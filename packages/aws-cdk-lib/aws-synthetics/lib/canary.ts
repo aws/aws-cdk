@@ -214,6 +214,9 @@ export interface CanaryProps {
    * How long the canary is allowed to run before it must stop.
    * You can't set this time to be longer than the frequency of the runs of this canary.
    *
+   * The minimum allowed value is 3 seconds.
+   * The maximum allowed value is 840 seconds (14 minutes).
+   *
    * @default - the frequency of the canary is used as this value, up to a maximum of 900 seconds.
    */
   readonly timeout?: cdk.Duration;
