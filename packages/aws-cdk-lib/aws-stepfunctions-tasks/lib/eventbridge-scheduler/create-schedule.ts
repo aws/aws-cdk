@@ -62,7 +62,10 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
   /**
    * The maximum time window during which a schedule can be invoked.
    *
-   * @default - Disable flexible time window
+   * Minimum value is 1 minute.
+   * Maximum value is 1440 minutes (1 day).
+   *
+   * @default - Flexible time window is not enabled.
    */
   readonly flexibleTimeWindow?: Duration;
 
