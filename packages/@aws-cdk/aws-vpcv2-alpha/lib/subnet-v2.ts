@@ -4,7 +4,6 @@ import { Resource, Names } from 'aws-cdk-lib';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
-import { defaultSubnetName } from './util';
 
 export interface ICidr {
   readonly cidr: string;
