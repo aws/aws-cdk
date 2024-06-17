@@ -66,9 +66,7 @@ class EksClusterStack extends Stack {
 
 const app = new App();
 
-const env = { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT };
-
-const stack = new EksClusterStack(app, 'eks-pod-identities', { env });
+const stack = new EksClusterStack(app, 'eks-pod-identities-test');
 
 new IntegTest(app, 'integ-eks-pod-identities', {
   testCases: [stack],
