@@ -247,7 +247,7 @@ You can use a cache policy to improve your cache hit ratio by controlling the va
 that are included in the cache key, and/or adjusting how long items remain in the cache via the time-to-live (TTL) settings.
 CloudFront provides some predefined cache policies, known as managed policies, for common use cases. You can use these managed policies,
 or you can create your own cache policy that’s specific to your needs.
-See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html> for more details.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html for more details.
 
 ```ts
 // Using an existing cache policy for a Distribution
@@ -290,7 +290,7 @@ Other information from the viewer request, such as URL query strings, HTTP heade
 You can use an origin request policy to control the information that’s included in an origin request.
 CloudFront provides some predefined origin request policies, known as managed policies, for common use cases. You can use these managed policies,
 or you can create your own origin request policy that’s specific to your needs.
-See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html> for more details.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html for more details.
 
 ```ts
 // Using an existing origin request policy for a Distribution
@@ -326,7 +326,7 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 
 You can configure CloudFront to add one or more HTTP headers to the responses that it sends to viewers (web browsers or other clients), without making any changes to the origin or writing any code.
 To specify the headers that CloudFront adds to HTTP responses, you use a response headers policy. CloudFront adds the headers regardless of whether it serves the object from the cache or has to retrieve the object from the origin. If the origin response includes one or more of the headers that’s in a response headers policy, the policy can specify whether CloudFront uses the header it received from the origin or overwrites it with the one in the policy.
-See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html>
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html
 
 ```ts
 // Using an existing managed response headers policy
@@ -448,7 +448,7 @@ new cloudfront.Distribution(this, 'myDist', {
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
 > `EdgeFunction` has the same interface as `Function` and can be created and used interchangeably.
 > Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
-> See <https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html> for more about bootstrapping regions.
+> See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
 
 If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
 
@@ -1207,5 +1207,5 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
 
 See:
 
-- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html>
-- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html>
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html
