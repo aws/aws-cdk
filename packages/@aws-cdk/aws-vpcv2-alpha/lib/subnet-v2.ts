@@ -53,12 +53,12 @@ export interface SubnetPropsV2 {
   routeTable?: IRouteTable;
 
   /**
-   * Logical name for the subnet group.
+   * A tag applied to the subnet for grouping purposes.
    *
-   * This name can be used when selecting VPC subnets to distinguish
-   * between different subnet groups of the same type.
+   * This grouping allows users to do things such as
+   * find all subnets with subnetGroupNameTag `subnetGroupA` for example.
    */
-  name?: string;
+  subnetGroupNameTag?: string;
 
   /**
    * The type of Subnet to configure.
@@ -107,21 +107,16 @@ export class SubnetV2 extends Resource implements ISubnet {
 
   /**
    *
+   */
+  public subnetType: SubnetType;
+
+  /**
+   *
    * @param scope
    * @param id
    * @param props
    */
   private _networkAcl: INetworkAcl;
-
-  /**
-   * Isolated subnet or not
-   * @default true
-   */
-  public isIsolated?: Boolean;
-
-  public name?: string;
-
-  public subnetType: SubnetType;
 
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
@@ -152,42 +147,24 @@ export class SubnetV2 extends Resource implements ISubnet {
     /**
      * seems to be the main default one
      */
-    const table = new CfnRouteTable(this, 'RouteTable', {
-      vpcId: props.vpc.vpcId,
-    });
-    this.routeTable = { routeTableId: table.ref };
+    if (props.routeTable) {
+      this.routeTable = props.routeTable;
+    } else {
+      const defaultTable = new CfnRouteTable(this, 'RouteTable', {
+        vpcId: props.vpc.vpcId,
+      });
+      this.routeTable = { routeTableId: defaultTable.ref };
+    }
+
     const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: table.ref,
+      routeTableId: this.routeTable.routeTableId,
     });
     this._internetConnectivityEstablished.add(routeAssoc);
-
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     this.subnetType = props.subnetType;
-
-    pushSubnet(props.vpc, this, props.subnetType);
-
-    /**
-     * custom route table
-     * can be moved to a function definition if we plan to change association
-     * after subnet creation
-     */
-    if (props.routeTable) {
-      this.isIsolated = false;
-      this.routeTable = props.routeTable;
-      if (props.subnetType === SubnetType.ISOLATED) {
-        throw new Error('Cannot create a route for a private isolated subnet, change type to PRIVATE');
-      }
-      new CfnSubnetRouteTableAssociation(this, 'CustomRouteTableAssociation', {
-        subnetId: this.subnetId,
-        routeTableId: props.routeTable.routeTableId,
-      });
-    }
-
-    /**optional name to be set to support filtering options */
-    this.name = props.name ?? defaultSubnetName(props.subnetType);
-
+    storeSubnetToVpcByType(props.vpc, this, props.subnetType);
   }
 
   /**
@@ -209,10 +186,9 @@ export class SubnetV2 extends Resource implements ISubnet {
   public get networkAcl(): INetworkAcl {
     return this._networkAcl;
   }
-
 }
 
-function pushSubnet(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
+function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
   const findFunctionType = subnetTypeMap[type];
   if (findFunctionType) {
     findFunctionType(vpc, subnet);
