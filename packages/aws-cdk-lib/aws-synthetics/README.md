@@ -109,7 +109,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 ### Memory
 
-You can set the maximum amount of memory that the canary can use while running by setting `memory`.
+You can set the maximum amount of memory the canary can use while running with the `memory` property.
 
 ```ts
 import * as cdk from "aws-cdk-lib";
