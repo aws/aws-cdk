@@ -110,6 +110,17 @@ function defaultToolkitSetup() {
   });
 }
 
+function destroyToolkitSetup() {
+  return new CdkToolkit({
+    cloudExecutable,
+    configuration: cloudExecutable.configuration,
+    sdkProvider: cloudExecutable.sdkProvider,
+    deployments: new FakeCloudFormation({
+      'Test-Stack-Destroy': { Foo: 'Bar' },
+    }),
+  });
+}
+
 describe('readCurrentTemplate', () => {
   let template: any;
   let mockForEnvironment = jest.fn();
@@ -731,11 +742,11 @@ describe('deploy', () => {
 
 describe('destroy', () => {
   test('destroy correct stack', async () => {
-    const toolkit = defaultToolkitSetup();
+    const toolkit = destroyToolkitSetup();
 
-    await expect(() => {
+    expect(() => {
       return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
+        selector: { patterns: ['Test-Stack-Destroy'] },
         exclusively: true,
         force: true,
         fromDeploy: true,
@@ -994,10 +1005,6 @@ describe('synth', () => {
     // THEN
     await toolkit.synth(['Test-Stack-A-Display-Name'], false, true);
     expect(mockData.mock.calls.length).toEqual(0);
-  });
-
-  afterEach(() => {
-    process.env.STACKS_TO_VALIDATE = undefined;
   });
 
   describe('migrate', () => {
