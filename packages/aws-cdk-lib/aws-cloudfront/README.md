@@ -223,7 +223,7 @@ To specify a web ACL created using AWS WAF Classic, use the ACL ID, for example 
 ```ts
 declare const bucketOrigin: origins.S3Origin;
 declare const webAcl: wafv2.CfnWebACL;
-const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: bucketOrigin },
   webAclId: webAcl.attrArn,
 });
@@ -234,7 +234,7 @@ You can also attach a web ACL to a distribution after creation.
 ```ts
 declare const bucketOrigin: origins.S3Origin;
 declare const webAcl: wafv2.CfnWebACL;
-const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: bucketOrigin },
 });
 
