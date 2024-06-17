@@ -27,6 +27,11 @@ For more details see the service documentation:
 
 Pipe targets are the end point of a EventBridge Pipe.
 
+The following targets are supported:
+
+1. `targets.SqsTarget`: [Send event source to a Queue](#amazon-sqs)
+2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions)
+
 ### Amazon SQS
 
 A SQS message queue can be used as a target for a pipe. Messages will be pushed to the queue.
@@ -43,7 +48,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
-The target configuration can be transformed:
+The target input can be transformed:
 
 ```ts
 declare const sourceQueue: sqs.Queue;
@@ -55,6 +60,60 @@ const pipeTarget = new targets.SqsTarget(targetQueue,
         { 
             "SomeKey": pipes.DynamicInput.fromEventPath('$.body')
         })
+    }
+);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+### AWS Step Functions State Machine
+
+A State Machine can be used as a target for a pipe. The State Machine will be invoked with the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStateMachine: sfn.IStateMachine;
+
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine,{});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+Specifying the Invocation Type when the target State Machine is invoked:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStateMachine: sfn.IStateMachine;
+
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
+    {
+      invocationType: targets.StateMachineInvocationType.FIRE_AND_FORGET,
+    }
+);
+
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+The input to the target State Machine can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStateMachine: sfn.IStateMachine;
+
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
+    {
+      inputTransformation: pipes.InputTransformation.fromObject({ body: '<$.body>' }),
+      invocationType: targets.StateMachineInvocationType.FIRE_AND_FORGET,
     }
 );
 

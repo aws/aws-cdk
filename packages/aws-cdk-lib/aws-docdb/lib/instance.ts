@@ -3,6 +3,7 @@ import { IDatabaseCluster } from './cluster-ref';
 import { CfnDBInstance } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import * as ec2 from '../../aws-ec2';
+import { CaCertificate } from '../../aws-rds';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
 
@@ -172,6 +173,17 @@ export interface DatabaseInstanceProps {
    * @default - false
    */
   readonly enablePerformanceInsights?: boolean;
+
+  /**
+   * The identifier of the CA certificate for this DB instance.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/ca_cert_rotation.html
+   *
+   * @default - DocumentDB will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 }
 
 /**
@@ -213,6 +225,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       dbInstanceClass: `db.${props.instanceType}`,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade ?? true,
       availabilityZone: props.availabilityZone,
+      caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       dbInstanceIdentifier: props.dbInstanceName,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       enablePerformanceInsights: props.enablePerformanceInsights,

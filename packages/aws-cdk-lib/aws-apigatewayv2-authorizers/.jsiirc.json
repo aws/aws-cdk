@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AwsApigatewayv2Authorizers"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.aws_apigatewayv2_authorizers"
+    },
+    "python": {
+      "module": "aws_cdk.aws_apigatewayv2_authorizers"
+    }
+  }
+}

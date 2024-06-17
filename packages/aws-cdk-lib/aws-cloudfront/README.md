@@ -539,7 +539,7 @@ Additionally, you can load the function's code from a file using the `FunctionCo
 
 If you set `autoPublish` to false, the function will not be automatically published to the LIVE stage when it’s created.
 
-``ts
+```ts
 new cloudfront.Function(this, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
   runtime: cloudfront.FunctionRuntime.JS_2_0,
