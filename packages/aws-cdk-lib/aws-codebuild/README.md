@@ -69,6 +69,9 @@ const gitHubSource = codebuild.Source.gitHub({
       .inEventOf(codebuild.EventAction.PUSH)
       .andBranchIs('main')
       .andCommitMessageIs('the commit message'),
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.RELEASED)
+      .andBranchIs('main')
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -298,6 +301,9 @@ can use the `environment` property to customize the build environment:
 * `environmentVariables` can be set at this level (and also at the project
   level).
 
+Finally, you can also set the build environment `fleet` property to create
+a reserved capacity project. See [Fleet](#fleet) for more information.
+
 ## Images
 
 The CodeBuild library supports both Linux and Windows images via the
@@ -416,6 +422,53 @@ new codebuild.Project(this, 'Project', {
 ```
 
 > Visit [AWS Lambda compute in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html) for more details.
+
+## Fleet
+
+By default, a CodeBuild project will request on-demand compute resources
+to process your build requests. While being able to scale and handle high load,
+on-demand resources can also be slow to provision.
+
+Reserved capacity fleets are an alternative to on-demand.
+Dedicated instances, maintained by CodeBuild,
+will be ready to fulfill your build requests immediately.
+Skipping the provisioning step in your project will reduce your build time,
+at the cost of paying for these reserved instances, even when idling, until they are released.
+
+For more information, see [Working with reserved capacity in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html) in the CodeBuild documentation.
+
+```ts
+const fleet = new codebuild.Fleet(this, 'Fleet', {
+    computeType: codebuild.FleetComputeType.MEDIUM,
+    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    baseCapacity: 1,
+});
+
+new codebuild.Project(this, 'Project', {
+  environment: {
+    fleet,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+  },
+  // ...
+})
+```
+
+You can also import an existing fleet to share its resources
+among several projects across multiple stacks:
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    fleet: codebuild.Fleet.fromFleetArn(
+      this, 'SharedFleet',
+      'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:ed0d0823-e38a-4c10-90a1-1bf25f50fa76', 
+    ),
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+  },
+  // ...
+})
+```
+
 
 ## Logs
 

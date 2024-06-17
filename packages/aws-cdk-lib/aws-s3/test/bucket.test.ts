@@ -3,6 +3,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -903,6 +904,28 @@ describe('bucket', () => {
         },
       },
     });
+  });
+
+  test('bucket with default block public access setting to throw error msg', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      publicReadAccess: true,
+    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+  });
+
+  test('bucket with enabled block public access setting to throw error msg', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      publicReadAccess: true,
+      blockPublicAccess: {
+        blockPublicPolicy: true,
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      },
+    })).toThrow('Cannot grant public access when \'blockPublicPolicy\' is enabled');
   });
 
   test('bucket with custom canned access control', () => {
@@ -3469,6 +3492,82 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+  });
+
+  test('setAutoDeleteObjectsLogGroup to update AutoDeleteObjectsProvider LoggingConfig after Bucket creation', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'FirstLogGroupFF5C2AA0',
+        },
+      },
+    });
+  });
+
+  test('setAutoDeleteObjectsLogGroup before Bucket creation', () => {
+    const stack = new cdk.Stack();
+
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'FirstLogGroupFF5C2AA0',
+        },
+      },
+    });
+  });
+
+  test('setAutoDeleteObjectsLogGroup multiple times should take the latest Log Group', () => {
+    const stack = new cdk.Stack();
+
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'SecondLogGroup', {
+      logGroupName: 'MySecondLogGroup',
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MySecondLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'SecondLogGroup8CDA9B9E',
+        },
+      },
+    });
   });
 
   test('bucket with transfer acceleration turned on', () => {

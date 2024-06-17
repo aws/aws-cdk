@@ -26,6 +26,7 @@ import {
   KeyPair,
   KeyPairType,
   CpuCredits,
+  InstanceInitiatedShutdownBehavior,
   PlacementGroup,
 } from '../lib';
 
@@ -676,6 +677,22 @@ describe('instance', () => {
       });
     }).toThrow('creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: m5.large');
   });
+
+  test('set instanceInitiatedShutdownBehavior', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      instanceInitiatedShutdownBehavior: InstanceInitiatedShutdownBehavior.TERMINATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      InstanceType: 't2.micro',
+      InstanceInitiatedShutdownBehavior: 'terminate',
+    });
+  });
 });
 
 test('add CloudFormation Init to instance', () => {
@@ -937,4 +954,73 @@ test('specify ebs optimized instance', () => {
     InstanceType: 't3.large',
     EbsOptimized: true,
   });
+});
+
+test.each([
+  [true, true],
+  [false, false],
+])('given enclaveEnabled %p', (given: boolean, expected: boolean) => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.XLARGE),
+    enclaveEnabled: given,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    EnclaveOptions: {
+      Enabled: expected,
+    },
+  });
+});
+
+test.each([
+  [true, true],
+  [false, false],
+])('given hibernationEnabled %p', (given: boolean, expected: boolean) => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.XLARGE),
+    hibernationEnabled: given,
+    blockDevices: [{
+      deviceName: '/dev/xvda',
+      volume: BlockDeviceVolume.ebs(30, {
+        volumeType: EbsDeviceVolumeType.GP3,
+        encrypted: true,
+        deleteOnTermination: true,
+      }),
+    }],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    HibernationOptions: {
+      Configured: expected,
+    },
+  });
+});
+
+test('throw if both enclaveEnabled and hibernationEnabled are set to true', () => {
+  // WHEN/THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.LARGE),
+      enclaveEnabled: true,
+      hibernationEnabled: true,
+      blockDevices: [{
+        deviceName: '/dev/xvda',
+        volume: BlockDeviceVolume.ebs(30, {
+          volumeType: EbsDeviceVolumeType.GP3,
+          encrypted: true,
+          deleteOnTermination: true,
+        }),
+      }],
+    });
+  }).toThrow('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
 });
