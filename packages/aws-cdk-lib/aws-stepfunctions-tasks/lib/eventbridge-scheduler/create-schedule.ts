@@ -70,9 +70,9 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
   readonly flexibleTimeWindow?: Duration;
 
   /**
-   * Existing schedule group name
+   * The name of the schedule group to associate with this schedule.
    *
-   * @default 'default'
+   * @default - The default schedule group is used.
    */
   readonly groupName?: string;
 
