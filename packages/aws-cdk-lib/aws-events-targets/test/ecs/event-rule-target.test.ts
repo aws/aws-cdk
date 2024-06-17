@@ -1108,10 +1108,10 @@ test('Non-imported TaskDefinition role is targeting by Ref', () => {
   });
 
   rule.addTarget(
-      new EcsTask({
-        cluster: cluster,
-        taskDefinition: taskDefinition,
-      }),
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
   );
 
   const policyMatch = Match.objectLike({
@@ -1142,10 +1142,10 @@ test('Imported task definition without revision adds wildcard to policy resource
   });
 
   rule.addTarget(
-      new EcsTask({
-        cluster: cluster,
-        taskDefinition: taskDefinition,
-      }),
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
   );
 
   const policyMatch = Match.objectLike({
@@ -1174,10 +1174,10 @@ test('Imported task definition with revision uses original arn for policy resour
   });
 
   rule.addTarget(
-      new EcsTask({
-        cluster: cluster,
-        taskDefinition: taskDefinition,
-      }),
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
   );
 
   const policyMatch = Match.objectLike({
