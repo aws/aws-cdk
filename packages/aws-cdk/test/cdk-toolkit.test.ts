@@ -493,60 +493,62 @@ describe('deploy', () => {
       });
     });
 
-    test('with sns notification arns as options', async () => {
-      // GIVEN
-      const notificationArns = [
-        'arn:aws:sns:us-east-2:444455556666:MyTopic',
-        'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
-      ];
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        deployments: new FakeCloudFormation({
-          'Test-Stack-A': { Foo: 'Bar' },
-          'Test-Stack-B': { Baz: 'Zinga!' },
-        }, notificationArns),
-      });
-
-      // WHEN
-      await toolkit.deploy({
-        selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
-        notificationArns,
-        hotswap: HotswapMode.FULL_DEPLOYMENT,
-      });
-    });
-
-    test('fail with incorrect sns notification arns as options', async () => {
-      // GIVEN
-      const notificationArns = ['arn:::cfn-my-cool-topic'];
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        deployments: new FakeCloudFormation({
-          'Test-Stack-A': { Foo: 'Bar' },
-        }, notificationArns),
-      });
-
-      // WHEN
-      await expect(() =>
-        toolkit.deploy({
-          selector: { patterns: ['Test-Stack-A'] },
-          notificationArns,
-          hotswap: HotswapMode.FULL_DEPLOYMENT,
-        }),
-      ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
-    });
-
     describe('sns notification arns', () => {
       beforeEach(() => {
         cloudExecutable = new MockCloudExecutable({
           stacks: [
+            MockStack.MOCK_STACK_A,
+            MockStack.MOCK_STACK_B,
             MockStack.MOCK_STACK_WITH_NOTIFICATION_ARNS,
             MockStack.MOCK_STACK_WITH_BAD_NOTIFICATION_ARNS,
           ],
         });
+      });
+
+      test('with sns notification arns as options', async () => {
+        // GIVEN
+        const notificationArns = [
+          'arn:aws:sns:us-east-2:444455556666:MyTopic',
+          'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
+        ];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-A': { Foo: 'Bar' },
+            'Test-Stack-B': { Baz: 'Zinga!' },
+          }, notificationArns),
+        });
+
+        // WHEN
+        await toolkit.deploy({
+          selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
+          notificationArns,
+          hotswap: HotswapMode.FULL_DEPLOYMENT,
+        });
+      });
+
+      test('fail with incorrect sns notification arns as options', async () => {
+        // GIVEN
+        const notificationArns = ['arn:::cfn-my-cool-topic'];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-A': { Foo: 'Bar' },
+          }, notificationArns),
+        });
+
+        // WHEN
+        await expect(() =>
+          toolkit.deploy({
+            selector: { patterns: ['Test-Stack-A'] },
+            notificationArns,
+            hotswap: HotswapMode.FULL_DEPLOYMENT,
+          }),
+        ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
       });
 
       test('with sns notification arns in the executable', async () => {
