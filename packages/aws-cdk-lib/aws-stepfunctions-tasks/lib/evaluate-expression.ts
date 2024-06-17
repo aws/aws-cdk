@@ -131,7 +131,7 @@ function createEvalFn(props: EvaluateExpressionProps, scope: Construct) {
   return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {
     uuid,
     lambdaPurpose,
-    runtime,
+    runtime: props.runtime,
     role: props.role,
   });
 }
