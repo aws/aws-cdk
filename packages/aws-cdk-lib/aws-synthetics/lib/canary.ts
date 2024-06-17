@@ -562,7 +562,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     let memoryInMb: number | undefined;
-    if (!cdk.Token.isUnresolved(props.memory) && props.memory) {
+    if (!cdk.Token.isUnresolved(props.memory) && props.memory !== undefined) {
       memoryInMb = props.memory.toMebibytes();
       if (memoryInMb % 64 !== 0) {
         throw new Error(`\`memory\` must be a multiple of 64 MiB, got ${memoryInMb} MiB.`);
