@@ -272,7 +272,7 @@ test('throws when activeTracing is enabled with an unsupported runtime', () => {
     runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
     activeTracing: true,
   }))
-    .toThrow('You can enable active tracing only for canaries that use version syn-nodejs-2.0 or later for their canary runtime.');
+    .toThrow('You can enable active tracing only for canaries that use version `syn-nodejs-2.0` or later for their canary runtime.');
 });
 
 test('environment variables can be specified', () => {

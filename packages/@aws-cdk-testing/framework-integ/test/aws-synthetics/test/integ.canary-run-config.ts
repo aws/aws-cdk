@@ -19,7 +19,7 @@ class TestStack extends Stack {
       }),
       cleanup: synthetics.Cleanup.LAMBDA,
       activeTracing: true,
-      memory: Size.mebibytes(1024),
+      memory: Size.mebibytes(2048),
       timeout: Duration.minutes(4),
     });
   }

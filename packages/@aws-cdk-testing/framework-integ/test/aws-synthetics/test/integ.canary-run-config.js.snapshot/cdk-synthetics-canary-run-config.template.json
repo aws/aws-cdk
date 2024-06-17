@@ -188,7 +188,7 @@
     "Name": "next",
     "RunConfig": {
      "ActiveTracing": true,
-     "MemoryInMB": 1024,
+     "MemoryInMB": 2048,
      "TimeoutInSeconds": 240
     },
     "RuntimeVersion": "syn-nodejs-puppeteer-7.0",

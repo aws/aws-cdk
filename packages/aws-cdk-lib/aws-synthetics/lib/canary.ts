@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { Code } from './code';
-import { Runtime } from './runtime';
+import { Runtime, RuntimeFamily } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
@@ -206,7 +206,7 @@ export interface CanaryProps {
    * This value must be a multiple of 64 Mib.
    * The range is 960 MiB to 3008 MiB.
    *
-   * @default Size.mebibytes(5)
+   * @default Size.mebibytes(1024)
    */
   readonly memory?: cdk.Size;
 
@@ -552,12 +552,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       !props.timeout) {
       return undefined;
     }
-    const activeTracingNotSupportedRuntime = [
-      Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
-      Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0,
-    ];
 
-    if (props.activeTracing && activeTracingNotSupportedRuntime.includes(props.runtime)) {
+    // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
+    if (props.activeTracing && !cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) {
       throw new Error('You can enable active tracing only for canaries that use version `syn-nodejs-2.0` or later for their canary runtime.');
     }
 
