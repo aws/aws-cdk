@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "sns-grant-subscribe-test/DefaultTest": {
+      "stacks": [
+        "sns-grant-subscribe-stack"
+      ],
+      "assertionStack": "sns-grant-subscribe-test/DefaultTest/DeployAssert",
+      "assertionStackName": "snsgrantsubscribetestDefaultTestDeployAssertE3ABCE3F"
+    }
+  }
+}
