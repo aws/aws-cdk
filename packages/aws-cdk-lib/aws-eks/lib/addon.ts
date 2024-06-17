@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAddon } from './eks.generated';
-import { IResource, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -59,11 +59,12 @@ export interface AddonAttributes {
  */
 export class Addon extends Resource implements IAddon {
   /**
-   * Creates an Iaddon instance from the given Add-On name.
-   * @param scope The parent construct.
-   * @param id The construct ID.
-   * @param addonName The name of the Add-On.
-   * @returns An Iaddon instance.
+   * Creates an `IAddon` instance from the given addon attributes.
+   *
+   * @param scope - The parent construct.
+   * @param id - The construct ID.
+   * @param attrs - The attributes of the addon, including the addon name and the cluster name.
+   * @returns An `IAddon` instance.
    */
   public static fromAddonAttributes(scope: Construct, id: string, attrs: AddonAttributes): IAddon {
     class Import extends Resource implements IAddon {
@@ -76,8 +77,32 @@ export class Addon extends Resource implements IAddon {
     }
     return new Import(scope, id);
   }
+  /**
+   * Creates an `IAddon` from an existing addon ARN.
+   *
+   * @param scope - The parent construct.
+   * @param id - The ID of the construct.
+   * @param addonArn - The ARN of the addon.
+   * @returns An `IAddon` implementation.
+   */
+  public static fromAddonArn(scope: Construct, id: string, addonArn: string): IAddon {
+    const parsedArn = Stack.of(scope).splitArn(addonArn, ArnFormat.COLON_RESOURCE_NAME);
+    const splitResourceName = Fn.split('/', parsedArn.resourceName!);
+    class Import extends Resource implements IAddon {
+      public readonly addonName = Fn.select(1, splitResourceName);
+      public readonly addonArn = addonArn;
+    }
 
+    return new Import(scope, id);
+  }
+
+  /**
+   * Name of the addon.
+   */
   public readonly addonName: string;
+  /**
+   * Arn of the addon.
+   */
   public readonly addonArn: string;
   private readonly clusterName: string;
 

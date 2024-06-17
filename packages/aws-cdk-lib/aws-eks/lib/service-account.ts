@@ -178,10 +178,6 @@ export class ServiceAccount extends Construct implements IPrincipal {
         StringEquals: conditions,
       });
 
-      // Ensure that the EKS Pod Identity Agent addon is available for this cluster.
-      // If the addon has not been created yet, create it.
-      cluster.eksPodIdentityAgent;
-
     } else {
       /**
        * Identity type is POD_IDENTITY.
@@ -195,8 +191,11 @@ export class ServiceAccount extends Construct implements IPrincipal {
 
     // pod identities requires 'sts:TagSession' in its principal actions
     if (props.identityType === IdentityType.POD_IDENTITY) {
+      /**
+       * EKS Pod Identities requires both assumed role actions otherwise it would fail.
+       */
       role.assumeRolePolicy!.addStatements(new PolicyStatement({
-        actions: ['sts:TagSession'],
+        actions: ['sts:AssumeRole', 'sts:TagSession'],
         principals: [new ServicePrincipal('pods.eks.amazonaws.com')],
       }));
 
@@ -210,6 +209,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
         roleArn: role.roleArn,
         serviceAccount: this.serviceAccountName,
       });
+
     };
 
     this.role = role;
