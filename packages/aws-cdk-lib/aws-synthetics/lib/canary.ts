@@ -190,7 +190,6 @@ export interface CanaryProps {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_tracing.html
    */
-
   readonly activeTracing?: boolean;
 
   /**
