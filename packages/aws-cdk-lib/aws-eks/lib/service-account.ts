@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { CfnPodIdentityAssociation } from './index';
+import { CfnPodIdentityAssociation, FargateCluster } from './index';
 import { KubernetesManifest } from './k8s-manifest';
 import {
   AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
@@ -184,6 +184,11 @@ export class ServiceAccount extends Construct implements IPrincipal {
        * Create a service principal with "Service": "pods.eks.amazonaws.com"
        * See https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
        */
+
+      // EKS Pod Identity does not support Fargate
+      if (cluster instanceof FargateCluster) {
+        throw Error('Pod Identity is not supported in Fargate. Use IRSA identity type instead.');
+      }
       principal = new ServicePrincipal('pods.eks.amazonaws.com');
     }
 

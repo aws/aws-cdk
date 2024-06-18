@@ -379,6 +379,18 @@ describe('service account', () => {
       // should not create OpenIdConnectProvider
       t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
     });
+    test('throw error when adding service account to Fargate cluster', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster(undefined, undefined, { isFargate: true });
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('MyServiceAccount', {
+        identityType: eks.IdentityType.POD_IDENTITY,
+      })).toThrow(
+        'Pod Identity is not supported in Fargate. Use IRSA identity type instead.',
+      );
+    });
+
   });
   describe('Service Account with eks.IdentityType.IRSA', () => {
     test('default', () => {
