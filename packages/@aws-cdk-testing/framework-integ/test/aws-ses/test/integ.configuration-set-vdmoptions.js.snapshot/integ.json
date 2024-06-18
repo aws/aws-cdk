@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ConfigurationSetVdmOptionsInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-configuration-set-vdmoptions-integ"
+      ],
+      "assertionStack": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ConfigurationSetVdmOptionsIntegDefaultTestDeployAssertF0560934"
+    }
+  }
+}
