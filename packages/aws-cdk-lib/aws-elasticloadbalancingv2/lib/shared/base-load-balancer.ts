@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './enums';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -251,7 +252,11 @@ export abstract class BaseLoadBalancer extends Resource {
     }
 
     if (baseProps.denyAllIgwTraffic !== undefined) {
-      this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
+      if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK) {
+        this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
+      } else {
+        throw new Error(`'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`);
+      }
     }
 
     this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;

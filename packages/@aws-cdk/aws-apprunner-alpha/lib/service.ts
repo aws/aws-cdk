@@ -1,6 +1,7 @@
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib/core';
@@ -79,7 +80,7 @@ export class Cpu {
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: string) {}
+  private constructor(public readonly unit: string) { }
 }
 
 /**
@@ -715,6 +716,20 @@ export interface ServiceProps {
    * @default - no health check configuration
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The customer managed key that AWS App Runner uses to encrypt copies of the source repository and service logs.
+   *
+   * @default - Use an AWS managed key
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The IP address type for your incoming public network configuration.
+   *
+   * @default - IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -997,6 +1012,21 @@ export class HealthCheck {
 }
 
 /**
+ * The IP address type for your incoming public network configuration.
+ */
+export enum IpAddressType {
+  /**
+   * IPV4
+   */
+  IPV4 = 'IPV4',
+
+  /**
+   * DUAL_STACK
+   */
+  DUAL_STACK = 'DUAL_STACK',
+}
+
+/**
  * Attributes for the App Runner Service
  */
 export interface ServiceAttributes {
@@ -1239,11 +1269,15 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           this.renderCodeConfiguration(this.source.codeRepository!.codeConfiguration.configurationValues!) :
           undefined,
       },
+      encryptionConfiguration: this.props.kmsKey ? {
+        kmsKey: this.props.kmsKey.keyArn,
+      } : undefined,
       networkConfiguration: {
         egressConfiguration: {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+        ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :

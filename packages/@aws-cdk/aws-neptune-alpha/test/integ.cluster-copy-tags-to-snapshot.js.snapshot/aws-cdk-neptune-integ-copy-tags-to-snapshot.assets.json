@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "a57522de53101cd95696abb302681e2a1002f0ea0beffe8e2acdf6df1fd35852": {
+      "source": {
+        "path": "aws-cdk-neptune-integ-copy-tags-to-snapshot.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a57522de53101cd95696abb302681e2a1002f0ea0beffe8e2acdf6df1fd35852.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

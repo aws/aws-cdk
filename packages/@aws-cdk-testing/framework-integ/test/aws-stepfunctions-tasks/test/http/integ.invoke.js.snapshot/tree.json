@@ -107,11 +107,6 @@
                       },
                       "s3Key": "635014de0189cac8a2849b0c53d352f1cc9c7079c6e59d2de204a40e3b86ecae.zip"
                     },
-                    "environment": {
-                      "variables": {
-                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-                      }
-                    },
                     "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [

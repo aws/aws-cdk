@@ -467,3 +467,84 @@ test('Scheduled Ec2 Task - with list of tags', () => {
     ],
   });
 });
+
+test('Can create a scheduled Ec2 Task - with customized container name', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      containerName: 'ScheduledContainer1',
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task2', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      containerName: 'ScheduledContainer2',
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      {
+        Essential: true,
+        Image: 'henk',
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-group': {
+              Ref: 'ScheduledEc2TaskScheduledTaskDefScheduledContainer1LogGroupE13E2953',
+            },
+            'awslogs-stream-prefix': 'ScheduledEc2Task',
+            'awslogs-region': {
+              Ref: 'AWS::Region',
+            },
+          },
+        },
+        Memory: 512,
+        Name: 'ScheduledContainer1',
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      {
+        Essential: true,
+        Image: 'henk',
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-group': {
+              Ref: 'ScheduledEc2Task2ScheduledTaskDefScheduledContainer2LogGroup2355D79B',
+            },
+            'awslogs-stream-prefix': 'ScheduledEc2Task2',
+            'awslogs-region': {
+              Ref: 'AWS::Region',
+            },
+          },
+        },
+        Memory: 512,
+        Name: 'ScheduledContainer2',
+      },
+    ],
+  });
+});

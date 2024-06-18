@@ -1,0 +1,131 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integ-apprunner-encryption.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-apprunner-encryption.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-apprunner-encryption": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner-encryption.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0fe6f95cda1a644231803b5acf00b70af151133660b969f529838e037d6ffcfd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-apprunner-encryption.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apprunner-encryption.assets"
+      ],
+      "metadata": {
+        "/integ-apprunner-encryption/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/integ-apprunner-encryption/Service/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceInstanceRoleDFA90CEC"
+          }
+        ],
+        "/integ-apprunner-encryption/Service/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceDBC79909"
+          }
+        ],
+        "/integ-apprunner-encryption/URL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL"
+          }
+        ],
+        "/integ-apprunner-encryption/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-apprunner-encryption/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner-encryption"
+    },
+    "AppRunnerEncryptionDefaultTestDeployAssert21640739.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppRunnerEncryptionDefaultTestDeployAssert21640739.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AppRunnerEncryptionDefaultTestDeployAssert21640739": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AppRunnerEncryptionDefaultTestDeployAssert21640739.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppRunnerEncryptionDefaultTestDeployAssert21640739.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppRunnerEncryptionDefaultTestDeployAssert21640739.assets"
+      ],
+      "metadata": {
+        "/AppRunnerEncryption/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppRunnerEncryption/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AppRunnerEncryption/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -14,6 +14,19 @@ export interface NetworkLoadBalancerEndpointProps {
    * @default 128
    */
   readonly weight?: number;
+
+  /**
+   * Forward the client IP address in an `X-Forwarded-For` header
+   *
+   * GlobalAccelerator will create Network Interfaces in your VPC in order
+   * to preserve the client IP address.
+   *
+   * Client IP address preservation is supported only in specific AWS Regions.
+   * See the GlobalAccelerator Developer Guide for a list.
+   *
+   * @default false
+   */
+  readonly preserveClientIp?: boolean;
 }
 
 /**
@@ -31,6 +44,7 @@ export class NetworkLoadBalancerEndpoint implements ga.IEndpoint {
     return {
       endpointId: this.loadBalancer.loadBalancerArn,
       weight: this.options.weight,
+      clientIpPreservationEnabled: this.options.preserveClientIp,
     } as ga.CfnEndpointGroup.EndpointConfigurationProperty;
   }
 }

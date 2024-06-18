@@ -1,7 +1,5 @@
-import * as path from 'path';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import {
   CustomResource,
@@ -18,7 +16,7 @@ import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
 
 /**
  * A branch
@@ -229,42 +227,22 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const onEvent = new NodejsFunction(
-      this,
-      'amplify-asset-deployment-on-event',
-      {
-        entry: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
-        handler: 'onEvent',
-        initialPolicy: [
-          new iam.PolicyStatement({
-            resources: ['*'],
-            actions: [
-              's3:GetObject',
-              's3:GetSignedUrl',
-              'amplify:ListJobs',
-              'amplify:StartDeployment',
-            ],
-          }),
-        ],
-        runtime: Runtime.NODEJS_18_X,
-      },
-    );
+    const onEvent = new AssetDeploymentOnEventFunction(this, 'amplify-asset-deployment-on-event');
+    onEvent.addToRolePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        's3:GetObject',
+        's3:GetSignedUrl',
+        'amplify:ListJobs',
+        'amplify:StartDeployment',
+      ],
+    }));
 
-    const isComplete = new NodejsFunction(
-      this,
-      'amplify-asset-deployment-is-complete',
-      {
-        entry: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
-        handler: 'isComplete',
-        initialPolicy: [
-          new iam.PolicyStatement({
-            resources: ['*'],
-            actions: ['amplify:GetJob*'],
-          }),
-        ],
-        runtime: Runtime.NODEJS_18_X,
-      },
-    );
+    const isComplete = new AssetDeploymentIsCompleteFunction(this, 'amplify-asset-deployment-is-complete');
+    isComplete.addToRolePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['amplify:GetJob*'],
+    }));
 
     this.provider = new Provider(
       this,

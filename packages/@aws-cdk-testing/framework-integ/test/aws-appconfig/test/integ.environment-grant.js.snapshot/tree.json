@@ -1,0 +1,243 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-appconfig-environment-grant": {
+        "id": "aws-appconfig-environment-grant",
+        "path": "aws-appconfig-environment-grant",
+        "children": {
+          "MyApplicationForEnv": {
+            "id": "MyApplicationForEnv",
+            "path": "aws-appconfig-environment-grant/MyApplicationForEnv",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment-grant/MyApplicationForEnv/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "AppForEnvTest"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnApplication",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appconfig.Application",
+              "version": "0.0.0"
+            }
+          },
+          "MyEnvironment": {
+            "id": "MyEnvironment",
+            "path": "aws-appconfig-environment-grant/MyEnvironment",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment-grant/MyEnvironment/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "name": "awsappconfigenvironmentgrant-MyEnvironment-6CC47125"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnEnvironment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appconfig.Environment",
+              "version": "0.0.0"
+            }
+          },
+          "MyUser": {
+            "id": "MyUser",
+            "path": "aws-appconfig-environment-grant/MyUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment-grant/MyUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-appconfig-environment-grant/MyUser/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-environment-grant/MyUser/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "appconfig:GetLatestConfiguration",
+                                "appconfig:StartConfigurationSession"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":appconfig:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":application/",
+                                    {
+                                      "Ref": "MyApplicationForEnv1F597ED9"
+                                    },
+                                    "/environment/",
+                                    {
+                                      "Ref": "MyEnvironment465E4DEA"
+                                    },
+                                    "/configuration/*"
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "MyUserDefaultPolicy7B897426",
+                        "users": [
+                          {
+                            "Ref": "MyUserDC45028B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appconfig-environment-grant/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appconfig-environment-grant/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "appconfig-environment": {
+        "id": "appconfig-environment",
+        "path": "appconfig-environment",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "appconfig-environment/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "appconfig-environment/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "appconfig-environment/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "appconfig-environment/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "appconfig-environment/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

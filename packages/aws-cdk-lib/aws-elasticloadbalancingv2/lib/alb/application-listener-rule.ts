@@ -114,7 +114,7 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
 
 /**
  * The content type for a fixed response
- * @deprecated superceded by `FixedResponseOptions`.
+ * @deprecated superseded by `FixedResponseOptions`.
  */
 export enum ContentType {
   TEXT_PLAIN = 'text/plain',
@@ -126,7 +126,7 @@ export enum ContentType {
 
 /**
  * A fixed response
- * @deprecated superceded by `ListenerAction.fixedResponse()`.
+ * @deprecated superseded by `ListenerAction.fixedResponse()`.
  */
 export interface FixedResponse {
   /**
@@ -151,7 +151,7 @@ export interface FixedResponse {
 
 /**
  * A redirect response
- * @deprecated superceded by `ListenerAction.redirect()`.
+ * @deprecated superseded by `ListenerAction.redirect()`.
  */
 export interface RedirectResponse {
   /**

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "MultiAzRedshiftTest/DefaultTest": {
+      "stacks": [
+        "MultiAzRedshift"
+      ],
+      "assertionStack": "MultiAzRedshiftTest/DefaultTest/DeployAssert",
+      "assertionStackName": "MultiAzRedshiftTestDefaultTestDeployAssert07040285"
+    }
+  }
+}

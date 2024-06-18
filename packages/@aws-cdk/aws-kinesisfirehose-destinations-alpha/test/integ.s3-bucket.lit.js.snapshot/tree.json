@@ -125,6 +125,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -424,11 +432,6 @@
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
                       "s3Key": "f634c102f4aa6cdd9b6c00b836e98f2d5c03e65b02bd9efa16f83a2f348f149f.zip"
-                    },
-                    "environment": {
-                      "variables": {
-                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-                      }
                     },
                     "handler": "index.handler",
                     "role": {

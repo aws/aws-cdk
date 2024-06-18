@@ -125,6 +125,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "cdk-s3-bucket-auto-delete-objects/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "cdk-s3-bucket-auto-delete-objects/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -514,7 +522,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },
@@ -526,6 +542,31 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "MyLogGroup": {
+            "id": "MyLogGroup",
+            "path": "cdk-s3-bucket-auto-delete-objects/MyLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-s3-bucket-auto-delete-objects/MyLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "MyLogGroup",
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
               "version": "0.0.0"
             }
           },

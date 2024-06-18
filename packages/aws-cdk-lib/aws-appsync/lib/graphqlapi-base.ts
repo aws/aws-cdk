@@ -113,6 +113,47 @@ export class IamResource {
 }
 
 /**
+ * Visibility type for a GraphQL API
+ */
+export enum Visibility {
+
+  /**
+   * Public, open to the internet
+   */
+  GLOBAL = 'GLOBAL',
+  /**
+   * Only accessible through a VPC
+   */
+  PRIVATE = 'PRIVATE',
+}
+
+/**
+ * enum with all possible values for AppSync authorization type
+ */
+export enum AuthorizationType {
+  /**
+   * API Key authorization type
+   */
+  API_KEY = 'API_KEY',
+  /**
+   * AWS IAM authorization type. Can be used with Cognito Identity Pool federated credentials
+   */
+  IAM = 'AWS_IAM',
+  /**
+   * Cognito User Pool authorization type
+   */
+  USER_POOL = 'AMAZON_COGNITO_USER_POOLS',
+  /**
+   * OpenID Connect authorization type
+   */
+  OIDC = 'OPENID_CONNECT',
+  /**
+   * Lambda authorization type
+   */
+  LAMBDA = 'AWS_LAMBDA',
+}
+
+/**
  * Interface for GraphQL
  */
 export interface IGraphqlApi extends IResource {
@@ -131,6 +172,21 @@ export interface IGraphqlApi extends IResource {
    * @attribute
    */
   readonly arn: string;
+
+  /**
+   * The GraphQL endpoint ARN
+   */
+  readonly graphQLEndpointArn: string;
+
+  /**
+   * the visibility of the API
+   */
+  readonly visibility: Visibility;
+
+  /**
+   * The Authorization Types for this GraphQL Api
+   */
+  readonly modes: AuthorizationType[];
 
   /**
    * add a new dummy data source to this API. Useful for pipeline resolvers
@@ -291,9 +347,24 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   public abstract readonly apiId: string;
 
   /**
+   * The GraphQL endpoint ARN
+   */
+  public abstract readonly graphQLEndpointArn: string;
+
+  /**
+   * The visibility of the API
+   */
+  public abstract readonly visibility: Visibility;
+
+  /**
    * the ARN of the API
    */
   public abstract readonly arn: string;
+
+  /**
+   * The Authorization Types for this GraphQL Api
+   */
+  public abstract readonly modes: AuthorizationType[];
 
   /**
    * add a new dummy data source to this API. Useful for pipeline resolvers

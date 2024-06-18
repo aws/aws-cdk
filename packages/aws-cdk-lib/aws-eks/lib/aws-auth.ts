@@ -1,6 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
 import { AwsAuthMapping } from './aws-auth-mapping';
-import { Cluster } from './cluster';
+import { Cluster, AuthenticationMode } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
 import * as iam from '../../aws-iam';
 import { Lazy, Stack } from '../../core';
@@ -30,6 +30,23 @@ export class AwsAuth extends Construct {
 
   constructor(scope: Construct, id: string, props: AwsAuthProps) {
     super(scope, id);
+
+    /**
+     * Throw if the cluster does not support ConfigMap.
+     * AuthenticationMode.API => support API only
+     * AuthenticationMode.API_AND_CONFIG_MAP => support both API and ConfigMap
+     * AuthenticationMode.CONFIG_MAP => support ConfigMap only
+     * AuthenticationMode undefined => support ConfigMap only
+     *
+     * As AwsAuth is designed to handle the ConfigMap by creating the KubernetesManifest.
+     * We should throw when ConfigMap is not supported and that is only when authenticationMode is
+     * AuthenticationMode.API.
+     */
+    const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+
+    if (!supportConfigMap) {
+      throw new Error('ConfigMap not supported in the AuthenticationMode');
+    }
 
     this.stack = Stack.of(this);
 

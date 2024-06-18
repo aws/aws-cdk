@@ -114,6 +114,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "cdk-route53-integ-delete-existing-record-set/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::DeleteExistingRecordSetCustomResourceProvider": {
             "id": "Custom::DeleteExistingRecordSetCustomResourceProvider",
             "path": "cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider",

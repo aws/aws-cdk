@@ -50,6 +50,7 @@ export class HttpNlbIntegration extends HttpPrivateIntegration {
       uri: this.listener.listenerArn,
       secureServerName: this.props.secureServerName,
       parameterMapping: this.props.parameterMapping,
+      timeout: this.props.timeout,
     };
   }
 }

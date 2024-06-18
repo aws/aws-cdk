@@ -879,6 +879,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "vpc-dual-stack-ec2/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "vpc-dual-stack-ec2/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -1237,13 +1245,13 @@
               "version": "0.0.0"
             }
           },
-          "15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset": {
-            "id": "15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset",
-            "path": "vpc-dual-stack-ec2/15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset",
+          "936f942e853e44b4f129cc9a61b8a64b--app--webserver.zipAsset": {
+            "id": "936f942e853e44b4f129cc9a61b8a64b--app--webserver.zipAsset",
+            "path": "vpc-dual-stack-ec2/936f942e853e44b4f129cc9a61b8a64b--app--webserver.zipAsset",
             "children": {
               "Stage": {
                 "id": "Stage",
-                "path": "vpc-dual-stack-ec2/15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset/Stage",
+                "path": "vpc-dual-stack-ec2/936f942e853e44b4f129cc9a61b8a64b--app--webserver.zipAsset/Stage",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -1251,7 +1259,7 @@
               },
               "AssetBucket": {
                 "id": "AssetBucket",
-                "path": "vpc-dual-stack-ec2/15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset/AssetBucket",
+                "path": "vpc-dual-stack-ec2/936f942e853e44b4f129cc9a61b8a64b--app--webserver.zipAsset/AssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                   "version": "0.0.0"
@@ -1409,6 +1417,14 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "vpc-dual-stack-ec2-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "BootstrapVersion": {

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AppRunnerEncryption/DefaultTest": {
+      "stacks": [
+        "integ-apprunner-encryption"
+      ],
+      "assertionStack": "AppRunnerEncryption/DefaultTest/DeployAssert",
+      "assertionStackName": "AppRunnerEncryptionDefaultTestDeployAssert21640739"
+    }
+  }
+}

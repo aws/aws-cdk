@@ -9,6 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-s3-notifications');
 
 new s3.Bucket(stack, 'MyEventBridgeBucket', {
   eventBridgeEnabled: true,
+  enforceSSL: true, // Adding dummy bucket policy for testing that bucket policy is created before bucket notification
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

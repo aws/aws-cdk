@@ -346,6 +346,14 @@
               "version": "10.3.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "AppSyncLogMetrics/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "AppSyncLogMetrics/BootstrapVersion",

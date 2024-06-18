@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/45d4f73b0c122d43b58b505f8c7b6cf825757b0ee70e4b0e517206c0df6468e3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7761f66ff15ca0ff25df34788e2510516eed8627c49e6291fd008122eaf2886d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -232,12 +232,6 @@
             "data": "DNS"
           }
         ],
-        "/integ-cognito/User/Resource": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
-          }
-        ],
         "/integ-cognito/User/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -250,12 +244,6 @@
             "data": "UserCustomResourcePolicyC2EB5139"
           }
         ],
-        "/integ-cognito/User/SetUserPassword": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
-          }
-        ],
         "/integ-cognito/User/SetUserPassword/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -266,6 +254,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "UserSetUserPasswordCustomResourcePolicy7B250C76"
+          }
+        ],
+        "/integ-cognito/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -336,7 +330,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21b8c8603be6ff24312b7a23dee57527b3a6c0b4f155620aa89afc35b0693009.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66075eddc13a6655a6af91535b72c2e91333bbc8ae3539fc38e13cc7e7da1a4f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -381,6 +375,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-test-cognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default/Default": [

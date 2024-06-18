@@ -1,0 +1,192 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-ivs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ivs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ivs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ivs.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b36ff63b806e0b7de210c25d9b1d33b64f53913997de9e5cb8b99dcee96d779.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ivs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ivs.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ivs/AdvancedChannelWithoutPresetSetting/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdvancedChannelWithoutPresetSetting56CDB01B"
+          }
+        ],
+        "/aws-cdk-ivs/AdvancedChannelWithPresetSetting/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdvancedChannelWithPresetSetting5981FCA9"
+          }
+        ],
+        "/aws-cdk-ivs/StandardChannelWithPresetSetting/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardChannelWithPresetSetting45FDEBBB"
+          }
+        ],
+        "/aws-cdk-ivs/Exports/Output{\"Fn::GetAtt\":[\"AdvancedChannelWithoutPresetSetting56CDB01B\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAdvancedChannelWithoutPresetSetting56CDB01BArnDCD4734C"
+          }
+        ],
+        "/aws-cdk-ivs/Exports/Output{\"Fn::GetAtt\":[\"AdvancedChannelWithPresetSetting5981FCA9\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAdvancedChannelWithPresetSetting5981FCA9Arn6ED27899"
+          }
+        ],
+        "/aws-cdk-ivs/Exports/Output{\"Fn::GetAtt\":[\"StandardChannelWithPresetSetting45FDEBBB\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttStandardChannelWithPresetSetting45FDEBBBArn94DAE976"
+          }
+        ],
+        "/aws-cdk-ivs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ivs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ivs"
+    },
+    "ivstestDefaultTestDeployAssertDCE80D47.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ivstestDefaultTestDeployAssertDCE80D47.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ivstestDefaultTestDeployAssertDCE80D47": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ivstestDefaultTestDeployAssertDCE80D47.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/32286efe813967799699a6dd82932b7fe48f365ad030e84b7916e665aef48d50.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ivstestDefaultTestDeployAssertDCE80D47.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ivs",
+        "ivstestDefaultTestDeployAssertDCE80D47.assets"
+      ],
+      "metadata": {
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ivs-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -135,6 +135,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-ecs-integ/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-ecs-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -2229,12 +2237,7 @@
                     },
                     "deploymentConfiguration": {
                       "maximumPercent": 200,
-                      "minimumHealthyPercent": 50,
-                      "alarms": {
-                        "alarmNames": [],
-                        "enable": false,
-                        "rollback": false
-                      }
+                      "minimumHealthyPercent": 50
                     },
                     "enableEcsManagedTags": false,
                     "launchType": "EC2",

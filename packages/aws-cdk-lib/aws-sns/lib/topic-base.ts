@@ -57,6 +57,11 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    * Grant topic publishing permissions to the given identity
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant topic subscribing permissions to the given identity
+   */
+  grantSubscribe(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -152,7 +157,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
    */
   protected createSSLPolicyDocument(): iam.PolicyStatement {
-    return new iam.PolicyStatement ({
+    return new iam.PolicyStatement({
       sid: 'AllowPublishThroughSSLOnly',
       actions: ['sns:Publish'],
       effect: iam.Effect.DENY,
@@ -171,6 +176,18 @@ export abstract class TopicBase extends Resource implements ITopic {
     return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['sns:Publish'],
+      resourceArns: [this.topicArn],
+      resource: this,
+    });
+  }
+
+  /**
+   * Grant topic subscribing permissions to the given identity
+   */
+  public grantSubscribe(grantee: iam.IGrantable) {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: ['sns:Subscribe'],
       resourceArns: [this.topicArn],
       resource: this,
     });

@@ -34,6 +34,8 @@ const defaultEksClient: EksClient = {
   createFargateProfile: req => getEksClient().createFargateProfile(req),
   deleteFargateProfile: req => getEksClient().deleteFargateProfile(req),
   describeFargateProfile: req => getEksClient().describeFargateProfile(req),
+  tagResource: req => getEksClient().tagResource(req),
+  untagResource: req => getEksClient().untagResource(req),
   configureAssumeRole: (req) => {
     eks = new EKS({
       ...awsConfig,

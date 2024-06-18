@@ -38,6 +38,27 @@ class EventStack extends cdk.Stack {
         },
       ],
     });
+
+    // New Scheduled Task with custom container name
+    new ScheduledEc2Task(this, 'ScheduledEc2Task2', {
+      cluster,
+      scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        containerName: 'differentName',
+        memoryLimitMiB: 512,
+        cpu: 1,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
+      desiredTaskCount: 2,
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+      tags: [
+        {
+          key: 'my-tag',
+          value: 'my-tag-value',
+        },
+      ],
+    });
     /// !hide
   }
 }

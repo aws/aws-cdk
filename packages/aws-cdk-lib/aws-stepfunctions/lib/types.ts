@@ -220,14 +220,17 @@ export interface ProcessorConfig {
   /**
    * Specifies the execution mode for the Map workflow.
    *
-   * @default - ProcessorMode.INLINE
+   * @default - ProcessorMode.INLINE if using the `Map` class, ProcessorMode.DISTRIBUTED if using the `DistributedMap` class
    */
   readonly mode?: ProcessorMode;
 
   /**
    * Specifies the execution type for the Map workflow.
    *
-   * You must provide this field if you specified `DISTRIBUTED` for the `mode` sub-field.
+   * If you use the `Map` class, you must provide this field if you specified `DISTRIBUTED` for the `mode` sub-field.
+   *
+   * If you use the `DistributedMap` class, this property is ignored.
+   * Use the `mapExecutionType` in the `DistributedMap` class instead.
    *
    * @default - no execution type
    */

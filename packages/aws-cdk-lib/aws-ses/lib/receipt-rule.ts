@@ -112,10 +112,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   }
 
   public readonly receiptRuleName: string;
-
-  private readonly ruleSet: IReceiptRuleSet;
-  private readonly actions: IReceiptRuleAction[] = [];
-  private readonly actionProperties: CfnReceiptRule.ActionProperty[] = [];
+  private readonly actions = new Array<CfnReceiptRule.ActionProperty>();
 
   constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
     super(scope, id, {
@@ -136,7 +133,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     });
 
     this.receiptRuleName = resource.ref;
-    this.ruleSet = props.ruleSet;
 
     for (const action of props.actions || []) {
       this.addAction(action);
@@ -147,20 +143,15 @@ export class ReceiptRule extends Resource implements IReceiptRule {
    * Adds an action to this receipt rule.
    */
   public addAction(action: IReceiptRuleAction) {
-    this.actions.push(action);
-    this.actionProperties.push(action.bind(this));
+    this.actions.push(action.bind(this));
   }
 
   private renderActions() {
-    if (this.actionProperties.length === 0) {
+    if (this.actions.length === 0) {
       return undefined;
     }
 
-    for (const action of this.actions) {
-      action._applyPolicyStatement?.(this.ruleSet);
-    }
-
-    return this.actionProperties;
+    return this.actions;
   }
 }
 

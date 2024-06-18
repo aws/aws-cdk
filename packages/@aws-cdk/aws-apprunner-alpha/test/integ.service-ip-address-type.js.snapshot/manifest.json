@@ -1,0 +1,125 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integ-apprunner-ip-address-type.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-apprunner-ip-address-type.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-apprunner-ip-address-type": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner-ip-address-type.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9e956fb5e2f791153ea7f9505e67fce8b218eac61d16971b414879ba0b5e11d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-apprunner-ip-address-type.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apprunner-ip-address-type.assets"
+      ],
+      "metadata": {
+        "/integ-apprunner-ip-address-type/Service/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceInstanceRoleDFA90CEC"
+          }
+        ],
+        "/integ-apprunner-ip-address-type/Service/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceDBC79909"
+          }
+        ],
+        "/integ-apprunner-ip-address-type/URL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL"
+          }
+        ],
+        "/integ-apprunner-ip-address-type/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-apprunner-ip-address-type/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner-ip-address-type"
+    },
+    "AppRunnerIpAddressTypeDefaultTestDeployAssertAC7DD6FC.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppRunnerIpAddressTypeDefaultTestDeployAssertAC7DD6FC.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AppRunnerIpAddressTypeDefaultTestDeployAssertAC7DD6FC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AppRunnerIpAddressTypeDefaultTestDeployAssertAC7DD6FC.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppRunnerIpAddressTypeDefaultTestDeployAssertAC7DD6FC.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppRunnerIpAddressTypeDefaultTestDeployAssertAC7DD6FC.assets"
+      ],
+      "metadata": {
+        "/AppRunnerIpAddressType/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppRunnerIpAddressType/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AppRunnerIpAddressType/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

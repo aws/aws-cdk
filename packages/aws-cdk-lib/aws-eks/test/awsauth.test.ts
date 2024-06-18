@@ -2,7 +2,7 @@ import { testFixtureNoVpc } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
+import { Cluster, KubernetesManifest, KubernetesVersion, AuthenticationMode } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 
 /* eslint-disable max-len */
@@ -230,5 +230,60 @@ describe('aws auth', () => {
         ],
       },
     });
+  });
+  test('throws when authenticationMode does not support ConfigMap', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'test-stack');
+    const cluster = new Cluster(clusterStack, 'Cluster', {
+      version: KubernetesVersion.V1_29,
+      authenticationMode: AuthenticationMode.API,
+    });
+
+    // THEN
+    expect(() => {
+      new AwsAuth(clusterStack, 'Auth', { cluster });
+    }).toThrow(/ConfigMap not supported in the AuthenticationMode/);
+  });
+  test('should not throw when authenticationMode is API_AND_CONFIG_MAP', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'test-stack');
+    const cluster = new Cluster(clusterStack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      authenticationMode: AuthenticationMode.API_AND_CONFIG_MAP,
+    });
+
+    // THEN
+    expect(() => {
+      new AwsAuth(clusterStack, 'Auth', { cluster });
+    }).not.toThrow();
+  });
+  test('should not throw when authenticationMode is CONFIG_MAP', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'test-stack');
+    const cluster = new Cluster(clusterStack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      authenticationMode: AuthenticationMode.CONFIG_MAP,
+    });
+
+    // THEN
+    expect(() => {
+      new AwsAuth(clusterStack, 'Auth', { cluster });
+    }).not.toThrow();
+  });
+  test('should not throw when authenticationMode is undefined', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'test-stack');
+    const cluster = new Cluster(clusterStack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // THEN
+    expect(() => {
+      new AwsAuth(clusterStack, 'Auth', { cluster });
+    }).not.toThrow();
   });
 });

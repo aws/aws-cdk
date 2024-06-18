@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "c6a2f102b98eb6b8b078b8c708c5ec49ac9fb7e611cd4a8bccfd504b93ab555c": {
+      "source": {
+        "path": "aws-cdk-report-group-delete-reports.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c6a2f102b98eb6b8b078b8c708c5ec49ac9fb7e611cd4a8bccfd504b93ab555c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

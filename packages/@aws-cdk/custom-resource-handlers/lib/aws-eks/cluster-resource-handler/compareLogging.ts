@@ -12,8 +12,8 @@ import * as EKS from '@aws-sdk/client-eks';
 export function compareLoggingProps(oldProps: Partial<EKS.CreateClusterCommandInput>,
   newProps: Partial<EKS.CreateClusterCommandInput>): Partial<EKS.CreateClusterCommandInput> {
   const result: Partial<EKS.CreateClusterCommandInput> = { logging: {} };
-  let enabledTypes: (EKS.LogType | string)[] = [];
-  let disabledTypes: (EKS.LogType | string)[] = [];
+  let enabledTypes: EKS.LogType[] = [];
+  let disabledTypes: EKS.LogType[] = [];
 
   if (newProps.logging?.clusterLogging === undefined && oldProps.logging?.clusterLogging === undefined) {
     return newProps;

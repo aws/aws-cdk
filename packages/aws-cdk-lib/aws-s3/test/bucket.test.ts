@@ -3,6 +3,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -574,15 +575,41 @@ describe('bucket', () => {
     });
   });
 
-  test('throws error if bucketKeyEnabled is set, but encryption is not KMS', () => {
+  test('bucketKeyEnabled can be enabled with SSE-S3', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256' },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
+    });
+
+  });
+  test('bucketKeyEnabled can not be enabled with UNENCRYPTED', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketKeyEnabled: true,
+        encryption: s3.BucketEncryption.UNENCRYPTED,
+      });
+    }).toThrow(/bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3/);
+  });
+
+  test('bucketKeyEnabled can NOT be enabled with encryption undefined', () => {
     const stack = new cdk.Stack();
 
     expect(() => {
-      new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: S3_MANAGED)");
-    expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: UNENCRYPTED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: UNENCRYPTED)");
 
   });
 
@@ -877,6 +904,28 @@ describe('bucket', () => {
         },
       },
     });
+  });
+
+  test('bucket with default block public access setting to throw error msg', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      publicReadAccess: true,
+    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+  });
+
+  test('bucket with enabled block public access setting to throw error msg', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      publicReadAccess: true,
+      blockPublicAccess: {
+        blockPublicPolicy: true,
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      },
+    })).toThrow('Cannot grant public access when \'blockPublicPolicy\' is enabled');
   });
 
   test('bucket with custom canned access control', () => {
@@ -3443,6 +3492,82 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+  });
+
+  test('setAutoDeleteObjectsLogGroup to update AutoDeleteObjectsProvider LoggingConfig after Bucket creation', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'FirstLogGroupFF5C2AA0',
+        },
+      },
+    });
+  });
+
+  test('setAutoDeleteObjectsLogGroup before Bucket creation', () => {
+    const stack = new cdk.Stack();
+
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'FirstLogGroupFF5C2AA0',
+        },
+      },
+    });
+  });
+
+  test('setAutoDeleteObjectsLogGroup multiple times should take the latest Log Group', () => {
+    const stack = new cdk.Stack();
+
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'SecondLogGroup', {
+      logGroupName: 'MySecondLogGroup',
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MySecondLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'SecondLogGroup8CDA9B9E',
+        },
+      },
+    });
   });
 
   test('bucket with transfer acceleration turned on', () => {

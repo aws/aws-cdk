@@ -239,3 +239,18 @@ Use the `VdmAttributes` construct to configure the Virtual Deliverability Manage
 // Enables engagement tracking and optimized shared delivery by default
 new ses.VdmAttributes(this, 'Vdm');
 ```
+
+If you want to override the VDM settings in the specified configuration set, use `vdmOptions` in the `ConfigurationSet` construct.
+
+> **Note:** The configuration set level settings need to be used together with the account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
+If you enable only the configuration set level settings, VDM will not be enabled until the account level settings are configured.
+For more information, see [Virtual Deliverability Manager settings](https://docs.aws.amazon.com/ses/latest/dg/vdm-settings.html).
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSetWithVdmOptions', {
+  vdmOptions: {
+    engagementMetrics: true,
+    optimizedSharedDelivery: true,
+  },
+});
+```

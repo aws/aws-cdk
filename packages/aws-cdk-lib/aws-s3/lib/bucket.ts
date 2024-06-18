@@ -10,6 +10,7 @@ import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
 import {
   CustomResource,
   Duration,
@@ -1440,7 +1441,7 @@ export interface BucketProps {
    *   attendant cost implications of that).
    * - If enabled, S3 will use its own time-limited key instead.
    *
-   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
+   * Only relevant, when Encryption is not set to `BucketEncryption.UNENCRYPTED`.
    *
    * @default - false
    */
@@ -1465,6 +1466,9 @@ export interface BucketProps {
    * removed from the stack or when the stack is deleted.
    *
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * A custom resource along with a provider lambda will be created for
+   * emptying the bucket.
    *
    * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
@@ -1882,6 +1886,16 @@ export class Bucket extends BucketBase {
     }
   }
 
+  /**
+   * Set the log group on the stack wide singleton AutoDeleteObjects provider lambda.
+   *
+   * @param stack the stack with the singleton AutoDeleteObjects provider lambda.
+   * @param logGroup the log group to use on the lambda.
+   */
+  public static setAutoDeleteObjectsLogGroup(stack: Stack, logGroup: logs.ILogGroup): void {
+    AutoDeleteObjectsProvider.useLogGroup(stack, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, logGroup.logGroupName);
+  }
+
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
@@ -2000,6 +2014,10 @@ export class Bucket extends BucketBase {
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
 
     if (props.publicReadAccess) {
+      if (props.blockPublicAccess === undefined) {
+        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+      }
+
       this.grantPublicAccess();
     }
 
@@ -2105,6 +2123,7 @@ export class Bucket extends BucketBase {
    * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
    * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
    * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+   * | S3_MANAGED       | undefined           | e                      | SSE-S3, bucketKeyEnabled = e    | undefined                    |
    * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
    * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
    * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
@@ -2127,12 +2146,9 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
-    if (
-      props.bucketKeyEnabled &&
-      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
-    ) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
+    if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2161,7 +2177,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+          },
         ],
       };
 

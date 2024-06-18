@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-chatbot-user-role-required/DefaultTest": {
+      "stacks": [
+        "ChatbotInteg"
+      ],
+      "assertionStack": "integ-chatbot-user-role-required/DefaultTest/DeployAssert",
+      "assertionStackName": "integchatbotuserrolerequiredDefaultTestDeployAssert995C2DD6"
+    }
+  }
+}

@@ -406,6 +406,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "sqs-bucket-notifications/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -761,6 +769,14 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f": {

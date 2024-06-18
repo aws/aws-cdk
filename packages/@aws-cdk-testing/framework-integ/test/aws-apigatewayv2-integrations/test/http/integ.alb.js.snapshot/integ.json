@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.alb": {
+    "integ-alb-integration-test/DefaultTest": {
       "stacks": [
         "integ-alb-integration"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-alb-integration-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integalbintegrationtestDefaultTestDeployAssert91001477"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

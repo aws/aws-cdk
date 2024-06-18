@@ -1,14 +1,10 @@
+import { AssertionsProvider, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as assert from 'assert';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
-import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
-
-/*
- * Stack verification steps:
- * * <step-1> Deploy the stack and wait for the API endpoint output to get printed
- * * <step-2> Hit the above endpoint using curl and expect a 200 response
- */
 
 const app = new App();
 
@@ -21,9 +17,32 @@ listener.addTargets('target', { port: 80 });
 listener.addAction('dsf', { action: elbv2.ListenerAction.fixedResponse(200) });
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener),
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener, {
+    timeout: Duration.seconds(20),
+  }),
 });
 
-new CfnOutput(stack, 'Endpoint', {
-  value: httpEndpoint.url!,
+assert(httpEndpoint.url, 'HttpEndpoint URL is not defined');
+
+const integ = new IntegTest(app, 'integ-alb-integration-test', {
+  testCases: [stack],
 });
+
+integ.assertions.httpApiCall(httpEndpoint.url).expect(
+  ExpectedResult.objectLike({ status: 200 }),
+);
+
+const integrations = integ.assertions.awsApiCall('ApiGatewayV2', 'getIntegrations', {
+  ApiId: httpEndpoint.httpApiId,
+});
+
+const assertionProvider = integrations.node.tryFindChild('SdkProvider') as AssertionsProvider;
+assertionProvider.addPolicyStatementFromSdkCall('apigateway', 'GET', [
+  `arn:${stack.partition}:apigateway:${stack.region}::/apis/${httpEndpoint.httpApiId}/integrations`,
+]);
+
+integrations.expect(
+  ExpectedResult.objectLike({ Items: [{ IntegrationMethod: 'ANY', TimeoutInMillis: 20000 }] }),
+);
+
+app.synth();

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/30351fe07d78cdd320646091f55a31706902779e0430e155093c577158ac4749.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bfc01b279d2ed549e306093a49b142e94dc76d50b64c0a1378028b973d40456d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -176,6 +176,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+          }
+        ],
+        "/aws-cdk-rds-read-replica-with-allocated-storage/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-rds-read-replica-with-allocated-storage/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [

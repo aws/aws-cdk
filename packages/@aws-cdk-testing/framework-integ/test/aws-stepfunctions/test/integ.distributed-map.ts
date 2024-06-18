@@ -48,7 +48,11 @@ testCase.assertions
   .awsApiCall('StepFunctions', 'describeStateMachine', {
     stateMachineArn: stack.stateMachine.stateMachineArn,
   })
-  .expect(ExpectedResult.objectLike({ status: 'ACTIVE' }));
+  .expect(ExpectedResult.objectLike({ status: 'ACTIVE' }))
+  .waitForAssertions({
+    interval: cdk.Duration.seconds(10),
+    totalTimeout: cdk.Duration.minutes(5),
+  });
 
 // Put an object in the bucket
 const putObject = testCase.assertions.awsApiCall('S3', 'putObject', {
@@ -72,6 +76,9 @@ start.next(describe);
 // assert the results
 describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
-}));
+})).waitForAssertions({
+  interval: cdk.Duration.seconds(10),
+  totalTimeout: cdk.Duration.minutes(5),
+});
 
 app.synth();

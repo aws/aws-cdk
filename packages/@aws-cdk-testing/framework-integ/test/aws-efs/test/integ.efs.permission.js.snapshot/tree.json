@@ -669,6 +669,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "test-efs-permission-integ/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "test-efs-permission-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -699,7 +707,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -1752,7 +1760,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -1790,7 +1798,7 @@
                 "path": "EfsPermissionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1810,7 +1818,7 @@
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -1874,7 +1882,15 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "EfsPermissionTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef": {
@@ -1890,7 +1906,7 @@
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -1930,7 +1946,7 @@
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.69"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -1956,7 +1972,7 @@
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.69"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -2040,7 +2056,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.3.0"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -2074,7 +2090,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.3.0"
                     }
                   },
                   "AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f": {
@@ -2090,7 +2106,7 @@
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -2136,7 +2152,7 @@
                             "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -2176,7 +2192,7 @@
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.69"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -2202,7 +2218,7 @@
                                 "path": "EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.69"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -2294,7 +2310,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

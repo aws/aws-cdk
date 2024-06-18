@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7cdf3662f73bc1b1ded5abc32aba347b8d504e8b6e72ea33f350068f980abc79.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/978c524bc921b1193d36ed4e79f1c4c4b1554668c9919d1dfb1a4bf8c88fc36c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,6 +44,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RepoAutoDeleteImagesCustomResource65201E29"
+          }
+        ],
+        "/aws-ecr-integ-stack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [

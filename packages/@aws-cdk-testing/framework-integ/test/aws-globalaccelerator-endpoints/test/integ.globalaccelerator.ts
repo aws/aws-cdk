@@ -38,7 +38,9 @@ class GaStack extends Stack {
       listener,
       endpoints: [
         new endpoints.ApplicationLoadBalancerEndpoint(alb),
+        new endpoints.ApplicationLoadBalancerEndpoint(alb, { preserveClientIp: true }),
         new endpoints.NetworkLoadBalancerEndpoint(nlb),
+        new endpoints.NetworkLoadBalancerEndpoint(nlb, { preserveClientIp: true }),
         new endpoints.CfnEipEndpoint(eip),
         new endpoints.InstanceEndpoint(instances[0]),
         new endpoints.InstanceEndpoint(instances[1]),

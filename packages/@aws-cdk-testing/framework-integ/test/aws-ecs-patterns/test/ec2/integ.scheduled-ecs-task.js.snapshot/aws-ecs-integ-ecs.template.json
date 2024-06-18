@@ -955,6 +955,245 @@
      }
     ]
    }
+  },
+  "ScheduledEc2Task2ScheduledEventRule904C0930": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsCluster97242B84",
+        "Arn"
+       ]
+      },
+      "EcsParameters": {
+       "PropagateTags": "TASK_DEFINITION",
+       "TagList": [
+        {
+         "Key": "my-tag",
+         "Value": "my-tag-value"
+        }
+       ],
+       "TaskCount": 2,
+       "TaskDefinitionArn": {
+        "Ref": "ScheduledEc2Task2ScheduledTaskDef5A1A589E"
+       }
+      },
+      "Id": "Target0",
+      "Input": "{}",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "ScheduledEc2Task2ScheduledTaskDefEventsRoleE4A47A7F",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "ScheduledEc2Task2ScheduledTaskDefTaskRoleF24CD72E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ScheduledEc2Task2ScheduledTaskDef5A1A589E": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Cpu": 1,
+      "Environment": [
+       {
+        "Name": "TRIGGER",
+        "Value": "CloudWatch Events"
+       }
+      ],
+      "Essential": true,
+      "Image": "amazon/amazon-ecs-sample",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "ScheduledEc2Task2ScheduledTaskDefdifferentNameLogGroup576E34BD"
+        },
+        "awslogs-stream-prefix": "ScheduledEc2Task2",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Memory": 512,
+      "Name": "differentName"
+     }
+    ],
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80",
+      "Arn"
+     ]
+    },
+    "Family": "awsecsintegecsScheduledEc2Task2ScheduledTaskDef4390684D",
+    "NetworkMode": "bridge",
+    "RequiresCompatibilities": [
+     "EC2"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "ScheduledEc2Task2ScheduledTaskDefTaskRoleF24CD72E",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ScheduledEc2Task2ScheduledTaskDefdifferentNameLogGroup576E34BD": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ScheduledEc2Task2ScheduledTaskDefExecutionRoleDefaultPolicy70781945": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduledEc2Task2ScheduledTaskDefdifferentNameLogGroup576E34BD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ScheduledEc2Task2ScheduledTaskDefExecutionRoleDefaultPolicy70781945",
+    "Roles": [
+     {
+      "Ref": "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80"
+     }
+    ]
+   }
+  },
+  "ScheduledEc2Task2ScheduledTaskDefEventsRoleE4A47A7F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ScheduledEc2Task2ScheduledTaskDefEventsRoleDefaultPolicyF5EB7640": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ecs:RunTask",
+       "Condition": {
+        "ArnEquals": {
+         "ecs:cluster": {
+          "Fn::GetAtt": [
+           "EcsCluster97242B84",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ScheduledEc2Task2ScheduledTaskDef5A1A589E"
+       }
+      },
+      {
+       "Action": "ecs:TagResource",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":*:task/",
+          {
+           "Ref": "EcsCluster97242B84"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ScheduledEc2Task2ScheduledTaskDefEventsRoleDefaultPolicyF5EB7640",
+    "Roles": [
+     {
+      "Ref": "ScheduledEc2Task2ScheduledTaskDefEventsRoleE4A47A7F"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

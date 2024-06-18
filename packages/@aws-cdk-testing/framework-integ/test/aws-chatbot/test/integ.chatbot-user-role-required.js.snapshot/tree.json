@@ -1,0 +1,177 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "ChatbotInteg": {
+        "id": "ChatbotInteg",
+        "path": "ChatbotInteg",
+        "children": {
+          "MySlackChannel": {
+            "id": "MySlackChannel",
+            "path": "ChatbotInteg/MySlackChannel",
+            "children": {
+              "ConfigurationRole": {
+                "id": "ConfigurationRole",
+                "path": "ChatbotInteg/MySlackChannel/ConfigurationRole",
+                "children": {
+                  "ImportConfigurationRole": {
+                    "id": "ImportConfigurationRole",
+                    "path": "ChatbotInteg/MySlackChannel/ConfigurationRole/ImportConfigurationRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ChatbotInteg/MySlackChannel/ConfigurationRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "chatbot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ChatbotInteg/MySlackChannel/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Chatbot::SlackChannelConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "configurationName": "test-channel",
+                    "iamRoleArn": {
+                      "Fn::GetAtt": [
+                        "MySlackChannelConfigurationRole1D3F23AE",
+                        "Arn"
+                      ]
+                    },
+                    "slackChannelId": "C07639U21PW",
+                    "slackWorkspaceId": "T075XU2GKBP",
+                    "userRoleRequired": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_chatbot.CfnSlackChannelConfiguration",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_chatbot.SlackChannelConfiguration",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ChatbotInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ChatbotInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-chatbot-user-role-required": {
+        "id": "integ-chatbot-user-role-required",
+        "path": "integ-chatbot-user-role-required",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-chatbot-user-role-required/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-chatbot-user-role-required/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-chatbot-user-role-required/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-chatbot-user-role-required/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-chatbot-user-role-required/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

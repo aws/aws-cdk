@@ -10,6 +10,11 @@ new s3.Bucket(stack, 'MyDSSEBucket', {
   encryption: s3.BucketEncryption.DSSE_MANAGED,
 });
 
+new s3.Bucket(stack, 'MySSES3Bucket', {
+  encryption: s3.BucketEncryption.S3_MANAGED,
+  bucketKeyEnabled: true,
+});
+
 new integ.IntegTest(app, 'IntegTestDSSEBucket', {
   testCases: [stack],
 });

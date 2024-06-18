@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Windows2019FleetIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-project-windows-2019-fleet"
+      ],
+      "assertionStack": "Windows2019FleetIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "Windows2019FleetIntegTestDefaultTestDeployAssertB6D51860"
+    }
+  }
+}

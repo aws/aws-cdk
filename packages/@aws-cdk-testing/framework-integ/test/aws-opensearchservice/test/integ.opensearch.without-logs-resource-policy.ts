@@ -34,7 +34,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const domainProps: opensearch.DomainProps = {
-      version: opensearch.EngineVersion.OPENSEARCH_2_11,
+      version: opensearch.EngineVersion.OPENSEARCH_2_13,
       removalPolicy: RemovalPolicy.DESTROY,
       logging: {
         appLogEnabled: true,

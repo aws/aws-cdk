@@ -8,7 +8,7 @@ import {
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
-import { Stack } from '../../../core';
+import { Duration, Stack } from '../../../core';
 
 /**
  * Lambda Proxy integration properties
@@ -27,6 +27,14 @@ export interface HttpLambdaIntegrationProps {
    * @default undefined requests are sent to the backend unmodified
    */
   readonly parameterMapping?: ParameterMapping;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -69,6 +77,7 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
       uri: this.handler.functionArn,
       payloadFormatVersion: this.props.payloadFormatVersion ?? PayloadFormatVersion.VERSION_2_0,
       parameterMapping: this.props.parameterMapping,
+      timeout: this.props.timeout,
     };
   }
 }

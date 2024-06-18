@@ -1,0 +1,474 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-appsync-function-max-batch-size": {
+        "id": "aws-cdk-appsync-function-max-batch-size",
+        "path": "aws-cdk-appsync-function-max-batch-size",
+        "children": {
+          "LambdaAPI": {
+            "id": "LambdaAPI",
+            "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "name": "LambdaAPI"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "LambdaAPID6A5A92B",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "schema {\n    query: Query\n    mutation: Mutation\n}\n\ntype Query {\n    getPost(id:ID!): Post\n    allPosts: [Post]\n}\n\ntype Mutation {\n    addPost(id: ID!, author: String!, title: String, content: String, url: String): Post!\n}\n\ntype Post {\n    id: ID!\n    author: String!\n    title: String\n    content: String\n    url: String\n    ups: Int\n    downs: Int\n    relatedPosts: [Post]\n    relatedPostsMaxBatchSize: [Post]\n}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultApiKey": {
+                "id": "DefaultApiKey",
+                "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/DefaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "LambdaAPID6A5A92B",
+                        "ApiId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaDS": {
+                "id": "LambdaDS",
+                "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "funcC3A0C2E2",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "funcC3A0C2E2",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "LambdaAPILambdaDSServiceRoleDefaultPolicyFB1B9CE8",
+                                "roles": [
+                                  {
+                                    "Ref": "LambdaAPILambdaDSServiceRole21CACDF8"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "LambdaAPID6A5A92B",
+                            "ApiId"
+                          ]
+                        },
+                        "lambdaConfig": {
+                          "lambdaFunctionArn": {
+                            "Fn::GetAtt": [
+                              "funcC3A0C2E2",
+                              "Arn"
+                            ]
+                          }
+                        },
+                        "name": "LambdaDS",
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "LambdaAPILambdaDSServiceRole21CACDF8",
+                            "Arn"
+                          ]
+                        },
+                        "type": "AWS_LAMBDA"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.LambdaDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "TestFunction": {
+                "id": "TestFunction",
+                "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/TestFunction",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-appsync-function-max-batch-size/LambdaAPI/TestFunction/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "LambdaAPID6A5A92B",
+                            "ApiId"
+                          ]
+                        },
+                        "dataSourceName": "LambdaDS",
+                        "functionVersion": "2018-05-29",
+                        "maxBatchSize": 10,
+                        "name": "test"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnFunctionConfiguration",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.AppsyncFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "func": {
+            "id": "func",
+            "path": "aws-cdk-appsync-function-max-batch-size/func",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-appsync-function-max-batch-size/func/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-appsync-function-max-batch-size/func/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-appsync-function-max-batch-size/func/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-cdk-appsync-function-max-batch-size/func/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-appsync-function-max-batch-size/func/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-appsync-function-max-batch-size/func/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-appsync-function-max-batch-size/func/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "df9f207d681056c35badb6bc0d60a945b44c887b227b759715fd6a6443486443.zip"
+                    },
+                    "handler": "lambda-tutorial.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "funcServiceRoleA96CCB44",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-appsync-function-max-batch-size/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-appsync-function-max-batch-size/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "AppSyncFunctionMaxBatchSize": {
+        "id": "AppSyncFunctionMaxBatchSize",
+        "path": "AppSyncFunctionMaxBatchSize",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "AppSyncFunctionMaxBatchSize/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "AppSyncFunctionMaxBatchSize/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "AppSyncFunctionMaxBatchSize/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "AppSyncFunctionMaxBatchSize/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "AppSyncFunctionMaxBatchSize/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

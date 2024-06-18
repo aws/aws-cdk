@@ -40,3 +40,52 @@ test('configuration set with options', () => {
     },
   });
 });
+
+test('configuration set with both engagement metrics and optimized shared delivery enabled', () => {
+  new ConfigurationSet(stack, 'ConfigurationSet', {
+    vdmOptions: {
+      engagementMetrics: true,
+      optimizedSharedDelivery: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+    VdmOptions: {
+      DashboardOptions: {
+        EngagementMetrics: 'ENABLED',
+      },
+      GuardianOptions: {
+        OptimizedSharedDelivery: 'ENABLED',
+      },
+    },
+  });
+});
+
+test('configuration set with both engagement metrics and optimized shared delivery disabled', () => {
+  new ConfigurationSet(stack, 'ConfigurationSet', {
+    vdmOptions: {
+      engagementMetrics: false,
+      optimizedSharedDelivery: false,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+    VdmOptions: {
+      DashboardOptions: {
+        EngagementMetrics: 'DISABLED',
+      },
+      GuardianOptions: {
+        OptimizedSharedDelivery: 'DISABLED',
+      },
+    },
+  });
+});
+
+test('configuration set with vdmOptions not configured', () => {
+  new ConfigurationSet(stack, 'ConfigurationSet', {
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+    VdmOptions: Match.absent(),
+  });
+});

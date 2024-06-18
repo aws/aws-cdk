@@ -4,10 +4,10 @@ import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { LockFile } from './package-manager';
 import { BundlingOptions } from './types';
-import { callsites, findUpMultiple } from './util';
+import { callsites, findUpMultiple, isSdkV2Runtime } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
-import { FeatureFlags } from '../../core';
+import { Annotations, FeatureFlags } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
@@ -27,8 +27,12 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * The name of the exported handler in the entry file.
    *
-   * The handler is prefixed with `index.` unless the specified handler value contains a `.`,
-   * in which case it is used as-is.
+   * * If the `code` property is supplied, then you must include the `handler` property. The handler should be the name of the file
+   * that contains the exported handler and the function that should be called when the AWS Lambda is invoked. For example, if
+   * you had a file called `myLambda.js` and the function to be invoked was `myHandler`, then you should input `handler` property as `myLambda.myHandler`.
+   *
+   * * If the `code` property is not supplied and the handler input does not contain a `.`, then the handler is prefixed with `index.` (index period). Otherwise,
+   * the handler property is not modified.
    *
    * @default handler
    */
@@ -43,15 +47,22 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly runtime?: lambda.Runtime;
 
   /**
+   * The `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable does not exist in the AWS SDK for JavaScript v3.
+   *
+   * This prop will be deprecated when the Lambda Node16 runtime is deprecated on June 12, 2024.
+   * See https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy
+   *
+   * Info for Node 16 runtimes / SDK v2 users:
+   *
    * Whether to automatically reuse TCP connections when working with the AWS
-   * SDK for JavaScript.
+   * SDK for JavaScript v2.
    *
    * This sets the `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable
    * to `1`.
    *
-   * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-reusing-connections.html
    *
-   * @default true
+   * @default - false (obsolete) for runtimes >= Node 18, true for runtimes <= Node 16.
    */
   readonly awsSdkConnectionReuse?: boolean;
 
@@ -83,6 +94,16 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the directory containing the `depsLockFilePath`
    */
   readonly projectRoot?: string;
+
+  /**
+   * The code that will be deployed to the Lambda Handler. If included, then properties related to
+   * bundling of the code are ignored.
+   *
+   * * If the `code` field is specified, then you must include the `handler` property.
+   *
+   * @default - the code is bundled by esbuild
+   */
+  readonly code?: lambda.Code;
 }
 
 /**
@@ -94,31 +115,56 @@ export class NodejsFunction extends lambda.Function {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
-    // Entry and defaults
-    const entry = path.resolve(findEntry(id, props.entry));
-    const handler = props.handler ?? 'handler';
-    const architecture = props.architecture ?? Architecture.X86_64;
-    const depsLockFilePath = findLockFile(props.depsLockFilePath);
-    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
     const runtime = getRuntime(scope, props);
 
-    super(scope, id, {
-      ...props,
-      runtime,
-      code: Bundling.bundle(scope, {
-        ...props.bundling ?? {},
-        entry,
-        runtime,
-        architecture,
-        depsLockFilePath,
-        projectRoot,
-      }),
-      handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
-    });
+    if (props.code !== undefined) {
+      if (props.handler === undefined) {
+        throw new Error(
+          'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
+          + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
+          + 'For example, handler should be specified in the form `myFile.myFunction`',
+        );
+      }
 
-    // Enable connection reuse for aws-sdk
-    if (props.awsSdkConnectionReuse ?? true) {
-      this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: props.code,
+        handler: props.handler,
+      });
+    } else {
+      // Entry and defaults
+      const entry = path.resolve(findEntry(id, props.entry));
+      const architecture = props.architecture ?? Architecture.X86_64;
+      const depsLockFilePath = findLockFile(props.depsLockFilePath);
+      const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+      const handler = props.handler ?? 'handler';
+
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: Bundling.bundle(scope, {
+          ...props.bundling ?? {},
+          entry,
+          runtime,
+          architecture,
+          depsLockFilePath,
+          projectRoot,
+        }),
+        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+      });
+    }
+
+    // Enable connection reuse for aws-sdk v2, do not set for sdk v3
+    if (isSdkV2Runtime(runtime)) {
+      if (props.awsSdkConnectionReuse ?? true) {
+        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+      }
+    } else {
+      if (props.awsSdkConnectionReuse) {
+        Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-lambda-nodejs:unusedSdkEvironmentVariable', 'The AWS_NODEJS_CONNECTION_REUSE_ENABLED environment variable does not exist in SDK v3. You have explicitly set `awsSdkConnectionReuse`; please make sure this is intentional.');
+        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+      }
     }
   }
 

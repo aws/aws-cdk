@@ -669,6 +669,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "Default/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "Default/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -699,7 +707,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -863,7 +871,7 @@
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
                     "engine": "aurora-mysql",
-                    "engineVersion": "8.0.mysql_aurora.3.01.0",
+                    "engineVersion": "8.0.mysql_aurora.3.06.0",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -916,7 +924,7 @@
                         "dbClusterIdentifier": {
                           "Ref": "DatabaseB269D8BB"
                         },
-                        "dbInstanceClass": "db.t3.small",
+                        "dbInstanceClass": "db.t3.medium",
                         "engine": "aurora-mysql",
                         "promotionTier": 0
                       }
@@ -1002,7 +1010,7 @@
                 "path": "instanceIdentifiersTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1048,7 +1056,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ReportGroupDeleteReportsIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-report-group-delete-reports"
+      ],
+      "assertionStack": "ReportGroupDeleteReportsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ReportGroupDeleteReportsIntegTestDefaultTestDeployAssertFBD2FDC0"
+    }
+  }
+}

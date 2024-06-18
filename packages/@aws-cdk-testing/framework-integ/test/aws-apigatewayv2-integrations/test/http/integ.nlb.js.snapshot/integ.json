@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.nlb": {
+    "integ-nlb-integration-test/DefaultTest": {
       "stacks": [
         "integ-nlb-integration"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-nlb-integration-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integnlbintegrationtestDefaultTestDeployAssert2961C4CC"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

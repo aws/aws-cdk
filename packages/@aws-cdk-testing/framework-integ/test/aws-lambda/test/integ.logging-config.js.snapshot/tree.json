@@ -721,6 +721,102 @@
               "version": "0.0.0"
             }
           },
+          "LambdaWithLogLevelV2": {
+            "id": "LambdaWithLogLevelV2",
+            "path": "aws-cdk-lambda-logging-config/LambdaWithLogLevelV2",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "foo"
+                    },
+                    "handler": "index.handler",
+                    "loggingConfig": {
+                      "logFormat": "JSON",
+                      "systemLogLevel": "INFO",
+                      "applicationLogLevel": "INFO"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaWithLogLevelV2ServiceRoleD184382A",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-lambda-logging-config/BootstrapVersion",
