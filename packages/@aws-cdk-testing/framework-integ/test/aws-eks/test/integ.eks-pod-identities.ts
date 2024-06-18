@@ -6,7 +6,7 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
- * After the deployment, verify it with:
+ * After deployment, verify it with:
  *
  * $ kubectl get po
  *
@@ -45,7 +45,7 @@ class EksClusterStack extends Stack {
       identityType: eks.IdentityType.POD_IDENTITY,
     });
 
-    // deploy a sample pod
+    // deploy a pod using the service account
     const pod = cluster.addManifest('demopod', {
       apiVersion: 'v1',
       kind: 'Pod',
