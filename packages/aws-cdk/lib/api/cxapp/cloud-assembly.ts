@@ -114,8 +114,7 @@ export class CloudAssembly {
     }
 
     if (selector.patterns.includes('Test-Stack-E')) {
-      // eslint-disable-next-line no-console
-      console.log(topLevelStacks.map(stack => stack.stackName));
+      throw new Error(topLevelStacks.map(stack => stack.stackName));
     }
 
     if (allTopLevel) {
