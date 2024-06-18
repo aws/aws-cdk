@@ -10,6 +10,7 @@ import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
 import {
   CustomResource,
   Duration,
@@ -1466,6 +1467,9 @@ export interface BucketProps {
    *
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
+   * A custom resource along with a provider lambda will be created for
+   * emptying the bucket.
+   *
    * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
    * all objects in the bucket being deleted. Be sure to update your bucket resources
@@ -1882,6 +1886,16 @@ export class Bucket extends BucketBase {
     }
   }
 
+  /**
+   * Set the log group on the stack wide singleton AutoDeleteObjects provider lambda.
+   *
+   * @param stack the stack with the singleton AutoDeleteObjects provider lambda.
+   * @param logGroup the log group to use on the lambda.
+   */
+  public static setAutoDeleteObjectsLogGroup(stack: Stack, logGroup: logs.ILogGroup): void {
+    AutoDeleteObjectsProvider.useLogGroup(stack, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, logGroup.logGroupName);
+  }
+
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
@@ -2000,6 +2014,10 @@ export class Bucket extends BucketBase {
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
 
     if (props.publicReadAccess) {
+      if (props.blockPublicAccess === undefined) {
+        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+      }
+
       this.grantPublicAccess();
     }
 
