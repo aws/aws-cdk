@@ -6,7 +6,7 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
- * After the deployment, verify it using:
+ * After the deployment, verify it with:
  *
  * $ kubectl get po
  *
