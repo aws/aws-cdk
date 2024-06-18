@@ -114,7 +114,7 @@ export class CloudAssembly {
     }
 
     if (selector.patterns.includes('Test-Stack-E')) {
-      throw new Error(topLevelStacks.map(stack => stack.stackName));
+      throw new Error(topLevelStacks.map(stack => stack.stackName).join(' '));
     }
 
     if (allTopLevel) {
