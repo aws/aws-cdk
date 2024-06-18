@@ -396,6 +396,22 @@ test('timeout can be set', () => {
   });
 });
 
+test.each([100, 3100])('throws when timeout is not set as an integer representing seconds , %d milliseconds', (milliseconds: number) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.millis(milliseconds),
+  }))
+    .toThrow(`\`timeout\` must be set as an integer representing seconds, got ${milliseconds} milliseconds.`);
+});
+
 test.each([2, 900])('throws when timeout is out of range, %d seconds', (seconds: number) => {
   // GIVEN
   const stack = new Stack();

@@ -571,6 +571,11 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     let timeoutInSeconds: number | undefined;
     if (!cdk.Token.isUnresolved(props.timeout) && props.timeout !== undefined) {
+      const timeoutInMillis = props.timeout?.toMilliseconds();
+      if (timeoutInMillis % 1000 !== 0) {
+        throw new Error(`\`timeout\` must be set as an integer representing seconds, got ${timeoutInMillis} milliseconds.`);
+      }
+
       timeoutInSeconds = props.timeout.toSeconds();
       if (timeoutInSeconds < 3 || timeoutInSeconds > 840) {
         throw new Error(`\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`);
