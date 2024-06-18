@@ -103,7 +103,7 @@ export interface EcsOptimizedAmiProps {
    *
    * @default none, uses the recommended kernel version
    */
-  readonly kernel?: string;
+  readonly kernel?: ec2.AmazonLinux2Kernel;
 }
 
 /*
@@ -229,7 +229,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
       cachedInContext: options.cachedInContext,
-      kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10.toString(),
+      kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
     });
   }
 
@@ -304,7 +304,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (props.kernel ? `${props.kernel}/` : '')
+      + (props.kernel ? `${props.kernel.toString()}/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
