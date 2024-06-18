@@ -2227,25 +2227,21 @@ describe('cluster', () => {
       });
     });
 
-    test('with IAutoScalingGroup should emit a warning if Managed Termination Protection is enabled.', () => {
+    test('with IAutoScalingGroup should throw an error if Managed Termination Protection is enabled.', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
       const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
 
-      // WHEN
-      new ecs.AsgCapacityProvider(stack, 'provider', {
-        autoScalingGroup,
-      });
-
       // THEN
-      expect(getWarnings(app.synth())).toEqual([{
-        message: 'Cannot enforce `newInstancesProtectedFromScaleIn: true` on the AutoScalingGroup. This will have no effect if the AutoScalingGroup was created in this CDK app. [ack: @aws-cdk/aws-ecs:cannotEnforceNewInstancesProtectedFromScaleIn]',
-        path: '/test/provider',
-      }]);
+      expect(() => {
+        new ecs.AsgCapacityProvider(stack, 'provider', {
+          autoScalingGroup,
+        });
+      }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
     });
 
-    test('with IAutoScalingGroup should not emit warning if Managed Termination Protection is disabled.', () => {
+    test('with IAutoScalingGroup should not throw an error if Managed Termination Protection is disabled.', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
@@ -2538,6 +2534,7 @@ describe('cluster', () => {
 
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
+      enableManagedTerminationProtection: false,
     });
     // THEN
     expect(() => {
@@ -3105,7 +3102,7 @@ describe('Accessing container instance role', function () {
 
   const addUserDataMock = jest.fn();
 
-  function getAutoScalingGroup(stack: cdk.Stack) : autoscaling.AutoScalingGroup {
+  function getAutoScalingGroup(stack: cdk.Stack): autoscaling.AutoScalingGroup {
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const asg = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,

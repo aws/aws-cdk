@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names, Annotations } from '../../core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -1316,7 +1316,7 @@ export class AsgCapacityProvider extends Construct {
       if (this.autoScalingGroup instanceof autoscaling.AutoScalingGroup) {
         this.autoScalingGroup.protectNewInstancesFromScaleIn();
       } else {
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:cannotEnforceNewInstancesProtectedFromScaleIn', 'Cannot enforce `newInstancesProtectedFromScaleIn: true` on the AutoScalingGroup. This will have no effect if the AutoScalingGroup was created in this CDK app.');
+        throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
       }
     }
 
