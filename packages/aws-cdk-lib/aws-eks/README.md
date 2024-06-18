@@ -1343,8 +1343,9 @@ Kubernetes applications running on Amazon EKS can obtain AWS IAM credentials. It
 Kubernetes service account, allowing pods to retrieve temporary AWS credentials without the need
 to manage IAM roles and policies directly.
 
-By default, `ServiceAccount` would create an `OpenIdIdentityProvider` for 
-[IRSA(IAM roles for service accounts)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html).
+By default, `ServiceAccount` creates an `OpenIdConnectProvider` for 
+[IRSA(IAM roles for service accounts)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) if
+`identityType` is `undefined` or `IdentityType.IRSA`.
 
 You may opt in Amaozn EKS Pod Identities as below:
 
