@@ -1,8 +1,8 @@
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 /**
  * To verify the ability to run jobs created in this test
@@ -21,7 +21,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
  */
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-glue-job-python-shell');
+const stack = new cdk.Stack(app, 'aws-glue-ray-job');
 
 const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py'));
 
@@ -30,24 +30,16 @@ const iam_role = new iam.Role(stack, 'IAMServiceRole', {
   managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
 });
 
-new glue.PythonShellJob(stack, 'BasicShellJob39', {
+new glue.RayJob(stack, 'BasicRayJob', {
   script: script,
   role: iam_role,
 });
 
-new glue.PythonShellJob(stack, 'BasicShellJob', {
+new glue.RayJob(stack, 'RayJob5Workers', {
   script: script,
   role: iam_role,
-  pythonVersion: glue.PythonVersion.THREE,
-  glueVersion: glue.GlueVersion.V1_0,
-});
-
-new glue.PythonShellJob(stack, 'DetailedShellJob39', {
-  script: script,
-  role: iam_role,
-  description: 'My detailed Python 3.9 Shell Job',
-  maxCapacity: glue.MaxCapacity.DPU_1,
-  jobName: 'My Python 3.9 Shell Job',
+  numberOrWorkers: 5,
+  jobName: 'RayJobWith5Workers',
   defaultArguments: {
     arg1: 'value1',
     arg2: 'value2',
@@ -57,7 +49,7 @@ new glue.PythonShellJob(stack, 'DetailedShellJob39', {
   },
 });
 
-new integ.IntegTest(app, 'aws-glue-job-python-shell-integ-test', {
+new integ.IntegTest(app, 'aws-glue-ray-job-integ-test', {
   testCases: [stack],
 });
 

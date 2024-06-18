@@ -1,40 +1,39 @@
 /**
- *  Spark ETL Jobs class
- *  ETL jobs support pySpark and Scala languages, for which there are separate
- *  but similar constructors. ETL jobs default to the G2 worker type, but you
- *  can override this default with other supported worker type values
- *  (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
- *  override to 3.0. The following ETL features are enabled by default:
- *  —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
- *  You can find more details about version, worker type and other features
- *  in Glue's public documentation.
+ *  Scala Streaming Jobs class
  *
- *  RFC: https://github.com/aws/aws-cdk-rfcs/blob/main/text/0497-glue-l2-construct.md
+ * A Streaming job is similar to an ETL job, except that it performs ETL on data streams
+ * using the Apache Spark Structured Streaming framework.
+ * These jobs will default to use Python 3.9.
  *
+ * Similar to ETL jobs, streaming job supports Scala and Python languages. Similar to ETL,
+ * it supports G1 and G2 worker type and 2.0, 3.0 and 4.0 version. We’ll default to G2 worker
+ * and 4.0 version for streaming jobs which developers can override.
+ * We will enable —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ *
+ * RFC: https://github.com/aws/aws-cdk-rfcs/blob/main/text/0497-glue-l2-construct.md
  */
 
+import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
-import { Code } from '../code';
 
 /**
  * Properties for creating a Scala Spark ETL job
  */
-export interface ScalaSparkEtlJobProps extends JobProperties {
+export interface ScalaSparkStreamingJobProps extends JobProperties {
 
   /**
-   * Enables the Spark UI debugging and monitoring with the specified props.
-   *
-   * @default - Spark UI debugging and monitoring is disabled.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
+     * Enables the Spark UI debugging and monitoring with the specified props.
+     *
+     * @default - Spark UI debugging and monitoring is disabled.
+     *
+     * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
+     * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+     */
   readonly sparkUI?: SparkUIProps;
 
   /**
@@ -49,13 +48,13 @@ export interface ScalaSparkEtlJobProps extends JobProperties {
    * S3 URL where additional jar dependencies are located
    * @default - no extra jar files
   */
-  readonly extraJars?: Code[];
+  readonly extraJars?: string[];
 }
 
 /**
- * A Scala Spark ETL Glue Job
+ * A Scala Spark Streaming Glue Job
  */
-export class ScalaSparkEtlJob extends Job {
+export class ScalaSparkStreamingJob extends Job {
 
   // Implement abstract Job attributes
   public readonly jobArn: string;
@@ -68,17 +67,17 @@ export class ScalaSparkEtlJob extends Job {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
+  */
   public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
   /**
-   * ScalaSparkEtlJob constructor
+   * ScalaSparkStreamingJob constructor
    *
    * @param scope
    * @param id
    * @param props
-   */
-  constructor(scope: Construct, id: string, props: ScalaSparkEtlJobProps) {
+  */
+  constructor(scope: Construct, id: string, props: ScalaSparkStreamingJobProps) {
     super(scope, id, {
       physicalName: props.jobName,
     });
@@ -99,7 +98,7 @@ export class ScalaSparkEtlJob extends Job {
     const profilingMetricsArgs = { '--enable-metrics': '' };
 
     // Gather executable arguments
-    const execuatbleArgs = this.executableArguments(props);
+    const executableArgs = this.executableArguments(props);
 
     // Mandatory className argument
     if (props.className === undefined) {
@@ -108,7 +107,7 @@ export class ScalaSparkEtlJob extends Job {
 
     // Conbine command line arguments into a single line item
     const defaultArguments = {
-      ...execuatbleArgs,
+      ...executableArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
       ...sparkUIArgs?.args,
@@ -124,7 +123,7 @@ export class ScalaSparkEtlJob extends Job {
       description: props.description,
       role: this.role.roleArn,
       command: {
-        name: JobType.ETL,
+        name: JobType.STREAMING,
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
@@ -149,15 +148,22 @@ export class ScalaSparkEtlJob extends Job {
    *
    * @param props
    * @returns An array of arguments for Glue to use on execution
-   */
-  private executableArguments(props: ScalaSparkEtlJobProps) {
+  */
+  private executableArguments(props: ScalaSparkStreamingJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.SCALA;
     args['--class'] = props.className!;
 
+    // TODO: Confirm with Glue service team what the mapping is from extra-x to job language, if any
     if (props.extraJars && props.extraJars?.length > 0) {
-      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
+      // args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
+    // if (props.extraFiles && props.extraFiles.length > 0) {
+    //   args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    // }
+    // if (props.extraJarsFirst) {
+    //   args['--user-jars-first'] = 'true';
+    // }
 
     return args;
   }

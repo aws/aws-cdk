@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-glue-job-python-shell.assets": {
+    "aws-glue-ray-job.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-glue-job-python-shell.assets.json",
+        "file": "aws-glue-ray-job.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-glue-job-python-shell": {
+    "aws-glue-ray-job": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-glue-job-python-shell.template.json",
+        "templateFile": "aws-glue-ray-job.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aeda11f7bb7dfbd52c66176f2e7ae14f20571f1f22ab7988a59bc714daf278a0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8fda7378f7edbed186ceae92474d861037062e15e578b62a4ba9cfdb80a57b8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-glue-job-python-shell.assets"
+          "aws-glue-ray-job.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,121 +31,61 @@
         }
       },
       "dependencies": [
-        "aws-glue-job-python-shell.assets"
+        "aws-glue-ray-job.assets"
       ],
       "metadata": {
-        "/aws-glue-job-python-shell/IAMServiceRole/Resource": [
+        "/aws-glue-ray-job/IAMServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IAMServiceRole61C662C4"
           }
         ],
-        "/aws-glue-job-python-shell/IAMServiceRole/DefaultPolicy/Resource": [
+        "/aws-glue-ray-job/IAMServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IAMServiceRoleDefaultPolicy379D1A0E"
           }
         ],
-        "/aws-glue-job-python-shell/BasicShellJob39/Resource": [
+        "/aws-glue-ray-job/BasicRayJob/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BasicShellJob39F2E7D12A"
+            "data": "BasicRayJobF8D69550"
           }
         ],
-        "/aws-glue-job-python-shell/BasicShellJob/Resource": [
+        "/aws-glue-ray-job/RayJob5Workers/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BasicShellJobC7D0761E"
+            "data": "RayJob5Workers11381A2E"
           }
         ],
-        "/aws-glue-job-python-shell/DetailedShellJob39/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DetailedShellJob39CB370B41"
-          }
-        ],
-        "/aws-glue-job-python-shell/BootstrapVersion": [
+        "/aws-glue-ray-job/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-glue-job-python-shell/CheckBootstrapVersion": [
+        "/aws-glue-ray-job/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ShellJobServiceRoleCF97BC4B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJobServiceRoleCF97BC4B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ShellJobServiceRoleDefaultPolicy7F22D315": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJobServiceRoleDefaultPolicy7F22D315",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ShellJob42E81F95": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJob42E81F95",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ShellJob39ServiceRole2F6F3768": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJob39ServiceRole2F6F3768",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ShellJob39ServiceRoleDefaultPolicy38A33919": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJob39ServiceRoleDefaultPolicy38A33919",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ShellJob390C141361": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ShellJob390C141361",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "aws-glue-job-python-shell"
+      "displayName": "aws-glue-ray-job"
     },
-    "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets": {
+    "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets.json",
+        "file": "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7": {
+    "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.template.json",
+        "templateFile": "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -154,7 +94,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets"
+          "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -163,23 +103,23 @@
         }
       },
       "dependencies": [
-        "awsgluejobpythonshellintegtestDefaultTestDeployAssert453D25B7.assets"
+        "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747.assets"
       ],
       "metadata": {
-        "/aws-glue-job-python-shell-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-glue-ray-job-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-glue-job-python-shell-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-glue-ray-job-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-glue-job-python-shell-integ-test/DefaultTest/DeployAssert"
+      "displayName": "aws-glue-ray-job-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

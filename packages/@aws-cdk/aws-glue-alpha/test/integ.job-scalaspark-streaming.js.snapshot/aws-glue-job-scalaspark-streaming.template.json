@@ -88,12 +88,11 @@
     ]
    }
   },
-  "BasicShellJob39F2E7D12A": {
+  "BasicScalaSparkStreamingJob03E183FE": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3.9",
+     "Name": "gluestreaming",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -102,31 +101,32 @@
         {
          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+        "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
        ]
       ]
      }
     },
     "DefaultArguments": {
-     "library-set": "analytics"
+     "--job-language": "scala",
+     "--class": "com.example.HelloWorld",
+     "--enable-metrics": ""
     },
-    "GlueVersion": "3.0",
-    "MaxCapacity": 0.0625,
-    "MaxRetries": 0,
+    "GlueVersion": "4.0",
+    "NumberOfWorkers": 10,
     "Role": {
      "Fn::GetAtt": [
       "IAMServiceRole61C662C4",
       "Arn"
      ]
-    }
+    },
+    "WorkerType": "G.2X"
    }
   },
-  "BasicShellJobC7D0761E": {
+  "OverrideScalaSparkStreamingJob598931ED": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3",
+     "Name": "gluestreaming",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -135,52 +135,22 @@
         {
          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
-       ]
-      ]
-     }
-    },
-    "DefaultArguments": {},
-    "GlueVersion": "1.0",
-    "MaxCapacity": 0.0625,
-    "MaxRetries": 0,
-    "Role": {
-     "Fn::GetAtt": [
-      "IAMServiceRole61C662C4",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "DetailedShellJob39CB370B41": {
-   "Type": "AWS::Glue::Job",
-   "Properties": {
-    "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3.9",
-     "ScriptLocation": {
-      "Fn::Join": [
-       "",
-       [
-        "s3://",
-        {
-         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-        },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+        "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
        ]
       ]
      }
     },
     "DefaultArguments": {
-     "library-set": "analytics",
+     "--job-language": "scala",
+     "--class": "com.example.HelloWorld",
+     "--enable-metrics": "",
      "arg1": "value1",
      "arg2": "value2"
     },
-    "Description": "My detailed Python 3.9 Shell Job",
+    "Description": "Optional Override ScalaSpark Streaming Job",
     "GlueVersion": "3.0",
-    "MaxCapacity": 1,
-    "MaxRetries": 0,
-    "Name": "My Python 3.9 Shell Job",
+    "Name": "Optional Override ScalaSpark Streaming Job",
+    "NumberOfWorkers": 20,
     "Role": {
      "Fn::GetAtt": [
       "IAMServiceRole61C662C4",
@@ -189,7 +159,9 @@
     },
     "Tags": {
      "key": "value"
-    }
+    },
+    "Timeout": 15,
+    "WorkerType": "G.2X"
    }
   }
  },

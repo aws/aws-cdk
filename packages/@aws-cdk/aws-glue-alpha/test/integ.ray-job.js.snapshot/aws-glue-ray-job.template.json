@@ -88,12 +88,12 @@
     ]
    }
   },
-  "BasicShellJob39F2E7D12A": {
+  "BasicRayJobF8D69550": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3.9",
+     "Name": "glueray",
+     "Runtime": "Ray2.4",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -108,56 +108,25 @@
      }
     },
     "DefaultArguments": {
-     "library-set": "analytics"
+     "--enable-metrics": ""
     },
-    "GlueVersion": "3.0",
-    "MaxCapacity": 0.0625,
-    "MaxRetries": 0,
+    "GlueVersion": "4.0",
+    "NumberOfWorkers": 3,
     "Role": {
      "Fn::GetAtt": [
       "IAMServiceRole61C662C4",
       "Arn"
      ]
-    }
-   }
-  },
-  "BasicShellJobC7D0761E": {
-   "Type": "AWS::Glue::Job",
-   "Properties": {
-    "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3",
-     "ScriptLocation": {
-      "Fn::Join": [
-       "",
-       [
-        "s3://",
-        {
-         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-        },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
-       ]
-      ]
-     }
     },
-    "DefaultArguments": {},
-    "GlueVersion": "1.0",
-    "MaxCapacity": 0.0625,
-    "MaxRetries": 0,
-    "Role": {
-     "Fn::GetAtt": [
-      "IAMServiceRole61C662C4",
-      "Arn"
-     ]
-    }
+    "WorkerType": "Z.2X"
    }
   },
-  "DetailedShellJob39CB370B41": {
+  "RayJob5Workers11381A2E": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3.9",
+     "Name": "glueray",
+     "Runtime": "Ray2.4",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -172,15 +141,13 @@
      }
     },
     "DefaultArguments": {
-     "library-set": "analytics",
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--enable-metrics": ""
     },
-    "Description": "My detailed Python 3.9 Shell Job",
-    "GlueVersion": "3.0",
-    "MaxCapacity": 1,
-    "MaxRetries": 0,
-    "Name": "My Python 3.9 Shell Job",
+    "GlueVersion": "4.0",
+    "Name": "RayJobWith5Workers",
+    "NumberOfWorkers": 5,
     "Role": {
      "Fn::GetAtt": [
       "IAMServiceRole61C662C4",
@@ -189,7 +156,8 @@
     },
     "Tags": {
      "key": "value"
-    }
+    },
+    "WorkerType": "Z.2X"
    }
   }
  },

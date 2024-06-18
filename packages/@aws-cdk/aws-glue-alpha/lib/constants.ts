@@ -245,3 +245,59 @@ export enum JobType {
 
 }
 
+/**
+ * The number of AWS Glue data processing units (DPUs) that can be allocated when this job runs. A DPU is a relative measure of processing power that consists of 4 vCPUs of compute capacity and 16 GB of memory.
+ */
+export enum MaxCapacity {
+
+  /**
+   * DPU value of 1/16th
+   */
+  DPU_1_16TH = 0.0625,
+
+  /**
+   * DPU value of 1
+   */
+  DPU_1 = 1,
+}
+
+ * Represents the logical operator for combining multiple conditions in the Glue Trigger API.
+ */
+export enum PredicateLogical {
+  /** All conditions must be true for the predicate to be true. */
+  AND = 'AND',
+
+  /** At least one condition must be true for the predicate to be true. */
+  ANY = 'ANY',
+}
+
+/**
+ * Represents the logical operator for evaluating a single condition in the Glue Trigger API.
+ */
+export enum ConditionLogicalOperator {
+  /** The condition is true if the values are equal. */
+  EQUALS = 'EQUALS',
+}
+
+/**
+ * Represents the state of a crawler for a condition in the Glue Trigger API.
+ */
+export enum CrawlerState {
+  /** The crawler is currently running. */
+  RUNNING = 'RUNNING',
+
+  /** The crawler is in the process of being cancelled. */
+  CANCELLING = 'CANCELLING',
+
+  /** The crawler has been cancelled. */
+  CANCELLED = 'CANCELLED',
+
+  /** The crawler has completed its operation successfully. */
+  SUCCEEDED = 'SUCCEEDED',
+
+  /** The crawler has failed to complete its operation. */
+  FAILED = 'FAILED',
+
+  /** The crawler encountered an error during its operation. */
+  ERROR = 'ERROR',
+}
