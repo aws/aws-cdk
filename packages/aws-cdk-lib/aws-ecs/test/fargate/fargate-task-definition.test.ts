@@ -21,15 +21,17 @@ describe('fargate task definition', () => {
 
     });
 
-    test('does not support lazy cpu and memory values', () => {
+    test('support lazy cpu and memory values', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: cdk.Lazy.number({ produce: () => 256 }),
+        memoryLimitMiB: cdk.Lazy.number({ produce: () => 1024 }),
+      });
+
       expect(() => {
-        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-          cpu: cdk.Lazy.number({ produce: () => 256 }),
-          memoryLimitMiB: cdk.Lazy.number({ produce: () => 1024 }),
-        });
+        Template.fromStack(stack);
       }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
 
     });
@@ -216,11 +218,13 @@ describe('fargate task definition', () => {
     test('throws error when invalid CPU and memory combination is provided', () => {
       const stack = new cdk.Stack();
 
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 256,
+        memoryLimitMiB: 125,
+      });
+
       expect(() => {
-        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-          cpu: 256,
-          memoryLimitMiB: 125,
-        });
+        Template.fromStack(stack);
       }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
     });
 

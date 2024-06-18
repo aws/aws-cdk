@@ -468,7 +468,9 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
 
       // Check the combination as per doc https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
-      this.validateFargateTaskDefinitionMemoryCpu(props.cpu, props.memoryMiB);
+      this.node.addValidation({
+        validate: () => this.validateFargateTaskDefinitionMemoryCpu(props.cpu!, props.memoryMiB!),
+      });
     }
 
     this._executionRole = props.executionRole;
@@ -906,7 +908,8 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
   };
 
-  private validateFargateTaskDefinitionMemoryCpu(cpu: string, memory: string) {
+  private validateFargateTaskDefinitionMemoryCpu(cpu: string, memory: string): string[] {
+    const ret = new Array<string>();
     const validCpuMemoryCombinations = [
       { cpu: '256', memory: ['512', '1024', '2048'] },
       { cpu: '512', memory: this.range(1024, 4096, 1024) },
@@ -922,8 +925,10 @@ export class TaskDefinition extends TaskDefinitionBase {
     });
 
     if (!isValidCombination) {
-      throw new Error('Invalid CPU and memory combinations for FARGATE compatible task definition - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html');
+      ret.push('Invalid CPU and memory combinations for FARGATE compatible task definition - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html');
     }
+
+    return ret;
   }
 
   private range(start: number, end: number, step: number): string[] {

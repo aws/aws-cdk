@@ -461,12 +461,14 @@ describe('task definition', () => {
     test('throws error when invalid CPU and memory combination is provided with Fargate compatibilities', () => {
       const stack = new cdk.Stack();
 
+      new ecs.TaskDefinition(stack, 'TaskDef', {
+        compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+        cpu: '122',
+        memoryMiB: '513',
+      });
+
       expect(() => {
-        new ecs.TaskDefinition(stack, 'TaskDef', {
-          compatibility: ecs.Compatibility.EC2_AND_FARGATE,
-          cpu: '122',
-          memoryMiB: '513',
-        });
+        Template.fromStack(stack);
       }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
     });
 
