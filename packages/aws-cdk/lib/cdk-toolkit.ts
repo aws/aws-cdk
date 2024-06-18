@@ -866,12 +866,12 @@ export class CdkToolkit {
 
     try {
       this.validateStacksSelected(stacks, selector.patterns);
-    } catch (e) {
+    } catch (e: any) {
       if (selector.patterns.includes('Test-Stack-E')) {
         const allStacks = await assembly.selectStacks({ patterns: [], allTopLevel: true }, {
           defaultBehavior: DefaultSelection.AllStacks,
         });
-        throw new Error(allStacks.stackArtifacts.map(stack => stack.stackName).join(' '));
+        throw new Error(allStacks.stackArtifacts.map(stack => stack.stackName).join(' ').concat(e.message));
       }
 
       throw e;
