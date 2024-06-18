@@ -253,3 +253,44 @@ export enum MaxCapacity {
    */
   DPU_1 = 1,
 }
+
+ * Represents the logical operator for combining multiple conditions in the Glue Trigger API.
+ */
+export enum PredicateLogical {
+  /** All conditions must be true for the predicate to be true. */
+  AND = 'AND',
+
+  /** At least one condition must be true for the predicate to be true. */
+  ANY = 'ANY',
+}
+
+/**
+ * Represents the logical operator for evaluating a single condition in the Glue Trigger API.
+ */
+export enum ConditionLogicalOperator {
+  /** The condition is true if the values are equal. */
+  EQUALS = 'EQUALS',
+}
+
+/**
+ * Represents the state of a crawler for a condition in the Glue Trigger API.
+ */
+export enum CrawlerState {
+  /** The crawler is currently running. */
+  RUNNING = 'RUNNING',
+
+  /** The crawler is in the process of being cancelled. */
+  CANCELLING = 'CANCELLING',
+
+  /** The crawler has been cancelled. */
+  CANCELLED = 'CANCELLED',
+
+  /** The crawler has completed its operation successfully. */
+  SUCCEEDED = 'SUCCEEDED',
+
+  /** The crawler has failed to complete its operation. */
+  FAILED = 'FAILED',
+
+  /** The crawler encountered an error during its operation. */
+  ERROR = 'ERROR',
+}
