@@ -36,10 +36,12 @@ export interface SubnetPropsV2 {
   vpc: IVpcV2;
 
   /**
-   * custom CIDR range
-   * TODO: modify to Ipv4cidr class
+   * ipv4 cidr to assign to this subnet.
+   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-cidrblock
    */
-  cidrBlock: ICidr;
+  cidrBlock: Ipv4Cidr;
+
+  ipv6CidrBlock?: Ipv6Cidr;
 
   /**
    * Custom AZ
@@ -52,18 +54,12 @@ export interface SubnetPropsV2 {
   routeTable?: IRouteTable;
 
   /**
-   * A tag applied to the subnet for grouping purposes.
-   *
-   * This grouping allows users to do things such as
-   * find all subnets with subnetGroupNameTag `subnetGroupA` for example.
-   */
-  subnetGroupNameTag?: string;
-
-  /**
    * The type of Subnet to configure.
    *
    * The Subnet type will control the ability to route and connect to the
    * Internet.
+   *
+   * TODO: Add validation check `subnetType` when adding resources (e.g. cannot add NatGateway to private)
    */
   subnetType: SubnetType;
 
@@ -120,14 +116,10 @@ export class SubnetV2 extends Resource implements ISubnet {
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
 
-    let ipv4CidrBlock: string = '';
-    let ipv6CidrBlock: string = '';
-    if (props.cidrBlock instanceof Ipv4Cidr) {
-      ipv4CidrBlock = props.cidrBlock.cidr;
-    } else if (props.cidrBlock instanceof Ipv6Cidr) {
-      if (validateSupportIpv6(props.vpc)) {
-        ipv6CidrBlock = props.cidrBlock.cidr;
-      }
+    const ipv4CidrBlock = props.cidrBlock.cidr;
+    const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
+    if (ipv6CidrBlock) {
+      validateSupportIpv6(props.vpc)
     }
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
@@ -143,9 +135,6 @@ export class SubnetV2 extends Resource implements ISubnet {
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
-    /**
-     * seems to be the main default one
-     */
     if (props.routeTable) {
       this.routeTable = props.routeTable;
     } else {
