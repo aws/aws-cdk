@@ -113,10 +113,6 @@ export class CloudAssembly {
       throw new Error('This app contains no stacks');
     }
 
-    if (selector.patterns.includes('Test-Stack-E')) {
-      throw new Error(topLevelStacks.map(stack => stack.stackName).join(' '));
-    }
-
     if (allTopLevel) {
       return this.selectTopLevelStacks(stacks, topLevelStacks, options.extend);
     } else if (patterns.length > 0) {
