@@ -52,6 +52,12 @@ export enum WorkerType {
 }
 
 /**
+ * The number of workers of a defined workerType that are allocated when a job runs.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html
+ */
+
+/**
  * Job states emitted by Glue to CloudWatch Events.
  *
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types for more information.
@@ -196,6 +202,7 @@ export enum PythonVersion {
    * Python 3.9 (the exact version depends on GlueVersion and JobCommand used)
    */
   THREE_NINE = '3.9',
+
 }
 
 /**
