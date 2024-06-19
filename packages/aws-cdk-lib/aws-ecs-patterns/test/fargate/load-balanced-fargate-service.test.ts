@@ -1641,7 +1641,7 @@ describe('NetworkLoadBalancedFargateService', () => {
     });
   });
 
-  test('setting listenerCertificate create ELB listener with TLS protocal and certificate, Target group with TLS protocol', () => {
+  test('setting listenerCertificate create ELB listener with port 443, TLS protocal and certificate, Target group with port 443 and TLS protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const certificate = Certificate.fromCertificateArn(stack, 'Cert', 'helloworld');
@@ -1656,6 +1656,7 @@ describe('NetworkLoadBalancedFargateService', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
       Protocol: 'TLS',
       Certificates: [{
         CertificateArn: 'helloworld',
@@ -1663,11 +1664,12 @@ describe('NetworkLoadBalancedFargateService', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 443,
       Protocol: 'TLS',
     });
   });
 
-  test('not setting listenerCertificate create ELB listener with TCP protocal, Target group with TCP protocol', () => {
+  test('not setting listenerCertificate create ELB listener with port 80 and TCP protocal, Target group with port 80 and TCP protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1680,10 +1682,12 @@ describe('NetworkLoadBalancedFargateService', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
       Protocol: 'TCP',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
       Protocol: 'TCP',
     });
   });
