@@ -86,3 +86,25 @@ test.each([
     });
   }).toThrow(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${autoScalingConfigurationName}`);
 });
+
+test('create an Auto scaling Configuration with tags', () => {
+  // WHEN
+  const autoScalingConfiguration = new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+    autoScalingConfigurationName: 'my-autoscaling-config',
+    maxConcurrency: 150,
+    maxSize: 20,
+    minSize: 5,
+  });
+
+  new cdk.Tags.of(autoScalingConfiguration).add('Environment', 'production');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {
+    Tags: [
+      {
+        Key: 'Environment',
+        Value: 'production',
+      },
+    ],
+  });
+});
