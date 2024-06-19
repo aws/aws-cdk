@@ -136,12 +136,6 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/MyLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLogGroup5C0DAD85"
-          }
-        ],
         "/cdk-s3-bucket-auto-delete-objects/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

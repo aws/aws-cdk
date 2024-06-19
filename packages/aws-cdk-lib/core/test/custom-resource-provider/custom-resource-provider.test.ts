@@ -394,27 +394,6 @@ describe('custom resource provider', () => {
     }]);
   });
 
-  test('configureLambdaLogGroup() sets the Lambda LoggingConfig', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
-      codeDirectory: TEST_HANDLER,
-      runtime: DEFAULT_PROVIDER_RUNTIME,
-      policyStatements: [
-        { statement1: 123 },
-        { statement2: { foo: 111 } },
-      ],
-    });
-    provider.configureLambdaLogGroup('MyTestLogGroup');
-
-    // THEN
-    const template = toCloudFormation(stack);
-    const role = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
-    expect(role.Properties.LoggingConfig).toEqual({ LogGroup: 'MyTestLogGroup' });
-  });
-
   test('memorySize, timeout and description', () => {
     // GIVEN
     const stack = new Stack();

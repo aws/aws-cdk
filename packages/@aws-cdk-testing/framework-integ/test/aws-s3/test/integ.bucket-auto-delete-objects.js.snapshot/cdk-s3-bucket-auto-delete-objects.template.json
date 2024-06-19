@@ -144,11 +144,6 @@
        " S3 bucket."
       ]
      ]
-    },
-    "LoggingConfig": {
-     "LogGroup": {
-      "Ref": "MyLogGroup5C0DAD85"
-     }
     }
    },
    "DependsOn": [
@@ -452,15 +447,6 @@
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
-  },
-  "MyLogGroup5C0DAD85": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": "MyLogGroup",
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   }
  },
  "Mappings": {
