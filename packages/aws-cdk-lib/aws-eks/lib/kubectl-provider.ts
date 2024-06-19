@@ -138,7 +138,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       memorySize,
       environment: {
         // required and recommended for boto3
-        AWS_STS_REGIONAL_ENDPOINTS: 'regional', 
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
         ...cluster.kubectlEnvironment,
       },
       role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
