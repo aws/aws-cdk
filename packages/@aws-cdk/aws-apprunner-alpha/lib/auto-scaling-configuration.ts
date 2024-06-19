@@ -55,11 +55,6 @@ export interface AutoScalingConfigurationAttributes {
   readonly autoScalingConfigurationName: string;
 
   /**
-   * The ARN of the Auto Scaling Configuration.
-   */
-  readonly autoScalingConfigurationArn: string;
-
-  /**
    * The revision of the Auto Scaling Configuration.
    */
   readonly autoScalingConfigurationRevision: number;
@@ -99,14 +94,17 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
    */
   public static fromAutoScalingConfigurationAttributes(scope: Construct, id: string,
     attrs: AutoScalingConfigurationAttributes): IAutoScalingConfiguration {
-    const autoScalingConfigurationArn = attrs.autoScalingConfigurationArn;
     const autoScalingConfigurationName = attrs.autoScalingConfigurationName;
     const autoScalingConfigurationRevision = attrs.autoScalingConfigurationRevision;
 
-    class Import extends cdk.Resource implements  IAutoScalingConfiguration  {
-      public readonly autoScalingConfigurationArn = autoScalingConfigurationArn
-      public readonly autoScalingConfigurationName = autoScalingConfigurationName
-      public readonly autoScalingConfigurationRevision = autoScalingConfigurationRevision
+    class Import extends cdk.Resource implements IAutoScalingConfiguration {
+      public readonly autoScalingConfigurationName = autoScalingConfigurationName;
+      public readonly autoScalingConfigurationRevision = autoScalingConfigurationRevision;
+      public readonly autoScalingConfigurationArn = cdk.Stack.of(this).formatArn({
+        resource: 'autoscalingconfiguration',
+        service: 'apprunner',
+        resourceName: `${attrs.autoScalingConfigurationName}/${attrs.autoScalingConfigurationRevision}`,
+      });
     }
 
     return new Import(scope, id);
@@ -116,22 +114,22 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
    * Imports an App Runner Auto Scaling Configuration from its ARN
    */
   public static fromArn(scope: Construct, id: string, autoScalingConfigurationArn: string): IAutoScalingConfiguration {
-    const arn = cdk.Stack.of(scope).splitArn(autoScalingConfigurationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
-
-    const resourceParts = arn.resourceName?.split('/');
+    const resourceParts = cdk.Fn.split('/', autoScalingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
       throw new Error(`Unexpected ARN format: ${autoScalingConfigurationArn}`);
     }
 
-    const autoScalingConfigurationName = resourceParts[0];
-    const autoScalingConfigurationRevision = parseInt(resourceParts[1]);
+    const autoScalingConfigurationName = cdk.Fn.select(0, resourceParts);
+    const autoScalingConfigurationRevision = Number(cdk.Fn.select(1, resourceParts));
 
-    return AutoScalingConfiguration.fromAutoScalingConfigurationAttributes(scope, id, {
-      autoScalingConfigurationArn,
-      autoScalingConfigurationName,
-      autoScalingConfigurationRevision,
-    });
+    class Import extends cdk.Resource implements IAutoScalingConfiguration {
+      public readonly autoScalingConfigurationName = autoScalingConfigurationName;
+      public readonly autoScalingConfigurationRevision = autoScalingConfigurationRevision;
+      public readonly autoScalingConfigurationArn = autoScalingConfigurationArn;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
