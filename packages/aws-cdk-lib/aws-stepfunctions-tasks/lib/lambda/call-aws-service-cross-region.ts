@@ -37,14 +37,14 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   /**
    * The resources for the IAM statement that will be added to the Lambda
    * function role's policy to allow the state machine to make the API call.
-   *
-   * By default the action for this IAM statement will be `service:action`.
    */
   readonly iamResources: string[];
 
   /**
    * The action for the IAM statement that will be added to the Lambda
    * function role's policy to allow the state machine to make the API call.
+   *
+   * By default the action for this IAM statement will be `service:action`.
    *
    * Use in the case where the IAM action name does not match with the
    * API service/action name, e.g. `s3:ListBuckets` requires `s3:ListAllMyBuckets`.
