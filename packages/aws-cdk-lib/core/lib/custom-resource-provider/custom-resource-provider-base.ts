@@ -51,7 +51,6 @@ export abstract class CustomResourceProviderBase extends Construct {
   private _codeHash?: string;
   private policyStatements?: any[];
   private role?: CfnResource;
-  private handler: CfnResource;
 
   /**
    * The ARN of the provider's AWS Lambda function which should be used as the `serviceToken` when defining a custom
@@ -130,7 +129,7 @@ export abstract class CustomResourceProviderBase extends Construct {
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 
-    this.handler = new CfnResource(this, 'Handler', {
+    const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
         Code: code,
@@ -145,25 +144,14 @@ export abstract class CustomResourceProviderBase extends Construct {
     });
 
     if (this.role) {
-      this.handler.addDependency(this.role);
+      handler.addDependency(this.role);
     }
 
     if (metadata) {
-      Object.entries(metadata).forEach(([k, v]) => this.handler.addMetadata(k, v));
+      Object.entries(metadata).forEach(([k, v]) => handler.addMetadata(k, v));
     }
 
-    this.serviceToken = Token.asString(this.handler.getAtt('Arn'));
-  }
-
-  /**
-   * Set the log group used by the lambda function backing this custom resource.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-loggingconfig
-   */
-  public configureLambdaLogGroup(logGroupName: string) {
-    this.handler.addPropertyOverride('LoggingConfig', {
-      LogGroup: logGroupName,
-    });
+    this.serviceToken = Token.asString(handler.getAtt('Arn'));
   }
 
   /**
