@@ -609,7 +609,7 @@ export class Distribution extends Resource implements IDistribution {
       const scope = new Construct(this, `Origin${originIndex}`);
       const generatedId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const distributionId = this.distributionId;
-      const originBindConfig = origin.bind(scope, { originId: generatedId, distributionId });
+      const originBindConfig = origin.bind(scope, { originId: generatedId, distributionId: Lazy.string({ produce: () => this.distributionId }) });
       const originId = originBindConfig.originProperty?.id ?? generatedId;
       const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
       if (duplicateId) {

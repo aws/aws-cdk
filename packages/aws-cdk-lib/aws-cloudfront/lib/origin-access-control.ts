@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
-import { IResource, Resource, Stack, Names } from '../../core';
+import { IResource, Resource, Names } from '../../core';
 /**
  * Interface for CloudFront origin access controls
  */
@@ -10,13 +10,6 @@ export interface IOriginAccessControl extends IResource {
    * @attribute
    */
   readonly originAccessControlId: string;
-}
-
-abstract class OriginAccessControlBase extends Resource implements IOriginAccessControl {
-  /**
-   * The unique identifier of the origin access control.
-   */
-  public abstract readonly originAccessControlId: string;
 }
 
 /**
@@ -35,17 +28,17 @@ export interface OriginAccessControlProps {
   readonly originAccessControlName?: string;
   /**
    * The type of origin that this origin access control is for.
-   * @default s3
+   * @default OriginAccessControlOriginType.S3
    */
   readonly originAccessControlOriginType?: OriginAccessControlOriginType;
   /**
    * Specifies which requests CloudFront signs.
-   * @default always
+   * @default SigningBehavior.ALWAYS
    */
   readonly signingBehavior?: SigningBehavior;
   /**
    * The signing protocol of the origin access control.
-   * @default sigv4
+   * @default SigningProtocol.SIGV4
    */
   readonly signingProtocol?: SigningProtocol;
 }
@@ -110,12 +103,12 @@ export enum SigningProtocol {
  * @resource AWS::CloudFront::OriginAccessControl
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
  */
-export class OriginAccessControl extends OriginAccessControlBase {
+export class OriginAccessControl extends Resource implements IOriginAccessControl {
   /**
    * Imports an origin access control from its id.
    */
   public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
-    class Import extends OriginAccessControlBase {
+    class Import extends Resource implements IOriginAccessControl {
       public readonly originAccessControlId = originAccessControlId;
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -126,14 +119,20 @@ export class OriginAccessControl extends OriginAccessControlBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Returns the Id of this OriginAccessControl
+   */
   public readonly originAccessControlId: string;
+
   constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
     super(scope, id);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {
         description: props.description,
-        name: props.originAccessControlName ?? this.generateName(),
+        name: props.originAccessControlName ?? Names.uniqueResourceName(this, {
+          maxLength: 64,
+        }),
         signingBehavior: props.signingBehavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signingProtocol ?? SigningProtocol.SIGV4,
         originAccessControlOriginType: props.originAccessControlOriginType ?? OriginAccessControlOriginType.S3,
@@ -142,13 +141,4 @@ export class OriginAccessControl extends OriginAccessControlBase {
 
     this.originAccessControlId = resource.attrId;
   }
-
-  private generateName(): string {
-    const name = Stack.of(this).region + Names.uniqueId(this);
-    if (name.length > 64) {
-      return name.substring(0, 32) + name.substring(name.length - 32);
-    }
-    return name;
-  }
-
 }
