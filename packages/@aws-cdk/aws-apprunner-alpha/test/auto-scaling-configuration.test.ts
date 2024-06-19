@@ -96,7 +96,7 @@ test('create an Auto scaling Configuration with tags', () => {
     minSize: 5,
   });
 
-  new cdk.Tags.of(autoScalingConfiguration).add('Environment', 'production');
+  cdk.Tags.of(autoScalingConfiguration).add('Environment', 'production');
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {

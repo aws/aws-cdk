@@ -155,32 +155,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       physicalName: props.autoScalingConfigurationName,
     });
 
-    if (
-      props.autoScalingConfigurationName !== undefined &&
-      !cdk.Token.isUnresolved(props.autoScalingConfigurationName) &&
-      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.autoScalingConfigurationName)
-    ) {
-      throw new Error(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${props.autoScalingConfigurationName}`);
-    }
-
-    const isMinSizeDefined = props.minSize !== undefined && !cdk.Token.isUnresolved(props.minSize);
-    const isMaxSizeDefined = props.maxSize !== undefined && !cdk.Token.isUnresolved(props.maxSize);
-    if (isMinSizeDefined && (props.minSize < 1 || props.minSize > 25)) {
-      throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
-    }
-    if (isMaxSizeDefined && (props.maxSize < 1 || props.maxSize > 25)) {
-      throw new Error(`maxSize must be between 1 and 25, got ${props.maxSize}`);
-    }
-    if (isMinSizeDefined && isMaxSizeDefined && !(props.minSize < props.maxSize)) {
-      throw new Error('maxSize must be greater than minSize');
-    }
-    if (
-      props.maxConcurrency !== undefined &&
-      !cdk.Token.isUnresolved(props.maxConcurrency) &&
-      (props.maxConcurrency < 1 || props.maxConcurrency > 200)
-    ) {
-      throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}`);
-    }
+    this.validateAutoScalingConfiguration(props);
 
     const resource = new CfnAutoScalingConfiguration(this, 'Resource', {
       autoScalingConfigurationName: props.autoScalingConfigurationName,
@@ -193,4 +168,35 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     this.autoScalingConfigurationRevision = resource.attrAutoScalingConfigurationRevision;
     this.autoScalingConfigurationName = resource.ref;
   }
+
+  private validateAutoScalingConfiguration(props: AutoScalingConfigurationProps) {
+    if (
+      props.autoScalingConfigurationName !== undefined &&
+      !cdk.Token.isUnresolved(props.autoScalingConfigurationName) &&
+      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.autoScalingConfigurationName)
+    ) {
+      throw new Error(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${props.autoScalingConfigurationName}`);
+    }
+
+    const isMinSizeDefined = typeof props.minSize === 'number';
+    const isMaxSizeDefined = typeof props.maxSize === 'number';
+    const isMaxConcurrencyDefined = typeof props.maxConcurrency === 'number';
+
+    if (isMinSizeDefined && (props.minSize < 1 || props.minSize > 25)) {
+      throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
+    }
+
+    if (isMaxSizeDefined && (props.maxSize < 1 || props.maxSize > 25)) {
+      throw new Error(`maxSize must be between 1 and 25, got ${props.maxSize}`);
+    }
+
+    if (isMinSizeDefined && isMaxSizeDefined && !(props.minSize < props.maxSize)) {
+      throw new Error('maxSize must be greater than minSize');
+    }
+
+    if (isMaxConcurrencyDefined && (props.maxConcurrency < 1 || props.maxConcurrency > 200)) {
+      throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}`);
+    }
+  }
+
 }
