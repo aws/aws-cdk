@@ -132,7 +132,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   /**
    * Listener port of the network load balancer that will serve traffic to the service.
    *
-   * @default 80
+   * @default 80 or 443 with listenerCertificate provided
    */
   readonly listenerPort?: number;
 
@@ -288,7 +288,7 @@ export interface NetworkLoadBalancedTaskImageOptions {
    * For more information, see
    * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
    *
-   * @default 80
+   * @default 80 or 443 with listenerCertificate provided
    */
   readonly containerPort?: number;
 
@@ -378,14 +378,15 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
 
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
 
+    const defaultPort = props.listenerCertificate ? 443 : 80;
     const listenerProps = {
-      port: props.listenerPort ?? 80,
+      port: props.listenerPort ?? defaultPort,
       certificates: props.listenerCertificate ? [props.listenerCertificate] : undefined,
     };
     this.listener = loadBalancer.addListener('PublicListener', listenerProps);
 
     const targetProps = {
-      port: props.taskImageOptions?.containerPort ?? 80,
+      port: props.taskImageOptions?.containerPort ?? defaultPort,
     };
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
