@@ -103,7 +103,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     const autoScalingConfigurationName = attrs.autoScalingConfigurationName;
     const autoScalingConfigurationRevision = attrs.autoScalingConfigurationRevision;
 
-    class Import extends cdk.Resource {
+    class Import extends cdk.Resource implements  IAutoScalingConfiguration  {
       public readonly autoScalingConfigurationArn = autoScalingConfigurationArn
       public readonly autoScalingConfigurationName = autoScalingConfigurationName
       public readonly autoScalingConfigurationRevision = autoScalingConfigurationRevision
