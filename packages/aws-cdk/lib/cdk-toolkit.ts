@@ -868,7 +868,7 @@ export class CdkToolkit {
       this.validateStacksSelected(stacks, selector.patterns);
     } catch (e: any) {
       if (selector.patterns.includes('Test-Stack-E')) {
-        const allStacks = await assembly.selectStacks({ patterns: [], allTopLevel: true }, {
+        const allStacks = await assembly.selectStacks(selector, {
           defaultBehavior: DefaultSelection.AllStacks,
         });
         throw new Error(allStacks.stackArtifacts.map(stack => stack.stackName).join(' ').concat(e.message));
