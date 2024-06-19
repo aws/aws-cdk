@@ -1641,6 +1641,53 @@ describe('NetworkLoadBalancedFargateService', () => {
     });
   });
 
+  test('setting listenerCertificate create ELB listener with TLS protocal and certificate, Target group with TLS protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const certificate = Certificate.fromCertificateArn(stack, 'Cert', 'helloworld');
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      listenerCertificate: certificate,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TLS',
+      Certificates: [{
+        CertificateArn: 'helloworld',
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Protocol: 'TLS',
+    });
+  });
+
+  test('not setting listenerCertificate create ELB listener with TCP protocal, Target group with TCP protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TCP',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Protocol: 'TCP',
+    });
+  });
+
   test('setting NLB deployment controller', () => {
     // GIVEN
     const stack = new cdk.Stack();
