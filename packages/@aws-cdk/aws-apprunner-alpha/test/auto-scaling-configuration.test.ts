@@ -41,7 +41,7 @@ test('create an Auto scaling Configuration without all properties', () => {
   });
 });
 
-test.each([0, 26])('invalid minSize', (minSize: number) => {
+test.each([-1, 0, 26])('invalid minSize', (minSize: number) => {
   expect(() => {
     new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
       minSize,
