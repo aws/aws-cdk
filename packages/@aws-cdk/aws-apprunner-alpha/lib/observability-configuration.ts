@@ -41,11 +41,6 @@ export interface ObservabilityConfigurationAttributes {
   readonly observabilityConfigurationName: string;
 
   /**
-   * The ARN of the Observability configuration.
-   */
-  readonly observabilityConfigurationArn: string;
-
-  /**
    * The revision of the Observability configuration.
    */
   readonly observabilityConfigurationRevision: number;
@@ -85,14 +80,17 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
    */
   public static fromObservabilityConfigurationAttributes(scope: Construct, id: string,
     attrs: ObservabilityConfigurationAttributes): IObservabilityConfiguration {
-    const observabilityConfigurationArn = attrs.observabilityConfigurationArn;
     const observabilityConfigurationName = attrs.observabilityConfigurationName;
     const observabilityConfigurationRevision = attrs.observabilityConfigurationRevision;
 
-    class Import extends cdk.Resource {
-      public readonly observabilityConfigurationArn = observabilityConfigurationArn
-      public readonly observabilityConfigurationName = observabilityConfigurationName
-      public readonly observabilityConfigurationRevision = observabilityConfigurationRevision
+    class Import extends cdk.Resource implements IObservabilityConfiguration {
+      public readonly observabilityConfigurationName = observabilityConfigurationName;
+      public readonly observabilityConfigurationRevision = observabilityConfigurationRevision;
+      public readonly observabilityConfigurationArn = cdk.Stack.of(this).formatArn({
+        resource: 'observabilityconfiguration',
+        service: 'apprunner',
+        resourceName: `${attrs.observabilityConfigurationName}/${attrs.observabilityConfigurationRevision}`,
+      });
     }
 
     return new Import(scope, id);
@@ -102,22 +100,22 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
    * Imports an App Runner Observability Configuration from its ARN
    */
   public static fromArn(scope: Construct, id: string, observabilityConfigurationArn: string): IObservabilityConfiguration {
-    const arn = cdk.Stack.of(scope).splitArn(observabilityConfigurationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
-
-    const resourceParts = arn.resourceName?.split('/');
+    const resourceParts = cdk.Fn.split('/', observabilityConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
       throw new Error(`Unexpected ARN format: ${observabilityConfigurationArn}`);
     }
 
-    const observabilityConfigurationName = resourceParts[0];
-    const observabilityConfigurationRevision = parseInt(resourceParts[1]);
+    const observabilityConfigurationName = cdk.Fn.select(0, resourceParts);
+    const observabilityConfigurationRevision = Number(cdk.Fn.select(1, resourceParts));
 
-    return ObservabilityConfiguration.fromObservabilityConfigurationAttributes(scope, id, {
-      observabilityConfigurationArn,
-      observabilityConfigurationName,
-      observabilityConfigurationRevision,
-    });
+    class Import extends cdk.Resource implements IObservabilityConfiguration {
+      public readonly observabilityConfigurationName = observabilityConfigurationName;
+      public readonly observabilityConfigurationRevision = observabilityConfigurationRevision;
+      public readonly observabilityConfigurationArn = observabilityConfigurationArn;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
