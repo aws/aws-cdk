@@ -545,31 +545,6 @@
               "version": "0.0.0"
             }
           },
-          "MyLogGroup": {
-            "id": "MyLogGroup",
-            "path": "cdk-s3-bucket-auto-delete-objects/MyLogGroup",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "cdk-s3-bucket-auto-delete-objects/MyLogGroup/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": "MyLogGroup",
-                    "retentionInDays": 731
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "0.0.0"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-s3-bucket-auto-delete-objects/BootstrapVersion",
