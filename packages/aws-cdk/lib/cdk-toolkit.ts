@@ -871,7 +871,8 @@ export class CdkToolkit {
         const allStacks = await assembly.selectStacks(selector, {
           defaultBehavior: DefaultSelection.AllStacks,
         });
-        throw new Error('allStacks: '.concat(allStacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat('actual stacks: ').concat(stacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat(e.message));
+        const customStacks = await assembly.selectStacks({ patterns: [], allTopLevel: true }, { defaultBehavior: DefaultSelection.AllStacks });
+        throw new Error('allStacks: '.concat(allStacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat('actual stacks: ').concat(stacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat('custom stacks: ').concat(customStacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat(e.message));
       }
 
       throw e;
