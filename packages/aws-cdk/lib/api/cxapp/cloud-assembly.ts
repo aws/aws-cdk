@@ -106,17 +106,8 @@ export class CloudAssembly {
     const allTopLevel = selector.allTopLevel ?? false;
     const patterns = sanitizePatterns(selector.patterns);
 
-    if (patterns.includes('Test-Stack-E')) {
-      // eslint-disable-next-line no-console
-      console.error(`WOW found stacks: ${stacks.map(stack => stack.stackName)}. They have heirarchical IDs: ${stacks.map(stack => stack.hierarchicalId)}`);
-    }
-
     if (stacks.length === 0) {
       if (options.ignoreNoStacks) {
-        if (patterns.includes('Test-Stack-E')) {
-          // eslint-disable-next-line no-console
-          console.error('no stacks found!');
-        }
         return new StackCollection(this, []);
       }
       throw new Error('This app contains no stacks');
@@ -125,6 +116,10 @@ export class CloudAssembly {
     if (allTopLevel) {
       return this.selectTopLevelStacks(stacks, topLevelStacks, options.extend);
     } else if (patterns.length > 0) {
+      if (patterns.includes('Test-Stack-E')) {
+        // eslint-disable-next-line no-console
+        console.error(`WOW found stacks: ${stacks.map(stack => stack.stackName)}. They have heirarchical IDs: ${stacks.map(stack => stack.hierarchicalId)}`);
+      }
       return this.selectMatchingStacks(stacks, patterns, options.extend);
     } else {
       return this.selectDefaultStacks(stacks, topLevelStacks, options.defaultBehavior);
@@ -154,6 +149,10 @@ export class CloudAssembly {
     }
 
     const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => {
+      if (pattern.includes('Test-Stack-E')) {
+        // eslint-disable-next-line no-console
+        console.error(`attempting to minimatch '${pattern}' against '${stack.hierarchicalId}': result is '${minimatch(stack.hierarchicalId, pattern)}'`);
+      }
       if (minimatch(stack.hierarchicalId, pattern)) {
         return true;
       } else if (!disableLegacy && stack.id === pattern && semver.major(versionNumber()) < 2) {
@@ -165,6 +164,11 @@ export class CloudAssembly {
     };
 
     const matchedStacks = flatten(patterns.map(pattern => stacks.filter(matchingPattern(pattern))));
+
+    if (patterns.includes('Test-Stack-E')) {
+      // eslint-disable-next-line no-console
+      console.error(`matched these stacks: ${matchedStacks.map(stack => stack.stackName)}`);
+    }
 
     return this.extendStacks(matchedStacks, stacks, extend);
   }
