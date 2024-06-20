@@ -1,6 +1,10 @@
 import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
+
+const S3_ORIGIN_ACCESS_CONTROL_SYMBOL = Symbol.for('aws-cdk-lib/aws-cloudfront/lib/origin-access-control.S3OriginAccessControl');
+const LAMBDA_ORIGIN_ACCESS_CONTROL_SYMBOL = Symbol.for('aws-cdk-lib/aws-cloudfront/lib/origin-access-control.LambdaOriginAccessControl');
+
 /**
  * Interface for CloudFront origin access controls
  */
@@ -119,8 +123,17 @@ export class OriginAccessControl extends Resource implements IOriginAccessContro
     return new Import(scope, id);
   }
 
+  public static forS3(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
+    return new S3OriginAccessControl(scope, id, props);
+  }
+
+  public static forLambda(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
+    return new LambdaOriginAccessControl(scope, id, props);
+  }
+
   /**
-   * Returns the Id of this OriginAccessControl
+   * The unique identifier of this Origin Access Control.
+   * @attribute
    */
   public readonly originAccessControlId: string;
 
@@ -142,3 +155,46 @@ export class OriginAccessControl extends Resource implements IOriginAccessContro
     this.originAccessControlId = resource.attrId;
   }
 }
+
+/**
+ * Origin access control for a S3 bucket origin
+ */
+export class S3OriginAccessControl extends OriginAccessControl {
+  /**
+   * Returns `true` if `x` is an S3OriginAccessControl, `false` otherwise
+   */
+  public static isS3OriginAccessControl(x: any): x is S3OriginAccessControl {
+    return x !== null && typeof (x) === 'object' && S3_ORIGIN_ACCESS_CONTROL_SYMBOL in x;
+  }
+  constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
+    super(scope, id, { ...props, originAccessControlOriginType: OriginAccessControlOriginType.S3 });
+  }
+}
+
+Object.defineProperty(S3OriginAccessControl.prototype, S3_ORIGIN_ACCESS_CONTROL_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
+
+/**
+ * Origin access control for a Lambda Function Url origin
+ */
+export class LambdaOriginAccessControl extends OriginAccessControl {
+  /**
+   * Returns `true` if `x` is a LambdaOriginAccessControl, `false` otherwise
+   */
+  public static isLambdaOriginAccessControl(x: any): x is LambdaOriginAccessControl {
+    return x !== null && typeof (x) === 'object' && LAMBDA_ORIGIN_ACCESS_CONTROL_SYMBOL in x;
+  }
+
+  constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
+    super(scope, id, { ...props, originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA });
+  }
+}
+
+Object.defineProperty(LambdaOriginAccessControl.prototype, LAMBDA_ORIGIN_ACCESS_CONTROL_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
