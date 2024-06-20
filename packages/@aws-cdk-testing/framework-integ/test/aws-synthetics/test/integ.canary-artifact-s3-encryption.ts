@@ -66,5 +66,3 @@ new Canary(stack, 'CanarySseKmsWith', {
 new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
 });
-
-app.synth();
