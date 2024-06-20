@@ -28,7 +28,7 @@ export class AssetManifestBuilder {
     // because when a file without extension is added to the manifest, the path.extension() will return an file hash.
     // ex) path.extension('asset.dc5ce447844') => 'dc5ce447844'
     const extension =
-      asset.fileName != undefined ? path.extname(removeAssetPrefix(asset.fileName)) : '';
+      asset.fileName != undefined ? path.extname(asset.fileName) : '';
     const objectKey =
       (target.bucketPrefix ?? '') +
       asset.sourceHash +
@@ -261,14 +261,4 @@ function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
       throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
     }
   }
-}
-
-function removeAssetPrefix(str: string): string {
-  const prefix = 'asset.';
-
-  if (str.startsWith(prefix)) {
-    return str.slice(prefix.length);
-  }
-
-  return str;
 }
