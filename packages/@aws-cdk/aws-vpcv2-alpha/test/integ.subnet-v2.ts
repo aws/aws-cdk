@@ -12,8 +12,9 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { AddressFamily, Ipam } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Ipv4Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
+import { Ipv4Cidr, Ipv6Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { Fn } from 'aws-cdk-lib';
 
 // as in unit tests, we use a qualified import,
 // not bring in individual classes
@@ -49,6 +50,7 @@ new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'us-west-2a',
   cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
+  ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 

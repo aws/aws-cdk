@@ -203,7 +203,7 @@ export class VpcV2 extends VpcV2Base {
     });
 
     this.vpcCidrBlock = this.resource.attrCidrBlock;
-    this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks
+    this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
     this.vpcId = this.resource.attrVpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
