@@ -1123,6 +1123,28 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 });
 ```
 
+### Set TLS for NetworkLoadBalancedFargateService
+
+To set up TLS listener in Network Load Balancer, you need to pass extactly one ACM certificate into the option `listenerCertificate`. The listener port and the target group port will also become 443 by default. You can override the listener's port with `listenerPort` and the target group's port with `taskImageOptions.containerPort`.
+
+```ts
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+
+const certificate = Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-east-1:123456:certificate/abcdefg');
+const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'Service', {
+  // The default value of listenerPort is 443 if you pass in listenerCertificate
+  // It is configured to port 4443 here
+  listenerPort: 4443,
+  listenerCertificate: certificate,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    // The default value of containerPort is 443 if you pass in listenerCertificate
+    // It is configured to port 8443 here
+    containerPort: 8443,
+  },
+});
+```
+
 ### Use dualstack NLB
 
 ```ts
