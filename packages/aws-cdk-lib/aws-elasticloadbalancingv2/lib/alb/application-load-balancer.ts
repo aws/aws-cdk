@@ -300,7 +300,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
       ],
     }));
-    // We still need this policy for the bucket using ACL
+    // We still need this policy for the bucket using the ACL
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
