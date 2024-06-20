@@ -64,18 +64,20 @@ export interface IpamOptions {
   readonly ipv6IpamPoolId?: string;
 }
 
-export class IpamPool {
+export class IpamPool extends Resource {
 
   public readonly ipamPoolId: string;
   constructor(scope: Construct, id: string, options: CfnPoolOptions) {
+    super(scope, id);
 
-    const CfnPool = new CfnIPAMPool(scope, id, {
+    const cfnPool = new CfnIPAMPool(scope, id, {
       addressFamily: getAddressFamilyString(options.addressFamily),
       provisionedCidrs: options.provisionedCidrs,
       locale: options.locale,
       ipamScopeId: options.ipamScopeId,
     });
-    this.ipamPoolId = CfnPool.attrIpamPoolId;
+    this.ipamPoolId = cfnPool.attrIpamPoolId;
+    cfnPool.applyRemovalPolicy(undefined);
   }
 }
 
@@ -133,11 +135,11 @@ export class Ipam {
 
 export class IpamPublicScope {
 
-  public readonly defaultpublicScopeId: string;
+  public readonly defaultPublicScopeId: string;
   public readonly scope: Construct;
 
   constructor(scope: Construct, id: string) {
-    this.defaultpublicScopeId = id;
+    this.defaultPublicScopeId = id;
     this.scope = scope;
   }
   /**
@@ -153,7 +155,7 @@ export class IpamPublicScope {
     return new IpamPool(this.scope, 'PublicPool', {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
-      ipamScopeId: this.defaultpublicScopeId,
+      ipamScopeId: this.defaultPublicScopeId,
       //TODO: should be stack region or props input
       locale: options.locale,
     });
@@ -177,7 +179,7 @@ export class IpamPrivateScope {
    * There can be multiple options supported under a scope
    * for pool like using amazon provided IPv6
    */
-  addPool(options: PoolOptions):IpamPool {
+  addPool(options: PoolOptions): IpamPool {
 
     return new IpamPool(this.scope, 'PrivatePool', {
       addressFamily: options.addressFamily,

@@ -122,7 +122,7 @@ export class SubnetV2 extends Resource implements ISubnet {
     const ipv4CidrBlock = props.cidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
     if (ipv6CidrBlock) {
-      validateSupportIpv6(props.vpc)
+      validateSupportIpv6(props.vpc);
     }
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
