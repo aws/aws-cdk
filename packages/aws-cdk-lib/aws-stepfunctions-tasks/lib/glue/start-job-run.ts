@@ -49,6 +49,13 @@ export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
    * @default - Default worker configuration in the job definition
    */
   readonly workerConfiguration?: WorkerConfigurationProperty;
+
+  /**
+   * The excecution class of the job.
+   *
+   * @default - STANDARD
+   */
+  readonly executionClass?: ExecutionClass;
 }
 
 /**
@@ -125,6 +132,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
         NotificationProperty: notificationProperty,
         WorkerType: this.props.workerConfiguration?.workerType,
         NumberOfWorkers: this.props.workerConfiguration?.numberOfWorkers,
+        ExecutionClass: this.props.executionClass,
       }),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
@@ -167,35 +175,52 @@ export enum WorkerType {
   /**
    * Each worker provides 4 vCPU, 16 GB of memory and a 50GB disk, and 2 executors per worker.
    */
-  STANDARD ='Standard',
-
-  /**
-   * Each worker maps to 1 DPU (4 vCPU, 16 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
-   */
-  G_1X ='G.1X',
-
-  /**
-   * Each worker maps to 2 DPU (8 vCPU, 32 GB of memory, 128 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
-   */
-  G_2X ='G.2X',
-
-  /**
-   * Each worker maps to 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
-   */
-  G_4X ='G.4X',
-
-  /**
-   * Each worker maps to 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
-   */
-  G_8X ='G.8X',
+  STANDARD = 'Standard',
 
   /**
    * Each worker maps to 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
    */
-  G_025X ='G.025X',
+  G_025X = 'G.025X',
+
+  /**
+   * Each worker maps to 1 DPU (4 vCPU, 16 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
+   */
+  G_1X = 'G.1X',
+
+  /**
+   * Each worker maps to 2 DPU (8 vCPU, 32 GB of memory, 128 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
+   */
+  G_2X = 'G.2X',
+
+  /**
+   * Each worker maps to 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  G_4X = 'G.4X',
+
+  /**
+   * Each worker maps to 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  G_8X = 'G.8X',
 
   /**
    * Each worker maps to 2 high-memory DPU [M-DPU] (8 vCPU, 64 GB of memory, 128 GB disk). Supported in Ray jobs.
    */
-  Z_2X ='Z.2X',
+  Z_2X = 'Z.2X',
+}
+
+/**
+ * The excecution class of the job.
+ */
+export enum ExecutionClass {
+  /**
+   * The flexible execution class is appropriate for time-insensitive jobs whose start and completion times may vary.
+   * Only jobs with AWS Glue version 3.0 and above and command type `glueetl` will be allowed to set `ExecutionClass` to `FLEX`.
+   * The flexible execution class is available for Spark jobs.
+   */
+  FLEX = 'FLEX',
+
+  /**
+   * The standard execution class is ideal for time-sensitive workloads that require fast job startup and dedicated resources.
+   */
+  STANDARD = 'STANDARD',
 }
