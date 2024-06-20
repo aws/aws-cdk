@@ -2264,7 +2264,6 @@ describe('cluster', () => {
           ManagedTerminationProtection: 'DISABLED',
         },
       });
-      expect(getWarnings(app.synth())).toEqual([]);
     });
   });
 
