@@ -154,10 +154,20 @@ export class CloudAssembly {
         console.error(`attempting to minimatch '${pattern}' against '${stack.hierarchicalId}': result is '${minimatch(stack.hierarchicalId, pattern)}'`);
       }
       if (minimatch(stack.hierarchicalId, pattern)) {
+        // eslint-disable-next-line no-console
+        if (pattern.includes('Test-Stack-E')) {
+        // eslint-disable-next-line no-console
+          console.error(`no way! ${pattern} matched`);
+        }
         return true;
       } else if (!disableLegacy && stack.id === pattern && semver.major(versionNumber()) < 2) {
         warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', chalk.bold(stack.id), chalk.bold(stack.hierarchicalId));
         warning('Run "cdk ls" to see a list of all stack identifiers');
+        // eslint-disable-next-line no-console
+        if (pattern.includes('Test-Stack-E')) {
+        // eslint-disable-next-line no-console
+          console.error(`wow really no way! ${pattern} and semver matched, disableLegacy is ${disableLegacy}, semver.major is ${semver.major(versionNumber())}, vesrionNumber is ${versionNumber()}`);
+        }
         return true;
       }
       return false;
