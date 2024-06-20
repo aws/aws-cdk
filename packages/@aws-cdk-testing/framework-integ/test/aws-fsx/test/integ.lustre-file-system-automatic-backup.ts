@@ -29,5 +29,3 @@ new LustreFileSystem(stack, 'FsxLustreFileSystem', {
 new integ.IntegTest(app, 'FsxLustreAutomaticBackup', {
   testCases: [stack],
 });
-
-app.synth();
