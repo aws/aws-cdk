@@ -885,7 +885,7 @@ describe('artifact encryption test', () => {
     });
   });
 
-  test('SSE-S3 with a key throw an error', () => {
+  test('SSE-S3 with a key throws', () => {
     const stack = new Stack();
     const key = new kms.Key(stack, 'myKey');
 
