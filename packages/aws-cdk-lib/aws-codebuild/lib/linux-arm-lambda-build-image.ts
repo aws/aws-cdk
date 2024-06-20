@@ -39,6 +39,8 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_GO_1_21 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:go1.21');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:dotnet6` build image. */
   public static readonly AMAZON_LINUX_2_DOTNET_6 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:dotnet6');
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:dotnet8` build image. */
+  public static readonly AMAZON_LINUX_2023_DOTNET_8 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:dotnet8');
 
   /**
    * Uses a Docker image provided by CodeBuild.
