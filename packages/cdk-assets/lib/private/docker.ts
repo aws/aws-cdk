@@ -271,9 +271,15 @@ export class DockerFactory {
 }
 
 function getDockerCmd(): string {
-  return process.env.CDK_DOCKER ?? 'docker';
+  return process.env.CDK_DOCKER ?? getDockerCmdMac() ?? 'docker';
 }
 
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
+}
+
+function getDockerCmdMac(): string | undefined {
+  const isMac = os.platform() === 'darwin';
+  if ( isMac ) return '/Applications/Docker.app/Contents/Resources/bin/docker' 
+  else return
 }
