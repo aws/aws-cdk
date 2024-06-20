@@ -5,6 +5,7 @@ import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -346,12 +347,31 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   private makePolicyStatements(): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(this);
 
+    const taskDefinitionFamilyArn = this.getTaskDefinitionFamilyArn();
+    const reduceRunTaskPermissions = cdk.FeatureFlags.of(this).isEnabled(cxapi.ECS_REDUCE_RUN_TASK_PERMISSIONS);
+    let policyStatements = [];
+
     // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
-    const policyStatements = [
-      new iam.PolicyStatement({
-        actions: ['ecs:RunTask'],
-        resources: [`${this.getTaskDefinitionFamilyArn()}:*`],
-      }),
+    if (reduceRunTaskPermissions) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['ecs:RunTask'],
+          resources: [`${taskDefinitionFamilyArn}:*`],
+        }),
+      );
+    } else {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['ecs:RunTask'],
+          resources: [
+            taskDefinitionFamilyArn,
+            `${taskDefinitionFamilyArn}:*`,
+          ],
+        }),
+      );
+    }
+
+    policyStatements.push(
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
         resources: ['*'],
@@ -360,7 +380,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         actions: ['iam:PassRole'],
         resources: this.taskExecutionRoles().map((r) => r.roleArn),
       }),
-    ];
+    );
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       policyStatements.push(
