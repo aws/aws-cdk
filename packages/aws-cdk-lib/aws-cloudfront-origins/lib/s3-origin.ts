@@ -131,8 +131,13 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
       public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
         if (!this.originAccessControl) {
           // Create a new origin access control if not specified
-          this.originAccessControl = new cloudfront.OriginAccessControl(scope, 'S3OriginAccessControl');
+          this.originAccessControl = new cloudfront.S3OriginAccessControl(scope, 'S3OriginAccessControl');
         }
+
+        if (!cloudfront.S3OriginAccessControl.isS3OriginAccessControl(this.originAccessControl)) {
+          throw new Error('Origin access control for an S3 origin must be a S3OriginAccessControl');
+        }
+
         const distributionId = options.distributionId;
         const result = this.grantDistributionAccessToBucket(distributionId);
 
