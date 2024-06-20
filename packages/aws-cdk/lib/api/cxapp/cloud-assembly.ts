@@ -152,6 +152,8 @@ export class CloudAssembly {
       if (pattern.includes('Test-Stack-E')) {
         // eslint-disable-next-line no-console
         console.error(`attempting to minimatch '${pattern}' against '${stack.hierarchicalId}': result is '${minimatch(stack.hierarchicalId, pattern)}'`);
+        // eslint-disable-next-line no-console
+        console.error(`stack.id is ${stack.id}, disableLegacy is ${disableLegacy}, semver.major is ${semver.major(versionNumber())}, versionNumber is ${versionNumber()}`);
       }
       if (minimatch(stack.hierarchicalId, pattern)) {
         // eslint-disable-next-line no-console
