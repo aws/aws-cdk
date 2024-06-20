@@ -268,12 +268,30 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (bucket.encryptionKey) {
       throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
     }
+    super.logAccessLogs(bucket, prefix);
+  }
+
+  /**
+   * Enable connection logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   */
+  public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
+    /**
+    * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
+    */
+    if (bucket.encryptionKey) {
+      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+    }
 
     prefix = prefix || '';
-    this.setAttribute('access_logs.s3.enabled', 'true');
-    this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
-    this.setAttribute('access_logs.s3.prefix', prefix);
+    this.setAttribute('connection_logs.s3.enabled', 'true');
+    this.setAttribute('connection_logs.s3.bucket', bucket.bucketName.toString());
+    this.setAttribute('connection_logs.s3.prefix', prefix);
 
+    // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
     const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
     bucket.addToResourcePolicy(new PolicyStatement({
       actions: ['s3:PutObject'],
@@ -282,6 +300,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
       ],
     }));
+    // We still need this policy for the bucket using ACL
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
