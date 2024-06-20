@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-alb-integration.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-alb-integration.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f11c6ceac4cb2b8f267a4416107765cb75f20ea260e7835fefdd1a6f801d6c88.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee2e351e728b8f102f3818cca3c6c4ff8961914b881abd50ae295b5828ecee4a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,7 +187,7 @@
         "/integ-alb-integration/lb/listener": [
           {
             "type": "aws:cdk:warning",
-            "data": "A default Action already existed on this Listener and was replaced. Configure exactly one default Action."
+            "data": "A default Action already existed on this Listener and was replaced. Configure exactly one default Action. [ack: @aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced]"
           }
         ],
         "/integ-alb-integration/lb/listener/Resource": [
@@ -204,7 +199,7 @@
         "/integ-alb-integration/lb/listener/targetGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future)."
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
           }
         ],
         "/integ-alb-integration/lb/listener/targetGroup/Resource": [
@@ -243,10 +238,10 @@
             "data": "HttpProxyPrivateApiDefaultStage18B3706E"
           }
         ],
-        "/integ-alb-integration/Endpoint": [
+        "/integ-alb-integration/Exports/Output{\"Ref\":\"HttpProxyPrivateApiA55E154D\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Endpoint"
+            "data": "ExportsOutputRefHttpProxyPrivateApiA55E154DBF80C6A7"
           }
         ],
         "/integ-alb-integration/BootstrapVersion": [
@@ -263,6 +258,103 @@
         ]
       },
       "displayName": "integ-alb-integration"
+    },
+    "integalbintegrationtestDefaultTestDeployAssert91001477.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integalbintegrationtestDefaultTestDeployAssert91001477.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integalbintegrationtestDefaultTestDeployAssert91001477": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integalbintegrationtestDefaultTestDeployAssert91001477.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62a908350bb5534d9d1c1edeafca72b4fc7c5f7021887f16f070f68b43f311e8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integalbintegrationtestDefaultTestDeployAssert91001477.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-alb-integration",
+        "integalbintegrationtestDefaultTestDeployAssert91001477.assets"
+      ],
+      "metadata": {
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/HttpApiCalla783627932e25f8a930fccc254ea4a09/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCalla783627932e25f8a930fccc254ea4a09"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/HttpApiCalla783627932e25f8a930fccc254ea4a09/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCalla783627932e25f8a930fccc254ea4a09"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/AwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/AwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-alb-integration-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
