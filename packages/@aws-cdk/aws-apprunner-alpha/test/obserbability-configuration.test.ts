@@ -39,3 +39,23 @@ test.each([
     });
   }).toThrow(`observabilityConfigurationName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$\` pattern, got ${observabilityConfigurationName}`);
 });
+
+test('create an Auto scaling Configuration with tags', () => {
+  // WHEN
+  const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
+    observabilityConfigurationName: 'my-autoscaling-config',
+    traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
+  });
+
+  cdk.Tags.of(observabilityConfiguration).add('Environment', 'production');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
+    Tags: [
+      {
+        Key: 'Environment',
+        Value: 'production',
+      },
+    ],
+  });
+});
