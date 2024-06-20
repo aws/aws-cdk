@@ -118,7 +118,7 @@ export class CloudAssembly {
     } else if (patterns.length > 0) {
       if (patterns.includes('Test-Stack-E')) {
         // eslint-disable-next-line no-console
-        console.error(`WOW found stacks: ${stacks.map(stack => stack.stackName)}`);
+        console.error(`WOW found stacks: ${stacks.map(stack => stack.stackName)}. They have heirarchical IDs: ${stacks.map(stack => stack.hierarchicalId)}`);
       }
       return this.selectMatchingStacks(stacks, patterns, options.extend);
     } else {
@@ -143,6 +143,10 @@ export class CloudAssembly {
     // cli tests use this to ensure tests do not depend on legacy behavior
     // (otherwise they will fail in v2)
     const disableLegacy = process.env.CXAPI_DISABLE_SELECT_BY_ID === '1';
+    if (patterns.includes('Test-Stack-E')) {
+      // eslint-disable-next-line no-console
+      console.error(`selecting stacks. extend: ${extend}`);
+    }
 
     const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => {
       if (minimatch(stack.hierarchicalId, pattern)) {
