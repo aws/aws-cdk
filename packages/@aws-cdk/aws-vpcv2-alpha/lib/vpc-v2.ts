@@ -187,6 +187,8 @@ export class VpcV2 extends VpcV2Base {
   constructor(scope: Construct, id: string, props: VpcV2Props = {}) {
     super(scope, id);
 
+    console.log('CONSTURCITJ');
+
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
 
@@ -218,8 +220,11 @@ export class VpcV2 extends VpcV2Base {
         ipCount+=1;
         const secondaryVpcOptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
 
+        console.log('SECONDARY VPC OPTIONS');
+        console.log(secondaryVpcOptions.amazonProvided);
         if (secondaryVpcOptions.amazonProvided === true) {
           this.useIpv6 = true;
+          console.log('USING IPV6 @@@@@');
         }
         //validate CIDR ranges per RFC 1918
         if (secondaryVpcOptions.ipv4CidrBlock!) {

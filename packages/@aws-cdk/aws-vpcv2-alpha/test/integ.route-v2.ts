@@ -44,16 +44,31 @@ let i = 0;
 
 for (const stackName in stacks) {
     const vpc = new vpc_v2.VpcV2(stacks[stackName], stackName, {
-        primaryAddressBlock: stackName == 'eigw' ? vpc_v2.IpAddresses.ipv6({ipv6CidrBlock: '2001:0db8:/32'}) : vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
+      primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
+      secondaryAddressBlocks: [vpc_v2.IpAddresses.amazonProvidedIpv6()],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
     });
     vpcs[stackName] = vpc;
-    const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
+    if (stackName == 'eigw') {
+      const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
         vpc: vpc,
         availabilityZone: azs[i],
-        cidrBlock: stackName == 'eigw' ? new Ipv6Cidr('2001:0db8:/48') : new Ipv4Cidr('10.0.0.0/24'),
+        cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
         subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-    });
-    subnets[stackName] = subnet;
+      });
+      subnets[stackName] = subnet;
+    } else {
+      const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
+        vpc: vpc,
+        availabilityZone: azs[i],
+        cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
+        ipv6CidrBlock: new Ipv6Cidr(vpcs[stackName].ipv6CidrBlocks[0]),
+        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+      });
+      subnets[stackName] = subnet;
+    }
+    
     i++; i = i % azs.length;
 }
 
@@ -118,7 +133,7 @@ const routeToCgw = new Route(stacks['cgw'], 'testCGWRoute', {
 
 const routeToEigw = new Route(stacks['eigw'], 'testEIGWRoute', {
   routeTable: routeTables['eigw'],
-  destination: vpc_v2.IpAddresses.ipv6({ipv6CidrBlock: '2001:0db8:/32'}),
+  destination: vpc_v2.IpAddresses.ipv6({ipv6CidrBlock: subnets['eigw'].ipv6CidrBlocks[0]}),
   target: eigw,
 });
 
