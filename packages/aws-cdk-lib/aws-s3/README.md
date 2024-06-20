@@ -656,23 +656,6 @@ switching this to `false` in a CDK version _before_ `1.126.0` will lead to
 all objects in the bucket being deleted. Be sure to update your bucket resources
 by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
 
-Enabling `autoDeleteObjects` creates a stack-wide singleton Lambda that is responsible for deleting objects.
-To configure the lambda to use a different log group, use the `Bucket.setAutoDeleteObjectsLogGroup()` method:
-
-```ts
-import * as logs from 'aws-cdk-lib/aws-logs';
-
-const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-  autoDeleteObjects: true,
-});
-
-s3.Bucket.setAutoDeleteObjectsLogGroup(this, new logs.LogGroup(this, 'MyLogGroup', {
-  logGroupName: 'MyLogGroup',
-  retention: logs.RetentionDays.FIVE_YEARS
-}))
-```
-
 ## Transfer Acceleration
 
 [Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
