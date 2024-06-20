@@ -79,7 +79,10 @@ export class SubnetV2 extends Resource implements ISubnet {
   public readonly subnetId: string;
 
   /**
-   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   * The variable name `internetConnectivityEstablished` does not reflect what it actually is.
+   * The naming is enforced by ISubnet. We need to keep it to maintain compatibility.
+   * It exposes the RouteTable-Subnet association so that other resources can depend on it.
+   * E.g. Resources in a subnet, when being deleted, may need the RouteTable to exist in order to delete properly
    */
   public readonly internetConnectivityEstablished: IDependable;
 
@@ -93,7 +96,7 @@ export class SubnetV2 extends Resource implements ISubnet {
   /**
    * The IPv6 CIDR Block for this subnet
    */
-  public readonly ipv6CidrBlock: string[];
+  public readonly ipv6CidrBlocks: string[];
 
   /**
    * The route table for this subnet
@@ -129,7 +132,7 @@ export class SubnetV2 extends Resource implements ISubnet {
     });
 
     this.ipv4CidrBlock = subnet.attrCidrBlock;
-    this.ipv6CidrBlock = subnet.attrIpv6CidrBlocks;
+    this.ipv6CidrBlocks = subnet.attrIpv6CidrBlocks;
     this.subnetId = subnet.ref;
     this.availabilityZone = props.availabilityZone;
 
@@ -182,6 +185,14 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
     findFunctionType(vpc, subnet);
   } else {
     throw new Error(`Unsupported subnet type: ${type}`);
+  }
+
+  /**
+   * Need to set explicit dependency as during stack deletion,
+   * the cidr blocks may get deleted first and will fail as the subnets are still using the cidr blocks
+   */
+  for(const cidr of vpc.secondaryCidrBlock) {
+    subnet.node.addDependency(cidr)
   }
 }
 
