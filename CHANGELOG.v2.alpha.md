@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.147.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.146.0-alpha.0...v2.147.0-alpha.0) (2024-06-20)
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** don't recursively process s3 bucket objects ([#30209](https://github.com/aws/aws-cdk/issues/30209)) ([25835e4](https://github.com/aws/aws-cdk/commit/25835e415bcaa7900c78914b0993605b6d6d4b68)), closes [#30573](https://github.com/aws/aws-cdk/issues/30573) [/github.com/aws/aws-cdk/pull/30209#issuecomment-2118991218](https://github.com/aws//github.com/aws/aws-cdk/pull/30209/issues/issuecomment-2118991218)
+
+## [2.146.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.145.0-alpha.0...v2.146.0-alpha.0) (2024-06-13)
+
+
+### Features
+
+* **apprunner:** add ipAddressType property to the Service class ([#30351](https://github.com/aws/aws-cdk/issues/30351)) ([665396f](https://github.com/aws/aws-cdk/commit/665396fa8485ab642c27acf30df85f2b023acde4))
+
+## [2.145.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.144.0-alpha.0...v2.145.0-alpha.0) (2024-06-07)
+
 ## [2.144.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.1-alpha.0...v2.144.0-alpha.0) (2024-05-31)
 
 
