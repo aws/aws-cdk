@@ -416,7 +416,7 @@ describe('Invoke Model', () => {
 
     expect(() => {
       // WHEN
-      const task = new BedrockInvokeModel(stack, 'Invoke', {
+      new BedrockInvokeModel(stack, 'Invoke', {
         model,
         contentType: 'application/json',
         body: sfn.TaskInput.fromObject(
@@ -430,7 +430,32 @@ describe('Invoke Model', () => {
         },
       });
       // THEN
-    }).toThrow('guardrailIdentifier must match the ^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail/[a-z0-9]+))$ pattern, got invalid-id');
+    }).toThrow('You must set guardrailIdentifier to the id or the arn of Guardrail, got invalid-id');
+  });
+
+  test('guardrail configuration fails when guardrailIdentifier length is invalid', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const guardrailIdentifier = 'a'.repeat(2049);
+
+    expect(() => {
+      // WHEN
+      new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        contentType: 'application/json',
+        body: sfn.TaskInput.fromObject(
+          {
+            prompt: 'Hello world',
+          },
+        ),
+        guardrailConfiguration: {
+          guardrailIdentifier,
+          guardrailVersion: 'DRAFT',
+        },
+      });
+      // THEN
+    }).toThrow(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
   });
 
   test('guardrail configuration fails when invalid guardrailVersion is set', () => {
@@ -454,7 +479,7 @@ describe('Invoke Model', () => {
         },
       });
       // THEN
-    }).toThrow('guardrailVersion must match the ^(([1-9][0-9]{0,7})|(DRAFT))$ pattern, got test');
+    }).toThrow('`guardrailVersion` must be either \'DRAFT\' or a string representing a number between 1 and 99999999, got test.');
   });
 
   test('guardrail configuration fails when contentType is not \'application/json\'', () => {
