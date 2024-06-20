@@ -8,7 +8,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * **ec2:** add nitro enclave and hibernation settings to the Instance Construct ([#30228](https://github.com/aws/aws-cdk/issues/30228)) ([4e9ef15](https://github.com/aws/aws-cdk/commit/4e9ef15a0cf8b1bc664b5d22b34af9eaaa17bec8))
-* **s3:** allow user to set Log Group on S3 Bucket autoDeleteObjects provider lambda ([#30394](https://github.com/aws/aws-cdk/issues/30394)) ([95938b2](https://github.com/aws/aws-cdk/commit/95938b220ea998f002e16d4ea8e3fb9f4a7901e3)), closes [#24815](https://github.com/aws/aws-cdk/issues/24815)
 * **ses:** allow VDM settings at the configuration set level ([#30051](https://github.com/aws/aws-cdk/issues/30051)) ([49a98ac](https://github.com/aws/aws-cdk/commit/49a98ac978701383390cfc9ab62d38603469295a)), closes [#30041](https://github.com/aws/aws-cdk/issues/30041)
 * **stepfunctions-tasks:** support FLEX execution class for GlueStartJobRun ([#30534](https://github.com/aws/aws-cdk/issues/30534)) ([c826d8f](https://github.com/aws/aws-cdk/commit/c826d8faaeb310623eb9a1a1c82930b679768007)), closes [#30533](https://github.com/aws/aws-cdk/issues/30533)
 * update L1 CloudFormation resource definitions ([#30569](https://github.com/aws/aws-cdk/issues/30569)) ([a5c6d21](https://github.com/aws/aws-cdk/commit/a5c6d2159d22aaa1f5f67dce45d87fe86aea35fe)), closes [/docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html#aurora-serverless-v2](https://github.com/aws//docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html/issues/aurora-serverless-v2) [/docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html#aurora-serverless-v2](https://github.com/aws//docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html/issues/aurora-serverless-v2)
@@ -20,11 +19,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **core:** overrideLogicalId validation ([#29708](https://github.com/aws/aws-cdk/issues/29708)) ([b196b13](https://github.com/aws/aws-cdk/commit/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d)), closes [#29701](https://github.com/aws/aws-cdk/issues/29701)
 * **globalaccelerator-endpoints:** add preserveClientIp option for net… ([#30346](https://github.com/aws/aws-cdk/issues/30346)) ([c1e1b4d](https://github.com/aws/aws-cdk/commit/c1e1b4d777a65ba3fcb6a108c43b10b4e7b9ace6))
 * **stepfunctions:** add docs and warning DistributedMap Class ignores executionType in the ProcessorConfig ([#30301](https://github.com/aws/aws-cdk/issues/30301)) ([0499adf](https://github.com/aws/aws-cdk/commit/0499adf035061997c1a845ff7f2f10a1759c6cb7)), closes [#30194](https://github.com/aws/aws-cdk/issues/30194) [#27913](https://github.com/aws/aws-cdk/issues/27913) [#28821](https://github.com/aws/aws-cdk/issues/28821)
-
-
-### Reverts
-
-* "feat(s3): allow user to set Log Group on S3 Bucket autoDeleteObjects provider lambda" ([#30590](https://github.com/aws/aws-cdk/issues/30590)) ([e02578f](https://github.com/aws/aws-cdk/commit/e02578f26f9a353a351badcc6664a342d1abe585)), closes [aws/aws-cdk#30394](https://github.com/aws/aws-cdk/issues/30394)
 
 ## [2.146.0](https://github.com/aws/aws-cdk/compare/v2.145.0...v2.146.0) (2024-06-13)
 
