@@ -251,7 +251,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 Canary artifacts are encrypted at rest using an AWS-managed key by default.
 
-Additionally, you can choose the encryption options SSE-S3 or SSE-KMS by setting the `artifactS3EncryptionMode` property.
+You can choose the encryption options SSE-S3 or SSE-KMS by setting the `artifactS3EncryptionMode` property.
 
 When you use SSE-KMS, you can also supply your own external KMS key by specifying the `kmsKey` property. If you don't, a KMS key will be automatically created and associated with the canary.
 
