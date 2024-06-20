@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import {Annotations, Template} from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
@@ -898,6 +898,7 @@ describe('record set', () => {
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
       zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
     });
 
     // WHEN
@@ -906,12 +907,15 @@ describe('record set', () => {
       zoneName: 'fake-name',
     });
 
-    //THEN
-    expect(() => new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
       delegatedZone: childZone,
       parentHostedZoneId: parentZone.hostedZoneId,
-      delegationRole: parentZone.crossAccountZoneDelegationRole!,
-    })).toThrow(/Not able to retrieve Name Servers for fake-name due to it being imported./);
+      delegationRole: parentZone.crossAccountZoneDelegationRole,
+    });
+
+    //THEN
+    Annotations.fromStack(stack).hasWarning('*',
+      "Not able to retrieve Name Servers for 'fake-name' due to it being imported. Use a non-imported one or use AwsCustomResource to retrieve the Name Servers. [ack: @aws-cdk/aws-route53:importedDelegatedZoneNSValidation]");
   });
 
   testDeprecated('Cross account zone delegation record with parentHostedZoneName', () => {

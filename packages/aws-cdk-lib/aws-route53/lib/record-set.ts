@@ -5,7 +5,7 @@ import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import {Annotations, CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token} from '../../core';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -930,7 +930,8 @@ export class CrossAccountZoneDelegationRecord extends Construct {
     }
 
     if (!props.delegatedZone.hostedZoneNameServers) {
-      throw Error(`Not able to retrieve Name Servers for ${props.delegatedZone.zoneName} due to it being imported.`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-route53:importedDelegatedZoneNSValidation',
+        `Not able to retrieve Name Servers for \'${props.delegatedZone.zoneName}\' due to it being imported. Use a non-imported one or use AwsCustomResource to retrieve the Name Servers.`);
     }
 
     const provider = CrossAccountZoneDelegationProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE);
