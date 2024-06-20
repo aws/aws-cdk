@@ -604,7 +604,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       return undefined;
     }
 
-    const isNodeRuntime = !cdk.Token.isUnresolved(props.runtime) && props.runtime.family === RuntimeFamily.NODEJS;
+    const isNodeRuntime = props.runtime.family === RuntimeFamily.NODEJS;
     const isArtifactS3EncryptionModeDefined = !cdk.Token.isUnresolved(props.artifactS3EncryptionMode) && props.artifactS3EncryptionMode;
     const isArtifactS3KmsKeyDefined = !cdk.Token.isUnresolved(props.artifactS3KmsKey) && props.artifactS3KmsKey;
 
