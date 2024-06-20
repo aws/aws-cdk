@@ -142,11 +142,11 @@ export class VpcV2 extends VpcV2Base {
      */
   public readonly vpcCidrBlock: string;
   /**
-   * The IPv6 CIDR block CFN resource.
+   * The IPv6 CIDR blocks for the VPC.
    *
-   * Needed to create a dependency for the subnets.
+   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#aws-resource-ec2-vpc-return-values
    */
-  public readonly ipv6CidrBlock?: CfnVPCCidrBlock;
+  public readonly ipv6CidrBlocks: string[];
 
   /**
    * The provider of ipv4 addresses
@@ -201,6 +201,7 @@ export class VpcV2 extends VpcV2Base {
     });
 
     this.vpcCidrBlock = this.resource.attrCidrBlock;
+    this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks
     this.vpcId = this.resource.attrVpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
