@@ -116,6 +116,10 @@ export class CloudAssembly {
     if (allTopLevel) {
       return this.selectTopLevelStacks(stacks, topLevelStacks, options.extend);
     } else if (patterns.length > 0) {
+      if (patterns.includes('Test-Stack-E')) {
+        // eslint-disable-next-line no-console
+        console.error(`WOW found stacks: ${stacks.map(stack => stack.stackName)}`);
+      }
       return this.selectMatchingStacks(stacks, patterns, options.extend);
     } else {
       return this.selectDefaultStacks(stacks, topLevelStacks, options.defaultBehavior);
