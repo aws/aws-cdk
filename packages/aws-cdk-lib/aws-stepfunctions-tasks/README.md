@@ -357,7 +357,7 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
 });
 ```
 
-You can apply a guardrail to the invocation by setting `guardrailConfiguration`.
+You can apply a guardrail to the invocation by setting `guardrail`.
 
 ```ts
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
@@ -380,7 +380,7 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
       },
     },
   ),
-  guardrailConfiguration: {
+  guardrail: {
     guardrailIdentifier: myGuardrail.attrGuardrailId,
     guardrailVersion: myGuardrail.attrVersion,
   },

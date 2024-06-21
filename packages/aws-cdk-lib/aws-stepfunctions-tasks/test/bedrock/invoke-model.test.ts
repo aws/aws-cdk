@@ -361,7 +361,7 @@ describe('Invoke Model', () => {
     }).toThrow(/Output S3 object version is not supported./);
   });
 
-  test('guardrail configuration', () => {
+  test('guardrail', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -375,7 +375,7 @@ describe('Invoke Model', () => {
           prompt: 'Hello world',
         },
       ),
-      guardrailConfiguration: {
+      guardrail: {
         guardrailIdentifier: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
         guardrailVersion: 'DRAFT',
       },
@@ -409,7 +409,7 @@ describe('Invoke Model', () => {
     });
   });
 
-  test('guardrail configuration fails when invalid guardrailIdentifier is set', () => {
+  test('guardrail fails when invalid guardrailIdentifier is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -424,7 +424,7 @@ describe('Invoke Model', () => {
             prompt: 'Hello world',
           },
         ),
-        guardrailConfiguration: {
+        guardrail: {
           guardrailIdentifier: 'invalid-id',
           guardrailVersion: 'DRAFT',
         },
@@ -433,7 +433,7 @@ describe('Invoke Model', () => {
     }).toThrow('You must set guardrailIdentifier to the id or the arn of Guardrail, got invalid-id');
   });
 
-  test('guardrail configuration fails when guardrailIdentifier length is invalid', () => {
+  test('guardrail fails when guardrailIdentifier length is invalid', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -449,7 +449,7 @@ describe('Invoke Model', () => {
             prompt: 'Hello world',
           },
         ),
-        guardrailConfiguration: {
+        guardrail: {
           guardrailIdentifier,
           guardrailVersion: 'DRAFT',
         },
@@ -458,7 +458,7 @@ describe('Invoke Model', () => {
     }).toThrow(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
   });
 
-  test('guardrail configuration fails when invalid guardrailVersion is set', () => {
+  test('guardrail fails when invalid guardrailVersion is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -473,7 +473,7 @@ describe('Invoke Model', () => {
             prompt: 'Hello world',
           },
         ),
-        guardrailConfiguration: {
+        guardrail: {
           guardrailIdentifier: 'abcdef',
           guardrailVersion: 'test',
         },
@@ -482,7 +482,7 @@ describe('Invoke Model', () => {
     }).toThrow('`guardrailVersion` must be either \'DRAFT\' or a string representing a number between 1 and 99999999, got test.');
   });
 
-  test('guardrail configuration fails when contentType is not \'application/json\'', () => {
+  test('guardrail fails when contentType is not \'application/json\'', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -497,13 +497,13 @@ describe('Invoke Model', () => {
             prompt: 'Hello world',
           },
         ),
-        guardrailConfiguration: {
+        guardrail: {
           guardrailIdentifier: 'abcdef',
           guardrailVersion: 'DRAFT',
         },
       });
       // THEN
-    }).toThrow('You must set contentType to \'application/json\' when using guardrailConfiguration, got \'text/plain\'.');
+    }).toThrow('You must set contentType to \'application/json\' when using guardrail, got \'text/plain\'.');
   });
 
   test('trace configuration', () => {

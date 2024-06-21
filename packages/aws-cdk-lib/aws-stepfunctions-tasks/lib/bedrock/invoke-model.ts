@@ -42,9 +42,9 @@ export interface BedrockInvokeModelOutputProps {
 }
 
 /**
- * Properties for the guardrail configuration.
+ * Properties for the guardrail.
  */
-export interface GuardrailConfiguration {
+export interface Guardrail {
   /**
    * The unique identifier of the guardrail that you want to use.
    */
@@ -126,7 +126,7 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    *
    * @default - No guardrail is applied to the invocation.
    */
-  readonly guardrailConfiguration?: GuardrailConfiguration;
+  readonly guardrail?: Guardrail;
 
   /**
    * Specifies whether to enable or disable the Bedrock trace.
@@ -173,7 +173,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       throw new Error('Output S3 object version is not supported.');
     }
 
-    this.validateGuardrailConfiguration(props);
+    this.validateGuardrail(props);
 
     this.taskPolicies = this.renderPolicyStatements();
   }
@@ -220,7 +220,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    if (this.props.guardrailConfiguration) {
+    if (this.props.guardrail) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['bedrock:ApplyGuardrail'],
@@ -228,7 +228,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
             Stack.of(this).formatArn({
               service: 'bedrock',
               resource: 'guardrail',
-              resourceName: this.props.guardrailConfiguration.guardrailIdentifier,
+              resourceName: this.props.guardrail.guardrailIdentifier,
             }),
           ],
         }),
@@ -257,8 +257,8 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
         } : undefined,
-        GuardrailIdentifier: this.props.guardrailConfiguration?.guardrailIdentifier,
-        GuardrailVersion: this.props.guardrailConfiguration?.guardrailVersion,
+        GuardrailIdentifier: this.props.guardrail?.guardrailIdentifier,
+        GuardrailVersion: this.props.guardrail?.guardrailVersion,
         Trace: this.props.traceEnabled === undefined
           ? undefined
           : this.props.traceEnabled
@@ -268,18 +268,18 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     };
   }
 
-  private validateGuardrailConfiguration(props: BedrockInvokeModelProps) {
-    if (!props.guardrailConfiguration) return;
+  private validateGuardrail(props: BedrockInvokeModelProps) {
+    if (!props.guardrail) return;
 
-    const { guardrailIdentifier, guardrailVersion } = props.guardrailConfiguration;
+    const { guardrailIdentifier, guardrailVersion } = props.guardrail;
 
     if (!Token.isUnresolved(guardrailIdentifier)) {
-      const guardrailConfigurationPattern = /^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail\/[a-z0-9]+))$/;
-      if (!guardrailConfigurationPattern.test(guardrailIdentifier)) {
+      const guardrailPattern = /^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail\/[a-z0-9]+))$/;
+      if (!guardrailPattern.test(guardrailIdentifier)) {
         throw new Error(`You must set guardrailIdentifier to the id or the arn of Guardrail, got ${guardrailIdentifier}`);
       }
       if (props.contentType !== 'application/json') {
-        throw new Error(`You must set contentType to \'application/json\' when using guardrailConfiguration, got '${props.contentType}'.`);
+        throw new Error(`You must set contentType to \'application/json\' when using guardrail, got '${props.contentType}'.`);
       }
       if (guardrailIdentifier.length > 2048) {
         throw new Error(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);

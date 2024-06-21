@@ -38,7 +38,7 @@ const prompt = new BedrockInvokeModel(stack, 'Prompt', {
       },
     },
   ),
-  guardrailConfiguration: {
+  guardrail: {
     guardrailIdentifier: guardrail.attrGuardrailId,
     guardrailVersion: guardrail.attrVersion,
   },
