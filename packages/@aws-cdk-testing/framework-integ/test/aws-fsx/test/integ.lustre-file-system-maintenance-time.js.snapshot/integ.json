@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "FsxLustreMaintenanceTime/DefaultTest": {
+      "stacks": [
+        "AwsCdkFsxLustreMaintenanceTime"
+      ],
+      "assertionStack": "FsxLustreMaintenanceTime/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxLustreMaintenanceTimeDefaultTestDeployAssert402BBFE3"
+    }
+  }
+}

@@ -187,7 +187,10 @@ export class Method extends Resource {
     const options = props.options || {};
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
-    const authorizer = options.authorizer || defaultMethodOptions.authorizer;
+    // do not use the default authorizer config in case if the provided authorizer type is None
+    const authorizer =
+        options.authorizationType === AuthorizationType.NONE
+        && options.authorizer == undefined ? undefined : options.authorizer || defaultMethodOptions.authorizer;
     const authorizerId = authorizer?.authorizerId ? authorizer.authorizerId : undefined;
 
     const authorizationTypeOption = options.authorizationType || defaultMethodOptions.authorizationType;
