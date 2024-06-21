@@ -201,6 +201,42 @@ new apprunner.Service(this, 'Service', {
 });
 ```
 
+## VPC Ingress Connection
+
+You need to create a VPC Ingress Connection to make your App Runner service private and only accessible from within a VPC.
+
+To set up a VPC Ingress Connection, you need to associate a VPC, a VPC Interface Endpoint, and an App Runner Service.
+
+For more information, see [Enabling Private endpoint for incoming traffic](https://docs.aws.amazon.com/apprunner/latest/dg/network-pl.html).
+
+```typescript
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.Vpc;
+
+const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(this, 'MyVpcEndpoint', {
+  vpc,
+  service: ec2.InterfaceVpcEndpointAwsService.APP_RUNNER_REQUESTS,
+  privateDnsEnabled: false,
+});
+
+const service = new Service(this, 'Service', {
+  source: Source.fromEcrPublic({
+    imageConfiguration: {
+      port: 8000,
+    },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  isPubliclyAccessible: false,
+});
+
+new VpcIngressConnection(this, 'VpcIngressConnection', {
+  vpc,
+  interfaceVpcEndpoint,
+  service,
+});
+```
+
 ## Dual Stack
 
 To use dual stack (IPv4 and IPv6) for your incoming public network configuration, set `ipAddressType` to `IpAddressType.DUAL_STACK`.

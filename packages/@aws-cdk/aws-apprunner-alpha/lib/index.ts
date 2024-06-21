@@ -2,3 +2,4 @@
 export * from './auto-scaling-configuration';
 export * from './service';
 export * from './vpc-connector';
+export * from './vpc-ingress-connection';

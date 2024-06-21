@@ -1654,3 +1654,27 @@ test('create a service with an AutoScalingConfiguration', () => {
     AutoScalingConfigurationArn: stack.resolve(autoScalingConfiguration.autoScalingConfigurationArn),
   });
 });
+
+test.each([true, false])('isPubliclyAccessible is set %s', (isPubliclyAccessible: boolean) => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    isPubliclyAccessible,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    NetworkConfiguration: {
+      IngressConfiguration: {
+        IsPubliclyAccessible: isPubliclyAccessible,
+      },
+    },
+  });
+});
