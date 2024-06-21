@@ -487,6 +487,16 @@ const fail = new sfn.Fail(this, 'Fail', {
 });
 ```
 
+You can also use an intrinsic function that returns a string to specify CausePath and ErrorPath.
+The available functions include States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, and States.UUID.
+
+```ts
+const fail = new sfn.Fail(this, 'Fail', {
+  errorPath: sfn.JsonPath.format('error: {}.', sfn.JsonPath.stringAt('$.someError')),
+  causePath: "States.Format('cause: {}.', $.someCause)",
+});
+```
+
 ### Map
 
 A `Map` state can be used to run a set of steps for each element of an input array.
@@ -593,6 +603,21 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
   })
 });
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
+```
+
+If you want to specify the execution type for the ItemProcessor in the DistributedMap, you must set the `mapExecutionType` property in the `DistributedMap` class. When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
+
+In the following example, the execution type for the ItemProcessor in the DistributedMap is set to `EXPRESS` based on the value specified for `mapExecutionType`.
+
+```ts
+const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+  mapExecutionType: sfn.StateMachineType.EXPRESS, // mapExecutionType property is applied.
+});
+
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'), {
+  mode: sfn.ProcessorMode.DISTRIBUTED,
+  executionType: sfn.ProcessorType.STANDARD, // ProcessorConfig.executionType is ignored
+});
 ```
 
 ### Custom State
