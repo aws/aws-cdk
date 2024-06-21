@@ -247,9 +247,7 @@ function invokeAspects(root: IConstruct) {
     }
 
     for (const child of construct.node.children) {
-      if (!Stage.isStage(child)) {
-        recurse(child, allAspectsHere);
-      }
+      recurse(child, allAspectsHere);
     }
   }
 }
