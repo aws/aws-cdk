@@ -5,6 +5,7 @@ const codebuild = require("aws-cdk-lib/aws-codebuild");
 const ec2 = require("aws-cdk-lib/aws-ec2");
 const s3 = require("aws-cdk-lib/aws-s3");
 const s3_assets = require("aws-cdk-lib/aws-s3-assets");
+const cx_api_1 = require("aws-cdk-lib/cx-api");
 const aws_cdk_lib_1 = require("aws-cdk-lib");
 const integ = require("@aws-cdk/integ-tests-alpha");
 const pipelines = require("aws-cdk-lib/pipelines");
@@ -54,6 +55,7 @@ const app = new aws_cdk_lib_1.App({
     postCliContext: {
         '@aws-cdk/core:newStyleStackSynthesis': '1',
         '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+        [cx_api_1.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
     },
 });
 const stack = new TestStack(app, 'PipelinesFileSystemLocations');

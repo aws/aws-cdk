@@ -758,7 +758,7 @@ describe('fargate service', () => {
         },
         memoryLimitMiB: 512,
         cpu: 256,
-        pidMode: ecs.PidMode.HOST,
+        pidMode: ecs.PidMode.TASK,
       });
 
       // WHEN

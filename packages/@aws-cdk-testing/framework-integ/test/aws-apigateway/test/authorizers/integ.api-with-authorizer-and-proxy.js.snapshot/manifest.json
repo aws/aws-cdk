@@ -1,0 +1,203 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integtest-restapi-with-authorizer-and-proxy.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtest-restapi-with-authorizer-and-proxy.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtest-restapi-with-authorizer-and-proxy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtest-restapi-with-authorizer-and-proxy.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e00a1a9e901bbc68cea042ffc2c9166791d0859b52adda8cf66c7feed6974f3f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtest-restapi-with-authorizer-and-proxy.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtest-restapi-with-authorizer-and-proxy.assets"
+      ],
+      "metadata": {
+        "/integtest-restapi-with-authorizer-and-proxy/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Authorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerBD825682"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayF80386B7"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayDeployment50B6E6A6b044ca25daae592efce60035930152bc"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayDeploymentStageprod812022BF"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayEndpoint261B645B"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayOPTIONS8EA1F997"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionA216DA07"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionOPTIONS675242EA"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionproxyDD433460"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionproxyOPTIONS041B022A"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy1FB876EB"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.Test.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyD05DD0B4"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionproxyANY14A167E2"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdas3ServiceRoleC9EDE33A"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdas342CE2BBD"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-restapi-with-authorizer-and-proxy/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-restapi-with-authorizer-and-proxy"
+    },
+    "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets"
+      ],
+      "metadata": {
+        "/apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

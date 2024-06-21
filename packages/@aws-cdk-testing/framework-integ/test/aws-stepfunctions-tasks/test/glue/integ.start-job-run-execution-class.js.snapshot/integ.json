@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AwsSfnIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-integ-execution-class"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AwsSfnIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsSfnIntegTestDefaultTestDeployAssert8F32A58A"
+    }
+  }
+}
