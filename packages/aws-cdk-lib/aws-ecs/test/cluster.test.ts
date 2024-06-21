@@ -2524,15 +2524,15 @@ describe('cluster', () => {
 
   });
 
-  test('should throw an error if the capacity provider was created using an imported AsgCapacityProvider', () => {
+  test('throws when calling Cluster.addAsgCapacityProvider with an AsgCapacityProvider created with an imported ASG', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
-    const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
+    const importedAsg = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
-      autoScalingGroup,
+      autoScalingGroup: importedAsg,
       enableManagedTerminationProtection: false,
     });
     // THEN
