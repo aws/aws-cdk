@@ -154,6 +154,27 @@ when required.
 
 See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles) for more details.
 
+## Auto Scaling Configuration
+
+To associate an App Runner service with a custom Auto Scaling Configuration, define `autoScalingConfiguration` for the service.
+
+```ts
+const autoScalingConfiguration = new apprunner.AutoScalingConfiguration(this, 'AutoScalingConfiguration', {
+  autoScalingConfigurationName: 'MyAutoScalingConfiguration',
+  maxConcurrency: 150,
+  maxSize: 20,
+  minSize: 5,
+});
+
+new apprunner.Service(this, 'DemoService', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  autoScalingConfiguration,
+});
+```
+
 ## VPC Connector
 
 To associate an App Runner service with a custom VPC, define `vpcConnector` for the service.

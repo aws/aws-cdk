@@ -1627,3 +1627,30 @@ test.each([apprunner.IpAddressType.IPV4, apprunner.IpAddressType.DUAL_STACK])('i
     },
   });
 });
+
+test('create a service with an AutoScalingConfiguration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const autoScalingConfiguration = new apprunner.AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+    autoScalingConfigurationName: 'MyAutoScalingConfiguration',
+  });
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    autoScalingConfiguration,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {
+    AutoScalingConfigurationName: 'MyAutoScalingConfiguration',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    AutoScalingConfigurationArn: stack.resolve(autoScalingConfiguration.autoScalingConfigurationArn),
+  });
+});
