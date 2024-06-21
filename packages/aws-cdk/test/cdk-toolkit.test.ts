@@ -112,17 +112,6 @@ function defaultToolkitSetup() {
   });
 }
 
-function destroyToolkitSetup() {
-  return new CdkToolkit({
-    cloudExecutable,
-    configuration: cloudExecutable.configuration,
-    sdkProvider: cloudExecutable.sdkProvider,
-    deployments: new FakeCloudFormation({
-      'Test-Stack-Destroy': { Foo: 'Bar' },
-    }),
-  });
-}
-
 describe('readCurrentTemplate', () => {
   let template: any;
   let mockForEnvironment = jest.fn();
