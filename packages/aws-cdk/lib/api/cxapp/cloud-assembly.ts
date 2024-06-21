@@ -116,10 +116,6 @@ export class CloudAssembly {
     if (allTopLevel) {
       return this.selectTopLevelStacks(stacks, topLevelStacks, options.extend);
     } else if (patterns.length > 0) {
-      if (patterns.includes('Test-Stack-E')) {
-        // eslint-disable-next-line no-console
-        console.error(`WOW found stacks: ${stacks.map(stack => stack.stackName)}. They have heirarchical IDs: ${stacks.map(stack => stack.hierarchicalId)}`);
-      }
       return this.selectMatchingStacks(stacks, patterns, options.extend);
     } else {
       return this.selectDefaultStacks(stacks, topLevelStacks, options.defaultBehavior);
@@ -143,44 +139,19 @@ export class CloudAssembly {
     // cli tests use this to ensure tests do not depend on legacy behavior
     // (otherwise they will fail in v2)
     const disableLegacy = process.env.CXAPI_DISABLE_SELECT_BY_ID === '1';
-    if (patterns.includes('Test-Stack-E')) {
-      // eslint-disable-next-line no-console
-      console.error(`selecting stacks. extend: ${extend}`);
-    }
 
     const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => {
-      if (pattern.includes('Test-Stack-E')) {
-        // eslint-disable-next-line no-console
-        console.error(`attempting to minimatch '${pattern}' against '${stack.hierarchicalId}': result is '${minimatch(stack.hierarchicalId, pattern)}'`);
-        // eslint-disable-next-line no-console
-        console.error(`stack.id is ${stack.id}, disableLegacy is ${disableLegacy}, semver.major is ${semver.major(versionNumber())}, versionNumber is ${versionNumber()}`);
-      }
       if (minimatch(stack.hierarchicalId, pattern)) {
-        // eslint-disable-next-line no-console
-        if (pattern.includes('Test-Stack-E')) {
-        // eslint-disable-next-line no-console
-          console.error(`no way! ${pattern} matched`);
-        }
         return true;
       } else if (!disableLegacy && stack.id === pattern && semver.major(versionNumber()) < 2) {
         warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', chalk.bold(stack.id), chalk.bold(stack.hierarchicalId));
         warning('Run "cdk ls" to see a list of all stack identifiers');
-        // eslint-disable-next-line no-console
-        if (pattern.includes('Test-Stack-E')) {
-        // eslint-disable-next-line no-console
-          console.error(`wow really no way! ${pattern} and semver matched, disableLegacy is ${disableLegacy}, semver.major is ${semver.major(versionNumber())}, vesrionNumber is ${versionNumber()}`);
-        }
         return true;
       }
       return false;
     };
 
     const matchedStacks = flatten(patterns.map(pattern => stacks.filter(matchingPattern(pattern))));
-
-    if (patterns.includes('Test-Stack-E')) {
-      // eslint-disable-next-line no-console
-      console.error(`matched these stacks: ${matchedStacks.map(stack => stack.stackName)}`);
-    }
 
     return this.extendStacks(matchedStacks, stacks, extend);
   }

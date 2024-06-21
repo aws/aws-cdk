@@ -864,19 +864,7 @@ export class CdkToolkit {
       ignoreNoStacks,
     });
 
-    try {
-      this.validateStacksSelected(stacks, selector.patterns);
-    } catch (e: any) {
-      if (selector.patterns.includes('Test-Stack-E')) {
-        const allStacks = await assembly.selectStacks(selector, {
-          defaultBehavior: DefaultSelection.AllStacks,
-        });
-        const customStacks = await assembly.selectStacks({ patterns: [], allTopLevel: true }, { defaultBehavior: DefaultSelection.AllStacks });
-        throw new Error(`selector patterns: ${selector.patterns} selector allTopLevel: ${selector.allTopLevel}, `.concat('allStacks: ').concat(allStacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat('actual stacks: ').concat(stacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat('custom stacks: ').concat(customStacks.stackArtifacts.map(stack => stack.stackName).join(' ')).concat(e.message));
-      }
-
-      throw e;
-    }
+    this.validateStacksSelected(stacks, selector.patterns);
     this.validateStacks(stacks);
 
     return stacks;
