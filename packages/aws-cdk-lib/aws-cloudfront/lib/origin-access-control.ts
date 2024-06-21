@@ -2,11 +2,8 @@ import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
 
-const S3_ORIGIN_ACCESS_CONTROL_SYMBOL = Symbol.for('aws-cdk-lib/aws-cloudfront/lib/origin-access-control.S3OriginAccessControl');
-const LAMBDA_ORIGIN_ACCESS_CONTROL_SYMBOL = Symbol.for('aws-cdk-lib/aws-cloudfront/lib/origin-access-control.LambdaOriginAccessControl');
-
 /**
- * Interface for CloudFront origin access controls
+ * Represents a CloudFront Origin Access Control
  */
 export interface IOriginAccessControl extends IResource {
   /**
@@ -14,10 +11,16 @@ export interface IOriginAccessControl extends IResource {
    * @attribute
    */
   readonly originAccessControlId: string;
+
+  /**
+   * The type of origin that the origin access control is for.
+   * @attribute
+   */
+  readonly originAccessControlOriginType: string;
 }
 
 /**
- * Properties for creating a OriginAccessControl resource.
+ * Properties for creating a Origin Access Control resource.
  */
 export interface OriginAccessControlProps {
   /**
@@ -48,25 +51,28 @@ export interface OriginAccessControlProps {
 }
 
 /**
- * Origin types supported by origin access control.
+ * Attributes for a CloudFront Origin Access Control
+ */
+export interface OriginAccessControlAttributes {
+  /**
+   * The unique identifier of the origin access control.
+   */
+  readonly originAccessControlId: string;
+
+  /**
+   * The type of origin that the origin access control is for.
+   */
+  readonly originAccessControlOriginType: string;
+}
+
+/**
+ * Origin types supported by Origin Access Control.
  */
 export enum OriginAccessControlOriginType {
   /**
    * Uses an Amazon S3 bucket origin.
    */
   S3 = 's3',
-  /**
-   * Uses an AWS Elemental MediaStore origin.
-   */
-  MEDIASTORE = 'mediastore',
-  /**
-   * Uses a Lambda function URL origin.
-   */
-  LAMBDA = 'lambda',
-  /**
-   * Uses an AWS Elemental MediaPackage v2 origin.
-   */
-  MEDIAPACKAGEV2 = 'mediapackagev2',
 }
 
 /**
@@ -93,7 +99,7 @@ export enum SigningBehavior {
 }
 
 /**
- * The signing protocol of the origin access control.
+ * The signing protocol of the Origin Access Control.
  */
 export enum SigningProtocol {
   /**
@@ -109,26 +115,14 @@ export enum SigningProtocol {
  */
 export class OriginAccessControl extends Resource implements IOriginAccessControl {
   /**
-   * Imports an origin access control from its id.
+   * Imports an origin access control from its id and origin type.
    */
-  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+  public static fromOriginAccessControlAttributes(scope: Construct, id: string, attrs: OriginAccessControlAttributes): IOriginAccessControl {
     class Import extends Resource implements IOriginAccessControl {
-      public readonly originAccessControlId = originAccessControlId;
-      constructor(s: Construct, i: string) {
-        super(s, i);
-
-        this.originAccessControlId = originAccessControlId;
-      }
+      public readonly originAccessControlId = attrs.originAccessControlId;
+      public readonly originAccessControlOriginType = attrs.originAccessControlOriginType;
     }
     return new Import(scope, id);
-  }
-
-  public static forS3(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
-    return new S3OriginAccessControl(scope, id, props);
-  }
-
-  public static forLambda(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
-    return new LambdaOriginAccessControl(scope, id, props);
   }
 
   /**
@@ -137,8 +131,16 @@ export class OriginAccessControl extends Resource implements IOriginAccessContro
    */
   public readonly originAccessControlId: string;
 
+  /**
+   * The type of origin that the origin access control is for.
+   * @attribute
+   */
+  public readonly originAccessControlOriginType: string;
+
   constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
     super(scope, id);
+
+    this.originAccessControlOriginType = props.originAccessControlOriginType ?? OriginAccessControlOriginType.S3;
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {
@@ -148,53 +150,10 @@ export class OriginAccessControl extends Resource implements IOriginAccessContro
         }),
         signingBehavior: props.signingBehavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signingProtocol ?? SigningProtocol.SIGV4,
-        originAccessControlOriginType: props.originAccessControlOriginType ?? OriginAccessControlOriginType.S3,
+        originAccessControlOriginType: this.originAccessControlOriginType,
       },
     });
 
     this.originAccessControlId = resource.attrId;
   }
 }
-
-/**
- * Origin access control for a S3 bucket origin
- */
-export class S3OriginAccessControl extends OriginAccessControl {
-  /**
-   * Returns `true` if `x` is an S3OriginAccessControl, `false` otherwise
-   */
-  public static isS3OriginAccessControl(x: any): x is S3OriginAccessControl {
-    return x !== null && typeof (x) === 'object' && S3_ORIGIN_ACCESS_CONTROL_SYMBOL in x;
-  }
-  constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
-    super(scope, id, { ...props, originAccessControlOriginType: OriginAccessControlOriginType.S3 });
-  }
-}
-
-Object.defineProperty(S3OriginAccessControl.prototype, S3_ORIGIN_ACCESS_CONTROL_SYMBOL, {
-  value: true,
-  enumerable: false,
-  writable: false,
-});
-
-/**
- * Origin access control for a Lambda Function Url origin
- */
-export class LambdaOriginAccessControl extends OriginAccessControl {
-  /**
-   * Returns `true` if `x` is a LambdaOriginAccessControl, `false` otherwise
-   */
-  public static isLambdaOriginAccessControl(x: any): x is LambdaOriginAccessControl {
-    return x !== null && typeof (x) === 'object' && LAMBDA_ORIGIN_ACCESS_CONTROL_SYMBOL in x;
-  }
-
-  constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
-    super(scope, id, { ...props, originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA });
-  }
-}
-
-Object.defineProperty(LambdaOriginAccessControl.prototype, LAMBDA_ORIGIN_ACCESS_CONTROL_SYMBOL, {
-  value: true,
-  enumerable: false,
-  writable: false,
-});

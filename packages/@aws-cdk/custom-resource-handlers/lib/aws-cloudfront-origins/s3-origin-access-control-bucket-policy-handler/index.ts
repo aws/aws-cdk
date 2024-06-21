@@ -21,11 +21,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const accountId = props.AccountId;
     const partition = props.Partition;
     const bucketName = props.BucketName;
-    const isImportedBucket = props.IsImportedBucket;
 
-    if (isImportedBucket) {
-      await updateBucketPolicy({ bucketName, distributionId, partition, accountId });
-    }
+    await updateBucketPolicy({ bucketName, distributionId, partition, accountId });
 
     return {
       IsComplete: true,
@@ -93,19 +90,28 @@ async function updateBucketPolicy(props: updateBucketPolicyProps) {
  * @returns currentPolicy - the updated policy.
  */
 function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
-  // Check to see if a duplicate key policy exists by matching on the sid. This is to prevent duplicate key policies
-  // from being added/updated in response to a stack being updated one or more times after initial creation.
-  const existingPolicyIndex = currentPolicy.Statement.findIndex((statement: any) => statement.Sid === policyStatementToAdd.Sid);
-  // If a match is found, overwrite the key policy statement...
-  // Otherwise, push the new key policy to the array of statements
-  if (existingPolicyIndex > -1) {
-    currentPolicy.Statement[existingPolicyIndex] = policyStatementToAdd;
-  } else {
+  // // Check to see if a duplicate key policy exists by matching on the sid. This is to prevent duplicate key policies
+  // // from being added/updated in response to a stack being updated one or more times after initial creation.
+  // const existingPolicyIndex = currentPolicy.Statement.findIndex((statement: any) => statement.Sid === policyStatementToAdd.Sid);
+  // // If a match is found, overwrite the key policy statement...
+  // // Otherwise, push the new key policy to the array of statements
+  // if (existingPolicyIndex > -1) {
+  //   currentPolicy.Statement[existingPolicyIndex] = policyStatementToAdd;
+  // } else {
+  //   currentPolicy.Statement.push(policyStatementToAdd);
+  // }
+  
+  if (!isStatementInPolicy(currentPolicy, policyStatementToAdd)) {
     currentPolicy.Statement.push(policyStatementToAdd);
   }
+
   // Return the result
   return currentPolicy;
 };
+
+function isStatementInPolicy(policy: any, statement: any): boolean {
+  return policy.Statement.some((existingStatement: any) => JSON.stringify(existingStatement) === JSON.stringify(statement));
+}
 
 /**
  * Check if the policy contains an OAI principal

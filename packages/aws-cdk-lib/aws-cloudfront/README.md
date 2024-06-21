@@ -8,7 +8,7 @@ possible performance.
 
 ## Distribution API
 
-The `Distribution` API is currently being built to replace the existing `CloudFrontWebDistribution` API. The `Distribution` API is optimized for the
+The `Distribution` API replaces the `CloudFrontWebDistribution` API which is now deprecated. The `Distribution` API is optimized for the
 most common use cases of CloudFront distributions (e.g., single origin and behavior, few customizations) while still providing the ability for more
 advanced use cases. The API focuses on simplicity for the common use cases, and convenience methods for creating the behaviors and origins necessary
 for more complex use cases.
@@ -951,7 +951,7 @@ If no changes are desired during migration, you will at the least be able to use
 
 ## CloudFrontWebDistribution API
 
-> The `CloudFrontWebDistribution` construct is the original construct written for working with CloudFront distributions.
+> The `CloudFrontWebDistribution` construct is the original construct written for working with CloudFront distributions and has been marked as deprecated.
 > Users are encouraged to use the newer `Distribution` instead, as it has a simpler interface and receives new features faster.
 
 Example usage:

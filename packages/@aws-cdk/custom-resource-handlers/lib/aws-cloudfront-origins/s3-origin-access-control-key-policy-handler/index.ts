@@ -37,6 +37,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     // Define the updated key policy to allow CloudFront Distribution access
     const keyPolicy = JSON.parse(getKeyPolicyCommandResponse?.Policy);
+    console.log('Retrieved key policy', JSON.stringify(keyPolicy, undefined, 2));
     const kmsKeyPolicyStatement = {
       Sid: 'AllowCloudFrontServicePrincipalSSE-KMS',
       Effect: 'Allow',
@@ -58,6 +59,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       },
     };
     const updatedKeyPolicy = updatePolicy(keyPolicy, kmsKeyPolicyStatement);
+    console.log('Updated key policy', JSON.stringify(updatedKeyPolicy, undefined, 2));
     await kms.putKeyPolicy({
       KeyId: kmsKeyId,
       Policy: JSON.stringify(updatedKeyPolicy),
@@ -80,17 +82,25 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
  * @param policyStatementToAdd - the policy statement to be added to the policy.
  * @returns currentPolicy - the updated policy.
  */
-export const updatePolicy = (currentPolicy: any, policyStatementToAdd: any) => {
-  // Check to see if a duplicate key policy exists by matching on the sid. This is to prevent duplicate key policies
-  // from being added/updated in response to a stack being updated one or more times after initial creation.
-  const existingPolicyIndex = currentPolicy.Statement.findIndex((statement: any) => statement.Sid === policyStatementToAdd.Sid);
-  // If a match is found, overwrite the key policy statement...
-  // Otherwise, push the new key policy to the array of statements
-  if (existingPolicyIndex > -1) {
-    currentPolicy.Statement[existingPolicyIndex] = policyStatementToAdd;
-  } else {
+function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
+  // // Check to see if a duplicate key policy exists by matching on the sid. This is to prevent duplicate key policies
+  // // from being added/updated in response to a stack being updated one or more times after initial creation.
+  // const existingPolicyIndex = currentPolicy.Statement.findIndex((statement: any) => statement.Sid === policyStatementToAdd.Sid);
+  // // If a match is found, overwrite the key policy statement...
+  // // Otherwise, push the new key policy to the array of statements
+  // if (existingPolicyIndex > -1) {
+  //   currentPolicy.Statement[existingPolicyIndex] = policyStatementToAdd;
+  // } else {
+  //   currentPolicy.Statement.push(policyStatementToAdd);
+  // }
+
+  if (!isStatementInPolicy(currentPolicy, policyStatementToAdd)) {
     currentPolicy.Statement.push(policyStatementToAdd);
   }
   // Return the result
   return currentPolicy;
 };
+
+function isStatementInPolicy(policy: any, statement: any): boolean {
+  return policy.Statement.some((existingStatement: any) => JSON.stringify(existingStatement) === JSON.stringify(statement));
+}
