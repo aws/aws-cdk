@@ -3,7 +3,7 @@ import { Certificate } from '../../../aws-certificatemanager';
 import { Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
-import { ApplicationProtocol, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
@@ -738,6 +738,30 @@ describe('Network Load Balancer', () => {
         VpcId: {
           Ref: 'VPCB9E5F0B4',
         },
+      });
+    });
+
+    test('specify IPV6 address type for NLB', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC', { maxAzs: 2 });
+
+      // WHEN
+      new NetworkLoadBalancedFargateService(stack, 'NLBService', {
+        cluster: new ecs.Cluster(stack, 'Cluster', { vpc }),
+        memoryLimitMiB: 1024,
+        cpu: 512,
+        taskImageOptions: {
+          image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          containerPort: 80,
+        },
+        listenerPort: 80,
+        ipAddressType: IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        IpAddressType: 'dualstack',
       });
     });
   });
