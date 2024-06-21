@@ -644,10 +644,6 @@ async function canSkipDeploy(
     return false;
   }
 
-  function arrayEquals(a: any[], b: any[]): boolean {
-    return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
-  }
-
   // Notification arns have changed
   if (!arrayEquals(cloudFormationStack.notificationArns, deployStackOptions.notificationArns ?? [])) {
     debug(`${deployName}: notification arns have changed`);
@@ -703,4 +699,8 @@ function suffixWithErrors(msg: string, errors?: string[]) {
   return errors && errors.length > 0
     ? `${msg}: ${errors.join(', ')}`
     : msg;
+}
+
+function arrayEquals(a: any[], b: any[]): boolean {
+  return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
 }
