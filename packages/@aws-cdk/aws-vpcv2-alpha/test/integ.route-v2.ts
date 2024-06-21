@@ -40,38 +40,33 @@ var vpcs: {[id: string] : vpc_v2.VpcV2} = {};
 var subnets: {[id: string]: SubnetV2} = {};
 var routeTables: {[id: string]: RouteTable} = {};
 
-const azs = ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d'];
-let i = 0;
-
 for (const stackName in stacks) {
-    const vpc = new vpc_v2.VpcV2(stacks[stackName], stackName, {
-      primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
-      secondaryAddressBlocks: [vpc_v2.IpAddresses.amazonProvidedIpv6()],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
+  const vpc = new vpc_v2.VpcV2(stacks[stackName], stackName, {
+    primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
+    secondaryAddressBlocks: [vpc_v2.IpAddresses.amazonProvidedIpv6()],
+    enableDnsHostnames: true,
+    enableDnsSupport: true,
+  });
+  vpcs[stackName] = vpc;
+  if (stackName == 'eigw') {
+    const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
+      vpc: vpc,
+      availabilityZone: 'us-west-1a',
+      cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
-    vpcs[stackName] = vpc;
-    if (stackName == 'eigw') {
-      const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
-        vpc: vpc,
-        availabilityZone: azs[i],
-        cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
-        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      });
-      subnets[stackName] = subnet;
-    } else {
-      // use empty ipv6 that doesn't overlap
-      const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
-        vpc: vpc,
-        availabilityZone: azs[i],
-        cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
-        ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
-        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      });
-      subnets[stackName] = subnet;
-    }
-    
-    i++; i = i % azs.length;
+    subnets[stackName] = subnet;
+  } else {
+    // use empty ipv6 that doesn't overlap
+    const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
+      vpc: vpc,
+      availabilityZone: 'us-west-1a',
+      cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
+      ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    });
+    subnets[stackName] = subnet;
+  }
 }
 
 const user2Vpc = new vpc_v2.VpcV2(stacks['vpcpc'], 'vpcpc-user2', {
@@ -233,7 +228,7 @@ if (routeToDynamo.targetRouterType != RouterType.VPC_ENDPOINT) {
   throw new Error('Dynamo route has wrong route type');
 }
 
-i = 0;
+var i = 0;
 for (const stackName in stacks) {
   new IntegTest(app, 'integtest-model-' + i, {
     testCases: [stacks[stackName]],
