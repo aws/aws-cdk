@@ -1,5 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as codecommit from '../../aws-codecommit';
+import * as codepipeline from '../../aws-codepipeline';
+import * as cpactions from '../../aws-codepipeline-actions';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
@@ -1595,6 +1597,65 @@ test('environment variables can be overridden at the project level', () => {
   });
 });
 
+test('throws when batch builds are enabled for a reserved capacity project', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
+  const bucket = new s3.Bucket(stack, 'MyBucket');
+
+  // WHEN
+  const project = new codebuild.Project(stack, 'MyProject', {
+    source: codebuild.Source.s3({
+      bucket,
+      path: 'path/to/source.zip',
+    }),
+    environment: {
+      fleet,
+      buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+    },
+  });
+
+  // THEN
+  expect(() => {
+    project.enableBatchBuilds();
+  }).toThrow(/Build batch is not supported for project using reserved capacity/);
+});
+
+test('throws when pipeline are enabled for a reserved capacity project', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
+  const sourceOutput = new codepipeline.Artifact();
+  const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+    artifactBucket: new s3.Bucket(stack, 'Bucket', {
+      versioned: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    }),
+  });
+
+  // WHEN
+  const project = new codebuild.PipelineProject(stack, 'MyProject', {
+    environment: {
+      fleet,
+      buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+    },
+  });
+
+  // THEN
+  expect(() => {
+    pipeline.addStage({
+      stageName: 'Build',
+      actions: [new cpactions.CodeBuildAction({
+        actionName: 'Build',
+        project,
+        executeBatchBuild: true,
+        input: sourceOutput,
+        role: pipeline.role,
+      })],
+    });
+  }).toThrow(/Build batch is not supported for project using reserved capacity/);
+});
+
 test('.metricXxx() methods can be used to obtain Metrics for CodeBuild projects', () => {
   const stack = new cdk.Stack();
 
@@ -2043,11 +2104,13 @@ test('enableBatchBuilds()', () => {
       repo: 'testrepo',
     }),
   });
+  expect(project.isBatchBuildsEnabled).toBeFalsy();
 
   const returnVal = project.enableBatchBuilds();
   if (!returnVal?.role) {
     throw new Error('Expecting return value with role');
   }
+  expect(project.isBatchBuildsEnabled).toBeTruthy();
 
   Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     BuildBatchConfig: {
