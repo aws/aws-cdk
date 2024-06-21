@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-pipe-enrichments-stepfunctions/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-enrichments-stepfunctions"
+      ],
+      "assertionStack": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipeenrichmentsstepfunctionsDefaultTestDeployAssert49B5A72D"
+    }
+  }
+}
