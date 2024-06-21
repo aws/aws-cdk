@@ -747,11 +747,11 @@ describe('deploy', () => {
 
 describe('destroy', () => {
   test('destroy correct stack', async () => {
-    const toolkit = destroyToolkitSetup();
+    const toolkit = defaultToolkitSetup();
 
     expect(() => {
       return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-Destroy'] },
+        selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
         exclusively: true,
         force: true,
         fromDeploy: true,
