@@ -11,7 +11,7 @@ const app = new cdk.App({
   context: { [S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED]: true },
 });
 
-const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-notifications');
+const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-s3-notifications');
 
 const bucketA = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,

@@ -15,6 +15,7 @@ def handler(event: dict, context):
     props = event["ResourceProperties"]
     notification_configuration = props["NotificationConfiguration"]
     managed = props.get('Managed', 'true').lower() == 'true'
+    s3NotificationsDeleteFeatureFlagEnabled = props.get('S3NotificationsDeleteFeatureFlagEnabled', 'true').lower() == 'true'
     stack_id = event['StackId']
     old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
@@ -40,7 +41,10 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
     strToHash=json.dumps(n, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
     return f"{stack_id}-{hash(strToHash)}"
   def with_id(n):
-    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    if s3NotificationsDeleteFeatureFlagEnabled:
+      n['Id'] = get_id(n)
+    else:
+      n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
     return n
 
   # find external notifications
@@ -48,10 +52,14 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
   existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
-        ids = [with_id(n) for n in old.get(t, [])]
-        old_incoming_ids = [n['Id'] for n in ids]
-        # if the notification was created by us, we know what id to expect so we can filter by it.
-        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+        if s3NotificationsDeleteFeatureFlagEnabled:
+          old_incoming_ids = [get_id(n) for n in old.get(t, [])]
+          external_notifications[t] = [n for n in existing_notifications.get(t, []) if not get_id(n) in old_incoming_ids]
+        else:
+          ids = [with_id(n) for n in old.get(t, [])]
+          old_incoming_ids = [n['Id'] for n in ids]
+          # if the notification was created by us, we know what id to expect so we can filter by it.
+          external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]      
     elif request_type == 'Delete':
         # For 'Delete' request, old parameter is an empty dict so we cannot use this to determine which are external
         # notifications. Fall back to rely on the stack naming logic.

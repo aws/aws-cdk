@@ -70,6 +70,20 @@ def make_empty_notification_configuration():
 def make_empty_notification_configuration_with_eventbridge():
     return {**make_empty_notification_configuration(), **make_eventbridge_configuration()}
 
+def make_event_s3_notification_delete_feature_enabled(request_type: str,
+                                                      managed: bool,
+                                                      s3NotificationsDeleteFeatureFlagEnabled: bool):
+    return {
+        "StackId": "StackId",
+        "RequestType": request_type,
+        "ResourceProperties": {
+            "Managed": str(managed),
+            "BucketName": "BucketName",
+            "NotificationConfiguration": make_notification_configuration(),
+            "S3NotificationsDeleteFeatureFlagEnabled": str(s3NotificationsDeleteFeatureFlagEnabled)
+
+        },
+    }
 
 def merge_notification_configurations(conf1: Dict, conf2: Dict):
     notifications = {}
@@ -174,6 +188,27 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
             ),
         )
 
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_delete_existing_s3_notifications(self, _, mock_s3: MagicMock):
+
+        event = make_event_s3_notification_delete_feature_enabled("Update", False, True)
+
+        # simulate a previous create operation
+        current_notifications = make_notification_configuration(f"{event['StackId']}-")
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
+
+        index.handler(event, {})
+
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"]
+            ),
+        )
+        
     @patch('index.s3')
     @patch("index.submit_response")
     def test_update_with_eventbridge(self, _, mock_s3: MagicMock):
