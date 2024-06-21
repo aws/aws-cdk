@@ -154,6 +154,27 @@ when required.
 
 See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles) for more details.
 
+## Auto Scaling Configuration
+
+To associate an App Runner service with a custom Auto Scaling Configuration, define `autoScalingConfiguration` for the service.
+
+```ts
+const autoScalingConfiguration = new apprunner.AutoScalingConfiguration(this, 'AutoScalingConfiguration', {
+  autoScalingConfigurationName: 'MyAutoScalingConfiguration',
+  maxConcurrency: 150,
+  maxSize: 20,
+  minSize: 5,
+});
+
+new apprunner.Service(this, 'DemoService', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  autoScalingConfiguration,
+});
+```
+
 ## VPC Connector
 
 To associate an App Runner service with a custom VPC, define `vpcConnector` for the service.
@@ -179,6 +200,26 @@ new apprunner.Service(this, 'Service', {
   vpcConnector,
 });
 ```
+
+## Dual Stack
+
+To use dual stack (IPv4 and IPv6) for your incoming public network configuration, set `ipAddressType` to `IpAddressType.DUAL_STACK`.
+
+```ts
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  ipAddressType: apprunner.IpAddressType.DUAL_STACK,
+});
+```
+
+**Note**: Currently, App Runner supports dual stack for only Public endpoint.
+Only IPv4 is supported for Private endpoint.
+If you update a service that's using dual-stack Public endpoint to a Private endpoint,
+your App Runner service will default to support only IPv4 for Private endpoint and fail
+to receive traffic originating from IPv6 endpoint.
 
 ## Secrets Manager
 

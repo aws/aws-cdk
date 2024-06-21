@@ -276,6 +276,31 @@ describe('Topic', () => {
 
   });
 
+  test('give subscribing permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    topic.grantSubscribe(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Subscribe',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn),
+          },
+        ],
+      },
+    });
+
+  });
+
   test('TopicPolicy passed document', () => {
     // GIVEN
     const stack = new cdk.Stack();
