@@ -1146,6 +1146,8 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
 ```
 
 ```ts
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+
 declare const cluster: ecs.Cluster;
 const certificate = Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-east-1:123456:certificate/abcdefg');
 const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(this, 'Service', {
