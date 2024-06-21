@@ -1,0 +1,153 @@
+{
+ "Resources": {
+  "cgw5BAAF9FE": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "cgwSecondaryIp1CDE9B91C": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "cgw5BAAF9FE",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "cgwSubnetADF05416": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "cgw5BAAF9FE",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "cgw5BAAF9FE",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "cgwSecondaryIp1CDE9B91C"
+   ]
+  },
+  "cgwSubnetRouteTableCDD8A9C7": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "cgw5BAAF9FE",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "cgwSecondaryIp1CDE9B91C"
+   ]
+  },
+  "cgwSubnetRouteTableAssociation8151D808": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "cgwSubnetRouteTableCDD8A9C7"
+    },
+    "SubnetId": {
+     "Ref": "cgwSubnetADF05416"
+    }
+   },
+   "DependsOn": [
+    "cgwSecondaryIp1CDE9B91C"
+   ]
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "cgw5BAAF9FE",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testCGWCarrierGatewayC388CDF6": {
+   "Type": "AWS::EC2::CarrierGateway",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "cgw5BAAF9FE",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testCGWRoute71270F55": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "CarrierGatewayId": {
+     "Fn::GetAtt": [
+      "testCGWCarrierGatewayC388CDF6",
+      "CarrierGatewayId"
+     ]
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

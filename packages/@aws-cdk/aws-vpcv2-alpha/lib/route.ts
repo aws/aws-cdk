@@ -1,4 +1,4 @@
-import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses } from './vpc-v2';
 import { Construct } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
@@ -228,7 +228,7 @@ export class Route extends Resource implements IRouteV2 {
    */
   public readonly targetRouterType: RouterType
 
-  public readonly resource: CfnRoute;
+  public readonly resource?: CfnRoute;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
@@ -239,12 +239,15 @@ export class Route extends Resource implements IRouteV2 {
 
     this.targetRouterType = 'routerType' in this.target ? this.target.routerType : RouterType.VPC_ENDPOINT;
 
-    this.resource = new CfnRoute(this, 'Route', {
-      routeTableId: this.routeTable.routeTableId,
-      destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
-      destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
-      [routerTypeToPropName(this.targetRouterType)]: 'routerId' in this.target ? this.target.routerId : this.target.vpcEndpointId,
-    });
+    // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
+    if (!(this.target instanceof GatewayVpcEndpoint) && this.targetRouterType != RouterType.GATEWAY) {
+      this.resource = new CfnRoute(this, 'Route', {
+        routeTableId: this.routeTable.routeTableId,
+        destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
+        destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
+        [routerTypeToPropName(this.targetRouterType)]: 'routerId' in this.target ? this.target.routerId : this.target.vpcEndpointId,
+      });
+    }
   }
 
 }

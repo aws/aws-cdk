@@ -1,0 +1,145 @@
+{
+ "Resources": {
+  "tgw23F41D77": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "tgwSecondaryIp1BF847949": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "tgw23F41D77",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "tgwSubnet9ACC0C41": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1d",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "tgw23F41D77",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "tgw23F41D77",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "tgwSecondaryIp1BF847949"
+   ]
+  },
+  "tgwSubnetRouteTableE925C2DB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "tgw23F41D77",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "tgwSecondaryIp1BF847949"
+   ]
+  },
+  "tgwSubnetRouteTableAssociation4C4F1286": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "tgwSubnetRouteTableE925C2DB"
+    },
+    "SubnetId": {
+     "Ref": "tgwSubnet9ACC0C41"
+    }
+   },
+   "DependsOn": [
+    "tgwSecondaryIp1BF847949"
+   ]
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "tgw23F41D77",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testTGWC8435D4D": {
+   "Type": "AWS::EC2::TransitGateway"
+  },
+  "testTransitGWRoute22FA84FB": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    },
+    "TransitGatewayId": {
+     "Fn::GetAtt": [
+      "testTGWC8435D4D",
+      "Id"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

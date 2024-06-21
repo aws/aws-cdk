@@ -1,0 +1,202 @@
+{
+ "Resources": {
+  "vpcpc6CAE1A04": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "vpcpcSecondaryIp1C735895D": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "vpcpcSubnet1DD6CE35": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "vpcpc6CAE1A04",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "vpcpcSecondaryIp1C735895D"
+   ]
+  },
+  "vpcpcSubnetRouteTable06C8C89A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "vpcpcSecondaryIp1C735895D"
+   ]
+  },
+  "vpcpcSubnetRouteTableAssociation8531BF5C": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcpcSubnetRouteTable06C8C89A"
+    },
+    "SubnetId": {
+     "Ref": "vpcpcSubnet1DD6CE35"
+    }
+   },
+   "DependsOn": [
+    "vpcpcSecondaryIp1C735895D"
+   ]
+  },
+  "vpcpcuser2935CC987": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.128.0/17",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "vpcpcSubnet2Subnet8BA063A9": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.128.128/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpcuser2935CC987",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "vpcpcSubnet2RouteTable684B0EAB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpcuser2935CC987",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "vpcpcSubnet2RouteTableAssociationC9082420": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcpcSubnet2RouteTable684B0EAB"
+    },
+    "SubnetId": {
+     "Ref": "vpcpcSubnet2Subnet8BA063A9"
+    }
+   }
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testVPCPCVPCPeerConnection9684B188": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerVpcId": {
+     "Fn::GetAtt": [
+      "vpcpcuser2935CC987",
+      "VpcId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testPeerconRoute02E64C80": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    },
+    "VpcPeeringConnectionId": {
+     "Fn::GetAtt": [
+      "testVPCPCVPCPeerConnection9684B188",
+      "Id"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
