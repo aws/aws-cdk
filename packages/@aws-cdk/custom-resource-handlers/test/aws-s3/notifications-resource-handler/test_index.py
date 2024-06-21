@@ -84,6 +84,20 @@ def make_event_s3_notification_delete_feature_enabled(request_type: str,
 
         },
     }
+def make_event_s3_notification_delete_feature_enabled(request_type: str,
+                                                      managed: bool,
+                                                      s3NotificationsDeleteFeatureFlagEnabled: bool):
+    return {
+        "StackId": "StackId",
+        "RequestType": request_type,
+        "ResourceProperties": {
+            "Managed": str(managed),
+            "BucketName": "BucketName",
+            "NotificationConfiguration": make_notification_configuration(),
+            "S3NotificationsDeleteFeatureFlagEnabled": str(s3NotificationsDeleteFeatureFlagEnabled)
+
+        },
+    }
 
 def merge_notification_configurations(conf1: Dict, conf2: Dict):
     notifications = {}
