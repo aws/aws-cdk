@@ -389,7 +389,7 @@ export interface LogGroupProps {
   /**
    * The KMS customer managed key to encrypt the log group with.
    *
-   * @default Server-side encrpytion managed by the CloudWatch Logs service
+   * @default Server-side encryption managed by the CloudWatch Logs service
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -438,6 +438,21 @@ export interface LogGroupProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * The method used to distribute log data to the destination.
+ */
+export enum Distribution {
+  /**
+   * Log events from the same log stream are kept together and sent to the same destination.
+   */
+  BY_LOG_STREAM = 'ByLogStream',
+
+  /**
+   * Log events are distributed across the log destinations randomly.
+   */
+  RANDOM = 'Random',
 }
 
 /**
@@ -573,6 +588,14 @@ export interface SubscriptionFilterOptions {
    * @default Automatically generated
    */
   readonly filterName?: string;
+
+  /**
+   * The method used to distribute log data to the destination.
+   * This property can only be used with KinesisDestination.
+   *
+   * @default Distribution.BY_LOG_STREAM
+   */
+  readonly distribution?: Distribution;
 }
 
 /**

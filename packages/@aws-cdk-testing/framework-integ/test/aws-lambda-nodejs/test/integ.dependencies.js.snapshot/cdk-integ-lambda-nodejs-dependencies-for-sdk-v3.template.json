@@ -1,5 +1,33 @@
 {
  "Resources": {
+  "SdkCallee1DA14178": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "call",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "call",
+      "KeyType": "HASH"
+     }
+    ],
+    "Replicas": [
+     {
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "TableName": "external-sdk-table"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "externalsdkv3ServiceRole9C835365": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -31,6 +59,45 @@
     ]
    }
   },
+  "externalsdkv3ServiceRoleDefaultPolicy08CC919E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SdkCallee1DA14178",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "externalsdkv3ServiceRoleDefaultPolicy08CC919E",
+    "Roles": [
+     {
+      "Ref": "externalsdkv3ServiceRole9C835365"
+     }
+    ]
+   }
+  },
   "externalsdkv3B69F9D99": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -38,11 +105,13 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f3b52c9ad5bbed49f33611a5c250aeacc78f264984e08b98abc221300022e69c.zip"
+     "S3Key": "c46b90b3424f50a27aa24f1460102bd87d1223bb01f7f6bf13bc50b977ec916e.zip"
     },
     "Environment": {
      "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+      "TABLE_NAME": {
+       "Ref": "SdkCallee1DA14178"
+      }
      }
     },
     "Handler": "index.handler",
@@ -55,6 +124,7 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
+    "externalsdkv3ServiceRoleDefaultPolicy08CC919E",
     "externalsdkv3ServiceRole9C835365"
    ]
   }
