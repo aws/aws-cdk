@@ -167,7 +167,9 @@ export class CdkToolkit {
             });
           } catch (e: any) {
             debug(e.message);
-            stream.write(`Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`);
+            if (!quiet) {
+              stream.write(`Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`);
+            }
             stackExists = false;
           }
 
