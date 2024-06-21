@@ -1182,7 +1182,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * The autoscaling group to add as a Capacity Provider.
    *
    * Warning: When passing an imported resource using `AutoScalingGroup.fromAutoScalingGroupName` along with `enableManagedTerminationProtection: true`,
-   * the AsgCapacityProvider construct will not be able to enforce the option `newInstancesProtectedFromScaleIn` of the AutoScalingGroup.
+   * the `AsgCapacityProvider` construct will not be able to enforce the option `newInstancesProtectedFromScaleIn` of the `AutoScalingGroup`.
    * In this case the constructor of `AsgCapacityProvider` will throw an exception.
    */
   readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
