@@ -495,7 +495,6 @@ describe('deploy', () => {
       });
     });
 
-
     describe('sns notification arns', () => {
       beforeEach(() => {
         cloudExecutable = new MockCloudExecutable({
@@ -554,55 +553,6 @@ describe('deploy', () => {
           }),
         ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
       });
-
-      /*
-      test('with sns notification arns as options', async () => {
-        // GIVEN
-        const notificationArns = [
-          'arn:aws:sns:us-east-2:444455556666:MyTopic',
-          'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
-        ];
-        const toolkit = new CdkToolkit({
-          cloudExecutable,
-          configuration: cloudExecutable.configuration,
-          sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation({
-            // Stacks should be selected by their hierarchical ID, which is their displayName, not by the stack ID.
-            'Test-Stack-E-Display-Name': { Foo: 'Bar' },
-            'Test-Stack-F-Display-Name': { Foo: 'Bar' },
-          }, notificationArns),
-        });
-
-        // WHEN
-        await toolkit.deploy({
-          selector: { patterns: ['Test-Stack-E', 'Test-Stack-F'] },
-          notificationArns,
-          hotswap: HotswapMode.FULL_DEPLOYMENT,
-        });
-      });
-
-      test('fail with incorrect sns notification arns as options', async () => {
-        // GIVEN
-        const notificationArns = ['arn:::cfn-my-cool-topic'];
-        const toolkit = new CdkToolkit({
-          cloudExecutable,
-          configuration: cloudExecutable.configuration,
-          sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation({
-            'Test-Stack-E-Display-Name': { Foo: 'Bar' },
-          }, notificationArns),
-        });
-
-        // WHEN
-        await expect(() =>
-          toolkit.deploy({
-            selector: { patterns: ['Test-Stack-E'] },
-            notificationArns,
-            hotswap: HotswapMode.FULL_DEPLOYMENT,
-          }),
-        ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
-      });
-      */
 
       test('with sns notification arns in the executable', async () => {
         // GIVEN
