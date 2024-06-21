@@ -11,9 +11,10 @@
 import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Ipv4Cidr, Ipv6Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
+import { Ipv4Cidr, Ipv6Cidr, SubnetV2 } from '../lib/subnet-v2';
 import { CarrierGateway, EgressOnlyInternetGateway, InternetGateway, NatGateway, NetworkInterface, Route, RouteTable, TransitGateway, VirtualPrivateGateway, VpcPeeringConnection } from '../lib/route';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, RouterType, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { Fn } from 'aws-cdk-lib';
 //import { log } from 'console';
 
 // as in unit tests, we use a qualified import,
@@ -59,11 +60,12 @@ for (const stackName in stacks) {
       });
       subnets[stackName] = subnet;
     } else {
+      // use empty ipv6 that doesn't overlap
       const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
         vpc: vpc,
         availabilityZone: azs[i],
         cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
-        ipv6CidrBlock: new Ipv6Cidr(vpcs[stackName].ipv6CidrBlocks[0]),
+        ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
         subnetType: SubnetType.PRIVATE_WITH_EGRESS,
       });
       subnets[stackName] = subnet;
@@ -133,7 +135,7 @@ const routeToCgw = new Route(stacks['cgw'], 'testCGWRoute', {
 
 const routeToEigw = new Route(stacks['eigw'], 'testEIGWRoute', {
   routeTable: routeTables['eigw'],
-  destination: vpc_v2.IpAddresses.ipv6({ipv6CidrBlock: subnets['eigw'].ipv6CidrBlocks[0]}),
+  destination: vpc_v2.IpAddresses.ipv6({ipv6CidrBlock: '2600:1f18:32d9:800::/0'}),
   target: eigw,
 });
 
@@ -198,7 +200,7 @@ if (!dynamoEndpoint.vpcEndpointId) {
 if (routeToCgw.targetRouterType != RouterType.CARRIER_GATEWAY) {
   throw new Error('Carrier gateway route has wrong route type');
 }
-
+ 
 if (routeToEigw.targetRouterType != RouterType.EGRESS_ONLY_INTERNET_GATEWAY) {
   throw new Error('Egress Only Internet Gateway has wrong router type');
 }
@@ -231,11 +233,10 @@ if (routeToDynamo.targetRouterType != RouterType.VPC_ENDPOINT) {
   throw new Error('Dynamo route has wrong route type');
 }
 
-var myStacks: cdk.Stack[] = [];
+i = 0;
 for (const stackName in stacks) {
-    myStacks.push(stacks[stackName])
+  new IntegTest(app, 'integtest-model-' + i, {
+    testCases: [stacks[stackName]],
+  });
+  i++;
 }
-
-new IntegTest(app, 'integtest-model', {
-    testCases: myStacks,
-});

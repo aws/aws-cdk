@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "414b9f73e8de64fd5cc2fc9746acc06ff5424434b666e1ca2a1a7c006e6c4fdc": {
+      "source": {
+        "path": "aws-cdk-routev2-alpha.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "414b9f73e8de64fd5cc2fc9746acc06ff5424434b666e1ca2a1a7c006e6c4fdc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
