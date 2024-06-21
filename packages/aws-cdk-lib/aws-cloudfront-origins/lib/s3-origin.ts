@@ -131,11 +131,11 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
       public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
         if (!this.originAccessControl) {
           // Create a new origin access control if not specified
-          this.originAccessControl = new cloudfront.S3OriginAccessControl(scope, 'S3OriginAccessControl');
+          this.originAccessControl = new cloudfront.OriginAccessControl(scope, 'S3OriginAccessControl');
         }
 
-        if (!cloudfront.S3OriginAccessControl.isS3OriginAccessControl(this.originAccessControl)) {
-          throw new Error('Origin access control for an S3 origin must be a S3OriginAccessControl');
+        if (this.originAccessControl.originAccessControlOriginType !== cloudfront.OriginAccessControlOriginType.S3) {
+          throw new Error(`Origin access control for an S3 origin must have origin type '${cloudfront.OriginAccessControlOriginType.S3}', got origin type '${this.originAccessControl.originAccessControlOriginType}'`);
         }
 
         const distributionId = options.distributionId;
@@ -178,6 +178,7 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
       private grantDistributionAccessToBucket(distributionId: string): iam.AddToResourcePolicyResult {
         const oacReadOnlyBucketPolicyStatement = new iam.PolicyStatement(
           {
+            sid: 'AllowS3OACAccess',
             effect: iam.Effect.ALLOW,
             principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
             actions: ['s3:GetObject'],
