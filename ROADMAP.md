@@ -44,6 +44,7 @@ The CDK team is committed to supporting our existing library of AWS L2 abstracti
 - 🚦️ [VPC Construct with Full Control](https://github.com/aws/aws-cdk/issues/5927)
 - 🔍 [Rewrite EKS L2](https://github.com/aws/aws-cdk-rfcs/issues/605)
 - 🔍 [Glue Alpha Construct Graduation](https://github.com/aws/aws-cdk-rfcs/issues/497)
+- 🔍 [Auto-generation of L2 constructs](https://github.com/aws/aws-cdk-rfcs/issues/611)
 
 ### Updates/Enhancements
 
