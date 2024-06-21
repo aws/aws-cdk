@@ -518,8 +518,9 @@ describe('toolkit', () => {
             configuration: cloudExecutable.configuration,
             sdkProvider: cloudExecutable.sdkProvider,
             deployments: new FakeCloudFormation({
-              'Test-Stack-E': { Foo: 'Bar' },
-              'Test-Stack-F': { Foo: 'Bar' },
+              // Stacks should be selected by their hierarchical ID, which is their displayName, not by the stack ID.
+              'Test-Stack-E-Display-Name': { Foo: 'Bar' },
+              'Test-Stack-F-Display-Name': { Foo: 'Bar' },
             }, notificationArns),
           });
 
@@ -539,7 +540,7 @@ describe('toolkit', () => {
             configuration: cloudExecutable.configuration,
             sdkProvider: cloudExecutable.sdkProvider,
             deployments: new FakeCloudFormation({
-              'Test-Stack-E': { Foo: 'Bar' },
+              'Test-Stack-E-Display-Name': { Foo: 'Bar' },
             }, notificationArns),
           });
 
