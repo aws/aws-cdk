@@ -1130,7 +1130,7 @@ describe('tests', () => {
   });
 
   describe('dualstack without public ipv4', () => {
-    test('Cannot create dualstack without public ipv4 NetworkLoadBalancer', () => {
+    test('Throws when creating a dualstack without public ipv4 and a NetworkLoadBalancer', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
 
