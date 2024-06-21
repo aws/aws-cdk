@@ -2104,13 +2104,13 @@ test('enableBatchBuilds()', () => {
       repo: 'testrepo',
     }),
   });
-  expect(project.isBatchBuildsEnabled).toBeFalsy();
+  expect(project.isBatchBuildEnabled).toBeFalsy();
 
   const returnVal = project.enableBatchBuilds();
   if (!returnVal?.role) {
     throw new Error('Expecting return value with role');
   }
-  expect(project.isBatchBuildsEnabled).toBeTruthy();
+  expect(project.isBatchBuildEnabled).toBeTruthy();
 
   Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     BuildBatchConfig: {

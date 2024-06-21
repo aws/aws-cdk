@@ -276,12 +276,6 @@ abstract class ProjectBase extends Resource implements IProject {
   protected _connections: ec2.Connections | undefined;
 
   /**
-   * Actual value will be determined for a Project
-   * using a getter depending on the effect of enableBatchBuilds
-   */
-  public readonly isBatchBuildEnabled = false;
-
-  /**
    * Access the Connections object.
    * Will fail if this Project does not have a VPC set.
    */
@@ -290,6 +284,14 @@ abstract class ProjectBase extends Resource implements IProject {
       throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
     }
     return this._connections;
+  }
+
+  /**
+   * Actual value will be determined for a Project
+   * using a getter depending on the effect of enableBatchBuilds
+   */
+  public get isBatchBuildEnabled(): boolean {
+    return false;
   }
 
   public enableBatchBuilds(): BatchBuildConfig | undefined {
@@ -1220,7 +1222,7 @@ export class Project extends ProjectBase {
     this.node.addValidation({ validate: () => this.validateProject() });
   }
 
-  public get isBatchBuildsEnabled(): boolean {
+  public get isBatchBuildEnabled(): boolean {
     return !!this._batchServiceRole;
   }
 
