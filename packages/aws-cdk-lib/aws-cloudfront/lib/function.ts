@@ -35,7 +35,7 @@ export abstract class FunctionCode {
 
   protected findReplace(code: string, instructions: FunctionCodeFindReplace[] | undefined): string {
     if (!instructions?.length) {
-      return 'code';
+      return code;
     }
     function reducer(acc: string, inst: FunctionCodeFindReplace) {
       const replacement = typeof inst.replace === 'string' ? inst.replace : Token.asString(inst.replace);
@@ -79,6 +79,8 @@ export interface FunctionCodeOptions {
    * A set of instructions for the CDK to find text in the CloudFront function's code and replace it with other text.
    *
    * The CDK does each find/replace in order, with the output of one find/replace becomes the input to the next.
+   *
+   * @default - do not modify the code
    */
   readonly findReplace?: FunctionCodeFindReplace[];
 }
