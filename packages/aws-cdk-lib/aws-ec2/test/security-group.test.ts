@@ -1,7 +1,8 @@
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
 import { App, Intrinsic, Lazy, Stack, Token } from '../../core';
 import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';
+
+import { Template } from '../../assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securityGroupDisableInlineRules';
 
@@ -589,6 +590,30 @@ describe('security group lookup', () => {
 
     // WHEN
     const securityGroup = SecurityGroup.fromLookupByName(stack, 'SG1', 'my-security-group', vpc);
+
+    // THEN
+    expect(securityGroup.securityGroupId).toEqual('sg-12345678');
+    expect(securityGroup.allowAllOutbound).toEqual(true);
+
+  });
+
+  test('can look up a security group by filters', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const securityGroup = SecurityGroup.fromLookupByFilters(stack, 'SG1', {
+      ownerId: "012345678901",
+      description: "my description",
+      tagKeys: ["tagA", "tagB"],
+      tags: { tagC: ["valueC", "otherValueC"], tagD: ["valueD"] }
+    });
 
     // THEN
     expect(securityGroup.securityGroupId).toEqual('sg-12345678');

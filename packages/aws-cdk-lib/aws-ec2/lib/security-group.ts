@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
-import { Connections } from './connections';
+import * as cxapi from '../../cx-api';
+import * as cxschema from '../../cloud-assembly-schema';
+
+import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer, Peer } from './peer';
-import { Port } from './port';
+
+import { Connections } from './connections';
+import { Construct } from 'constructs';
 import { IVpc } from './vpc';
-import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
-import * as cxapi from '../../cx-api';
+import { Port } from './port';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
@@ -388,6 +390,13 @@ export class SecurityGroup extends SecurityGroupBase {
   }
 
   /**
+   * Look up a security group by name.
+   */
+  public static fromLookupByFilters(scope: Construct, id: string, filters: SecurityGroupLookupOptions) {
+    return this.fromLookupAttributes(scope, id, filters);
+  }
+
+  /**
    * Import an existing security group into this app.
    *
    * This method will assume that the Security Group has a rule in it which allows
@@ -434,7 +443,15 @@ export class SecurityGroup extends SecurityGroupBase {
    * Look up a security group.
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
-    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
+    if ([
+      options.securityGroupId,
+      options.securityGroupName,
+      options.vpc?.vpcId,
+      options.description,
+      options.ownerId,
+      options.tagKeys,
+      options.tags,
+    ].some(opt => Token.isUnresolved(opt))) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
     }
 
@@ -444,6 +461,10 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: options.securityGroupId,
         securityGroupName: options.securityGroupName,
         vpcId: options.vpc?.vpcId,
+        description: options.description,
+        ownerId: options.ownerId,
+        tagKeys: options.tagKeys,
+        tags: options.tags,
       },
       dummyValue: {
         securityGroupId: 'sg-12345678',
@@ -843,4 +864,32 @@ interface SecurityGroupLookupOptions {
    * @default Don't filter on VPC
    */
   readonly vpc?: IVpc;
+
+  /**
+   * Security group description
+   *
+   * @default Don't filter on description
+   */
+  readonly description?: string;
+
+  /**
+   * Account ID of the owner of the security group
+   *
+   * @default Don't filter on owner ID
+   */
+  readonly ownerId?: string;
+
+  /**
+   * The keys of tags assigned to the security group
+   *
+   * @default Don't filter on tag key
+   */
+  readonly tagKeys?: string[];
+
+  /**
+   * The key/value combination of a tag assigned to the security group
+   *
+   * @default Don't filter on tags
+   */
+  readonly tags?: Record<string, string[]>;
 }
