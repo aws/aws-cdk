@@ -36,7 +36,7 @@ export interface DatabaseClusterProps {
   /**
    * What version of the database to start
    *
-   * @default - The default engine version.
+   * @default -  the latest major version
    */
   readonly engineVersion?: string;
 
@@ -258,6 +258,7 @@ export interface DatabaseClusterProps {
    *
    * I/O-optimized storage is supported starting with engine version 5.0.0.
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-storage-configs.html
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/release-notes.html#release-notes.11-21-2023
    *
    * @default StorageType.STANDARD
    */
