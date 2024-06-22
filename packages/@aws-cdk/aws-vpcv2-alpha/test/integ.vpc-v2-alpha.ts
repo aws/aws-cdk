@@ -9,7 +9,7 @@
 //  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-import { AddressFamily, Ipam } from '../lib';
+// import { AddressFamily, Ipam } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Ipv4Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
@@ -24,21 +24,21 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
-const ipam = new Ipam(stack, 'Ipam');
-
-const pool = ipam.publicScope.addPool({
-  addressFamily: AddressFamily.IP_V4,
-  provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
-  locale: 'us-east-1',
-});
+// const ipam = new Ipam(stack, 'Ipam');
+//
+// const pool = ipam.publicScope.addPool({
+//   addressFamily: AddressFamily.IP_V4,
+//   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
+//   locale: 'us-east-1',
+// });
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.ipv4Ipam({
-      ipv4IpamPoolId: pool.ipamPoolId,
-      ipv4NetmaskLength: 20,
-    }),
+    // vpc_v2.IpAddresses.ipv4Ipam({
+    //   ipv4IpamPoolId: pool.ipamPoolId,
+    //   ipv4NetmaskLength: 20,
+    // }),
     vpc_v2.IpAddresses.amazonProvidedIpv6(),
     // vpc_v2.IpAddresses.ipv4('192.168.0.0/16'), Test for invalid RFC range
   ],

@@ -1,7 +1,7 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, VpcV2Options } from './vpc-v2';
 import { Construct } from 'constructs';
-import { Resource } from 'aws-cdk-lib';
+import { RemovalPolicy, Resource } from 'aws-cdk-lib';
 
 export enum AddressFamily {
   IP_V4,
@@ -23,7 +23,7 @@ export interface CfnPoolOptions extends PoolOptions {
   readonly ipamScopeId: string;
 }
 
-export interface PoolOptions{
+export interface PoolOptions {
   readonly addressFamily: AddressFamily;
   readonly provisionedCidrs: CfnIPAMPool.ProvisionedCidrProperty[];
   readonly locale?: string;
@@ -70,7 +70,7 @@ export class IpamPool extends Resource {
   constructor(scope: Construct, id: string, options: CfnPoolOptions) {
     super(scope, id);
 
-    const cfnPool = new CfnIPAMPool(scope, id, {
+    const cfnPool = new CfnIPAMPool(this, id, {
       addressFamily: getAddressFamilyString(options.addressFamily),
       provisionedCidrs: options.provisionedCidrs,
       locale: options.locale,
@@ -116,7 +116,7 @@ export class IpamScope extends Resource {
  * Creates new IPAM with default public and private scope
  */
 
-export class Ipam {
+export class Ipam extends Resource {
   //Refers to default public scope
   public readonly publicScope: IpamPublicScope;
   //Refers to default private scope
@@ -126,9 +126,12 @@ export class Ipam {
   // can be used later to add a custom private scope
   public readonly ipamId: string;
   constructor(scope: Construct, id: string) {
-    this._ipam = new CfnIPAM(scope, id);
-    this.publicScope = new IpamPublicScope(scope, this._ipam.attrPublicDefaultScopeId);
-    this.privateScope = new IpamPrivateScope(scope, this._ipam.attrPrivateDefaultScopeId);
+    super(scope, id);
+
+    this._ipam = new CfnIPAM(this, 'Resource');
+    this._ipam.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    this.publicScope = new IpamPublicScope(this, this._ipam.attrPublicDefaultScopeId);
+    this.privateScope = new IpamPrivateScope(this, this._ipam.attrPrivateDefaultScopeId);
     this.ipamId = this._ipam.attrIpamId;
   }
 }
@@ -147,12 +150,12 @@ export class IpamPublicScope {
    * There can be multiple options supported under a scope
    * for pool like using amazon provided IPv6
    */
-  addPool(options: PoolOptions): IpamPool {
+  addPool(id: string, options: PoolOptions): IpamPool {
 
     /**
      * creates pool under default public scope (IPV4, IPV6)
      */
-    return new IpamPool(this.scope, 'PublicPool', {
+    return new IpamPool(this.scope, id, {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultPublicScopeId,
@@ -179,18 +182,15 @@ export class IpamPrivateScope {
    * There can be multiple options supported under a scope
    * for pool like using amazon provided IPv6
    */
-  addPool(options: PoolOptions): IpamPool {
+  addPool(id: string, options: PoolOptions): IpamPool {
 
-    return new IpamPool(this.scope, 'PrivatePool', {
+    return new IpamPool(this.scope, id, {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultprivateScopeId,
       //TODO: should be stack region or props input
       locale: options.locale,
     });
-    /**
-     * creates pool under default public scope (IPV4, IPV6)
-     */
   }
 }
 

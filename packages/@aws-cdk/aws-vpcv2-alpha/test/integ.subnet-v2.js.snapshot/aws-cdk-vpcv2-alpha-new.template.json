@@ -1,25 +1,49 @@
 {
  "Resources": {
-  "Ipam": {
-   "Type": "AWS::EC2::IPAM"
+  "Ipam2108E2ED": {
+   "Type": "AWS::EC2::IPAM",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "PrivatePool": {
+  "IpamPrivatePool400DCA5C": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv4",
     "IpamScopeId": {
      "Fn::GetAtt": [
-      "Ipam",
+      "Ipam2108E2ED",
       "PrivateDefaultScopeId"
      ]
     },
-    "Locale": "us-west-2",
+    "Locale": "us-east-1",
     "ProvisionedCidrs": [
      {
       "Cidr": "10.2.0.0/16"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "IpamPrivatePool0628BCC19": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "Ipam2108E2ED",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "Locale": "us-east-1",
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "10.3.0.0/16"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "VPCTestFB735C86": {
    "Type": "AWS::EC2::VPC",
@@ -34,7 +58,7 @@
    "Properties": {
     "Ipv4IpamPoolId": {
      "Fn::GetAtt": [
-      "PrivatePool",
+      "IpamPrivatePool400DCA5C",
       "IpamPoolId"
      ]
     },
@@ -98,16 +122,30 @@
   "testsbubnetSubnet77337845": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
-    "Ipv6CidrBlock": "",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "VPCTestFB735C86",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
     "VpcId": {
      "Fn::GetAtt": [
       "VPCTestFB735C86",
       "VpcId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "VPCTestSecondaryIp1BB4FC62E",
+    "VPCTestSecondaryIp24E984B36"
+   ]
   },
   "testsbubnetRouteTableF40F025B": {
    "Type": "AWS::EC2::RouteTable",
@@ -118,7 +156,11 @@
       "VpcId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "VPCTestSecondaryIp1BB4FC62E",
+    "VPCTestSecondaryIp24E984B36"
+   ]
   },
   "testsbubnetRouteTableAssociationD6D083FA": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -129,7 +171,11 @@
     "SubnetId": {
      "Ref": "testsbubnetSubnet77337845"
     }
-   }
+   },
+   "DependsOn": [
+    "VPCTestSecondaryIp1BB4FC62E",
+    "VPCTestSecondaryIp24E984B36"
+   ]
   }
  },
  "Parameters": {
