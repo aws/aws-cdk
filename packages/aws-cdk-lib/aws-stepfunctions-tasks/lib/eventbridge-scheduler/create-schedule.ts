@@ -191,6 +191,9 @@ export class EventBridgeSchedulerTarget {
     this.deadLetterQueue = props.deadLetterQueue;
   }
 
+  /**
+   * return the target object for the EventBridge Scheduler
+   */
   public renderTargetObject(): any {
     return {
       Arn: this.arn,
