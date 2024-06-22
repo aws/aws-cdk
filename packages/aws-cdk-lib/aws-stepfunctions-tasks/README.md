@@ -1135,8 +1135,6 @@ declare const deadLetterQueue: sqs.Queue;
 const schedulerRole = new iam.Role(this, 'SchedulerRole', {
   assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
 });
-// To encrypt and decrypt the data
-key.grantEncryptDecrypt(schedulerRole);
 // To send the message to the queue
 // This policy changes depending on the type of target.
 schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({

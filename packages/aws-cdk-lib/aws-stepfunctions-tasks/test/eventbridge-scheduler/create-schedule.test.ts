@@ -158,10 +158,6 @@ describe('Create Schedule', () => {
       actions: ['sqs:SendMessage'],
       resources: [targetQueue.queueArn],
     }));
-    schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['kms:Decrypt'],
-      resources: [kmsKey.keyArn],
-    }));
 
     const testDate = new Date();
     const testEndDate = new Date(testDate.getTime() + 1000 * 60 * 60);
@@ -331,11 +327,48 @@ describe('Create Schedule', () => {
         },
       ],
     });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'TargetQueue08AD2B3C',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'SchedulerRole59E73443',
+        },
+      ],
+    });
   });
 
   test.each([
     '', 'a'.repeat(65),
-  ])('throw error for invalid clientToken', (clientToken) => {
+  ])('throw error for invalid clientToken length', (clientToken) => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
@@ -345,6 +378,18 @@ describe('Create Schedule', () => {
         clientToken,
       });
     }).toThrow(`ClientToken must be between 1 and 64 characters long. Got: ${clientToken.length}`);
+  });
+
+  test.each(['*', 'abc.'])('throw error for invalid client token format', (clientToken) => {
+    expect(() => {
+      new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+        scheduleName: 'TestSchedule',
+        scheduleExpression: 'rate(1 minute)',
+        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+        role: schedulerRole,
+        clientToken,
+      });
+    }).toThrow(`ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${clientToken}`);
   });
 
   test('throw error for invalid description', () => {
@@ -361,7 +406,7 @@ describe('Create Schedule', () => {
   });
 
   test.each([
-    Duration.minutes(0), Duration.minutes(1441),
+    Duration.minutes(0), Duration.minutes(1441), Duration.seconds(59), Duration.millis(999),
   ])('throw error for invalid flexibleTimeWindow', (flexibleTimeWindow) => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
@@ -376,7 +421,7 @@ describe('Create Schedule', () => {
 
   test.each([
     '', 'a'.repeat(65),
-  ])('throw error for invalid groupName', (groupName) => {
+  ])('throw error for invalid groupName length', (groupName) => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
@@ -386,5 +431,29 @@ describe('Create Schedule', () => {
         groupName,
       });
     }).toThrow(`GroupName must be between 1 and 64 characters long. Got: ${groupName.length}`);
+  });
+
+  test.each(['*', 'abc['])('throw error for invalid groupName format', (groupName) => {
+    expect(() => {
+      new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+        scheduleName: 'TestSchedule',
+        scheduleExpression: 'rate(1 minute)',
+        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+        role: schedulerRole,
+        groupName,
+      });
+    }).toThrow(`GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${groupName}`);
+  });
+
+  test.each(['', 'a'.repeat(51)])('throw error for invalid timezone length', (timezone) => {
+    expect(() => {
+      new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+        scheduleName: 'TestSchedule',
+        scheduleExpression: 'rate(1 minute)',
+        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+        role: schedulerRole,
+        timezone,
+      });
+    }).toThrow(`Timezone must be between 1 and 50 characters long. Got: ${timezone.length}`);
   });
 });

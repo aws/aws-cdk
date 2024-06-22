@@ -180,6 +180,10 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
     this.validateProps(props);
 
+    if (props.kmsKey) {
+      props.kmsKey.grantEncryptDecrypt(props.role);
+    }
+
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -242,23 +246,38 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
   }
 
   private validateProps(props: EventBridgeSchedulerCreateScheduleTaskProps) {
-    if (
-      props.clientToken !== undefined &&
-      !Token.isUnresolved(props.clientToken) &&
-      (props.clientToken.length > 64 || props.clientToken.length < 1)) {
-      throw new Error(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`);
+    if (props.clientToken !== undefined && !Token.isUnresolved(props.clientToken)) {
+      if (props.clientToken.length > 64 || props.clientToken.length < 1) {
+        throw new Error(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`);
+      }
+      if (!/^[a-zA-Z0-9-_]+$/.test(props.clientToken)) {
+        throw new Error(`ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${props.clientToken}`);
+      }
     }
 
     if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 512) {
       throw new Error(`Description must be less than 512 characters long. Got: ${props.description.length}`);
     }
 
-    if (props.flexibleTimeWindow && (props.flexibleTimeWindow.toMinutes() < 1 || props.flexibleTimeWindow.toMinutes() > 1440)) {
+    if (props.flexibleTimeWindow && (
+      // To handle durations of less than one minute, comparisons will be made in milliseconds
+      props.flexibleTimeWindow.toMilliseconds() < 60000 ||
+      props.flexibleTimeWindow.toMinutes() > 1440
+    )) {
       throw new Error('FlexibleTimeWindow must be between 1 and 1440 minutes');
     }
 
-    if (props.groupName !== undefined && !Token.isUnresolved(props.groupName) && (props.groupName.length > 64 || props.groupName.length < 1)) {
-      throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
+    if (props.groupName !== undefined && !Token.isUnresolved(props.groupName)) {
+      if (props.groupName.length > 64 || props.groupName.length < 1) {
+        throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
+      }
+      if (!/^[a-zA-Z0-9-_.]+$/.test(props.groupName)) {
+        throw new Error(`GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${props.groupName}`);
+      }
+    }
+
+    if (props.timezone !== undefined && !Token.isUnresolved(props.timezone) && (props.timezone.length > 50 || props.timezone.length < 1)) {
+      throw new Error(`Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`);
     }
   }
 }
