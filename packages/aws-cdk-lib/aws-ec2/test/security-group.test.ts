@@ -1,8 +1,7 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '../../assertions';
 import { App, Intrinsic, Lazy, Stack, Token } from '../../core';
 import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';
-
-import { Template } from '../../assertions';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securityGroupDisableInlineRules';
 
@@ -609,10 +608,10 @@ describe('security group lookup', () => {
 
     // WHEN
     const securityGroup = SecurityGroup.fromLookupByFilters(stack, 'SG1', {
-      ownerId: "012345678901",
-      description: "my description",
-      tagKeys: ["tagA", "tagB"],
-      tags: { tagC: ["valueC", "otherValueC"], tagD: ["valueD"] }
+      ownerId: '012345678901',
+      description: 'my description',
+      tagKeys: ['tagA', 'tagB'],
+      tags: { tagC: ['valueC', 'otherValueC'], tagD: ['valueD'] },
     });
 
     // THEN

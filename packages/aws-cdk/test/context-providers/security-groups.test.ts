@@ -229,71 +229,71 @@ describe('security group context provider plugin', () => {
   });
 
   test('looks up by security group description, owner id, tag keys, and tags', async () => {
-        // GIVEN
-        const provider = new SecurityGroupContextProviderPlugin(mockSDK);
+    // GIVEN
+    const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
-        AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-          expect(_params).toEqual({
-            Filters: [
+    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
+      expect(_params).toEqual({
+        Filters: [
+          {
+            Name: 'owner-id',
+            Values: ['012345678901'],
+          },
+          {
+            Name: 'description',
+            Values: ['my description'],
+          },
+          {
+            Name: 'tag-key',
+            Values: ['tagA', 'tagB'],
+          },
+          {
+            Name: 'tag:tagC',
+            Values: ['valueC', 'otherValueC'],
+          },
+          {
+            Name: 'tag:tagD',
+            Values: ['valueD'],
+          },
+        ],
+      });
+      cb(null, {
+        SecurityGroups: [
+          {
+            GroupId: 'sg-1234',
+            IpPermissionsEgress: [
               {
-                Name: 'owner-id',
-                Values: ['012345678901'],
+                IpProtocol: '-1',
+                IpRanges: [
+                  { CidrIp: '0.0.0.0/0' },
+                ],
               },
               {
-                Name: 'description',
-                Values: ['my description'],
-              },
-              {
-                Name: 'tag-key',
-                Values: ['tagA', 'tagB'],
-              },
-              {
-                Name: 'tag:tagC',
-                Values: ['valueC', 'otherValueC'],
-              },
-              {
-                Name: 'tag:tagD',
-                Values: ['valueD'],
-              },
-            ],
-          });
-          cb(null, {
-            SecurityGroups: [
-              {
-                GroupId: 'sg-1234',
-                IpPermissionsEgress: [
-                  {
-                    IpProtocol: '-1',
-                    IpRanges: [
-                      { CidrIp: '0.0.0.0/0' },
-                    ],
-                  },
-                  {
-                    IpProtocol: '-1',
-                    Ipv6Ranges: [
-                      { CidrIpv6: '::/0' },
-                    ],
-                  },
+                IpProtocol: '-1',
+                Ipv6Ranges: [
+                  { CidrIpv6: '::/0' },
                 ],
               },
             ],
-          });
-        });
-    
-        // WHEN
-        const res = await provider.getValue({
-          account: '1234',
-          region: 'us-east-1',
-          ownerId: "012345678901",
-          description: "my description",
-          tagKeys: ["tagA", "tagB"],
-          tags: { tagC: ["valueC", "otherValueC"], tagD: ["valueD"] }
-        });
-    
-        // THEN
-        expect(res.securityGroupId).toEqual('sg-1234');
-        expect(res.allowAllOutbound).toEqual(true);
-  })
+          },
+        ],
+      });
+    });
+
+    // WHEN
+    const res = await provider.getValue({
+      account: '1234',
+      region: 'us-east-1',
+      ownerId: '012345678901',
+      description: 'my description',
+      tagKeys: ['tagA', 'tagB'],
+      tags: { tagC: ['valueC', 'otherValueC'], tagD: ['valueD'] },
+    });
+
+    // THEN
+    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.allowAllOutbound).toEqual(true);
+  });
 
   test('detects non all-outbound egress', async () => {
     // GIVEN

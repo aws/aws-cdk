@@ -1,14 +1,12 @@
-import * as cxapi from '../../cx-api';
-import * as cxschema from '../../cloud-assembly-schema';
-
-import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import { Construct } from 'constructs';
+import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer, Peer } from './peer';
-
-import { Connections } from './connections';
-import { Construct } from 'constructs';
-import { IVpc } from './vpc';
 import { Port } from './port';
+import { IVpc } from './vpc';
+import * as cxschema from '../../cloud-assembly-schema';
+import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
@@ -837,7 +835,7 @@ function isAllTrafficRule(rule: any) {
  *
  * Either `securityGroupName` or `securityGroupId` has to be specified.
  */
-interface SecurityGroupLookupOptions {
+export interface SecurityGroupLookupOptions {
   /**
    * The name of the security group
    *

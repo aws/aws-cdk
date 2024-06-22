@@ -1,10 +1,9 @@
-import * as AWS from 'aws-sdk';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-
-import { ContextProviderPlugin } from '../api/plugin';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as AWS from 'aws-sdk';
 import { Mode } from '../api/aws-auth/credentials';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
+import { ContextProviderPlugin } from '../api/plugin';
 
 export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
@@ -58,7 +57,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
           Name: `tag:${key}`,
           Values: values,
         });
-      })
+      });
     }
 
     const response = await ec2.describeSecurityGroups({
