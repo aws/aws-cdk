@@ -1198,7 +1198,7 @@ describe('DatabaseCluster', () => {
         vpc,
         engineVersion,
       });
-    }).toThrow(`Invalid engine version: ${engineVersion}. Engine version must be in the format x.y.z`);
+    }).toThrow(`Invalid engine version: '${engineVersion}'. Engine version must be in the format x.y.z`);
   });
 
   describe('storage type', () => {
@@ -1244,7 +1244,7 @@ describe('DatabaseCluster', () => {
           storageType: StorageType.IOPT1,
           engineVersion: '3.6.0',
         });
-      }).toThrow('I/O-optimized storage is supported starting with engine version 5.0.0, got 3.6.0');
+      }).toThrow("I/O-optimized storage is supported starting with engine version 5.0.0, got '3.6.0'");
     });
   });
 });
