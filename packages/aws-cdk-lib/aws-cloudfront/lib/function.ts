@@ -38,8 +38,33 @@ export abstract class FunctionCode {
       return 'code';
     }
     function reducer(acc: string, inst: FunctionCodeFindReplace) {
-      const r = typeof inst.replace === 'string' ? inst.replace : Token.asString(inst.replace);
-      return inst.all ? acc.replaceAll(inst.find, r) : acc.replace(inst.find, r);
+      const replacement = typeof inst.replace === 'string' ? inst.replace : Token.asString(inst.replace);
+      if (inst.all) {
+        // Use String.prototype.replaceAll once eslib is es2021+
+        // Simplification of https://github.com/es-shims/String.prototype.replaceAll/blob/main/implementation.js
+        const advanceBy = Math.max(1, inst.find.length);
+        const matchPositions: number[] = [];
+        for (
+          let position = acc.indexOf(inst.find);
+          position !== -1;
+          position = acc.indexOf(inst.find, position + advanceBy)
+        ) {
+          matchPositions.push(position);
+        }
+        let endOfLastMatch = 0;
+        let result = '';
+        for (const matchPos of matchPositions) {
+          result += acc.slice(endOfLastMatch, matchPos);
+          result += replacement;
+          endOfLastMatch = matchPos + inst.find.length;
+        }
+        if (endOfLastMatch < acc.length) {
+          result += acc.slice(endOfLastMatch);
+        }
+        return result;
+      } else {
+        return acc.replace(inst.find, replacement);
+      }
     }
     return instructions.reduce(reducer, code);
   }
