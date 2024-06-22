@@ -549,7 +549,7 @@ In which case you use `FunctionCode.fromFile()` instead of `FunctionCode.fromInl
 
 ```ts
 new cloudfront.Function(this, 'Function', {
-  code: cloudfront.FunctionCode.fromFile('function-code.js'),
+  code: cloudfront.FunctionCode.fromFile({ filePath: 'function-code.js' }),
   runtime: cloudfront.FunctionRuntime.JS_2_0
 });
 ```
@@ -566,7 +566,7 @@ Consider this CloudFront function in `function-code.js`. The intention to
 replace `%DEFAULT_REDIRECT%` with a URL that is different for different
 environments.
 
-```ts
+```js
 function handler(event) {
   // …
   return {
@@ -576,33 +576,37 @@ function handler(event) {
 }
 ```
 
-You can achieve this in your CDK app with this.
+You can have CDK replace `%DEFAULT_REDIRECT%` by adding a `findReplace` 
+option to `FunctionCode.fromFile`. The `findReplace` option is also
+available with `FunctionCode.fromInline`.
 
 ```ts
 declare const defaultRedirect: string // The actual URL depends on the environment, dev vs prod for example
 new cloudfront.Function(this, 'Function', {
-  code: cloudfront.FunctionCode.fromFile('function-code.js'),
   runtime: cloudfront.FunctionRuntime.JS_2_0,
-  findReplace: [
-    { find: '%DEFAULT_REDIRECT%', replace: defaultRedirect, all: true }, // all defaults to false
-  ],
+  code: cloudfront.FunctionCode.fromFile({
+    filePath: 'function-code.js',
+    findReplace: [
+      { find: '%DEFAULT_REDIRECT%', replace: defaultRedirect, all: true }, // all defaults to false
+    ],
+  }),
 });
 ```
 
 If `defaultRedirect` were `https://www.example.com/` during synthesis, the CDK would
 update your CloudFront function with this code.
 
-```ts
+```js
 function handler(event) {
   // …
   return {
     statusCode: 302, statusDescription: 'Found', 
-    headers: { location: { value: 'https://www.example.com/' } }, // %DEFAULT_REDIRECT% is replaced during CDK synth
+    headers: { location: { value: 'https://www.example.com/' } }, // https://www.example.com/ is replaced during CDK synth
   }
 }
 ```
 
-> **Note:** This is simple find and replace, like that of a non-intelligent text 
+> **Note:** This is a simple find and replace, like that of a non-intelligent text 
 > editor. The CDK does not look for whole identifiers, strings, or words. The
 > CDK replaces anything in your code that matches `find` regardless of its context.
 >
@@ -675,12 +679,12 @@ new cloudfront.Function(this, 'Function', {
 
 In your CloudFront function, put `%KVS_ID%` where you would normally put the key value store ID.
 
-```ts
+```js
 import cf from 'cloudfront';
 const kvsId = "%KVS_ID%";
 const kvsHandle = cf.kvs(kvsId);
 
-function handler(event) {
+async function handler(event) {
   // …
 }
 ```
@@ -690,10 +694,12 @@ Then in your CDK app, find `%KVS_ID%` and replace it with the key value store ID
 ```ts
 const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
 new cloudfront.Function(this, 'Function', {
-  code: cloudfront.FunctionCode.fromFile('function-code.js'),
   runtime: cloudfront.FunctionRuntime.JS_2_0,
   keyValueStore: store,
-  findReplace: [{ find: '%KVS_ID%', replace: store.keyValueStoreId }],
+  code: cloudfront.FunctionCode.fromFile({
+    filePath: 'function-code.js',
+    findReplace: [{ find: '%KVS_ID%', replace: store.keyValueStoreId }],
+  }),
 });
 ```
 
