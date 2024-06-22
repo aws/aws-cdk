@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
-import { IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 
 /**
  * Represents the function's source code
@@ -13,9 +13,10 @@ export abstract class FunctionCode {
    * Inline code for function
    * @returns code object with inline code.
    * @param code The actual function code
+   * @param options the options for the inline code
    */
-  public static fromInline(code: string): FunctionCode {
-    return new InlineCode(code);
+  public static fromInline(code: string, options?: InlineCodeOptions): FunctionCode {
+    return new InlineCode(code, options);
   }
 
   /**
@@ -31,12 +32,66 @@ export abstract class FunctionCode {
    * renders the function code
    */
   public abstract render(): string;
+
+  protected findReplace(code: string, instructions: FunctionCodeFindReplace[] | undefined): string {
+    if (!instructions?.length) {
+      return 'code';
+    }
+    function reducer(acc: string, inst: FunctionCodeFindReplace) {
+      const r = typeof inst.replace === 'string' ? inst.replace : Token.asString(inst.replace);
+      return inst.all ? acc.replaceAll(inst.find, r) : acc.replace(inst.find, r);
+    }
+    return instructions.reduce(reducer, code);
+  }
+
 }
+
+/**
+ * Options common to both inline code and code from an external file.
+ */
+export interface FunctionCodeOptions {
+  /**
+   * A set of instructions for the CDK to find text in the CloudFront function's code and replace it with other text.
+   *
+   * The CDK does each find/replace in order, with the output of one find/replace becomes the input to the next.
+   */
+  readonly findReplace?: FunctionCodeFindReplace[];
+}
+
+/**
+ * An instruction for the CDK to find text in a CloudFront function's code and replacing it with other text.
+ *
+ * The CDK finds any match for the text. It is not restricted to whole identifiers, strings, or words.
+ * It is recommended to put a suffix and prefix in the find text, such as '%TEXT%' or '__TEXT__'.
+ */
+export interface FunctionCodeFindReplace {
+  /**
+   * The text to find.
+   */
+  readonly find: string;
+
+  /**
+   * The text to replace the find text with.
+   */
+  readonly replace: string | Token;
+
+  /**
+   * Replace all occurrences, or just the first.
+   *
+   * @default false
+   */
+  readonly all?: boolean;
+}
+
+/**
+ * Options when including the function's code in line with the CDK app's code.
+ */
+export interface InlineCodeOptions extends FunctionCodeOptions { }
 
 /**
  * Options when reading the function's code from an external file
  */
-export interface FileCodeOptions {
+export interface FileCodeOptions extends FunctionCodeOptions {
   /**
    * The path of the file to read the code from
    */
@@ -48,12 +103,12 @@ export interface FileCodeOptions {
  */
 class InlineCode extends FunctionCode {
 
-  constructor(private code: string) {
+  constructor(private code: string, private options?: InlineCodeOptions) {
     super();
   }
 
   public render(): string {
-    return this.code;
+    return this.findReplace(this.code, this.options?.findReplace);
   }
 }
 
@@ -67,7 +122,10 @@ class FileCode extends FunctionCode {
   }
 
   public render(): string {
-    return fs.readFileSync(this.options.filePath, { encoding: 'utf-8' });
+    return this.findReplace(
+      fs.readFileSync(this.options.filePath, { encoding: 'utf-8' }),
+      this.options.findReplace,
+    );
   }
 }
 
