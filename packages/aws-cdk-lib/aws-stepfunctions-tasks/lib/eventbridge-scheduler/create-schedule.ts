@@ -117,7 +117,12 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
   readonly target: EventBridgeSchedulerTarget;
 }
 
-export interface EventBridgeSchedulerTarget {
+/**
+ * Properties for `EventBridgeSchedulerTarget`
+ *
+ * @see @see https://docs.aws.amazon.com/scheduler/latest/APIReference/API_Target.html#API_Target_Contents
+ */
+export interface EventBridgeSchedulerTargetProps {
   /**
    * The Amazon Resource Name (ARN) of the target.
    *
@@ -126,30 +131,99 @@ export interface EventBridgeSchedulerTarget {
   readonly arn: string;
 
   /**
-    * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
-    */
+  * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
+  */
   readonly role: iam.IRole;
 
   /**
-    * The input to the target.
-    *
-    * @default - EventBridge Scheduler delivers a default notification to the target
-    */
+  * The input to the target.
+  *
+  * @default - EventBridge Scheduler delivers a default notification to the target
+  */
   readonly input?: string;
 
   /**
-    * The retry policy settings
-    *
-    * @default - Do not retry
-    */
+  * The retry policy settings
+  *
+  * @default - Do not retry
+  */
   readonly retryPolicy?: RetryPolicy;
 
   /**
-    * Dead letter queue for failed events
-    *
-    * @default - No dead letter queue
-    */
+  * Dead letter queue for failed events
+  *
+  * @default - No dead letter queue
+  */
   readonly deadLetterQueue?: sqs.IQueue;
+}
+
+/**
+ * The target that EventBridge Scheduler will invoke
+ */
+export class EventBridgeSchedulerTarget {
+  /**
+   * The Amazon Resource Name (ARN) of the target
+   */
+  public arn: string;
+  /**
+   * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked
+   */
+  public role: iam.IRole;
+  /**
+   * The input to the target
+   */
+  public input?: string;
+  /**
+   * The retry policy settings
+   */
+  public retryPolicy?: RetryPolicy;
+  /**
+   * Dead letter queue for failed events
+   */
+  public deadLetterQueue?: sqs.IQueue;
+
+  constructor(props: EventBridgeSchedulerTargetProps) {
+    this.validateProps(props);
+    this.arn = props.arn;
+    this.role = props.role;
+    this.input = props.input;
+    this.retryPolicy = props.retryPolicy;
+    this.deadLetterQueue = props.deadLetterQueue;
+  }
+
+  public renderTargetObject() {
+    return {
+      Arn: this.arn,
+      RoleArn: this.role.roleArn,
+      Input: this.input,
+      RetryPolicy: this.retryPolicy ? {
+        MaximumEventAgeInSeconds: this.retryPolicy.maximumEventAge.toSeconds(),
+        MaximumRetryAttempts: this.retryPolicy.maximumRetryAttempts,
+      } : undefined,
+      DeadLetterConfig: this.deadLetterQueue ? {
+        Arn: this.deadLetterQueue.queueArn,
+      } : undefined,
+    };
+  }
+
+  private validateProps(props: EventBridgeSchedulerTargetProps) {
+    if (props.input !== undefined && !Token.isUnresolved(props.input) && props.input.length < 1) {
+      throw new Error('Input must be at least 1 character long.');
+    }
+
+    if (props.retryPolicy) {
+      if (
+        !Number.isInteger(props.retryPolicy.maximumRetryAttempts) ||
+        props.retryPolicy.maximumRetryAttempts < 0 ||
+        props.retryPolicy.maximumRetryAttempts > 185
+      ) {
+        throw new Error('MaximumRetryAttempts must be an integer between 0 and 185');
+      }
+      if (props.retryPolicy.maximumEventAge.toMilliseconds() < 60000 || props.retryPolicy.maximumEventAge.toSeconds() > 86400) {
+        throw new Error('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
+      }
+    }
+  }
 }
 
 /**
@@ -233,18 +307,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         ScheduleExpressionTimezone: this.props.timezone,
         StartDate: this.props.startDate ? this.props.startDate.toISOString() : undefined,
         State: (this.props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-        Target: {
-          Arn: this.props.target.arn,
-          RoleArn: this.props.target.role.roleArn,
-          Input: this.props.target.input,
-          RetryPolicy: this.props.target.retryPolicy ? {
-            MaximumEventAgeInSeconds: this.props.target.retryPolicy.maximumEventAge.toSeconds(),
-            MaximumRetryAttempts: this.props.target.retryPolicy.maximumRetryAttempts,
-          } : undefined,
-          DeadLetterConfig: this.props.target.deadLetterQueue ? {
-            Arn: this.props.target.deadLetterQueue.queueArn,
-          } : undefined,
-        },
+        Target: this.props.target.renderTargetObject(),
       },
     };
   }

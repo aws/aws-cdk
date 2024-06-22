@@ -1155,7 +1155,7 @@ const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(thi
   scheduleExpression: 'rate(5 minute)',
   timezone: 'UTC',
   enabled: true,
-  target: {
+  target: new tasks.EventBridgeSchedulerTarget({
     arn: targetQueue.queueArn,
     role: schedulerRole,
     retryPolicy: {
@@ -1163,7 +1163,7 @@ const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(thi
       maximumEventAge: Duration.minutes(5),
     },
     deadLetterQueue,
-  },
+  }),
 });
 ```
 
