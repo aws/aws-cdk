@@ -1189,9 +1189,7 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
-      contributorInsightsSpecification: props.contributorInsightsEnabled === undefined
-        ? undefined
-        : { enabled: props.contributorInsightsEnabled ? true : false },
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
