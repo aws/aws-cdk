@@ -512,7 +512,7 @@ new cloudfront.Distribution(this, 'distro', {
 
 ### CloudFront Function
 
-You can also deploy CloudFront functions and add them to a CloudFront distribution.
+You can deploy CloudFront functions and add them to a CloudFront distribution.
 
 ```ts
 // Add a cloudfront Function to a Distribution
@@ -533,19 +533,27 @@ new cloudfront.Distribution(this, 'distro', {
 });
 ```
 
-It will auto-generate the name of the function and deploy it to the `live` stage.
-
-Additionally, you can load the function's code from a file using the `FunctionCode.fromFile()` method.
-
-If you set `autoPublish` to false, the function will not be automatically published to the LIVE stage when it’s created.
+During deployment, the CDK updates the function in both the `DEVELOPMENT` stage and the `LIVE` stage. 
+You can stop the CDK from updating the `LIVE` stage by setting `autoPublish` to false.
 
 ```ts
 new cloudfront.Function(this, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
   runtime: cloudfront.FunctionRuntime.JS_2_0,
-  autoPublish: false
+  autoPublish: false    // Only update the function in the DEVELOPMENT stage during CDK deploy
 });
 ```
+
+The function's code can be in a separate file.
+In which case you use `FunctionCode.fromFile()` instead of `FunctionCode.fromInline()`.
+
+```ts
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromFile('function-code.js'),
+  runtime: cloudfront.FunctionRuntime.JS_2_0
+});
+```
+
 
 ### Key Value Store
 
