@@ -220,8 +220,8 @@ const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(this, 'MyVpcEndpoint',
   privateDnsEnabled: false,
 });
 
-const service = new Service(this, 'Service', {
-  source: Source.fromEcrPublic({
+const service = new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
     imageConfiguration: {
       port: 8000,
     },
@@ -230,7 +230,7 @@ const service = new Service(this, 'Service', {
   isPubliclyAccessible: false,
 });
 
-new VpcIngressConnection(this, 'VpcIngressConnection', {
+new apprunner.VpcIngressConnection(this, 'VpcIngressConnection', {
   vpc,
   interfaceVpcEndpoint,
   service,
