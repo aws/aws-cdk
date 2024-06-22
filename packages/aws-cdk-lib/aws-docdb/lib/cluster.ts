@@ -530,7 +530,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
     if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
-      throw new Error(`Invalid engine version: ${props.engineVersion}. Engine version must be in the format x.y.z`);
+      throw new Error(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`);
     }
 
     if (
