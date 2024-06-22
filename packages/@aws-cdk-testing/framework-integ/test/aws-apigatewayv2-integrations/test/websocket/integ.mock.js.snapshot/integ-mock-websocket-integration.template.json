@@ -46,10 +46,7 @@
      "Ref": "mywsapi32E6CE11"
     },
     "IntegrationType": "MOCK",
-    "IntegrationUri": "",
-    "RequestTemplates": {
-     "application/json": "{\"statusCode\":200}"
-    }
+    "IntegrationUri": ""
    }
   },
   "mywsapisendmessageRouteintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse72380ED8": {

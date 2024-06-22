@@ -11,26 +11,6 @@ import {
  */
 export interface WebSocketMockIntegrationProps {
   /**
-   * A map of Apache Velocity templates that are applied on the request
-   * payload.
-   *
-   * ```
-   *   { "application/json": "{ \"statusCode\": 200 }" }
-   * ```
-   *
-   * @default - No request template provided to the integration.
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html
-   */
-  readonly requestTemplates?: { [contentType: string]: string };
-
-  /**
-   * The template selection expression for the integration.
-   *
-   * @default - No template selection expression provided.
-   */
-  readonly templateSelectionExpression?: string;
-
-  /**
    * Integration responses configuration
    *
    * @default - No response configuration provided.
@@ -56,8 +36,6 @@ export class WebSocketMockIntegration extends CustomResponseWebSocketRoute {
     return {
       type: WebSocketIntegrationType.MOCK,
       uri: '',
-      requestTemplates: this.props.requestTemplates,
-      templateSelectionExpression: this.props.templateSelectionExpression,
       responses: this.props.responses,
     };
   }

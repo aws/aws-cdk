@@ -113,10 +113,7 @@
                               "Ref": "mywsapi32E6CE11"
                             },
                             "integrationType": "MOCK",
-                            "integrationUri": "",
-                            "requestTemplates": {
-                              "application/json": "{\"statusCode\":200}"
-                            }
+                            "integrationUri": ""
                           }
                         },
                         "constructInfo": {

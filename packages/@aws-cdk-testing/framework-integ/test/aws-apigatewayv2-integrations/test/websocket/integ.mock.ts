@@ -23,7 +23,6 @@ const stage = new WebSocketStage(stack, 'mystage', {
 
 webSocketApi.addRoute('sendmessage', {
   integration: new WebSocketMockIntegration('DefaultIntegration', {
-    requestTemplates: { 'application/json': JSON.stringify({ statusCode: 200 }) },
     responses: [
       {
         responseKey: WebSocketIntegrationResponseKey.default,
