@@ -29,7 +29,7 @@ export interface PoolOptions {
   readonly locale?: string;
 }
 
-export interface IpamScopeOptions {
+export interface IpamScopeProps {
   readonly ipamId: string;
 }
 
@@ -103,9 +103,9 @@ export class IpamScope extends Resource {
 
   private readonly _ipamScope: CfnIPAMScope;
   public readonly ipamScopeId: string;
-  constructor(scope: Construct, id: string, props: IpamScopeOptions) {
+  constructor(scope: Construct, id: string, props: IpamScopeProps) {
     super(scope, id);
-    this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
+    this._ipamScope = new CfnIPAMScope(this, 'IpamScope', {
       ipamId: props.ipamId,
     });
     this.ipamScopeId = this._ipamScope.attrIpamScopeId;
