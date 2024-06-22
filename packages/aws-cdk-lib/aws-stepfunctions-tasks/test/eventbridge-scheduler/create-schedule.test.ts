@@ -28,8 +28,10 @@ describe('Create Schedule', () => {
     const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
       scheduleExpression: 'rate(1 minute)',
-      target: targetQueue.queueArn,
-      role: schedulerRole,
+      target: {
+        arn: targetQueue.queueArn,
+        role: schedulerRole,
+      },
     });
 
     new sfn.StateMachine(stack, 'stateMachine', {
@@ -175,13 +177,15 @@ describe('Create Schedule', () => {
       scheduleExpression: 'rate(1 minute)',
       timezone: 'UTC',
       enabled: true,
-      target: targetQueue.queueArn,
-      role: schedulerRole,
-      retryPolicy: {
-        maximumRetryAttempts: 2,
-        maximumEventAge: Duration.minutes(5),
+      target: {
+        arn: targetQueue.queueArn,
+        role: schedulerRole,
+        retryPolicy: {
+          maximumRetryAttempts: 2,
+          maximumEventAge: Duration.minutes(5),
+        },
+        deadLetterQueue,
       },
-      deadLetterQueue,
     });
 
     new sfn.StateMachine(stack, 'stateMachine', {
@@ -373,8 +377,10 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-        role: schedulerRole,
+        target: {
+          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+          role: schedulerRole,
+        },
         clientToken,
       });
     }).toThrow(`ClientToken must be between 1 and 64 characters long. Got: ${clientToken.length}`);
@@ -385,8 +391,10 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-        role: schedulerRole,
+        target: {
+          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+          role: schedulerRole,
+        },
         clientToken,
       });
     }).toThrow(`ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${clientToken}`);
@@ -398,8 +406,10 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-        role: schedulerRole,
+        target: {
+          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+          role: schedulerRole,
+        },
         description: invalidDescription,
       });
     }).toThrow(`Description must be less than 512 characters long. Got: ${invalidDescription.length}`);
@@ -412,8 +422,10 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-        role: schedulerRole,
+        target: {
+          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+          role: schedulerRole,
+        },
         flexibleTimeWindow,
       });
     }).toThrow('FlexibleTimeWindow must be between 1 and 1440 minutes');
@@ -426,8 +438,10 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-        role: schedulerRole,
+        target: {
+          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+          role: schedulerRole,
+        },
         groupName,
       });
     }).toThrow(`GroupName must be between 1 and 64 characters long. Got: ${groupName.length}`);
@@ -438,8 +452,10 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-        role: schedulerRole,
+        target: {
+          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+          role: schedulerRole,
+        },
         groupName,
       });
     }).toThrow(`GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${groupName}`);
@@ -450,8 +466,10 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-        role: schedulerRole,
+        target: {
+          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+          role: schedulerRole,
+        },
         timezone,
       });
     }).toThrow(`Timezone must be between 1 and 50 characters long. Got: ${timezone.length}`);

@@ -114,37 +114,41 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
    */
   readonly enabled?: boolean;
 
+  readonly target: EventBridgeSchedulerTarget;
+}
+
+export interface EventBridgeSchedulerTarget {
   /**
    * The Amazon Resource Name (ARN) of the target.
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets.html
    */
-  readonly target: string;
+  readonly arn: string;
 
   /**
-   * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
-   */
+    * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
+    */
   readonly role: iam.IRole;
 
   /**
-   * The input to the target.
-   *
-   * @default - EventBridge Scheduler delivers a default notification to the target
-   */
+    * The input to the target.
+    *
+    * @default - EventBridge Scheduler delivers a default notification to the target
+    */
   readonly input?: string;
 
   /**
-   * The retry policy settings
-   *
-   * @default - Do not retry
-   */
+    * The retry policy settings
+    *
+    * @default - Do not retry
+    */
   readonly retryPolicy?: RetryPolicy;
 
   /**
-   * Dead letter queue for failed events
-   *
-   * @default - No dead letter queue
-   */
+    * Dead letter queue for failed events
+    *
+    * @default - No dead letter queue
+    */
   readonly deadLetterQueue?: sqs.IQueue;
 }
 
@@ -181,7 +185,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
     this.validateProps(props);
 
     if (props.kmsKey) {
-      props.kmsKey.grantEncryptDecrypt(props.role);
+      props.kmsKey.grantEncryptDecrypt(props.target.role);
     }
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
@@ -199,7 +203,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         ],
       }),
       new iam.PolicyStatement({
-        resources: [props.role.roleArn],
+        resources: [props.target.role.roleArn],
         actions: [
           'iam:PassRole',
         ],
@@ -230,15 +234,15 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         StartDate: this.props.startDate ? this.props.startDate.toISOString() : undefined,
         State: (this.props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
         Target: {
-          Arn: this.props.target,
-          RoleArn: this.props.role.roleArn,
-          Input: this.props.input,
-          RetryPolicy: this.props.retryPolicy ? {
-            MaximumEventAgeInSeconds: this.props.retryPolicy.maximumEventAge.toSeconds(),
-            MaximumRetryAttempts: this.props.retryPolicy.maximumRetryAttempts,
+          Arn: this.props.target.arn,
+          RoleArn: this.props.target.role.roleArn,
+          Input: this.props.target.input,
+          RetryPolicy: this.props.target.retryPolicy ? {
+            MaximumEventAgeInSeconds: this.props.target.retryPolicy.maximumEventAge.toSeconds(),
+            MaximumRetryAttempts: this.props.target.retryPolicy.maximumRetryAttempts,
           } : undefined,
-          DeadLetterConfig: this.props.deadLetterQueue ? {
-            Arn: this.props.deadLetterQueue.queueArn,
+          DeadLetterConfig: this.props.target.deadLetterQueue ? {
+            Arn: this.props.target.deadLetterQueue.queueArn,
           } : undefined,
         },
       },
