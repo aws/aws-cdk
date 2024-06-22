@@ -87,6 +87,13 @@ export interface SlackChannelConfigurationProps {
    * @default - The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set.
    */
   readonly guardrailPolicies?: iam.IManagedPolicy[];
+
+  /**
+   * Enables use of a user role requirement in your chat configuration.
+   *
+   * @default false
+   */
+  readonly userRoleRequired?: boolean;
 }
 
 /**
@@ -300,6 +307,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       snsTopicArns: cdk.Lazy.list({ produce: () => this.notificationTopics.map(topic => topic.topicArn) }, { omitEmpty: true } ),
       loggingLevel: props.loggingLevel?.toString(),
       guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
+      userRoleRequired: props.userRoleRequired,
     });
 
     // Log retention
