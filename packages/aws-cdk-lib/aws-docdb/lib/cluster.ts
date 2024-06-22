@@ -259,7 +259,7 @@ export interface DatabaseClusterProps {
    * I/O-optimized storage is supported starting with engine version 5.0.0.
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-storage-configs.html
    *
-   * @default - StorageType.STANDARD
+   * @default StorageType.STANDARD
    */
   readonly storageType?: StorageType;
 }
