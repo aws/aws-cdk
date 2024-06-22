@@ -26,6 +26,7 @@ new AwsCustomResource(stack, 'DescribeVpcAttribute', {
   },
   policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
   timeout: cdk.Duration.minutes(3),
+  serviceTimeout: cdk.Duration.minutes(15),
   vpc: vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
 });

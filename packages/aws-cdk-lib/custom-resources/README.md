@@ -299,6 +299,7 @@ new lambda.Function(this, 'OnEventHandler', {
 
 ### Timeouts
 
+#### User-Defined Lambda Function Timeouts
 Users are responsible to define the timeouts for the AWS Lambda functions for
 user-defined handlers. It is recommended not to exceed a **14 minutes** timeout,
 since all framework functions are configured to time out after 15 minutes, which
@@ -308,6 +309,36 @@ If your operation takes over **14 minutes**, the recommended approach is to
 implement an [asynchronous provider](#asynchronous-providers-iscomplete), and
 then configure the timeouts for the asynchronous retries through the
 `queryInterval` and the `totalTimeout` options.
+
+```ts
+// This example shows how to set the timeout for the User-Defined Lambda function
+new AwsCustomResource(stack, 'DescribeVpcAttribute', {
+  // The rest of your code
+  timeout: cdk.Duration.minutes(3),
+});
+```
+
+#### CloudFormation Timeout
+You can specify `ServiceTimeout` to set the maximum time that CloudFormation will
+wait for the custom resource provider to respond. The default is 60 minutes.
+You can either set this value on the `AwsCustomResource` construct or directly on the
+`CustomResource` construct (both are L2).
+The default is 30 minutes.
+```ts
+// This example shows how to set the timeout on CloudFormation
+new AwsCustomResource(stack, 'CustomResource', {
+  // ... the rest of your code
+  serviceTimeout: cdk.Duration.minutes(15),
+});
+```
+Or:
+```ts
+// This example shows how to set the timeout on CloudFormation
+new CustomResource(stack, 'CustomResource', {
+  // ... the rest of your code
+  serviceTimeout: cdk.Duration.minutes(15),
+});
+```
 
 ### Provider Framework Examples
 
