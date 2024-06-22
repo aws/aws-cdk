@@ -308,15 +308,27 @@ describe('CloudFront Function', () => {
       });
     });
 
+    test('no-op when not found', () => {
+      const stack = new Stack();
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code', {
+          findReplace: [{ find: 'text', replace: '12', all: true }],
+        }),
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionCode: 'code',
+      });
+    });
+
     test('replace first only', () => {
       const stack = new Stack();
       new Function(stack, 'TestFn', {
         code: FunctionCode.fromInline('Some text replaced with other text', {
-          findReplace: [{ find: 'text', replace: '12', all: false }],
+          findReplace: [{ find: 'text', replace: '', all: false }],
         }),
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
-        FunctionCode: 'Some 12 replaced with other text',
+        FunctionCode: 'Some  replaced with other text',
       });
     });
 
