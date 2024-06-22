@@ -361,7 +361,7 @@ describe('Invoke Model', () => {
     }).toThrow(/Output S3 object version is not supported./);
   });
 
-  test('guardrail', () => {
+  test('guardrail when gurdarilIdentifier is set to arn', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -379,6 +379,10 @@ describe('Invoke Model', () => {
         guardrailIdentifier: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
         guardrailVersion: 'DRAFT',
       },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -405,6 +409,111 @@ describe('Invoke Model', () => {
         ContentType: 'application/json',
         GuardrailIdentifier: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
         GuardrailVersion: 'DRAFT',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'bedrock:InvokeModel',
+            Effect: 'Allow',
+            Resource: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+          },
+          {
+            Action: 'bedrock:ApplyGuardrail',
+            Effect: 'Allow',
+            Resource: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
+          },
+        ],
+      },
+    });
+  });
+
+  test('guardrail when gurdarilIdentifier is set to id', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    // WHEN
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      contentType: 'application/json',
+      body: sfn.TaskInput.fromObject(
+        {
+          prompt: 'Hello world',
+        },
+      ),
+      guardrail: {
+        guardrailIdentifier: 'testid',
+        guardrailVersion: 'DRAFT',
+      },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+        Body: {
+          prompt: 'Hello world',
+        },
+        ContentType: 'application/json',
+        GuardrailIdentifier: 'testid',
+        GuardrailVersion: 'DRAFT',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'bedrock:InvokeModel',
+            Effect: 'Allow',
+            Resource: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+          },
+          {
+            Action: 'bedrock:ApplyGuardrail',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':bedrock:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':guardrail/testid',
+                ],
+              ],
+            },
+          },
+        ],
       },
     });
   });

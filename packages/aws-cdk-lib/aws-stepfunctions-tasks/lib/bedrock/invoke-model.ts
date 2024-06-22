@@ -221,15 +221,18 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     }
 
     if (this.props.guardrail) {
+      const isArn = this.props.guardrail.guardrailIdentifier.startsWith('arn:');
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['bedrock:ApplyGuardrail'],
           resources: [
-            Stack.of(this).formatArn({
-              service: 'bedrock',
-              resource: 'guardrail',
-              resourceName: this.props.guardrail.guardrailIdentifier,
-            }),
+            isArn
+              ? this.props.guardrail.guardrailIdentifier
+              : Stack.of(this).formatArn({
+                service: 'bedrock',
+                resource: 'guardrail',
+                resourceName: this.props.guardrail.guardrailIdentifier,
+              }),
           ],
         }),
       );
