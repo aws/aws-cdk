@@ -1181,7 +1181,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test.each(['1.0.0.1', '01.1.0', '1.0'])('throw error for invalid engine version %s', (engineVersion: string) => {
+  test.each(['1.0.0.1', '01.1.0', '1.0', '-1', '-0.1', 'abc', '1.0.a', 'a.b.c'])('throw error for invalid engine version %s', (engineVersion: string) => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
