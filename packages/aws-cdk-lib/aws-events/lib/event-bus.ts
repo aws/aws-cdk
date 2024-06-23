@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
 import * as iam from '../../aws-iam';
+import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 
 /**
@@ -78,6 +79,15 @@ export interface EventBusProps {
    * @default - no partner event source
    */
   readonly eventSourceName?: string;
+
+  /**
+   * Dead Letter Queue for the event bus
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html#eb-rule-dlq
+   *
+   * @default - no dead letter queue
+   */
+  readonly deadLetterQueue?: sqs.IQueue;
 }
 
 /**
@@ -320,6 +330,9 @@ export class EventBus extends EventBusBase {
     const eventBus = new CfnEventBus(this, 'Resource', {
       name: this.physicalName,
       eventSourceName,
+      deadLetterConfig: props?.deadLetterQueue ? {
+        arn: props.deadLetterQueue.queueArn,
+      } : undefined,
     });
 
     this.eventBusArn = this.getResourceArnAttribute(eventBus.attrArn, {

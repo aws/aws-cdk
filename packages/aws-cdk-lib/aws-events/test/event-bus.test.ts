@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import { Effect } from '../../aws-iam';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
 import { EventBus } from '../lib';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 describe('event bus', () => {
   test('default event bus', () => {
@@ -624,5 +625,22 @@ describe('event bus', () => {
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:PutEvents'],
     }))).toThrow('Event Bus policy statements must have a sid');
+  });
+
+  test('set dead letter queue', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const dlq = new sqs.Queue(stack, 'DLQ');
+    new EventBus(stack, 'Bus', {
+      deadLetterQueue: dlq,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      DeadLetterConfig: {
+        Arn: {
+          'Fn::GetAtt': ['DLQ581697C4', 'Arn'],
+        },
+      },
+    });
   });
 });
