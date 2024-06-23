@@ -1142,6 +1142,15 @@ new tasks.GlueStartJobRun(this, 'Task', {
 });
 ```
 
+You can choose the execution class by setting the `executionClass` property.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  executionClass: tasks.ExecutionClass.FLEX,
+});
+```
+
 ### StartCrawlerRun
 
 You can call the [`StartCrawler`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-StartCrawler) API from a `Task` state through AWS SDK service integrations.
@@ -1309,13 +1318,13 @@ Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-func
 
 ### CreateJob
 
-The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job. 
+The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
 For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
 
-You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`. 
+You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
 
-Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) & 
-[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer 
+Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) &
+[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer
 [CreateJobRequest](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-model-createjobrequest) for all other optional parameters.
 
 ```ts
