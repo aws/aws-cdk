@@ -240,7 +240,7 @@ export class Route extends Resource implements IRouteV2 {
     this.targetRouterType = 'routerType' in this.target ? this.target.routerType : RouterType.VPC_ENDPOINT;
 
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
-    if (!(this.target instanceof GatewayVpcEndpoint) && this.targetRouterType != RouterType.GATEWAY) {
+    if (!(this.target instanceof GatewayVpcEndpoint)) {
       this.resource = new CfnRoute(this, 'Route', {
         routeTableId: this.routeTable.routeTableId,
         destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,

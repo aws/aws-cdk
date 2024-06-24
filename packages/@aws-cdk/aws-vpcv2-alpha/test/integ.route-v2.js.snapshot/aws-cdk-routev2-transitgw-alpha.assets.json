@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "db16d56130031f14789697da4074f2d4808fbedecf270369d921fefa4c7e0319": {
+    "ca3654458b31e6adf5fceaff1dd2e217a15198105d02739d779f3f0cf9ebb75f": {
       "source": {
         "path": "aws-cdk-routev2-transitgw-alpha.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "db16d56130031f14789697da4074f2d4808fbedecf270369d921fefa4c7e0319.json",
+          "objectKey": "ca3654458b31e6adf5fceaff1dd2e217a15198105d02739d779f3f0cf9ebb75f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

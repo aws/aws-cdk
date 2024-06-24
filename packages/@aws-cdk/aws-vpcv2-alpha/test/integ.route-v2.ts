@@ -24,16 +24,16 @@ import { Fn } from 'aws-cdk-lib';
 const app = new cdk.App();
 
 const stacks: {[id: string] : cdk.Stack} = {
-    'default': new cdk.Stack(app, 'aws-cdk-routev2-alpha'),
-    'cgw': new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha'),
-    'eigw': new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha'),
-    'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha'),
-    'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha'),
-    'natgw': new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha'),
-    'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha'),
-    'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha'),
-    'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha'),
-    'dynamodb': new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha'),
+  'default': new cdk.Stack(app, 'aws-cdk-routev2-alpha', {stackName: 'DefaultVpcDeploy'}),
+  'cgw': new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha', {stackName: 'CarrierGatewayVpc'}), //
+  'eigw': new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', {stackName: 'EgressOnlyIgwVpc'}),
+  'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}), //
+  'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}),
+  'natgw': new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha', {stackName: 'NatGwVpc'}),
+  'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', {stackName: 'NetworkInterfaceVpc'}),
+  'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}),
+  'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}),
+  'dynamodb': new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', {stackName: 'DynamodbEndpointVpc'}),
 };
 
 var vpcs: {[id: string] : vpc_v2.VpcV2} = {};
@@ -51,7 +51,7 @@ for (const stackName in stacks) {
   if (stackName == 'eigw') {
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-west-1a',
+      availabilityZone: 'us-east-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
@@ -60,7 +60,7 @@ for (const stackName in stacks) {
     // use empty ipv6 that doesn't overlap
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-west-1a',
+      availabilityZone: 'us-east-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,

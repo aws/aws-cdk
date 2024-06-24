@@ -253,7 +253,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1b",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -507,7 +507,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1c",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
@@ -750,7 +750,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1d",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -882,6 +882,34 @@
           "testIGWRoute": {
             "id": "testIGWRoute",
             "path": "aws-cdk-routev2-igw-alpha/testIGWRoute",
+            "children": {
+              "Route": {
+                "id": "Route",
+                "path": "aws-cdk-routev2-igw-alpha/testIGWRoute/Route",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": {
+                      "Fn::GetAtt": [
+                        "testIGW8D947AF2",
+                        "InternetGatewayId"
+                      ]
+                    },
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "TestRoottableRouteTableFA28AA38",
+                        "RouteTableId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -1103,6 +1131,34 @@
           "testVPGWRoute": {
             "id": "testVPGWRoute",
             "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGWRoute",
+            "children": {
+              "Route": {
+                "id": "Route",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGWRoute/Route",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": {
+                      "Fn::GetAtt": [
+                        "testVPGWIGW816C7C4F",
+                        "VPNGatewayId"
+                      ]
+                    },
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "TestRoottableRouteTableFA28AA38",
+                        "RouteTableId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -1190,7 +1246,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1b",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -1441,7 +1497,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1c",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -1692,7 +1748,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1d",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -2302,7 +2358,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1b",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
