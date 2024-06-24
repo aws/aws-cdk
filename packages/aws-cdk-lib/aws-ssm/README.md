@@ -1,6 +1,5 @@
 # AWS Systems Manager Construct Library
 
-
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Using existing SSM Parameters in your CDK app
@@ -155,7 +154,7 @@ without any '/' is considered a simple name, thus you should set `simpleName` to
 If the parameter name includes '/', set `simpleName` to `false`.
 
 ```ts
-declare const func: lambda.IFunction;
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const simpleParameter = new ssm.StringParameter(this, 'StringParameter', {
   // the parameter name is simple
@@ -164,6 +163,7 @@ const simpleParameter = new ssm.StringParameter(this, 'StringParameter', {
   simpleName: true, // set `simpleName` to true
 });
 
+declare const func: lambda.IFunction;
 const nonSimpleParameter = new ssm.StringParameter(this, 'StringParameter', {
   // the parameter name is not simple
   parameterName: `/${func.functionName}/my/app/param`,
