@@ -2,9 +2,9 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { Effect } from '../../aws-iam';
+import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
 import { EventBus } from '../lib';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 describe('event bus', () => {
   test('default event bus', () => {
