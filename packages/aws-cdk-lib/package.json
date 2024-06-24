@@ -135,7 +135,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.7",
+    "@aws-cdk/aws-service-spec": "^0.1.8",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -234,6 +234,7 @@
     "./aws-apprunner": "./aws-apprunner/index.js",
     "./aws-appstream": "./aws-appstream/index.js",
     "./aws-appsync": "./aws-appsync/index.js",
+    "./aws-apptest": "./aws-apptest/index.js",
     "./aws-aps": "./aws-aps/index.js",
     "./aws-arczonalshift": "./aws-arczonalshift/index.js",
     "./aws-athena": "./aws-athena/index.js",
