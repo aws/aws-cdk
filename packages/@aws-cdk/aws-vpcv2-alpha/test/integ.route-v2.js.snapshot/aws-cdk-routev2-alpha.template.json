@@ -1,0 +1,124 @@
+{
+ "Resources": {
+  "defaultC974F9E3": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "defaultSecondaryIp18DFC7C62": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "defaultC974F9E3",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "defaultSubnetDFB3A3B6": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "defaultC974F9E3",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "defaultC974F9E3",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "defaultSecondaryIp18DFC7C62"
+   ]
+  },
+  "defaultSubnetRouteTable76D6FE5A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "defaultC974F9E3",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "defaultSecondaryIp18DFC7C62"
+   ]
+  },
+  "defaultSubnetRouteTableAssociationF1D85D29": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "defaultSubnetRouteTable76D6FE5A"
+    },
+    "SubnetId": {
+     "Ref": "defaultSubnetDFB3A3B6"
+    }
+   },
+   "DependsOn": [
+    "defaultSecondaryIp18DFC7C62"
+   ]
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "defaultC974F9E3",
+      "VpcId"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

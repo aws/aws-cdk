@@ -4,7 +4,6 @@ import { Resource, Names } from 'aws-cdk-lib';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
-import { defaultSubnetName } from './util';
 
 export interface ICidr {
   readonly cidr: string;
@@ -37,8 +36,8 @@ export interface SubnetPropsV2 {
   vpc: IVpcV2;
 
   /**
-   * custom CIDR range
-   * TODO: modify to Ipv4cidr class
+   * ipv4 cidr to assign to this subnet.
+   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-cidrblock
    */
   cidrBlock: Ipv4Cidr;
 
@@ -58,18 +57,12 @@ export interface SubnetPropsV2 {
   routeTable?: IRouteTable;
 
   /**
-   * Logical name for the subnet group.
-   *
-   * This name can be used when selecting VPC subnets to distinguish
-   * between different subnet groups of the same type.
-   */
-  name?: string;
-
-  /**
    * The type of Subnet to configure.
    *
    * The Subnet type will control the ability to route and connect to the
    * Internet.
+   *
+   * TODO: Add validation check `subnetType` when adding resources (e.g. cannot add NatGateway to private)
    */
   subnetType: SubnetType;
 
@@ -89,7 +82,10 @@ export class SubnetV2 extends Resource implements ISubnet {
   public readonly subnetId: string;
 
   /**
-   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   * The variable name `internetConnectivityEstablished` does not reflect what it actually is.
+   * The naming is enforced by ISubnet. We need to keep it to maintain compatibility.
+   * It exposes the RouteTable-Subnet association so that other resources can depend on it.
+   * E.g. Resources in a subnet, when being deleted, may need the RouteTable to exist in order to delete properly
    */
   public readonly internetConnectivityEstablished: IDependable;
 
@@ -103,7 +99,7 @@ export class SubnetV2 extends Resource implements ISubnet {
   /**
    * The IPv6 CIDR Block for this subnet
    */
-  public readonly ipv6CidrBlock: string[];
+  public readonly ipv6CidrBlocks: string[];
 
   /**
    * The route table for this subnet
@@ -112,21 +108,16 @@ export class SubnetV2 extends Resource implements ISubnet {
 
   /**
    *
+   */
+  public subnetType: SubnetType;
+
+  /**
+   *
    * @param scope
    * @param id
    * @param props
    */
   private _networkAcl: INetworkAcl;
-
-  /**
-   * Isolated subnet or not
-   * @default true
-   */
-  public isIsolated?: Boolean;
-
-  public name?: string;
-
-  public subnetType: SubnetType;
 
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
@@ -145,51 +136,30 @@ export class SubnetV2 extends Resource implements ISubnet {
     });
 
     this.ipv4CidrBlock = subnet.attrCidrBlock;
-    this.ipv6CidrBlock = subnet.attrIpv6CidrBlocks;
+    this.ipv6CidrBlocks = subnet.attrIpv6CidrBlocks;
     this.subnetId = subnet.ref;
     this.availabilityZone = props.availabilityZone;
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
-    /**
-     * seems to be the main default one
-     */
-    const table = new CfnRouteTable(this, 'RouteTable', {
-      vpcId: props.vpc.vpcId,
-    });
-    this.routeTable = { routeTableId: table.ref };
+    if (props.routeTable) {
+      this.routeTable = props.routeTable;
+    } else {
+      const defaultTable = new CfnRouteTable(this, 'RouteTable', {
+        vpcId: props.vpc.vpcId,
+      });
+      this.routeTable = { routeTableId: defaultTable.ref };
+    }
+
     const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: table.ref,
+      routeTableId: this.routeTable.routeTableId,
     });
     this._internetConnectivityEstablished.add(routeAssoc);
-
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     this.subnetType = props.subnetType;
-
-    pushSubnet(props.vpc, this, props.subnetType);
-
-    /**
-     * custom route table
-     * can be moved to a function definition if we plan to change association
-     * after subnet creation
-     */
-    if (props.routeTable) {
-      this.isIsolated = false;
-      this.routeTable = props.routeTable;
-      if (props.subnetType === SubnetType.ISOLATED) {
-        throw new Error('Cannot create a route for a private isolated subnet, change type to PRIVATE');
-      }
-      new CfnSubnetRouteTableAssociation(this, 'CustomRouteTableAssociation', {
-        subnetId: this.subnetId,
-        routeTableId: props.routeTable.routeTableId,
-      });
-    }
-
-    /**optional name to be set to support filtering options */
-    this.name = props.name ?? defaultSubnetName(props.subnetType);
-
+    storeSubnetToVpcByType(props.vpc, this, props.subnetType);
   }
 
   /**
@@ -211,15 +181,22 @@ export class SubnetV2 extends Resource implements ISubnet {
   public get networkAcl(): INetworkAcl {
     return this._networkAcl;
   }
-
 }
 
-function pushSubnet(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
+function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
   const findFunctionType = subnetTypeMap[type];
   if (findFunctionType) {
     findFunctionType(vpc, subnet);
   } else {
     throw new Error(`Unsupported subnet type: ${type}`);
+  }
+
+  /**
+   * Need to set explicit dependency as during stack deletion,
+   * the cidr blocks may get deleted first and will fail as the subnets are still using the cidr blocks
+   */
+  for(const cidr of vpc.secondaryCidrBlock) {
+    subnet.node.addDependency(cidr)
   }
 }
 

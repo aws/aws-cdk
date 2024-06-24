@@ -272,6 +272,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
      */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
 
+    // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');

@@ -1,0 +1,150 @@
+{
+ "Resources": {
+  "nif44200315": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "nifSecondaryIp15ACDD6AB": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "nif44200315",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "nifSubnetAEB60456": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1c",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "nif44200315",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "nif44200315",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "nifSecondaryIp15ACDD6AB"
+   ]
+  },
+  "nifSubnetRouteTable54F701C7": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "nif44200315",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "nifSecondaryIp15ACDD6AB"
+   ]
+  },
+  "nifSubnetRouteTableAssociationE4036B9F": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "nifSubnetRouteTable54F701C7"
+    },
+    "SubnetId": {
+     "Ref": "nifSubnetAEB60456"
+    }
+   },
+   "DependsOn": [
+    "nifSecondaryIp15ACDD6AB"
+   ]
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "nif44200315",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testNWIFNetworkInterface47840299": {
+   "Type": "AWS::EC2::NetworkInterface",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "nifSubnetAEB60456"
+    }
+   }
+  },
+  "testNetIntRoute9304C2B1": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NetworkInterfaceId": {
+     "Fn::GetAtt": [
+      "testNWIFNetworkInterface47840299",
+      "Id"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

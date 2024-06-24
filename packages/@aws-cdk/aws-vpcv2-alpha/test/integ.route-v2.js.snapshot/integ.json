@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-model-9/DefaultTest": {
+      "stacks": [
+        "aws-cdk-routev2-dynamodbendpoint-alpha"
+      ],
+      "assertionStack": "integtest-model-9/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestmodel9DefaultTestDeployAssert7E93A46E"
+    }
+  }
+}

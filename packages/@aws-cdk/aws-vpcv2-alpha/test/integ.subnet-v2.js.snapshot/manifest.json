@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97187802dbd9211ecabaa11a38b49495d71b4e12fd0c8c27d304d32497b9212d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d46708c6a00979cee0c664616ae07b60b99f4863ffe592d627b9b09b6c566d0f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,22 @@
         "aws-cdk-vpcv2-alpha-new.assets"
       ],
       "metadata": {
-        "/aws-cdk-vpcv2-alpha-new/Ipam": [
+        "/aws-cdk-vpcv2-alpha-new/Ipam/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipam"
+            "data": "Ipam2108E2ED"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/PrivatePool": [
+        "/aws-cdk-vpcv2-alpha-new/Ipam/PrivatePool/PrivatePool": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PrivatePool"
+            "data": "IpamPrivatePool400DCA5C"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha-new/Ipam/PrivatePool0/PrivatePool0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamPrivatePool0628BCC19"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/VPCTest/Resource": [
@@ -85,10 +91,7 @@
         "/aws-cdk-vpcv2-alpha-new/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetSubnet77337845",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "testsbubnetSubnet77337845"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testsbubnet/RouteTable": [

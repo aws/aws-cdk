@@ -1,5 +1,5 @@
-import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
-import { IIpAddresses, IpAddresses } from './vpc-v2';
+import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { IIpAddresses } from './vpc-v2';
 import { Construct } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
 
@@ -29,7 +29,7 @@ export interface NatGatewayProps {
 }
 
 export interface NetworkInterfaceProps {
-  readonly subnetId: string;
+  readonly subnet: ISubnet;
 }
 
 export interface TransitGatewayProps {
@@ -147,7 +147,7 @@ export class NetworkInterface extends Resource implements IRouter {
     this.routerType = RouterType.NETWORK_INTERFACE;
 
     this.resource = new CfnNetworkInterface(this, 'NetworkInterface', {
-      subnetId: props.subnetId,
+      subnetId: props.subnet.subnetId,
     });
 
     this.routerId = this.resource.attrId;
@@ -198,53 +198,67 @@ export interface IRouteV2 {
 }
 
 export interface RouteProps {
+  /**
+   * The route table this route belongs to
+   */
   readonly routeTable: IRouteTable;
+
+  /**
+   * The IP address used for the destination match
+   */
   readonly destination: IIpAddresses;
+
+  /**
+   * The target gateway or endpoint of the route
+   */
   readonly target: IRouter | IVpcEndpoint;
 }
 
+/**
+ * Creates a new route with added functionality.
+ * @resource AWS::EC2::Route
+ */
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
   public readonly target: IRouter | IVpcEndpoint;
-  // public readonly routeTableId: string;
   public readonly routeTable: IRouteTable;
 
+  /**
+   * The type of router the route is targetting
+   */
   public readonly targetRouterType: RouterType
 
-  public readonly resource: CfnRoute;
+  public readonly resource?: CfnRoute;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
 
-    this.destination = props.destination ?? IpAddresses.ipv4('10.0.0.0/16');
+    this.destination = props.destination;
     this.target = props.target;
-    // this.routeTableId = props.routeTableId ?? '';
     this.routeTable = props.routeTable;
 
     this.targetRouterType = 'routerType' in this.target ? this.target.routerType : RouterType.VPC_ENDPOINT;
 
-    this.resource = new CfnRoute(this, 'Route', {
-      routeTableId: this.routeTable.routeTableId,
-      destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
-      destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
-      [routerTypeToPropName(this.targetRouterType)]: 'routerId' in this.target ? this.target.routerId : this.target.vpcEndpointId,
-    });
-
-    // this.routeTable.addRoute(this.resource.ref);
+    // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
+    if (!(this.target instanceof GatewayVpcEndpoint) && this.targetRouterType != RouterType.GATEWAY) {
+      this.resource = new CfnRoute(this, 'Route', {
+        routeTableId: this.routeTable.routeTableId,
+        destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
+        destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
+        [routerTypeToPropName(this.targetRouterType)]: 'routerId' in this.target ? this.target.routerId : this.target.vpcEndpointId,
+      });
+    }
   }
 
 }
 
 export class RouteTable extends Resource implements IRouteTable {
   public readonly routeTableId: string;
-  // public readonly routes: string[];
 
   public readonly resource: CfnRouteTable;
 
   constructor(scope: Construct, id: string, props: RouteTableProps) {
     super(scope, id);
-
-    // this.routes = Array<string>();
 
     this.resource = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
@@ -252,14 +266,6 @@ export class RouteTable extends Resource implements IRouteTable {
 
     this.routeTableId = this.resource.attrRouteTableId;
   }
-
-  // function addRoute() {
-  //   return;
-  // }
-
-  // function getRoute(routeId: string) {
-  //   return;
-  // }
 }
 
 export interface RouteTableProps {
