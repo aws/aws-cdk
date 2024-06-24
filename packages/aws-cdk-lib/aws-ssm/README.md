@@ -143,3 +143,31 @@ When specifying an `allowedPattern`, the values provided as string literals
 are validated against the pattern and an exception is raised if a value
 provided does not comply.
 
+## Using Tokens in parameter name
+
+When using [CDK Tokens](https://docs.aws.amazon.com/cdk/v2/guide/tokens.html) in parameter name,
+you need to explicitly set `simpleName` property. Setting `simpleName` to incorrect boolean
+value may result in unexpected behaviours, such as getting duplicate '/' in the parameter ARN
+or missing '/' in the parameter ARN.
+
+`simpleName` is used to indicates whether the parameter name is a simple name. A parameter name
+without any '/' is considered a simple name, thus you should set `simpleName` to `true`.
+If the parameter name includes '/', set `simpleName` to `false`.
+
+```ts
+declare const func: lambda.IFunction;
+
+const simpleParameter = new ssm.StringParameter(this, 'StringParameter', {
+  // the parameter name is simple
+  parameterName: 'parameter',
+  stringValue: 'SOME_VALUE',
+  simpleName: true, // set `simpleName` to true
+});
+
+const nonSimpleParameter = new ssm.StringParameter(this, 'StringParameter', {
+  // the parameter name is not simple
+  parameterName: `/${func.functionName}/my/app/param`,
+  stringValue: 'SOME_VALUE',
+  simpleName: false, // set `simpleName` to false
+});
+```
