@@ -399,13 +399,16 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
   readonly forceDynamicReference?: boolean;
 
   /**
-   * The AWS account sharing this ssm parameter with current deploying account.
-   * When it's specified, the sharing account has to create an AWS RAM ResourceShare that shares the parmater
-   * with current account and the current account has to accept the invitation. Specifying this property
-   * implies to use CfnParameter only and `forceDynamicReference` cannot be enabled as cloudformation
-   * dynamic reference does not support cross account sharing.
+   * Specifies the AWS account that is sharing the SSM parameter with the current deploying account.
    *
-   * @default - not from a cross-account sharing.
+   * When this property is set, the following must occur:
+   * 1. The sharing account must create an AWS RAM ResourceShare that shares the parameter.
+   * 2. The current account must accept the invitation to the resource share.
+   *
+   * Setting this property implies that a `CfnParameter` must be used, and `forceDynamicReference` cannot be enabled.
+   * This is because CloudFormation dynamic references do not support cross-account parameter sharing.
+   *
+   * @default - The parameter is not being shared from a different AWS account.
    */
   readonly sharingAccount?: string;
 }
