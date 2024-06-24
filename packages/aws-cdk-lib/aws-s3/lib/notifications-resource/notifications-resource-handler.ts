@@ -84,7 +84,7 @@ export class NotificationsResourceHandler extends Construct {
 
     const handlerSource = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3', 'notifications-resource-handler', 'index.py'), 'utf8');
 
-    // Removing lines that starts with '#' (comment lines).
+    // Removing lines that starts with '#' (comment lines)
     const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');
 
     const resource = new InLineLambda(this, 'Resource', {
