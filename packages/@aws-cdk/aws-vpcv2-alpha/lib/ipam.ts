@@ -1,7 +1,8 @@
+/* eslint-disable no-bitwise */
 import { CfnIPAM, CfnIPAMPool, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, VpcV2Options } from './vpc-v2';
 import { Construct } from 'constructs';
-import { Resource } from 'aws-cdk-lib';
+import { RemovalPolicy, Resource } from 'aws-cdk-lib';
 
 export enum AddressFamily {
   IP_V4,
@@ -23,13 +24,22 @@ export interface CfnPoolOptions extends PoolOptions {
   readonly ipamScopeId: string;
 }
 
-export interface PoolOptions{
+export interface PoolOptions {
   readonly addressFamily: AddressFamily;
-  readonly provisionedCidrs: CfnIPAMPool.ProvisionedCidrProperty[];
+  readonly provisionedCidrs?: CfnIPAMPool.ProvisionedCidrProperty[];
   readonly locale?: string;
+  readonly publicIpSource?: string;
+  /**
+  * Limits which service in AWS that the pool can be used in.
+  *
+  * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+  *
+  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+  */
+  readonly awsService?: string;
 }
 
-export interface IpamScopeOptions {
+export interface IpamScopeProps {
   readonly ipamId: string;
 }
 
@@ -50,6 +60,11 @@ export interface IpamOptions {
   readonly ipv4IpamPoolId?: string;
 
   /**
+   * ipv4 IPAM pool
+   */
+  readonly ipv4IpamPool?: IpamPool;
+
+  /**
    * CIDR Mask for Vpc
    *
    * @default - Only required when using AWS Ipam
@@ -61,7 +76,7 @@ export interface IpamOptions {
    *
    * @default - Only required when using AWS Ipam
    */
-  readonly ipv6IpamPoolId?: string;
+  readonly ipv6IpamPool?: IpamPool;
 }
 
 export class IpamPool extends Resource {
@@ -70,11 +85,13 @@ export class IpamPool extends Resource {
   constructor(scope: Construct, id: string, options: CfnPoolOptions) {
     super(scope, id);
 
-    const cfnPool = new CfnIPAMPool(scope, id, {
+    const cfnPool = new CfnIPAMPool(this, id, {
       addressFamily: getAddressFamilyString(options.addressFamily),
       provisionedCidrs: options.provisionedCidrs,
       locale: options.locale,
       ipamScopeId: options.ipamScopeId,
+      publicIpSource: options.publicIpSource,
+      awsService: options.awsService,
     });
     this.ipamPoolId = cfnPool.attrIpamPoolId;
     cfnPool.applyRemovalPolicy(undefined);
@@ -89,7 +106,7 @@ export class IpamIpv4 implements IIpAddresses {
 
     return {
       ipv4NetmaskLength: this.props.ipv4NetmaskLength,
-      ipv4IpamPoolId: this.props.ipv4IpamPoolId,
+      ipv4IpamPool: this.props.ipv4IpamPool,
     };
   }
 }
@@ -97,15 +114,16 @@ export class IpamIpv4 implements IIpAddresses {
 /**
  * Creates custom Ipam Scope, can only be private
  * (can be used for adding custom scopes to an existing IPAM)
+ * @resource AWS::EC2::IPAMScope
  */
 
 export class IpamScope extends Resource {
 
   private readonly _ipamScope: CfnIPAMScope;
   public readonly ipamScopeId: string;
-  constructor(scope: Construct, id: string, props: IpamScopeOptions) {
+  constructor(scope: Construct, id: string, props: IpamScopeProps) {
     super(scope, id);
-    this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
+    this._ipamScope = new CfnIPAMScope(this, 'IpamScope', {
       ipamId: props.ipamId,
     });
     this.ipamScopeId = this._ipamScope.attrIpamScopeId;
@@ -116,7 +134,7 @@ export class IpamScope extends Resource {
  * Creates new IPAM with default public and private scope
  */
 
-export class Ipam {
+export class Ipam extends Resource {
   //Refers to default public scope
   public readonly publicScope: IpamPublicScope;
   //Refers to default private scope
@@ -126,9 +144,12 @@ export class Ipam {
   // can be used later to add a custom private scope
   public readonly ipamId: string;
   constructor(scope: Construct, id: string) {
-    this._ipam = new CfnIPAM(scope, id);
-    this.publicScope = new IpamPublicScope(scope, this._ipam.attrPublicDefaultScopeId);
-    this.privateScope = new IpamPrivateScope(scope, this._ipam.attrPrivateDefaultScopeId);
+    super(scope, id);
+
+    this._ipam = new CfnIPAM(this, 'Resource');
+    this._ipam.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    this.publicScope = new IpamPublicScope(this, this._ipam.attrPublicDefaultScopeId);
+    this.privateScope = new IpamPrivateScope(this, this._ipam.attrPrivateDefaultScopeId);
     this.ipamId = this._ipam.attrIpamId;
   }
 }
@@ -149,16 +170,20 @@ export class IpamPublicScope {
    */
   addPool(options: PoolOptions): IpamPool {
 
-    /**
-     * creates pool under default public scope (IPV4, IPV6)
-     */
-    return new IpamPool(this.scope, 'PublicPool', {
+    const uuid = generateUUID();
+    const pool = new IpamPool(this.scope, `PublicPool-${uuid}`, {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultPublicScopeId,
       //TODO: should be stack region or props input
       locale: options.locale,
+      publicIpSource: options.publicIpSource,
+      awsService: options.awsService,
     });
+    /**
+     * creates pool under default public scope (IPV4, IPV6)
+     */
+    return pool;
   }
 }
 
@@ -181,13 +206,16 @@ export class IpamPrivateScope {
    */
   addPool(options: PoolOptions): IpamPool {
 
-    return new IpamPool(this.scope, 'PrivatePool', {
+    const uuid = generateUUID();
+    const pool = new IpamPool(this.scope, `PublicPool-${uuid}`, {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultprivateScopeId,
       //TODO: should be stack region or props input
       locale: options.locale,
     });
+
+    return pool;
     /**
      * creates pool under default public scope (IPV4, IPV6)
      */
@@ -202,8 +230,15 @@ export class IpamIpv6 implements IIpAddresses {
   allocateVpcCidr(): VpcV2Options {
     return {
       ipv6NetmaskLength: this.props.ipv6NetmaskLength,
-      ipv6IpamPoolId: this.props.ipv6IpamPoolId,
+      ipv6IpamPool: this.props.ipv6IpamPool,
     };
   }
 }
 
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}

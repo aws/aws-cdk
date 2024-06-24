@@ -1,75 +1,78 @@
-import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, ISubnet } from 'aws-cdk-lib/aws-ec2';
-//import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
+import { CfnVPC, CfnVPCCidrBlock, ISubnet } from 'aws-cdk-lib/aws-ec2';
 import { Arn } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { IpamIpv4, IpamIpv6 } from './ipam';
+import { IpamIpv4, IpamPool, IpamIpv6 } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
 
+/**
+ * Ipam Options to add IPv4 CIDR range to the VPC
+ */
 export interface IIpIpamOptions{
-  readonly ipv4IpamPoolId: any;
-  readonly ipv4NetmaskLength: number;
+  readonly ipv4IpamPool?: IpamPool;
+  readonly ipv4NetmaskLength?: number;
+  readonly ipv6IpamPool?: IpamPool;
+  readonly ipv6NetmaskLength?: number;
 }
 
-export interface Ipv6AddressesOptions {
-  readonly scope?: Construct;
-  readonly vpcId?: string;
-  readonly ipv4options?: IIpv6AddressesOptions;
-  readonly ipv6CidrBlock?: string;
-}
-
+/**
+ * IpAddress options to define VPC V2
+ */
 export class IpAddresses {
 
+  /**
+   * An IPv4 CIDR Range
+   */
   public static ipv4(ipv4Cidr: string): IIpAddresses {
     return new ipv4CidrAllocation(ipv4Cidr);
   }
 
+  /**
+   * An Ipv4 Ipam Pool
+   */
   public static ipv4Ipam(ipv4IpamOptions: IIpIpamOptions) {
     return new IpamIpv4(ipv4IpamOptions);
-  }
-
-  public static ipv6(ipv6CidrOptions: IIpv6AddressesOptions): IIpAddresses {
-    return new ipv6CidrAllocation(ipv6CidrOptions);
   }
 
   public static ipv6Ipam(ipv6IpamOptions: IIpIpamOptions): IIpAddresses {
     return new IpamIpv6(ipv6IpamOptions);
   }
 
+  /**
+   * Amazon Provided Ipv6 range
+   */
   public static amazonProvidedIpv6() {
     return new AmazonProvided();
   }
-
 }
 
+/**
+ * Consolidated return parameters to pass to VPC construct
+ */
 export interface VpcV2Options {
 
   /**
-   * CIDR Block
+   * IPv4 CIDR Block
    */
   readonly ipv4CidrBlock?: string;
 
   /**
    * CIDR Mask for Vpc
    *
-   * @default - Only required when using AWS Ipam
+   * @default - Only required when using IPAM Ipv4
    */
   readonly ipv4NetmaskLength?: number;
 
   /**
-   * ipv4 IPAM Pool Id
+   * Ipv4 IPAM Pool
    *
-   * @default - Only required when using AWS Ipam
+   * @default - Only required when using IPAM Ipv4
    */
-  readonly ipv4IpamPool?: CfnIPAMPool;
+  readonly ipv4IpamPool?: IpamPool;
 
   /**
-   * Implementing ipv6
+   * Implementing Ipv6
    */
   readonly ipv6CidrBlock?: string;
-
-  /*
-  */
-  readonly ipv4IpamPoolId?: string;
 
   /**
    * CIDR Mask for Vpc
@@ -80,12 +83,12 @@ export interface VpcV2Options {
 
   /*
   */
-  readonly ipv6IpamPoolId?: string;
+  readonly ipv6IpamPool?: IpamPool;
 
   /**
    * required with cidr block for BYOL IP
    */
-  readonly ipv6Pool?: string;
+  //readonly ipv6Pool?: string;
 
   /**
    * use amazon provided IP range
@@ -163,14 +166,23 @@ export class VpcV2 extends VpcV2Base {
   public readonly dnsHostnamesEnabled: boolean;
 
   /**
-     * Indicates if DNS support is enabled for this VPC.
-     */
+  * Indicates if DNS support is enabled for this VPC.
+  */
   public readonly dnsSupportEnabled: boolean;
 
+  /**
+   * Isolated Subnets that are part of this VPC.
+   */
   public readonly isolatedSubnets: ISubnet[];
 
+  /**
+   * To define dependency on internet connectivity
+   */
   public readonly internetConnectivityEstablished: IDependable;
 
+  /**
+   * To define dependency on internet connectivity
+   */
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   /**
@@ -179,7 +191,9 @@ export class VpcV2 extends VpcV2Base {
   public readonly secondaryCidrBlock = new Array<CfnVPCCidrBlock>;
 
   /**
-   * For validation to define IPv6 subnets
+   * For validation to define IPv6 subnets, set to true in case of
+   * Amazon Provided IPv6 cidr range
+   * IPv6 addresses can be attached to the subnets
    * @default false
    */
   public readonly useIpv6: boolean = false;
@@ -196,7 +210,7 @@ export class VpcV2 extends VpcV2Base {
       cidrBlock: vpcOptions.ipv4CidrBlock, //for Ipv4 addresses CIDR block
       enableDnsHostnames: this.dnsHostnamesEnabled,
       enableDnsSupport: this.dnsSupportEnabled,
-      ipv4IpamPoolId: vpcOptions.ipv4IpamPoolId, // for Ipv4 ipam option
+      ipv4IpamPoolId: vpcOptions.ipv4IpamPool?.ipamPoolId, // for Ipv4 ipam option
       ipv4NetmaskLength: vpcOptions.ipv4NetmaskLength, // for Ipv4 ipam option
     });
 
@@ -210,7 +224,6 @@ export class VpcV2 extends VpcV2Base {
     }, this.stack);
 
     if (props.secondaryAddressBlocks) {
-
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
       let ipCount = 0;
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
@@ -232,13 +245,15 @@ export class VpcV2 extends VpcV2Base {
         this.secondaryCidrBlock = [...this.secondaryCidrBlock, new CfnVPCCidrBlock(this, `SecondaryIp${ipCount}`, {
           vpcId: this.vpcId,
           cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
-          ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPoolId,
+          ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPool?.ipamPoolId,
           ipv4NetmaskLength: secondaryVpcOptions.ipv4NetmaskLength,
-          //IPv6 Options
-          ipv6CidrBlock: secondaryVpcOptions.ipv6CidrBlock,
-          ipv6Pool: secondaryVpcOptions.ipv6Pool,
+          //BYOL CIDR Options
+          //ipv6CidrBlock: secondaryVpcOptions.ipv6CidrBlock,
+          //BYOL POOL
+          //ipv6Pool: secondaryVpcOptions.ipv6Pool,
+          //TODO: Add Ipv6 address
           ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
-          ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPoolId,
+          ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPool?.ipamPoolId,
           amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
         })];
       }
@@ -269,23 +284,9 @@ class ipv4CidrAllocation implements IIpAddresses {
   }
 }
 
-class ipv6CidrAllocation implements IIpAddresses {
-
-  private readonly ipv6cidrBlock : string;
-  private readonly ipv6poolId: string;
-  constructor(private readonly props: IIpv6AddressesOptions) {
-    this.ipv6cidrBlock = this.props.ipv6CidrBlock ?? '';
-    this.ipv6poolId = this.props.ipv6PoolId ?? '';
-  }
-
-  allocateVpcCidr(): VpcV2Options {
-    return {
-      ipv6CidrBlock: this.ipv6cidrBlock,
-      ipv6Pool: this.ipv6poolId,
-    };
-  }
-}
-
+/**
+ * Supports Amazon Provided Ipv6 ranges
+ */
 export class AmazonProvided implements IIpAddresses {
 
   //private readonly amazonProvided: boolean;
@@ -300,13 +301,19 @@ export class AmazonProvided implements IIpAddresses {
   }
 
 }
-//Default Config
 
+//First two Octet to verify RFC 1918
 interface IPaddressConfig {
   octet1: number;
   octet2: number;
 }
 
+/**
+ * Validate whether secondary IP address is a valid IP range
+ * @param cidr1 Secondary IPv4 Address
+ * @param cidr2 Primary IPv4 Address
+ * @returns true if valid
+ */
 function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
   if (!cidr1 || !cidr2) {
     return false; // Handle cases where CIDR ranges are not provided

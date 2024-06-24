@@ -9,16 +9,10 @@
 //  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-import { AddressFamily, Ipam } from '../lib';
+// import { AddressFamily, Ipam } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Ipv4Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-//import { log } from 'console';
-
-// as in unit tests, we use a qualified import,
-// not bring in individual classes
-//import * as er from '../lib';
+import { AddressFamily, Ipam } from '../lib/ipam';
 
 const app = new cdk.App();
 
@@ -26,50 +20,45 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
 const ipam = new Ipam(stack, 'Ipam');
 
-const pool = ipam.publicScope.addPool({
+/**Test Ipam Pool Ipv4 */
+
+const pool1 = ipam.privateScope.addPool({
   addressFamily: AddressFamily.IP_V4,
   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
-  locale: 'us-east-1',
+  locale: 'eu-west-1',
 });
 
-const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
+ipam.publicScope.addPool({
+  addressFamily: AddressFamily.IP_V6,
+  awsService: 'ec2',
+  locale: 'eu-west-1',
+  publicIpSource: 'amazon',
+});
+
+//TODO: Test Ipam Pool Ipv6
+
+/** Test Ipv4 Primary and Secondary address */
+new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.ipv4Ipam({
-      ipv4IpamPoolId: pool.ipamPoolId,
+      ipv4IpamPool: pool1,
       ipv4NetmaskLength: 20,
     }),
+    //Test secondary ipv6 address
     vpc_v2.IpAddresses.amazonProvidedIpv6(),
-    // vpc_v2.IpAddresses.ipv4('192.168.0.0/16'), Test for invalid RFC range
   ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
 });
 
-new SubnetV2(stack, 'testsbubnet', {
-  vpc,
-  availabilityZone: 'us-east-1a',
-  cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
-  subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
+  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
+  // secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
+  //   ipv6IpamPool: pool2,
+  //   ipv6NetmaskLength: 52,
+  // })],
 });
-
-// const selection = vpc.selectSubnets();
-// log(selection);
-// vpc.enableVpnGateway({
-//   vpnRoutePropagation: [{
-//     subnetType: SubnetType.PRIVATE_WITH_EGRESS, // optional, defaults to "PUBLIC"
-//   }],
-//   type: 'ipsec.1',
-// });
-
-/**
- * Expected as should be true by default
- */
-
-// if (!vpc.isolatedSubnets.includes(subnet)) {
-//   throw new Error('Subnet is not isolated');
-// };
-
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],

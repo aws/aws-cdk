@@ -41,6 +41,9 @@ export interface SubnetPropsV2 {
    */
   cidrBlock: Ipv4Cidr;
 
+  /**
+   * Ipv6 CIDR Range for subnet
+   */
   ipv6CidrBlock?: Ipv6Cidr;
 
   /**
@@ -121,6 +124,7 @@ export class SubnetV2 extends Resource implements ISubnet {
 
     const ipv4CidrBlock = props.cidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
+    //check whether VPC supports ipv6
     if (ipv6CidrBlock) {
       validateSupportIpv6(props.vpc);
     }
@@ -191,8 +195,8 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
    * Need to set explicit dependency as during stack deletion,
    * the cidr blocks may get deleted first and will fail as the subnets are still using the cidr blocks
    */
-  for(const cidr of vpc.secondaryCidrBlock) {
-    subnet.node.addDependency(cidr)
+  for (const cidr of vpc.secondaryCidrBlock) {
+    subnet.node.addDependency(cidr);
   }
 }
 
