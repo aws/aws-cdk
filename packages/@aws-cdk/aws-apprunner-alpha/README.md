@@ -296,3 +296,22 @@ new apprunner.Service(this, 'Service', {
   }),
 });
 ```
+
+## Observability Configuration
+
+To associate an App Runner service with a custom observability configuration, use the `observabilityConfiguration` property.
+
+```ts
+const observabilityConfiguration = new apprunner.ObservabilityConfiguration(this, 'ObservabilityConfiguration', {
+  observabilityConfigurationName: 'MyObservabilityConfiguration',
+  traceConfigurationVendor: apprunner.TraceConfigurationVendor.AWSXRAY,
+});
+
+new apprunner.Service(this, 'DemoService', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  observabilityConfiguration,
+});
+```
