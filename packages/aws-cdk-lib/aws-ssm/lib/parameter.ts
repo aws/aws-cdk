@@ -397,6 +397,17 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
    * @default false
    */
   readonly forceDynamicReference?: boolean;
+
+  /**
+   * The AWS account sharing this ssm parameter with current deploying account.
+   * When it's specified, the sharing account has to create an AWS RAM ResourceShare that shares the parmater
+   * with current account and the current account has to accept the invitation. Specifying this property
+   * implies to use CfnParameter only and `forceDynamicReference` cannot be enabled as cloudformation
+   * dynamic reference does not support cross account sharing.
+   *
+   * @default - not from a cross-account sharing.
+   */
+  readonly sharingAccount?: string;
 }
 
 /**
@@ -481,8 +492,28 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
     const forceDynamicReference = attrs.forceDynamicReference ?? false;
+    const sharingAccount = attrs.sharingAccount;
 
     let stringValue: string;
+    // if sharingAccount specified, we just build a CfnParameter with the sharing parameter arn as its default value
+    if (sharingAccount) {
+      const sharingParameterArn = Stack.of(scope).formatArn({
+        service: 'ssm',
+        account: attrs.sharingAccount,
+        resource: 'parameter',
+        resourceName: attrs.parameterName,
+      });
+      if (forceDynamicReference) {
+        throw new Error('forceDynamicReference cannot be enabled when sharingAccount is specified');
+      }
+      if (Token.isUnresolved(attrs.parameterName) && Fn._isFnBase(Tokenization.reverseString(attrs.parameterName).firstToken)) {
+        // the default value of a CfnParameter can only contain strings, so we cannot use it when a parameter name contains tokens.
+        throw new Error('parameter name cannot contain tokens with sharingAccount');
+      } else {
+        stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: sharingParameterArn }).valueAsString;
+      }
+    } else
+    // not from a sharing account
     if (attrs.version) {
       stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
     } else if (forceDynamicReference) {
