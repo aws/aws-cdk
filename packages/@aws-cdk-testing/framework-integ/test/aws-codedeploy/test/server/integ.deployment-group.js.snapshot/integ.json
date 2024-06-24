@@ -1,14 +1,12 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.deployment-group": {
+    "integ-cloudfront-custom-s3/DefaultTest": {
       "stacks": [
         "aws-cdk-codedeploy-server-dg"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-cloudfront-custom-s3/DefaultTest/DeployAssert",
+      "assertionStackName": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
