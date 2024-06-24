@@ -107,7 +107,7 @@ export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
-export const CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL = '@aws-cdk/aws-cloudfront:useOriginAccessControl';
+export const CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL_BY_DEFAULT = '@aws-cdk/aws-cloudfront:useOriginAccessControlByDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1124,11 +1124,11 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL]: {
+  [CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL_BY_DEFAULT]: {
     type: FlagType.BugFix,
-    summary: 'When enabled, an origin access control will be created automatically when a new S3 origin is created.',
+    summary: 'When enabled, an origin access control will be created by default when a new S3 origin is created.',
     detailsMd: `
-      When this feature flag is enabled, an origin access control will be created automatically when a new \`S3Origin\` is created instead
+      When this feature flag is enabled, an origin access control will be created by default when a new \`S3Origin\` is created instead
       of an origin access identity (legacy).
     `,
     introducedIn: { v2: 'V2NEXT' },

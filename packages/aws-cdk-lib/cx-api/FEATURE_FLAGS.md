@@ -71,17 +71,8 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | (default) |
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
-<<<<<<< HEAD
-<<<<<<< HEAD
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
-=======
-=======
-| [@aws-cdk/aws-cloudfront:useOriginAccessControl](#aws-cdkaws-cloudfrontuseoriginaccesscontrol) | When enabled, use Origin Access Control rather than Origin Access Identity | V2NEXT | (fix) |
->>>>>>> 386904900a (wip oac)
->>>>>>> c47258bd5d (wip oac)
-=======
 | [@aws-cdk/aws-cloudfront:useOriginAccessControl](#aws-cdkaws-cloudfrontuseoriginaccesscontrol) | When enabled, an origin access control will be created automatically when a new S3 origin is created. | V2NEXT | (fix) |
->>>>>>> a76e6cc968 (refactor)
 
 <!-- END table -->
 
@@ -142,21 +133,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
-<<<<<<< HEAD
-<<<<<<< HEAD
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
-    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false
-=======
-<<<<<<< HEAD
-    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true
-=======
-    "@aws-cdk/aws-cloudfront:useOriginAccessControl": true,
->>>>>>> 386904900a (wip oac)
->>>>>>> c47258bd5d (wip oac)
-=======
-    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/aws-cloudfront:useOriginAccessControl": true
->>>>>>> a76e6cc968 (refactor)
   }
 }
 ```
@@ -1372,6 +1351,7 @@ Unlike most feature flags, we don't recommend setting this feature flag to true.
 the event object, then setting this feature flag will keep this behavior. Otherwise, setting this feature flag to false will trigger an 'Update' event by removing the 'logApiResponseData'
 property from the event object.
 
+
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
@@ -1384,6 +1364,7 @@ property from the event object.
 
 When this feature flag is enabled, an origin access control will be created automatically when a new `S3Origin` is created instead
 of an origin access identity (legacy).
+
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |

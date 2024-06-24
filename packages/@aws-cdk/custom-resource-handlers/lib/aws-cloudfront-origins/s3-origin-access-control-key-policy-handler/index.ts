@@ -4,6 +4,11 @@ import { KMS, KeyManagerType } from '@aws-sdk/client-kms';
 
 const kms = new KMS({});
 
+const KEY_ACTIONS: Record<string, string[]> = {
+  READ: ['kms:Decrypt'],
+  WRITE: ['kms:Encrypt', 'kms:GenerateDataKey*'],
+};
+
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
 
   if (event.RequestType === 'Create' || event.RequestType === 'Update') {
@@ -13,6 +18,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const accountId = props.AccountId;
     const partition = props.Partition;
     const region = process.env.AWS_REGION;
+    const accessLevels = props.AccessLevels;
 
     const describeKeyCommandResponse = await kms.describeKey({
       KeyId: kmsKeyId,
@@ -38,6 +44,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // Define the updated key policy to allow CloudFront Distribution access
     const keyPolicy = JSON.parse(getKeyPolicyCommandResponse?.Policy);
     console.log('Retrieved key policy', JSON.stringify(keyPolicy, undefined, 2));
+
+    const actions = getActions(accessLevels);
+
     const kmsKeyPolicyStatement = {
       Sid: 'AllowCloudFrontServicePrincipalSSE-KMS',
       Effect: 'Allow',
@@ -46,11 +55,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           'cloudfront.amazonaws.com',
         ],
       },
-      Action: [
-        'kms:Decrypt',
-        'kms:Encrypt',
-        'kms:GenerateDataKey*',
-      ],
+      Action: actions,
       Resource: `arn:${partition}:kms:${region}:${accountId}:key/${kmsKeyId}`,
       Condition: {
         StringEquals: {
@@ -58,6 +63,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         },
       },
     };
+
     const updatedKeyPolicy = updatePolicy(keyPolicy, kmsKeyPolicyStatement);
     console.log('Updated key policy', JSON.stringify(updatedKeyPolicy, undefined, 2));
     await kms.putKeyPolicy({
@@ -72,6 +78,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   } else {
     return;
   }
+}
+
+function getActions(accessLevels: string[]): string[] {
+  let actions: string[] = [];
+  for (const accessLevel of accessLevels) {
+    actions = actions.concat(KEY_ACTIONS[accessLevel]);
+  }
+  return actions;
 }
 
 /**

@@ -11,6 +11,7 @@ interface updateBucketPolicyProps {
   distributionId: string;
   partition: string;
   accountId: string;
+  actions: string[];
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -21,8 +22,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const accountId = props.AccountId;
     const partition = props.Partition;
     const bucketName = props.BucketName;
+    const actions = props.Actions;
 
-    await updateBucketPolicy({ bucketName, distributionId, partition, accountId });
+    await updateBucketPolicy({ bucketName, distributionId, partition, accountId, actions });
 
     return {
       IsComplete: true,
@@ -39,13 +41,14 @@ async function updateBucketPolicy(props: updateBucketPolicyProps) {
     const prevPolicyJson = (await s3.getBucketPolicy({ Bucket: props.bucketName }))?.Policy ?? S3_POLICY_STUB;
     const policy = JSON.parse(prevPolicyJson);
     console.log('Previous bucket policy:', JSON.stringify(policy, undefined, 2));
+
     const oacBucketPolicyStatement = {
-      Sid: 'AllowS3OACAccess',
+      Sid: 'GrantOACAccessToS3',
       Principal: {
         Service: ['cloudfront.amazonaws.com'],
       },
       Effect: 'Allow',
-      Action: ['s3:GetObject'],
+      Action: props.actions,
       Resource: [`arn:${props.partition}:s3:::${props.bucketName}/*`],
       Condition: {
         StringEquals: {

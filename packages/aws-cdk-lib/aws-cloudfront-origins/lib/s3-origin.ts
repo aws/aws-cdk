@@ -9,8 +9,15 @@ import { S3OriginAccessControlBucketPolicyProvider } from '../../custom-resource
 import { S3OriginAccessControlKeyPolicyProvider } from '../../custom-resource-handlers/dist/aws-cloudfront-origins/s3-origin-access-control-key-policy-provider.generated';
 import * as cxapi from '../../cx-api';
 
-const S3_ORIGIN_ACCESS_CONTROL_KEY_RESOURCE_TYPE = 'Custom::S3OriginAccessControlKeyPolicy';
-const S3_ORIGIN_ACCESS_CONTROL_BUCKET_RESOURCE_TYPE = 'Custom::S3OriginAccessControlBucketPolicy';
+const S3_ORIGIN_ACCESS_CONTROL_KEY_RESOURCE_TYPE = 'Custom::S3OriginAccessControlKeyPolicyUpdater';
+const S3_ORIGIN_ACCESS_CONTROL_BUCKET_RESOURCE_TYPE = 'Custom::S3OriginAccessControlBucketPolicyUpdater';
+
+const BUCKET_ACTIONS: Record<string, string[]> = {
+  READ: ['s3:GetObject'],
+  WRITE: ['s3:PutObject'],
+  DELETE: ['s3:DeleteObject']
+};
+
 /**
  * Properties to use to customize an S3 Origin.
  */
@@ -29,11 +36,36 @@ export interface S3OriginProps extends cloudfront.OriginProps {
   readonly originAccessControl?: cloudfront.IOriginAccessControl;
 
   /**
-   * When set to 'true', an attempt will be made to update the bucket policy to allow the
+   * When set to 'true', a best-effort attempt will be made to update the bucket policy to allow the
    * CloudFront distribution access.
    * @default false
    */
   readonly overrideImportedBucketPolicy?: boolean;
+
+  /**
+   * The level of permissions granted in the bucket policy and key policy (if applicable)
+   * to the CloudFront distribution.
+   * @default AccessLevel.READ
+   */
+  readonly originAccessLevels?: AccessLevel[];
+}
+
+/**
+ * The types of permissions to grant OAC access to th S3 origin
+ */
+export enum AccessLevel {
+  /**
+   * Grants 's3:GetObject' permission to OAC
+   */
+  READ = 'READ',
+  /**
+   * Grants 's3:PutObject' permission to OAC
+   */
+  WRITE = 'WRITE',
+  /**
+   * Grants 's3:DeleteObject' permission to OAC
+   */
+  DELETE = 'DELETE',
 }
 
 /**
@@ -56,10 +88,12 @@ export class S3Origin implements cloudfront.IOrigin {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
         ...props,
       });
-    } else if (props.originAccessIdentity || !FeatureFlags.of(bucket.stack).isEnabled(cxapi.CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL)) {
+    } else if (props.originAccessControl) {
+      this.origin = S3BucketOrigin.withAccessControl(bucket, props);
+    } else if (props.originAccessIdentity) {
       this.origin = S3BucketOrigin.withAccessIdentity(bucket, props);
     } else {
-      this.origin = S3BucketOrigin.withAccessControl(bucket, props);
+      this.origin = FeatureFlags.of(bucket.stack).isEnabled(cxapi.CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL_BY_DEFAULT) ? S3BucketOrigin.withAccessControl(bucket, props) : S3BucketOrigin.withAccessIdentity(bucket, props);
     }
   }
 
@@ -139,12 +173,13 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         const distributionId = options.distributionId;
-        const result = this.grantDistributionAccessToBucket(distributionId);
+        const actions = this.getActions(props.originAccessLevels ?? [AccessLevel.READ]);
+        const result = this.grantDistributionAccessToBucket(distributionId, actions);
 
         // Failed to update bucket policy, assume using imported bucket
         if (!result.statementAdded) {
           if (props.overrideImportedBucketPolicy) {
-            this.grantDistributionAccessToImportedBucket(scope, distributionId);
+            this.grantDistributionAccessToImportedBucket(scope, distributionId, actions);
           } else {
             Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateBucketPolicy',
               'Cannot update bucket policy of an imported bucket. Set overrideImportedBucketPolicy to true or update the policy manually instead.');
@@ -152,7 +187,12 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         if (this.bucket.encryptionKey) {
-          this.grantDistributionAccessToKey(scope, distributionId, this.bucket.encryptionKey);
+          this.grantDistributionAccessToKey(
+            scope,
+            distributionId,
+            this.bucket.encryptionKey,
+            props.originAccessLevels ?? [AccessLevel.READ],
+          );
         }
 
         const originBindConfig = this._bind(scope, options);
@@ -175,13 +215,21 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return { originAccessIdentity: '' };
       }
 
-      private grantDistributionAccessToBucket(distributionId: string): iam.AddToResourcePolicyResult {
+      private getActions(accessLevels: AccessLevel[]): string[] {
+        let actions: string[] = [];
+        for (const accessLevel of new Set(accessLevels)) {
+          actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
+        }
+        return actions;
+      }
+
+      private grantDistributionAccessToBucket(distributionId: string | undefined, actions: string[]): iam.AddToResourcePolicyResult {
         const oacReadOnlyBucketPolicyStatement = new iam.PolicyStatement(
           {
-            sid: 'AllowS3OACAccess',
+            sid: 'GrantOACAccessToS3',
             effect: iam.Effect.ALLOW,
             principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-            actions: ['s3:GetObject'],
+            actions,
             resources: [this.bucket.arnForObjects('*')],
             conditions: {
               StringEquals: {
@@ -197,7 +245,7 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
       /**
        * Use custom resource to update bucket policy and remove OAI policy statement if it exists
        */
-      private grantDistributionAccessToImportedBucket(scope: Construct, distributionId: string) {
+      private grantDistributionAccessToImportedBucket(scope: Construct, distributionId: string | undefined, actions: string[]) {
         const provider = S3OriginAccessControlBucketPolicyProvider.getOrCreateProvider(scope, S3_ORIGIN_ACCESS_CONTROL_BUCKET_RESOURCE_TYPE, {
           description: 'Lambda function that updates S3 bucket policy to allow CloudFront distribution access.',
         });
@@ -215,6 +263,7 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
             AccountId: this.bucket.env.account,
             Partition: Stack.of(scope).partition,
             BucketName: this.bucket.bucketName,
+            Actions: actions,
           },
         });
       }
@@ -222,7 +271,7 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
       /**
        * Use custom resource to update KMS key policy
        */
-      private grantDistributionAccessToKey(scope: Construct, distributionId: string, key: IKey) {
+      private grantDistributionAccessToKey(scope: Construct, distributionId: string | undefined, key: IKey, accessLevels: AccessLevel[]) {
         const provider = S3OriginAccessControlKeyPolicyProvider.getOrCreateProvider(scope, S3_ORIGIN_ACCESS_CONTROL_KEY_RESOURCE_TYPE,
           {
             description: 'Lambda function that updates SSE-KMS key policy to allow CloudFront distribution access.',
@@ -233,6 +282,9 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
           Resource: [key.keyArn],
         });
 
+        // Remove duplicates and DELETE permissions which are not applicable to KMS key actions
+        const keyAccessLevels = [...new Set(accessLevels.filter(level => level !== AccessLevel.DELETE))];
+
         new CustomResource(scope, 'S3OriginKMSKeyPolicyCustomResource', {
           resourceType: S3_ORIGIN_ACCESS_CONTROL_KEY_RESOURCE_TYPE,
           serviceToken: provider.serviceToken,
@@ -241,6 +293,7 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
             KmsKeyId: key.keyId,
             AccountId: this.bucket.env.account,
             Partition: Stack.of(scope).partition,
+            AccessLevels: keyAccessLevels
           },
         });
       }

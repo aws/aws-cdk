@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
-import { IResource, Resource, Names } from '../../core';
+import { IResource, Resource, Names, Token } from '../../core';
 
 /**
  * Represents a CloudFront Origin Access Control
@@ -142,6 +142,11 @@ export class OriginAccessControl extends Resource implements IOriginAccessContro
 
     this.originAccessControlOriginType = props.originAccessControlOriginType ?? OriginAccessControlOriginType.S3;
 
+    // check if origin access control name is 64 characters or less
+    if (props.originAccessControlName) {
+      this.validateOriginAccessControlName(props.originAccessControlName);
+    }
+
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {
         description: props.description,
@@ -155,5 +160,11 @@ export class OriginAccessControl extends Resource implements IOriginAccessContro
     });
 
     this.originAccessControlId = resource.attrId;
+  }
+
+  private validateOriginAccessControlName(name: string) {
+    if (!Token.isUnresolved(name) && name.length > 64) {
+      throw new Error(`Origin access control name must be 64 characters or less, '${name}' has length ${name.length}`);
+    }
   }
 }

@@ -130,7 +130,7 @@ export interface OriginBindOptions {
   /**
    * The identifier of the Distribution this Origin is used for.
    */
-  readonly distributionId: string;
+  readonly distributionId?: string | undefined;
 }
 
 /**

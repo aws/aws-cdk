@@ -4,7 +4,6 @@ import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, 
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
-import { IOriginAccessControl } from './origin-access-control';
 import { IOriginAccessIdentity } from './origin-access-identity';
 import { formatDistributionArn } from './private/utils';
 import * as certificatemanager from '../../aws-certificatemanager';
@@ -215,12 +214,6 @@ export interface SourceConfiguration {
    * @default - origin shield not enabled
    */
   readonly originShieldRegion?: string;
-
-  /**
-   * Origin Access Control
-   * @default - No origin access control
-   */
-  readonly originAccessControl?: IOriginAccessControl;
 }
 
 /**
@@ -318,13 +311,6 @@ export interface S3OriginConfig {
    * @default No Origin Access Identity which requires the S3 bucket to be public accessible
    */
   readonly originAccessIdentity?: IOriginAccessIdentity;
-
-  /**
-   * The optional Origin Access Control that Cloudfront will use when accessing your S3 bucket.
-   *
-   * @default - No origin access control
-   */
-  readonly originAccessControl?: IOriginAccessControl;
 
   /**
    * The relative path to the origin root to use for sources.
@@ -1134,9 +1120,6 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     let s3OriginConfig: CfnDistribution.S3OriginConfigProperty | undefined;
     if (originConfig.s3OriginSource) {
-      if (originConfig.s3OriginSource.originAccessIdentity && originConfig.s3OriginSource.originAccessControl) {
-        throw Error('Only one of origin access identity or origin access control can be defined.');
-      }
       // first case for backwards compatibility
       if (originConfig.s3OriginSource.originAccessIdentity) {
         // grant CloudFront OriginAccessIdentity read access to S3 bucket
@@ -1152,30 +1135,6 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
         s3OriginConfig = {
           originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityId}`,
-        };
-      } else if (originConfig.s3OriginSource.originAccessControl) {
-        const oacReadOnlyBucketPolicyStatement = new iam.PolicyStatement(
-          {
-            sid: 'AllowS3OACAccess',
-            effect: iam.Effect.ALLOW,
-            principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-            actions: ['s3:GetObject'],
-            resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
-            conditions: {
-              StringEquals: {
-                'AWS:SourceArn': formatDistributionArn(this),
-              },
-            },
-          },
-        );
-        const result = originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(oacReadOnlyBucketPolicyStatement);
-
-        if (!result.statementAdded) {
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:webDistribution', 'Cannot update bucket policy of an imported bucket. Update the policy manually instead.');
-        }
-
-        s3OriginConfig = {
-          originAccessIdentity: '',
         };
       } else {
         s3OriginConfig = {};
@@ -1201,7 +1160,6 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       originCustomHeaders:
         originHeaders.length > 0 ? originHeaders : undefined,
       s3OriginConfig,
-      originAccessControlId: originConfig.s3OriginSource?.originAccessControl?.originAccessControlId,
       originShield: this.toOriginShieldProperty(originConfig),
       customOriginConfig: originConfig.customOriginSource
         ? {
