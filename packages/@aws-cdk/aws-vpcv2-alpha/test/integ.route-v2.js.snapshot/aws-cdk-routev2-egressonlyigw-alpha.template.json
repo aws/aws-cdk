@@ -89,7 +89,7 @@
   "testEIGWRouteEB4FE8D5": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "DestinationIpv6CidrBlock": "2600:1f18:32d9:800::/0",
+    "DestinationCidrBlock": "0.0.0.0/0",
     "EgressOnlyInternetGatewayId": {
      "Fn::GetAtt": [
       "testEOIGWEIGW54CCAD37",

@@ -89,6 +89,7 @@
   "testNATgwNATGateway1533420D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
+    "AllocationId": "0.0.0.0/0",
     "SubnetId": {
      "Ref": "natgwSubnetD255A267"
     }

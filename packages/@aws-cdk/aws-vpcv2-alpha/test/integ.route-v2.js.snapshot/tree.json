@@ -642,7 +642,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                   "aws:cdk:cloudformation:props": {
-                    "destinationIpv6CidrBlock": "2600:1f18:32d9:800::/0",
+                    "destinationCidrBlock": "0.0.0.0/0",
                     "egressOnlyInternetGatewayId": {
                       "Fn::GetAtt": [
                         "testEOIGWEIGW54CCAD37",
@@ -1363,6 +1363,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                   "aws:cdk:cloudformation:props": {
+                    "allocationId": "0.0.0.0/0",
                     "subnetId": {
                       "Ref": "natgwSubnetD255A267"
                     }

@@ -1,6 +1,6 @@
 import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses } from './vpc-v2';
-import { Construct } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
 
 export interface IRouter {
@@ -26,6 +26,7 @@ export interface VirtualPrivateGatewayProps {
 
 export interface NatGatewayProps {
   readonly subnet: ISubnet;
+  readonly allocationId?: string;
 }
 
 export interface NetworkInterfaceProps {
@@ -118,6 +119,7 @@ export class VirtualPrivateGateway extends Resource implements IRouter {
 export class NatGateway extends Resource implements IRouter {
   public readonly routerId: string;
   public readonly routerType: RouterType;
+  public readonly allocationId?: string;
 
   public readonly resource: CfnNatGateway;
 
@@ -128,6 +130,7 @@ export class NatGateway extends Resource implements IRouter {
 
     this.resource = new CfnNatGateway(this, 'NATGateway', {
       subnetId: props.subnet.subnetId,
+      ...props,
     });
 
     this.routerId = this.resource.attrNatGatewayId;
@@ -249,10 +252,9 @@ export class Route extends Resource implements IRouteV2 {
       });
     }
   }
-
 }
 
-export class RouteTable extends Resource implements IRouteTable {
+export class RouteTable extends Resource implements IRouteTable, IDependable {
   public readonly routeTableId: string;
 
   public readonly resource: CfnRouteTable;

@@ -25,14 +25,14 @@ const app = new cdk.App();
 
 const stacks: {[id: string] : cdk.Stack} = {
   'default': new cdk.Stack(app, 'aws-cdk-routev2-alpha', {stackName: 'DefaultVpcDeploy'}),
-  'cgw': new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha', {stackName: 'CarrierGatewayVpc'}), //
+  'cgw': new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha', {stackName: 'CarrierGatewayVpc'}), // failing
   'eigw': new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', {stackName: 'EgressOnlyIgwVpc'}),
-  'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}), //
-  'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}),
-  'natgw': new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha', {stackName: 'NatGwVpc'}),
+  'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}), // failing
+  'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}), // failing
+  'natgw': new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha', {stackName: 'NatGwVpc'}), // failing
   'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', {stackName: 'NetworkInterfaceVpc'}),
-  'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}),
-  'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}),
+  'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}), // failing
+  'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}), // failing
   'dynamodb': new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', {stackName: 'DynamodbEndpointVpc'}),
 };
 
@@ -103,6 +103,7 @@ const vpgw = new VirtualPrivateGateway(stacks.vpgw, 'testVPGW', {
 
 const natGw = new NatGateway(stacks.natgw, 'testNATgw', {
   subnet: subnets.natgw,
+  allocationId: '0.0.0.0/0',
 });
 
 const networkInterface = new NetworkInterface(stacks.nif, 'testNWIF', {

@@ -200,7 +200,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a95536e46f18eaad4b5b6cb7d04ecc0a5fe9e955b7ecf0030a3977fc25d10f95.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b52d73329a49bdfdce0817631805d707055686017436ccf86c8768e13430a56.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -491,7 +491,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c59cd7ba538b1c7ee1f791633382b6c06c3bf5801da731e2f83c7caaa6b8736.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4d839c0ae81dccd6cb4d66423023e39b2cb2c7aedbba303009db0283a99b3c4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -935,10 +935,7 @@
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "dynamodbSubnet81957A26",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "dynamodbSubnet81957A26"
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/RouteTable": [
@@ -950,10 +947,7 @@
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "dynamodbSubnetRouteTableAssociationC38B30F3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "dynamodbSubnetRouteTableAssociationC38B30F3"
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/TestRoottable/RouteTable": [
