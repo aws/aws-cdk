@@ -114,6 +114,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
       acceptanceRequired: this.acceptanceRequired,
       contributorInsightsEnabled: this.contributorInsightsEnabled,
     });
+    this.node.defaultChild = this.endpointService;
 
     this.vpcEndpointServiceId = this.endpointService.ref;
 
