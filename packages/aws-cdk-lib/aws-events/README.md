@@ -244,7 +244,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 const dlq = new sqs.Queue(this, 'DLQ');
 
-const bus = new EventBus(this, 'Bus', {
+const bus = new events.EventBus(this, 'Bus', {
   deadLetterQueue: dlq,
 });
 ```
