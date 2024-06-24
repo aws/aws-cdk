@@ -241,3 +241,19 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
     target: streamTarget,
 });
 ```
+
+### Amazon EventBridge Event Bus
+
+An event bus can be used as a target for a pipe. The event bus will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetEventBus: events.EventBus;
+
+const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {}),
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: eventBusTarget,
+});
+```
