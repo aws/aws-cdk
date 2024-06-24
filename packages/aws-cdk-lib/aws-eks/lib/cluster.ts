@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -183,6 +184,12 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * apply` operation with the `--prune` switch.
    */
   readonly prune: boolean;
+
+  /**
+   * The authentication mode for the cluster.
+   * @default AuthenticationMode.CONFIG_MAP
+   */
+  readonly authenticationMode?: AuthenticationMode;
 
   /**
    * Creates a new service account with corresponding IAM Role (IRSA).
@@ -675,6 +682,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - none
    */
   readonly clusterLogging?: ClusterLoggingTypes[];
+
+  /**
+   * The desired authentication mode for the cluster.
+   * @default AuthenticationMode.CONFIG_MAP
+   */
+  readonly authenticationMode?: AuthenticationMode;
 }
 
 /**
@@ -808,6 +821,16 @@ export interface ClusterProps extends ClusterOptions {
    * @default - Default Lambda IAM Execution Role
    */
   readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
+   * Whether or not IAM principal of the cluster creator was set as a cluster admin access entry
+   * during cluster creation time.
+   *
+   * Changing this value after the cluster has been created will result in the cluster being replaced.
+   *
+   * @default true
+   */
+  readonly bootstrapClusterCreatorAdminPermissions?: boolean;
 
   /**
    * The tags assigned to the EKS cluster
@@ -947,7 +970,7 @@ export class KubernetesVersion {
    * Kubernetes version 1.30
    *
    * When creating a `Cluster` with this version, you need to also specify the
-   * `kubectlLayer` property with a `KubectlV29Layer` from
+   * `kubectlLayer` property with a `KubectlV30Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v30`.
    */
   public static readonly V1_30 = KubernetesVersion.of('1.30');
@@ -1003,6 +1026,24 @@ export enum IpFamily {
    * Use IPv6 for pods and services in your cluster.
    */
   IP_V6 = 'ipv6',
+}
+
+/**
+ * Represents the authentication mode for an Amazon EKS cluster.
+ */
+export enum AuthenticationMode {
+  /**
+   * Authenticates using a Kubernetes ConfigMap.
+   */
+  CONFIG_MAP = 'CONFIG_MAP',
+  /**
+   * Authenticates using both the Kubernetes API server and a ConfigMap.
+   */
+  API_AND_CONFIG_MAP = 'API_AND_CONFIG_MAP',
+  /**
+   * Authenticates using the Kubernetes API server.
+   */
+  API = 'API',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1261,6 +1302,8 @@ export class Cluster extends ClusterBase {
     return new ImportedCluster(scope, id, attrs);
   }
 
+  private accessEntries: Map<string, IAccessEntry> = new Map();
+
   /**
    * The VPC in which this Cluster was created
    */
@@ -1446,6 +1489,17 @@ export class Cluster extends ClusterBase {
   public readonly albController?: AlbController;
 
   /**
+   * The authentication mode for the Amazon EKS cluster.
+   *
+   * The authentication mode determines how users and applications authenticate to the Kubernetes API server.
+   *
+   * @property {AuthenticationMode} [authenticationMode] - The authentication mode for the Amazon EKS cluster.
+   *
+   * @default CONFIG_MAP.
+   */
+  public readonly authenticationMode?: AuthenticationMode;
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -1584,11 +1638,17 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
+    this.authenticationMode = props.authenticationMode;
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
       environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
+      accessconfig: {
+        authenticationMode: props.authenticationMode,
+        bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
+      },
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
@@ -1686,12 +1746,26 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
+    const supportAuthenticationApi = (this.authenticationMode === AuthenticationMode.API ||
+      this.authenticationMode === AuthenticationMode.API_AND_CONFIG_MAP) ? true : false;
+
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
     if (props.mastersRole) {
       const mastersRole = props.mastersRole;
 
-      // map the IAM role to the `system:masters` group.
-      this.awsAuth.addMastersRole(mastersRole);
+      // if we support authentication API we create an access entry for this mastersRole
+      // with cluster scope.
+      if (supportAuthenticationApi) {
+        this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
+          AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+            accessScopeType: AccessScopeType.CLUSTER,
+          }),
+        ]);
+      } else {
+        // if we don't support authentication API we should fallback to configmap
+        // this would avoid breaking changes as well if authenticationMode is undefined
+        this.awsAuth.addMastersRole(mastersRole);
+      }
 
       if (props.outputMastersRoleArn) {
         new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
@@ -1724,6 +1798,21 @@ export class Cluster extends ClusterBase {
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
 
+  }
+
+  /**
+   * Grants the specified IAM principal access to the EKS cluster based on the provided access policies.
+   *
+   * This method creates an `AccessEntry` construct that grants the specified IAM principal the access permissions
+   * defined by the provided `IAccessPolicy` array. This allows the IAM principal to perform the actions permitted
+   * by the access policies within the EKS cluster.
+   *
+   * @param id - The ID of the `AccessEntry` construct to be created.
+   * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
+   * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
+   */
+  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
+    this.addToAccessEntry(id, principal, accessPolicies);
   }
 
   /**
@@ -1936,6 +2025,33 @@ export class Cluster extends ClusterBase {
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
     Node.of(resourceScope).addDependency(this._kubectlReadyBarrier);
     return this._kubectlResourceProvider;
+  }
+
+  /**
+   * Adds an access entry to the cluster's access entries map.
+   *
+   * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
+   * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
+   *
+   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
+   * @param policies - An array of access policies to be associated with the principal.
+   *
+   * @throws {Error} If the uniqueName generated for the new access entry is not unique.
+   *
+   * @returns {void}
+   */
+  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
+    const entry = this.accessEntries.get(principal);
+    if (entry) {
+      (entry as AccessEntry).addAccessPolicies(policies);
+    } else {
+      const newEntry = new AccessEntry(this, id, {
+        principal,
+        cluster: this,
+        accessPolicies: policies,
+      });
+      this.accessEntries.set(principal, newEntry);
+    }
   }
 
   private defineKubectlProvider() {
