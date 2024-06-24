@@ -40,7 +40,12 @@ export interface SubnetPropsV2 {
    * custom CIDR range
    * TODO: modify to Ipv4cidr class
    */
-  cidrBlock: ICidr;
+  cidrBlock: Ipv4Cidr;
+
+  /**
+   * Ipv6 CIDR Range for subnet
+   */
+  ipv6CidrBlock?: Ipv6Cidr;
 
   /**
    * Custom AZ
@@ -126,14 +131,11 @@ export class SubnetV2 extends Resource implements ISubnet {
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
 
-    let ipv4CidrBlock: string = '';
-    let ipv6CidrBlock: string = '';
-    if (props.cidrBlock instanceof Ipv4Cidr) {
-      ipv4CidrBlock = props.cidrBlock.cidr;
-    } else if (props.cidrBlock instanceof Ipv6Cidr) {
-      if (validateSupportIpv6(props.vpc)) {
-        ipv6CidrBlock = props.cidrBlock.cidr;
-      }
+    const ipv4CidrBlock = props.cidrBlock.cidr;
+    const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
+    //check whether VPC supports ipv6
+    if (ipv6CidrBlock) {
+      validateSupportIpv6(props.vpc);
     }
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,

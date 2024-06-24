@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import { CfnIPAM, CfnIPAMPool, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, VpcV2Options } from './vpc-v2';
 import { Construct } from 'constructs';
@@ -25,8 +26,17 @@ export interface CfnPoolOptions extends PoolOptions {
 
 export interface PoolOptions{
   readonly addressFamily: AddressFamily;
-  readonly provisionedCidrs: CfnIPAMPool.ProvisionedCidrProperty[];
+  readonly provisionedCidrs?: CfnIPAMPool.ProvisionedCidrProperty[];
   readonly locale?: string;
+  readonly publicIpSource?: string;
+  /**
+  * Limits which service in AWS that the pool can be used in.
+  *
+  * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+  *
+  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+  */
+  readonly awsService?: string;
 }
 
 export interface IpamScopeOptions {
@@ -50,6 +60,11 @@ export interface IpamOptions {
   readonly ipv4IpamPoolId?: string;
 
   /**
+   * ipv4 IPAM pool
+   */
+  readonly ipv4IpamPool?: IpamPool;
+
+  /**
    * CIDR Mask for Vpc
    *
    * @default - Only required when using AWS Ipam
@@ -61,7 +76,7 @@ export interface IpamOptions {
    *
    * @default - Only required when using AWS Ipam
    */
-  readonly ipv6IpamPoolId?: string;
+  readonly ipv6IpamPool?: IpamPool;
 }
 
 export class IpamPool {
@@ -74,6 +89,8 @@ export class IpamPool {
       provisionedCidrs: options.provisionedCidrs,
       locale: options.locale,
       ipamScopeId: options.ipamScopeId,
+      publicIpSource: options.publicIpSource,
+      awsService: options.awsService,
     });
     this.ipamPoolId = CfnPool.attrIpamPoolId;
   }
@@ -87,7 +104,7 @@ export class IpamIpv4 implements IIpAddresses {
 
     return {
       ipv4NetmaskLength: this.props.ipv4NetmaskLength,
-      ipv4IpamPoolId: this.props.ipv4IpamPoolId,
+      ipv4IpamPool: this.props.ipv4IpamPool,
     };
   }
 }
@@ -95,6 +112,7 @@ export class IpamIpv4 implements IIpAddresses {
 /**
  * Creates custom Ipam Scope, can only be private
  * (can be used for adding custom scopes to an existing IPAM)
+ * @resource AWS::EC2::IPAMScope
  */
 
 export class IpamScope extends Resource {
@@ -147,16 +165,20 @@ export class IpamPublicScope {
    */
   addPool(options: PoolOptions): IpamPool {
 
-    /**
-     * creates pool under default public scope (IPV4, IPV6)
-     */
-    return new IpamPool(this.scope, 'PublicPool', {
+    const uuid = generateUUID();
+    const pool = new IpamPool(this.scope, `PublicPool-${uuid}`, {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultpublicScopeId,
       //TODO: should be stack region or props input
       locale: options.locale,
+      publicIpSource: options.publicIpSource,
+      awsService: options.awsService,
     });
+    /**
+     * creates pool under default public scope (IPV4, IPV6)
+     */
+    return pool;
   }
 }
 
@@ -179,13 +201,16 @@ export class IpamPrivateScope {
    */
   addPool(options: PoolOptions):IpamPool {
 
-    return new IpamPool(this.scope, 'PrivatePool', {
+    const uuid = generateUUID();
+    const pool = new IpamPool(this.scope, `PublicPool-${uuid}`, {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultprivateScopeId,
       //TODO: should be stack region or props input
       locale: options.locale,
     });
+
+    return pool;
     /**
      * creates pool under default public scope (IPV4, IPV6)
      */
@@ -200,8 +225,15 @@ export class IpamIpv6 implements IIpAddresses {
   allocateVpcCidr(): VpcV2Options {
     return {
       ipv6NetmaskLength: this.props.ipv6NetmaskLength,
-      ipv6IpamPoolId: this.props.ipv6IpamPoolId,
+      ipv6IpamPool: this.props.ipv6IpamPool,
     };
   }
 }
 
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
