@@ -221,7 +221,7 @@ To create a new deployment configuration with zonal configuration:
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'DeploymentConfiguration', {
   minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(2),
   zonalConfig: {
-    monitorDuration: Duration.minutes(20),
+    monitorDuration: Duration.minutes(30),
     firstZoneMonitorDuration: Duration.minutes(60),
     minimumHealthyHostsPerZone: codedeploy.MinimumHealthyHostsPerZone.count(1),
   },
