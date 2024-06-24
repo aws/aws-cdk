@@ -205,3 +205,21 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
     target: apiTarget,
 });
 ```
+
+### Amazon Kinesis Data Stream
+
+A data stream can be used as a target for a pipe. The data stream will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: kinesis.Stream;
+
+const streamTarget = new targets.KinesisTarget(targetStream, {
+    partitionKey: 'pk',
+}),
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: streamTarget,
+});
+```
