@@ -130,7 +130,7 @@ const routeToCgw = new Route(stacks.cgw, 'testCGWRoute', {
 
 const routeToEigw = new Route(stacks.eigw, 'testEIGWRoute', {
   routeTable: routeTables.eigw,
-  destination: vpc_v2.IpAddresses.ipv6({ ipv6CidrBlock: '2600:1f18:32d9:800::/0' }),
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
   target: eigw,
 });
 

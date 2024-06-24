@@ -31,7 +31,7 @@ const pool = ipam.publicScope.addPool({
   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
   locale: 'us-east-1',
 });
-ipam.privateScope.addPool('PrivatePool0', {
+ipam.privateScope.addPool({
   addressFamily: AddressFamily.IP_V4,
   provisionedCidrs: [{ cidr: '10.3.0.0/16' }],
   locale: 'us-east-1',

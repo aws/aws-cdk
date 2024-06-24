@@ -195,8 +195,8 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
    * Need to set explicit dependency as during stack deletion,
    * the cidr blocks may get deleted first and will fail as the subnets are still using the cidr blocks
    */
-  for(const cidr of vpc.secondaryCidrBlock) {
-    subnet.node.addDependency(cidr)
+  for (const cidr of vpc.secondaryCidrBlock) {
+    subnet.node.addDependency(cidr);
   }
 }
 

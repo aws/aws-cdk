@@ -168,7 +168,7 @@ export class IpamPublicScope {
    * There can be multiple options supported under a scope
    * for pool like using amazon provided IPv6
    */
-  addPool(id: string, options: PoolOptions): IpamPool {
+  addPool(options: PoolOptions): IpamPool {
 
     const uuid = generateUUID();
     const pool = new IpamPool(this.scope, `PublicPool-${uuid}`, {
@@ -204,7 +204,7 @@ export class IpamPrivateScope {
    * There can be multiple options supported under a scope
    * for pool like using amazon provided IPv6
    */
-  addPool(id: string, options: PoolOptions): IpamPool {
+  addPool(options: PoolOptions): IpamPool {
 
     const uuid = generateUUID();
     const pool = new IpamPool(this.scope, `PublicPool-${uuid}`, {
