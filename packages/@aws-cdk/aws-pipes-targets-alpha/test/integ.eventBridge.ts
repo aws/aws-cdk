@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { EventBridgeTarget } from '../lib/eventBridge';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets');
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-eventbridge');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetEventBus = new cdk.aws_events.EventBus(stack, 'TargetEventBus');
 
