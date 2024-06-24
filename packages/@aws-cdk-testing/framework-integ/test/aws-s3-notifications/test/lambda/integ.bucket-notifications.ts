@@ -32,9 +32,8 @@ bucketB.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.LambdaDestinat
 const c1 = new constructs.Construct(stack, 'Construct1');
 const unmanagedBucket = s3.Bucket.fromBucketName(c1, 'IntegUnmanagedBucket1', bucketA.bucketName);
 
-unmanagedBucket.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { prefix: 'TEST/', suffix: '.png'});
+unmanagedBucket.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { prefix: 'TEST/', suffix: '.png' });
 unmanagedBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn), { prefix: 'TEST1/' });
-
 
 /* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
@@ -54,10 +53,9 @@ const integTest = new integ.IntegTest(app, 'LambdaBucketNotificationsTest', {
   diffAssets: true,
 });
 
-
 const getNotifications = integTest.assertions
   .awsApiCall('S3', 'getBucketNotificationConfiguration', {
-    Bucket: unmanagedBucket.bucketName
+    Bucket: unmanagedBucket.bucketName,
   });
 getNotifications.provider.addToRolePolicy({
   Effect: 'Allow',
@@ -66,41 +64,41 @@ getNotifications.provider.addToRolePolicy({
 });
 
 getNotifications.expect(integ.ExpectedResult.objectLike({
-LambdaFunctionConfigurations: [
-  {
-    Events: [
-        "s3:ObjectCreated:*"
-    ],
-    Filter: {
-        Key: {
-            FilterRules: [
-                {
-                    Name: "Prefix",
-                    Value: "TEST/"
-                },
-                {
-                  Name: "Suffix",
-                  Value: ".png"
-                }
-            ]
-        }
-    }
-},
-  {
+  LambdaFunctionConfigurations: [
+    {
       Events: [
-          "s3:ObjectCreated:*"
+        's3:ObjectCreated:*',
       ],
       Filter: {
-          Key: {
-              FilterRules: [
-                  {
-                      Name: "Prefix",
-                      Value: "TEST1/"
-                  }
-              ]
-          }
-      }
-  }
-]
-}))
+        Key: {
+          FilterRules: [
+            {
+              Name: 'Prefix',
+              Value: 'TEST/',
+            },
+            {
+              Name: 'Suffix',
+              Value: '.png',
+            },
+          ],
+        },
+      },
+    },
+    {
+      Events: [
+        's3:ObjectCreated:*',
+      ],
+      Filter: {
+        Key: {
+          FilterRules: [
+            {
+              Name: 'Prefix',
+              Value: 'TEST1/',
+            },
+          ],
+        },
+      },
+    },
+  ],
+}));
 app.synth();
