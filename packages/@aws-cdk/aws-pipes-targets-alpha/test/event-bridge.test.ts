@@ -3,7 +3,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { TestSource } from './test-classes';
-import { EventBridgeTarget } from '../lib/eventBridge';
+import { EventBridgeTarget } from '../lib/event-bridge';
 
 describe('EventBridge', () => {
   it('should have only target arn', () => {
