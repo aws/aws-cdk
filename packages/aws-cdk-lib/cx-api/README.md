@@ -377,11 +377,11 @@ _cdk.json_
 }
 ```
 
-* `@aws-cdk/aws-cloudfront:useOriginAccessControl`
+* `@aws-cdk/aws-cloudfront:useOriginAccessControlByDefault`
 
 Use Origin Access Control instead of Origin Access Identity
 
-When this feature flag is enabled, an origin access control will be created automatically when a new S3 origin is created.
+When this feature flag is enabled, an origin access control will be created by default when a new S3 origin is created.
 
 
 _cdk.json_
@@ -389,7 +389,7 @@ _cdk.json_
 ```json
 {
   "context": {
-    "@aws-cdk/aws-cloudfront:useOriginAccessControl": true
+    "@aws-cdk/aws-cloudfront:useOriginAccessControlByDefault": true
   }
 }
 ```
