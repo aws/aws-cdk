@@ -44,7 +44,7 @@ export interface S3OriginProps extends cloudfront.OriginProps {
 
   /**
    * The level of permissions granted in the bucket policy and key policy (if applicable)
-   * to the CloudFront distribution.
+   * to the CloudFront distribution. This property only applies to OAC (not OAI).
    * @default AccessLevel.READ
    */
   readonly originAccessLevels?: AccessLevel[];

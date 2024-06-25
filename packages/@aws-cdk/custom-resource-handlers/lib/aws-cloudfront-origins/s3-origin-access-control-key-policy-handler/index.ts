@@ -10,16 +10,15 @@ const KEY_ACTIONS: Record<string, string[]> = {
 };
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
+  const props = event.ResourceProperties;
+  const distributionId = props.DistributionId;
+  const kmsKeyId = props.KmsKeyId;
+  const accountId = props.AccountId;
+  const partition = props.Partition;
+  const region = process.env.AWS_REGION;
+  const accessLevels = props.AccessLevels;
 
   if (event.RequestType === 'Create' || event.RequestType === 'Update') {
-    const props = event.ResourceProperties;
-    const distributionId = props.DistributionId;
-    const kmsKeyId = props.KmsKeyId;
-    const accountId = props.AccountId;
-    const partition = props.Partition;
-    const region = process.env.AWS_REGION;
-    const accessLevels = props.AccessLevels;
-
     const describeKeyCommandResponse = await kms.describeKey({
       KeyId: kmsKeyId,
     });
@@ -48,7 +47,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const actions = getActions(accessLevels);
 
     const kmsKeyPolicyStatement = {
-      Sid: 'AllowCloudFrontServicePrincipalSSE-KMS',
+      Sid: 'GrantOACAccessToKMS',
       Effect: 'Allow',
       Principal: {
         Service: [
@@ -75,12 +74,44 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return {
       IsComplete: true,
     };
-  } else {
-    return;
+  } else if (event.RequestType === 'Delete') {
+    const getKeyPolicyCommandResponse = await kms.getKeyPolicy({
+      KeyId: kmsKeyId,
+      PolicyName: 'default',
+    });
+
+    if (!getKeyPolicyCommandResponse.Policy) {
+      throw new Error('An error occurred while retrieving the key policy.');
+    }
+
+    const keyPolicy = JSON.parse(getKeyPolicyCommandResponse.Policy);
+    console.log('Retrieved key policy', JSON.stringify(keyPolicy, undefined, 2));
+
+    const updatedKeyPolicy = {
+      ...keyPolicy,
+      Statement: keyPolicy.Statement.filter((statement: any) => {
+        return (
+          statement.Sid !== 'GrantOACAccessToKMS' ||
+          statement.Condition.StringEquals['AWS:SourceArn'] !== `arn:${partition}:cloudfront::${accountId}:distribution/${distributionId}`
+        );
+      }),
+    };
+
+    console.log('Updated key policy', JSON.stringify(updatedKeyPolicy, undefined, 2));
+
+    await kms.putKeyPolicy({
+      KeyId: kmsKeyId,
+      Policy: JSON.stringify(updatedKeyPolicy),
+      PolicyName: 'default',
+    });
+
+    return {
+      IsComplete: true,
+    };
   }
 }
 
-function getActions(accessLevels: string[]): string[] {
+export function getActions(accessLevels: string[]): string[] {
   let actions: string[] = [];
   for (const accessLevel of accessLevels) {
     actions = actions.concat(KEY_ACTIONS[accessLevel]);
@@ -96,18 +127,7 @@ function getActions(accessLevels: string[]): string[] {
  * @param policyStatementToAdd - the policy statement to be added to the policy.
  * @returns currentPolicy - the updated policy.
  */
-function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
-  // // Check to see if a duplicate key policy exists by matching on the sid. This is to prevent duplicate key policies
-  // // from being added/updated in response to a stack being updated one or more times after initial creation.
-  // const existingPolicyIndex = currentPolicy.Statement.findIndex((statement: any) => statement.Sid === policyStatementToAdd.Sid);
-  // // If a match is found, overwrite the key policy statement...
-  // // Otherwise, push the new key policy to the array of statements
-  // if (existingPolicyIndex > -1) {
-  //   currentPolicy.Statement[existingPolicyIndex] = policyStatementToAdd;
-  // } else {
-  //   currentPolicy.Statement.push(policyStatementToAdd);
-  // }
-
+export function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
   if (!isStatementInPolicy(currentPolicy, policyStatementToAdd)) {
     currentPolicy.Statement.push(policyStatementToAdd);
   }
@@ -115,6 +135,6 @@ function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
   return currentPolicy;
 };
 
-function isStatementInPolicy(policy: any, statement: any): boolean {
+export function isStatementInPolicy(policy: any, statement: any): boolean {
   return policy.Statement.some((existingStatement: any) => JSON.stringify(existingStatement) === JSON.stringify(statement));
-}
+} 
