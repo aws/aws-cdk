@@ -1319,9 +1319,11 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       } : undefined,
     });
 
-    // grant required privileges for the role
+    // grant required privileges for the role to access an image in Amazon ECR
+    // See https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles
     if (this.source.ecrRepository && this.accessRole) {
       this.source.ecrRepository.grantPull(this.accessRole);
+      this.source.ecrRepository.grant(this.accessRole, 'ecr:DescribeImages');
     }
 
     this.serviceArn = resource.attrServiceArn;
