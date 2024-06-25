@@ -28,11 +28,46 @@ export class WebSocketIntegrationResponseKey {
   public static serverError = WebSocketIntegrationResponseKey.fromStatusRegExp(/5\d{2}/.source);
 
   /**
+   * Match 200 OK status code
+   */
+  public static ok = WebSocketIntegrationResponseKey.fromStatusCode(200);
+
+  /**
+   * Match 204 Created status code
+   */
+  public static noContent = WebSocketIntegrationResponseKey.fromStatusCode(204);
+
+  /**
+   * Match 400 Bad Request status code
+   */
+  public static badRequest = WebSocketIntegrationResponseKey.fromStatusCode(400);
+
+  /**
+   * Match 401 Unauthorized status code
+   */
+  public static unauthorized = WebSocketIntegrationResponseKey.fromStatusCode(401);
+
+  /**
+   * Match 403 Forbidden status code
+   */
+  public static forbidden = WebSocketIntegrationResponseKey.fromStatusCode(403);
+
+  /**
+   * Match 404 Not Found status code
+   */
+  public static notFound = WebSocketIntegrationResponseKey.fromStatusCode(404);
+
+  /**
+   * Match 500 Internal Server Error status code
+   */
+  public static internalServerError = WebSocketIntegrationResponseKey.fromStatusCode(500);
+
+  /**
    * Generate an integration response key from an HTTP status code
    *
    * @example
-   * // Match 403 status code
-   * apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(403)
+   * // Match 409 Conflict status code
+   * apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(409)
    *
    * @param httpStatusCode HTTP status code of the mapped response
    */

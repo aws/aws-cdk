@@ -47,6 +47,14 @@ describe('WebSocketIntegrationResponseKey', () => {
     expect(WebSocketIntegrationResponseKey.success.key).toEqual('/2\\d{2}/');
     expect(WebSocketIntegrationResponseKey.clientError.key).toEqual('/4\\d{2}/');
     expect(WebSocketIntegrationResponseKey.serverError.key).toEqual('/5\\d{2}/');
+
+    expect(WebSocketIntegrationResponseKey.ok.key).toEqual('/200/');
+    expect(WebSocketIntegrationResponseKey.noContent.key).toEqual('/204/');
+    expect(WebSocketIntegrationResponseKey.badRequest.key).toEqual('/400/');
+    expect(WebSocketIntegrationResponseKey.unauthorized.key).toEqual('/401/');
+    expect(WebSocketIntegrationResponseKey.forbidden.key).toEqual('/403/');
+    expect(WebSocketIntegrationResponseKey.notFound.key).toEqual('/404/');
+    expect(WebSocketIntegrationResponseKey.internalServerError.key).toEqual('/500/');
   });
 
   test('can generate fromStatusCode', () => {
