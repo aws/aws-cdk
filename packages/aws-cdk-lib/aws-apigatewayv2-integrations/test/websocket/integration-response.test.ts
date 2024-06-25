@@ -34,10 +34,13 @@ class WebSocketTestIntegration extends CustomResponseWebSocketRoute {
   /**
    * Add a response to this integration
    *
-   * @param response The response to add
+   * @param responseKey The response key to add
+   * @param options Optional properties to add to the response
    */
-  addResponse(response: InternalWebSocketIntegrationResponseProps) {
-    super.addResponse(response);
+  addResponse(
+    responseKey: WebSocketIntegrationResponseKey,
+    options: Omit<InternalWebSocketIntegrationResponseProps, 'responseKey'> = {}) {
+    super.addResponse(responseKey, options);
   }
 }
 
@@ -226,7 +229,7 @@ describe('WebSocketIntegrationResponse from properties', () => {
         { responseKey: WebSocketIntegrationResponseKey.default },
       ],
     });
-    integration.addResponse({ responseKey: WebSocketIntegrationResponseKey.clientError });
+    integration.addResponse(WebSocketIntegrationResponseKey.clientError);
 
     api.addRoute('$default', { integration, returnResponse: true });
 
@@ -288,7 +291,7 @@ describe('WebSocketIntegrationResponse from properties', () => {
         { responseKey: WebSocketIntegrationResponseKey.default },
       ],
     });
-    integration.addResponse({ responseKey: WebSocketIntegrationResponseKey.default });
+    integration.addResponse(WebSocketIntegrationResponseKey.default);
 
     // THEN
     expect(

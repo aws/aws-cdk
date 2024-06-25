@@ -335,26 +335,26 @@ new apigwv2.WebSocketStage(this, 'mystage', {
 declare const integration: WebSocketAwsIntegration;
 
 // Default response key, will be used if no other matched
-integration.addResponse({ responseKey: apigwv2.WebSocketIntegrationResponseKey.default });
+integration.addResponse(apigwv2.WebSocketIntegrationResponseKey.default);
 
-integration.addResponse({ 
+integration.addResponse(
   // Success response key, will match all 2xx response HTTP status codes
-  responseKey: apigwv2.WebSocketIntegrationResponseKey.success,
-  responseTemplates: {
-    'application/json': JSON.stringify({ success: true }),
-  },
-});
+  apigwv2.WebSocketIntegrationResponseKey.success,
+  { responseTemplates: { 'application/json': JSON.stringify({ success: true }) } },
+);
 
-integration.addResponse({ 
+integration.addResponse(
   // You can also create custom response integrations for specific status codes
-  responseKey: apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(404),
-  responseTemplates: {
-    'application/json': `{
-      "error": "Not found",
-      "message": $input.json('$.Message')
-    }`,
+  apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(410),
+  {
+    responseTemplates: {
+      'application/json': `{
+        "error": "Gone",
+        "message": $input.json('$.Message')
+      }`,
+    },
   },
-});
+);
 
 webSocketApi.addRoute('putItem', { integration, returnResponse: true });
 ```
