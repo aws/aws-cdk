@@ -42,7 +42,7 @@ const rule = new cdk.aws_events.Rule(stack, 'rule', {
 });
 rule.addTarget(new cdk.aws_events_targets.SqsQueue(resultQueue, {}));
 
-const test = new IntegTest(app, 'integtest-pipe-target-sqs', {
+const test = new IntegTest(app, 'integtest-pipe-target-eventbridge', {
   testCases: [stack],
 });
 
