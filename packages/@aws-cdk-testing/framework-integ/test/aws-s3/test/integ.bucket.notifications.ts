@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled`': false,
+    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled': false,
   },
 });
 

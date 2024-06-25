@@ -72,7 +72,7 @@ def make_empty_notification_configuration_with_eventbridge():
 
 def make_event_s3_notification_delete_feature_enabled(request_type: str,
                                                       managed: bool,
-                                                      s3NotificationsDeleteFeatureFlagEnabled: bool):
+                                                      applyNameTransformations: bool):
     return {
         "StackId": "StackId",
         "RequestType": request_type,
@@ -80,7 +80,7 @@ def make_event_s3_notification_delete_feature_enabled(request_type: str,
             "Managed": str(managed),
             "BucketName": "BucketName",
             "NotificationConfiguration": make_notification_configuration(),
-            "S3NotificationsDeleteFeatureFlagEnabled": str(s3NotificationsDeleteFeatureFlagEnabled)
+            "ApplyNameTransformations": str(applyNameTransformations)
 
         },
     }

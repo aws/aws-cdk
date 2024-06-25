@@ -15,13 +15,13 @@ def handler(event: dict, context):
     props = event["ResourceProperties"]
     notification_configuration = props["NotificationConfiguration"]
     managed = props.get('Managed', 'true').lower() == 'true'
-    s3NotificationsDeleteFeatureFlagEnabled = props.get('S3NotificationsDeleteFeatureFlagEnabled', 'true').lower() == 'true'
+    applyNameTransformations = props.get('ApplyNameTransformations', 'false').lower() == 'true'
     stack_id = event['StackId']
     old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
       config = handle_managed(event["RequestType"], notification_configuration)
     else:
-      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old, s3NotificationsDeleteFeatureFlagEnabled)
+      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old, applyNameTransformations)
     s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
@@ -35,13 +35,13 @@ def handle_managed(request_type, notification_configuration):
     return {}
   return notification_configuration
 
-def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old, s3NotificationsDeleteFeatureFlagEnabled):
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old, applyNameTransformations):
   def get_id(n):
     n['Id'] = ''
     strToHash=json.dumps(n, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
     return f"{stack_id}-{hash(strToHash)}"
   def with_id(n):
-    if s3NotificationsDeleteFeatureFlagEnabled:
+    if applyNameTransformations:
       n['Id'] = get_id(n)
     else:
       n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
@@ -52,7 +52,7 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
   existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
-        if s3NotificationsDeleteFeatureFlagEnabled:
+        if applyNameTransformations:
           old_incoming_ids = [get_id(n) for n in old.get(t, [])]
           external_notifications[t] = [n for n in existing_notifications.get(t, []) if not get_id(n) in old_incoming_ids]
         else:
