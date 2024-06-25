@@ -10,6 +10,7 @@ import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
 import { IAutoScalingConfiguration } from './auto-scaling-configuration';
+import { IObservabilityConfiguration } from './observability-configuration';
 
 /**
  * The image repository types
@@ -743,6 +744,14 @@ export interface ServiceProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Settings for an App Runner observability configuration.
+   *
+   * @default - no observability configuration resource is associated with the service.
+   */
+  readonly observabilityConfiguration?: IObservabilityConfiguration;
+
 }
 
 /**
@@ -1296,6 +1305,10 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :
         undefined,
+      observabilityConfiguration: props.observabilityConfiguration ? {
+        observabilityEnabled: true,
+        observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
+      } : undefined,
     });
 
     // grant required privileges for the role to access an image in Amazon ECR
