@@ -149,7 +149,7 @@ describe('getActions', () => {
   });
 });
 
-describe('updatePolicy', () => {
+describe('appendStatementToPolicy', () => {
   it('should add a new policy statement if it does not exist', () => {
     const currentPolicy = { Statement: [] };
     const policyStatementToAdd = { Sid: 'NewStatement', Effect: 'Allow', Action: ['kms:Decrypt'], Resource: '*' };

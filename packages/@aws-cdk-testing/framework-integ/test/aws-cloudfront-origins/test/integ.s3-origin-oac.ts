@@ -11,10 +11,10 @@ const stack = new cdk.Stack(app, 'cloudfront-s3-origin-oac');
 const bucket = new s3.Bucket(stack, 'Bucket');
 const originAccessControl = new cloudfront.OriginAccessControl(stack, 'OriginAccessControl');
 new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { 
+  defaultBehavior: {
     origin: new origins.S3Origin(bucket, {
-      originAccessControl: originAccessControl
-    })
+      originAccessControl: originAccessControl,
+    }),
   },
 });
 

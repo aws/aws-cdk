@@ -46,12 +46,12 @@ describe('S3 OAC bucket policy handler', () => {
   })
 });
 
-describe('updatePolicy', () => {
+describe('appendStatementToPolicy', () => {
   it('should add a new policy statement if it does not exist', () => {
     const currentPolicy = { Statement: [] };
     const policyStatementToAdd = { Sid: 'NewStatement', Effect: 'Allow', Action: 's3:GetObject', Resource: 'arn:aws:s3:::bucket/*' };
 
-    const updatedPolicy = updatePolicy(currentPolicy, policyStatementToAdd);
+    const updatedPolicy = appendStatementToPolicy(currentPolicy, policyStatementToAdd);
 
     expect(updatedPolicy.Statement).toContainEqual(policyStatementToAdd);
   });

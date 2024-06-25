@@ -18,8 +18,8 @@ const originAccessControl = new cloudfront.OriginAccessControl(stack, 'OriginAcc
 new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: {
     origin: new origins.S3Origin(bucket, {
-      originAccessControl: originAccessControl
-    })
+      originAccessControl: originAccessControl,
+    }),
   },
 });
 
