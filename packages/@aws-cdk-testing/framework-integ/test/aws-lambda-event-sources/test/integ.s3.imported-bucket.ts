@@ -30,7 +30,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled`': false,
+  },
+});
 
 new IntegTest(app, 'issue-4324', {
   testCases: [

@@ -4,11 +4,12 @@ import * as cdk from 'aws-cdk-lib';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 import * as constructs from 'constructs';
-import { S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED } from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
-  context: { [S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED]: true },
+  postCliContext: {
+    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled`': false,
+  },
 });
 
 const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-s3-notifications');
