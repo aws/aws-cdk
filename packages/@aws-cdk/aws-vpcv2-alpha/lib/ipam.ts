@@ -155,9 +155,9 @@ export class Ipam extends Resource {
   public readonly ipamId: string;
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    this._ipam = new CfnIPAM(scope, 'Ipam');
-    this.publicScope = new IpamPublicScope(scope, this._ipam.attrPublicDefaultScopeId);
-    this.privateScope = new IpamPrivateScope(scope, this._ipam.attrPrivateDefaultScopeId);
+    this._ipam = new CfnIPAM(this, 'Ipam');
+    this.publicScope = new IpamPublicScope(this, this._ipam.attrPublicDefaultScopeId);
+    this.privateScope = new IpamPrivateScope(this, this._ipam.attrPrivateDefaultScopeId);
     this.ipamId = this._ipam.attrIpamId;
   }
 }
