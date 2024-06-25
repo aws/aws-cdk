@@ -1655,6 +1655,59 @@ test('create a service with an AutoScalingConfiguration', () => {
   });
 });
 
+test('create a service with a Observability Configuration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const observabilityConfiguration = new apprunner.ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
+    observabilityConfigurationName: 'MyObservabilityConfiguration',
+    traceConfigurationVendor: apprunner.TraceConfigurationVendor.AWSXRAY,
+  });
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    observabilityConfiguration,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
+    ObservabilityConfigurationName: 'MyObservabilityConfiguration',
+    TraceConfiguration: {
+      Vendor: 'AWSXRAY',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ObservabilityConfiguration: {
+      ObservabilityEnabled: true,
+      ObservabilityConfigurationArn: stack.resolve(observabilityConfiguration.observabilityConfigurationArn),
+    },
+  });
+});
+
+test('create a service without a Observability Configuration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ObservabilityConfiguration: Match.absent(),
+  });
+});
+
 test.each([true, false])('isPubliclyAccessible is set %s', (isPubliclyAccessible: boolean) => {
   // GIVEN
   const app = new cdk.App();
