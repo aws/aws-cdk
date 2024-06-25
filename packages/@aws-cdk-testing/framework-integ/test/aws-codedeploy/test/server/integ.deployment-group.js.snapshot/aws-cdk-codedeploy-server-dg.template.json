@@ -773,8 +773,7 @@
       "CodeDeployGroupRole1D304F7A",
       "Arn"
      ]
-    },
-    "TerminationHookEnabled": true
+    }
    }
   }
  },

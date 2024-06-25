@@ -44,6 +44,6 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   terminationHook: true,
 });
 
-new IntegTest(app, 'integ-cloudfront-custom-s3', {
+new IntegTest(app, 'integ-deployment-group', {
   testCases: [stack],
 });
