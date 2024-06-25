@@ -51,7 +51,7 @@ for (const stackName in stacks) {
   if (stackName == 'eigw') {
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-west-1a',
+      availabilityZone: 'us-east-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
@@ -60,7 +60,7 @@ for (const stackName in stacks) {
     // use empty ipv6 that doesn't overlap
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-west-1a',
+      availabilityZone: 'us-east-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
@@ -75,7 +75,7 @@ const user2Vpc = new vpc_v2.VpcV2(stacks.vpcpc, 'vpcpc-user2', {
 
 new SubnetV2(stacks.vpcpc, 'vpcpcSubnet-2', {
   vpc: user2Vpc,
-  availabilityZone: 'us-west-1a',
+  availabilityZone: 'us-east-1a',
   cidrBlock: new Ipv4Cidr('10.0.128.128/24'),
   subnetType: SubnetType.PRIVATE_WITH_EGRESS,
 });
