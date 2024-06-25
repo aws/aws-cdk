@@ -15,16 +15,13 @@ export class GlobalAcceleratorDomainTarget implements route53.IAliasRecordTarget
   /**
    * Create an Alias Target for a Global Accelerator domain name.
    */
-  constructor(
-    private readonly acceleratorDomainName: string,
-    private readonly props: GlobalAcceleratorDomainTargetProps = { evaluateTargetHealth: false },
-  ) {}
+  constructor(private readonly acceleratorDomainName: string, private readonly props?: GlobalAcceleratorDomainTargetProps) {}
 
   bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {
       hostedZoneId: GlobalAcceleratorTarget.GLOBAL_ACCELERATOR_ZONE_ID,
       dnsName: this.acceleratorDomainName,
-      evaluateTargetHealth: this.props.evaluateTargetHealth,
+      evaluateTargetHealth: this.props?.evaluateTargetHealth,
     };
   }
 }
@@ -36,7 +33,7 @@ export class GlobalAcceleratorTarget extends GlobalAcceleratorDomainTarget {
   /**
    * Create an Alias Target for a Global Accelerator instance.
    */
-  constructor(accelerator: globalaccelerator.IAccelerator, props: GlobalAcceleratorDomainTargetProps = { evaluateTargetHealth: false }) {
+  constructor(accelerator: globalaccelerator.IAccelerator, props?: GlobalAcceleratorDomainTargetProps) {
     super(accelerator.dnsName, props);
   }
 }
@@ -47,7 +44,7 @@ export class GlobalAcceleratorTarget extends GlobalAcceleratorDomainTarget {
 export interface GlobalAcceleratorDomainTargetProps {
   /**
    * Evaluate target health
-   * @default - false
+   * @default - no health check configuration
    */
   readonly evaluateTargetHealth?: boolean;
 }

@@ -79,24 +79,3 @@ test('GlobalAcceleratorTarget creates an alias resource with health check', () =
     },
   });
 });
-
-test('GlobalAcceleratorTarget creates an alias resource with health check off by default', () => {
-  // GIVEN
-  const stack = new Stack();
-  const accelerator = new globalaccelerator.Accelerator(stack, 'Accelerator');
-  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
-
-  // WHEN
-  new route53.ARecord(stack, 'GlobalAcceleratorAlias', {
-    target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget(accelerator)),
-    recordName: 'test',
-    zone,
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
-    AliasTarget: {
-      EvaluateTargetHealth: false,
-    },
-  });
-});
