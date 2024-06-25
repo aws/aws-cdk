@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "integtest-pipe-target-sqs/DefaultTest": {
+    "integtest-pipe-target-eventbridge/DefaultTest": {
       "stacks": [
-        "aws-cdk-pipes-targets"
+        "aws-cdk-pipes-targets-eventbridge"
       ],
-      "assertionStack": "integtest-pipe-target-sqs/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestpipetargetsqsDefaultTestDeployAssertD5F047DA"
+      "assertionStack": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargeteventbridgeDefaultTestDeployAssertB137FF82"
     }
   }
 }
