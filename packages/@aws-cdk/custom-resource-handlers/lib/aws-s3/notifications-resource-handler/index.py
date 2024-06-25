@@ -72,7 +72,7 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
   if EVENTBRIDGE_CONFIGURATION in existing_notifications:
     external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
 
-  # if delete, that's all we need
+  # If delete, that's all we need
   if request_type == 'Delete':
     return external_notifications
 
