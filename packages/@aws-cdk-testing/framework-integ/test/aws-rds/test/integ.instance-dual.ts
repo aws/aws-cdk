@@ -15,7 +15,7 @@ vpc.isolatedSubnets.forEach((subnet, idx) => {
 });
 
 new rds.DatabaseInstance(stack, 'DualstackInstance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
   credentials: rds.Credentials.fromUsername('postgres', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
   vpc,
@@ -27,7 +27,7 @@ new rds.DatabaseInstance(stack, 'DualstackInstance', {
 });
 
 new rds.DatabaseInstance(stack, 'Ipv4Instance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
   credentials: rds.Credentials.fromUsername('postgres', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
   vpc,

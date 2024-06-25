@@ -1,0 +1,126 @@
+{
+ "Resources": {
+  "Ipam2108E2ED": {
+   "Type": "AWS::EC2::IPAM",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "IpamPublicPool9b0cd44d8af344ee95b87c7a192d9daeAB12561E": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "Ipam2108E2ED",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "Locale": "eu-west-1",
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "10.2.0.0/16"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "IpamPublicPoolb70ff97568c1416386b05cef0e5c84c8E81B32E2": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv6",
+    "AwsService": "ec2",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "Ipam2108E2ED",
+      "PublicDefaultScopeId"
+     ]
+    },
+    "Locale": "eu-west-1",
+    "PublicIpSource": "amazon"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "VPCintegtest1EBA1CB75": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "VPCintegtest1SecondaryIp17A37C105": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv4IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamPublicPool9b0cd44d8af344ee95b87c7a192d9daeAB12561E",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv4NetmaskLength": 20,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCintegtest1SecondaryIp233A848D1": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "Vpcintegtest20DAD8F9D": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

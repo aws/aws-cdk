@@ -29,7 +29,7 @@ const stacks: {[id: string] : cdk.Stack} = {
   'eigw': new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', {stackName: 'EgressOnlyIgwVpc'}),
   'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}),
   'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}),
-  'natgw': new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha', {stackName: 'NatGwVpc'}), // failing
+  'natgw': new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha', {stackName: 'NatGwVpc'}),
   'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', {stackName: 'NetworkInterfaceVpc'}),
   'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}), // failing
   'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}), // failing
