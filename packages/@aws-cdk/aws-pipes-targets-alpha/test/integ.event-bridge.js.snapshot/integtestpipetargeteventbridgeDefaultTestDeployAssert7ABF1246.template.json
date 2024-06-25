@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-pipes-targets-eventbridge:ExportsOutputRefSourceQueue6E809DF09604904F"
+         "Fn::ImportValue": "aws-cdk-pipes-targets-event-bridge:ExportsOutputRefSourceQueue6E809DF09604904F"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      "MessageBody": "\"OmahaNebraska\""
     },
     "flattenResponse": "false",
-    "salt": "1719277675373"
+    "salt": "1719326961873"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -142,7 +142,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-pipes-targets-eventbridge:ExportsOutputRefResultQueue98CD34E0D4C9659C"
+         "Fn::ImportValue": "aws-cdk-pipes-targets-event-bridge:ExportsOutputRefResultQueue98CD34E0D4C9659C"
         },
         "\""
        ]
@@ -153,7 +153,7 @@
     "outputPaths": [
      "Messages.0.Body.detail.body"
     ],
-    "salt": "1719277675374"
+    "salt": "1719326961874"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9"

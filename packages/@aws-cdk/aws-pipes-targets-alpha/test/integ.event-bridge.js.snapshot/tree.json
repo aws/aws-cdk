@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-pipes-targets-eventbridge": {
-        "id": "aws-cdk-pipes-targets-eventbridge",
-        "path": "aws-cdk-pipes-targets-eventbridge",
+      "aws-cdk-pipes-targets-event-bridge": {
+        "id": "aws-cdk-pipes-targets-event-bridge",
+        "path": "aws-cdk-pipes-targets-event-bridge",
         "children": {
           "SourceQueue": {
             "id": "SourceQueue",
-            "path": "aws-cdk-pipes-targets-eventbridge/SourceQueue",
+            "path": "aws-cdk-pipes-targets-event-bridge/SourceQueue",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-targets-eventbridge/SourceQueue/Resource",
+                "path": "aws-cdk-pipes-targets-event-bridge/SourceQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {}
@@ -32,15 +32,15 @@
           },
           "TargetEventBus": {
             "id": "TargetEventBus",
-            "path": "aws-cdk-pipes-targets-eventbridge/TargetEventBus",
+            "path": "aws-cdk-pipes-targets-event-bridge/TargetEventBus",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-targets-eventbridge/TargetEventBus/Resource",
+                "path": "aws-cdk-pipes-targets-event-bridge/TargetEventBus/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
                   "aws:cdk:cloudformation:props": {
-                    "name": "awscdkpipestargetseventbridgeTargetEventBus0CDC15B8"
+                    "name": "awscdkpipestargetseventbridgeTargetEventBusF398C0E3"
                   }
                 },
                 "constructInfo": {
@@ -56,15 +56,15 @@
           },
           "Pipe": {
             "id": "Pipe",
-            "path": "aws-cdk-pipes-targets-eventbridge/Pipe",
+            "path": "aws-cdk-pipes-targets-event-bridge/Pipe",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-pipes-targets-eventbridge/Pipe/Role",
+                "path": "aws-cdk-pipes-targets-event-bridge/Pipe/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-pipes-targets-eventbridge/Pipe/Role/ImportRole",
+                    "path": "aws-cdk-pipes-targets-event-bridge/Pipe/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -72,7 +72,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-pipes-targets-eventbridge/Pipe/Role/Resource",
+                    "path": "aws-cdk-pipes-targets-event-bridge/Pipe/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -97,11 +97,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-pipes-targets-eventbridge/Pipe/Role/DefaultPolicy",
+                    "path": "aws-cdk-pipes-targets-event-bridge/Pipe/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-pipes-targets-eventbridge/Pipe/Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-pipes-targets-event-bridge/Pipe/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -163,7 +163,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-targets-eventbridge/Pipe/Resource",
+                "path": "aws-cdk-pipes-targets-event-bridge/Pipe/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Pipes::Pipe",
                   "aws:cdk:cloudformation:props": {
@@ -208,11 +208,11 @@
           },
           "ResultQueue": {
             "id": "ResultQueue",
-            "path": "aws-cdk-pipes-targets-eventbridge/ResultQueue",
+            "path": "aws-cdk-pipes-targets-event-bridge/ResultQueue",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-targets-eventbridge/ResultQueue/Resource",
+                "path": "aws-cdk-pipes-targets-event-bridge/ResultQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {}
@@ -224,11 +224,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-cdk-pipes-targets-eventbridge/ResultQueue/Policy",
+                "path": "aws-cdk-pipes-targets-event-bridge/ResultQueue/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-pipes-targets-eventbridge/ResultQueue/Policy/Resource",
+                    "path": "aws-cdk-pipes-targets-event-bridge/ResultQueue/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
                       "aws:cdk:cloudformation:props": {
@@ -290,11 +290,11 @@
           },
           "rule": {
             "id": "rule",
-            "path": "aws-cdk-pipes-targets-eventbridge/rule",
+            "path": "aws-cdk-pipes-targets-event-bridge/rule",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-targets-eventbridge/rule/Resource",
+                "path": "aws-cdk-pipes-targets-event-bridge/rule/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Events::Rule",
                   "aws:cdk:cloudformation:props": {
@@ -333,11 +333,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "aws-cdk-pipes-targets-eventbridge/Exports",
+            "path": "aws-cdk-pipes-targets-event-bridge/Exports",
             "children": {
               "Output{\"Ref\":\"SourceQueue6E809DF0\"}": {
                 "id": "Output{\"Ref\":\"SourceQueue6E809DF0\"}",
-                "path": "aws-cdk-pipes-targets-eventbridge/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "path": "aws-cdk-pipes-targets-event-bridge/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -345,7 +345,7 @@
               },
               "Output{\"Ref\":\"ResultQueue98CD34E0\"}": {
                 "id": "Output{\"Ref\":\"ResultQueue98CD34E0\"}",
-                "path": "aws-cdk-pipes-targets-eventbridge/Exports/Output{\"Ref\":\"ResultQueue98CD34E0\"}",
+                "path": "aws-cdk-pipes-targets-event-bridge/Exports/Output{\"Ref\":\"ResultQueue98CD34E0\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -359,7 +359,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-pipes-targets-eventbridge/BootstrapVersion",
+            "path": "aws-cdk-pipes-targets-event-bridge/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -367,7 +367,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-pipes-targets-eventbridge/CheckBootstrapVersion",
+            "path": "aws-cdk-pipes-targets-event-bridge/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -379,17 +379,17 @@
           "version": "10.3.0"
         }
       },
-      "integtest-pipe-target-eventbridge": {
-        "id": "integtest-pipe-target-eventbridge",
-        "path": "integtest-pipe-target-eventbridge",
+      "integtest-pipe-target-event-bridge": {
+        "id": "integtest-pipe-target-event-bridge",
+        "path": "integtest-pipe-target-event-bridge",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "integtest-pipe-target-eventbridge/DefaultTest",
+            "path": "integtest-pipe-target-event-bridge/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "integtest-pipe-target-eventbridge/DefaultTest/Default",
+                "path": "integtest-pipe-target-event-bridge/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -397,19 +397,19 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert",
+                "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert",
                 "children": {
                   "AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9": {
                     "id": "AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/SdkProvider",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -423,11 +423,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/Default",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/Default/Default",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage75b849dddd0a40ac5b945a4a88da6af9/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -447,11 +447,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -459,7 +459,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -467,7 +467,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -481,7 +481,7 @@
                   },
                   "LatestNodeRuntimeMap": {
                     "id": "LatestNodeRuntimeMap",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -489,15 +489,15 @@
                   },
                   "AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea": {
                     "id": "AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/SdkProvider",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -511,11 +511,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/Default",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/Default/Default",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -529,15 +529,15 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/IsCompleteProvider",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -545,7 +545,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -559,11 +559,11 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/TimeoutProvider",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -571,7 +571,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/TimeoutProvider/Invoke",
+                                "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -585,7 +585,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/Role",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -593,7 +593,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/Resource",
+                            "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -607,7 +607,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/AssertionResults",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage12fa63f642952b2c2eaf965ffcee68ea/AssertionResults",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -621,11 +621,11 @@
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
                     "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -633,7 +633,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -641,7 +641,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -655,11 +655,11 @@
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
                     "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -667,7 +667,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -675,7 +675,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -689,7 +689,7 @@
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -697,7 +697,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "integtest-pipe-target-eventbridge/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
