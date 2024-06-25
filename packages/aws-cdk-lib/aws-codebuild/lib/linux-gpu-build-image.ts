@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
+import { EnvironmentType } from './environment-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import {
   BuildEnvironment, BuildImageBindOptions, BuildImageConfig, IBindableBuildImage, IBuildImage,
@@ -102,7 +103,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     return new LinuxGpuBuildImage(repository.repositoryName, tag, repository.env.account);
   }
 
-  public readonly type = 'LINUX_GPU_CONTAINER';
+  public readonly type = EnvironmentType.LINUX_GPU_CONTAINER as string;
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
   public readonly imageId: string;
