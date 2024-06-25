@@ -37,8 +37,8 @@ To create a map, define a `Map`:
 ```ts
 new location.Map(this, 'Map', {
   mapName: 'my-map',
-  style: Style.VECTOR_ESRI_NAVIGATION,
-  customLayers: [CustomLayer.POI],
+  style: location.Style.VECTOR_ESRI_NAVIGATION,
+  customLayers: [location.CustomLayer.POI],
 });
 ```
 
@@ -49,7 +49,7 @@ on the map:
 declare const role: iam.Role;
 
 const map = new location.Map(this, 'Map', {
-  style: Style.VECTOR_ESRI_NAVIGATION,
+  style: location.Style.VECTOR_ESRI_NAVIGATION,
 });
 map.grantRendering(role);
 ```
