@@ -1,5 +1,5 @@
 {
-  "app": "go mod download && go run %name%.go",
+  "app": "go mod download && go run .",
   "watch": {
     "include": ["**"],
     "exclude": [
