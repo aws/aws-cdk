@@ -250,7 +250,7 @@ An event bus can be used as a target for a pipe. The event bus will receive the 
 declare const sourceQueue: sqs.Queue;
 declare const targetEventBus: events.EventBus;
 
-const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {}),
+const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
