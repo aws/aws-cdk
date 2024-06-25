@@ -69,6 +69,9 @@ const gitHubSource = codebuild.Source.gitHub({
       .inEventOf(codebuild.EventAction.PUSH)
       .andBranchIs('main')
       .andCommitMessageIs('the commit message'),
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.RELEASED)
+      .andBranchIs('main')
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -941,5 +944,20 @@ By default there is no explicit limit.
 ```ts
 new codebuild.Project(this, 'MyProject', {
   concurrentBuildLimit: 1
+});
+```
+
+## Visibility
+When you can specify the visibility of the project builds. This setting controls whether the builds are publicly readable or remain private.
+
+Visibility options:
+- `PUBLIC_READ`: The project builds are visible to the public.
+- `PRIVATE`: The project builds are not visible to the public.
+
+Examples:
+
+```ts
+new codebuild.Project(this, 'MyProject', {
+  visibility: codebuild.ProjectVisibility.PUBLIC_READ,
 });
 ```
