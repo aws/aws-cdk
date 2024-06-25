@@ -69,9 +69,8 @@ export class EventBridgeTarget implements ITarget {
   constructor(eventBus: IEventBus, parameters?: EventBridgeTargetParameters) {
     this.eventBus = eventBus;
     this.targetArn = eventBus.eventBusArn;
-    this.eventBridgeParameters = parameters;
-
     if (parameters) {
+      this.eventBridgeParameters = parameters;
       for (const validate of [validateDetailType, validateEndpointId, validateSource, validateTime]) {
         validate(parameters);
       }
