@@ -104,6 +104,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-sonnet-20240229-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-sonnet-20240229-v1:0:200k');
 
+  /** Base model "anthropic.claude-3-5-sonnet-20240620-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20240620-v1:0');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
