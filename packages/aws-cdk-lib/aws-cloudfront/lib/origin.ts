@@ -129,6 +129,7 @@ export interface OriginBindOptions {
 
   /**
    * The identifier of the Distribution this Origin is used for.
+   * @default - no distributionId
    */
   readonly distributionId?: string | undefined;
 }

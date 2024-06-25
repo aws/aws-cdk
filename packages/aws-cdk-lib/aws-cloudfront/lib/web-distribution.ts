@@ -11,7 +11,6 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { Annotations } from '../../core';
 
 /**
  * HTTP status code to failover to second origin

@@ -1,7 +1,7 @@
 import { S3Client, GetBucketPolicyCommand, PutBucketPolicyCommand } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import { handler, updatePolicy, isStatementInPolicy, isOaiPrincipal, removeOacPolicyStatement, removeOaiPolicyStatements, isOacPolicyStatement } from '../../lib/aws-cloudfront-origins/s3-origin-access-control-bucket-policy-handler/index';
+import { handler, appendStatementToPolicy, isStatementInPolicy, isOaiPrincipal, removeOacPolicyStatement, removeOaiPolicyStatements, isOacPolicyStatement } from '../../lib/aws-cloudfront-origins/s3-origin-access-control-bucket-policy-handler/index';
 
 const s3Mock = mockClient(S3Client);
 
@@ -60,7 +60,7 @@ describe('updatePolicy', () => {
     const currentPolicy = { Statement: [{ Sid: 'ExistingStatement', Effect: 'Allow', Action: 's3:GetObject', Resource: 'arn:aws:s3:::bucket/*' }] };
     const policyStatementToAdd = { Sid: 'ExistingStatement', Effect: 'Allow', Action: 's3:GetObject', Resource: 'arn:aws:s3:::bucket/*' };
 
-    const updatedPolicy = updatePolicy(currentPolicy, policyStatementToAdd);
+    const updatedPolicy = appendStatementToPolicy(currentPolicy, policyStatementToAdd);
 
     expect(updatedPolicy.Statement).toHaveLength(1);
   });

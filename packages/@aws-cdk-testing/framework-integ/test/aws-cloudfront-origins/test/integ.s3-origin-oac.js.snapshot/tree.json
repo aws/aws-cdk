@@ -1,0 +1,291 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cloudfront-s3-origin-oac": {
+        "id": "cloudfront-s3-origin-oac",
+        "path": "cloudfront-s3-origin-oac",
+        "children": {
+          "Bucket": {
+            "id": "Bucket",
+            "path": "cloudfront-s3-origin-oac/Bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cloudfront-s3-origin-oac/Bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "cloudfront-s3-origin-oac/Bucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cloudfront-s3-origin-oac/Bucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "Bucket83908E77"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "s3:GetObject",
+                              "Condition": {
+                                "StringEquals": {
+                                  "AWS:SourceArn": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":cloudfront::",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":distribution/",
+                                        {
+                                          "Ref": "Distribution830FAC52"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "cloudfront.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "Bucket83908E77",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "/*"
+                                  ]
+                                ]
+                              },
+                              "Sid": "GrantOACAccessToS3"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "OriginAccessControl": {
+            "id": "OriginAccessControl",
+            "path": "cloudfront-s3-origin-oac/OriginAccessControl",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cloudfront-s3-origin-oac/OriginAccessControl/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::OriginAccessControl",
+                  "aws:cdk:cloudformation:props": {
+                    "originAccessControlConfig": {
+                      "name": "cloudfronts3originoacOriginAccessControl90512E67",
+                      "signingBehavior": "always",
+                      "signingProtocol": "sigv4",
+                      "originAccessControlOriginType": "s3"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnOriginAccessControl",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.OriginAccessControl",
+              "version": "0.0.0"
+            }
+          },
+          "Distribution": {
+            "id": "Distribution",
+            "path": "cloudfront-s3-origin-oac/Distribution",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "cloudfront-s3-origin-oac/Distribution/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cloudfront-s3-origin-oac/Distribution/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": {
+                            "Fn::GetAtt": [
+                              "Bucket83908E77",
+                              "RegionalDomainName"
+                            ]
+                          },
+                          "id": "cloudfronts3originoacDistributionOrigin12695E2FC",
+                          "s3OriginConfig": {
+                            "originAccessIdentity": ""
+                          },
+                          "originAccessControlId": {
+                            "Fn::GetAtt": [
+                              "OriginAccessControlDC2011A2",
+                              "Id"
+                            ]
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "cloudfronts3originoacDistributionOrigin12695E2FC",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cloudfront-s3-origin-oac/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cloudfront-s3-origin-oac/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "s3-origin-oac": {
+        "id": "s3-origin-oac",
+        "path": "s3-origin-oac",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "s3-origin-oac/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "s3-origin-oac/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "s3-origin-oac/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "s3-origin-oac/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "s3-origin-oac/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

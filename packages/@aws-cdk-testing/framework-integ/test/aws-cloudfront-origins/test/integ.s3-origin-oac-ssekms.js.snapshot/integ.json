@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "kms-s3-origin-oac/DefaultTest": {
+      "stacks": [
+        "ssekms-s3-origin-oac"
+      ],
+      "assertionStack": "kms-s3-origin-oac/DefaultTest/DeployAssert",
+      "assertionStackName": "kmss3originoacDefaultTestDeployAssert38960359"
+    }
+  }
+}

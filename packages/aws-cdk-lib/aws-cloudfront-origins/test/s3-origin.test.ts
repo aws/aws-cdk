@@ -1,7 +1,7 @@
 import { Annotations, Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
-import * as s3 from '../../aws-s3';
 import * as kms from '../../aws-kms';
+import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
 import { CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL_BY_DEFAULT } from '../../cx-api';
 import { AccessLevel, S3Origin, S3OriginProps } from '../lib';
@@ -220,7 +220,7 @@ describe('With bucket', () => {
         originAccessIdentity: oai,
         originAccessControl: oac,
       })).toThrow('Only one of originAccessControl or originAccessIdentity can be specified for an origin.');
-  })
+  });
 
   describe('with feature flag enabled', () => {
     beforeEach(() => {
@@ -270,15 +270,14 @@ describe('With bucket', () => {
       };
       const origin = new S3Origin(bucket, props);
       new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
-      console.log(Template.fromStack(stack).findResources('AWS::S3::BucketPolicy'));
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         PolicyDocument: {
           Statement: [{
-            Sid: "GrantOACAccessToS3",
+            Sid: 'GrantOACAccessToS3',
             Action: ['s3:GetObject', 's3:PutObject'],
             Effect: 'Allow',
             Principal: {
-              Service: "cloudfront.amazonaws.com",
+              Service: 'cloudfront.amazonaws.com',
             },
             Resource: {
               'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
@@ -286,7 +285,7 @@ describe('With bucket', () => {
             Condition: {
               StringEquals: {
                 'AWS:SourceArn': {
-                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::', { Ref: 'AWS::AccountId' }, ':distribution/', { Ref: 'DistB3B78991'} ]],
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::', { Ref: 'AWS::AccountId' }, ':distribution/', { Ref: 'DistB3B78991' }]],
                 },
               },
             },
@@ -366,7 +365,6 @@ describe('With bucket', () => {
     });
   });
 });
-
 
 describe('With website-configured bucket', () => {
   test('renders all required properties, including custom origin config', () => {

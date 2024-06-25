@@ -15,7 +15,7 @@ const S3_ORIGIN_ACCESS_CONTROL_BUCKET_RESOURCE_TYPE = 'Custom::S3OriginAccessCon
 const BUCKET_ACTIONS: Record<string, string[]> = {
   READ: ['s3:GetObject'],
   WRITE: ['s3:PutObject'],
-  DELETE: ['s3:DeleteObject']
+  DELETE: ['s3:DeleteObject'],
 };
 
 /**
@@ -93,7 +93,10 @@ export class S3Origin implements cloudfront.IOrigin {
     } else if (props.originAccessIdentity) {
       this.origin = S3BucketOrigin.withAccessIdentity(bucket, props);
     } else {
-      this.origin = FeatureFlags.of(bucket.stack).isEnabled(cxapi.CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL_BY_DEFAULT) ? S3BucketOrigin.withAccessControl(bucket, props) : S3BucketOrigin.withAccessIdentity(bucket, props);
+      this.origin = FeatureFlags.of(bucket.stack)
+        .isEnabled(cxapi.CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL_BY_DEFAULT) ?
+        S3BucketOrigin.withAccessControl(bucket, props) :
+        S3BucketOrigin.withAccessIdentity(bucket, props);
     }
   }
 
@@ -293,7 +296,7 @@ abstract class S3BucketOrigin extends cloudfront.OriginBase {
             KmsKeyId: key.keyId,
             AccountId: this.bucket.env.account,
             Partition: Stack.of(scope).partition,
-            AccessLevels: keyAccessLevels
+            AccessLevels: keyAccessLevels,
           },
         });
       }

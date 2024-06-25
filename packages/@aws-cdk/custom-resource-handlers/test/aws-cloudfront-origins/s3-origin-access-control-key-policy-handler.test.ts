@@ -1,7 +1,7 @@
 import { KMS, KeyManagerType, DescribeKeyCommand, PutKeyPolicyCommand, GetKeyPolicyCommand } from '@aws-sdk/client-kms';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import { handler, updatePolicy, getActions, isStatementInPolicy } from '../../lib/aws-cloudfront-origins/s3-origin-access-control-key-policy-handler/index';
+import { handler, appendStatementToPolicy, getActions, isStatementInPolicy } from '../../lib/aws-cloudfront-origins/s3-origin-access-control-key-policy-handler/index';
 
 const kmsMock = mockClient(KMS);
 
@@ -153,7 +153,7 @@ describe('updatePolicy', () => {
   it('should add a new policy statement if it does not exist', () => {
     const currentPolicy = { Statement: [] };
     const policyStatementToAdd = { Sid: 'NewStatement', Effect: 'Allow', Action: ['kms:Decrypt'], Resource: '*' };
-    const updatedPolicy = updatePolicy(currentPolicy, policyStatementToAdd);
+    const updatedPolicy = appendStatementToPolicy(currentPolicy, policyStatementToAdd);
     expect(updatedPolicy.Statement).toHaveLength(1);
     expect(updatedPolicy.Statement[0]).toEqual(policyStatementToAdd);
   });
@@ -165,7 +165,7 @@ describe('updatePolicy', () => {
       ],
     };
     const policyStatementToAdd = { Sid: 'ExistingStatement', Effect: 'Allow', Action: ['kms:Decrypt'], Resource: '*' };
-    const updatedPolicy = updatePolicy(currentPolicy, policyStatementToAdd);
+    const updatedPolicy = appendStatementToPolicy(currentPolicy, policyStatementToAdd);
     expect(updatedPolicy.Statement).toHaveLength(1);
     expect(updatedPolicy.Statement[0]).toEqual(policyStatementToAdd);
   });

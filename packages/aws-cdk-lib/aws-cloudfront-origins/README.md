@@ -18,9 +18,106 @@ new cloudfront.Distribution(this, 'myDist', {
 
 The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
 treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
-CloudFront's redirect and error handling will be used. In the latter case, the Origin will create an origin access identity and grant it access to the
-underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
-URLs and not S3 URLs directly. Alternatively, a custom origin access identity can be passed to the S3 origin in the properties.
+CloudFront's redirect and error handling will be used.
+
+### Restricting access to an S3 Origin
+
+CloudFront provides two ways to send authenticated requests to an Amazon S3 origin: origin access control (OAC) and origin access identity (OAI).
+OAC is the recommended method and OAI is considered legacy (see [Restricting access to an Amazon Simple Storage Service origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)).
+Following AWS best practices, it is recommended you set the feature flag `@aws-cdk/aws-cloudfront:useOriginAccessControlByDefault` to `true` to use OAC by
+default when creating new origins.
+
+For an S3 bucket that is configured as a standard S3 bucket origin (not as a website endpoint), when the above feature flag is enabled the `S3Origin`
+construct will automatically create an OAC and grant it access (read-only by default) to the underlying bucket.
+
+> [Note](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html): When you use OAC with S3
+bucket origins you must set the bucket's object ownership to Bucket owner enforced, or Bucket owner preferred (only if you require ACLs).
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { 
+    origin: new origins.S3Origin(myBucket) // Automatically creates an OAC
+  },
+});
+```
+
+Alternatively, a custom origin access control can be passed to the S3 origin:
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+const myOAC = new cloudfront.OriginAccessControl(this, 'myOAC', {
+  description: 'Origin access control for S3 origin',
+  originAccessControlOriginType: cloudfront.OriginAccessControlOriginType.S3,
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { 
+    origin: new origins.S3Origin(myBucket, {
+      originAccessControl: myOAC
+    }),
+  },
+});
+```
+
+Alternatively, an existing origin access control can be imported:
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+const importedOAC = cloudfront.OriginAccessControl.fromOriginAccessControlAttributes(this, 'myImportedOAC', {
+  originAccessControlId: 'ABC123ABC123AB',
+  originAccessControlOriginType: cloudfront.OriginAccessControlOriginType.S3,
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { 
+    origin: new origins.S3Origin(myBucket, {
+      originAccessControl: importedOAC
+    }),
+  },
+});
+```
+
+If the feature flag is not enabled (i.e. set to `false`), an origin access identity will be created by default.
+
+#### Using OAC for a SSE-KMS encrypted S3 origin
+
+If the objects in the S3 bucket origin are encrypted using server-side encryption with
+AWS Key Management Service (SSE-KMS), the OAC must have permission to use the AWS KMS key.
+
+```ts
+const myKmsKey = new kms.Key(this, 'myKMSKey');
+const myBucket = new s3.Bucket(this, 'mySSEKMSEncryptedBucket', {
+  encryption: s3.BucketEncryption.KMS,
+  encryptionKey: kmsKey,
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { 
+    origin: new origins.S3Origin(myBucket) // Automatically creates an OAC
+  },
+});
+```
+If the S3 bucket has an `encryptionKey` defined, the `S3Origin` construct
+will update the KMS key policy by appending the following policy statement to allow CloudFront read-only access (unless otherwise specified in the `originAccessLevels` property):
+
+```
+{
+    "Statement": {
+        "Sid": "GrantOACAccessToKMS",
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "cloudfront.amazonaws.com"
+        },
+        "Action": "kms:Decrypt",
+        "Resource": "arn:aws:kms:::key/<key ID>",
+        "Condition": {
+            "StringEquals": {
+                "AWS:SourceArn": "arn:aws:cloudfront::111122223333:distribution/<CloudFront distribution ID>"
+            }
+        }
+    }
+}
+```
 
 ### Adding Custom Headers
 

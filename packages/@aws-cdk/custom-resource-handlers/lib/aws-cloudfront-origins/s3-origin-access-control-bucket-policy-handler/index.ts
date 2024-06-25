@@ -38,6 +38,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return {
       IsComplete: true,
     };
+  } else {
+    return;
   }
 }
 
@@ -64,7 +66,7 @@ export async function updateBucketPolicy(props: updateBucketPolicyProps) {
       },
     };
     // Give Origin Access Control permission to access the bucket
-    let updatedBucketPolicy = updatePolicy(policy, oacBucketPolicyStatement);
+    let updatedBucketPolicy = appendStatementToPolicy(policy, oacBucketPolicyStatement);
     console.log('Updated bucket policy', JSON.stringify(updatedBucketPolicy, undefined, 2));
 
     await s3.putBucketPolicy({
@@ -93,7 +95,7 @@ export async function updateBucketPolicy(props: updateBucketPolicyProps) {
  * @param policyStatementToAdd - the policy statement to be added to the policy.
  * @returns currentPolicy - the updated policy.
  */
-export function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
+export function appendStatementToPolicy(currentPolicy: any, policyStatementToAdd: any) {
   if (!isStatementInPolicy(currentPolicy, policyStatementToAdd)) {
     currentPolicy.Statement.push(policyStatementToAdd);
   }

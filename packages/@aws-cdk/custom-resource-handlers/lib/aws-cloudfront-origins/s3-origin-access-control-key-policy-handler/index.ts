@@ -40,12 +40,12 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       throw new Error('An error occurred while retrieving the key policy.');
     }
 
-    // Define the updated key policy to allow CloudFront Distribution access
     const keyPolicy = JSON.parse(getKeyPolicyCommandResponse?.Policy);
     console.log('Retrieved key policy', JSON.stringify(keyPolicy, undefined, 2));
 
-    const actions = getActions(accessLevels);
-
+    const actions = getActions(accessLevels)
+    
+    // Define the updated key policy to allow CloudFront Distribution access
     const kmsKeyPolicyStatement = {
       Sid: 'GrantOACAccessToKMS',
       Effect: 'Allow',
@@ -63,7 +63,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       },
     };
 
-    const updatedKeyPolicy = updatePolicy(keyPolicy, kmsKeyPolicyStatement);
+    const updatedKeyPolicy = appendStatementToPolicy(keyPolicy, kmsKeyPolicyStatement);
     console.log('Updated key policy', JSON.stringify(updatedKeyPolicy, undefined, 2));
     await kms.putKeyPolicy({
       KeyId: kmsKeyId,
@@ -108,6 +108,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return {
       IsComplete: true,
     };
+  } else {
+    return;
   }
 }
 
@@ -127,7 +129,7 @@ export function getActions(accessLevels: string[]): string[] {
  * @param policyStatementToAdd - the policy statement to be added to the policy.
  * @returns currentPolicy - the updated policy.
  */
-export function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
+export function appendStatementToPolicy(currentPolicy: any, policyStatementToAdd: any) {
   if (!isStatementInPolicy(currentPolicy, policyStatementToAdd)) {
     currentPolicy.Statement.push(policyStatementToAdd);
   }
