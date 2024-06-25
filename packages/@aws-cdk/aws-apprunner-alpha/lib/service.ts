@@ -9,6 +9,8 @@ import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
+import { IAutoScalingConfiguration } from './auto-scaling-configuration';
+import { IObservabilityConfiguration } from './observability-configuration';
 
 /**
  * The image repository types
@@ -657,6 +659,18 @@ export interface ServiceProps {
   readonly autoDeploymentsEnabled?: boolean;
 
   /**
+   * Specifies an App Runner Auto Scaling Configuration.
+   *
+   * A default configuration is either the AWS recommended configuration,
+   * or the configuration you set as the default.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/manage-autoscaling.html
+   *
+   * @default - the latest revision of a default auto scaling configuration is used.
+   */
+  readonly autoScalingConfiguration?: IAutoScalingConfiguration;
+
+  /**
    * The number of CPU units reserved for each instance of your App Runner service.
    *
    * @default Cpu.ONE_VCPU
@@ -723,6 +737,21 @@ export interface ServiceProps {
    * @default - Use an AWS managed key
    */
   readonly kmsKey?: kms.IKey;
+
+  /**
+   * The IP address type for your incoming public network configuration.
+   *
+   * @default - IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Settings for an App Runner observability configuration.
+   *
+   * @default - no observability configuration resource is associated with the service.
+   */
+  readonly observabilityConfiguration?: IObservabilityConfiguration;
+
 }
 
 /**
@@ -1005,6 +1034,21 @@ export class HealthCheck {
 }
 
 /**
+ * The IP address type for your incoming public network configuration.
+ */
+export enum IpAddressType {
+  /**
+   * IPV4
+   */
+  IPV4 = 'IPV4',
+
+  /**
+   * DUAL_STACK
+   */
+  DUAL_STACK = 'DUAL_STACK',
+}
+
+/**
  * Attributes for the App Runner Service
  */
 export interface ServiceAttributes {
@@ -1250,15 +1294,21 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       encryptionConfiguration: this.props.kmsKey ? {
         kmsKey: this.props.kmsKey.keyArn,
       } : undefined,
+      autoScalingConfigurationArn: this.props.autoScalingConfiguration?.autoScalingConfigurationArn,
       networkConfiguration: {
         egressConfiguration: {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+        ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :
         undefined,
+      observabilityConfiguration: props.observabilityConfiguration ? {
+        observabilityEnabled: true,
+        observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
+      } : undefined,
     });
 
     // grant required privileges for the role

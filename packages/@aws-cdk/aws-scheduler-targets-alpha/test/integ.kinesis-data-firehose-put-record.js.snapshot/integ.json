@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "testCases": {
     "integrationtest-firehose-put-record/DefaultTest": {
       "stacks": [
