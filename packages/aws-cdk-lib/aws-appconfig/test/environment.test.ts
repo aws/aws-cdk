@@ -829,4 +829,44 @@ describe('environment', () => {
 
     actual.resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
+
+  test('grantReadConfig creates and attaches a policy with read only access to the principal', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const env = new Environment(stack, 'MyEnvironment', {
+      application: app,
+    });
+
+    const user = new iam.User(stack, 'MyUser');
+    env.grantReadConfig(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appconfig:GetLatestConfiguration',
+              'appconfig:StartConfigurationSession',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':appconfig:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':application/',
+                { Ref: 'MyAppConfigB4B63E75' },
+                '/environment/',
+                { Ref: 'MyEnvironment465E4DEA' },
+                '/configuration/*',
+              ]],
+            },
+          },
+        ],
+      },
+    });
+  });
 });

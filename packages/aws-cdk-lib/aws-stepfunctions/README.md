@@ -487,6 +487,16 @@ const fail = new sfn.Fail(this, 'Fail', {
 });
 ```
 
+You can also use an intrinsic function that returns a string to specify CausePath and ErrorPath.
+The available functions include States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, and States.UUID.
+
+```ts
+const fail = new sfn.Fail(this, 'Fail', {
+  errorPath: sfn.JsonPath.format('error: {}.', sfn.JsonPath.stringAt('$.someError')),
+  causePath: "States.Format('cause: {}.', $.someCause)",
+});
+```
+
 ### Map
 
 A `Map` state can be used to run a set of steps for each element of an input array.
