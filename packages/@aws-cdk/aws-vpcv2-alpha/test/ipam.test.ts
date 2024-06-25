@@ -20,7 +20,7 @@ describe('IPAM Test', () => {
 
   test('Creates IP Pool under Public Scope', () => {
 
-    const pool = ipam.publicScope.addPool({
+    const pool = ipam.publicScope.addPool('Public', {
       addressFamily: AddressFamily.IP_V6,
       awsService: 'ec2',
       locale: 'us-east-1',
@@ -42,7 +42,7 @@ describe('IPAM Test', () => {
         AddressFamily: 'ipv6',
         IpamScopeId: {
           'Fn::GetAtt': [
-            'Ipam2108E2ED',
+            'Ipam',
             'PublicDefaultScopeId',
           ],
         },
@@ -53,7 +53,7 @@ describe('IPAM Test', () => {
 
   test('Creates IP Pool under Private Scope', () => {
 
-    const pool = ipam.privateScope.addPool({
+    const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
       provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
       locale: 'us-east-1',
@@ -72,7 +72,7 @@ describe('IPAM Test', () => {
         AddressFamily: 'ipv4',
         IpamScopeId: {
           'Fn::GetAtt': [
-            'Ipam2108E2ED',
+            'Ipam',
             'PrivateDefaultScopeId',
           ],
         },

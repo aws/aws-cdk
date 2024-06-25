@@ -9,30 +9,30 @@
 //  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-// import { AddressFamily, Ipam } from '../lib';
+import { AddressFamily, Ipam } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { AddressFamily, Ipam } from '../lib/ipam';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
-const ipam = new Ipam(stack, 'Ipam');
+const ipam = new Ipam(stack, 'IpamTest');
 
 /**Test Ipam Pool Ipv4 */
 
-const pool1 = ipam.privateScope.addPool({
+const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
-  locale: 'eu-west-1',
+  locale: 'eu-central-1',
 });
 
-ipam.publicScope.addPool({
+const pool2 = ipam.publicScope.addPool('PublicPool0', {
   addressFamily: AddressFamily.IP_V6,
   awsService: 'ec2',
-  locale: 'eu-west-1',
+  locale: 'eu-central-1',
   publicIpSource: 'amazon',
+  netmasklength: 52,
 });
 
 //TODO: Test Ipam Pool Ipv6
@@ -52,13 +52,17 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   enableDnsSupport: true,
 });
 
-new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
+const vpc2 = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
-  // secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
-  //   ipv6IpamPool: pool2,
-  //   ipv6NetmaskLength: 52,
-  // })],
+  secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
+    ipv6IpamPool: pool2,
+    ipv6NetmaskLength: 60,
+  })],
 });
+
+if (pool2.ipv6CidrPool) {
+  vpc2.node.addDependency(pool2.ipv6CidrPool);
+}
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
