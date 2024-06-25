@@ -1,7 +1,7 @@
 import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { EventBridgeTarget } from '../lib/eventBridge';
+import { EventBridgeTarget } from '../lib/event-bridge';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-event-bridge');
