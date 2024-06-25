@@ -4,6 +4,9 @@ import { Construct } from 'constructs';
 import { CfnMap } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 
+/**
+ * Represents the Amazon Location Service Map
+ */
 export interface IMap extends IResource {
   /**
    * The name of the map
@@ -21,7 +24,7 @@ export interface IMap extends IResource {
 }
 
 /**
- * Properties for a map
+ * Properties for the Amazon Location Service Map
  */
 export interface MapProps {
   /**
@@ -238,7 +241,9 @@ abstract class MapBase extends Resource implements IMap {
 }
 
 /**
- * A map is a collection of map data.
+ * The Amazon Location Service Map
+ *
+ * @see https://docs.aws.amazon.com/location/latest/developerguide/map-concepts.html
  */
 export class Map extends MapBase {
   /**
