@@ -1407,13 +1407,37 @@
             "id": "testNATgw",
             "path": "aws-cdk-routev2-natgw-alpha/testNATgw",
             "children": {
+              "EIP": {
+                "id": "EIP",
+                "path": "aws-cdk-routev2-natgw-alpha/testNATgw/EIP",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                  "aws:cdk:cloudformation:props": {
+                    "domain": {
+                      "Fn::GetAtt": [
+                        "natgw9631C9BB",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                  "version": "0.0.0"
+                }
+              },
               "NATGateway": {
                 "id": "NATGateway",
                 "path": "aws-cdk-routev2-natgw-alpha/testNATgw/NATGateway",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                   "aws:cdk:cloudformation:props": {
-                    "allocationId": "0.0.0.0/0",
+                    "allocationId": {
+                      "Fn::GetAtt": [
+                        "testNATgwEIP1C260FAD",
+                        "AllocationId"
+                      ]
+                    },
                     "subnetId": {
                       "Ref": "natgwSubnetD255A267"
                     }
@@ -1421,6 +1445,89 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "testNATgwIGW": {
+            "id": "testNATgwIGW",
+            "path": "aws-cdk-routev2-natgw-alpha/testNATgwIGW",
+            "children": {
+              "IGW": {
+                "id": "IGW",
+                "path": "aws-cdk-routev2-natgw-alpha/testNATgwIGW/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "testnatgwigwRoute": {
+            "id": "testnatgwigwRoute",
+            "path": "aws-cdk-routev2-natgw-alpha/testnatgwigwRoute",
+            "children": {
+              "Route": {
+                "id": "Route",
+                "path": "aws-cdk-routev2-natgw-alpha/testnatgwigwRoute/Route",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationCidrBlock": "242.0.0.0/32",
+                    "gatewayId": {
+                      "Fn::GetAtt": [
+                        "testNATgwIGW6AC97E9A",
+                        "InternetGatewayId"
+                      ]
+                    },
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "TestRoottableRouteTableFA28AA38",
+                        "RouteTableId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "GWAttachment": {
+                "id": "GWAttachment",
+                "path": "aws-cdk-routev2-natgw-alpha/testnatgwigwRoute/GWAttachment",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "internetGatewayId": {
+                      "Fn::GetAtt": [
+                        "testNATgwIGW6AC97E9A",
+                        "InternetGatewayId"
+                      ]
+                    },
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "natgw9631C9BB",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }

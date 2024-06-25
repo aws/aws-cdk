@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "d4d839c0ae81dccd6cb4d66423023e39b2cb2c7aedbba303009db0283a99b3c4": {
+    "db1550277408ee3215c0800fd9c716384a7f886c1c89ef5260ab6f250ae82b13": {
       "source": {
         "path": "aws-cdk-routev2-natgw-alpha.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d4d839c0ae81dccd6cb4d66423023e39b2cb2c7aedbba303009db0283a99b3c4.json",
+          "objectKey": "db1550277408ee3215c0800fd9c716384a7f886c1c89ef5260ab6f250ae82b13.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

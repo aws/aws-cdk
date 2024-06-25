@@ -81,4 +81,132 @@ describe('EC2 Routing', () => {
       }
     });
   });
+
+  test('Route to VPN Gateway', () => {
+    const vpngw = new route.VirtualPrivateGateway(stack, 'TestVpnGw', {
+      type: 'ipsec.1',
+      vpcId: myVpc.vpcId,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: vpngw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // VPN Gateway should be in stack
+        TestVpnGwIGW11AF5344: {
+          Type: 'AWS::EC2::VPNGateway',
+          Properties: {
+            Type: 'ipsec.1'
+          },
+        },
+        // Route linking IP to VPN GW should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: {
+              'Fn::GetAtt': [
+                'TestVpnGwIGW11AF5344', 'VPNGatewayId',
+              ],
+            },
+            RouteTableId: {
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C', 'RouteTableId',
+              ],
+            },
+          },
+        },
+        // Route Gateway attachment should be in stack
+        TestRouteGWAttachmentDD69361B: {
+          Type: 'AWS::EC2::VPCGatewayAttachment',
+          Properties: {
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678', 'VpcId',
+              ],
+            },
+            VpnGatewayId: {
+              'Fn::GetAtt': [
+                'TestVpnGwIGW11AF5344', 'VPNGatewayId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  }),
+
+  test('Route to VPN Gateway with optional properties', () => {
+    new route.VirtualPrivateGateway(stack, 'TestVpnGw', {
+      type: 'ipsec.1',
+      vpcId: myVpc.vpcId,
+      amazonSideAsn: 12345678,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // VPN Gateway should be in stack
+        TestVpnGwIGW11AF5344: {
+          Type: 'AWS::EC2::VPNGateway',
+          Properties: {
+            AmazonSideAsn: 12345678,
+            Type: 'ipsec.1',
+          },
+        },
+      },
+    });
+  }),
+
+  test('Route to Internet Gateway', () => {
+    const igw = new route.InternetGateway(stack, 'TestIGW', {
+      vpcId: myVpc.vpcId,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: igw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // Internet Gateway should be in stack
+        TestIGW1B4DB37D: {
+          Type: 'AWS::EC2::InternetGateway',
+        },
+        // Route linking IP to IGW should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: {
+              'Fn::GetAtt': [
+                'TestIGW1B4DB37D', 'InternetGatewayId',
+              ],
+            },
+            RouteTableId: {
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C', 'RouteTableId',
+              ],
+            },
+          },
+        },
+        // Route Gateway attachment should be in stack
+        TestRouteGWAttachmentDD69361B: {
+          Type: 'AWS::EC2::VPCGatewayAttachment',
+          Properties: {
+            InternetGatewayId: {
+              'Fn::GetAtt': [
+                'TestIGW1B4DB37D', 'InternetGatewayId',
+              ],
+            },
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678', 'VpcId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  })
 });

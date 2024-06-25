@@ -86,10 +86,29 @@
     }
    }
   },
+  "testNATgwEIP1C260FAD": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": {
+     "Fn::GetAtt": [
+      "natgw9631C9BB",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "natgwSubnetRouteTableAssociationF02D8461"
+   ]
+  },
   "testNATgwNATGateway1533420D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "AllocationId": "0.0.0.0/0",
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "testNATgwEIP1C260FAD",
+      "AllocationId"
+     ]
+    },
     "SubnetId": {
      "Ref": "natgwSubnetD255A267"
     }
@@ -97,6 +116,44 @@
    "DependsOn": [
     "natgwSubnetRouteTableAssociationF02D8461"
    ]
+  },
+  "testNATgwIGW6AC97E9A": {
+   "Type": "AWS::EC2::InternetGateway"
+  },
+  "testnatgwigwRouteE8D2BF39": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "242.0.0.0/32",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwIGW6AC97E9A",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   }
+  },
+  "testnatgwigwRouteGWAttachmentB8E1033C": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwIGW6AC97E9A",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgw9631C9BB",
+      "VpcId"
+     ]
+    }
+   }
   },
   "testNATGWRoute7A26EC80": {
    "Type": "AWS::EC2::Route",

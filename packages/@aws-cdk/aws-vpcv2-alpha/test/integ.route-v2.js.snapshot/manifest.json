@@ -503,7 +503,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4d839c0ae81dccd6cb4d66423023e39b2cb2c7aedbba303009db0283a99b3c4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db1550277408ee3215c0800fd9c716384a7f886c1c89ef5260ab6f250ae82b13.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -556,10 +556,34 @@
             "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
+        "/aws-cdk-routev2-natgw-alpha/testNATgw/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testNATgwEIP1C260FAD"
+          }
+        ],
         "/aws-cdk-routev2-natgw-alpha/testNATgw/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testNATgwNATGateway1533420D"
+          }
+        ],
+        "/aws-cdk-routev2-natgw-alpha/testNATgwIGW/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testNATgwIGW6AC97E9A"
+          }
+        ],
+        "/aws-cdk-routev2-natgw-alpha/testnatgwigwRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testnatgwigwRouteE8D2BF39"
+          }
+        ],
+        "/aws-cdk-routev2-natgw-alpha/testnatgwigwRoute/GWAttachment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testnatgwigwRouteGWAttachmentB8E1033C"
           }
         ],
         "/aws-cdk-routev2-natgw-alpha/testNATGWRoute/Route": [

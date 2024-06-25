@@ -23,6 +23,7 @@ export interface InternetGatewayProps {
 export interface VirtualPrivateGatewayProps {
   readonly type: string;
   readonly vpcId: string;
+  readonly amazonSideAsn?: number;
 }
 
 export interface NatGatewayProps {
@@ -117,6 +118,10 @@ export class VirtualPrivateGateway extends Resource implements IRouteTarget {
     this.resource = new CfnVPNGateway(this, 'IGW', {
       type: props.type,
     });
+
+    if (props.amazonSideAsn) {
+      this.resource.addPropertyOverride('AmazonSideAsn', props.amazonSideAsn);
+    }
 
     this.routerId = this.resource.attrVpnGatewayId;
     this.vpcId = props.vpcId;
