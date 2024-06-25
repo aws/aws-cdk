@@ -24,15 +24,16 @@ describe('EC2 Routing', () => {
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });
+    routeTable = new route.RouteTable(stack, 'TestRouteTable', {
+      vpcId: myVpc.vpcId,
+    });
     mySubnet = new subnet.SubnetV2(stack, 'TestSubnet', {
       vpc: myVpc,
       availabilityZone: 'us-east-1a',
       cidrBlock: new subnet.Ipv4Cidr('10.0.0.0/24'),
       ipv6CidrBlock: new subnet.Ipv6Cidr(cdk.Fn.select(0, myVpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-    });
-    routeTable = new route.RouteTable(stack, 'TestRouteTable', {
-      vpcId: myVpc.vpcId,
+      routeTable: routeTable,
     });
   });
 
@@ -45,6 +46,39 @@ describe('EC2 Routing', () => {
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
       target: eigw,
     });
-    Template.fromStack(stack).toJSON();
+    if (mySubnet) {}
+    // console.log(Template.fromStack(stack).toJSON().Resources);
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // EIGW should be in stack
+        TestEIGW4E4CDA8D: {
+          Type: 'AWS::EC2::EgressOnlyInternetGateway',
+          Properties: {
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678', 'VpcId',
+              ],
+            },
+          },
+        },
+        // Route linking IP to EIGW should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            EgressOnlyInternetGatewayId: {
+              'Fn::GetAtt': [
+                'TestEIGW4E4CDA8D', 'Id',
+              ],
+            },
+            RouteTableId: {
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C', 'RouteTableId',
+              ],
+            },
+          },
+        },
+      }
+    });
   });
 });

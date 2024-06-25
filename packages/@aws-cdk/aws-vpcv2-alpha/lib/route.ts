@@ -3,7 +3,7 @@ import { IIpAddresses } from './vpc-v2';
 import { Construct, IDependable } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
 
-export interface IRouter {
+export interface IRouteTarget {
   readonly routerType: RouterType;
   readonly routerId: string;
 }
@@ -45,7 +45,7 @@ export interface VpcPeeringConnectionProps {
   readonly peerRoleArn: string;
 }
 
-export class CarrierGateway extends Resource implements IRouter {
+export class CarrierGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
 
@@ -64,7 +64,7 @@ export class CarrierGateway extends Resource implements IRouter {
   }
 }
 
-export class EgressOnlyInternetGateway extends Resource implements IRouter {
+export class EgressOnlyInternetGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
 
@@ -83,7 +83,7 @@ export class EgressOnlyInternetGateway extends Resource implements IRouter {
   }
 }
 
-export class InternetGateway extends Resource implements IRouter {
+export class InternetGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
   public readonly vpcId: string;
@@ -102,7 +102,7 @@ export class InternetGateway extends Resource implements IRouter {
   }
 }
 
-export class VirtualPrivateGateway extends Resource implements IRouter {
+export class VirtualPrivateGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
   public readonly vpcId: string;
@@ -123,7 +123,7 @@ export class VirtualPrivateGateway extends Resource implements IRouter {
   }
 }
 
-export class NatGateway extends Resource implements IRouter {
+export class NatGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
   public readonly allocationId?: string;
@@ -162,7 +162,7 @@ export class NatGateway extends Resource implements IRouter {
   }
 }
 
-export class NetworkInterface extends Resource implements IRouter {
+export class NetworkInterface extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
 
@@ -181,7 +181,7 @@ export class NetworkInterface extends Resource implements IRouter {
   }
 }
 
-export class TransitGateway extends Resource implements IRouter {
+export class TransitGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
 
@@ -198,7 +198,7 @@ export class TransitGateway extends Resource implements IRouter {
   }
 }
 
-export class VpcPeeringConnection extends Resource implements IRouter {
+export class VpcPeeringConnection extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
   public readonly peerRoleArn: string;
@@ -224,7 +224,7 @@ export class VpcPeeringConnection extends Resource implements IRouter {
 export interface IRouteV2 {
   readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
-  readonly target: IRouter | IVpcEndpoint;
+  readonly target: IRouteTarget | IVpcEndpoint;
 }
 
 export interface RouteProps {
@@ -241,7 +241,7 @@ export interface RouteProps {
   /**
    * The target gateway or endpoint of the route
    */
-  readonly target: IRouter | IVpcEndpoint;
+  readonly target: IRouteTarget | IVpcEndpoint;
 }
 
 /**
@@ -250,7 +250,7 @@ export interface RouteProps {
  */
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
-  public readonly target: IRouter | IVpcEndpoint;
+  public readonly target: IRouteTarget | IVpcEndpoint;
   public readonly routeTable: IRouteTable;
 
   /**
