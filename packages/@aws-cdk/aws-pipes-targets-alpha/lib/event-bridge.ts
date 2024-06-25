@@ -10,66 +10,51 @@ export interface EventBridgeTargetParameters {
    * The input transformation to apply to the message before sending it to the target.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargetparameters.html#cfn-pipes-pipe-pipetargetparameters-inputtemplate
-   * @default none
+   * @default - none
    */
   readonly inputTransformation?: IInputTransformation;
 
   /**
-   * A free-form string, with a maximum of 128 characters, used to decide what fields to expect in the event detail.
-   *
-   * Minimum: 1
-   * Maximum: 128
+   * A free-form string used to decide what fields to expect in the event detail.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargeteventbridgeeventbusparameters.html#cfn-pipes-pipe-pipetargeteventbridgeeventbusparameters-detailtype
-   * @default none
+   * @default - none
    */
   readonly detailType?: string;
 
   /**
    * The URL subdomain of the endpoint.
    *
-   * For example, if the URL for the endpoint is https://abcde.veo.endpoints.event.amazonaws.com, then `EndpointId` is abcde.veo.
-   *
-   * Pattern: `^[A-Za-z0-9\-]+[\.][A-Za-z0-9\-]+$`
-   * Minimum: 1
-   * Maximum: 50
+   * @example
+   * // if the URL for the endpoint is https://abcde.veo.endpoints.event.amazonaws.com
+   * 'abcde.veo'
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargeteventbridgeeventbusparameters.html#cfn-pipes-pipe-pipetargeteventbridgeeventbusparameters-endpointid
-   * @default none
+   * @default - none
    */
   readonly endpointId?: string;
 
   /**
-   * AWS resources, identified by Amazon Resource Name (ARN), which the event primarily concerns. Any number, including zero, may be present.
-   *
-   * Minimum: 1 | 0
-   * Maximum: 1600 | 10
+   * AWS resources, identified by Amazon Resource Name (ARN), which the event primarily concerns.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargeteventbridgeeventbusparameters.html#cfn-pipes-pipe-pipetargeteventbridgeeventbusparameters-resources
-   * @default none
+   * @default - none
    */
   readonly resources?: string[];
 
   /**
    * The source of the event.
    *
-   * Minimum: 1
-   * Maximum: 256
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargeteventbridgeeventbusparameters.html#cfn-pipes-pipe-pipetargeteventbridgeeventbusparameters-source
-   * @default none
+   * @default - none
    */
   readonly source?: string;
 
   /**
-   * The time stamp of the event, per RFC3339. If no time stamp is provided, the time stamp of the PutEvents call is used.
-   *
-   * Pattern: (?=[/\.\-_A-Za-z0-9]+)((?!aws\.).*)|(\$(\.[\w/_-]+(\[(\d+|\*)\])*)*)
-   * Minimum: 1
-   * Maximum: 256
+   * The time stamp of the event, per RFC3339.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargeteventbridgeeventbusparameters.html#cfn-pipes-pipe-pipetargeteventbridgeeventbusparameters-time
-   * @default none
+   * @default - the time stamp of the PutEvents call
    */
   readonly time?: string;
 }
@@ -86,10 +71,11 @@ export class EventBridgeTarget implements ITarget {
     this.targetArn = eventBus.eventBusArn;
     this.eventBridgeParameters = parameters;
 
-    validateDetailType(parameters?.detailType);
-    validateEndpointId(parameters?.endpointId);
-    validateSource(parameters?.source);
-    validateTime(parameters?.time);
+    if (parameters) {
+      for (const validate of [validateDetailType, validateEndpointId, validateSource, validateTime]) {
+        validate(parameters);
+      }
+    }
   }
 
   grantPush(grantee: IRole): void {
@@ -112,7 +98,7 @@ export class EventBridgeTarget implements ITarget {
   }
 }
 
-function validateDetailType(detailType?: string) {
+function validateDetailType({ detailType }: EventBridgeTargetParameters) {
   if (detailType !== undefined) {
     if (detailType.length < 1 || detailType.length > 128) {
       throw new Error(`Detail type must be between 1 and 128 characters, received ${detailType.length}`);
@@ -120,7 +106,7 @@ function validateDetailType(detailType?: string) {
   }
 }
 
-function validateEndpointId(endpointId?: string) {
+function validateEndpointId({ endpointId }: EventBridgeTargetParameters) {
   if (endpointId !== undefined) {
     if (endpointId.length < 1 || endpointId.length > 50) {
       throw new Error(`Endpoint id must be between 1 and 50 characters, received ${endpointId.length}`);
@@ -128,7 +114,7 @@ function validateEndpointId(endpointId?: string) {
   }
 }
 
-function validateSource(source?: string) {
+function validateSource({ source }: EventBridgeTargetParameters) {
   if (source !== undefined) {
     if (source.length < 1 || source.length > 256) {
       throw new Error(`Source must be between 1 and 256 characters, received ${source.length}`);
@@ -136,7 +122,7 @@ function validateSource(source?: string) {
   }
 }
 
-function validateTime(time?: string) {
+function validateTime({ time }: EventBridgeTargetParameters) {
   if (time !== undefined) {
     if (time.length < 1 || time.length > 256) {
       throw new Error(`Time must be between 1 and 256 characters, received ${time.length}`);

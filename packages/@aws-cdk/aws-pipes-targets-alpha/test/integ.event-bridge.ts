@@ -4,21 +4,24 @@ import * as cdk from 'aws-cdk-lib';
 import { EventBridgeTarget } from '../lib/eventBridge';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-eventbridge');
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-event-bridge');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetEventBus = new cdk.aws_events.EventBus(stack, 'TargetEventBus');
 
 class TestSource implements ISource {
   sourceArn: string;
+
   constructor(private readonly queue: cdk.aws_sqs.Queue) {
     this.queue = queue;
     this.sourceArn = queue.queueArn;
   }
+
   bind(_pipe: IPipe): SourceConfig {
     return {
       sourceParameters: { sqsQueueParameters: { batchSize: 1 } },
     };
   }
+
   grantRead(pipeRole: cdk.aws_iam.IRole): void {
     this.queue.grantConsumeMessages(pipeRole);
   }
@@ -42,7 +45,7 @@ const rule = new cdk.aws_events.Rule(stack, 'rule', {
 });
 rule.addTarget(new cdk.aws_events_targets.SqsQueue(resultQueue, {}));
 
-const test = new IntegTest(app, 'integtest-pipe-target-eventbridge', {
+const test = new IntegTest(app, 'integtest-pipe-target-event-bridge', {
   testCases: [stack],
 });
 

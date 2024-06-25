@@ -8,7 +8,7 @@
   "TargetEventBus43DE6DE2": {
    "Type": "AWS::Events::EventBus",
    "Properties": {
-    "Name": "awscdkpipestargetseventbridgeTargetEventBus0CDC15B8"
+    "Name": "awscdkpipestargetseventbridgeTargetEventBusF398C0E3"
    }
   },
   "PipeRole7D4AFC73": {
@@ -180,7 +180,7 @@
     "Ref": "SourceQueue6E809DF0"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-targets-eventbridge:ExportsOutputRefSourceQueue6E809DF09604904F"
+    "Name": "aws-cdk-pipes-targets-event-bridge:ExportsOutputRefSourceQueue6E809DF09604904F"
    }
   },
   "ExportsOutputRefResultQueue98CD34E0D4C9659C": {
@@ -188,7 +188,7 @@
     "Ref": "ResultQueue98CD34E0"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-targets-eventbridge:ExportsOutputRefResultQueue98CD34E0D4C9659C"
+    "Name": "aws-cdk-pipes-targets-event-bridge:ExportsOutputRefResultQueue98CD34E0D4C9659C"
    }
   }
  },

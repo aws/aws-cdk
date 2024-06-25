@@ -10,9 +10,7 @@ describe('EventBridge', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-
     const bus = new EventBus(stack, 'MyEventBus', {});
-
     const target = new EventBridgeTarget(bus);
 
     new Pipe(stack, 'MyPipe', {
@@ -39,7 +37,6 @@ describe('EventBridge', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-
     const bus = new EventBus(stack, 'MyEventBus', {});
 
     const target = new EventBridgeTarget(bus, {
@@ -79,7 +76,6 @@ describe('EventBridge', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-
     const bus = new EventBus(stack, 'MyEventBus', {});
 
     const inputTransformation = InputTransformation.fromObject({
@@ -110,9 +106,7 @@ describe('EventBridge', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-
     const bus = new EventBus(stack, 'MyEventBus', {});
-
     const target = new EventBridgeTarget(bus);
 
     new Pipe(stack, 'MyPipe', {
