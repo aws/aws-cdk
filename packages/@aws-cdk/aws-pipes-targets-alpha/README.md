@@ -216,7 +216,7 @@ declare const targetStream: kinesis.Stream;
 
 const streamTarget = new targets.KinesisTarget(targetStream, {
     partitionKey: 'pk',
-}),
+});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
