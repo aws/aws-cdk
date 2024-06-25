@@ -109,6 +109,23 @@
      ]
     }
    }
+  },
+  "testVPGWRouteGWAttachment01E74575": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpgw2AB64B6B",
+      "VpcId"
+     ]
+    },
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   }
   }
  },
  "Parameters": {

@@ -27,8 +27,8 @@ const stacks: {[id: string] : cdk.Stack} = {
   'default': new cdk.Stack(app, 'aws-cdk-routev2-alpha', {stackName: 'DefaultVpcDeploy'}),
   'cgw': new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha', {stackName: 'CarrierGatewayVpc'}), // failing
   'eigw': new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', {stackName: 'EgressOnlyIgwVpc'}),
-  'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}), // failing
-  'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}), // failing
+  'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}),
+  'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}),
   'natgw': new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha', {stackName: 'NatGwVpc'}), // failing
   'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', {stackName: 'NetworkInterfaceVpc'}),
   'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}), // failing
@@ -51,7 +51,7 @@ for (const stackName in stacks) {
   if (stackName == 'eigw') {
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'us-west-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
@@ -60,7 +60,7 @@ for (const stackName in stacks) {
     // use empty ipv6 that doesn't overlap
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'us-west-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
@@ -75,7 +75,7 @@ const user2Vpc = new vpc_v2.VpcV2(stacks.vpcpc, 'vpcpc-user2', {
 
 new SubnetV2(stacks.vpcpc, 'vpcpcSubnet-2', {
   vpc: user2Vpc,
-  availabilityZone: 'us-east-1a',
+  availabilityZone: 'us-west-1a',
   cidrBlock: new Ipv4Cidr('10.0.128.128/24'),
   subnetType: SubnetType.PRIVATE_WITH_EGRESS,
 });
@@ -95,15 +95,26 @@ const eigw = new EgressOnlyInternetGateway(stacks.eigw, 'testEOIGW', {
   vpcId: vpcs.eigw.vpcId,
 });
 
-const igw = new InternetGateway(stacks.igw, 'testIGW');
+const igw = new InternetGateway(stacks.igw, 'testIGW', {
+  vpcId: vpcs.igw.vpcId,
+});
 
 const vpgw = new VirtualPrivateGateway(stacks.vpgw, 'testVPGW', {
   type: 'ipsec.1',
+  vpcId: vpcs.vpgw.vpcId,
 });
 
 const natGw = new NatGateway(stacks.natgw, 'testNATgw', {
   subnet: subnets.natgw,
-  allocationId: '0.0.0.0/0',
+  vpcId: vpcs.natgw.vpcId,
+});
+const natGwIgw = new InternetGateway(stacks.natgw, 'testNATgwIGW', {
+  vpcId: vpcs.natgw.vpcId,
+});
+new Route(stacks.natgw, 'testnatgwigwRoute', {
+  routeTable: routeTables.natgw,
+  destination: vpc_v2.IpAddresses.ipv4('242.0.0.0/32'),
+  target: natGwIgw,
 });
 
 const networkInterface = new NetworkInterface(stacks.nif, 'testNWIF', {
@@ -115,6 +126,7 @@ const transitGw = new TransitGateway(stacks.tgw, 'testTGW');
 const vpcPeerConn = new VpcPeeringConnection(stacks.vpcpc, 'testVPCPC', {
   vpcId: vpcs.vpcpc.vpcId,
   peerVpcId: user2Vpc.vpcId,
+  peerRoleArn: user2Vpc.vpcArn,
 });
 
 const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoint', {

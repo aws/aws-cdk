@@ -106,6 +106,23 @@
      ]
     }
    }
+  },
+  "testIGWRouteGWAttachmentB0836D42": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "testIGW8D947AF2",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "igw127F1970",
+      "VpcId"
+     ]
+    }
+   }
   }
  },
  "Parameters": {

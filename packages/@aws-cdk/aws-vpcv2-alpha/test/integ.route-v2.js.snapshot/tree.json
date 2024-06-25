@@ -908,6 +908,31 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                   "version": "0.0.0"
                 }
+              },
+              "GWAttachment": {
+                "id": "GWAttachment",
+                "path": "aws-cdk-routev2-igw-alpha/testIGWRoute/GWAttachment",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "internetGatewayId": {
+                      "Fn::GetAtt": [
+                        "testIGW8D947AF2",
+                        "InternetGatewayId"
+                      ]
+                    },
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "igw127F1970",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -1155,6 +1180,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "GWAttachment": {
+                "id": "GWAttachment",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGWRoute/GWAttachment",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "vpgw2AB64B6B",
+                        "VpcId"
+                      ]
+                    },
+                    "vpnGatewayId": {
+                      "Fn::GetAtt": [
+                        "testVPGWIGW816C7C4F",
+                        "VPNGatewayId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
@@ -2216,6 +2266,32 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCPeeringConnection",
                   "aws:cdk:cloudformation:props": {
+                    "peerRoleArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":vpc/",
+                          {
+                            "Fn::GetAtt": [
+                              "vpcpcuser2935CC987",
+                              "VpcId"
+                            ]
+                          }
+                        ]
+                      ]
+                    },
                     "peerVpcId": {
                       "Fn::GetAtt": [
                         "vpcpcuser2935CC987",

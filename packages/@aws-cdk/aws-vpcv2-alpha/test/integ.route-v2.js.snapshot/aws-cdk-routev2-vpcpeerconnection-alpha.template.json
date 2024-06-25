@@ -132,6 +132,32 @@
   "testVPCPCVPCPeerConnection9684B188": {
    "Type": "AWS::EC2::VPCPeeringConnection",
    "Properties": {
+    "PeerRoleArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":ec2:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":vpc/",
+       {
+        "Fn::GetAtt": [
+         "vpcpcuser2935CC987",
+         "VpcId"
+        ]
+       }
+      ]
+     ]
+    },
     "PeerVpcId": {
      "Fn::GetAtt": [
       "vpcpcuser2935CC987",

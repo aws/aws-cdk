@@ -1,4 +1,4 @@
-import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { CfnCarrierGateway, CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCGatewayAttachment, CfnVPCPeeringConnection, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses } from './vpc-v2';
 import { Construct, IDependable } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
@@ -17,15 +17,17 @@ export interface EgressOnlyInternetGatewayProps {
 }
 
 export interface InternetGatewayProps {
-
+  readonly vpcId: string;
 }
 
 export interface VirtualPrivateGatewayProps {
   readonly type: string;
+  readonly vpcId: string;
 }
 
 export interface NatGatewayProps {
   readonly subnet: ISubnet;
+  readonly vpcId?: string;
   readonly allocationId?: string;
 }
 
@@ -40,6 +42,7 @@ export interface TransitGatewayProps {
 export interface VpcPeeringConnectionProps {
   readonly vpcId: string;
   readonly peerVpcId: string;
+  readonly peerRoleArn: string;
 }
 
 export class CarrierGateway extends Resource implements IRouter {
@@ -83,10 +86,11 @@ export class EgressOnlyInternetGateway extends Resource implements IRouter {
 export class InternetGateway extends Resource implements IRouter {
   public readonly routerId: string;
   public readonly routerType: RouterType;
+  public readonly vpcId: string;
 
   public readonly resource: CfnInternetGateway;
 
-  constructor(scope: Construct, id: string/*, props: InternetGatewayProps*/) {
+  constructor(scope: Construct, id: string, props: InternetGatewayProps) {
     super(scope, id);
 
     this.routerType = RouterType.GATEWAY;
@@ -94,12 +98,14 @@ export class InternetGateway extends Resource implements IRouter {
     this.resource = new CfnInternetGateway(this, 'IGW', {});
 
     this.routerId = this.resource.attrInternetGatewayId;
+    this.vpcId = props.vpcId;
   }
 }
 
 export class VirtualPrivateGateway extends Resource implements IRouter {
   public readonly routerId: string;
   public readonly routerType: RouterType;
+  public readonly vpcId: string;
 
   public readonly resource: CfnVPNGateway;
 
@@ -113,6 +119,7 @@ export class VirtualPrivateGateway extends Resource implements IRouter {
     });
 
     this.routerId = this.resource.attrVpnGatewayId;
+    this.vpcId = props.vpcId;
   }
 }
 
@@ -127,13 +134,30 @@ export class NatGateway extends Resource implements IRouter {
     super(scope, id);
 
     this.routerType = RouterType.NAT_GATEWAY;
-
+    
+    // If user does not provide EIP, generate one for them
+    var aId: string = props.allocationId || '';
+    if (!props.allocationId) {
+      let eip = new CfnEIP(this, 'EIP', {
+        domain: props.vpcId,
+      });
+      aId = eip.attrAllocationId;
+    }
+    
+    // TODO: Give user warning if no InternetGateway exists
+    
     this.resource = new CfnNatGateway(this, 'NATGateway', {
       subnetId: props.subnet.subnetId,
-      ...props,
+      allocationId: aId,
     });
-
+    
     this.routerId = this.resource.attrNatGatewayId;
+    
+    // new CfnEIPAssociation(this, 'EIPAssociation', {
+    //   allocationId: aId,
+    //   networkInterfaceId: this.routerId,
+    // });
+
     this.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
 }
@@ -177,6 +201,7 @@ export class TransitGateway extends Resource implements IRouter {
 export class VpcPeeringConnection extends Resource implements IRouter {
   public readonly routerId: string;
   public readonly routerType: RouterType;
+  public readonly peerRoleArn: string;
 
   public readonly resource: CfnVPCPeeringConnection;
 
@@ -188,9 +213,11 @@ export class VpcPeeringConnection extends Resource implements IRouter {
     this.resource = new CfnVPCPeeringConnection(this, 'VPCPeerConnection', {
       peerVpcId: props.peerVpcId,
       vpcId: props.vpcId,
+      peerRoleArn: props.peerRoleArn,
     });
 
     this.routerId = this.resource.attrId;
+    this.peerRoleArn = props.peerRoleArn;
   }
 }
 
@@ -250,6 +277,20 @@ export class Route extends Resource implements IRouteV2 {
         destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
         [routerTypeToPropName(this.targetRouterType)]: 'routerId' in this.target ? this.target.routerId : this.target.vpcEndpointId,
       });
+    }
+
+    if (this.targetRouterType == RouterType.GATEWAY) {
+      if (this.target instanceof InternetGateway) {
+        new CfnVPCGatewayAttachment(this, 'GWAttachment', {
+          vpcId: this.target.vpcId,
+          internetGatewayId: this.target.routerId,
+        });
+      } else if (this.target instanceof VirtualPrivateGateway) {
+        new CfnVPCGatewayAttachment(this, 'GWAttachment', {
+          vpcId: this.target.vpcId,
+          vpnGatewayId: this.target.routerId,
+        })
+      }
     }
   }
 }
