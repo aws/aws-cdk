@@ -194,7 +194,8 @@
                     },
                     "defaultArguments": {
                       "--job-language": "python",
-                      "--enable-metrics": ""
+                      "--enable-metrics": "",
+                      "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "4.0",
                     "numberOfWorkers": 10,
@@ -204,7 +205,7 @@
                         "Arn"
                       ]
                     },
-                    "workerType": "G.2X"
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
@@ -247,6 +248,7 @@
                     "defaultArguments": {
                       "--job-language": "python",
                       "--enable-metrics": "",
+                      "--enable-observability-metrics": "true",
                       "arg1": "value1",
                       "arg2": "value2"
                     },

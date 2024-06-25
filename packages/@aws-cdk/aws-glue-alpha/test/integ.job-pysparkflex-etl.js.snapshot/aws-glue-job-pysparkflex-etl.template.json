@@ -109,7 +109,8 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
-     "--enable-metrics": ""
+     "--enable-metrics": "",
+     "--enable-observability-metrics": "true"
     },
     "ExecutionClass": "FLEX",
     "GlueVersion": "3.0",
@@ -120,7 +121,7 @@
       "Arn"
      ]
     },
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "OverridePySparkFlexEtlJob8EE4CFA1": {
@@ -145,6 +146,7 @@
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-metrics": "",
+     "--enable-observability-metrics": "true",
      "arg1": "value1",
      "arg2": "value2"
     },
