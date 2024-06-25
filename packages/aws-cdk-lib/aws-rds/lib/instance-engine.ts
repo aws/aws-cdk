@@ -839,6 +839,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44 = MysqlEngineVersion.of('5.7.44', '5.7');
   /** Version "5.7.44-rds.20240408". */
   public static readonly VER_5_7_44_RDS_20240408 = MysqlEngineVersion.of('5.7.44-rds.20240408', '5.7');
+  /** Version "5.7.44-rds.20240529". */
+  public static readonly VER_5_7_44_RDS_20240529 = MysqlEngineVersion.of('5.7.44-rds.20240529', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -1391,10 +1393,6 @@ export class PostgresEngineVersion {
    */
   public static readonly VER_11_12 = PostgresEngineVersion.of('11.12', '11', { s3Import: true, s3Export: true });
   /**
-   * Version "11.12-rds.20240418"
-   */
-  public static readonly VER_11_12_RDS_20240418 = PostgresEngineVersion.of('11.12-rds.20240418', '11', { s3Import: true, s3Export: true });
-  /**
    * Version "11.13"
    * @deprecated PostgreSQL 11.13 is no longer supported by Amazon RDS.
    */
@@ -1441,6 +1439,14 @@ export class PostgresEngineVersion {
   public static readonly VER_11_21 = PostgresEngineVersion.of('11.21', '11', { s3Import: true, s3Export: true });
   /** Version "11.22". */
   public static readonly VER_11_22 = PostgresEngineVersion.of('11.22', '11', { s3Import: true, s3Export: true });
+  /**
+   * Version "11.22-rds.20240418"
+   */
+  public static readonly VER_11_22_RDS_20240418 = PostgresEngineVersion.of('11.22-rds.20240418', '11', { s3Import: true, s3Export: true });
+  /**
+   * Version "11.22-rds.20240509"
+   */
+  public static readonly VER_11_22_RDS_20240509 = PostgresEngineVersion.of('11.22-rds.20240509', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -2637,6 +2643,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4115_5_V1 = SqlServerEngineVersion.of('16.00.4115.5.v1', '16.00');
   /** Version "16.00.4120.1.v1". */
   public static readonly VER_16_00_4120_1_V1 = SqlServerEngineVersion.of('16.00.4120.1.v1', '16.00');
+  /** Version "16.00.4125.3.v1". */
+  public static readonly VER_16_00_4125_3_V1 = SqlServerEngineVersion.of('16.00.4125.3.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
