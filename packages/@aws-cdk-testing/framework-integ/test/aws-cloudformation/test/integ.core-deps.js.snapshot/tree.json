@@ -226,6 +226,14 @@
               "version": "10.3.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "replace-depends-on-test/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "CustomPolicy": {
             "id": "CustomPolicy",
             "path": "replace-depends-on-test/CustomPolicy",
