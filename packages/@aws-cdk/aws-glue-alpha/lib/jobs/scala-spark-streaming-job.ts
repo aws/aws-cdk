@@ -96,6 +96,7 @@ export class ScalaSparkStreamingJob extends Job {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
     const profilingMetricsArgs = { '--enable-metrics': '' };
+    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
     // Gather executable arguments
     const executableArgs = this.executableArguments(props);
@@ -110,6 +111,7 @@ export class ScalaSparkStreamingJob extends Job {
       ...executableArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
+      ...observabilityMetricsArgs,
       ...sparkUIArgs?.args,
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
@@ -127,7 +129,7 @@ export class ScalaSparkStreamingJob extends Job {
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_2X,
+      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
       numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
@@ -153,17 +155,6 @@ export class ScalaSparkStreamingJob extends Job {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.SCALA;
     args['--class'] = props.className!;
-
-    // TODO: Confirm with Glue service team what the mapping is from extra-x to job language, if any
-    if (props.extraJars && props.extraJars?.length > 0) {
-      // args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    // if (props.extraFiles && props.extraFiles.length > 0) {
-    //   args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraJarsFirst) {
-    //   args['--user-jars-first'] = 'true';
-    // }
 
     return args;
   }

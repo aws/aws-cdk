@@ -354,7 +354,7 @@ export interface JobProperties {
    * Worker Type (optional)
    * Type of Worker for Glue to use during job execution
    * Enum options: Standard, G_1X, G_2X, G_025X. G_4X, G_8X, Z_2X
-   * @default G_2X
+   * @default G_1X
    **/
   readonly workerType?: WorkerType;
 

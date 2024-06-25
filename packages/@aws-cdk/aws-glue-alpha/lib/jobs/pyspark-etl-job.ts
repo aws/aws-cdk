@@ -5,6 +5,7 @@ import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import { Code } from '../code';
 
 /**
  *  Spark ETL Jobs class
@@ -38,8 +39,16 @@ export interface PySparkEtlJobProps extends JobProperties {
    * S3 URL where additional python dependencies are located
    * @default - no extra files
    */
-  readonly extraPythonFiles?: string[];
+  readonly extraPythonFiles?: Code[];
 
+  /**
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   *
+   * @default - no extra files specified.
+   *
+   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraFiles?: Code[];
 }
 
 /**
@@ -87,6 +96,7 @@ export class PySparkEtlJob extends Job {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
     const profilingMetricsArgs = { '--enable-metrics': '' };
+    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
     // Gather executable arguments
     const execuatbleArgs = this.executableArguments(props);
@@ -96,6 +106,7 @@ export class PySparkEtlJob extends Job {
       ...execuatbleArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
+      ...observabilityMetricsArgs,
       ...sparkUIArgs?.args,
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
@@ -114,7 +125,7 @@ export class PySparkEtlJob extends Job {
         pythonVersion: PythonVersion.THREE,
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_2X,
+      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
       numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
@@ -141,20 +152,12 @@ export class PySparkEtlJob extends Job {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
 
-    // TODO: Confirm with Glue service team what the mapping is from extra-x to job language, if any
     if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      //args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+      args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
-
-    // if (props.extraJars && props.extraJars?.length > 0) {
-    //   args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraFiles && props.extraFiles.length > 0) {
-    //   args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraJarsFirst) {
-    //   args['--user-jars-first'] = 'true';
-    // }
+    if (props.extraFiles && props.extraFiles.length > 0) {
+      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
 
     return args;
   }
