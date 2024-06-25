@@ -26,4 +26,14 @@ new route53.ARecord(zone, 'Alias', {
   target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(lb)),
 });
 
+new route53.ARecord(stack, 'AliasWithHealthCheck', {
+  zone,
+  recordName: '_foo-health',
+  target: route53.RecordTarget.fromAlias(
+    new targets.LoadBalancerTarget(lb, {
+      evaluateTargetHealth: true,
+    }),
+  ),
+});
+
 app.synth();
