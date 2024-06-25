@@ -44,6 +44,6 @@ test.assertions.awsApiCall('SQS', 'sendMessage', {
 
 // It is nontrivial to read from a Kinesis data stream.
 // Manual verification was done to ensure the record made
-// it from the SQS to Kinesis via the pipe.
+// it from SQS to Kinesis via the pipe.
 
 app.synth();

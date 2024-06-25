@@ -106,6 +106,6 @@ describe('Kinesis source parameters validation', () => {
       new KinesisTarget(stream, {
         partitionKey: 'x'.repeat(257),
       });
-    }).toThrow('Partition key must be between 0 and 256 characters, received 257');
+    }).toThrow('Partition key must be less than or equal to 256 characters, received 257');
   });
 });
