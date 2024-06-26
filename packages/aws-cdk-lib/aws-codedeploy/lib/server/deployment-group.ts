@@ -227,6 +227,15 @@ export interface ServerDeploymentGroupProps {
    * @default - false
    */
   readonly ignoreAlarmConfiguration?: boolean;
+
+  /**
+   * Indicates whether the deployment group was configured to have CodeDeploy install a termination hook into an Auto Scaling group.
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-auto-scaling.html#integrations-aws-auto-scaling-behaviors
+   *
+   * @default - false
+   */
+  readonly terminationHook?: boolean;
 }
 
 /**
@@ -318,6 +327,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
         }),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      terminationHookEnabled: props.terminationHook,
     });
 
     this._setNameAndArn(resource, this.application);
