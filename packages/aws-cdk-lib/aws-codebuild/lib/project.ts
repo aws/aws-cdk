@@ -1843,7 +1843,7 @@ export class LinuxBuildImage implements IBuildImage {
    * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
   /**
-   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0".
    * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0}
    * */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
