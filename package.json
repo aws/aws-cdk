@@ -15,7 +15,7 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@nx/workspace": "^16.10.0",
+    "@nx/workspace": "^19.3.1",
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -29,7 +29,7 @@
     "jsii-pacmak": "1.100.0",
     "jsii-reflect": "1.100.0",
     "lerna": "^8.1.5",
-    "nx": "^18.3.5",
+    "nx": "^19.3.1",
     "patch-package": "^6.5.1",
     "semver": "^7.6.2",
     "standard-version": "^9.5.0",
