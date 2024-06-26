@@ -123,6 +123,7 @@ export class Addon extends Resource implements IAddon {
     const resource = new CfnAddon(this, 'Resource', {
       addonName: props.addonName,
       clusterName: this.clusterName,
+      addonVersion: props.addonVersion,
     });
 
     this.addonName = this.getResourceNameAttribute(resource.ref);
