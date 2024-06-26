@@ -18,7 +18,7 @@ const layer = new lambda.LayerVersion(stack, 'MyLayer', {
 });
 
 // To grant usage by other AWS accounts
-layer.addPermission('remote-account-grant', { accountId: awsAccountId, removalPolicy: cdk.RemovalPolicy.RETAIN });
+layer.addPermission('remote-account-grant', { accountId: awsAccountId });
 
 // To grant usage to all accounts in some AWS Ogranization
 // layer.grantUsage({ accountId: '*', organizationId });
