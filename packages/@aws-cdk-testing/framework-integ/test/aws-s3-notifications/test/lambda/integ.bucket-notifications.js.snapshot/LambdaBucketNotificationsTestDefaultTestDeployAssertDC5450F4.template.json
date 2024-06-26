@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4": {
-   "Type": "Custom::DeployAssert@SdkCallSQSpurgeQueue",
+  "AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a": {
+   "Type": "Custom::DeployAssert@SdkCallS3getBucketNotificationConfigura",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,16 +9,17 @@
       "Arn"
      ]
     },
-    "service": "SQS",
-    "api": "purgeQueue",
+    "service": "S3",
+    "api": "getBucketNotificationConfiguration",
+    "expected": "{\"$ObjectLike\":{\"LambdaFunctionConfigurations\":[{\"Events\":[\"s3:ObjectCreated:*\"],\"Filter\":{\"Key\":{\"FilterRules\":[{\"Name\":\"Prefix\",\"Value\":\"TEST/\"},{\"Name\":\"Suffix\",\"Value\":\".png\"}]}}},{\"Events\":[\"s3:ObjectCreated:*\"],\"Filter\":{\"Key\":{\"FilterRules\":[{\"Name\":\"Prefix\",\"Value\":\"TEST1/\"}]}}}]}}",
     "parameters": {
-     "QueueUrl": {
+     "Bucket": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefMyQueueE6CA623512A57419"
+         "Fn::ImportValue": "cdk-integ-lambda-bucket-s3-notifications:ExportsOutputRefMyBucketF68F3FF0442F9925"
         },
         "\""
        ]
@@ -26,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1719355626263"
+    "salt": "1719356098987"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -59,7 +60,7 @@
        "Statement": [
         {
          "Action": [
-          "sqs:PurgeQueue"
+          "s3:GetBucketNotificationConfiguration"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -67,19 +68,10 @@
          ]
         },
         {
-         "Action": [
-          "s3:PutObject"
-         ],
          "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
          "Action": [
-          "sqs:ReceiveMessage"
+          "s3:GetBucketNotification"
          ],
-         "Effect": "Allow",
          "Resource": [
           "*"
          ]
@@ -109,89 +101,13 @@
      ]
     }
    }
-  },
-  "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f": {
-   "Type": "Custom::DeployAssert@SdkCallS3putObject",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "S3",
-    "api": "putObject",
-    "parameters": {
-     "Bucket": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefBucket25524B414E77B0447"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Key": "\"image.png\"",
-     "Body": "\"Some content\""
-    },
-    "flattenResponse": "false",
-    "salt": "1719355626264"
-   },
-   "DependsOn": [
-    "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
-   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "SQS",
-    "api": "receiveMessage",
-    "expected": "{\"$StringLike\":\"image\\\\.png\"}",
-    "actualPath": "Messages.0.Body.Records.0.s3.object.key",
-    "parameters": {
-     "QueueUrl": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefMyQueueE6CA623512A57419"
-        },
-        "\""
-       ]
-      ]
-     },
-     "WaitTimeSeconds": "20"
-    },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "Messages.0.Body.Records.0.s3.object.key"
-    ],
-    "salt": "1719355626265"
-   },
-   "DependsOn": [
-    "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+  "AssertionResultsAwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7",
+     "AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a",
      "assertion"
     ]
    }
