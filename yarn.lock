@@ -4207,6 +4207,14 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@jsii/check-node@1.100.0":
+  version "1.100.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.100.0.tgz#98e8db619d026c8693f2fe0417961e8fb1e9daff"
+  integrity sha512-4bsO7Y6YyekBk4v4iatAl5E7QQs2UUPtHoP9gfT3UnpbKzyMjH8XholSVCjfcNSKBwFobPMb8iA7NCMIMqFKsQ==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.6.0"
+
 "@jsii/check-node@1.98.0":
   version "1.98.0"
   resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.98.0.tgz#140860478009834aa35dc8479a26db1a221439d5"
@@ -4227,6 +4235,13 @@
   version "1.99.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.99.0.tgz#f71bfcf83e2e48d7894821cc8b52c320f52cbbf4"
   integrity sha512-R4E0lFj+C2PpLt2tnexIlQA7Ovy52tL9PRcDy6sUcnJto4iZufexudIm4pjIJPN+bfwimQX5aMjALloRwDixtQ==
+  dependencies:
+    ajv "^8.13.0"
+
+"@jsii/spec@^1.100.0":
+  version "1.100.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.100.0.tgz#44e5c6fb84299664f40479b2ebe11e2aee0b727e"
+  integrity sha512-4LJCpSkmi3Hfcbmbchv+2JPIquV+cgrkhQcwglBAWqS4liLGbWPwgfHRL22sMXEKXiyXeHfitVwkP+IoGIyJ8g==
   dependencies:
     ajv "^8.13.0"
 
@@ -11710,6 +11725,25 @@ jsii-rosetta@~5.4.21:
   dependencies:
     "@jsii/check-node" "1.98.0"
     "@jsii/spec" "^1.98.0"
+    "@xmldom/xmldom" "^0.8.10"
+    chalk "^4"
+    commonmark "^0.31.0"
+    fast-glob "^3.3.2"
+    jsii "~5.4.0"
+    semver "^7.6.2"
+    semver-intersect "^1.5.0"
+    stream-json "^1.8.0"
+    typescript "~5.4"
+    workerpool "^6.5.1"
+    yargs "^17.7.2"
+
+jsii-rosetta@~5.4.23:
+  version "5.4.23"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.4.23.tgz#c07fb7d99e7796c3b9e4d13eff7e37b9d07ea96c"
+  integrity sha512-QOObTPIWIwc+q4dvXgRXptdEtkcCb6uQO93sHlz5f3SBJ/E/LdLaIVCqPqZmojkGr+5OnVrU4h58okPFOo4c4w==
+  dependencies:
+    "@jsii/check-node" "1.100.0"
+    "@jsii/spec" "^1.100.0"
     "@xmldom/xmldom" "^0.8.10"
     chalk "^4"
     commonmark "^0.31.0"
