@@ -41,6 +41,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.titan-embed-text-v2:0". */
   public static readonly AMAZON_TITAN_EMBED_TEXT_V2_0 = new FoundationModelIdentifier('amazon.titan-embed-text-v2:0');
 
+  /** Base model "amazon.titan-embed-text-v2:0:8k". */
+  public static readonly AMAZON_TITAN_EMBED_TEXT_V2_0_8K = new FoundationModelIdentifier('amazon.titan-embed-text-v2:0:8k');
+
   /** Base model "amazon.titan-image-generator-v1". */
   public static readonly AMAZON_TITAN_IMAGE_GENERATOR_G1_V1 = new FoundationModelIdentifier('amazon.titan-image-generator-v1');
 
@@ -65,11 +68,17 @@ export class FoundationModelIdentifier {
   /** Base model "ai21.j2-ultra-v1". */
   public static readonly AI21_LABS_JURASSIC_2_ULTRA_V1 = new FoundationModelIdentifier('ai21.j2-ultra-v1');
 
+  /** Base model "ai21.j2-ultra-v1:0:8k". */
+  public static readonly AI21_LABS_JURASSIC_2_ULTRA_V1_0_8K = new FoundationModelIdentifier('ai21.j2-ultra-v1:0:8k');
+
   /** Base model "ai21.j2-grande-instruct". */
   public static readonly AI21_J2_GRANDE_INSTRUCT = new FoundationModelIdentifier('ai21.j2-grande-instruct');
 
   /** Base model "ai21.j2-jumbo-instruct". */
   public static readonly AI21_J2_JUMBO_INSTRUCT = new FoundationModelIdentifier('ai21.j2-jumbo-instruct');
+
+  /** Base model "ai21.jamba-instruct-v1:0". */
+  public static readonly AI21_J2_JAMBA_INSTRUCT_V1_0 = new FoundationModelIdentifier('ai21.jamba-instruct-v1:0');
 
   /**
    * Base model "anthropic.claude-v1".
@@ -138,7 +147,7 @@ export class FoundationModelIdentifier {
   public static readonly COHERE_COMMAND_LIGHT_TEXT_V14_7_4K = new FoundationModelIdentifier('cohere.command-light-text-v14:7:4k');
 
   /** Base model "cohere.command-r-v1:0". */
-  public static readonly COHERE_COMMAND_R_V1 = new FoundationModelIdentifier('ccohere.command-r-v1:0');
+  public static readonly COHERE_COMMAND_R_V1 = new FoundationModelIdentifier('cohere.command-r-v1:0');
 
   /** Base model "cohere.command-r-v1:0". */
   public static readonly COHERE_COMMAND_R_PLUS_V1 = new FoundationModelIdentifier('cohere.command-r-plus-v1:0');
@@ -146,8 +155,14 @@ export class FoundationModelIdentifier {
   /** Base model "cohere.embed-english-v3". */
   public static readonly COHERE_EMBED_ENGLISH_V3 = new FoundationModelIdentifier('cohere.embed-english-v3');
 
+  /** Base model "cohere.embed-english-v3:0:512". */
+  public static readonly COHERE_EMBED_ENGLISH_V3_0_512 = new FoundationModelIdentifier('cohere.embed-english-v3:0:512');
+
   /** Base model "cohere.embed-multilingual-v3". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3 = new FoundationModelIdentifier('cohere.embed-multilingual-v3');
+
+  /** Base model "cohere.embed-multilingual-v3:0:512". */
+  public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
 
   /** Base model "meta.llama2-13b-v1". */
   public static readonly META_LLAMA_2_13B_V1 = new FoundationModelIdentifier('meta.llama2-13b-v1');
@@ -187,6 +202,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "mistral.mistral-large-2402-v1:0". */
   public static readonly MISTRAL_LARGE_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2402-v1:0');
+
+  /** Base model "mistral.mistral-small-2402-v1:0". */
+  public static readonly MISTRAL_SMALL_V0_1 = new FoundationModelIdentifier('mistral.mistral-small-2402-v1:0');
 
   /**
    * Base model "stability.stable-diffusion-xl".
