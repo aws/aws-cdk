@@ -30,12 +30,20 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
 
   const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, sanitizedRequest, cfnRequest.ResponseURL) as OnEventResponse;
-  log('onEvent returned:', onEventResult);
+  if (onEventResult.NoEcho) {
+    log('redacted onEvent returned:', cfnResponse.redactDataFromPayload(onEventResult));
+  } else {
+    log('onEvent returned:', onEventResult);
+  }
 
   // merge the request and the result from onEvent to form the complete resource event
   // this also performs validation.
   const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
-  log('event:', onEventResult);
+  if (onEventResult.NoEcho) {
+    log('readacted event:', cfnResponse.redactDataFromPayload(resourceEvent));
+  } else {
+    log('event:', resourceEvent);
+  }
 
   // determine if this is an async provider based on whether we have an isComplete handler defined.
   // if it is not defined, then we are basically ready to return a positive response.
@@ -62,10 +70,18 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
 // invoked a few times until `complete` is true or until it times out.
 async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
-  log('isComplete', sanitizedRequest);
+  if (event.NoEcho) {
+    log('redacted isComplete request', cfnResponse.redactDataFromPayload(sanitizedRequest));
+  } else {
+    log('isComplete', sanitizedRequest);
+  }
 
   const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest, event.ResponseURL) as IsCompleteResponse;
-  log('user isComplete returned:', isCompleteResult);
+  if (event.NoEcho) {
+    log('redacted user isComplete returned:', cfnResponse.redactDataFromPayload(isCompleteResult));
+  } else {
+    log('user isComplete returned:', isCompleteResult);
+  }
 
   // if we are not complete, return false, and don't send a response back.
   if (!isCompleteResult.IsComplete) {
