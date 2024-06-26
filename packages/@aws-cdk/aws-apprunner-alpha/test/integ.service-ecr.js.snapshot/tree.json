@@ -16,7 +16,7 @@
                 "id": "Staging",
                 "path": "integ-apprunner/ImageAssets/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
                 }
               },
@@ -24,13 +24,13 @@
                 "id": "Repository",
                 "path": "integ-apprunner/ImageAssets/Repository",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+              "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
               "version": "0.0.0"
             }
           },
@@ -38,6 +38,49 @@
             "id": "Service3",
             "path": "integ-apprunner/Service3",
             "children": {
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-apprunner/Service3/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-apprunner/Service3/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apprunner/Service3/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "tasks.apprunner.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "AccessRole": {
                 "id": "AccessRole",
                 "path": "integ-apprunner/Service3/AccessRole",
@@ -46,7 +89,7 @@
                     "id": "ImportAccessRole",
                     "path": "integ-apprunner/Service3/AccessRole/ImportAccessRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -71,7 +114,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -96,6 +139,7 @@
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
                                     "ecr:BatchGetImage",
+                                    "ecr:DescribeImages",
                                     "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
@@ -135,19 +179,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -157,6 +201,19 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
                   "aws:cdk:cloudformation:props": {
+                    "instanceConfiguration": {
+                      "instanceRoleArn": {
+                        "Fn::GetAtt": [
+                          "Service3InstanceRoleD40BEE82",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    },
                     "sourceConfiguration": {
                       "authenticationConfiguration": {
                         "accessRoleArn": {
@@ -176,23 +233,17 @@
                         },
                         "imageRepositoryType": "ECR"
                       }
-                    },
-                    "instanceConfiguration": {},
-                    "networkConfiguration": {
-                      "egressConfiguration": {
-                        "egressType": "DEFAULT"
-                      }
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "fqn": "aws-cdk-lib.aws_apprunner.CfnService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -200,7 +251,7 @@
             "id": "URL3",
             "path": "integ-apprunner/URL3",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -208,6 +259,49 @@
             "id": "Service2",
             "path": "integ-apprunner/Service2",
             "children": {
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-apprunner/Service2/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-apprunner/Service2/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apprunner/Service2/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "tasks.apprunner.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "AccessRole": {
                 "id": "AccessRole",
                 "path": "integ-apprunner/Service2/AccessRole",
@@ -216,7 +310,7 @@
                     "id": "ImportAccessRole",
                     "path": "integ-apprunner/Service2/AccessRole/ImportAccessRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -241,7 +335,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -266,6 +360,7 @@
                                   "Action": [
                                     "ecr:BatchCheckLayerAvailability",
                                     "ecr:BatchGetImage",
+                                    "ecr:DescribeImages",
                                     "ecr:GetDownloadUrlForLayer"
                                   ],
                                   "Effect": "Allow",
@@ -305,19 +400,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -327,6 +422,19 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
                   "aws:cdk:cloudformation:props": {
+                    "instanceConfiguration": {
+                      "instanceRoleArn": {
+                        "Fn::GetAtt": [
+                          "Service2InstanceRole3F57F2AA",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    },
                     "sourceConfiguration": {
                       "authenticationConfiguration": {
                         "accessRoleArn": {
@@ -365,23 +473,17 @@
                         },
                         "imageRepositoryType": "ECR"
                       }
-                    },
-                    "instanceConfiguration": {},
-                    "networkConfiguration": {
-                      "egressConfiguration": {
-                        "egressType": "DEFAULT"
-                      }
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apprunner.CfnService",
+                  "fqn": "aws-cdk-lib.aws_apprunner.CfnService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apprunner.Service",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -389,7 +491,7 @@
             "id": "URL2",
             "path": "integ-apprunner/URL2",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -397,7 +499,7 @@
             "id": "BootstrapVersion",
             "path": "integ-apprunner/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -405,13 +507,13 @@
             "id": "CheckBootstrapVersion",
             "path": "integ-apprunner/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -420,12 +522,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

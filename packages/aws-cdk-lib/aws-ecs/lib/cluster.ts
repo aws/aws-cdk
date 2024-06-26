@@ -474,6 +474,9 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    if (!(autoScalingGroup instanceof autoscaling.AutoScalingGroup)) {
+      throw new Error('Cannot configure the AutoScalingGroup because it is an imported resource.');
+    }
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
     } else {
@@ -1177,6 +1180,10 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
 
   /**
    * The autoscaling group to add as a Capacity Provider.
+   *
+   * Warning: When passing an imported resource using `AutoScalingGroup.fromAutoScalingGroupName` along with `enableManagedTerminationProtection: true`,
+   * the `AsgCapacityProvider` construct will not be able to enforce the option `newInstancesProtectedFromScaleIn` of the `AutoScalingGroup`.
+   * In this case the constructor of `AsgCapacityProvider` will throw an exception.
    */
   readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
 
@@ -1306,7 +1313,11 @@ export class AsgCapacityProvider extends Construct {
       throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
     }
     if (this.enableManagedTerminationProtection) {
-      this.autoScalingGroup.protectNewInstancesFromScaleIn();
+      if (this.autoScalingGroup instanceof autoscaling.AutoScalingGroup) {
+        this.autoScalingGroup.protectNewInstancesFromScaleIn();
+      } else {
+        throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
+      }
     }
 
     const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;

@@ -358,3 +358,21 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions`
+
+When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+
+When this feature flag is enabled, the IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
+for more details.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
+  }
+}
+```
