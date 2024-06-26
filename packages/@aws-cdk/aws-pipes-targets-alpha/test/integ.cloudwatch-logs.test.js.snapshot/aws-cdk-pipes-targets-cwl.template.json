@@ -122,7 +122,7 @@
     "Ref": "SourceQueue6E809DF0"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-targets:ExportsOutputRefSourceQueue6E809DF09604904F"
+    "Name": "aws-cdk-pipes-targets-cwl:ExportsOutputRefSourceQueue6E809DF09604904F"
    }
   },
   "ExportsOutputRefTargetLogGroupB910FA6FA19EA81F": {
@@ -130,7 +130,7 @@
     "Ref": "TargetLogGroupB910FA6F"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-targets:ExportsOutputRefTargetLogGroupB910FA6FA19EA81F"
+    "Name": "aws-cdk-pipes-targets-cwl:ExportsOutputRefTargetLogGroupB910FA6FA19EA81F"
    }
   }
  },

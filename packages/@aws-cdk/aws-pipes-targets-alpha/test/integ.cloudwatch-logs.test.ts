@@ -4,11 +4,12 @@ import * as cdk from 'aws-cdk-lib';
 import { CloudWatchLogsTarget } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets');
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-cwl');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetLogGroup = new cdk.aws_logs.LogGroup(stack, 'TargetLogGroup');
 const logStreamName = 'Mexico';
 const body = 'Cozumel';
+
 class TestSource implements ISource {
   sourceArn: string;
   sourceParameters = undefined;
@@ -37,7 +38,7 @@ new Pipe(stack, 'Pipe', {
   target: new CloudWatchLogsTarget(targetLogGroup, { logStreamName }),
 });
 
-const test = new IntegTest(app, 'integtest-pipe-target-sqs', {
+const test = new IntegTest(app, 'integtest-pipe-target-cwl', {
   testCases: [stack],
 });
 
