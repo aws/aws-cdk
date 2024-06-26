@@ -216,7 +216,7 @@ fn.grantInvokeLatestVersion(principal);
 
 ```
 
-If you want to grant access for invoking a specific version of Lambda function, you can use `fn.grantInovkeVersion(grantee, version)`
+If you want to grant access for invoking a specific version of Lambda function, you can use `fn.grantInvokeVersion(grantee, version)`
 
 ```ts
 declare const fn: lambda.Function;

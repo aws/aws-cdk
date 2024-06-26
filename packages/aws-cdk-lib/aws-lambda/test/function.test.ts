@@ -1333,8 +1333,8 @@ describe('function', () => {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
               Resource: [
-                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
                 { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':$LATEST']] },
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
               ],
             },
           ],

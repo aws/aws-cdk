@@ -111,7 +111,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Grant the given identity permissions to invoke this Lambda Function URL
    */
-  grantInvokeUrl(grantee: iam.IGrantable): iam.Grant;
+  grantInvokeUrl(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
@@ -476,7 +476,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     if (!grant) {
       let resouceArns = [`${this.functionArn}:${version.version}`];
       if (version == this.latestVersion) {
-        resouceArns = [this.functionArn, `${this.functionArn}:$LATEST`];
+        resouceArns.push(this.functionArn);
       }
       grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', resouceArns);
       this._invocationGrants[identifier] = grant;
