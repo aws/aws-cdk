@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-glue-ray-job": {
-        "id": "aws-glue-ray-job",
-        "path": "aws-glue-ray-job",
+      "aws-glue-job-scalasparkflex-etl": {
+        "id": "aws-glue-job-scalasparkflex-etl",
+        "path": "aws-glue-job-scalasparkflex-etl",
         "children": {
           "IAMServiceRole": {
             "id": "IAMServiceRole",
-            "path": "aws-glue-ray-job/IAMServiceRole",
+            "path": "aws-glue-job-scalasparkflex-etl/IAMServiceRole",
             "children": {
               "ImportIAMServiceRole": {
                 "id": "ImportIAMServiceRole",
-                "path": "aws-glue-ray-job/IAMServiceRole/ImportIAMServiceRole",
+                "path": "aws-glue-job-scalasparkflex-etl/IAMServiceRole/ImportIAMServiceRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -22,7 +22,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-glue-ray-job/IAMServiceRole/Resource",
+                "path": "aws-glue-job-scalasparkflex-etl/IAMServiceRole/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -61,11 +61,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "aws-glue-ray-job/IAMServiceRole/DefaultPolicy",
+                "path": "aws-glue-job-scalasparkflex-etl/IAMServiceRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-glue-ray-job/IAMServiceRole/DefaultPolicy/Resource",
+                    "path": "aws-glue-job-scalasparkflex-etl/IAMServiceRole/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -140,17 +140,17 @@
               "version": "0.0.0"
             }
           },
-          "BasicRayJob": {
-            "id": "BasicRayJob",
-            "path": "aws-glue-ray-job/BasicRayJob",
+          "BasicScalaSparkFlexEtlJob": {
+            "id": "BasicScalaSparkFlexEtlJob",
+            "path": "aws-glue-job-scalasparkflex-etl/BasicScalaSparkFlexEtlJob",
             "children": {
-              "Code2907ea7be4a583708cfffc21b3df1dfa": {
-                "id": "Code2907ea7be4a583708cfffc21b3df1dfa",
-                "path": "aws-glue-ray-job/BasicRayJob/Code2907ea7be4a583708cfffc21b3df1dfa",
+              "Codeb58a68516710fd95a65c427a7e567405": {
+                "id": "Codeb58a68516710fd95a65c427a7e567405",
+                "path": "aws-glue-job-scalasparkflex-etl/BasicScalaSparkFlexEtlJob/Codeb58a68516710fd95a65c427a7e567405",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-ray-job/BasicRayJob/Code2907ea7be4a583708cfffc21b3df1dfa/Stage",
+                    "path": "aws-glue-job-scalasparkflex-etl/BasicScalaSparkFlexEtlJob/Codeb58a68516710fd95a65c427a7e567405/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -158,7 +158,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-ray-job/BasicRayJob/Code2907ea7be4a583708cfffc21b3df1dfa/AssetBucket",
+                    "path": "aws-glue-job-scalasparkflex-etl/BasicScalaSparkFlexEtlJob/Codeb58a68516710fd95a65c427a7e567405/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -172,12 +172,12 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-glue-ray-job/BasicRayJob/Resource",
+                "path": "aws-glue-job-scalasparkflex-etl/BasicScalaSparkFlexEtlJob/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Glue::Job",
                   "aws:cdk:cloudformation:props": {
                     "command": {
-                      "name": "glueray",
+                      "name": "glueetl",
                       "scriptLocation": {
                         "Fn::Join": [
                           "",
@@ -186,25 +186,27 @@
                             {
                               "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                            "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
                           ]
                         ]
-                      },
-                      "runtime": "Ray2.4"
+                      }
                     },
                     "defaultArguments": {
+                      "--job-language": "scala",
+                      "--class": "com.example.HelloWorld",
                       "--enable-metrics": "",
                       "--enable-observability-metrics": "true"
                     },
-                    "glueVersion": "4.0",
-                    "numberOfWorkers": 3,
+                    "executionClass": "FLEX",
+                    "glueVersion": "3.0",
+                    "numberOfWorkers": 10,
                     "role": {
                       "Fn::GetAtt": [
                         "IAMServiceRole61C662C4",
                         "Arn"
                       ]
                     },
-                    "workerType": "Z.2X"
+                    "workerType": "G.2X"
                   }
                 },
                 "constructInfo": {
@@ -214,22 +216,22 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue-alpha.RayJob",
+              "fqn": "@aws-cdk/aws-glue-alpha.ScalaSparkFlexEtlJob",
               "version": "0.0.0"
             }
           },
-          "RayJob5Workers": {
-            "id": "RayJob5Workers",
-            "path": "aws-glue-ray-job/RayJob5Workers",
+          "OverrideScalaSparkFlexEtlJob": {
+            "id": "OverrideScalaSparkFlexEtlJob",
+            "path": "aws-glue-job-scalasparkflex-etl/OverrideScalaSparkFlexEtlJob",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-glue-ray-job/RayJob5Workers/Resource",
+                "path": "aws-glue-job-scalasparkflex-etl/OverrideScalaSparkFlexEtlJob/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Glue::Job",
                   "aws:cdk:cloudformation:props": {
                     "command": {
-                      "name": "glueray",
+                      "name": "glueetl",
                       "scriptLocation": {
                         "Fn::Join": [
                           "",
@@ -238,21 +240,24 @@
                             {
                               "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                            "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
                           ]
                         ]
-                      },
-                      "runtime": "Ray2.4"
+                      }
                     },
                     "defaultArguments": {
-                      "arg1": "value1",
-                      "arg2": "value2",
+                      "--job-language": "scala",
+                      "--class": "com.example.HelloWorld",
                       "--enable-metrics": "",
-                      "--enable-observability-metrics": "true"
+                      "--enable-observability-metrics": "true",
+                      "arg1": "value1",
+                      "arg2": "value2"
                     },
-                    "glueVersion": "4.0",
-                    "name": "RayJobWith5Workers",
-                    "numberOfWorkers": 5,
+                    "description": "Optional Override ScalaSpark Flex Etl Job",
+                    "executionClass": "FLEX",
+                    "glueVersion": "3.0",
+                    "name": "Optional Override ScalaSpark Flex Etl Job",
+                    "numberOfWorkers": 20,
                     "role": {
                       "Fn::GetAtt": [
                         "IAMServiceRole61C662C4",
@@ -262,7 +267,8 @@
                     "tags": {
                       "key": "value"
                     },
-                    "workerType": "Z.2X"
+                    "timeout": 15,
+                    "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
@@ -272,13 +278,13 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue-alpha.RayJob",
+              "fqn": "@aws-cdk/aws-glue-alpha.ScalaSparkFlexEtlJob",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-glue-ray-job/BootstrapVersion",
+            "path": "aws-glue-job-scalasparkflex-etl/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -286,7 +292,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-glue-ray-job/CheckBootstrapVersion",
+            "path": "aws-glue-job-scalasparkflex-etl/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -298,17 +304,17 @@
           "version": "0.0.0"
         }
       },
-      "aws-glue-ray-job-integ-test": {
-        "id": "aws-glue-ray-job-integ-test",
-        "path": "aws-glue-ray-job-integ-test",
+      "aws-glue-job-scalasparkflex-etl-integ-test": {
+        "id": "aws-glue-job-scalasparkflex-etl-integ-test",
+        "path": "aws-glue-job-scalasparkflex-etl-integ-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-glue-ray-job-integ-test/DefaultTest",
+            "path": "aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-glue-ray-job-integ-test/DefaultTest/Default",
+                "path": "aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -316,11 +322,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-glue-ray-job-integ-test/DefaultTest/DeployAssert",
+                "path": "aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-glue-ray-job-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -328,7 +334,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-glue-ray-job-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

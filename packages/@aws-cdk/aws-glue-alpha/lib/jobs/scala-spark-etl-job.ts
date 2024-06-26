@@ -97,6 +97,7 @@ export class ScalaSparkEtlJob extends Job {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
     const profilingMetricsArgs = { '--enable-metrics': '' };
+    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
     // Gather executable arguments
     const execuatbleArgs = this.executableArguments(props);
@@ -111,6 +112,7 @@ export class ScalaSparkEtlJob extends Job {
       ...execuatbleArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
+      ...observabilityMetricsArgs,
       ...sparkUIArgs?.args,
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
@@ -169,7 +171,7 @@ export class ScalaSparkEtlJob extends Job {
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
     const args = {
       '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix),
+      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
     };
 
     return {

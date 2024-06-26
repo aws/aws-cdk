@@ -109,7 +109,8 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
-     "--enable-metrics": ""
+     "--enable-metrics": "",
+     "--enable-observability-metrics": "true"
     },
     "GlueVersion": "4.0",
     "NumberOfWorkers": 10,
@@ -144,6 +145,7 @@
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-metrics": "",
+     "--enable-observability-metrics": "true",
      "arg1": "value1",
      "arg2": "value2"
     },

@@ -96,6 +96,7 @@ export class ScalaSparkStreamingJob extends Job {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
     const profilingMetricsArgs = { '--enable-metrics': '' };
+    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
     // Gather executable arguments
     const executableArgs = this.executableArguments(props);
@@ -110,6 +111,7 @@ export class ScalaSparkStreamingJob extends Job {
       ...executableArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
+      ...observabilityMetricsArgs,
       ...sparkUIArgs?.args,
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
@@ -154,17 +156,6 @@ export class ScalaSparkStreamingJob extends Job {
     args['--job-language'] = JobLanguage.SCALA;
     args['--class'] = props.className!;
 
-    // TODO: Confirm with Glue service team what the mapping is from extra-x to job language, if any
-    if (props.extraJars && props.extraJars?.length > 0) {
-      // args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    // if (props.extraFiles && props.extraFiles.length > 0) {
-    //   args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraJarsFirst) {
-    //   args['--user-jars-first'] = 'true';
-    // }
-
     return args;
   }
 
@@ -175,7 +166,7 @@ export class ScalaSparkStreamingJob extends Job {
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
     const args = {
       '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix),
+      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
     };
 
     return {

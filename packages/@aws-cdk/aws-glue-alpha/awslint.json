@@ -60,6 +60,7 @@
     "docs-public-apis:@aws-cdk/aws-glue-alpha.TableAttributes.tableArn",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.TableAttributes.tableName",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.TableBaseProps",
-    "docs-public-apis:@aws-cdk/aws-glue-alpha.TableProps"
+    "docs-public-apis:@aws-cdk/aws-glue-alpha.TableProps",
+    "docs-public-apis:@aws-cdk/aws-glue-alpha.PredicateLogical"
   ]
 }

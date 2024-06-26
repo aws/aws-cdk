@@ -194,7 +194,8 @@
                     "defaultArguments": {
                       "--job-language": "scala",
                       "--class": "com.example.HelloWorld",
-                      "--enable-metrics": ""
+                      "--enable-metrics": "",
+                      "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "4.0",
                     "numberOfWorkers": 10,
@@ -247,6 +248,7 @@
                       "--job-language": "scala",
                       "--class": "com.example.HelloWorld",
                       "--enable-metrics": "",
+                      "--enable-observability-metrics": "true",
                       "arg1": "value1",
                       "arg2": "value2"
                     },

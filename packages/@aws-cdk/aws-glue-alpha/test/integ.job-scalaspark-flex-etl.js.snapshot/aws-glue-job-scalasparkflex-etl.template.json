@@ -88,12 +88,11 @@
     ]
    }
   },
-  "BasicPySparkStreamingJobAFD3B477": {
+  "BasicScalaSparkFlexEtlJobF8FD9EFB": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "gluestreaming",
-     "PythonVersion": "3",
+     "Name": "glueetl",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -102,17 +101,19 @@
         {
          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+        "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
        ]
       ]
      }
     },
     "DefaultArguments": {
-     "--job-language": "python",
+     "--job-language": "scala",
+     "--class": "com.example.HelloWorld",
      "--enable-metrics": "",
      "--enable-observability-metrics": "true"
     },
-    "GlueVersion": "4.0",
+    "ExecutionClass": "FLEX",
+    "GlueVersion": "3.0",
     "NumberOfWorkers": 10,
     "Role": {
      "Fn::GetAtt": [
@@ -123,12 +124,11 @@
     "WorkerType": "G.2X"
    }
   },
-  "OverridePySparkStreamingJob58DE176A": {
+  "OverrideScalaSparkFlexEtlJob843D93B4": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "gluestreaming",
-     "PythonVersion": "3",
+     "Name": "glueetl",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -137,21 +137,23 @@
         {
          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+        "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
        ]
       ]
      }
     },
     "DefaultArguments": {
-     "--job-language": "python",
+     "--job-language": "scala",
+     "--class": "com.example.HelloWorld",
      "--enable-metrics": "",
      "--enable-observability-metrics": "true",
      "arg1": "value1",
      "arg2": "value2"
     },
-    "Description": "Optional Override PySpark Streaming Job",
+    "Description": "Optional Override ScalaSpark Flex Etl Job",
+    "ExecutionClass": "FLEX",
     "GlueVersion": "3.0",
-    "Name": "Optional Override PySpark Streaming Job",
+    "Name": "Optional Override ScalaSpark Flex Etl Job",
     "NumberOfWorkers": 20,
     "Role": {
      "Fn::GetAtt": [
@@ -163,7 +165,7 @@
      "key": "value"
     },
     "Timeout": 15,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   }
  },
