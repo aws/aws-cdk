@@ -78,7 +78,7 @@ export class FoundationModelIdentifier {
   public static readonly AI21_J2_JUMBO_INSTRUCT = new FoundationModelIdentifier('ai21.j2-jumbo-instruct');
 
   /** Base model "ai21.jamba-instruct-v1:0". */
-  public static readonly AI21_J2_JAMBA_INSTRUCT = new FoundationModelIdentifier('ai21.jamba-instruct-v1:0');
+  public static readonly AI21_J2_JAMBA_INSTRUCT_V1_0 = new FoundationModelIdentifier('ai21.jamba-instruct-v1:0');
 
   /**
    * Base model "anthropic.claude-v1".
