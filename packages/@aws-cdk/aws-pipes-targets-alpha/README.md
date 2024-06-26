@@ -135,6 +135,6 @@ const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup, {});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
-    target: eventBusTarget,
+    target: logGroupTarget,
 });
 ```
