@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "c8ede8ef587a43d76a297deb7aa4c8ac6c2e81cbdaf2f1b238d2b5ada35daf13": {
+    "4aef73b2a9bf3e062e96ccb4d77a88c051e6e47d0919b96eff6c383aef02cea4": {
       "source": {
         "path": "sns-bucket-notifications.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c8ede8ef587a43d76a297deb7aa4c8ac6c2e81cbdaf2f1b238d2b5ada35daf13.json",
+          "objectKey": "4aef73b2a9bf3e062e96ccb4d77a88c051e6e47d0919b96eff6c383aef02cea4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

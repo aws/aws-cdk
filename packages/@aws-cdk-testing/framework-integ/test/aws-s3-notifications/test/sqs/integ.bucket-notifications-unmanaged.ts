@@ -7,7 +7,7 @@ import * as constructs from 'constructs';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled': false,
+    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled': true,
   },
 });
 

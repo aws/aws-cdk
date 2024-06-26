@@ -5,7 +5,7 @@ import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
-const bucketName = 'cdk-integ-test-imported-bucket-name';
+const bucketName = 'cdk-integration-test-imported-bucket-name';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -32,7 +32,7 @@ class TestStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled': false,
+    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled': true,
   },
 });
 
