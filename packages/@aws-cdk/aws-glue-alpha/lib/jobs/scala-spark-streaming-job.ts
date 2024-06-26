@@ -129,7 +129,7 @@ export class ScalaSparkStreamingJob extends Job {
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
+      workerType: props.workerType ? props.workerType : WorkerType.G_2X,
       numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
@@ -166,7 +166,7 @@ export class ScalaSparkStreamingJob extends Job {
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
     const args = {
       '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix),
+      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
     };
 
     return {

@@ -39,9 +39,9 @@ describe('Job', () => {
       });
     });
 
-    test('Default WorkerType should be G.1X', () => {
+    test('Default WorkerType should be G.2X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        WorkerType: 'G.1X',
+        WorkerType: 'G.2X',
       });
     });
 

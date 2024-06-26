@@ -120,7 +120,7 @@
       "Arn"
      ]
     },
-    "WorkerType": "G.1X"
+    "WorkerType": "G.2X"
    }
   },
   "OverridePySparkStreamingJob58DE176A": {

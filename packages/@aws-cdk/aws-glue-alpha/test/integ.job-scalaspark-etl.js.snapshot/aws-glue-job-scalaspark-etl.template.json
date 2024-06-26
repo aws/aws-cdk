@@ -120,7 +120,7 @@
       "Arn"
      ]
     },
-    "WorkerType": "G.1X"
+    "WorkerType": "G.2X"
    }
   },
   "OverrideScalaSparkETLJobC019089C": {

@@ -205,7 +205,7 @@
                         "Arn"
                       ]
                     },
-                    "workerType": "G.1X"
+                    "workerType": "G.2X"
                   }
                 },
                 "constructInfo": {
