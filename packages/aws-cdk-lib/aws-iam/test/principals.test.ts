@@ -369,15 +369,15 @@ describe('deprecated ServicePrincipal behavior', () => {
   });
 
   test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string and be composed of 12 digits');
+    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
   });
 
   test('Passing string with invalid pattern in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be of type string and be composed of 12 digits');
+    expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be composed of 12 digits');
   });
 
   test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be of type string and be composed of 12 digits');
+    expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
   });
 
   test('ServicePrincipal in agnostic stack generates lookup table', () => {
