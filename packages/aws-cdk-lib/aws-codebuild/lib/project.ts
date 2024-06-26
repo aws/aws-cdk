@@ -631,7 +631,7 @@ export interface CommonProjectProps {
    * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
    * AWS service access, add VPC Endpoints to your private subnets.
    *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html for more details.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
    * @default - private subnets if available else public subnets
    */
