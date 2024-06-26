@@ -23,10 +23,13 @@ export interface CloudWatchLogsTargetParameters {
   readonly logStreamName?: string;
 
   /**
-   * The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+   * The JSON path expression that references the timestamp in the payload.
+   *
+   * @example
+   * '$.data.timestamp'
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargetcloudwatchlogsparameters.html#cfn-pipes-pipe-pipetargetcloudwatchlogsparameters-timestamp
-   * @default - none
+   * @default - current time
    */
   readonly timestamp?: string;
 }
