@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "integtest-pipe-target-sqs/DefaultTest": {
+    "integtest-pipe-target-cwl/DefaultTest": {
       "stacks": [
-        "aws-cdk-pipes-targets"
+        "aws-cdk-pipes-targets-cwl"
       ],
-      "assertionStack": "integtest-pipe-target-sqs/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestpipetargetsqsDefaultTestDeployAssertD5F047DA"
+      "assertionStack": "integtest-pipe-target-cwl/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetcwlDefaultTestDeployAssert4A6B8BD3"
     }
   }
 }

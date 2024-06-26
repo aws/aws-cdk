@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-pipes-targets:ExportsOutputRefSourceQueue6E809DF09604904F"
+         "Fn::ImportValue": "aws-cdk-pipes-targets-cwl:ExportsOutputRefSourceQueue6E809DF09604904F"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      "MessageBody": "\"Cozumel\""
     },
     "flattenResponse": "false",
-    "salt": "1719361342113"
+    "salt": "1719366477125"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -142,7 +142,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-pipes-targets:ExportsOutputRefTargetLogGroupB910FA6FA19EA81F"
+         "Fn::ImportValue": "aws-cdk-pipes-targets-cwl:ExportsOutputRefTargetLogGroupB910FA6FA19EA81F"
         },
         "\""
        ]
@@ -155,7 +155,7 @@
     "outputPaths": [
      "events.0.message.body"
     ],
-    "salt": "1719361342113"
+    "salt": "1719366477126"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessage09e328f9c64f2b7d7048c21f46ec7a09"
