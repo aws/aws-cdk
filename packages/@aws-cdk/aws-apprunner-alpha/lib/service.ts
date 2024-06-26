@@ -577,7 +577,7 @@ export interface ImageRepository {
    * always be `public.ecr.aws`. For `ECR`, the pattern should be
    * `([0-9]{12}.dkr.ecr.[a-z\-]+-[0-9]{1}.amazonaws.com\/.*)`.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html for more details.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
    */
   readonly imageIdentifier: string;
 
