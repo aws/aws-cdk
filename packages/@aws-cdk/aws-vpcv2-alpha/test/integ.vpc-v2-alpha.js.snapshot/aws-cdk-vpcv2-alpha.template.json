@@ -1,46 +1,52 @@
 {
  "Resources": {
-  "Ipam2108E2ED": {
-   "Type": "AWS::EC2::IPAM",
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+  "IpamTestIpam6C9298EF": {
+   "Type": "AWS::EC2::IPAM"
   },
-  "IpamPublicPool9b0cd44d8af344ee95b87c7a192d9daeAB12561E": {
+  "IpamTestPrivatePool039C763DC": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv4",
     "IpamScopeId": {
      "Fn::GetAtt": [
-      "Ipam2108E2ED",
+      "IpamTestIpam6C9298EF",
       "PrivateDefaultScopeId"
      ]
     },
-    "Locale": "eu-west-1",
+    "Locale": "eu-central-1",
     "ProvisionedCidrs": [
      {
       "Cidr": "10.2.0.0/16"
      }
     ]
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   }
   },
-  "IpamPublicPoolb70ff97568c1416386b05cef0e5c84c8E81B32E2": {
+  "IpamTestPublicPool0C44B7C49": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv6",
     "AwsService": "ec2",
     "IpamScopeId": {
      "Fn::GetAtt": [
-      "Ipam2108E2ED",
+      "IpamTestIpam6C9298EF",
       "PublicDefaultScopeId"
      ]
     },
-    "Locale": "eu-west-1",
+    "Locale": "eu-central-1",
     "PublicIpSource": "amazon"
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   }
+  },
+  "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D": {
+   "Type": "AWS::EC2::IPAMPoolCidr",
+   "Properties": {
+    "IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "NetmaskLength": 52
+   }
   },
   "VPCintegtest1EBA1CB75": {
    "Type": "AWS::EC2::VPC",
@@ -55,7 +61,7 @@
    "Properties": {
     "Ipv4IpamPoolId": {
      "Fn::GetAtt": [
-      "IpamPublicPool9b0cd44d8af344ee95b87c7a192d9daeAB12561E",
+      "IpamTestPrivatePool039C763DC",
       "IpamPoolId"
      ]
     },
@@ -87,6 +93,27 @@
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true
    }
+  },
+  "Vpcintegtest2SecondaryIp1E19DFFAD": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv6IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv6NetmaskLength": 60,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D"
+   ]
   }
  },
  "Parameters": {

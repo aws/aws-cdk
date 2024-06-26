@@ -8,13 +8,13 @@
         "id": "aws-cdk-vpcv2-alpha",
         "path": "aws-cdk-vpcv2-alpha",
         "children": {
-          "Ipam": {
-            "id": "Ipam",
-            "path": "aws-cdk-vpcv2-alpha/Ipam",
+          "IpamTest": {
+            "id": "IpamTest",
+            "path": "aws-cdk-vpcv2-alpha/IpamTest",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-vpcv2-alpha/Ipam/Resource",
+              "Ipam": {
+                "id": "Ipam",
+                "path": "aws-cdk-vpcv2-alpha/IpamTest/Ipam",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::IPAM",
                   "aws:cdk:cloudformation:props": {}
@@ -24,24 +24,24 @@
                   "version": "0.0.0"
                 }
               },
-              "PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae": {
-                "id": "PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae",
-                "path": "aws-cdk-vpcv2-alpha/Ipam/PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae",
+              "PrivatePool0": {
+                "id": "PrivatePool0",
+                "path": "aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0",
                 "children": {
-                  "PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae": {
-                    "id": "PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae",
-                    "path": "aws-cdk-vpcv2-alpha/Ipam/PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae/PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae",
+                  "PrivatePool0": {
+                    "id": "PrivatePool0",
+                    "path": "aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
                       "aws:cdk:cloudformation:props": {
                         "addressFamily": "ipv4",
                         "ipamScopeId": {
                           "Fn::GetAtt": [
-                            "Ipam2108E2ED",
+                            "IpamTestIpam6C9298EF",
                             "PrivateDefaultScopeId"
                           ]
                         },
-                        "locale": "eu-west-1",
+                        "locale": "eu-central-1",
                         "provisionedCidrs": [
                           {
                             "cidr": "10.2.0.0/16"
@@ -60,13 +60,13 @@
                   "version": "0.0.0"
                 }
               },
-              "PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8": {
-                "id": "PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8",
-                "path": "aws-cdk-vpcv2-alpha/Ipam/PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8",
+              "PublicPool0": {
+                "id": "PublicPool0",
+                "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0",
                 "children": {
-                  "PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8": {
-                    "id": "PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8",
-                    "path": "aws-cdk-vpcv2-alpha/Ipam/PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8/PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8",
+                  "PublicPool0": {
+                    "id": "PublicPool0",
+                    "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
                       "aws:cdk:cloudformation:props": {
@@ -74,16 +74,46 @@
                         "awsService": "ec2",
                         "ipamScopeId": {
                           "Fn::GetAtt": [
-                            "Ipam2108E2ED",
+                            "IpamTestIpam6C9298EF",
                             "PublicDefaultScopeId"
                           ]
                         },
-                        "locale": "eu-west-1",
+                        "locale": "eu-central-1",
                         "publicIpSource": "amazon"
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPool",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "PublicPool0Cidr": {
+                    "id": "PublicPool0Cidr",
+                    "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr",
+                    "children": {
+                      "PoolCidr": {
+                        "id": "PoolCidr",
+                        "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr/PoolCidr",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPoolCidr",
+                          "aws:cdk:cloudformation:props": {
+                            "ipamPoolId": {
+                              "Fn::GetAtt": [
+                                "IpamTestPublicPool0C44B7C49",
+                                "IpamPoolId"
+                              ]
+                            },
+                            "netmaskLength": 52
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPoolCidr",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-vpcv2-alpha.IpamPoolCidr",
                       "version": "0.0.0"
                     }
                   }
@@ -127,7 +157,7 @@
                   "aws:cdk:cloudformation:props": {
                     "ipv4IpamPoolId": {
                       "Fn::GetAtt": [
-                        "IpamPublicPool9b0cd44d8af344ee95b87c7a192d9daeAB12561E",
+                        "IpamTestPrivatePool039C763DC",
                         "IpamPoolId"
                       ]
                     },
@@ -188,6 +218,32 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "SecondaryIp1": {
+                "id": "SecondaryIp1",
+                "path": "aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                  "aws:cdk:cloudformation:props": {
+                    "ipv6IpamPoolId": {
+                      "Fn::GetAtt": [
+                        "IpamTestPublicPool0C44B7C49",
+                        "IpamPoolId"
+                      ]
+                    },
+                    "ipv6NetmaskLength": 60,
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "Vpcintegtest20DAD8F9D",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
                   "version": "0.0.0"
                 }
               }

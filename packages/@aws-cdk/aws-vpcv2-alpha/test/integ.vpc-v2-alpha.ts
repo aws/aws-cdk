@@ -12,6 +12,8 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { SubnetV2, Ipv4Cidr } from '../lib/subnet-v2';
 
 const app = new cdk.App();
 
@@ -33,7 +35,7 @@ const pool2 = ipam.publicScope.addPool('PublicPool0', {
   locale: 'eu-central-1',
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
-
+pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );
 //TODO: Test Ipam Pool Ipv6
 
 /** Test Ipv4 Primary and Secondary address */
@@ -51,12 +53,26 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   enableDnsSupport: true,
 });
 
-new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
+const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
     ipv6IpamPool: pool2,
     ipv6NetmaskLength: 60,
   })],
+});
+
+new SubnetV2(stack, 'testsbubnet', {
+  vpc,
+  availabilityZone: 'us-west-2a',
+  cidrBlock: new Ipv4Cidr('10.1.0.0/24'),
+  subnetType: SubnetType.PRIVATE_ISOLATED,
+});
+
+new SubnetV2(stack, 'testsbubnet', {
+  vpc,
+  availabilityZone: 'us-west-2a',
+  cidrBlock: new Ipv4Cidr('10.1.0.0/25'),
+  subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
 new IntegTest(app, 'integtest-model', {

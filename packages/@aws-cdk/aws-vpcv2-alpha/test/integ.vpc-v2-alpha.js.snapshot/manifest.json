@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bb0cdda3f0785cb1d5f16a6b3a69f61d2b030c8d56870edad98caa9480114a92.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bb68c78eaa8463d388fb6745d71a4c2a7c3c4365c422c07f0af88315ffe8cfe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,22 +34,28 @@
         "aws-cdk-vpcv2-alpha.assets"
       ],
       "metadata": {
-        "/aws-cdk-vpcv2-alpha/Ipam/Resource": [
+        "/aws-cdk-vpcv2-alpha/IpamTest/Ipam": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipam2108E2ED"
+            "data": "IpamTestIpam6C9298EF"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/Ipam/PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae/PublicPool-9b0cd44d-8af3-44ee-95b8-7c7a192d9dae": [
+        "/aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamPublicPool9b0cd44d8af344ee95b87c7a192d9daeAB12561E"
+            "data": "IpamTestPrivatePool039C763DC"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/Ipam/PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8/PublicPool-b70ff975-68c1-4163-86b0-5cef0e5c84c8": [
+        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamPublicPoolb70ff97568c1416386b05cef0e5c84c8E81B32E2"
+            "data": "IpamTestPublicPool0C44B7C49"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr/PoolCidr": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D"
           }
         ],
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/Resource": [
@@ -74,6 +80,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpcintegtest20DAD8F9D"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpcintegtest2SecondaryIp1E19DFFAD"
           }
         ],
         "/aws-cdk-vpcv2-alpha/BootstrapVersion": [

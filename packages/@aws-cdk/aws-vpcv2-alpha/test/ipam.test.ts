@@ -42,7 +42,7 @@ describe('IPAM Test', () => {
         AddressFamily: 'ipv6',
         IpamScopeId: {
           'Fn::GetAtt': [
-            'Ipam',
+            'Ipam50346F82',
             'PublicDefaultScopeId',
           ],
         },
@@ -72,7 +72,7 @@ describe('IPAM Test', () => {
         AddressFamily: 'ipv4',
         IpamScopeId: {
           'Fn::GetAtt': [
-            'Ipam',
+            'Ipam50346F82',
             'PrivateDefaultScopeId',
           ],
         },
