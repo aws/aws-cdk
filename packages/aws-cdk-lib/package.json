@@ -160,17 +160,17 @@
     "@aws-sdk/node-http-handler": "^3.370.0",
     "@aws-sdk/types": "^3.433.0",
     "@smithy/util-stream": "^2.2.0",
-    "@types/aws-lambda": "^8.10.138",
+    "@types/aws-lambda": "^8.10.140",
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.17.5",
     "@types/punycode": "^2.1.4",
     "@types/mime-types": "^2.1.4",
     "@aws-cdk/lazify": "0.0.0",
-    "aws-sdk": "^2.1639.0",
+    "aws-sdk": "^2.1648.0",
     "aws-sdk-client-mock": "^3.1.0",
     "aws-sdk-client-mock-jest": "^3.1.0",
     "aws-sdk-mock": "5.8.0",
-    "cdk8s": "2.68.78",
+    "cdk8s": "2.68.82",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.21.5",
@@ -184,7 +184,7 @@
     "ts-mock-imports": "^1.3.16",
     "ts-node": "^10.9.2",
     "typescript": "~5.4.5",
-    "typescript-json-schema": "^0.63.0"
+    "typescript-json-schema": "^0.64.0"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"
