@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetLogGroup = new cdk.aws_logs.LogGroup(stack, 'TargetLogGroup');
 const logStreamName = 'Mexico';
-
+const body = 'Cozumel';
 class TestSource implements ISource {
   sourceArn: string;
   sourceParameters = undefined;
@@ -27,6 +27,11 @@ class TestSource implements ISource {
   }
 }
 
+new cdk.aws_logs.LogStream(stack, 'TargetLogStream', {
+  logGroup: targetLogGroup,
+  logStreamName: logStreamName,
+});
+
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
   target: new CloudWatchLogsTarget(targetLogGroup, { logStreamName }),
@@ -36,20 +41,22 @@ const test = new IntegTest(app, 'integtest-pipe-target-sqs', {
   testCases: [stack],
 });
 
-const body = 'Cozumel';
 const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   QueueUrl: sourceQueue.queueUrl,
   MessageBody: body,
 });
 
-const message = putMessageOnQueue.next(test.assertions.awsApiCall('CloudWatchLogs', 'GetLogEvents', {
-  LogGroupName: targetLogGroup.logGroupName,
-  LogStreamName: logStreamName,
-}));
+const logEvents = test.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
+  logGroupName: targetLogGroup.logGroupName,
+  logStreamName: logStreamName,
+  limit: 1,
+});
 
-message.assertAtPath('events.0.message', ExpectedResult.stringLikeRegexp(body)).waitForAssertions({
+const message = putMessageOnQueue.next(logEvents);
+
+message.assertAtPath('events.0.message.body', ExpectedResult.stringLikeRegexp(body)).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(1),
-  interval: cdk.Duration.seconds(10),
+  interval: cdk.Duration.seconds(15),
 });
 
 app.synth();
