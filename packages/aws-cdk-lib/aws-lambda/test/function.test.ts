@@ -1324,7 +1324,7 @@ describe('function', () => {
       // WHEN
       fn.grantInvokeLatestVersion(role);
 
-      // THEN
+      // THEN function should have allow on both unqualified arn and arn:$LATEST
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
