@@ -42,7 +42,7 @@ export class FoundationModelIdentifier {
   public static readonly AMAZON_TITAN_EMBED_TEXT_V2_0 = new FoundationModelIdentifier('amazon.titan-embed-text-v2:0');
 
   /** Base model "amazon.titan-embed-text-v2:0:8k". */
-  public static readonly AMAZON_TITAN_EMBED_TEXT_V2_0_8k = new FoundationModelIdentifier('amazon.titan-embed-text-v2:0:8k');
+  public static readonly AMAZON_TITAN_EMBED_TEXT_V2_0_8K = new FoundationModelIdentifier('amazon.titan-embed-text-v2:0:8k');
 
   /** Base model "amazon.titan-image-generator-v1". */
   public static readonly AMAZON_TITAN_IMAGE_GENERATOR_G1_V1 = new FoundationModelIdentifier('amazon.titan-image-generator-v1');
@@ -69,7 +69,7 @@ export class FoundationModelIdentifier {
   public static readonly AI21_LABS_JURASSIC_2_ULTRA_V1 = new FoundationModelIdentifier('ai21.j2-ultra-v1');
 
   /** Base model "ai21.j2-ultra-v1:0:8k". */
-  public static readonly AI21_LABS_JURASSIC_2_ULTRA_V1_0_8k = new FoundationModelIdentifier('ai21.j2-ultra-v1:0:8k');
+  public static readonly AI21_LABS_JURASSIC_2_ULTRA_V1_0_8K = new FoundationModelIdentifier('ai21.j2-ultra-v1:0:8k');
 
   /** Base model "ai21.j2-grande-instruct". */
   public static readonly AI21_J2_GRANDE_INSTRUCT = new FoundationModelIdentifier('ai21.j2-grande-instruct');
