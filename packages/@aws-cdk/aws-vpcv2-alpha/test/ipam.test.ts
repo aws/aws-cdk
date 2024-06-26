@@ -2,7 +2,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib';
-import { AddressFamily, Ipam } from '../lib';
+import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
 
 describe('IPAM Test', () => {
   let stack: cdk.Stack;
@@ -24,7 +24,7 @@ describe('IPAM Test', () => {
       addressFamily: AddressFamily.IP_V6,
       awsService: 'ec2',
       locale: 'us-east-1',
-      publicIpSource: 'amazon',
+      publicIpSource: IpamPoolPublicIpSource.AMAZON,
     });
 
     new vpc.VpcV2(stack, 'TestVPC', {

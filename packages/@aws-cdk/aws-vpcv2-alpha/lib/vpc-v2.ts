@@ -1,5 +1,5 @@
 import { CfnVPC, CfnVPCCidrBlock, ISubnet } from 'aws-cdk-lib/aws-ec2';
-import { Arn } from 'aws-cdk-lib/core';
+import { Arn, CfnResource } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamIpv4, IpamPool, IpamIpv6 } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
@@ -48,7 +48,7 @@ export class IpAddresses {
 /**
  * Consolidated return parameters to pass to VPC construct
  */
-export interface VpcV2Options {
+export interface VpcCidrOptions {
 
   /**
    * IPv4 CIDR Block
@@ -94,6 +94,8 @@ export interface VpcV2Options {
    * use amazon provided IP range
    */
   readonly amazonProvided?: boolean;
+
+  readonly dependencies?: CfnResource[];
 }
 
 export interface IIpv6AddressesOptions {
@@ -103,7 +105,7 @@ export interface IIpv6AddressesOptions {
 
 export interface IIpAddresses {
 
-  allocateVpcCidr() : VpcV2Options;
+  allocateVpcCidr() : VpcCidrOptions;
 
 }
 
@@ -229,7 +231,7 @@ export class VpcV2 extends VpcV2Base {
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
         //TODO: Add unique has for each secondary ip address
         ipCount+=1;
-        const secondaryVpcOptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
+        const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
 
         if (secondaryVpcOptions.amazonProvided === true) {
           this.useIpv6 = true;
@@ -241,8 +243,8 @@ export class VpcV2 extends VpcV2Base {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
         }
-        //Create secondary blocks for Ipv4 and Ipv6
-        this.secondaryCidrBlock = [...this.secondaryCidrBlock, new CfnVPCCidrBlock(this, `SecondaryIp${ipCount}`, {
+
+        const cfnVpcCidrBlock = new CfnVPCCidrBlock(this, `SecondaryIp${ipCount}`, {
           vpcId: this.vpcId,
           cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
           ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPool?.ipamPoolId,
@@ -255,7 +257,14 @@ export class VpcV2 extends VpcV2Base {
           ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
           ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPool?.ipamPoolId,
           amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
-        })];
+        });
+        if (secondaryVpcOptions.dependencies) {
+          for (const dep of secondaryVpcOptions.dependencies) {
+            cfnVpcCidrBlock.addDependency(dep);
+          }
+        }
+        //Create secondary blocks for Ipv4 and Ipv6
+        this.secondaryCidrBlock.push(cfnVpcCidrBlock);
       }
     }
 
@@ -277,7 +286,7 @@ class ipv4CidrAllocation implements IIpAddresses {
 
   }
 
-  allocateVpcCidr(): VpcV2Options {
+  allocateVpcCidr(): VpcCidrOptions {
     return {
       ipv4CidrBlock: this.cidrBlock,
     };
@@ -294,7 +303,7 @@ export class AmazonProvided implements IIpAddresses {
     //this.amazonProvided = true;
   };
 
-  allocateVpcCidr(): VpcV2Options {
+  allocateVpcCidr(): VpcCidrOptions {
     return {
       amazonProvided: true,
     };

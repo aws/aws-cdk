@@ -1,26 +1,15 @@
 /* eslint-disable no-bitwise */
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
-import { IIpAddresses, VpcV2Options } from './vpc-v2';
+import { IIpAddresses, VpcCidrOptions } from './vpc-v2';
 import { Construct } from 'constructs';
-import { Resource } from 'aws-cdk-lib';
+import { CfnResource, Resource } from 'aws-cdk-lib';
 
 export enum AddressFamily {
-  IP_V4,
-  IP_V6,
+  IP_V4 = 'ipv4',
+  IP_V6 = 'ipv6',
 }
 
-function getAddressFamilyString(addressFamily: AddressFamily): string {
-  switch (addressFamily) {
-    case AddressFamily.IP_V4:
-      return 'ipv4';
-    case AddressFamily.IP_V6:
-      return 'ipv6';
-    default:
-      throw new Error(`Unsupported AddressFamily: ${addressFamily}`);
-  }
-}
-
-export interface CfnPoolOptions extends PoolOptions {
+export interface IpamPoolProps extends PoolOptions {
   readonly ipamScopeId: string;
 }
 
@@ -28,7 +17,7 @@ export interface PoolOptions{
   readonly addressFamily: AddressFamily;
   readonly provisionedCidrs?: CfnIPAMPool.ProvisionedCidrProperty[];
   readonly locale?: string;
-  readonly publicIpSource?: string;
+  readonly publicIpSource?: IpamPoolPublicIpSource;
   /**
   * Limits which service in AWS that the pool can be used in.
   *
@@ -37,7 +26,6 @@ export interface PoolOptions{
   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
   */
   readonly awsService?: string;
-  readonly netmasklength?: number;
 }
 
 export interface IpamScopeOptions {
@@ -82,29 +70,57 @@ export interface IpamOptions {
   readonly ipv6CidrBlock?: string;
 }
 
+export enum IpamPoolPublicIpSource {
+  BYOIP = 'byoip',
+  AMAZON = 'amazon',
+}
+
+export interface IpamPoolCidrProvisioningOptions {
+  readonly netmaskLength?: number;
+  readonly cidr?: string;
+}
+
 export class IpamPool extends Resource {
 
   public readonly ipamPoolId: string;
-  public readonly ipv6CidrPool?: CfnIPAMPoolCidr;
-  constructor(scope: Construct, id: string, options: CfnPoolOptions) {
+  public readonly ipamCidrs: IpamPoolCidr[] = []
 
+  constructor(scope: Construct, id: string, props: IpamPoolProps) {
     super(scope, id);
     //const uuid = generateUUID();
-    const CfnPool = new CfnIPAMPool(this, id, {
-      addressFamily: getAddressFamilyString(options.addressFamily),
-      provisionedCidrs: options.provisionedCidrs,
-      locale: options.locale,
-      ipamScopeId: options.ipamScopeId,
-      publicIpSource: options.publicIpSource,
-      awsService: options.awsService,
+    const cfnPool = new CfnIPAMPool(this, id, {
+      addressFamily: props.addressFamily,
+      provisionedCidrs: props.provisionedCidrs,
+      locale: props.locale,
+      ipamScopeId: props.ipamScopeId,
+      publicIpSource: props.publicIpSource,
+      awsService: props.awsService,
     });
-    if (options.addressFamily === AddressFamily.IP_V6 && options.netmasklength) {
-      this.ipv6CidrPool = new CfnIPAMPoolCidr(scope, `PoolCidr-${id}`, {
-        netmaskLength: options.netmasklength,
-        ipamPoolId: CfnPool.attrIpamPoolId,
-      });
-    }
-    this.ipamPoolId = CfnPool.attrIpamPoolId;
+    this.ipamPoolId = cfnPool.attrIpamPoolId;
+  }
+
+  public provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): IpamPoolCidr {
+    const cidr = new IpamPoolCidr(this, id, {
+      ...options,
+      ipamPoolId: this.ipamPoolId,
+    });
+    this.ipamCidrs.push(cidr);
+    return cidr;
+  }
+}
+
+export interface IpamPoolCidrProps extends IpamPoolCidrProvisioningOptions {
+  readonly ipamPoolId: string;
+}
+export class IpamPoolCidr extends Resource {
+
+  constructor(scope: Construct, id: string, props: IpamPoolCidrProps) {
+    super(scope, id);
+    this.node.defaultChild = new CfnIPAMPoolCidr(this, 'PoolCidr', {
+      netmaskLength: props.netmaskLength,
+      ipamPoolId: props.ipamPoolId,
+      cidr: props.cidr,
+    });
   }
 }
 
@@ -112,7 +128,7 @@ export class IpamIpv4 implements IIpAddresses {
 
   constructor(private readonly props: IpamOptions) {
   }
-  allocateVpcCidr(): VpcV2Options {
+  allocateVpcCidr(): VpcCidrOptions {
 
     return {
       ipv4NetmaskLength: this.props.ipv4NetmaskLength,
@@ -187,7 +203,6 @@ export class IpamPublicScope {
       locale: options.locale,
       publicIpSource: options.publicIpSource,
       awsService: options.awsService,
-      netmasklength: options.netmasklength,
     });
     /**
      * creates pool under default public scope (IPV4, IPV6)
@@ -236,11 +251,12 @@ export class IpamIpv6 implements IIpAddresses {
   constructor(private readonly props: IpamOptions) {
   }
 
-  allocateVpcCidr(): VpcV2Options {
+  allocateVpcCidr(): VpcCidrOptions {
     return {
       ipv6NetmaskLength: this.props.ipv6NetmaskLength,
       ipv6CidrBlock: this.props.ipv6CidrBlock,
       ipv6IpamPool: this.props.ipv6IpamPool,
+      dependencies: this.props.ipv6IpamPool?.ipamCidrs.map(c => c.node.defaultChild as CfnResource),
     };
   }
 }

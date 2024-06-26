@@ -9,7 +9,7 @@
 //  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-import { AddressFamily, Ipam } from '../lib';
+import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 
@@ -31,8 +31,7 @@ const pool2 = ipam.publicScope.addPool('PublicPool0', {
   addressFamily: AddressFamily.IP_V6,
   awsService: 'ec2',
   locale: 'eu-central-1',
-  publicIpSource: 'amazon',
-  netmasklength: 52,
+  publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
 
 //TODO: Test Ipam Pool Ipv6
@@ -52,17 +51,13 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   enableDnsSupport: true,
 });
 
-const vpc2 = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
+new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
     ipv6IpamPool: pool2,
     ipv6NetmaskLength: 60,
   })],
 });
-
-if (pool2.ipv6CidrPool) {
-  vpc2.node.addDependency(pool2.ipv6CidrPool);
-}
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
