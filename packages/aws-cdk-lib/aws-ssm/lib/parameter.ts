@@ -101,7 +101,7 @@ export interface ParameterOptions {
   /**
    * Indicates whether the parameter name is a simple name. A parameter name
    * without any "/" is considered a simple name. If the parameter name includes
-   * "/", setting simpleName to true might cause unintended issues, such
+   * "/", setting simpleName to true might cause unintended issues such
    * as duplicate "/" in the resulting ARN.
    *
    * This is required only if `parameterName` is a token, which means we
