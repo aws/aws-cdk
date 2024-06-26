@@ -3,7 +3,7 @@
   "testCases": {
     "aws-cdk-s3-integ-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-s3-integ"
+        "aws-cdk-s3-legacy-name-integ"
       ],
       "assertionStack": "aws-cdk-s3-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdks3integtestDefaultTestDeployAssert9DECDFBF"

@@ -1,19 +1,19 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-cdk-s3-integ.assets": {
+    "aws-cdk-s3-legacy-name-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-s3-integ.assets.json",
+        "file": "aws-cdk-s3-legacy-name-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-s3-integ": {
+    "aws-cdk-s3-legacy-name-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-s3-integ.template.json",
+        "templateFile": "aws-cdk-s3-legacy-name-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-s3-integ.assets"
+          "aws-cdk-s3-legacy-name-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,35 +31,35 @@
         }
       },
       "dependencies": [
-        "aws-cdk-s3-integ.assets"
+        "aws-cdk-s3-legacy-name-integ.assets"
       ],
       "metadata": {
-        "/aws-cdk-s3-integ/LegacyBucketRole/Resource": [
+        "/aws-cdk-s3-legacy-name-integ/LegacyBucketRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LegacyBucketRoleFF9F72AB"
           }
         ],
-        "/aws-cdk-s3-integ/LegacyBucketRole/DefaultPolicy/Resource": [
+        "/aws-cdk-s3-legacy-name-integ/LegacyBucketRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LegacyBucketRoleDefaultPolicyA9F22E7C"
           }
         ],
-        "/aws-cdk-s3-integ/BootstrapVersion": [
+        "/aws-cdk-s3-legacy-name-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-s3-integ/CheckBootstrapVersion": [
+        "/aws-cdk-s3-legacy-name-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-s3-integ"
+      "displayName": "aws-cdk-s3-legacy-name-integ"
     },
     "awscdks3integtestDefaultTestDeployAssert9DECDFBF.assets": {
       "type": "cdk:asset-manifest",

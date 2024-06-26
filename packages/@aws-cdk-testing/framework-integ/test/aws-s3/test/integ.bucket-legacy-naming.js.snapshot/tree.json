@@ -4,13 +4,13 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-s3-integ": {
-        "id": "aws-cdk-s3-integ",
-        "path": "aws-cdk-s3-integ",
+      "aws-cdk-s3-legacy-name-integ": {
+        "id": "aws-cdk-s3-legacy-name-integ",
+        "path": "aws-cdk-s3-legacy-name-integ",
         "children": {
           "LegacyBucketFromName": {
             "id": "LegacyBucketFromName",
-            "path": "aws-cdk-s3-integ/LegacyBucketFromName",
+            "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketFromName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
               "version": "0.0.0"
@@ -18,7 +18,7 @@
           },
           "LegacyBucketFromArn": {
             "id": "LegacyBucketFromArn",
-            "path": "aws-cdk-s3-integ/LegacyBucketFromArn",
+            "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketFromArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
               "version": "0.0.0"
@@ -26,7 +26,7 @@
           },
           "LegacyBucketFromAttributes": {
             "id": "LegacyBucketFromAttributes",
-            "path": "aws-cdk-s3-integ/LegacyBucketFromAttributes",
+            "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketFromAttributes",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
               "version": "0.0.0"
@@ -34,11 +34,11 @@
           },
           "LegacyBucketRole": {
             "id": "LegacyBucketRole",
-            "path": "aws-cdk-s3-integ/LegacyBucketRole",
+            "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketRole",
             "children": {
               "ImportLegacyBucketRole": {
                 "id": "ImportLegacyBucketRole",
-                "path": "aws-cdk-s3-integ/LegacyBucketRole/ImportLegacyBucketRole",
+                "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketRole/ImportLegacyBucketRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -46,7 +46,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-s3-integ/LegacyBucketRole/Resource",
+                "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketRole/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -71,11 +71,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "aws-cdk-s3-integ/LegacyBucketRole/DefaultPolicy",
+                "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-s3-integ/LegacyBucketRole/DefaultPolicy/Resource",
+                    "path": "aws-cdk-s3-legacy-name-integ/LegacyBucketRole/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -142,7 +142,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-s3-integ/BootstrapVersion",
+            "path": "aws-cdk-s3-legacy-name-integ/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -150,7 +150,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-s3-integ/CheckBootstrapVersion",
+            "path": "aws-cdk-s3-legacy-name-integ/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
