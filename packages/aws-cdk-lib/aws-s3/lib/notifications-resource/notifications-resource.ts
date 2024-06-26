@@ -1,7 +1,9 @@
 import { Construct, IConstruct } from 'constructs';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
+import { FeatureFlags } from '../../../core';
 import * as cdk from '../../../core';
+import { S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED } from '../../../cx-api';
 import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 
@@ -133,6 +135,7 @@ export class BucketNotifications extends Construct {
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
+          ApplyNameTransformations: FeatureFlags.of(this).isEnabled(S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED),
         },
       });
 
