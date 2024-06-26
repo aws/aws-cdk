@@ -11,9 +11,6 @@ export interface StreamSourceParameters {
   /**
    * The maximum number of records to include in each batch.
    *
-   * Minumum: 1
-   * Maxiumum: 10000
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-batchsize
    * @default 1
    */
@@ -30,9 +27,6 @@ export interface StreamSourceParameters {
   /**
    * The maximum length of a time to wait for events.
    *
-   * Minumum: Duration.seconds(0)
-   * Maxiumum: Duration.seconds(300)
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumbatchingwindowinseconds
    * @default - the events will be handled immediately
    */
@@ -41,9 +35,6 @@ export interface StreamSourceParameters {
   /**
    * Discard records older than the specified age. The default value is -1, which sets the maximum age to infinite. When the value is set to infinite, EventBridge never discards old records.
    *
-   * Minumum: Duration.seconds(60) (leave undefined to set the maximum age to -1)
-   * Maxiumum: Duration.seconds(604800)
-   *
    *  @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumrecordageinseconds
    * @default -1 - EventBridge won't discard old records
    */
@@ -51,9 +42,6 @@ export interface StreamSourceParameters {
 
   /**
    * Discard records after the specified number of retries. The default value is -1, which sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, EventBridge retries failed records until the record expires in the event source.
-   *
-   * Minumum: -1
-   * Maxiumum: 10000
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumretryattempts
    * @default -1 - EventBridge will retry failed records until the record expires in the event source
