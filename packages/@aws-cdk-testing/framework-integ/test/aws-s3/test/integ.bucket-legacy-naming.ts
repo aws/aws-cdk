@@ -27,7 +27,7 @@ role.addToPolicy(
       `${legacyBucketFromArn.bucketArn}/*`,
       `${legacyBucketFromAttributes.bucketArn}/*`,
     ],
-  })
+  }),
 );
 
 new IntegTest(app, 'aws-cdk-s3-integ-test', {
