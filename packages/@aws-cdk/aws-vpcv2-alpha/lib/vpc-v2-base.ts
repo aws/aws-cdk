@@ -10,6 +10,7 @@ import { IDependable, Dependable, IConstruct } from 'constructs';
  */
 export interface IVpcV2 extends IVpc {
   readonly secondaryCidrBlock: CfnVPCCidrBlock[];
+  readonly ipv4CidrBlock: string;
 }
 
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
@@ -63,6 +64,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Newly added property for secondary CIDR blocks
    */
   public abstract readonly secondaryCidrBlock: CfnVPCCidrBlock[];
+
+  public abstract readonly ipv4CidrBlock: string;
 
   /**
      * If this is set to true, don't error out on trying to select subnets

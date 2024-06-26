@@ -200,6 +200,8 @@ export class VpcV2 extends VpcV2Base {
    */
   public readonly useIpv6: boolean = false;
 
+  public readonly ipv4CidrBlock: string = '';
+
   constructor(scope: Construct, id: string, props: VpcV2Props = {}) {
     super(scope, id);
 
@@ -217,6 +219,9 @@ export class VpcV2 extends VpcV2Base {
     });
 
     this.vpcCidrBlock = this.resource.attrCidrBlock;
+    if (vpcOptions.ipv4CidrBlock) {
+      this.ipv4CidrBlock = vpcOptions.ipv4CidrBlock;
+    }
     this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
     this.vpcId = this.resource.attrVpcId;
     this.vpcArn = Arn.format({

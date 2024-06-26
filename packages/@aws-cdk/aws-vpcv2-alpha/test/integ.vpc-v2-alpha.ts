@@ -15,6 +15,7 @@ import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, Ipv4Cidr } from '../lib/subnet-v2';
 
+
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
@@ -58,7 +59,9 @@ const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
     ipv6IpamPool: pool2,
     ipv6NetmaskLength: 60,
-  })],
+  }),
+  vpc_v2.IpAddresses.ipv4('10.2.0.0/16'),
+],
 });
 
 new SubnetV2(stack, 'testsbubnet', {
@@ -68,13 +71,15 @@ new SubnetV2(stack, 'testsbubnet', {
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-new SubnetV2(stack, 'testsbubnet', {
+new SubnetV2(stack, 'testsubnet', {
   vpc,
   availabilityZone: 'us-west-2a',
-  cidrBlock: new Ipv4Cidr('10.1.0.0/25'),
+  cidrBlock: new Ipv4Cidr('10.2.0.0/24'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
+
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });
+

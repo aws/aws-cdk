@@ -4,6 +4,8 @@ import { Resource, Names } from 'aws-cdk-lib';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
+import { CidrBlock } from './util';
+//import { CidrBlock } from '../lib/util';
 
 export interface ICidr {
   readonly cidr: string;
@@ -124,10 +126,17 @@ export class SubnetV2 extends Resource implements ISubnet {
 
     const ipv4CidrBlock = props.cidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
+
+    if(!checkCidrRanges(props.vpc, props.cidrBlock.cidr)){
+      throw new Error('CIDR block should be in the same VPC');
+    };
+    //validateOverlappingCidrRanges(props.vpc, ipv4CidrBlock);
+
     //check whether VPC supports ipv6
     if (ipv6CidrBlock) {
       validateSupportIpv6(props.vpc);
     }
+
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
       cidrBlock: ipv4CidrBlock,
@@ -135,7 +144,7 @@ export class SubnetV2 extends Resource implements ISubnet {
       availabilityZone: props.availabilityZone,
     });
 
-    this.ipv4CidrBlock = subnet.attrCidrBlock;
+    this.ipv4CidrBlock = props.cidrBlock.cidr;
     this.ipv6CidrBlocks = subnet.attrIpv6CidrBlocks;
     this.subnetId = subnet.ref;
     this.availabilityZone = props.availabilityZone;
@@ -219,4 +228,22 @@ function validateSupportIpv6(vpc: IVpcV2) {
   } else {
     throw new Error('To use IPv6, the VPC must enable IPv6 support.');
   }
+}
+
+function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
+
+  const vpcCidrBlock = [vpc.ipv4CidrBlock];
+
+  for (const cidrs of vpc.secondaryCidrBlock) {
+    if(cidrs.cidrBlock) {
+    vpcCidrBlock.push(cidrs.cidrBlock);
+    }
+  }
+
+  const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
+
+  const subnetCidrBlock = new CidrBlock(cidrRange);
+  
+  return cidrs.some(vpcCidrBlock => vpcCidrBlock.containsCidr(subnetCidrBlock));
+
 }

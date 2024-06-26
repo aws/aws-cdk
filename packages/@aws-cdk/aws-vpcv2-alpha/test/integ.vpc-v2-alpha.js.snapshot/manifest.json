@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bb68c78eaa8463d388fb6745d71a4c2a7c3c4365c422c07f0af88315ffe8cfe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af7b52ab0210d9ab7eeafa6133a6509bcdb11e835a11574064df49596f551e51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -86,6 +86,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpcintegtest2SecondaryIp1E19DFFAD"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpcintegtest2SecondaryIp23EC83AC8"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsbubnetSubnet77337845",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsbubnetRouteTableF40F025B"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsbubnetRouteTableAssociationD6D083FA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/testsubnet/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnetSubnetDD417829"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/testsubnet/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnetRouteTable55223C61"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/testsubnet/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnetRouteTableAssociationC106676D"
           }
         ],
         "/aws-cdk-vpcv2-alpha/BootstrapVersion": [
