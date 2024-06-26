@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-pipe-target-redshift/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-redshift"
+      ],
+      "assertionStack": "integtest-pipe-target-redshift/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetredshiftDefaultTestDeployAssert9D699C44"
+    }
+  }
+}
