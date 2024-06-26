@@ -481,7 +481,7 @@ export class AccountPrincipal extends ArnPrincipal {
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
-    if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string' && !this.accountIdRegExp.test(accountId)) {
+    if ((!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') || !this.accountIdRegExp.test(accountId)) {
       throw new Error('accountId should be of type string and be composed of 12 digits');
     }
     this.principalAccount = accountId;
