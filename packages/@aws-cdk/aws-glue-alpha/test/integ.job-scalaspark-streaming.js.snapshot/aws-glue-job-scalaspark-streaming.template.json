@@ -120,7 +120,7 @@
       "Arn"
      ]
     },
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "OverrideScalaSparkStreamingJob598931ED": {
@@ -163,7 +163,7 @@
      "key": "value"
     },
     "Timeout": 15,
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   }
  },
