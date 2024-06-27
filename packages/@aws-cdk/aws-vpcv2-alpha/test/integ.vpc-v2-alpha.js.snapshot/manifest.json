@@ -97,10 +97,7 @@
         "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetSubnet77337845",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsbubnetSubnet77337845"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTable": [
@@ -112,10 +109,7 @@
         "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetRouteTableAssociationD6D083FA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsbubnetRouteTableAssociationD6D083FA"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsubnet/Subnet": [

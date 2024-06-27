@@ -264,4 +264,12 @@ export class CidrBlock {
     return (this.maxAddress() >= other.maxAddress()) &&
       (this.minAddress() <= other.minAddress());
   }
+
+  public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
+    const [start1, end1] = range1;
+    const [start2, end2] = range2;
+  
+    // Check if ranges overlap
+    return start1 <= end2 && start2 <= end1;
+  }
 }

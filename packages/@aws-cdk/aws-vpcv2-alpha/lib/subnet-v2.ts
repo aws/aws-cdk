@@ -5,7 +5,6 @@ import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, 
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock } from './util';
-//import { CidrBlock } from '../lib/util';
 
 export interface ICidr {
   readonly cidr: string;
@@ -130,7 +129,19 @@ export class SubnetV2 extends Resource implements ISubnet {
     if(!checkCidrRanges(props.vpc, props.cidrBlock.cidr)){
       throw new Error('CIDR block should be in the same VPC');
     };
-    //validateOverlappingCidrRanges(props.vpc, ipv4CidrBlock);
+
+
+    let overlap: boolean = false;
+    try{
+      overlap = validateOverlappingCidrRanges(props.vpc,  props.cidrBlock.cidr);
+    }
+    catch(e){
+      "No Subnets in VPC";
+    }
+
+    if (overlap){
+      throw new Error('CIDR block should not overlap with existing subnet blocks');
+    }
 
     //check whether VPC supports ipv6
     if (ipv6CidrBlock) {
@@ -247,3 +258,29 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
   return cidrs.some(vpcCidrBlock => vpcCidrBlock.containsCidr(subnetCidrBlock));
 
 }
+
+function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {
+
+  let allSubnets: ISubnet[] = vpc.selectSubnets().subnets;
+
+  const ipMap: [string, string][] = new Array();
+
+  const inputRange = new CidrBlock(ipv4CidrBlock);
+
+  const inputIpMap: [string, string] = [inputRange.minIp(), inputRange.maxIp()];
+
+  for (const subnet of allSubnets){
+    const cidrBlock = new CidrBlock(subnet.ipv4CidrBlock);
+    ipMap.push([cidrBlock.minIp(), cidrBlock.maxIp()]);
+  }
+
+  for(const range of ipMap) {
+    if (inputRange.rangesOverlap(range, inputIpMap)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+

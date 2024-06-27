@@ -16,6 +16,7 @@ import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, Ipv4Cidr } from '../lib/subnet-v2';
 
 
+
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
