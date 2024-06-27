@@ -256,7 +256,7 @@ export interface ResultConfiguration {
   /**
    * Encryption option used if enabled in S3
    *
-   * @default - SSE_S3 encrpytion is enabled with default encryption key
+   * @default - SSE_S3 encryption is enabled with default encryption key
    */
   readonly encryptionConfiguration?: EncryptionConfiguration;
 }

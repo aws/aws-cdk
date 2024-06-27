@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-appsync-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-appsync-target-integ"
+      ],
+      "assertionStack": "aws-appsync-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awsappsyncintegDefaultTestDeployAssert7E101DC4"
+    }
+  }
+}

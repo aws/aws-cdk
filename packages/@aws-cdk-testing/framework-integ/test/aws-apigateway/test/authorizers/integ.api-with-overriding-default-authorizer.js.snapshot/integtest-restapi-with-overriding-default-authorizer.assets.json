@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "d1b9f5b2f5a16dd3d551be97ea2814cf6d8f574c561523bdf07541d86d27934c": {
+      "source": {
+        "path": "integtest-restapi-with-overriding-default-authorizer.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d1b9f5b2f5a16dd3d551be97ea2814cf6d8f574c561523bdf07541d86d27934c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

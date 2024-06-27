@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
+import { FeatureFlags } from '../../../core';
 import * as cdk from '../../../core';
+import { S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED } from '../../../cx-api';
 import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 
@@ -133,6 +135,21 @@ export class BucketNotifications extends Construct {
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
+          ApplyNameTransformations: FeatureFlags.of(this).isEnabled(S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED),
+        },
+      });
+
+      // Add dependency on bucket policy if it exists to avoid race conditions
+      // S3 does not allow calling PutBucketPolicy and PutBucketNotification APIs at the same time
+      // See https://github.com/aws/aws-cdk/issues/27600
+      // Aspects are used here because bucket policy maybe added to construct after addition of notification resource.
+      const bucket = this.bucket;
+      const resource = this.resource;
+      cdk.Aspects.of(this).add({
+        visit(node: IConstruct) {
+          if (node === resource && bucket.policy) {
+            node.node.addDependency(bucket.policy);
+          }
         },
       });
     }

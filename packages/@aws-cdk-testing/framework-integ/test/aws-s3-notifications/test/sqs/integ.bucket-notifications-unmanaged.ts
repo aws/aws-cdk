@@ -5,7 +5,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 import * as constructs from 'constructs';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled': true,
+  },
+});
 
 const stack = new cdk.Stack(app, 'integ-sqs-bucket-notifications');
 
