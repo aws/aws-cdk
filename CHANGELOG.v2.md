@@ -2,19 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [2.147.2](https://github.com/aws/aws-cdk/compare/v2.147.1...v2.147.2) (2024-06-27)
+## [2.147.2](https://github.com/aws/aws-cdk/compare/v2.147.1...v2.147.2) (2024-06-27)
 
 
 ### Reverts
 
-* fix(core): overrideLogicalId validation ([#30695](https://github.com/aws/aws-cdk/issues/30695)) ([5d155d7](https://github.com/aws/aws-cdk/commit/5d155d796bb024b026045636692e64cfc738eac7)), closes [aws/aws-cdk#29708](https://github.com/aws/aws-cdk/issues/29708)
+* fix(core): overrideLogicalId validation ([#29708](https://github.com/aws/aws-cdk/pull/29708)) ([b196b13](https://github.com/aws/aws-cdk/commit/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d))
 
 ## [2.147.1](https://github.com/aws/aws-cdk/compare/v2.147.0...v2.147.1) (2024-06-21)
 
 
 ### Reverts
 
-* route53 CrossAccountZoneDelegationRecord fails at deployment time with imported `delegatedZone` ([#30440](https://github.com/aws/aws-cdk/issues/30440))" ([#30606](https://github.com/aws/aws-cdk/issues/30606)) ([69eb617](https://github.com/aws/aws-cdk/commit/69eb617b45b5c4e495901d367d85e1edeea57e69)), closes [#30600](https://github.com/aws/aws-cdk/issues/30600)
+* route53 CrossAccountZoneDelegationRecord fails at deployment time with imported `delegatedZone` ([#30440](https://github.com/aws/aws-cdk/issues/30440)) ([a3d9b10](https://github.com/aws/aws-cdk/commit/a3d9b10ad9036486961f74e852493aa9684cfdb4))
 
 ## [2.147.0](https://github.com/aws/aws-cdk/compare/v2.146.0...v2.147.0) (2024-06-20)
 
