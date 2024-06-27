@@ -883,7 +883,6 @@ export enum InstanceClass {
   /**
    * Graphics-optimized instances, 6th generation
    */
-
   GRAPHICS6 = 'graphics6',
 
   /**
