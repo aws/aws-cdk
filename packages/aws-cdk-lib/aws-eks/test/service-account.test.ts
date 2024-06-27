@@ -341,4 +341,92 @@ describe('service account', () => {
         .toThrowError(RangeError);
     });
   });
+
+  describe('Service Account with eks.IdentityType.POD_IDENTITY', () => {
+    test('default', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // should create an IAM role with correct assume role policy
+      t.hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            { Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'pods.eks.amazonaws.com' } },
+            { Action: ['sts:AssumeRole', 'sts:TagSession'], Effect: 'Allow', Principal: { Service: 'pods.eks.amazonaws.com' } },
+          ],
+        },
+      });
+      // should have a eks pod identity agent addon
+      t.hasResourceProperties('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+        ClusterName: { Ref: 'Cluster9EE0221C' },
+      });
+      // should have pod identity association
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        ClusterName: { Ref: 'Cluster9EE0221C' },
+        Namespace: 'default',
+        RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
+        ServiceAccount: 'stackmyserviceaccount58b9529e',
+      });
+      // should not create OpenIdConnectProvider
+      t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
+    });
+    test('throw error when adding service account to Fargate cluster', () => {
+      // GIVEN
+      const { cluster } = testFixtureCluster(undefined, undefined, { isFargate: true });
+
+      // WHEN
+      expect(() => cluster.addServiceAccount('MyServiceAccount', {
+        identityType: eks.IdentityType.POD_IDENTITY,
+      })).toThrow(
+        'Pod Identity is not supported in Fargate. Use IRSA identity type instead.',
+      );
+    });
+
+  });
+  describe('Service Account with eks.IdentityType.IRSA', () => {
+    test('default', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.IRSA,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // should create an IAM role with correct assume role policy
+      t.hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRoleWithWebIdentity',
+              Condition: { StringEquals: { 'Fn::GetAtt': ['MyServiceAccountConditionJson1ED3BC54', 'Value'] } },
+              Effect: 'Allow',
+              Principal: { Federated: { Ref: 'ClusterOpenIdConnectProviderE7EB0530' } },
+            },
+          ],
+        },
+      });
+
+      // should create an OpenIdConnectProvider
+      t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 1);
+      // should not have any eks pod identity agent addon
+      t.resourcePropertiesCountIs('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+      }, 0);
+      // should not have pod identity association
+      t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
+    });
+  });
 });
