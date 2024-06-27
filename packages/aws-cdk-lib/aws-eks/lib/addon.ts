@@ -28,7 +28,10 @@ export interface AddonProps {
    */
   readonly addonName: string;
   /**
-   * Version of the Add-On.
+   * Version of the Add-On. You can check all available versions with describe-addon-versons.
+   * For example, this lists all available versions for the `eks-pod-identity-agent` addon:
+   * $ aws eks describe-addon-versions --addon-name eks-pod-identity-agent \
+   * --query 'addons[*].addonVersions[*].addonVersion'
    *
    * @default the latest version.
    */

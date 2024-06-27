@@ -33,6 +33,28 @@ describe('Addon', () => {
       },
     });
   });
+  test('creates a new Addon with version', () => {
+    // GIVEN
+    const addonVersion = 'v1.3.0-eksbuild.1';
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithVersion', {
+      addonName: 'test-addon',
+      addonVersion,
+      cluster,
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      AddonVersion: addonVersion,
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+    });
+  });
+
   test('creates an Addon from attributes', () => {
     // GIVEN
     const addonName = 'test-addon';
