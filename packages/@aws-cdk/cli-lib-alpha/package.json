@@ -43,7 +43,7 @@
     }
   },
   "scripts": {
-    "attribute": "node-bundle validate --external=fsevents:optional --entrypoint=lib/index.js --fix --dont-attribute \"^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$|^aws-cdk$\"",
+    "attribute": "node-bundle validate --external=fsevents:optional --entrypoint=lib/index.js --fix --dont-attribute \"^@aws-cdk/|^cdk-cli-wrapper$|^aws-cdk$\"",
     "awslint": "cdk-awslint",
     "build": "cdk-build",
     "build+extract": "yarn build && yarn rosetta:extract",

@@ -27,9 +27,6 @@ jobs:
               - packages/aws-cdk/bin/**
               - packages/aws-cdk/lib/**
               - packages/aws-cdk/test/**
-              - packages/cdk-assets/bin/**
-              - packages/cdk-assets/lib/**
-              - packages/cdk-assets/test/**
               - packages/aws-cdk-lib/cloud-assembly-schema/lib/**
               - packages/aws-cdk-lib/cloud-assembly-schema/schema/**
               - packages/aws-cdk-lib/cloud-assembly-schema/scripts/**

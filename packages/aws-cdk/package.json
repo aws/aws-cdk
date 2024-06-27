@@ -24,7 +24,7 @@
     "gen": "./generate.sh",
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test",
-    "attributions:update": "yarn node-bundle validate --entrypoint lib/index.ts --dont-attribute \"^@aws-cdk/|^cdk-assets|^cdk-cli-wrapper$\" --fix"
+    "attributions:update": "yarn node-bundle validate --entrypoint lib/index.ts --dont-attribute \"^@aws-cdk/|^cdk-cli-wrapper$\" --fix"
   },
   "cdk-build": {
     "post": [
@@ -48,7 +48,7 @@
         "0BSD",
         "MIT OR Apache-2.0"
       ],
-      "dontAttribute": "^@aws-cdk/|^@cdklabs/|^cdk-assets$|^cdk-cli-wrapper$",
+      "dontAttribute": "^@aws-cdk/|^@cdklabs/|^cdk-cli-wrapper$",
       "test": "bin/cdk --version",
       "entryPoints": [
         "lib/index.js"
@@ -71,6 +71,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
     "@types/jest": "^29.5.12",
+    "@types/mime": "^2.0.3",
     "@types/mockery": "^1.4.33",
     "@types/promptly": "^3.0.5",
     "@types/semver": "^7.5.8",
@@ -104,7 +105,7 @@
     "archiver": "^5.3.2",
     "aws-sdk": "^2.1648.0",
     "camelcase": "^6.3.0",
-    "cdk-assets": "0.0.0",
+    "cdk-assets": "^2.147.1",
     "cdk-from-cfn": "^0.162.0",
     "chalk": "^4",
     "chokidar": "^3.6.0",
