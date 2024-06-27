@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.147.2](https://github.com/aws/aws-cdk/compare/v2.147.1...v2.147.2) (2024-06-27)
+
+
+### Reverts
+
+* fix(core): overrideLogicalId validation ([#30695](https://github.com/aws/aws-cdk/issues/30695)) ([5d155d7](https://github.com/aws/aws-cdk/commit/5d155d796bb024b026045636692e64cfc738eac7)), closes [aws/aws-cdk#29708](https://github.com/aws/aws-cdk/issues/29708)
+
 ## [2.147.1](https://github.com/aws/aws-cdk/compare/v2.147.0...v2.147.1) (2024-06-21)
 
 
