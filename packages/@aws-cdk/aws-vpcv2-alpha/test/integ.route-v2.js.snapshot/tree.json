@@ -1654,39 +1654,19 @@
             "id": "testNATgw",
             "path": "aws-cdk-routev2-privatenatgw-alpha/testNATgw",
             "children": {
-              "EIP": {
-                "id": "EIP",
-                "path": "aws-cdk-routev2-privatenatgw-alpha/testNATgw/EIP",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
-                  "aws:cdk:cloudformation:props": {
-                    "domain": {
-                      "Fn::GetAtt": [
-                        "natgwpriv081A7D93",
-                        "VpcId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                  "version": "0.0.0"
-                }
-              },
               "NATGateway": {
                 "id": "NATGateway",
                 "path": "aws-cdk-routev2-privatenatgw-alpha/testNATgw/NATGateway",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                   "aws:cdk:cloudformation:props": {
-                    "allocationId": {
-                      "Fn::GetAtt": [
-                        "testNATgwEIP1C260FAD",
-                        "AllocationId"
-                      ]
-                    },
                     "connectivityType": "private",
-                    "privateIpAddress": "10.0.0.0/28",
+                    "privateIpAddress": "10.0.0.42",
+                    "secondaryPrivateIpAddresses": [
+                      "10.0.0.43",
+                      "10.0.0.44",
+                      "10.0.0.45"
+                    ],
                     "subnetId": {
                       "Ref": "natgwprivSubnetE547C5A0"
                     }
@@ -2388,7 +2368,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.0.128.0/17",
+                    "cidrBlock": "10.128.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true
                   }
@@ -2444,7 +2424,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "availabilityZone": "us-east-1a",
-                    "cidrBlock": "10.0.128.128/24",
+                    "cidrBlock": "10.128.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
                         "vpcpcuser2935CC987",
@@ -2504,32 +2484,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCPeeringConnection",
                   "aws:cdk:cloudformation:props": {
-                    "peerRoleArn": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            "Ref": "AWS::Partition"
-                          },
-                          ":ec2:",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          ":",
-                          {
-                            "Ref": "AWS::AccountId"
-                          },
-                          ":vpc/",
-                          {
-                            "Fn::GetAtt": [
-                              "vpcpcuser2935CC987",
-                              "VpcId"
-                            ]
-                          }
-                        ]
-                      ]
-                    },
                     "peerVpcId": {
                       "Fn::GetAtt": [
                         "vpcpcuser2935CC987",

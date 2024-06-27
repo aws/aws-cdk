@@ -33,7 +33,7 @@ const stacks: {[id: string] : cdk.Stack} = {
   'natgw_priv': new cdk.Stack(app, 'aws-cdk-routev2-privatenatgw-alpha', {stackName: 'NatGwPrivVpc'}),
   'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', {stackName: 'NetworkInterfaceVpc'}),
   'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}), // failing
-  'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}), // failing
+  'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}),
   'dynamodb': new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', {stackName: 'DynamodbEndpointVpc'}),
 };
 
@@ -77,18 +77,7 @@ for (const stackName in stacks) {
 }
 
 const user2Vpc = new vpc_v2.VpcV2(stacks.vpcpc, 'vpcpc-user2', {
-  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.128.0/17'),
-});
-const user2routeTable = new RouteTable(stacks.vpcpc, 'routetable-user2', {
-  vpcId: user2Vpc.vpcId,
-});
-
-new SubnetV2(stacks.vpcpc, 'vpcpcSubnet-2', {
-  vpc: user2Vpc,
-  availabilityZone: 'us-west-1a',
-  cidrBlock: new Ipv4Cidr('10.0.128.128/24'),
-  subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-  routeTable: user2routeTable,
+  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.128.0.0/16'),
 });
 
 const carrierGw = new CarrierGateway(stacks.cgw, 'testCGW', {
@@ -180,7 +169,6 @@ new Route(stacks.tgw, 'testTransitGWRoute', {
 const vpcPeerConn = new VpcPeeringConnection(stacks.vpcpc, 'testVPCPC', {
   vpcId: vpcs.vpcpc.vpcId,
   peerVpcId: user2Vpc.vpcId,
-  peerRoleArn: user2Vpc.vpcArn,
 });
 new Route(stacks.vpcpc, 'testPeerconRoute', {
   routeTable: routeTables.vpcpc,

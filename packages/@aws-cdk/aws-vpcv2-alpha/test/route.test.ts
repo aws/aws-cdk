@@ -529,4 +529,132 @@ describe('EC2 Routing', () => {
     });
   });
 
+  test('VPC Peer Connection route', () => {
+    // Set up second VPC
+    const myVpc2 = new vpc.VpcV2(stack, 'TestVpc2', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.128.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6()],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    // Create VPC Peer Connection
+    const vpcPeerConnection = new route.VpcPeeringConnection(stack, 'TestVPCPeerConn', {
+      vpcId: myVpc.vpcId,
+      peerVpcId: myVpc2.vpcId,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: vpcPeerConnection,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // VPC Peer Connection should be in stack
+        TestVPCPeerConnVPCPeerConnectionFF2845D4: {
+          Type: 'AWS::EC2::VPCPeeringConnection',
+          Properties: {
+            PeerVpcId: {
+              'Fn::GetAtt': [
+                'TestVpc275152919',
+                'VpcId',
+              ],
+            },
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678',
+                'VpcId',
+              ],
+            },
+          },
+        },
+        // Route linking the two VPCs should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            RouteTableId: {
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C',
+                'RouteTableId',
+              ],
+            },
+            VpcPeeringConnectionId: {
+              'Fn::GetAtt': [
+                'TestVPCPeerConnVPCPeerConnectionFF2845D4',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('VPC Peer Connection route many attributes', () => {
+    // Set up second VPC
+    const myVpc2 = new vpc.VpcV2(stack, 'TestVpc2', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.128.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6()],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    // Create VPC Peer Connection
+    const vpcPeerConnection = new route.VpcPeeringConnection(stack, 'TestVPCPeerConn', {
+      vpcId: myVpc.vpcId,
+      peerVpcId: myVpc2.vpcId,
+      peerOwnerId: '12345678',
+      peerRegion: 'us-east-3',
+      peerRoleArn: 'arn:aws:iam::account:root',
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: vpcPeerConnection,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // VPC Peer Connection should be in stack
+        TestVPCPeerConnVPCPeerConnectionFF2845D4: {
+          Type: 'AWS::EC2::VPCPeeringConnection',
+          Properties: {
+            PeerOwnerId: '12345678',
+            PeerRegion: 'us-east-3',
+            PeerRoleArn: 'arn:aws:iam::account:root',
+            PeerVpcId: {
+              'Fn::GetAtt': [
+                'TestVpc275152919',
+                'VpcId',
+              ],
+            },
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678',
+                'VpcId',
+              ],
+            },
+          },
+        },
+        // Route linking the two VPCs should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            RouteTableId: {
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C',
+                'RouteTableId',
+              ],
+            },
+            VpcPeeringConnectionId: {
+              'Fn::GetAtt': [
+                'TestVPCPeerConnVPCPeerConnectionFF2845D4',
+                'Id',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
 });

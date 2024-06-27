@@ -588,7 +588,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cee0e52172f804d87c334e435889c9111fdf9441467344dd33dfe999ad5e2597.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0aa33db1b8994015d3841ab12e1a0ea5f3bdfb3bc8e1e3dbe5bc1d426fb241cc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -633,12 +633,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "natgwprivSubnetRouteTableAssociation9E115869"
-          }
-        ],
-        "/aws-cdk-routev2-privatenatgw-alpha/testNATgw/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "testNATgwEIP1C260FAD"
           }
         ],
         "/aws-cdk-routev2-privatenatgw-alpha/testNATgw/NATGateway": [
@@ -867,7 +861,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8e33faa0fa3f789960cdada961a52b078452e6fedccdd631d1009946ba304b9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/77911d2110068ae18384da198867478ab672e37fa0b25f435721e5dbc37e4c12.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1020,13 +1014,19 @@
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "dynamodbSubnet81957A26"
+            "data": "dynamodbSubnet81957A26",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "dynamodbSubnetRouteTableAssociationC38B30F3"
+            "data": "dynamodbSubnetRouteTableAssociationC38B30F3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/testDynamoEndpoint/Resource": [

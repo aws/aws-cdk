@@ -4,41 +4,123 @@ import { Construct, IDependable } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
 
 export interface IRouteTarget {
+  /**
+   * The type of router used in the route.
+   */
   readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
   readonly routerId: string;
 }
 
 export interface CarrierGatewayProps {
+  /**
+   * The ID of the VPC associated with the carrier gateway.
+   */
   readonly vpcId: string;
 }
 
 export interface EgressOnlyInternetGatewayProps {
+  /**
+   * The ID of the VPC for which to create the egress-only internet gateway.
+   */
   readonly vpcId: string;
 }
 
 export interface InternetGatewayProps {
+  /**
+   * The ID of the VPC for which to create the internet gateway.
+   */
   readonly vpcId: string;
 }
 
 export interface VPNGatewayProps {
+  /**
+   * The type of VPN connection the virtual private gateway supports.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
+   */
   readonly type: string;
+
+  /**
+   * The ID of the VPC for which to create the VPN gateway.
+   */
   readonly vpcId: string;
+
+  /**
+   * The private Autonomous System Number (ASN) for the Amazon side of a BGP session.
+   */
   readonly amazonSideAsn?: number;
 }
 
 export interface NatGatewayProps {
+  /**
+   * The subnet in which the NAT gateway is located.
+   */
   readonly subnet: ISubnet;
+
+  /**
+   * The ID of the VPC in which the NAT gateway is located.
+   */
   readonly vpcId?: string;
+
+  /**
+   * [Public NAT gateway only] The allocation ID of the Elastic IP address that's
+   * associated with the NAT gateway. This property is required for a public NAT 
+   * gateway and cannot be specified with a private NAT gateway.
+   */
   readonly allocationId?: string;
+
+  /**
+   * Indicates whether the NAT gateway supports public or private connectivity.
+   * @default public
+   */
   readonly connectivityType?: string;
+
+  /**
+   * The maximum amount of time to wait (in seconds) before forcibly releasing the 
+   * IP addresses if connections are still in progress.
+   * @default 350
+   */
   readonly maxDrainDurationSeconds?: number;
+
+  /**
+   * The private IPv4 address to assign to the NAT gateway. If you don't provide an
+   * address, a private IPv4 address will be automatically assigned.
+   */
   readonly privateIpAddress?: string;
+
+  /**
+   * Secondary EIP allocation IDs.
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
+   */
   readonly secondaryAllocationIds?: string[];
+
+  /**
+   * [Private NAT gateway only] The number of secondary private IPv4 addresses you 
+   * want to assign to the NAT gateway.
+   * 
+   * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be 
+   * set at the same time.
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
+   */
   readonly secondaryPrivateIpAddressCount?: number;
+
+  /**
+   * Secondary private IPv4 addresses.
+   * 
+   * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be
+   * set at the same time.
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
+   */
   readonly secondaryPrivateIpAddresses?: string[];
 }
 
 export interface NetworkInterfaceProps {
+  /**
+   * The subnet to associate with the network interface.
+   */
   readonly subnet: ISubnet;
 }
 
@@ -47,9 +129,37 @@ export interface TransitGatewayProps {
 }
 
 export interface VpcPeeringConnectionProps {
+  /**
+   * The ID of the VPC.
+   */
   readonly vpcId: string;
+
+  /**
+   * The ID of the VPC with which you are creating the VPC peering connection. You must
+   * specify this parameter in the request.
+   */
   readonly peerVpcId: string;
-  readonly peerRoleArn: string;
+
+  /**
+   * The AWS account ID of the owner of the accepter VPC.
+   * @default - Your AWS account ID
+   */
+  readonly peerOwnerId?: string;
+
+  /**
+   * The Region code for the accepter VPC, if the accepter VPC is located in a Region 
+   * other than the Region in which you make the request.
+   * @default - The Region in which you make the request
+   */
+  readonly peerRegion?: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the VPC peer role for the peering connection in
+   * another AWS account.
+   * 
+   * This is required when you are peering a VPC in a different AWS account.
+   */
+  readonly peerRoleArn?: string;
 }
 
 export class CarrierGateway extends Resource implements IRouteTarget {
@@ -215,7 +325,6 @@ export class TransitGateway extends Resource implements IRouteTarget {
 export class VpcPeeringConnection extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
-  public readonly peerRoleArn: string;
 
   public readonly resource: CfnVPCPeeringConnection;
 
@@ -225,35 +334,47 @@ export class VpcPeeringConnection extends Resource implements IRouteTarget {
     this.routerType = RouterType.VPC_PEERING_CONNECTION;
 
     this.resource = new CfnVPCPeeringConnection(this, 'VPCPeerConnection', {
-      peerVpcId: props.peerVpcId,
-      vpcId: props.vpcId,
-      peerRoleArn: props.peerRoleArn,
+      ...props,
     });
 
     this.routerId = this.resource.attrId;
-    this.peerRoleArn = props.peerRoleArn;
   }
 }
 
 export interface IRouteV2 {
+  /**
+   * The ID of the route table for the route.
+   */
   readonly routeTable: IRouteTable;
+
+  /**
+   * The IPv4 or IPv6 CIDR block used for the destination match.
+   * 
+   * Routing decisions are based on the most specific match.
+   */
   readonly destination: IIpAddresses;
+
+  /**
+   * The gateway or endpoint targeted by the route.
+   */
   readonly target: IRouteTarget | IVpcEndpoint;
 }
 
 export interface RouteProps {
   /**
-   * The route table this route belongs to
+   * The ID of the route table for the route.
    */
   readonly routeTable: IRouteTable;
 
   /**
-   * The IP address used for the destination match
+   * The IPv4 or IPv6 CIDR block used for the destination match.
+   * 
+   * Routing decisions are based on the most specific match.
    */
   readonly destination: IIpAddresses;
 
   /**
-   * The target gateway or endpoint of the route
+   * The gateway or endpoint targeted by the route.
    */
   readonly target: IRouteTarget | IVpcEndpoint;
 }
@@ -309,6 +430,10 @@ export class Route extends Resource implements IRouteV2 {
   }
 }
 
+/**
+ * Creates a Route Table
+ * @resource AWS::EC2::RouteTable
+ */
 export class RouteTable extends Resource implements IRouteTable, IDependable {
   public readonly routeTableId: string;
 
@@ -327,7 +452,6 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
 
 export interface RouteTableProps {
   readonly vpcId: string;
-  // readonly routes?: IRouteV2[];
 }
 
 function routerTypeToPropName(routerType: RouterType) {

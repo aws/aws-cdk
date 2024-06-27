@@ -75,31 +75,16 @@
     "natgwprivSecondaryIp18E501E40"
    ]
   },
-  "testNATgwEIP1C260FAD": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": {
-     "Fn::GetAtt": [
-      "natgwpriv081A7D93",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "natgwprivSubnetRouteTableAssociation9E115869"
-   ]
-  },
   "testNATgwNATGateway1533420D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "testNATgwEIP1C260FAD",
-      "AllocationId"
-     ]
-    },
     "ConnectivityType": "private",
-    "PrivateIpAddress": "10.0.0.0/28",
+    "PrivateIpAddress": "10.0.0.42",
+    "SecondaryPrivateIpAddresses": [
+     "10.0.0.43",
+     "10.0.0.44",
+     "10.0.0.45"
+    ],
     "SubnetId": {
      "Ref": "natgwprivSubnetE547C5A0"
     }
