@@ -20,6 +20,17 @@
     }
    }
   },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "dynamodbC0A56799",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "dynamodbSubnet81957A26": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -47,25 +58,14 @@
     "dynamodbSecondaryIp1747F9BD8"
    ]
   },
-  "dynamodbSubnetRouteTableC5CA98C1": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "dynamodbC0A56799",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "dynamodbSecondaryIp1747F9BD8"
-   ]
-  },
   "dynamodbSubnetRouteTableAssociationC38B30F3": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "dynamodbSubnetRouteTableC5CA98C1"
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "dynamodbSubnet81957A26"
@@ -75,23 +75,15 @@
     "dynamodbSecondaryIp1747F9BD8"
    ]
   },
-  "TestRoottableRouteTableFA28AA38": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "dynamodbC0A56799",
-      "VpcId"
-     ]
-    }
-   }
-  },
   "testDynamoEndpoint03D5BDE5": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
     "RouteTableIds": [
      {
-      "Ref": "dynamodbSubnetRouteTableC5CA98C1"
+      "Fn::GetAtt": [
+       "TestRoottableRouteTableFA28AA38",
+       "RouteTableId"
+      ]
      }
     ],
     "ServiceName": {

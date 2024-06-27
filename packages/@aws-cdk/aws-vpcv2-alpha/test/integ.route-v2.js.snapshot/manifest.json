@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/414b9f73e8de64fd5cc2fc9746acc06ff5424434b666e1ca2a1a7c006e6c4fdc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aa2a7845305c896cd5471d7153b6c601a89f397d1416dfd0d9b394910b35df5f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -47,28 +47,22 @@
             "data": "defaultSecondaryIp18DFC7C62"
           }
         ],
+        "/aws-cdk-routev2-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-alpha/defaultSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "defaultSubnetDFB3A3B6"
           }
         ],
-        "/aws-cdk-routev2-alpha/defaultSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "defaultSubnetRouteTable76D6FE5A"
-          }
-        ],
         "/aws-cdk-routev2-alpha/defaultSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "defaultSubnetRouteTableAssociationF1D85D29"
-          }
-        ],
-        "/aws-cdk-routev2-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-alpha/BootstrapVersion": [
@@ -103,7 +97,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/159ccf3b40cd39e42c6ce59ba2c5d3526653905434e46197bb0ed6096d469c00.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2fb2854eb1c08510e470ac52cf3653de167c71b7fdd5d0082fcb694c543fe4c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -132,28 +126,22 @@
             "data": "cgwSecondaryIp1CDE9B91C"
           }
         ],
+        "/aws-cdk-routev2-carriergw-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-carriergw-alpha/cgwSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "cgwSubnetADF05416"
           }
         ],
-        "/aws-cdk-routev2-carriergw-alpha/cgwSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "cgwSubnetRouteTableCDD8A9C7"
-          }
-        ],
         "/aws-cdk-routev2-carriergw-alpha/cgwSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "cgwSubnetRouteTableAssociation8151D808"
-          }
-        ],
-        "/aws-cdk-routev2-carriergw-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-carriergw-alpha/testCGW/CarrierGateway": [
@@ -200,7 +188,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b52d73329a49bdfdce0817631805d707055686017436ccf86c8768e13430a56.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c71112f53e809a0dcf9d10e9a9bdae46a752d4ccea012f9d655162faa7a51654.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -229,28 +217,22 @@
             "data": "eigwSecondaryIp17297DCF4"
           }
         ],
+        "/aws-cdk-routev2-egressonlyigw-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-egressonlyigw-alpha/eigwSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "eigwSubnetCC28B9F9"
           }
         ],
-        "/aws-cdk-routev2-egressonlyigw-alpha/eigwSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "eigwSubnetRouteTableE10EAE87"
-          }
-        ],
         "/aws-cdk-routev2-egressonlyigw-alpha/eigwSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "eigwSubnetRouteTableAssociation887F4A97"
-          }
-        ],
-        "/aws-cdk-routev2-egressonlyigw-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-egressonlyigw-alpha/testEOIGW/EIGW": [
@@ -297,7 +279,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23c46f188783ce742a4b28254367415801dcf0be25001ed06ee3173047d9fcd2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5d610bcfe8fa8ab3042171d0b776abe14393889d3a4ca2e40fa1993bcdebc3f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -326,28 +308,22 @@
             "data": "igwSecondaryIp113BFE81F"
           }
         ],
+        "/aws-cdk-routev2-igw-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-igw-alpha/igwSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "igwSubnetF238E402"
           }
         ],
-        "/aws-cdk-routev2-igw-alpha/igwSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "igwSubnetRouteTable117017C8"
-          }
-        ],
         "/aws-cdk-routev2-igw-alpha/igwSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "igwSubnetRouteTableAssociationA48C27F3"
-          }
-        ],
-        "/aws-cdk-routev2-igw-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-igw-alpha/testIGW/IGW": [
@@ -400,7 +376,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a4a47590a34f4a686dacbed20d14c338b649b35f12479d3b1ccfc733d80fcc1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/37f116aa07551cae63b05f373610dbc0f6e548951650e2fb82662743652382d6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -429,28 +405,22 @@
             "data": "vpgwSecondaryIp19894D0A3"
           }
         ],
+        "/aws-cdk-routev2-virtualprivategw-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-virtualprivategw-alpha/vpgwSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "vpgwSubnet5E7F36AD"
           }
         ],
-        "/aws-cdk-routev2-virtualprivategw-alpha/vpgwSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "vpgwSubnetRouteTableB036C8CA"
-          }
-        ],
         "/aws-cdk-routev2-virtualprivategw-alpha/vpgwSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "vpgwSubnetRouteTableAssociation49921F90"
-          }
-        ],
-        "/aws-cdk-routev2-virtualprivategw-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-virtualprivategw-alpha/testVPGW/IGW": [
@@ -486,126 +456,217 @@
       },
       "displayName": "aws-cdk-routev2-virtualprivategw-alpha"
     },
-    "aws-cdk-routev2-natgw-alpha.assets": {
+    "aws-cdk-routev2-publicnatgw-alpha.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-routev2-natgw-alpha.assets.json",
+        "file": "aws-cdk-routev2-publicnatgw-alpha.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-routev2-natgw-alpha": {
+    "aws-cdk-routev2-publicnatgw-alpha": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-routev2-natgw-alpha.template.json",
+        "templateFile": "aws-cdk-routev2-publicnatgw-alpha.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db1550277408ee3215c0800fd9c716384a7f886c1c89ef5260ab6f250ae82b13.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7104b785f132684c63e9737546a1a1bb4c409aa153f4478a0f0b286876995a7e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-routev2-natgw-alpha.assets"
+          "aws-cdk-routev2-publicnatgw-alpha.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         },
-        "stackName": "NatGwVpc"
+        "stackName": "NatGwPubVpc"
       },
       "dependencies": [
-        "aws-cdk-routev2-natgw-alpha.assets"
+        "aws-cdk-routev2-publicnatgw-alpha.assets"
       ],
       "metadata": {
-        "/aws-cdk-routev2-natgw-alpha/natgw/Resource": [
+        "/aws-cdk-routev2-publicnatgw-alpha/natgw_pub/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "natgw9631C9BB"
+            "data": "natgwpub2FB85986"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/natgw/SecondaryIp1": [
+        "/aws-cdk-routev2-publicnatgw-alpha/natgw_pub/SecondaryIp1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "natgwSecondaryIp196041245"
+            "data": "natgwpubSecondaryIp1B0697165"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/natgwSubnet/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "natgwSubnetD255A267"
-          }
-        ],
-        "/aws-cdk-routev2-natgw-alpha/natgwSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "natgwSubnetRouteTable74636743"
-          }
-        ],
-        "/aws-cdk-routev2-natgw-alpha/natgwSubnet/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "natgwSubnetRouteTableAssociationF02D8461"
-          }
-        ],
-        "/aws-cdk-routev2-natgw-alpha/TestRoottable/RouteTable": [
+        "/aws-cdk-routev2-publicnatgw-alpha/TestRoottable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/testNATgw/EIP": [
+        "/aws-cdk-routev2-publicnatgw-alpha/natgw_pubSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testNATgwEIP1C260FAD"
+            "data": "natgwpubSubnet79D316E5"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/testNATgw/NATGateway": [
+        "/aws-cdk-routev2-publicnatgw-alpha/natgw_pubSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testNATgwNATGateway1533420D"
+            "data": "natgwpubSubnetRouteTableAssociation019CE26A"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/testNATgwIGW/IGW": [
+        "/aws-cdk-routev2-publicnatgw-alpha/testNATgwIGW/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testNATgwIGW6AC97E9A"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/testnatgwigwRoute/Route": [
+        "/aws-cdk-routev2-publicnatgw-alpha/testnatgwigwRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testnatgwigwRouteE8D2BF39"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/testnatgwigwRoute/GWAttachment": [
+        "/aws-cdk-routev2-publicnatgw-alpha/testnatgwigwRoute/GWAttachment": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testnatgwigwRouteGWAttachmentB8E1033C"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/testNATGWRoute/Route": [
+        "/aws-cdk-routev2-publicnatgw-alpha/testNATgw/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testNATgwEIP1C260FAD"
+          }
+        ],
+        "/aws-cdk-routev2-publicnatgw-alpha/testNATgw/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testNATgwNATGateway1533420D"
+          }
+        ],
+        "/aws-cdk-routev2-publicnatgw-alpha/testNATGWRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testNATGWRoute7A26EC80"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/BootstrapVersion": [
+        "/aws-cdk-routev2-publicnatgw-alpha/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-routev2-natgw-alpha/CheckBootstrapVersion": [
+        "/aws-cdk-routev2-publicnatgw-alpha/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-routev2-natgw-alpha"
+      "displayName": "aws-cdk-routev2-publicnatgw-alpha"
+    },
+    "aws-cdk-routev2-privatenatgw-alpha.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-routev2-privatenatgw-alpha.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-routev2-privatenatgw-alpha": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-routev2-privatenatgw-alpha.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cee0e52172f804d87c334e435889c9111fdf9441467344dd33dfe999ad5e2597.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-routev2-privatenatgw-alpha.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "NatGwPrivVpc"
+      },
+      "dependencies": [
+        "aws-cdk-routev2-privatenatgw-alpha.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-routev2-privatenatgw-alpha/natgw_priv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "natgwpriv081A7D93"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/natgw_priv/SecondaryIp1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "natgwprivSecondaryIp18E501E40"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/natgw_privSubnet/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "natgwprivSubnetE547C5A0"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/natgw_privSubnet/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "natgwprivSubnetRouteTableAssociation9E115869"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/testNATgw/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testNATgwEIP1C260FAD"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/testNATgw/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testNATgwNATGateway1533420D"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/testNATGWRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testNATGWRoute7A26EC80"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-routev2-privatenatgw-alpha/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-routev2-privatenatgw-alpha"
     },
     "aws-cdk-routev2-networkif-alpha.assets": {
       "type": "cdk:asset-manifest",
@@ -624,7 +685,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f24962965710e697840c8dbf32fde6c7a5b06c3672b04a9cac4ae28ec8113640.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f62fb6dc2af0fbd98d8f170cd8bc3e0387d8421ece1f3d6b3f1e4c2fbda8444.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -653,28 +714,22 @@
             "data": "nifSecondaryIp15ACDD6AB"
           }
         ],
+        "/aws-cdk-routev2-networkif-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-networkif-alpha/nifSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "nifSubnetAEB60456"
           }
         ],
-        "/aws-cdk-routev2-networkif-alpha/nifSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "nifSubnetRouteTable54F701C7"
-          }
-        ],
         "/aws-cdk-routev2-networkif-alpha/nifSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "nifSubnetRouteTableAssociationE4036B9F"
-          }
-        ],
-        "/aws-cdk-routev2-networkif-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-networkif-alpha/testNWIF/NetworkInterface": [
@@ -721,7 +776,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca3654458b31e6adf5fceaff1dd2e217a15198105d02739d779f3f0cf9ebb75f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/680dbdee69432cdbb74dc36c1c7662759f78b26fbf469645a07a37c993b05a41.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -750,28 +805,22 @@
             "data": "tgwSecondaryIp1BF847949"
           }
         ],
+        "/aws-cdk-routev2-transitgw-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-transitgw-alpha/tgwSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tgwSubnet9ACC0C41"
           }
         ],
-        "/aws-cdk-routev2-transitgw-alpha/tgwSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "tgwSubnetRouteTableE925C2DB"
-          }
-        ],
         "/aws-cdk-routev2-transitgw-alpha/tgwSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tgwSubnetRouteTableAssociation4C4F1286"
-          }
-        ],
-        "/aws-cdk-routev2-transitgw-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-transitgw-alpha/testTGW/TGW": [
@@ -818,7 +867,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/642cc4654f9f42e76f5c5c8e6e68bdb74bca9c030f634df8cbd9c1f8a446e552.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8e33faa0fa3f789960cdada961a52b078452e6fedccdd631d1009946ba304b9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -847,16 +896,16 @@
             "data": "vpcpcSecondaryIp1C735895D"
           }
         ],
+        "/aws-cdk-routev2-vpcpeerconnection-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "vpcpcSubnet1DD6CE35"
-          }
-        ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "vpcpcSubnetRouteTable06C8C89A"
           }
         ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/RouteTableAssociation": [
@@ -871,28 +920,22 @@
             "data": "vpcpcuser2935CC987"
           }
         ],
+        "/aws-cdk-routev2-vpcpeerconnection-alpha/routetable-user2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "routetableuser2RouteTable6163C8F3"
+          }
+        ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet-2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "vpcpcSubnet2Subnet8BA063A9"
           }
         ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet-2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "vpcpcSubnet2RouteTable684B0EAB"
-          }
-        ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet-2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "vpcpcSubnet2RouteTableAssociationC9082420"
-          }
-        ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/testVPCPC/VPCPeerConnection": [
@@ -939,7 +982,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a1ab4bdb726213697980172bcca21b351b1ea1ccec5258913dcc1513ae34236.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b386cf6234dab4fa80e850be060626248a04f992115c741f2b286fe3e2e89062.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -968,28 +1011,22 @@
             "data": "dynamodbSecondaryIp1747F9BD8"
           }
         ],
+        "/aws-cdk-routev2-dynamodbendpoint-alpha/TestRoottable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRoottableRouteTableFA28AA38"
+          }
+        ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "dynamodbSubnet81957A26"
           }
         ],
-        "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "dynamodbSubnetRouteTableC5CA98C1"
-          }
-        ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/dynamodbSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "dynamodbSubnetRouteTableAssociationC38B30F3"
-          }
-        ],
-        "/aws-cdk-routev2-dynamodbendpoint-alpha/TestRoottable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/testDynamoEndpoint/Resource": [
@@ -1492,6 +1529,54 @@
         ]
       },
       "displayName": "integtest-model-9/DefaultTest/DeployAssert"
+    },
+    "integtestmodel10DefaultTestDeployAssert55B15BB8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestmodel10DefaultTestDeployAssert55B15BB8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestmodel10DefaultTestDeployAssert55B15BB8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestmodel10DefaultTestDeployAssert55B15BB8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestmodel10DefaultTestDeployAssert55B15BB8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestmodel10DefaultTestDeployAssert55B15BB8.assets"
+      ],
+      "metadata": {
+        "/integtest-model-10/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-model-10/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-model-10/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

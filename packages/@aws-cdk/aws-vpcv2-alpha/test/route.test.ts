@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
 import { Template } from 'aws-cdk-lib/assertions';
 
@@ -46,7 +46,6 @@ describe('EC2 Routing', () => {
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
       target: eigw,
     });
-    if (mySubnet) {}
     // console.log(Template.fromStack(stack).toJSON().Resources);
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -83,7 +82,7 @@ describe('EC2 Routing', () => {
   });
 
   test('Route to VPN Gateway', () => {
-    const vpngw = new route.VirtualPrivateGateway(stack, 'TestVpnGw', {
+    const vpngw = new route.VPNGateway(stack, 'TestVpnGw', {
       type: 'ipsec.1',
       vpcId: myVpc.vpcId,
     });
@@ -139,7 +138,7 @@ describe('EC2 Routing', () => {
   }),
 
   test('Route to VPN Gateway with optional properties', () => {
-    new route.VirtualPrivateGateway(stack, 'TestVpnGw', {
+    new route.VPNGateway(stack, 'TestVpnGw', {
       type: 'ipsec.1',
       vpcId: myVpc.vpcId,
       amazonSideAsn: 12345678,
@@ -208,5 +207,326 @@ describe('EC2 Routing', () => {
         },
       },
     });
-  })
+  });
+
+  test('Route to private NAT Gateway', () => {
+    const natgw = new route.NatGateway(stack, 'TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: 'private',
+      privateIpAddress: '10.0.0.42',
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: natgw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // NAT Gateway should be in stack
+        TestNATGWNATGatewayBE4F6F2D: {
+          Type: 'AWS::EC2::NatGateway',
+          Properties: {
+            ConnectivityType: 'private',
+            PrivateIpAddress: '10.0.0.42',
+            SubnetId: {
+              Ref: 'TestSubnet2A4BE4CA' 
+            },
+          },
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30'
+          ],
+        },
+        // Route linking private IP to NAT Gateway should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: { 
+              'Fn::GetAtt': [
+                'TestNATGWNATGatewayBE4F6F2D',
+                'NatGatewayId',
+              ],
+            },
+            RouteTableId: { 
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C',
+                'RouteTableId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('Route to private NAT Gateway with secondary IP addresses', () => {
+    const natgw = new route.NatGateway(stack, 'TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: 'private',
+      privateIpAddress: '10.0.0.42',
+      secondaryPrivateIpAddresses: [
+        '10.0.1.0/28',
+        '10.0.2.0/28',
+      ]
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: natgw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // NAT Gateway should be in stack
+        TestNATGWNATGatewayBE4F6F2D: {
+          Type: 'AWS::EC2::NatGateway',
+          Properties: {
+            ConnectivityType: 'private',
+            PrivateIpAddress: '10.0.0.42',
+            SecondaryPrivateIpAddresses: [
+              '10.0.1.0/28',
+              '10.0.2.0/28',
+            ],
+            SubnetId: {
+              Ref: 'TestSubnet2A4BE4CA' 
+            },
+          },
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30' 
+          ],
+        },
+
+      },
+    });
+  });
+
+  test('Route to private NAT Gateway with secondary IP count', () => {
+    const natgw = new route.NatGateway(stack, 'TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: 'private',
+      privateIpAddress: '10.0.0.42',
+      secondaryPrivateIpAddressCount: 2,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: natgw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // NAT Gateway should be in stack
+        TestNATGWNATGatewayBE4F6F2D: {
+          Type: 'AWS::EC2::NatGateway',
+          Properties: {
+            ConnectivityType: 'private',
+            PrivateIpAddress: '10.0.0.42',
+            SecondaryPrivateIpAddressCount: 2,
+            SubnetId: {
+              Ref: 'TestSubnet2A4BE4CA' 
+            },
+          },
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30' 
+          ],
+        },
+        // Route linking private IP to NAT Gateway should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: { 
+              'Fn::GetAtt': [
+                'TestNATGWNATGatewayBE4F6F2D',
+                'NatGatewayId',
+              ],
+            },
+            RouteTableId: { 
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C',
+                'RouteTableId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('Route to public NAT Gateway', () => {
+    const natgw = new route.NatGateway(stack, 'TestNATGW', {
+      subnet: mySubnet,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: natgw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // NAT Gateway should be in stack
+        TestNATGWNATGatewayBE4F6F2D: {
+          Type: 'AWS::EC2::NatGateway',
+          Properties: {
+            SubnetId: {
+              Ref: 'TestSubnet2A4BE4CA' 
+            },
+          },
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30' 
+          ],
+        },
+        // Route linking private IP to NAT Gateway should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: { 
+              'Fn::GetAtt': [
+                'TestNATGWNATGatewayBE4F6F2D',
+                'NatGatewayId',
+              ],
+            },
+            RouteTableId: { 
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C',
+                'RouteTableId',
+              ],
+            },
+          },
+        },
+        // EIP should be created when not provided
+        TestNATGWEIP0A279819: {
+          Type: 'AWS::EC2::EIP',
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30',
+          ],
+        },
+      },
+    });
+  });
+
+  test('Route to public NAT Gateway with provided EIP', () => {
+    const eip = new CfnEIP(stack, 'MyEIP', {
+      domain: myVpc.vpcId,
+    });
+    const natgw = new route.NatGateway(stack, 'TestNATGW', {
+      subnet: mySubnet,
+      allocationId: eip.attrAllocationId,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: natgw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // NAT Gateway should be in stack
+        TestNATGWNATGatewayBE4F6F2D: {
+          Type: 'AWS::EC2::NatGateway',
+          Properties: {
+            SubnetId: {
+              Ref: 'TestSubnet2A4BE4CA' 
+            },
+          },
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30' 
+          ],
+        },
+        // Route linking private IP to NAT Gateway should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: { 
+              'Fn::GetAtt': [
+                'TestNATGWNATGatewayBE4F6F2D',
+                'NatGatewayId',
+              ],
+            },
+            RouteTableId: { 
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C',
+                'RouteTableId',
+              ],
+            },
+          },
+        },
+        // EIP should be in stack
+        MyEIP: {
+          Type: 'AWS::EC2::EIP',
+          Properties: {
+            Domain: { 
+              'Fn::GetAtt': [
+                'TestVpcE77CE678',
+                'VpcId'
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('Route to public NAT Gateway with many parameters', () => {
+    const natgw = new route.NatGateway(stack, 'TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: 'public',
+      maxDrainDurationSeconds: 2001,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: natgw,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // NAT Gateway should be in stack
+        TestNATGWNATGatewayBE4F6F2D: {
+          Type: 'AWS::EC2::NatGateway',
+          Properties: {
+            AllocationId: {
+              'Fn::GetAtt':[
+                'TestNATGWEIP0A279819',
+                'AllocationId',
+              ],
+            },
+            ConnectivityType: 'public',
+            MaxDrainDurationSeconds: 2001,
+            SubnetId: {
+              Ref: 'TestSubnet2A4BE4CA' 
+            },
+          },
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30' 
+          ],
+        },
+        // Route linking private IP to NAT Gateway should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: { 
+              'Fn::GetAtt': [
+                'TestNATGWNATGatewayBE4F6F2D',
+                'NatGatewayId',
+              ],
+            },
+            RouteTableId: { 
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C',
+                'RouteTableId',
+              ],
+            },
+          },
+        },
+        // EIP should be created when not provided
+        TestNATGWEIP0A279819: {
+          Type: 'AWS::EC2::EIP',
+          DependsOn: [
+            'TestSubnetRouteTableAssociationFE267B30',
+          ],
+        },
+      },
+    });
+  });
+
 });

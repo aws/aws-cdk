@@ -20,6 +20,17 @@
     }
    }
   },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "eigwC0F094EF",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "eigwSubnetCC28B9F9": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -36,25 +47,14 @@
     "eigwSecondaryIp17297DCF4"
    ]
   },
-  "eigwSubnetRouteTableE10EAE87": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "eigwC0F094EF",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "eigwSecondaryIp17297DCF4"
-   ]
-  },
   "eigwSubnetRouteTableAssociation887F4A97": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "eigwSubnetRouteTableE10EAE87"
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "eigwSubnetCC28B9F9"
@@ -63,17 +63,6 @@
    "DependsOn": [
     "eigwSecondaryIp17297DCF4"
    ]
-  },
-  "TestRoottableRouteTableFA28AA38": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "eigwC0F094EF",
-      "VpcId"
-     ]
-    }
-   }
   },
   "testEOIGWEIGW54CCAD37": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",

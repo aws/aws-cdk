@@ -20,6 +20,17 @@
     }
    }
   },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "nif44200315",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "nifSubnetAEB60456": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -47,25 +58,14 @@
     "nifSecondaryIp15ACDD6AB"
    ]
   },
-  "nifSubnetRouteTable54F701C7": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "nif44200315",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "nifSecondaryIp15ACDD6AB"
-   ]
-  },
   "nifSubnetRouteTableAssociationE4036B9F": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "nifSubnetRouteTable54F701C7"
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "nifSubnetAEB60456"
@@ -74,17 +74,6 @@
    "DependsOn": [
     "nifSecondaryIp15ACDD6AB"
    ]
-  },
-  "TestRoottableRouteTableFA28AA38": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "nif44200315",
-      "VpcId"
-     ]
-    }
-   }
   },
   "testNWIFNetworkInterface47840299": {
    "Type": "AWS::EC2::NetworkInterface",

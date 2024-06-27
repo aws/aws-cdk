@@ -20,6 +20,17 @@
     }
    }
   },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "vpcpcSubnet1DD6CE35": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -47,25 +58,14 @@
     "vpcpcSecondaryIp1C735895D"
    ]
   },
-  "vpcpcSubnetRouteTable06C8C89A": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpc6CAE1A04",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "vpcpcSecondaryIp1C735895D"
-   ]
-  },
   "vpcpcSubnetRouteTableAssociation8531BF5C": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "vpcpcSubnetRouteTable06C8C89A"
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "vpcpcSubnet1DD6CE35"
@@ -83,6 +83,17 @@
     "EnableDnsSupport": true
    }
   },
+  "routetableuser2RouteTable6163C8F3": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpcuser2935CC987",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "vpcpcSubnet2Subnet8BA063A9": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -96,36 +107,17 @@
     }
    }
   },
-  "vpcpcSubnet2RouteTable684B0EAB": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpcuser2935CC987",
-      "VpcId"
-     ]
-    }
-   }
-  },
   "vpcpcSubnet2RouteTableAssociationC9082420": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "vpcpcSubnet2RouteTable684B0EAB"
+     "Fn::GetAtt": [
+      "routetableuser2RouteTable6163C8F3",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "vpcpcSubnet2Subnet8BA063A9"
-    }
-   }
-  },
-  "TestRoottableRouteTableFA28AA38": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpc6CAE1A04",
-      "VpcId"
-     ]
     }
    }
   },

@@ -20,7 +20,7 @@ export interface InternetGatewayProps {
   readonly vpcId: string;
 }
 
-export interface VirtualPrivateGatewayProps {
+export interface VPNGatewayProps {
   readonly type: string;
   readonly vpcId: string;
   readonly amazonSideAsn?: number;
@@ -30,6 +30,12 @@ export interface NatGatewayProps {
   readonly subnet: ISubnet;
   readonly vpcId?: string;
   readonly allocationId?: string;
+  readonly connectivityType?: string;
+  readonly maxDrainDurationSeconds?: number;
+  readonly privateIpAddress?: string;
+  readonly secondaryAllocationIds?: string[];
+  readonly secondaryPrivateIpAddressCount?: number;
+  readonly secondaryPrivateIpAddresses?: string[];
 }
 
 export interface NetworkInterfaceProps {
@@ -103,14 +109,14 @@ export class InternetGateway extends Resource implements IRouteTarget {
   }
 }
 
-export class VirtualPrivateGateway extends Resource implements IRouteTarget {
+export class VPNGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
   public readonly vpcId: string;
 
   public readonly resource: CfnVPNGateway;
 
-  constructor(scope: Construct, id: string, props: VirtualPrivateGatewayProps) {
+  constructor(scope: Construct, id: string, props: VPNGatewayProps) {
     super(scope, id);
 
     this.routerType = RouterType.GATEWAY;
@@ -132,6 +138,8 @@ export class NatGateway extends Resource implements IRouteTarget {
   public readonly routerId: string;
   public readonly routerType: RouterType;
   public readonly allocationId?: string;
+  public readonly connectivityType?: string;
+  public readonly maxDrainDurationSeconds?: number;
 
   public readonly resource: CfnNatGateway;
 
@@ -139,29 +147,30 @@ export class NatGateway extends Resource implements IRouteTarget {
     super(scope, id);
 
     this.routerType = RouterType.NAT_GATEWAY;
+
+    this.connectivityType = props.connectivityType || 'public';
+    this.maxDrainDurationSeconds = props.maxDrainDurationSeconds || 350;
     
     // If user does not provide EIP, generate one for them
-    var aId: string = props.allocationId || '';
-    if (!props.allocationId) {
-      let eip = new CfnEIP(this, 'EIP', {
-        domain: props.vpcId,
-      });
-      aId = eip.attrAllocationId;
+    var aId: string | undefined;
+    if (this.connectivityType == 'public') {
+      if (!props.allocationId) {
+        let eip = new CfnEIP(this, 'EIP', {
+          domain: props.vpcId,
+        });
+        aId = eip.attrAllocationId;
+      } else {
+        aId = props.allocationId;
+      }
     }
-    
-    // TODO: Give user warning if no InternetGateway exists
-    
+      
     this.resource = new CfnNatGateway(this, 'NATGateway', {
       subnetId: props.subnet.subnetId,
       allocationId: aId,
+      ...props
     });
-    
+
     this.routerId = this.resource.attrNatGatewayId;
-    
-    // new CfnEIPAssociation(this, 'EIPAssociation', {
-    //   allocationId: aId,
-    //   networkInterfaceId: this.routerId,
-    // });
 
     this.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
@@ -290,7 +299,7 @@ export class Route extends Resource implements IRouteV2 {
           vpcId: this.target.vpcId,
           internetGatewayId: this.target.routerId,
         });
-      } else if (this.target instanceof VirtualPrivateGateway) {
+      } else if (this.target instanceof VPNGateway) {
         new CfnVPCGatewayAttachment(this, 'GWAttachment', {
           vpcId: this.target.vpcId,
           vpnGatewayId: this.target.routerId,
