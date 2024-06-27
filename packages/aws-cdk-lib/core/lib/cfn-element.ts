@@ -81,33 +81,14 @@ export abstract class CfnElement extends Construct {
   /**
    * Overrides the auto-generated logical ID with a specific ID.
    * @param newLogicalId The new logical ID to use for this stack element.
-   *
-   * @throws an error if `logicalId` has already been locked
-   * @throws an error if `newLogicalId` is empty
-   * @throws an error if `newLogicalId` contains more than 255 characters
-   * @throws an error if `newLogicalId` contains non-alphanumeric characters
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html#resources-section-structure-logicalid
    */
   public overrideLogicalId(newLogicalId: string) {
     if (this._logicalIdLocked) {
       throw new Error(`The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
         'Make sure you are calling "overrideLogicalId" before Stack.exportValue');
+    } else {
+      this._logicalIdOverride = newLogicalId;
     }
-
-    if (!Token.isUnresolved(newLogicalId)) {
-      if (!newLogicalId) {
-        throw new Error('Cannot set an empty logical ID');
-      }
-      if (newLogicalId.length > 255) {
-        throw new Error(`Invalid logical ID override: '${newLogicalId}'. It must be at most 255 characters long, got ${newLogicalId.length} characters.`);
-      }
-      if (!newLogicalId.match(/^[A-Za-z0-9]+$/)) {
-        throw new Error(`Invalid logical ID override: '${newLogicalId}'. It must only contain alphanumeric characters.`);
-      }
-    }
-
-    this._logicalIdOverride = newLogicalId;
   }
 
   /**
