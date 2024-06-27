@@ -22,7 +22,7 @@ const OutboundJob = new glue.PySparkEtlJob(stack, 'OutboundJob', {
   role,
   glueVersion: glue.GlueVersion.V4_0,
   workerType: glue.WorkerType.G_2X,
-  numberOrWorkers: 2,
+  numberOfWorkers: 2,
 });
 
 const InboundJob = new glue.PySparkEtlJob(stack, 'InboundJob', {
@@ -30,7 +30,7 @@ const InboundJob = new glue.PySparkEtlJob(stack, 'InboundJob', {
   role,
   glueVersion: glue.GlueVersion.V4_0,
   workerType: glue.WorkerType.G_2X,
-  numberOrWorkers: 2,
+  numberOfWorkers: 2,
 });
 
 workflow.addOnDemandTrigger('OnDemandTrigger', {

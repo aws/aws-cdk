@@ -92,7 +92,7 @@ export class RayJob extends Job {
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.Z_2X,
-      numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers: 3,
+      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers: 3,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),

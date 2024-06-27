@@ -4,6 +4,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as glue from '../lib';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 describe('Code', () => {
   let stack: cdk.Stack;
@@ -21,11 +22,11 @@ describe('Code', () => {
     test('with valid bucket name and key and bound by job sets the right path and grants the job permissions to read from it', () => {
       bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
       script = glue.Code.fromBucket(bucket, key);
-      new glue.JobLegacy(stack, 'Job1', {
-        executable: glue.JobExecutable.pythonShell({
-          glueVersion: glue.GlueVersion.V1_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script,
+
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
 
@@ -93,11 +94,10 @@ describe('Code', () => {
     });
 
     test("with valid and existing file path and bound to job sets job's script location and permissions stack metadata", () => {
-      new glue.JobLegacy(stack, 'Job1', {
-        executable: glue.JobExecutable.pythonShell({
-          glueVersion: glue.GlueVersion.V1_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script,
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
 
@@ -205,18 +205,16 @@ describe('Code', () => {
     });
 
     test('used in more than 1 job in the same stack should be reused', () => {
-      new glue.JobLegacy(stack, 'Job1', {
-        executable: glue.JobExecutable.pythonShell({
-          glueVersion: glue.GlueVersion.V1_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script,
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
-      new glue.JobLegacy(stack, 'Job2', {
-        executable: glue.JobExecutable.pythonShell({
-          glueVersion: glue.GlueVersion.V1_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script,
+      new glue.PythonShellJob(stack, 'Job2', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
       const ScriptLocation = {
@@ -285,20 +283,18 @@ describe('Code', () => {
     });
 
     test('throws if trying to rebind in another stack', () => {
-      new glue.JobLegacy(stack, 'Job1', {
-        executable: glue.JobExecutable.pythonShell({
-          glueVersion: glue.GlueVersion.V1_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script,
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
       const differentStack = new cdk.Stack();
 
-      expect(() => new glue.JobLegacy(differentStack, 'Job2', {
-        executable: glue.JobExecutable.pythonShell({
-          glueVersion: glue.GlueVersion.V1_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script: script,
+      expect(() => new glue.PythonShellJob(differentStack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       })).toThrow(/associated with another stack/);
     });

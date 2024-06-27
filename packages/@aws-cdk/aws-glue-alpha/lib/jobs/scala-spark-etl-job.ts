@@ -117,8 +117,8 @@ export class ScalaSparkEtlJob extends Job {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    if ((!props.workerType && props.numberOrWorkers !== undefined) || (props.workerType && props.numberOrWorkers === undefined)) {
-      throw new Error('Both workerType and numberOrWorkers must be set');
+    if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
+      throw new Error('Both workerType and numberOfWorkers must be set');
     }
 
     const jobResource = new CfnJob(this, 'Resource', {
@@ -130,8 +130,8 @@ export class ScalaSparkEtlJob extends Job {
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_2X,
-      numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers : 10,
+      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
+      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),

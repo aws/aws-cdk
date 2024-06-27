@@ -43,8 +43,8 @@ new glue.ScalaSparkEtlJob(stack, 'OverrideScalaSparkETLJob', {
   role: iam_role,
   description: 'Optional Override ScalaSpark ETL Job',
   glueVersion: glue.GlueVersion.V3_0,
-  numberOrWorkers: 20,
-  workerType: glue.WorkerType.G_2X,
+  numberOfWorkers: 20,
+  workerType: glue.WorkerType.G_1X,
   timeout: cdk.Duration.minutes(15),
   jobName: 'Optional Override ScalaSpark ETL Job',
   defaultArguments: {

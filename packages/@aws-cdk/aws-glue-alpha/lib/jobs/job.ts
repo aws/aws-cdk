@@ -348,13 +348,13 @@ export interface JobProperties {
    * Number of workers for Glue to use during job execution
    * @default 10
    */
-  readonly numberOrWorkers?: number;
+  readonly numberOfWorkers?: number;
 
   /**
    * Worker Type (optional)
    * Type of Worker for Glue to use during job execution
    * Enum options: Standard, G_1X, G_2X, G_025X. G_4X, G_8X, Z_2X
-   * @default G_2X
+   * @default G_1X
    **/
   readonly workerType?: WorkerType;
 
@@ -438,7 +438,7 @@ export interface JobProperties {
   /**
    * Enables continuous logging with the specified props.
    *
-   * @default - continuous logging is disabled.
+   * @default - continuous logging is enabled.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html

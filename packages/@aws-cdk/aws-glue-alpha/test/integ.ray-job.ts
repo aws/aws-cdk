@@ -38,7 +38,7 @@ new glue.RayJob(stack, 'BasicRayJob', {
 new glue.RayJob(stack, 'RayJob5Workers', {
   script: script,
   role: iam_role,
-  numberOrWorkers: 5,
+  numberOfWorkers: 5,
   jobName: 'RayJobWith5Workers',
   defaultArguments: {
     arg1: 'value1',

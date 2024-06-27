@@ -24,8 +24,8 @@ describe('Workflow and Triggers', () => {
       script: glue.Code.fromAsset('test/job-script/hello_world.py'),
       role,
       glueVersion: glue.GlueVersion.V4_0,
-      workerType: glue.WorkerType.G_2X,
-      numberOrWorkers: 10,
+      workerType: glue.WorkerType.G_1X,
+      numberOfWorkers: 10,
     });
   });
 

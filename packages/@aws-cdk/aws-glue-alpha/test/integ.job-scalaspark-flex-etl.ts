@@ -43,7 +43,7 @@ new glue.ScalaSparkFlexEtlJob(stack, 'OverrideScalaSparkFlexEtlJob', {
   role: iam_role,
   description: 'Optional Override ScalaSpark Flex Etl Job',
   glueVersion: glue.GlueVersion.V3_0,
-  numberOrWorkers: 20,
+  numberOfWorkers: 20,
   workerType: glue.WorkerType.G_1X,
   timeout: cdk.Duration.minutes(15),
   jobName: 'Optional Override ScalaSpark Flex Etl Job',
