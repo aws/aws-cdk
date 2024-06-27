@@ -2970,6 +2970,11 @@
                           "s3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
+                        "environment": {
+                          "variables": {
+                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+                          }
+                        },
                         "handler": "index.handler",
                         "layers": [
                           {
@@ -3433,7 +3438,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/86a6deb823cf0ef44ca139ab2bd07d89aa80633428b0f114124b6e4d4b222ba6.json"
+                          "/3ada47032a6e85480c62836b8d0e3d19e47559126976c2c8a24b5f442cf5f010.json"
                         ]
                       ]
                     }
