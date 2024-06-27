@@ -15,12 +15,13 @@ def handler(event: dict, context):
     props = event["ResourceProperties"]
     notification_configuration = props["NotificationConfiguration"]
     managed = props.get('Managed', 'true').lower() == 'true'
+    applyNameTransformations = props.get('ApplyNameTransformations', 'false').lower() == 'true'
     stack_id = event['StackId']
     old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
       config = handle_managed(event["RequestType"], notification_configuration)
     else:
-      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
+      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old, applyNameTransformations)
     s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
@@ -34,9 +35,16 @@ def handle_managed(request_type, notification_configuration):
     return {}
   return notification_configuration
 
-def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old, applyNameTransformations):
+  def get_id(n):
+    n['Id'] = ''
+    strToHash=json.dumps(n, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
+    return f"{stack_id}-{hash(strToHash)}"
   def with_id(n):
-    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    if applyNameTransformations:
+      n['Id'] = get_id(n)
+    else:
+      n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
     return n
 
   # find external notifications
@@ -44,10 +52,14 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
   existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
-        ids = [with_id(n) for n in old.get(t, [])]
-        old_incoming_ids = [n['Id'] for n in ids]
-        # if the notification was created by us, we know what id to expect so we can filter by it.
-        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+        if applyNameTransformations:
+          old_incoming_ids = [get_id(n) for n in old.get(t, [])]
+          external_notifications[t] = [n for n in existing_notifications.get(t, []) if not get_id(n) in old_incoming_ids]
+        else:
+          ids = [with_id(n) for n in old.get(t, [])]
+          old_incoming_ids = [n['Id'] for n in ids]
+          # if the notification was created by us, we know what id to expect so we can filter by it.
+          external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]      
     elif request_type == 'Delete':
         # For 'Delete' request, old parameter is an empty dict so we cannot use this to determine which are external
         # notifications. Fall back to rely on the stack naming logic.
@@ -60,7 +72,7 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
   if EVENTBRIDGE_CONFIGURATION in existing_notifications:
     external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
 
-  # if delete, that's all we need
+  # If delete, that's all we need
   if request_type == 'Delete':
     return external_notifications
 

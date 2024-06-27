@@ -4,6 +4,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
+import { ECS_REDUCE_RUN_TASK_PERMISSIONS } from '../../../cx-api';
 import * as tasks from '../../lib';
 
 let stack: Stack;
@@ -15,6 +16,7 @@ let cluster: ecs.Cluster;
 beforeEach(() => {
   // GIVEN
   stack = new Stack();
+  stack.node.setContext(ECS_REDUCE_RUN_TASK_PERMISSIONS, true);
   vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Capacity', {
@@ -289,26 +291,7 @@ test('Running a Fargate Task', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: [{
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-                '/',
-                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-              ],
-            ],
-          },
-          {
+          Resource: {
             'Fn::Join': [
               '',
               [
@@ -327,7 +310,7 @@ test('Running a Fargate Task', () => {
                 ':*',
               ],
             ],
-          }],
+          },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -431,26 +414,7 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: [{
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-                '/',
-                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-              ],
-            ],
-          },
-          {
+          Resource: {
             'Fn::Join': [
               '',
               [
@@ -469,7 +433,7 @@ test('Running an EC2 Task with bridge network', () => {
                 ':*',
               ],
             ],
-          }],
+          },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],

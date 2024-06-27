@@ -10,6 +10,7 @@ import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
 import { IAutoScalingConfiguration } from './auto-scaling-configuration';
+import { IObservabilityConfiguration } from './observability-configuration';
 
 /**
  * The image repository types
@@ -576,7 +577,7 @@ export interface ImageRepository {
    * always be `public.ecr.aws`. For `ECR`, the pattern should be
    * `([0-9]{12}.dkr.ecr.[a-z\-]+-[0-9]{1}.amazonaws.com\/.*)`.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html for more details.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
    */
   readonly imageIdentifier: string;
 
@@ -743,6 +744,14 @@ export interface ServiceProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Settings for an App Runner observability configuration.
+   *
+   * @default - no observability configuration resource is associated with the service.
+   */
+  readonly observabilityConfiguration?: IObservabilityConfiguration;
+
 }
 
 /**
@@ -1296,11 +1305,17 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :
         undefined,
+      observabilityConfiguration: props.observabilityConfiguration ? {
+        observabilityEnabled: true,
+        observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
+      } : undefined,
     });
 
-    // grant required privileges for the role
+    // grant required privileges for the role to access an image in Amazon ECR
+    // See https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles
     if (this.source.ecrRepository && this.accessRole) {
       this.source.ecrRepository.grantPull(this.accessRole);
+      this.source.ecrRepository.grant(this.accessRole, 'ecr:DescribeImages');
     }
 
     this.serviceArn = resource.attrServiceArn;

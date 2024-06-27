@@ -55,7 +55,7 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":s3:::cdk-integ-test-imported-bucket-name"
+                          ":s3:::cdk-integration-test-imported-bucket-name"
                         ]
                       ]
                     }
@@ -316,7 +316,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
-                    "bucketName": "cdk-integ-test-imported-bucket-name"
+                    "bucketName": "cdk-integration-test-imported-bucket-name"
                   }
                 },
                 "constructInfo": {
