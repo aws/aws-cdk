@@ -326,7 +326,6 @@ test('a notification destination can specify a set of dependencies that must be 
       ServiceToken: { 'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'] },
       BucketName: { Ref: 'Bucket83908E77' },
       Managed: true,
-      ApplyNameTransformations: false,
       NotificationConfiguration: { QueueConfigurations: [{ Events: ['s3:ObjectCreated:*'], QueueArn: 'arn' }] },
     },
     DependsOn: ['Dependent'],

@@ -3,11 +3,7 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled': true,
-  },
-});
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'test-3');
 
