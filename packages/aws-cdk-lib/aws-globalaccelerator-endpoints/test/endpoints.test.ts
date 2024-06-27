@@ -74,6 +74,7 @@ test('Network Load Balancer with all properties', () => {
     endpoints: [
       new endpoints.NetworkLoadBalancerEndpoint(nlb, {
         weight: 50,
+        preserveClientIp: true,
       }),
     ],
   });
@@ -84,6 +85,7 @@ test('Network Load Balancer with all properties', () => {
       {
         EndpointId: { Ref: 'NLB55158F82' },
         Weight: 50,
+        ClientIPPreservationEnabled: true,
       },
     ],
   });
