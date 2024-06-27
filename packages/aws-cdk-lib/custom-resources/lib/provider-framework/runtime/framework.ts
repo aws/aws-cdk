@@ -30,7 +30,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
 
   const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, sanitizedRequest, cfnRequest.ResponseURL) as OnEventResponse;
-  if (onEventResult.NoEcho) {
+  if (onEventResult?.NoEcho) {
     log('redacted onEvent returned:', cfnResponse.redactDataFromPayload(onEventResult));
   } else {
     log('onEvent returned:', onEventResult);
@@ -39,7 +39,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // merge the request and the result from onEvent to form the complete resource event
   // this also performs validation.
   const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
-  if (onEventResult.NoEcho) {
+  if (onEventResult?.NoEcho) {
     log('readacted event:', cfnResponse.redactDataFromPayload(resourceEvent));
   } else {
     log('event:', resourceEvent);
@@ -70,14 +70,14 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
 // invoked a few times until `complete` is true or until it times out.
 async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
-  if (event.NoEcho) {
+  if (event?.NoEcho) {
     log('redacted isComplete request', cfnResponse.redactDataFromPayload(sanitizedRequest));
   } else {
     log('isComplete', sanitizedRequest);
   }
 
   const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest, event.ResponseURL) as IsCompleteResponse;
-  if (event.NoEcho) {
+  if (event?.NoEcho) {
     log('redacted user isComplete returned:', cfnResponse.redactDataFromPayload(isCompleteResult));
   } else {
     log('user isComplete returned:', isCompleteResult);

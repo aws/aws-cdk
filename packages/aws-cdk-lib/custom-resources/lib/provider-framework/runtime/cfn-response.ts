@@ -38,7 +38,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
 
   const parsedUrl = url.parse(event.ResponseURL);
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
-  if (options.noEcho) {
+  if (options?.noEcho) {
     log('submit redacted response to cloudformation', loggingSafeUrl, redactDataFromPayload(json));
   } else {
     log('submit response to cloudformation', loggingSafeUrl, json);
