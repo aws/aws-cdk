@@ -121,7 +121,7 @@
       "Arn"
      ]
     },
-    "WorkerType": "G.2X"
+    "WorkerType": "G.1X"
    }
   },
   "OverrideScalaSparkFlexEtlJob843D93B4": {
