@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { IBranch } from './branch';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 /**
  * Options to add a domain to an application
@@ -52,6 +53,13 @@ export interface DomainProps extends DomainOptions {
    * @default the IAM role from App.grantPrincipal
    */
   readonly autoSubDomainIamRole?: iam.IRole;
+
+  /**
+   * The SSL/TLS certificate to use for your custom domain.
+   *
+   * @default - use the default certificate that Amplify provisions for you
+   */
+  readonly customCertificate?: acm.ICertificate;
 }
 
 /**
@@ -130,6 +138,10 @@ export class Domain extends Resource {
       enableAutoSubDomain: !!props.enableAutoSubdomain,
       autoSubDomainCreationPatterns: props.autoSubdomainCreationPatterns || ['*', 'pr*'],
       autoSubDomainIamRole: props.autoSubDomainIamRole?.roleArn,
+      certificateSettings: props.customCertificate ? {
+        certificateType: 'CUSTOM',
+        customCertificateArn: props.customCertificate.certificateArn,
+      } : undefined,
     });
 
     this.arn = domain.attrArn;
