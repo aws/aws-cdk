@@ -84,8 +84,7 @@ interface OnEventResponse {
   /**
    * Whether to mask the output of the custom resource when retrieved
    * by using the `Fn::GetAtt` function. If set to `true`, all returned
-   * values are masked with asterisks (*****) and to mask the `Data` values
-   * with asterisks (*****) in the log statements.
+   * values are masked with asterisks (*****).
    *
    * @default false
    */

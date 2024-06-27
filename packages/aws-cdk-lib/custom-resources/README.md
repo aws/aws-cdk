@@ -244,7 +244,7 @@ const handler = new lambda.Function(this , 'my-handler', {
 });
 
 // Provision a custom resource provider framework
-const provider = new Provider(this , 'my-provider', {
+const provider = new cr.Provider(this , 'my-provider', {
   onEventHandler: handler,
 });
 
@@ -254,17 +254,8 @@ new CustomResource(this , 'my-cr', {
 ```
 
 When `NoEcho` field is set to `true` in the response of custom resource handler,
-it will automatically mask all values in the `Data` object in the log statements.
-
-```ts
-PhysicalResourceId: '1234',
-NoEcho: true,
-Data: {
-  mySecret: '*****',
-  hello: '*****',
-  ghToken: '*****',
-}
-```
+it will automatically mask all values in the `Data` object in the log statements
+to asterisks (*****).
 
 ### When there are errors
 
