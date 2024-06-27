@@ -40,6 +40,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [Cluster Security Group](#cluster-security-group)
     - [Node SSH Access](#node-ssh-access)
     - [Service Accounts](#service-accounts)
+    - [Pod Identities](#pod-identities)
   - [Applying Kubernetes Resources](#applying-kubernetes-resources)
     - [Kubernetes Manifests](#kubernetes-manifests)
       - [ALB Controller Integration](#alb-controller-integration)
@@ -1334,6 +1335,46 @@ bucket.grantReadWrite(serviceAccount);
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
 See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#using-existing-clusters).
+
+### Pod Identities
+
+[Amazon EKS Pod Identities](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html) is a feature that simplifies how
+Kubernetes applications running on Amazon EKS can obtain AWS IAM credentials. It provides a way to associate an IAM role with a
+Kubernetes service account, allowing pods to retrieve temporary AWS credentials without the need
+to manage IAM roles and policies directly.
+
+By default, `ServiceAccount` creates an `OpenIdConnectProvider` for 
+[IRSA(IAM roles for service accounts)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) if
+`identityType` is `undefined` or `IdentityType.IRSA`.
+
+You may opt in Amaozn EKS Pod Identities as below:
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.ServiceAccount(this, 'ServiceAccount', {
+  cluster,
+  name: 'test-sa',
+  namespace: 'default',
+  identityType: eks.IdentityType.POD_IDENTITY,
+});
+```
+
+When you create the ServiceAccount with the `identityType` set to `POD_IDENTITY`,
+`ServiceAccount` contruct will perform the following actions behind the scenes:
+
+1. It will create an IAM role with the necessary trust policy to allow the "pods.eks.amazonaws.com" principal to assume the role.
+This trust policy grants the EKS service the permission to retrieve temporary AWS credentials on behalf of the pods using this service account.
+
+2. It will enable the "Amazon EKS Pod Identity Agent" add-on on the EKS cluster. This add-on is responsible for managing the temporary
+AWS credentials and making them available to the pods.
+
+3. It will create an association between the IAM role and the Kubernetes service account. This association allows the pods using this
+service account to obtain the temporary AWS credentials from the associated IAM role.
+
+This simplifies the process of configuring IAM permissions for your Kubernetes applications running on Amazon EKS. It handles the creation of the IAM role,
+the installation of the Pod Identity Agent add-on, and the association between the role and the service account, making it easier to manage AWS credentials
+for your applications.
 
 ## Applying Kubernetes Resources
 
