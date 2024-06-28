@@ -631,7 +631,7 @@ export interface CommonProjectProps {
    * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
    * AWS service access, add VPC Endpoints to your private subnets.
    *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html for more details.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
    * @default - private subnets if available else public subnets
    */
@@ -1843,7 +1843,7 @@ export class LinuxBuildImage implements IBuildImage {
    * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
   /**
-   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0".
    * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0}
    * */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
