@@ -1353,7 +1353,7 @@ Enabling this flag allows you to successfully delete existing S3 event notificat
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.145.0 | `false` | `true` |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault

@@ -1133,7 +1133,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     See https://github.com/aws/aws-cdk/issues/28915 for more details.
     Enabling this flag allows you to successfully delete existing S3 event notifications.
     `,
-    introducedIn: { v2: '2.145.0' },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };
