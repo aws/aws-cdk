@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "integ-ec2-instance-disable-api-termination.assets": {
+    "aws-cdk-ec2-disable-api-termination.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-ec2-instance-disable-api-termination.assets.json",
+        "file": "aws-cdk-ec2-disable-api-termination.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-ec2-instance-disable-api-termination": {
+    "aws-cdk-ec2-disable-api-termination": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-ec2-instance-disable-api-termination.template.json",
+        "templateFile": "aws-cdk-ec2-disable-api-termination.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75676b2897f6431eada51024f01651cf03abf6933e4a6db64d69c6e671ba1e02.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/59945d1b556baffe1191149ed84dadda630bae51fab9d52e114fca195c7e9b15.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-ec2-instance-disable-api-termination.assets"
+          "aws-cdk-ec2-disable-api-termination.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,215 +31,221 @@
         }
       },
       "dependencies": [
-        "integ-ec2-instance-disable-api-termination.assets"
+        "aws-cdk-ec2-disable-api-termination.assets"
       ],
       "metadata": {
-        "/integ-ec2-instance-disable-api-termination/VPC/Resource": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCB9E5F0B4"
+            "data": "Vpc8378EB38"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1SubnetB4246D30"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1EIP6AD938E8"
+            "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1NATGatewayE0556630"
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2Subnet74179F39"
+            "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2EIP4947BC00"
+            "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PublicSubnet2/NATGateway": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2NATGateway3C070193"
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+            "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/IGW": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIGWB7E252D3"
+            "data": "VpcIGWD7BA715C"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/VPCGW": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCVPCGW99B986DC"
+            "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/aws-cdk-ec2-disable-api-termination/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/LatestNodeRuntimeMap": [
+        "/aws-cdk-ec2-disable-api-termination/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/aws-cdk-ec2-disable-api-termination/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/aws-cdk-ec2-disable-api-termination/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/IntegSg/Resource": [
+        "/aws-cdk-ec2-disable-api-termination/TestInstance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegSg68DC2C7E"
+            "data": "TestInstanceInstanceSecurityGroupFC9BD332"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/Instance/InstanceRole/Resource": [
+        "/aws-cdk-ec2-disable-api-termination/TestInstance/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceRoleE9785DE5"
+            "data": "TestInstanceInstanceRole73B579CC"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/Instance/InstanceProfile": [
+        "/aws-cdk-ec2-disable-api-termination/TestInstance/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceProfileAB5AEF02"
+            "data": "TestInstanceInstanceProfileD0E25910"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/Instance/Resource": [
+        "/aws-cdk-ec2-disable-api-termination/TestInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87"
+            "data": "TestInstance44016A9E"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-ec2-disable-api-termination/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/BootstrapVersion": [
+        "/aws-cdk-ec2-disable-api-termination/Exports/Output{\"Ref\":\"TestInstance44016A9E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefTestInstance44016A9EE5FA7C7B"
+          }
+        ],
+        "/aws-cdk-ec2-disable-api-termination/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-ec2-instance-disable-api-termination/CheckBootstrapVersion": [
+        "/aws-cdk-ec2-disable-api-termination/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-ec2-instance-disable-api-termination"
+      "displayName": "aws-cdk-ec2-disable-api-termination"
     },
     "instancedisableapiterminationDefaultTestDeployAssertE3D2E0F8.assets": {
       "type": "cdk:asset-manifest",
@@ -258,7 +264,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec822568a47c0bbf6e6083746f8be3dff0c30929711bbda2bdf0803f4aa78029.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -271,9 +277,40 @@
         }
       },
       "dependencies": [
+        "aws-cdk-ec2-disable-api-termination",
         "instancedisableapiterminationDefaultTestDeployAssertE3D2E0F8.assets"
       ],
       "metadata": {
+        "/instance-disable-api-termination/DefaultTest/DeployAssert/AwsApiCallEC2describeInstanceAttribute2c89966e1079a06a88462d65ec0c5787/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallEC2describeInstanceAttribute2c89966e1079a06a88462d65ec0c5787"
+          }
+        ],
+        "/instance-disable-api-termination/DefaultTest/DeployAssert/AwsApiCallEC2describeInstanceAttribute2c89966e1079a06a88462d65ec0c5787/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallEC2describeInstanceAttribute2c89966e1079a06a88462d65ec0c5787"
+          }
+        ],
+        "/instance-disable-api-termination/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/instance-disable-api-termination/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/instance-disable-api-termination/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/instance-disable-api-termination/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

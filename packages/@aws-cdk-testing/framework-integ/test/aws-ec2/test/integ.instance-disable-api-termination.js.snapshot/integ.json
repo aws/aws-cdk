@@ -3,7 +3,7 @@
   "testCases": {
     "instance-disable-api-termination/DefaultTest": {
       "stacks": [
-        "integ-ec2-instance-disable-api-termination"
+        "aws-cdk-ec2-disable-api-termination"
       ],
       "assertionStack": "instance-disable-api-termination/DefaultTest/DeployAssert",
       "assertionStackName": "instancedisableapiterminationDefaultTestDeployAssertE3D2E0F8"
