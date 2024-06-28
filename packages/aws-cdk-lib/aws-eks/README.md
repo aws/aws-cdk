@@ -230,6 +230,8 @@ cluster.addNodegroupCapacity('custom-node-group', {
 To use a custom AMI for the node group, you can set `amiType` to `eks.NodegroupAmiType.CUSTOM` and provide a launch template.
 
 ```ts
+declare const cluster: eks.Cluster;
+
 const launchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateData: {
     imageId: 'ami-0abcdef1234567890',
