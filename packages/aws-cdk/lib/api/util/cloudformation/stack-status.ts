@@ -37,7 +37,10 @@ export class StackStatus {
     return this.name === 'NOT_FOUND';
   }
 
-  get isDeploySuccess(): boolean {
+  public isDeploySuccess(exitOnConfigComplete?: boolean): boolean {
+    if (exitOnConfigComplete && this.name === 'CONFIGURATION_COMPLETE') {
+      return true;
+    }
     return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE' || this.name === 'IMPORT_COMPLETE');
   }
 

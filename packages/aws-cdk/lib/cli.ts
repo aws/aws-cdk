@@ -174,7 +174,8 @@ async function parseCommandLineArguments(args: string[]) {
       .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true })
       .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
       .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true })
-      .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false }),
+      .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false })
+      .option('optimistic', { type: 'boolean', desc: 'Whether the CLI should exit if the CONFIGURATION_COMPLETE Stack event is detected. Stack deployment may fail after the CLI exits, but CloudFormation will still rollback the stack.', default: false }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -604,6 +605,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           assetParallelism: configuration.settings.get(['assetParallelism']),
           assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: args.ignoreNoStacks,
+          optimistic: args.optimistic,
         });
 
       case 'import':

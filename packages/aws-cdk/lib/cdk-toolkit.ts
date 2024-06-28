@@ -350,6 +350,7 @@ export class CdkToolkit {
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,
+          optimistic: options.optimistic,
         });
 
         const message = result.noOp
@@ -1339,6 +1340,13 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly ignoreNoStacks?: boolean;
+
+  /**
+   * Whether CLI should exit if the CONFIGURATION_COMPLETE Stack event is detected. Stack deployment may fail after the CLI exits, but CloudFormation will still rollback the stack.
+   *
+   * @default false
+   */
+  readonly optimistic?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {

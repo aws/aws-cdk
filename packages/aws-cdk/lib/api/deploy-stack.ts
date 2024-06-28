@@ -198,6 +198,13 @@ export interface DeployStackOptions {
    * @default true To remain backward compatible.
    */
   readonly assetParallelism?: boolean;
+
+  /**
+   * Whether CLI should exit if the CONFIGURATION_COMPLETE Stack event is detected. Stack deployment may fail after the CLI exits, but CloudFormation will still rollback the stack.
+   *
+   * @default false
+   */
+  readonly optimistic?: boolean;
 }
 
 export type DeploymentMethod =
@@ -514,7 +521,7 @@ class FullCloudFormationDeployment {
 
     let finalState = this.cloudFormationStack;
     try {
-      const successStack = await waitForStackDeploy(this.cfn, this.stackName);
+      const successStack = await waitForStackDeploy(this.cfn, this.stackName, this.options.optimistic);
 
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!successStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }

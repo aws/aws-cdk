@@ -206,6 +206,13 @@ export interface DeployStackOptions {
    * @default false
    */
   ignoreNoStacks?: boolean;
+
+  /**
+   * Whether CLI should exit if the CONFIGURATION_COMPLETE Stack event is detected. Stack deployment may fail after the CLI exits, but CloudFormation will still rollback the stack.
+   *
+   * @default false
+   */
+  readonly optimistic?: boolean;
 }
 
 interface AssetOptions {
@@ -414,6 +421,7 @@ export class Deployments {
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
       assetParallelism: options.assetParallelism,
+      optimistic: options.optimistic,
     });
   }
 

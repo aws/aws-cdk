@@ -463,7 +463,9 @@ export async function waitForStackDelete(
  */
 export async function waitForStackDeploy(
   cfn: CloudFormation,
-  stackName: string): Promise<CloudFormationStack | undefined> {
+  stackName: string,
+  exitOnConfigComplete?: boolean,
+): Promise<CloudFormationStack | undefined> {
 
   const stack = await stabilizeStack(cfn, stackName);
   if (!stack) { return undefined; }
@@ -472,7 +474,7 @@ export async function waitForStackDeploy(
 
   if (status.isCreationFailure) {
     throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-  } else if (!status.isDeploySuccess) {
+  } else if (!status.isDeploySuccess(exitOnConfigComplete)) {
     throw new Error(`The stack named ${stackName} failed to deploy: ${status}`);
   }
 
