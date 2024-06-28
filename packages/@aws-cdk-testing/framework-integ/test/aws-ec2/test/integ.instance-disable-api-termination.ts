@@ -20,7 +20,7 @@ const testCase = new IntegTest(app, 'instance-disable-api-termination', {
   testCases: [stack],
 });
 
-// Start an execution
+// Describe Instance
 const describe = testCase.assertions.awsApiCall('EC2', 'describeInstanceAttribute', {
   InstanceId: instance.instanceId,
   Attribute: 'disableApiTermination',
