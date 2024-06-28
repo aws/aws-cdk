@@ -42,6 +42,7 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'ap-south-1', // Asia Pacific (Mumbai)
   'us-east-2', // US East (Ohio)
   'ca-central-1', // Canada (Central)
+  'ca-west-1', // Canada (Calgary)
   'eu-west-2', // Europe (London)
   'us-isob-east-1', // AWS ISO-B
   'cn-northwest-1', // China (Ningxia)
