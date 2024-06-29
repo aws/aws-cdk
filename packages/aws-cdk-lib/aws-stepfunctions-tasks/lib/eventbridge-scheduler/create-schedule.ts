@@ -334,7 +334,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
     if (props.flexibleTimeWindow && (
       // To handle durations of less than one minute, comparisons will be made in milliseconds
-      props.flexibleTimeWindow.toMilliseconds() < 60000 ||
+      props.flexibleTimeWindow.toMilliseconds() < Duration.minutes(1).toMilliseconds() ||
       props.flexibleTimeWindow.toMinutes() > 1440
     )) {
       throw new Error('FlexibleTimeWindow must be between 1 and 1440 minutes');
