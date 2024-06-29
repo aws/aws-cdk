@@ -24,6 +24,17 @@
     }
    }
   },
+  "GuardrailVersion": {
+   "Type": "AWS::Bedrock::GuardrailVersion",
+   "Properties": {
+    "GuardrailIdentifier": {
+     "Fn::GetAtt": [
+      "Guardrail",
+      "GuardrailId"
+     ]
+    }
+   }
+  },
   "StateMachineRoleB840431D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -69,32 +80,60 @@
       {
        "Action": "bedrock:ApplyGuardrail",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":bedrock:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":guardrail/",
-          {
-           "Fn::GetAtt": [
-            "Guardrail",
-            "GuardrailId"
-           ]
-          }
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":guardrail/",
+           {
+            "Fn::GetAtt": [
+             "Guardrail",
+             "GuardrailArn"
+            ]
+           }
+          ]
          ]
-        ]
-       }
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":guardrail/",
+           {
+            "Fn::GetAtt": [
+             "Guardrail",
+             "GuardrailId"
+            ]
+           }
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -114,7 +153,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Prompt\",\"States\":{\"Prompt\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"output.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       "{\"StartAt\":\"Prompt1\",\"States\":{\"Prompt1\":{\"Next\":\"Prompt2\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"output.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -133,14 +172,26 @@
          "GuardrailId"
         ]
        },
-       "\",\"GuardrailVersion\":\"",
+       "\",\"GuardrailVersion\":\"DRAFT\",\"Trace\":\"ENABLED\"}},\"Prompt2\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"output.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"test attack\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
        {
         "Fn::GetAtt": [
          "Guardrail",
-         "Version"
+         "GuardrailArn"
         ]
        },
-       "\",\"Trace\":\"ENABLED\"}}},\"TimeoutSeconds\":30}"
+       "\",\"GuardrailVersion\":\"1\",\"Trace\":\"ENABLED\"}}},\"TimeoutSeconds\":30}"
       ]
      ]
     },

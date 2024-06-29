@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
+import { Guardrail } from './guardrail';
 import * as bedrock from '../../../aws-bedrock';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack, Token } from '../../../core';
+import { Stack } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -39,21 +40,6 @@ export interface BedrockInvokeModelOutputProps {
    * @default - Response body is returned in the task result
    */
   readonly s3Location?: s3.Location;
-}
-
-/**
- * Properties for the guardrail.
- */
-export interface Guardrail {
-  /**
-   * The unique identifier of the guardrail that you want to use.
-   */
-  readonly guardrailIdentifier: string;
-
-  /**
-   * The version number for the guardrail.
-   */
-  readonly guardrailVersion: string;
 }
 
 /**
@@ -101,6 +87,7 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModel.html
    * @default 'application/json'
+   * @deprecated This property does not require configuration because the only acceptable value is 'application/json'.
    */
   readonly contentType?: string;
 
@@ -172,8 +159,6 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     if (props.output?.s3Location?.objectVersion !== undefined) {
       throw new Error('Output S3 object version is not supported.');
     }
-
-    this.validateGuardrail(props);
 
     this.taskPolicies = this.renderPolicyStatements();
   }
@@ -269,31 +254,5 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
             : 'DISABLED',
       }),
     };
-  }
-
-  private validateGuardrail(props: BedrockInvokeModelProps) {
-    if (!props.guardrail) return;
-
-    const { guardrailIdentifier, guardrailVersion } = props.guardrail;
-
-    if (!Token.isUnresolved(guardrailIdentifier)) {
-      const guardrailPattern = /^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail\/[a-z0-9]+))$/;
-      if (!guardrailPattern.test(guardrailIdentifier)) {
-        throw new Error(`You must set guardrailIdentifier to the id or the arn of Guardrail, got ${guardrailIdentifier}`);
-      }
-      if (props.contentType !== 'application/json') {
-        throw new Error(`You must set contentType to \'application/json\' when using guardrail, got '${props.contentType}'.`);
-      }
-      if (guardrailIdentifier.length > 2048) {
-        throw new Error(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
-      }
-
-    }
-
-    const guardrailVersionPattern = /^(([1-9][0-9]{0,7})|(DRAFT))$/;
-    if (!Token.isUnresolved(guardrailVersion) && !guardrailVersionPattern.test(guardrailVersion)) {
-      throw new Error(`\`guardrailVersion\` must be either 'DRAFT' or a string representing a number between 1 and 99999999, got ${guardrailVersion}.`);
-    }
-
   }
 }

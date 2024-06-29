@@ -2,6 +2,7 @@ import { Template, Match } from '../../../assertions';
 import * as bedrock from '../../../aws-bedrock';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { Guardrail } from '../../lib/bedrock/guardrail';
 import { BedrockInvokeModel } from '../../lib/bedrock/invoke-model';
 
 describe('Invoke Model', () => {
@@ -369,16 +370,12 @@ describe('Invoke Model', () => {
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      contentType: 'application/json',
       body: sfn.TaskInput.fromObject(
         {
           prompt: 'Hello world',
         },
       ),
-      guardrail: {
-        guardrailIdentifier: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
-        guardrailVersion: 'DRAFT',
-      },
+      guardrail: Guardrail.enableDraft('arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid'),
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
@@ -406,7 +403,6 @@ describe('Invoke Model', () => {
         Body: {
           prompt: 'Hello world',
         },
-        ContentType: 'application/json',
         GuardrailIdentifier: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
         GuardrailVersion: 'DRAFT',
       },
@@ -438,16 +434,12 @@ describe('Invoke Model', () => {
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      contentType: 'application/json',
       body: sfn.TaskInput.fromObject(
         {
           prompt: 'Hello world',
         },
       ),
-      guardrail: {
-        guardrailIdentifier: 'testid',
-        guardrailVersion: 'DRAFT',
-      },
+      guardrail: Guardrail.enable('testid', 3),
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
@@ -475,9 +467,8 @@ describe('Invoke Model', () => {
         Body: {
           prompt: 'Hello world',
         },
-        ContentType: 'application/json',
         GuardrailIdentifier: 'testid',
-        GuardrailVersion: 'DRAFT',
+        GuardrailVersion: '3',
       },
     });
 
@@ -527,16 +518,12 @@ describe('Invoke Model', () => {
       // WHEN
       new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        contentType: 'application/json',
         body: sfn.TaskInput.fromObject(
           {
             prompt: 'Hello world',
           },
         ),
-        guardrail: {
-          guardrailIdentifier: 'invalid-id',
-          guardrailVersion: 'DRAFT',
-        },
+        guardrail: Guardrail.enableDraft('invalid-id'),
       });
       // THEN
     }).toThrow('You must set guardrailIdentifier to the id or the arn of Guardrail, got invalid-id');
@@ -552,16 +539,12 @@ describe('Invoke Model', () => {
       // WHEN
       new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        contentType: 'application/json',
         body: sfn.TaskInput.fromObject(
           {
             prompt: 'Hello world',
           },
         ),
-        guardrail: {
-          guardrailIdentifier,
-          guardrailVersion: 'DRAFT',
-        },
+        guardrail: Guardrail.enableDraft(guardrailIdentifier),
       });
       // THEN
     }).toThrow(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
@@ -576,43 +559,15 @@ describe('Invoke Model', () => {
       // WHEN
       const task = new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        contentType: 'application/json',
         body: sfn.TaskInput.fromObject(
           {
             prompt: 'Hello world',
           },
         ),
-        guardrail: {
-          guardrailIdentifier: 'abcdef',
-          guardrailVersion: 'test',
-        },
+        guardrail: Guardrail.enable('abcde', 0),
       });
       // THEN
-    }).toThrow('`guardrailVersion` must be either \'DRAFT\' or a string representing a number between 1 and 99999999, got test.');
-  });
-
-  test('guardrail fails when contentType is not \'application/json\'', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
-
-    expect(() => {
-      // WHEN
-      const task = new BedrockInvokeModel(stack, 'Invoke', {
-        model,
-        contentType: 'text/plain',
-        body: sfn.TaskInput.fromObject(
-          {
-            prompt: 'Hello world',
-          },
-        ),
-        guardrail: {
-          guardrailIdentifier: 'abcdef',
-          guardrailVersion: 'DRAFT',
-        },
-      });
-      // THEN
-    }).toThrow('You must set contentType to \'application/json\' when using guardrail, got \'text/plain\'.');
+    }).toThrow('\`version\` must be between 1 and 99999999, got 0.');
   });
 
   test('trace configuration', () => {

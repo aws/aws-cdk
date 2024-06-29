@@ -2,7 +2,7 @@ import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { BedrockInvokeModel } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { BedrockInvokeModel, Guardrail } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ');
@@ -27,7 +27,12 @@ const guardrail = new bedrock.CfnGuardrail(stack, 'Guardrail', {
   },
 });
 
-const prompt = new BedrockInvokeModel(stack, 'Prompt', {
+// Create Version 1
+new bedrock.CfnGuardrailVersion(stack, 'GuardrailVersion', {
+  guardrailIdentifier: guardrail.attrGuardrailId,
+});
+
+const prompt1 = new BedrockInvokeModel(stack, 'Prompt1', {
   model,
   body: sfn.TaskInput.fromObject(
     {
@@ -38,10 +43,7 @@ const prompt = new BedrockInvokeModel(stack, 'Prompt', {
       },
     },
   ),
-  guardrail: {
-    guardrailIdentifier: guardrail.attrGuardrailId,
-    guardrailVersion: guardrail.attrVersion,
-  },
+  guardrail: Guardrail.enableDraft(guardrail.attrGuardrailId),
   traceEnabled: true,
   resultSelector: {
     output: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
@@ -49,7 +51,26 @@ const prompt = new BedrockInvokeModel(stack, 'Prompt', {
   resultPath: '$',
 });
 
-const chain = sfn.Chain.start(prompt);
+const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'test attack',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  guardrail: Guardrail.enable(guardrail.attrGuardrailArn, 1),
+  traceEnabled: true,
+  resultSelector: {
+    output: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+  resultPath: '$',
+});
+
+const chain = sfn.Chain.start(prompt1).next(prompt2);
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),
@@ -88,5 +109,3 @@ describe.expect(ExpectedResult.objectLike({
   interval: cdk.Duration.seconds(10),
   totalTimeout: cdk.Duration.minutes(5),
 });
-
-app.synth();
