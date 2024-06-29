@@ -499,23 +499,36 @@ export abstract class Job extends JobBase {
    * @param props The properties for continuous logging configuration
    * @returns String containing the args for the continuous logging command
    */
-  public setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps) {
+  public setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
+
+    // If the developer has explicitly disabled continuous logging return no args
+    if (props && !props.enabled) {
+      return {};
+    }
+
+    // Else we turn on continuous logging by default. Determine what log group to use.
     const args: {[key: string]: string} = {
       '--enable-continuous-cloudwatch-log': 'true',
-      '--enable-continuous-log-filter': (props.quiet ?? true).toString(),
     };
 
-    if (props.logGroup) {
+    if (props?.quiet) {
+      args['--enable-continuous-log-filter'] = (props.quiet ?? true).toString();
+    };
+
+    // If the developer provided a log group, add its name to the args and update the role.
+    if (props?.logGroup) {
       args['--continuous-log-logGroup'] = props.logGroup.logGroupName;
       props.logGroup.grantWrite(role);
     }
 
-    if (props.logStreamPrefix) {
+    if (props?.logStreamPrefix) {
       args['--continuous-log-logStreamPrefix'] = props.logStreamPrefix;
     }
-    if (props.conversionPattern) {
+
+    if (props?.conversionPattern) {
       args['--continuous-log-conversionPattern'] = props.conversionPattern;
     }
+
     return args;
   }
 

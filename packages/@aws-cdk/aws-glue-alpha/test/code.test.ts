@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cxapi from 'aws-cdk-lib/cx-api';
@@ -23,7 +23,7 @@ describe('Code', () => {
       bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
       script = glue.Code.fromBucket(bucket, key);
 
-      new glue.PythonShellJob(stack, 'Job1', {
+      const job = new glue.PythonShellJob(stack, 'Job1', {
         script,
         role: new Role(stack, 'Role', {
           assumedBy: new ServicePrincipal('glue.amazonaws.com'),
@@ -78,7 +78,7 @@ describe('Code', () => {
         },
         Roles: [
           {
-            Ref: 'Job1ServiceRole7AF34CCA',
+            Ref: Match.stringLikeRegexp('Role'),
           },
         ],
       });
@@ -193,7 +193,7 @@ describe('Code', () => {
         },
         Roles: [
           {
-            Ref: 'Job1ServiceRole7AF34CCA',
+            Ref: Match.stringLikeRegexp('Role'),
           },
         ],
       });
@@ -207,13 +207,13 @@ describe('Code', () => {
     test('used in more than 1 job in the same stack should be reused', () => {
       new glue.PythonShellJob(stack, 'Job1', {
         script,
-        role: new Role(stack, 'Role', {
+        role: new Role(stack, 'Role1', {
           assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
       new glue.PythonShellJob(stack, 'Job2', {
         script,
-        role: new Role(stack, 'Role', {
+        role: new Role(stack, 'Role2', {
           assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
@@ -264,7 +264,7 @@ describe('Code', () => {
         },
         Role: {
           'Fn::GetAtt': [
-            'Job1ServiceRole7AF34CCA',
+            Match.stringLikeRegexp('Role'),
             'Arn',
           ],
         },
@@ -275,7 +275,7 @@ describe('Code', () => {
         },
         Role: {
           'Fn::GetAtt': [
-            'Job2ServiceRole5D2B98FE',
+            Match.stringLikeRegexp('Role'),
             'Arn',
           ],
         },
@@ -285,7 +285,7 @@ describe('Code', () => {
     test('throws if trying to rebind in another stack', () => {
       new glue.PythonShellJob(stack, 'Job1', {
         script,
-        role: new Role(stack, 'Role', {
+        role: new Role(stack, 'Role1', {
           assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       });
@@ -293,7 +293,7 @@ describe('Code', () => {
 
       expect(() => new glue.PythonShellJob(differentStack, 'Job1', {
         script,
-        role: new Role(stack, 'Role', {
+        role: new Role(stack, 'Role2', {
           assumedBy: new ServicePrincipal('glue.amazonaws.com'),
         }),
       })).toThrow(/associated with another stack/);

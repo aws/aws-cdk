@@ -62,8 +62,6 @@ export class PySparkEtlJob extends Job {
   public readonly role: iam.IRole;
   public readonly grantPrincipal: iam.IPrincipal;
 
-  //private logGroup: LogGroup;
-
   /**
    * The Spark UI logs location if Spark UI monitoring and debugging is enabled.
    *
@@ -85,6 +83,8 @@ export class PySparkEtlJob extends Job {
       physicalName: props.jobName,
     });
 
+    this.jobName = props.jobName ?? '';
+
     // Set up role and permissions for principal
     this.role = props.role, {
       assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
@@ -97,7 +97,7 @@ export class PySparkEtlJob extends Job {
     this.sparkUILoggingLocation = sparkUIArgs?.location;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
+    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
@@ -132,7 +132,6 @@ export class PySparkEtlJob extends Job {
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      //notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
       securityConfiguration: props.securityConfiguration?.securityConfigurationName,
