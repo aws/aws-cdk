@@ -4,6 +4,7 @@ import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
+import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -87,6 +88,20 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * The Open ID Connect Provider of the cluster used to configure Service Accounts.
    */
   readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+
+  /**
+   * The EKS Pod Identity Agent addon for the EKS cluster.
+   *
+   * The EKS Pod Identity Agent is responsible for managing the temporary credentials
+   * used by pods in the cluster to access AWS resources. It runs as a DaemonSet on
+   * each node and provides the necessary credentials to the pods based on their
+   * associated service account.
+   *
+   * This property returns the `CfnAddon` resource representing the EKS Pod Identity
+   * Agent addon. If the addon has not been created yet, it will be created and
+   * returned.
+   */
+  readonly eksPodIdentityAgent?: IAddon;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -1443,6 +1458,11 @@ export class Cluster extends ClusterBase {
   private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
+   * an EKS Pod Identity Agent instance
+   */
+  private _eksPodIdentityAgent?: IAddon;
+
+  /**
    * An AWS Lambda layer that includes `kubectl` and `helm`
    *
    * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
@@ -1978,6 +1998,26 @@ export class Cluster extends ClusterBase {
     }
 
     return this._openIdConnectProvider;
+  }
+
+  /**
+   * Retrieves the EKS Pod Identity Agent addon for the EKS cluster.
+   *
+   * The EKS Pod Identity Agent is responsible for managing the temporary credentials
+   * used by pods in the cluster to access AWS resources. It runs as a DaemonSet on
+   * each node and provides the necessary credentials to the pods based on their
+   * associated service account.
+   *
+   */
+  public get eksPodIdentityAgent(): IAddon | undefined {
+    if (!this._eksPodIdentityAgent) {
+      this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
+        cluster: this,
+        addonName: 'eks-pod-identity-agent',
+      });
+    }
+
+    return this._eksPodIdentityAgent;
   }
 
   /**

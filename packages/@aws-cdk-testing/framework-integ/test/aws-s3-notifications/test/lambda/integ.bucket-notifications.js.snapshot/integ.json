@@ -1,20 +1,14 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "LambdaBucketNotificationsTest/DefaultTest": {
+    "integ.bucket-notifications": {
       "stacks": [
-        "cdk-integ-lambda-bucket-s3-notifications"
+        "cdk-integ-lambda-bucket-notifications"
       ],
-      "diffAssets": true,
-      "cdkCommandOptions": {
-        "deploy": {
-          "args": {
-            "rollback": false
-          }
-        }
-      },
-      "assertionStack": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert",
-      "assertionStackName": "LambdaBucketNotificationsTestDefaultTestDeployAssertDC5450F4"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }

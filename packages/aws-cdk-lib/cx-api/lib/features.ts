@@ -107,7 +107,6 @@ export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
-export const S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED = '@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1120,20 +1119,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       for more details.
     `,
     introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED]: {
-    type: FlagType.BugFix,
-    summary: 'Enable deletion of existing S3 event notifications',
-    detailsMd: `
-    This flag enables the deletion of existing S3 event notifications. 
-    When trying to delete existing S3 event notifications, the S3 bucket event notification handler Lambda function can fail due to overlapping event type suffixes.
-    See https://github.com/aws/aws-cdk/issues/28915 for more details.
-    Enabling this flag allows you to successfully delete existing S3 event notifications.
-    `,
-    introducedIn: { v2: '2.145.0' },
     recommendedValue: true,
   },
 };
