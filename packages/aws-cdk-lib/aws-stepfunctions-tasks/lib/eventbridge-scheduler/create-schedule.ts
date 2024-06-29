@@ -114,6 +114,9 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
    */
   readonly enabled?: boolean;
 
+  /**
+   * The schedule's target.
+   */
   readonly target: EventBridgeSchedulerTarget;
 }
 
