@@ -81,11 +81,11 @@ export interface EventBusProps {
   readonly eventSourceName?: string;
 
   /**
-   * Dead Letter Queue for the event bus
+   * Dead-letter queue for the event bus
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html#eb-rule-dlq
    *
-   * @default - no dead letter queue
+   * @default - no dead-letter queue
    */
   readonly deadLetterQueue?: sqs.IQueue;
 }
