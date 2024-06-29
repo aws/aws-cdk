@@ -1,5 +1,5 @@
 export * from './api-destination';
-export * from './eventBridge';
+export * from './event-bridge';
 export * from './kinesis';
 export * from './lambda';
 export * from './sqs';
