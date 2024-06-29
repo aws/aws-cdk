@@ -120,7 +120,7 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
 /**
  * Properties for `EventBridgeSchedulerTarget`
  *
- * @see @see https://docs.aws.amazon.com/scheduler/latest/APIReference/API_Target.html#API_Target_Contents
+ * @see https://docs.aws.amazon.com/scheduler/latest/APIReference/API_Target.html#API_Target_Contents
  */
 export interface EventBridgeSchedulerTargetProps {
   /**
