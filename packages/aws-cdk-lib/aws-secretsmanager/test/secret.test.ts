@@ -382,7 +382,7 @@ test('grantRead cross account', () => {
   // GIVEN
   const key = new kms.Key(stack, 'KMS');
   const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
-  const principal = new iam.AccountPrincipal('1234');
+  const principal = new iam.AccountPrincipal('123456789012');
 
   // WHEN
   secret.grantRead(principal, ['FOO', 'bar']).assertSuccess();
