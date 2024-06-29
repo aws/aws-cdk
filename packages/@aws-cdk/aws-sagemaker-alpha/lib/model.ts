@@ -214,7 +214,7 @@ export interface ModelProps {
    *
    * @see https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html
    *
-   * @default - false
+   * @default false
    */
   readonly networkIsolation?: boolean;
 }
