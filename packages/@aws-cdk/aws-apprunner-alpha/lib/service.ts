@@ -577,7 +577,7 @@ export interface ImageRepository {
    * always be `public.ecr.aws`. For `ECR`, the pattern should be
    * `([0-9]{12}.dkr.ecr.[a-z\-]+-[0-9]{1}.amazonaws.com\/.*)`.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html for more details.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
    */
   readonly imageIdentifier: string;
 
@@ -1311,9 +1311,11 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       } : undefined,
     });
 
-    // grant required privileges for the role
+    // grant required privileges for the role to access an image in Amazon ECR
+    // See https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles
     if (this.source.ecrRepository && this.accessRole) {
       this.source.ecrRepository.grantPull(this.accessRole);
+      this.source.ecrRepository.grant(this.accessRole, 'ecr:DescribeImages');
     }
 
     this.serviceArn = resource.attrServiceArn;
