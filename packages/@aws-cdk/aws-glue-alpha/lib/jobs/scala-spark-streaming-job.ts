@@ -94,7 +94,7 @@ export class ScalaSparkStreamingJob extends Job {
     this.sparkUILoggingLocation = sparkUIArgs?.location;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
+    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
