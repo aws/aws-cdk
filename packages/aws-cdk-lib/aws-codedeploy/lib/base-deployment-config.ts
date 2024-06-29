@@ -180,10 +180,10 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
 
     if (props?.zonalConfig) {
       if (props.zonalConfig.monitorDuration) {
-        this.validateDurationLessThanOneSecond(props.zonalConfig.monitorDuration, 'monitorDuration');
+        this.validateMinimumDuration(props.zonalConfig.monitorDuration, 'monitorDuration');
       }
       if (props.zonalConfig.firstZoneMonitorDuration) {
-        this.validateDurationLessThanOneSecond(props.zonalConfig.firstZoneMonitorDuration, 'firstZoneMonitorDuration');
+        this.validateMinimumDuration(props.zonalConfig.firstZoneMonitorDuration, 'firstZoneMonitorDuration');
       }
     }
 
@@ -210,7 +210,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });
   }
 
-  private validateDurationLessThanOneSecond(duration: Duration, name: string) {
+  private validateMinimumDuration(duration: Duration, name: string) {
     const milliseconds = duration.toMilliseconds();
     if (milliseconds > 0 && milliseconds < 1000) {
       throw new Error(`${name} must be greater than or equal to 1 second or 0, got ${milliseconds}ms`);
