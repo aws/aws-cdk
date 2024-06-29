@@ -37,6 +37,13 @@ export interface DomainOptions {
    * @default - all repository branches ['*', 'pr*']
    */
   readonly autoSubdomainCreationPatterns?: string[];
+
+  /**
+   * The SSL/TLS certificate to use for your custom domain.
+   *
+   * @default - use the default certificate that Amplify provisions for you
+   */
+  readonly customCertificate?: acm.ICertificate;
 }
 
 /**
@@ -53,13 +60,6 @@ export interface DomainProps extends DomainOptions {
    * @default the IAM role from App.grantPrincipal
    */
   readonly autoSubDomainIamRole?: iam.IRole;
-
-  /**
-   * The SSL/TLS certificate to use for your custom domain.
-   *
-   * @default - use the default certificate that Amplify provisions for you
-   */
-  readonly customCertificate?: acm.ICertificate;
 }
 
 /**

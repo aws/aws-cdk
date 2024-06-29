@@ -1,5 +1,6 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
 
@@ -61,6 +62,53 @@ test('create a domain', () => {
         },
       },
     ],
+  });
+});
+
+test('create a domain', () => {
+  // GIVEN
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+  });
+  const prodBranch = app.addBranch('main');
+  const devBranch = app.addBranch('dev');
+
+  const cert = new acm.Certificate(stack, 'Cert', {
+    domainName: 'amazon.com',
+  });
+
+  // WHEN
+  const domain = app.addDomain('amazon.com', {
+    subDomains: [
+      {
+        branch: prodBranch,
+        prefix: 'prod',
+      },
+    ],
+    customCertificate: cert,
+  });
+  domain.mapSubDomain(devBranch);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
+    AppId: {
+      'Fn::GetAtt': [
+        'AppF1B96344',
+        'AppId',
+      ],
+    },
+    DomainName: 'amazon.com',
+    CertificateSettings: {
+      CertificateType: 'CUSTOM',
+      CustomCertificateArn: {
+        Ref: 'Cert5C9FAEC1',
+      },
+    },
   });
 });
 
