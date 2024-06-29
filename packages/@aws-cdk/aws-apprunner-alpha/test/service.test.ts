@@ -524,6 +524,56 @@ test('create a service from existing ECR repository(image repository type: ECR)'
       Version: '2012-10-17',
     },
   });
+  // we should have a following IAM Policy
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'ecr:GetAuthorizationToken',
+          Resource: '*',
+        },
+        {
+          Effect: 'Allow',
+          Action: [
+            'ecr:BatchCheckLayerAvailability',
+            'ecr:GetDownloadUrlForLayer',
+            'ecr:BatchGetImage',
+          ],
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':ecr:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':repository/nginx',
+            ]],
+          },
+        },
+        {
+          Effect: 'Allow',
+          Action: 'ecr:DescribeImages',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':ecr:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':repository/nginx',
+            ]],
+          },
+        },
+      ],
+    },
+    PolicyName: 'ServiceAccessRoleDefaultPolicy9C214812',
+    Roles: [
+      { Ref: 'ServiceAccessRole4763579D' },
+    ],
+  });
   // we should have the service
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
@@ -1652,5 +1702,58 @@ test('create a service with an AutoScalingConfiguration', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     AutoScalingConfigurationArn: stack.resolve(autoScalingConfiguration.autoScalingConfigurationArn),
+  });
+});
+
+test('create a service with a Observability Configuration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const observabilityConfiguration = new apprunner.ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
+    observabilityConfigurationName: 'MyObservabilityConfiguration',
+    traceConfigurationVendor: apprunner.TraceConfigurationVendor.AWSXRAY,
+  });
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    observabilityConfiguration,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
+    ObservabilityConfigurationName: 'MyObservabilityConfiguration',
+    TraceConfiguration: {
+      Vendor: 'AWSXRAY',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ObservabilityConfiguration: {
+      ObservabilityEnabled: true,
+      ObservabilityConfigurationArn: stack.resolve(observabilityConfiguration.observabilityConfigurationArn),
+    },
+  });
+});
+
+test('create a service without a Observability Configuration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ObservabilityConfiguration: Match.absent(),
   });
 });
