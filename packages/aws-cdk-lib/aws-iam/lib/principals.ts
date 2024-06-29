@@ -484,7 +484,7 @@ export class AccountPrincipal extends ArnPrincipal {
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
       throw new Error('accountId should be of type string');
     }
-    if (!this.accountIdRegExp.test(accountId)) {
+    if (!cdk.Token.isUnresolved(accountId) && !this.accountIdRegExp.test(accountId)) {
       throw new Error('accountId should be composed of 12 digits');
     }
     this.principalAccount = accountId;
