@@ -218,7 +218,7 @@ behavior('self-update project role uses tagged bootstrap-role permissions', (sui
           {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
-            Resource: 'arn:*:iam::123pipeline:role/*',
+            Resource: 'arn:*:iam::123456789012:role/*',
             Condition: {
               'ForAnyValue:StringEquals': {
                 'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],

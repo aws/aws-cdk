@@ -337,7 +337,7 @@ describe('key policies', () => {
 
   test('grant for a principal in a different account', () => {
     const app = new cdk.App();
-    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
+    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '123456789012' } });
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
       roleName: 'MyRolePhysicalName',
@@ -357,7 +357,7 @@ describe('key policies', () => {
             'kms:GenerateDataKey*',
           ],
           Effect: 'Allow',
-          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']] } },
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:role/MyRolePhysicalName']] } },
           Resource: '*',
         }]),
         Version: '2012-10-17',
@@ -383,7 +383,7 @@ describe('key policies', () => {
 
   test('grant for an immutable role', () => {
     const app = new cdk.App();
-    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
+    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '123456789012' } });
     const principal = new iam.Role(principalStack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
       roleName: 'MyRolePhysicalName',
@@ -409,7 +409,7 @@ describe('key policies', () => {
             'kms:GenerateDataKey*',
           ],
           Effect: 'Allow',
-          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:root']] } },
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] } },
           Resource: '*',
         }]),
         Version: '2012-10-17',

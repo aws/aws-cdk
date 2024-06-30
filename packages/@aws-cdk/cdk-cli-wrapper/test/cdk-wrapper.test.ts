@@ -68,7 +68,7 @@ test('deploy with all arguments', () => {
     lookups: false,
     notices: true,
     profile: 'my-profile',
-    roleArn: 'arn:aws:iam::1111111111:role/my-role',
+    roleArn: 'arn:aws:iam::111111111111:role/my-role',
     staging: false,
     verbose: true,
     ec2Creds: true,
@@ -112,7 +112,7 @@ test('deploy with all arguments', () => {
       '--profile', 'my-profile',
       '--proxy', 'https://proxy',
       '--ca-bundle-path', '/some/path',
-      '--role-arn', 'arn:aws:iam::1111111111:role/my-role',
+      '--role-arn', 'arn:aws:iam::111111111111:role/my-role',
       '--output', 'cdk.out',
       '--no-ci',
       '--execute',
@@ -247,8 +247,8 @@ test('can parse array arguments', () => {
     app: 'node bin/my-app.js',
     stacks: ['test-stack1'],
     notificationArns: [
-      'arn:aws:us-east-1:1111111111:some:resource',
-      'arn:aws:us-east-1:1111111111:some:other-resource',
+      'arn:aws:us-east-1:111111111111:some:resource',
+      'arn:aws:us-east-1:111111111111:some:other-resource',
     ],
   });
 
@@ -257,8 +257,8 @@ test('can parse array arguments', () => {
     expect.stringMatching(/cdk/),
     [
       'deploy',
-      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
-      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
+      '--notification-arns', 'arn:aws:us-east-1:111111111111:some:resource',
+      '--notification-arns', 'arn:aws:us-east-1:111111111111:some:other-resource',
       '--progress', 'events',
       '--app',
       'node bin/my-app.js',

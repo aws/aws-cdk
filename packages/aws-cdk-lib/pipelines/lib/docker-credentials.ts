@@ -30,7 +30,7 @@ export abstract class DockerCredential {
    * Creates a DockerCredential for one or more ECR repositories.
    *
    * NOTE - All ECR repositories in the same account and region share a domain name
-   * (e.g., 0123456789012.dkr.ecr.eu-west-1.amazonaws.com), and can only have one associated
+   * (e.g., 123456789012.dkr.ecr.eu-west-1.amazonaws.com), and can only have one associated
    * set of credentials (and DockerCredential). Attempting to associate one set of credentials
    * with one ECR repo and another with another ECR repo in the same account and region will
    * result in failures when using these credentials in the pipeline.

@@ -31,7 +31,7 @@ test('process events', async () => {
   monitor.addLogGroups(
     {
       name: 'name',
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-1',
     },
     sdk,
@@ -69,7 +69,7 @@ test('process truncated events', async () => {
   monitor.addLogGroups(
     {
       name: 'name',
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-1',
     },
     sdk,

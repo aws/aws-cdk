@@ -241,7 +241,7 @@ describe('StackSetAction', () => {
     stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
       ...defaultOpts(),
       stackInstances: cpactions.StackInstances.inAccounts(
-        ['11111111111', '22222222222'],
+        ['111111111111', '22222222222'],
         ['us-east-1', 'us-west-1', 'ca-central-1'],
       ),
       deploymentModel: cpactions.StackSetDeploymentModel.selfManaged({
@@ -264,7 +264,7 @@ describe('StackSetAction', () => {
                 'TemplatePath': 'SourceArtifact::template.yaml',
                 'Parameters': 'SourceArtifact::parameters.json',
                 'Capabilities': 'CAPABILITY_NAMED_IAM',
-                'DeploymentTargets': '11111111111,22222222222',
+                'DeploymentTargets': '111111111111,22222222222',
                 'FailureTolerancePercentage': 50,
                 'MaxConcurrentPercentage': 25,
                 'Regions': 'us-east-1,us-west-1,ca-central-1',

@@ -43,8 +43,8 @@ describe('CodeDeploy Server Deployment Group', () => {
   });
 
   test('creating an application with physical name if needed', () => {
-    const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
-    const stack2 = new cdk.Stack(undefined, undefined, { env: { account: '12346', region: 'us-test-2' } });
+    const stack = new cdk.Stack(undefined, undefined, { env: { account: '123456789012', region: 'us-test-1' } });
+    const stack2 = new cdk.Stack(undefined, undefined, { env: { account: '123467890123', region: 'us-test-2' } });
     const serverDeploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
       deploymentGroupName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });
@@ -54,7 +54,7 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack2).hasOutput('Output', {
-      Value: 'defaultmydgapplication78dba0bb0c7580b32033',
+      Value: 'defaultmydgapplication78dba0bb21f873b29bdf',
     });
   });
 

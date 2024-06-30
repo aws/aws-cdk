@@ -219,5 +219,5 @@ class TestStack extends cdk.Stack {
 }
 
 function testStack() {
-  return new TestStack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
+  return new TestStack(undefined, undefined, { env: { account: '123456789012', region: 'us-test-1' } });
 }

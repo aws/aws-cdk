@@ -53,7 +53,7 @@ export class StackSetPipelineStack extends Stack {
       ],
     });
 
-    const accounts = process.env.STACKSET_ACCOUNTS?.split(',') ?? ['1111', '2222'];
+    const accounts = process.env.STACKSET_ACCOUNTS?.split(',') ?? ['1111', '222222222222'];
 
     pipeline.addStage({
       stageName: 'Cfn',

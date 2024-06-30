@@ -157,7 +157,7 @@ test('passing trusted accounts to the old bootstrapping results in an error', as
   await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
     toolkitStackName: 'mockStack',
     parameters: {
-      trustedAccounts: ['0123456789012'],
+      trustedAccounts: ['123456789012'],
     },
   }))
     .rejects

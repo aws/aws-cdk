@@ -410,7 +410,7 @@ describe('basic pipeline', () => {
         pipeline.addApplicationStage(new FileAssetApp(app, 'App1'));
         pipeline.addApplicationStage(new FileAssetApp(app, 'App2', {
           env: {
-            account: '0123456789012',
+            account: '123456789012',
             region: 'eu-west-1',
           },
         }));
@@ -427,7 +427,7 @@ describe('basic pipeline', () => {
         pipeline.addStage(new FileAssetApp(app, 'App1'));
         pipeline.addStage(new FileAssetApp(app, 'App2', {
           env: {
-            account: '0123456789012',
+            account: '123456789012',
             region: 'eu-west-1',
           },
         }));
@@ -437,7 +437,7 @@ describe('basic pipeline', () => {
 
       function THEN_codePipelineExpectation() {
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-          expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::0123456789012:role/cdk-hnb659fds-file-publishing-role-0123456789012-eu-west-1'],
+          expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-eu-west-1'],
             'CdkAssetsFileRole6BE17A07'));
       }
     });
@@ -980,7 +980,7 @@ behavior('necessary secrets manager permissions get added to asset roles', suite
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+                ':secretsmanager:us-pipeline:123456789012:secret:FoobarSecret-??????',
               ],
             ],
           },
@@ -1022,7 +1022,7 @@ behavior('adding environment variable to assets job adds SecretsManager permissi
               'Fn::Join': ['', [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+                ':secretsmanager:us-pipeline:123456789012:secret:FoobarSecret-??????',
               ]],
             },
           }),

@@ -15,9 +15,9 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
  *
  * Outputs:
  * aws-cdk-codepipeline-ecr-source.PipelineConsoleLink = https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/aws-cdk-codepipeline-ecr-source-MyPipelineAED38ECF-1P0OYRLWF8FHY/view?region=us-east-1
- * aws-cdk-codepipeline-ecr-source.LoginCommand = aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 11111111111.dkr.ecr.us-east-1.amazonaws.com
- * aws-cdk-codepipeline-ecr-source.PushCommand = docker tag public.ecr.aws/lambda/provided 11111111111.dkr.ecr.us-east-1.amazonaws.com/aws-cdk-codepipeline-ecr-source-myecrrepo767466d0-gsrntpvfwc5w:latest \
- * && docker push 11111111111.dkr.ecr.us-east-1.amazonaws.com/aws-cdk-codepipeline-ecr-source-myecrrepo767466d0-gsrntpvfwc5w:latest
+ * aws-cdk-codepipeline-ecr-source.LoginCommand = aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 111111111111.dkr.ecr.us-east-1.amazonaws.com
+ * aws-cdk-codepipeline-ecr-source.PushCommand = docker tag public.ecr.aws/lambda/provided 111111111111.dkr.ecr.us-east-1.amazonaws.com/aws-cdk-codepipeline-ecr-source-myecrrepo767466d0-gsrntpvfwc5w:latest \
+ * && docker push 111111111111.dkr.ecr.us-east-1.amazonaws.com/aws-cdk-codepipeline-ecr-source-myecrrepo767466d0-gsrntpvfwc5w:latest
  *
  * Run the LoginCommand & PushCommand to tag and push an image to the ECR repository.
  * Then use the PipelineConsoleLink to navigate to the pipeline console page to validate that the pipeline

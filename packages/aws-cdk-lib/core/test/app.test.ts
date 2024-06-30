@@ -25,7 +25,7 @@ function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembl
 
 function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
   return withApp({ context }, app => {
-    const stack1 = new Stack(app, 'stack1', { env: { account: '12345', region: 'us-east-1' } });
+    const stack1 = new Stack(app, 'stack1', { env: { account: '123456789012', region: 'us-east-1' } });
     new CfnResource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
     const r2 = new CfnResource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
 
@@ -63,9 +63,9 @@ describe('app', () => {
     const stack1 = response.stacks[0];
     expect(stack1.stackName).toEqual('stack1');
     expect(stack1.id).toEqual('stack1');
-    expect(stack1.environment.account).toEqual('12345');
+    expect(stack1.environment.account).toEqual('123456789012');
     expect(stack1.environment.region).toEqual('us-east-1');
-    expect(stack1.environment.name).toEqual('aws://12345/us-east-1');
+    expect(stack1.environment.name).toEqual('aws://123456789012/us-east-1');
     expect(stack1.template).toEqual({
       Resources:
       {

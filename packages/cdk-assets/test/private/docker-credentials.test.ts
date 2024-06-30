@@ -72,18 +72,18 @@ describe('fetchDockerLoginCredentials', () => {
         'secret.example.com': { secretsManagerSecretId: 'mySecret' },
         'secretwithrole.example.com': {
           secretsManagerSecretId: 'mySecret',
-          assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role',
+          assumeRoleArn: 'arn:aws:iam::123456789012:role/my-role',
         },
         'secretwithcustomfields.example.com': {
           secretsManagerSecretId: 'mySecret',
           secretsUsernameField: 'name',
           secretsPasswordField: 'apiKey',
-          assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role',
+          assumeRoleArn: 'arn:aws:iam::123456789012:role/my-role',
         },
         'ecr.example.com': { ecrRepository: true },
         'ecrwithrole.example.com': {
           ecrRepository: true,
-          assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role',
+          assumeRoleArn: 'arn:aws:iam::123456789012:role/my-role',
         },
       },
     };
@@ -133,7 +133,7 @@ describe('fetchDockerLoginCredentials', () => {
       const creds = await fetchDockerLoginCredentials(aws, config, 'secretwithrole.example.com');
 
       expect(creds).toEqual({ Username: 'secretUser', Secret: 'secretPass' });
-      expect(aws.secretsManagerClient).toHaveBeenCalledWith({ assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role' });
+      expect(aws.secretsManagerClient).toHaveBeenCalledWith({ assumeRoleArn: 'arn:aws:iam::123456789012:role/my-role' });
     });
 
     test('supports configuring the secret fields', async () => {
@@ -178,7 +178,7 @@ describe('fetchDockerLoginCredentials', () => {
       const creds = await fetchDockerLoginCredentials(aws, config, 'ecrwithrole.example.com');
 
       expect(creds).toEqual({ Username: 'myFoo', Secret: 'myBar' });
-      expect(aws.ecrClient).toHaveBeenCalledWith({ assumeRoleArn: 'arn:aws:iam::0123456789012:role/my-role' });
+      expect(aws.ecrClient).toHaveBeenCalledWith({ assumeRoleArn: 'arn:aws:iam::123456789012:role/my-role' });
     });
 
     test('throws if ECR returns no authData', async () => {
@@ -198,7 +198,7 @@ describe('fetchDockerLoginCredentials', () => {
 
 function mockSecretWithSecretString(secretString: any) {
   aws.mockSecretsManager.getSecretValue = mockedApiResult({
-    ARN: 'arn:aws:secretsmanager:eu-west-1:0123456789012:secret:mySecret',
+    ARN: 'arn:aws:secretsmanager:eu-west-1:123456789012:secret:mySecret',
     Name: 'mySecret',
     VersionId: 'fa81fe61-c167-4aca-969e-4d8df74d4814',
     SecretString: JSON.stringify(secretString),
@@ -213,7 +213,7 @@ function mockEcrAuthorizationData(authorizationToken: string) {
     authorizationData: [
       {
         authorizationToken,
-        proxyEndpoint: 'https://0123456789012.dkr.ecr.eu-west-1.amazonaws.com',
+        proxyEndpoint: 'https://123456789012.dkr.ecr.eu-west-1.amazonaws.com',
       },
     ],
   });
