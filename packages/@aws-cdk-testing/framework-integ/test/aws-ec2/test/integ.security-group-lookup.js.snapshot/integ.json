@@ -1,0 +1,12 @@
+{
+  "version": "37.0.0",
+  "testCases": {
+    "SgLookupTest/DefaultTest": {
+      "stacks": [
+        "StackWithSg"
+      ],
+      "assertionStack": "SgLookupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SgLookupTestDefaultTestDeployAssert9466B7BF"
+    }
+  }
+}

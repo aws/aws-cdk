@@ -1,0 +1,20 @@
+{
+  "version": "37.0.0",
+  "files": {
+    "17ef89703212f1690fb87b6d1e83ab3015c62289c86a8abc3f7c420400a1c6fb": {
+      "source": {
+        "path": "StackWithSg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "17ef89703212f1690fb87b6d1e83ab3015c62289c86a8abc3f7c420400a1c6fb.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
