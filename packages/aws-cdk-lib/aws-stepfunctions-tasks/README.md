@@ -248,7 +248,7 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
 ### Cross-region AWS API call
 
 You can call AWS API in a different region from your state machine by using the `CallAwsServiceCrossRegion` construct. In addition to the properties for `CallAwsService` construct, you have to set `region` property to call the API.
- 
+
 ```ts
 declare const myBucket: s3.Bucket;
 const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
@@ -382,7 +382,6 @@ You can apply a guardrail to the invocation by setting `guardrail`.
 
 ```ts
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-declare const myGuardrail: bedrock.CfnGuardrail;
 
 const model = bedrock.FoundationModel.fromFoundationModelId(
   this,
@@ -401,10 +400,7 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
       },
     },
   ),
-  guardrail: {
-    guardrailIdentifier: myGuardrail.attrGuardrailId,
-    guardrailVersion: myGuardrail.attrVersion,
-  },
+  guardrail: tasks.Guardrail.enable('guardrailId', 1),
   resultSelector: {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },
