@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.147.3](https://github.com/aws/aws-cdk/compare/v2.147.2...v2.147.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** breaking change in esbuild causes import module error ([#30726](https://github.com/aws/aws-cdk/issues/30726)) ([06c14b1](https://github.com/aws/aws-cdk/commit/06c14b16d04353e9e108b58edc1450d018c24b12)), closes [#30717](https://github.com/aws/aws-cdk/issues/30717)
+
 ## [2.147.2](https://github.com/aws/aws-cdk/compare/v2.147.1...v2.147.2) (2024-06-27)
 
 
