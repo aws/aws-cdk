@@ -72,7 +72,6 @@
       "packages/aws-cdk-lib",
       "packages/aws-cdk",
       "packages/cdk",
-      "packages/cdk-assets",
       "packages/@aws-cdk/*",
       "packages/awslint",
       "packages/@aws-cdk-testing/*",

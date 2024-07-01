@@ -63,7 +63,6 @@ export class PublishConfigTagIsRequired extends ValidationRule {
     '@aws-cdk/region-info',
     'aws-cdk',
     'awslint',
-    'cdk-assets',
   ];
 
   public validate(pkg: PackageJson): void {
@@ -1685,7 +1684,6 @@ export class UbergenPackageVisibility extends ValidationRule {
     'aws-cdk',
     'awslint',
     'cdk',
-    'cdk-assets',
     '@aws-cdk/integ-runner',
     '@aws-cdk-testing/cli-integ',
   ];
