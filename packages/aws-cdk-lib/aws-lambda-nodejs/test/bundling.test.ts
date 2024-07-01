@@ -29,7 +29,7 @@ beforeEach(() => {
 
   detectPackageInstallationMock = jest.spyOn(PackageInstallation, 'detect').mockReturnValue({
     isLocal: true,
-    version: '0.21.x',
+    version: '0.8.8',
   });
 
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
