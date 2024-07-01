@@ -14,7 +14,7 @@ RUN npm install --global typescript
 
 # Install esbuild
 # (unsafe-perm because esbuild has a postinstall script)
-# pin the minor version to 0.21 to prevert breaking change
+# pin the minor version to 0.21 to prevent breaking change
 ARG ESBUILD_VERSION=0.21
 RUN npm install --global --unsafe-perm=true esbuild@$ESBUILD_VERSION
 
