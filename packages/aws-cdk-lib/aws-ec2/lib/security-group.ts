@@ -880,7 +880,7 @@ export interface SecurityGroupLookupOptions {
   /**
    * The keys of tags assigned to the security group
    *
-   * @default - Don't filter on tag key
+   * @default - Don't filter on tag keys
    */
   readonly tagKeys?: string[];
 
