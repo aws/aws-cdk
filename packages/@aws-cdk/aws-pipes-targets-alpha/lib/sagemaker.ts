@@ -17,31 +17,12 @@ export interface SageMakerTargetParameters {
   /**
    * List of parameter names and values for SageMaker Model Building Pipeline execution.
    *
+   * The Name/Value pairs are passed to start execution of the pipeline.
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargetsagemakerpipelineparameters.html#cfn-pipes-pipe-pipetargetsagemakerpipelineparameters-pipelineparameterlist
    * @default - none
    */
-  readonly pipelineParameterList?: SageMakerPipelineParameter[];
-}
-
-/**
- * The name/value pair of a parameter to start execution of a SageMaker Model Building Pipeline.
- *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
- */
-export interface SageMakerPipelineParameter {
-  /**
-   * Name of parameter to start execution of a SageMaker Model Building Pipeline.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-sagemakerpipelineparameter.html#cfn-pipes-pipe-sagemakerpipelineparameter-name
-   */
-  readonly name: string;
-
-  /**
-   * Value of parameter to start execution of a SageMaker Model Building Pipeline.
-   *
-   * @ see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-sagemakerpipelineparameter.html#cfn-pipes-pipe-sagemakerpipelineparameter-value
-   */
-  readonly value: string;
+  readonly pipelineParameterList?: Record<string, string>;
 }
 
 /**
@@ -50,12 +31,14 @@ export interface SageMakerPipelineParameter {
 export class SageMakerTarget implements ITarget {
   private pipeline: IPipeline;
   private sagemakerParameters?: SageMakerTargetParameters;
+  private pipelineParameterList?: Record<string, string>;
   public readonly targetArn: string;
 
   constructor(pipeline: IPipeline, parameters?: SageMakerTargetParameters) {
     this.pipeline = pipeline;
     this.targetArn = pipeline.pipelineArn;
     this.sagemakerParameters = parameters;
+    this.pipelineParameterList = this.sagemakerParameters?.pipelineParameterList;
   }
 
   grantPush(grantee: IRole): void {
@@ -72,7 +55,13 @@ export class SageMakerTarget implements ITarget {
     return {
       targetParameters: {
         inputTemplate: this.sagemakerParameters.inputTransformation?.bind(pipe).inputTemplate,
-        sageMakerPipelineParameters: this.sagemakerParameters,
+        sageMakerPipelineParameters: {
+          pipelineParameterList: this.pipelineParameterList ?
+            Object.entries(this.pipelineParameterList).map(([key, value]) => ({
+              name: key,
+              value: value,
+            })) : undefined,
+        },
       },
     };
   }

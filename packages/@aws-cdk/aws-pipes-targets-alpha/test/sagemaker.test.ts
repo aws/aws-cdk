@@ -39,12 +39,9 @@ describe('SageMaker', () => {
   it('should have target parameters', () => {
     // ARRANGE
     const target = new SageMakerTarget(pipeline, {
-      pipelineParameterList: [
-        {
-          name: 'foo',
-          value: 'bar',
-        },
-      ],
+      pipelineParameterList: {
+        foo: 'bar',
+      },
     });
 
     new Pipe(stack, 'MyPipe', {
