@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "FlinkAppTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlinkAppTest.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b87c9ca115369ddec2218b39dd812556831e2abf35fe09315930aa407c1e0d69.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48dd04d48b618ae68b67e5b8cf8896c84fb9c39997deb11669ac2a4a5205a3db.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -54,7 +49,10 @@
         "/FlinkAppTest/App/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppF1B96344"
+            "data": "AppF1B96344",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/FlinkAppTest/App/LogGroup/Resource": [
@@ -72,7 +70,10 @@
         "/FlinkAppTest/App/LoggingOption": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppLoggingOption75BE995E"
+            "data": "AppLoggingOption75BE995E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/FlinkAppTest/Alarm/Resource": [
@@ -95,6 +96,12 @@
         ]
       },
       "displayName": "FlinkAppTest"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

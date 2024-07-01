@@ -33,6 +33,8 @@ The following targets are supported:
 7. `targets.InspectorStartAssessmentRun`: [Start an Amazon Inspector assessment run](#start-an-amazon-inspector-assessment-run)
 8. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Streams](#put-a-record-to-an-amazon-kinesis-data-streams)
 9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
+10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
+11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
 
 ## Invoke a Lambda function
 
@@ -267,6 +269,47 @@ new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.KinesisDataFirehosePutRecord(deliveryStream, {
     input: ScheduleTargetInput.fromObject(payload),
+  }),
+});
+```
+
+## Start a CodePipeline execution
+
+Use the `CodePipelineStartPipelineExecution` target to start a new execution for a CodePipeline pipeline.
+
+The code snippet below creates an event rule with a CodePipeline pipeline as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
+
+declare const pipeline: codepipeline.Pipeline;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.CodePipelineStartPipelineExecution(pipeline),
+});
+```
+
+## Start a SageMaker pipeline execution
+
+Use the `SageMakerStartPipelineExecution` target to start a new execution for a SageMaker pipeline.
+
+The code snippet below creates an event rule with a SageMaker pipeline as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
+
+declare const pipeline: sagemaker.IPipeline;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.SageMakerStartPipelineExecution(pipeline, {
+    pipelineParameterList: [{
+      name: 'parameter-name',
+      value: 'parameter-value',
+    }],
   }),
 });
 ```

@@ -286,6 +286,13 @@ export interface DockerImageAssetSource {
    * @default - no cache to args are passed
    */
   readonly dockerCacheTo?: DockerCacheOption;
+
+  /**
+   * Disable the cache and pass `--no-cache` to the `docker build` command.
+   *
+   * @default - cache is used
+   */
+  readonly dockerCacheDisabled?: boolean;
 }
 
 /**
@@ -302,7 +309,7 @@ export enum FileAssetPackaging {
    * The asset source path points to a single file, which should be uploaded
    * to Amazon S3.
    */
-  FILE = 'file'
+  FILE = 'file',
 }
 
 /**

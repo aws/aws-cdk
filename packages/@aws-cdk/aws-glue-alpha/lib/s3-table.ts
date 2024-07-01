@@ -36,7 +36,7 @@ export enum TableEncryption {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
-  CLIENT_SIDE_KMS = 'CSE-KMS'
+  CLIENT_SIDE_KMS = 'CSE-KMS',
 }
 
 export interface S3TableProps extends TableBaseProps {
@@ -141,6 +141,7 @@ export class S3Table extends TableBase {
           'classification': props.dataFormat.classificationString?.value,
           'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
+          ...this.parameters,
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,

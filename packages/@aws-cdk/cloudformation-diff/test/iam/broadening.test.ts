@@ -1,10 +1,10 @@
-import { diffTemplate, formatSecurityChanges } from '../../lib';
+import { fullDiff, formatSecurityChanges } from '../../lib';
 import { poldoc, resource, template } from '../util';
 
 describe('broadening is', () => {
   test('adding of positive statements', () => {
     // WHEN
-    const diff = diffTemplate({}, template({
+    const diff = fullDiff({}, template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
         PolicyDocument: poldoc({
@@ -22,7 +22,7 @@ describe('broadening is', () => {
 
   test('permissions diff can be printed', () => {
     // GIVEN
-    const diff = diffTemplate({}, template({
+    const diff = fullDiff({}, template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
         PolicyDocument: poldoc({
@@ -47,7 +47,7 @@ describe('broadening is', () => {
 
   test('adding of positive statements to an existing policy', () => {
     // WHEN
-    const diff = diffTemplate(template({
+    const diff = fullDiff(template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
         PolicyDocument: poldoc(
@@ -85,7 +85,7 @@ describe('broadening is', () => {
 
   test('removal of not-statements', () => {
     // WHEN
-    const diff = diffTemplate(template({
+    const diff = fullDiff(template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
         PolicyDocument: poldoc({
@@ -103,7 +103,7 @@ describe('broadening is', () => {
 
   test('changing of resource target', () => {
     // WHEN
-    const diff = diffTemplate(template({
+    const diff = fullDiff(template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
         PolicyDocument: poldoc(
@@ -135,7 +135,7 @@ describe('broadening is', () => {
 
   test('addition of ingress rules', () => {
     // WHEN
-    const diff = diffTemplate(
+    const diff = fullDiff(
       template({
       }),
       template({
@@ -157,7 +157,7 @@ describe('broadening is', () => {
 
   test('addition of egress rules', () => {
     // WHEN
-    const diff = diffTemplate(
+    const diff = fullDiff(
       template({
       }),
       template({
@@ -181,7 +181,7 @@ describe('broadening is', () => {
 describe('broadening is not', () => {
   test('removal of positive statements from an existing policy', () => {
     // WHEN
-    const diff = diffTemplate(template({
+    const diff = fullDiff(template({
       QueuePolicy: resource('AWS::SQS::QueuePolicy', {
         Queues: [{ Ref: 'MyQueue' }],
         PolicyDocument: poldoc(

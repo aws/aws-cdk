@@ -36,6 +36,7 @@ class PortfolioStack extends cdk.Stack {
         cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
           new TestAssetProductStack1(this, 'MyProductStack1', {
             assetBucket: testAssetBucket,
+            memoryLimit: 256,
           }),
         ),
       }],
@@ -64,7 +65,7 @@ class TestAssetProductStack1 extends servicecatalog.ProductStack {
 
     new lambda.Function(this, 'HelloHandler', {
       runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset(path.join(__dirname, './assets')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
       handler: 'index.handler',
     });
   }
@@ -76,7 +77,7 @@ class TestAssetProductStack2 extends servicecatalog.ProductStack {
 
     new lambda.Function(this, 'HelloHandler2', {
       runtime: lambda.Runtime.PYTHON_3_9,
-      code: lambda.Code.fromAsset(path.join(__dirname, './assetsv2')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assetsv2')),
       handler: 'index.handler',
     });
   }

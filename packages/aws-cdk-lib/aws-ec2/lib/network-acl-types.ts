@@ -236,10 +236,10 @@ export interface AclPortRange {
   /**
    * The first port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
    */
-  readonly from?: number
+  readonly from?: number;
 
   /**
    * The last port in the range. Required if you specify 6 (TCP) or 17 (UDP) for the protocol parameter.
    */
-  readonly to?: number
+  readonly to?: number;
 }

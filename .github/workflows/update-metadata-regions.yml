@@ -59,7 +59,7 @@ jobs:
         run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           # Git commit details
           branch: automation/region-update

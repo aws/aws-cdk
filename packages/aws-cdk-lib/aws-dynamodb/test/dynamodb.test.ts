@@ -6,6 +6,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
+import * as s3 from '../../aws-s3';
 import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
 import {
@@ -21,6 +22,8 @@ import {
   TableEncryption,
   Operation,
   CfnTable,
+  InputCompressionType,
+  InputFormat,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -463,7 +466,7 @@ test('fails if encryption key is used with AWS managed CMK', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.AWS_MANAGED,
     encryptionKey,
-  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+  })).toThrow(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${TableEncryption.AWS_MANAGED})`);
 });
 
 test('fails if encryption key is used with default encryption', () => {
@@ -476,7 +479,7 @@ test('fails if encryption key is used with default encryption', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.DEFAULT,
     encryptionKey,
-  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+  })).toThrow(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${TableEncryption.DEFAULT})`);
 });
 
 testDeprecated('fails if encryption key is used with serverSideEncryption', () => {
@@ -3332,3 +3335,200 @@ describe('deletionProtectionEnabled', () => {
   });
 });
 
+describe('import source', () => {
+  let stack: Stack;
+  let bucket: s3.IBucket;
+
+  beforeEach(() => {
+    stack = new Stack();
+    bucket = new s3.Bucket(stack, 'Bucket');
+  });
+
+  test('by default ImportSource property is not set', () => {
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ImportSourceSpecification: Match.absent(),
+    });
+  });
+
+  test('import DynamoDBJson format', () => {
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      importSource: {
+        compressionType: InputCompressionType.GZIP,
+        inputFormat: InputFormat.dynamoDBJson(),
+        bucket,
+        bucketOwner: '111111111111',
+        keyPrefix: 'prefix',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ImportSourceSpecification: {
+        InputCompressionType: 'GZIP',
+        InputFormat: 'DYNAMODB_JSON',
+        S3BucketSource: {
+          S3Bucket: {
+            'Ref': 'Bucket83908E77',
+          },
+          S3BucketOwner: '111111111111',
+          S3KeyPrefix: 'prefix',
+        },
+      },
+    });
+  });
+
+  test('import Amazon ION format', () => {
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      importSource: {
+        compressionType: InputCompressionType.ZSTD,
+        inputFormat: InputFormat.ion(),
+        bucket,
+        bucketOwner: '111111111111',
+        keyPrefix: 'prefix',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ImportSourceSpecification: {
+        InputCompressionType: 'ZSTD',
+        InputFormat: 'ION',
+        S3BucketSource: {
+          S3Bucket: {
+            'Ref': 'Bucket83908E77',
+          },
+          S3BucketOwner: '111111111111',
+          S3KeyPrefix: 'prefix',
+        },
+      },
+    });
+  });
+
+  test('import CSV format', () => {
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      importSource: {
+        compressionType: InputCompressionType.NONE,
+        inputFormat: InputFormat.csv({
+          delimiter: ',',
+          headerList: ['id', 'name'],
+        }),
+        bucket,
+        bucketOwner: '111111111111',
+        keyPrefix: 'prefix',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ImportSourceSpecification: {
+        InputCompressionType: 'NONE',
+        InputFormat: 'CSV',
+        InputFormatOptions: {
+          Csv: {
+            Delimiter: ',',
+            HeaderList: ['id', 'name'],
+          },
+        },
+        S3BucketSource: {
+          S3Bucket: {
+            'Ref': 'Bucket83908E77',
+          },
+          S3BucketOwner: '111111111111',
+          S3KeyPrefix: 'prefix',
+        },
+      },
+    });
+  });
+
+  test.each([
+    [',,'], ['a'], ['1'], ['/'], ['+'], ['!'], ['@'],
+  ])('throw error when invalid delimiter is specified', (delimiter) => {
+    expect(() => {
+      new Table(stack, 'Table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING,
+        },
+        importSource: {
+          compressionType: InputCompressionType.NONE,
+          inputFormat: InputFormat.csv({
+            delimiter,
+            headerList: ['id', 'name'],
+          }),
+          bucket,
+          bucketOwner: '111111111111',
+          keyPrefix: 'prefix',
+        },
+      });
+    }).toThrow(`Delimiter must be a single character and one of the following: comma (,), tab (\\t), colon (:), semicolon (;), pipe (|), space ( ), got '${delimiter}'`);
+  });
+});
+
+test('Resource policy test', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const doc = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['dynamodb:GetItem'],
+        principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    resourcePolicy: doc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    'ResourcePolicy': {
+      'PolicyDocument': {
+        'Version': '2012-10-17',
+        'Statement': [
+          {
+            'Principal': {
+              'AWS': 'arn:aws:iam::111122223333:user/foobar',
+            },
+            'Effect': 'Allow',
+            'Action': 'dynamodb:GetItem',
+            'Resource': '*',
+          },
+        ],
+      },
+    },
+  });
+});

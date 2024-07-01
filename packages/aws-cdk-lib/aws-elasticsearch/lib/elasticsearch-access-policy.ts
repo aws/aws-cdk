@@ -33,6 +33,7 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
   constructor(scope: Construct, id: string, props: ElasticsearchAccessPolicyProps) {
     super(scope, id, {
       resourceType: 'Custom::ElasticsearchAccessPolicy',
+      installLatestAwsSdk: false,
       onUpdate: {
         action: 'updateElasticsearchDomainConfig',
         service: 'ES',

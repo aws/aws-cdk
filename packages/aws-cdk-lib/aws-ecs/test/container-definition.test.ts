@@ -404,7 +404,7 @@ describe('container definition', () => {
       }).toThrow(/Service connect-related port mapping field 'appProtocol' cannot be set without 'name'/);
     });
 
-    test('multiple port mappings of the same name error out', () =>{
+    test('multiple port mappings of the same name error out', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -465,6 +465,7 @@ describe('container definition', () => {
         memoryReservationMiB: 512,
         containerName: 'Example Container',
         command: ['CMD-SHELL'],
+        credentialSpecs: [new ecs.DomainlessCredentialSpec('arn:aws:s3:::bucket_name/key_name')],
         cpu: 128,
         disableNetworking: true,
         dnsSearchDomains: ['example.com'],
@@ -479,7 +480,7 @@ describe('container definition', () => {
           key: 'foo',
           value: 'bar',
         },
-        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles', 'test-envfile.env'))],
         essential: true,
         extraHosts: {
           name: 'dev-db.hostname.pvt',
@@ -514,6 +515,9 @@ describe('container definition', () => {
               'CMD-SHELL',
             ],
             Cpu: 128,
+            CredentialSpecs: [
+              'credentialspecdomainless:arn:aws:s3:::bucket_name/key_name',
+            ],
             DisableNetworking: true,
             DnsSearchDomains: [
               'example.com',
@@ -1099,7 +1103,7 @@ describe('container definition', () => {
 
         // THEN
         const expected = 8080;
-        expect(actual).toEqual( expected);
+        expect(actual).toEqual(expected);
       });
     });
 
@@ -1125,7 +1129,7 @@ describe('container definition', () => {
 
         // THEN
         const expected = 8081;
-        expect(actual).toEqual( expected);
+        expect(actual).toEqual(expected);
       });
 
       test('Ingress port should be 0 if not supplied', () => {
@@ -1150,6 +1154,80 @@ describe('container definition', () => {
         const expected = 0;
         expect(actual).toEqual(expected);
       });
+    });
+  });
+
+  test('can add docker label to the container definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      dockerLabels: {
+        FIRST_DOCKER_LABEL: 'first',
+      },
+    });
+    container.addDockerLabel('SECOND_DOCKER_LABEL', 'second');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          DockerLabels: {
+            FIRST_DOCKER_LABEL: 'first',
+            SECOND_DOCKER_LABEL: 'second',
+          },
+        }),
+      ],
+    });
+  });
+
+  test('can add docker label to container definition with no docker labels', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+    container.addDockerLabel('DOCKER_LABEL', 'value');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          DockerLabels: {
+            DOCKER_LABEL: 'value',
+          },
+        }),
+      ],
+    });
+  });
+
+  test('docker labels should be absent if empty object is provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      dockerLabels: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          DockerLabels: Match.absent(),
+        }),
+      ],
     });
   });
 
@@ -1305,7 +1383,7 @@ describe('container definition', () => {
         taskDefinition.addContainer('cont', {
           image: ecs.ContainerImage.fromRegistry('test'),
           memoryLimitMiB: 1024,
-          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles', 'test-envfile.env'))],
         });
 
         // THEN
@@ -1417,7 +1495,7 @@ describe('container definition', () => {
         taskDefinition.addContainer('cont', {
           image: ecs.ContainerImage.fromRegistry('test'),
           memoryLimitMiB: 1024,
-          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles', 'test-envfile.env'))],
         });
 
         // THEN
@@ -2401,7 +2479,7 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(taskDefinition.defaultContainer).toEqual( container);
+      expect(taskDefinition.defaultContainer).toEqual(container);
 
     });
 
@@ -2418,7 +2496,7 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(taskDefinition.defaultContainer).toEqual( undefined);
+      expect(taskDefinition.defaultContainer).toEqual(undefined);
     });
   });
 
@@ -2635,5 +2713,49 @@ describe('container definition', () => {
         ],
       });
     });
+  });
+
+  test('can specify interactive parameter', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      memoryLimitMiB: 2048,
+      interactive: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: '/aws/aws-example-app',
+          Memory: 2048,
+          Name: 'Container',
+          Interactive: true,
+        },
+      ],
+    });
+  });
+
+  test('fails if more than one credentialSpec is provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const containerDefinitionProps = {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      memoryLimitMiB: 2048,
+      credentialSpecs: [
+        new ecs.DomainlessCredentialSpec('arn:aws:s3:::bucket_name/key_name'),
+        new ecs.DomainlessCredentialSpec('arn:aws:s3:::bucket_name/key_name_2'),
+      ],
+    };
+
+    // THEN
+    expect(() => new ecs.ContainerDefinition(stack, 'Container', containerDefinitionProps)).toThrow(/Only one credential spec is allowed per container definition/);
   });
 });

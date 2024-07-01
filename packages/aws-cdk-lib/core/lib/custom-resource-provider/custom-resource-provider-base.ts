@@ -222,9 +222,9 @@ export abstract class CustomResourceProviderBase extends Construct {
    * If the code is to be uploaded as an asset, the asset gets created in this function.
    */
   private createCodePropAndMetadata(props: CustomResourceProviderBaseProps, stack: Stack): {
-    code: Code,
-    codeHandler: string,
-    metadata?: {[key: string]: string},
+    code: Code;
+    codeHandler: string;
+    metadata?: {[key: string]: string};
   } {
     let codeHandler = 'index.handler';
     const inlineCode = this.node.tryGetContext(INLINE_CUSTOM_RESOURCE_CONTEXT);
@@ -274,8 +274,8 @@ export abstract class CustomResourceProviderBase extends Construct {
 }
 
 export type Code = {
-  ZipFile: string,
+  ZipFile: string;
 } | {
-  S3Bucket: string,
-  S3Key: string,
+  S3Bucket: string;
+  S3Key: string;
 };

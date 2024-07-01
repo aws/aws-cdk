@@ -171,6 +171,7 @@ export abstract class State extends Construct implements IChainable {
   protected readonly resultSelector?: object;
   protected readonly branches: StateGraph[] = [];
   protected iteration?: StateGraph;
+  protected processorMode?: ProcessorMode = ProcessorMode.INLINE;
   protected processor?: StateGraph;
   protected processorConfig?: ProcessorConfig;
   protected defaultChoice?: State;
@@ -469,7 +470,7 @@ export abstract class State extends Construct implements IChainable {
    * Render ProcessorConfig in ASL JSON format
    */
   private renderProcessorConfig() {
-    const mode = this.processorConfig?.mode?.toString() ?? ProcessorMode.INLINE;
+    const mode = this.processorConfig?.mode?.toString() ?? this.processorMode;
     if (mode === ProcessorMode.INLINE) {
       return {
         ProcessorConfig: {

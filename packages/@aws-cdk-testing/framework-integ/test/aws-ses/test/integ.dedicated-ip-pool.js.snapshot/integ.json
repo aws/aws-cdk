@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "DedicatedIpPoolInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dedicated-ip-pool"
+      ],
+      "assertionStack": "DedicatedIpPoolInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "DedicatedIpPoolIntegDefaultTestDeployAssert1E9B4C6C"
+    }
+  }
+}

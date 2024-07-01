@@ -23,7 +23,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [API Gateway](#api-gateway)
     - [Call REST API Endpoint](#call-rest-api-endpoint)
     - [Call HTTP API Endpoint](#call-http-api-endpoint)
-    - [AWS SDK](#aws-sdk)
+  - [AWS SDK](#aws-sdk)
+    - [Cross-region AWS API call](#cross-region-aws-api-call)
   - [Athena](#athena)
     - [StartQueryExecution](#startqueryexecution)
     - [GetQueryExecution](#getqueryexecution)
@@ -61,8 +62,14 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
   - [Glue](#glue)
+    - [Start Job Run](#start-job-run)
+    - [Start Crawler Run](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
+    - [Start Job Run](#start-job-run-1)
   - [Lambda](#lambda)
+    - [Invoke](#invoke)
+  - [MediaConvert](#mediaconvert)
+    - [Create Job](#create-job)
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
@@ -71,10 +78,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Create Model](#create-model)
     - [Update Endpoint](#update-endpoint)
   - [SNS](#sns)
+    - [Publish](#publish)
   - [Step Functions](#step-functions)
     - [Start Execution](#start-execution)
     - [Invoke Activity](#invoke-activity)
   - [SQS](#sqs)
+    - [Send Message](#send-message)
 
 ## Paths
 
@@ -180,7 +189,7 @@ const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API'
 });
 ```
 
-### AWS SDK
+## AWS SDK
 
 Step Functions supports calling [AWS service's API actions](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html)
 through the service integration pattern.
@@ -235,6 +244,26 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
   ],
 });
 ```
+
+### Cross-region AWS API call
+
+You can call AWS API in a different region from your state machine by using the `CallAwsServiceCrossRegion` construct. In addition to the properties for `CallAwsService` construct, you have to set `region` property to call the API.
+ 
+```ts
+declare const myBucket: s3.Bucket;
+const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
+  region: 'ap-northeast-1',
+  service: 's3',
+  action: 'getObject',
+  parameters: {
+    Bucket: myBucket.bucketName,
+    Key: sfn.JsonPath.stringAt('$.key')
+  },
+  iamResources: [myBucket.arnForObjects('*')],
+});
+```
+
+Other properties such as `additionalIamStatements` can be used in the same way as the `CallAwsService` task.
 
 ## Athena
 
@@ -385,6 +414,45 @@ const task = new tasks.CodeBuildStartBuild(this, 'Task', {
   },
 });
 ```
+
+### StartBuildBatch
+
+[StartBuildBatch](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html) starts a batch CodeBuild for a project by project name.
+It is necessary to enable the batch build feature in the CodeBuild project.
+
+```ts
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
+const project = new codebuild.Project(this, 'Project', {
+  projectName: 'MyTestProject',
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    version: 0.2,
+    batch: {
+      'build-list': [
+        {
+          identifier: 'id',
+          buildspec: 'version: 0.2\nphases:\n  build:\n    commands:\n      - echo "Hello, from small!"',
+        },
+      ],
+    },
+  }),
+});
+project.enableBatchBuilds();
+
+const task = new tasks.CodeBuildStartBuildBatch(this, 'buildBatchTask', {
+  project,
+  integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  environmentVariablesOverride: {
+    test: {
+      type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+      value: 'testValue',
+    },
+  },
+});
+```
+
+**Note**: `enableBatchBuilds()` will do nothing for imported projects.
+If you are using an imported project, you must ensure that the project is already configured for batch builds.
 
 ## DynamoDB
 
@@ -561,6 +629,34 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 });
 ```
 
+#### ECS enable Exec
+
+By setting the property [`enableExecuteCommand`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-enableExecuteCommand) to `true`, you can enable the [ECS Exec feature](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html) for the task for either Fargate or EC2 launch types.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+const cluster = new ecs.Cluster(this, 'ECSCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  compatibility: ecs.Compatibility.EC2,
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsRunTask(this, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsEc2LaunchTarget(),
+  enableExecuteCommand: true,
+});
+```
+
 ## EMR
 
 Step Functions supports Amazon EMR through the service integration pattern.
@@ -605,6 +701,42 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
   name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
   serviceRole,
   autoScalingRole,
+});
+```
+
+You can use the launch specification for On-Demand and Spot instances in the fleet.
+
+```ts
+new tasks.EmrCreateCluster(this, 'OnDemandSpecification', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+      launchSpecifications: {
+        onDemandSpecification: {
+          allocationStrategy: tasks.EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+        },
+      },
+    }],
+  },
+  name: 'OnDemandCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+
+new tasks.EmrCreateCluster(this, 'SpotSpecification', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+      launchSpecifications: {
+        spotSpecification: {
+          allocationStrategy: tasks.EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
+          timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+          timeout: Duration.minutes(5),
+        },
+      },
+    }],
+  },
+  name: 'SpotCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
 });
 ```
 
@@ -662,7 +794,7 @@ new tasks.EmrAddStep(this, 'Task', {
 
 To specify a custom runtime role use the `executionRoleArn` property.
 
-**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
@@ -675,7 +807,7 @@ const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecu
       "AuthorizationConfiguration": {
           "IAMConfiguration": {
               "EnableApplicationScopedIAMRole": true,
-              "ApplicationScopedIAMRoleConfiguration": 
+              "ApplicationScopedIAMRoleConfiguration":
                   {
                       "PropagateSourceIdentity": true
                   }
@@ -1005,6 +1137,8 @@ new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
 
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
 
+### StartJobRun
+
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-StartJobRun) API from a `Task` state.
 
 ```ts
@@ -1017,10 +1151,52 @@ new tasks.GlueStartJobRun(this, 'Task', {
   notifyDelayAfter: Duration.minutes(5),
 });
 ```
+You can configure workers by setting the `workerType` and `numberOfWorkers` properties.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  workerConfiguration: {
+    workerType: tasks.WorkerType.G_1X, // Worker type
+    numberOfWorkers: 2, // Number of Workers
+  },
+});
+```
+
+You can choose the execution class by setting the `executionClass` property.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  executionClass: tasks.ExecutionClass.FLEX,
+});
+```
+
+### StartCrawlerRun
+
+You can call the [`StartCrawler`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-StartCrawler) API from a `Task` state through AWS SDK service integrations.
+
+```ts
+import * as glue from 'aws-cdk-lib/aws-glue';
+
+declare const myCrawler: glue.CfnCrawler;
+
+// You can get the crawler name from `crawler.ref`
+new tasks.GlueStartCrawlerRun(this, 'Task1', {
+  crawlerName: myCrawler.ref,
+});
+
+// Of course, you can also specify the crawler name directly.
+new tasks.GlueStartCrawlerRun(this, 'Task2', {
+  crawlerName: 'my-crawler-job',
+});
+```
 
 ## Glue DataBrew
 
 Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html) through the service integration pattern.
+
+### Start Job Run
 
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
 
@@ -1030,7 +1206,36 @@ new tasks.GlueDataBrewStartJobRun(this, 'Task', {
 });
 ```
 
+## Invoke HTTP API
+
+Step Functions supports [calling third-party APIs](https://docs.aws.amazon.com/step-functions/latest/dg/connect-third-party-apis.html) with credentials managed by Amazon EventBridge [Connections](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_Connection.html).
+
+The following snippet creates a new API destination connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
+});
+
+new tasks.HttpInvoke(this, 'Invoke HTTP API', {
+  apiRoot: 'https://api.example.com',
+  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  body: sfn.TaskInput.fromObject({ foo: 'bar' }),
+  connection,
+  headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),
+  method: sfn.TaskInput.fromText('POST'),
+  queryStringParameters: sfn.TaskInput.fromObject({ id: '123' }),
+  urlEncodingFormat: tasks.URLEncodingFormat.BRACKETS,
+});
+```
+
 ## Lambda
+
+Step Functions supports [AWS Lambda](https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html) through the service integration pattern.
+
+### Invoke
 
 [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
 
@@ -1127,6 +1332,81 @@ results in a 500 error, such as `ClientExecutionTimeoutException`, `ServiceExcep
 As a best practice, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
 a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
 disable this behavior.
+
+## MediaConvert
+
+Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-functions/latest/dg/connect-mediaconvert.html) through the Optimized integration pattern.
+
+### CreateJob
+
+The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
+For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
+
+You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
+
+Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) &
+[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer
+[CreateJobRequest](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-model-createjobrequest) for all other optional parameters.
+
+```ts
+new tasks.MediaConvertCreateJob(this, 'CreateJob', {
+  createJobRequest: {
+    "Role": "arn:aws:iam::123456789012:role/MediaConvertRole",
+    "Settings": {
+      "OutputGroups": [
+        {
+          "Outputs": [
+            {
+              "ContainerSettings": {
+                "Container": "MP4"
+              },
+              "VideoDescription": {
+                "CodecSettings": {
+                  "Codec": "H_264",
+                  "H264Settings": {
+                    "MaxBitrate": 1000,
+                    "RateControlMode": "QVBR",
+                    "SceneChangeDetect": "TRANSITION_DETECTION"
+                  }
+                }
+              },
+              "AudioDescriptions": [
+                {
+                  "CodecSettings": {
+                    "Codec": "AAC",
+                    "AacSettings": {
+                      "Bitrate": 96000,
+                      "CodingMode": "CODING_MODE_2_0",
+                      "SampleRate": 48000
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "OutputGroupSettings": {
+            "Type": "FILE_GROUP_SETTINGS",
+            "FileGroupSettings": {
+              "Destination": "s3://EXAMPLE-DESTINATION-BUCKET/"
+            }
+          }
+        }
+      ],
+      "Inputs": [
+        {
+          "AudioSelectors": {
+            "Audio Selector 1": {
+              "DefaultSelection": "DEFAULT"
+            }
+          },
+          "FileInput": "s3://EXAMPLE-SOURCE-BUCKET/EXAMPLE-SOURCE_FILE"
+        }
+      ]
+    }
+  },
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
 
 ## SageMaker
 
@@ -1266,6 +1546,8 @@ new tasks.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
 
 Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sns.html) through the service integration pattern.
 
+### Publish
+
 You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) API from a `Task` state to publish to an SNS topic.
 
 ```ts
@@ -1306,6 +1588,8 @@ const task2 = new tasks.SnsPublish(this, 'Publish2', {
 ```
 
 ## Step Functions
+
+Step Functions supports [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) through the service integration pattern.
 
 ### Start Execution
 
@@ -1401,6 +1685,8 @@ new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
 ## SQS
 
 Step Functions supports [Amazon SQS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sqs.html)
+
+### Send Message
 
 You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html) API from a `Task` state
 to send a message to an SQS queue.

@@ -46,7 +46,7 @@ export interface BundlingProps extends BundlingOptions {
    * Which option to use to copy the source files to the docker container and output files back
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  bundlingFileAccess?: BundlingFileAccess
+  bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**
@@ -99,7 +99,7 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes,
     });
 
-    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
+    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
       buildArgs: {
         ...props.buildArgs,
         IMAGE: runtime.bundlingImage.image,

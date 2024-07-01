@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "ac8ad5d976cbcae9c08616da07622c257d38ed9553c9ec79a97134851f5e7d62": {
+      "source": {
+        "path": "aws-ecs-integ-docker-label.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ac8ad5d976cbcae9c08616da07622c257d38ed9553c9ec79a97134851f5e7d62.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

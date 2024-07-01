@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "codepipeline-with-pipeline-triggers-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-with-pipeline-triggers"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelinewithpipelinetriggerstestDefaultTestDeployAssertE3F8DDE6"
+    }
+  }
+}

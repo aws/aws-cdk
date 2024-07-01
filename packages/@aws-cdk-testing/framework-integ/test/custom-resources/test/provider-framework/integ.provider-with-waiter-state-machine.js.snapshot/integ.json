@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "IntegProviderWithWaiterStateMachine/DefaultTest": {
+      "stacks": [
+        "integ-provider-with-waiter-state-machine"
+      ],
+      "diffAssets": true,
+      "assertionStack": "IntegProviderWithWaiterStateMachine/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegProviderWithWaiterStateMachineDefaultTestDeployAssert2D0F0427"
+    }
+  }
+}

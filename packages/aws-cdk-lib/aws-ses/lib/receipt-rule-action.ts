@@ -8,6 +8,7 @@ export interface IReceiptRuleAction {
    * Returns the receipt rule action specification
    */
   bind(receiptRule: IReceiptRule): ReceiptRuleActionConfig;
+
 }
 
 /**
@@ -205,7 +206,7 @@ export interface ReceiptRuleActionConfig {
   /**
    * Adds a header to the received email.
    */
-  readonly addHeaderAction?: AddHeaderActionConfig
+  readonly addHeaderAction?: AddHeaderActionConfig;
 
   /**
    * Rejects the received email by returning a bounce response to the sender and,

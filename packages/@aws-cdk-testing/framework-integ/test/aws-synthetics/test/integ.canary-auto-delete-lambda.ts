@@ -10,7 +10,7 @@ class TestStack extends Stack {
 
     new synthetics.Canary(this, 'Canary', {
       canaryName: 'next',
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
       test: synthetics.Test.custom({
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`
@@ -22,7 +22,7 @@ class TestStack extends Stack {
     });
 
     const canaryThatWillBeRemoved = new synthetics.Canary(this, 'CanaryRemoved', {
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
       test: synthetics.Test.custom({
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`

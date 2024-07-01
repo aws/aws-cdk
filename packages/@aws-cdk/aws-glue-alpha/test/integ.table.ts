@@ -16,6 +16,7 @@ const bucket = new s3.Bucket(stack, 'DataBucket', {
 
 const database = new glue.Database(stack, 'MyDatabase', {
   databaseName: 'my_database',
+  description: 'my_database_description',
 });
 
 const columns = [{
@@ -122,6 +123,18 @@ new glue.S3Table(stack, 'MyTableWithStorageDescriptorParameters', {
     glue.StorageParameter.custom('separatorChar', ','), // Will describe the separator char used in the data
     glue.StorageParameter.custom(glue.StorageParameters.WRITE_PARALLEL, 'off'),
   ],
+});
+
+new glue.S3Table(stack, 'MyTableWithParameters', {
+  database,
+  bucket,
+  tableName: 'table_with_parameters',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  parameters: {
+    key1: 'val1',
+    key2: 'val2',
+  },
 });
 
 new glue.Table(stack, 'MyDeprecatedTable', {

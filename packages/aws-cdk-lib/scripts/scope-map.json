@@ -38,6 +38,9 @@
   "aws-applicationinsights": [
     "AWS::ApplicationInsights"
   ],
+  "aws-applicationsignals": [
+    "AWS::ApplicationSignals"
+  ],
   "aws-appmesh": [
     "AWS::AppMesh"
   ],
@@ -49,6 +52,9 @@
   ],
   "aws-appsync": [
     "AWS::AppSync"
+  ],
+  "aws-apptest": [
+    "AWS::AppTest"
   ],
   "aws-aps": [
     "AWS::APS"
@@ -68,6 +74,9 @@
   "aws-autoscalingplans": [
     "AWS::AutoScalingPlans"
   ],
+  "aws-b2bi": [
+    "AWS::B2BI"
+  ],
   "aws-backup": [
     "AWS::Backup"
   ],
@@ -76,6 +85,12 @@
   ],
   "aws-batch": [
     "AWS::Batch"
+  ],
+  "aws-bcmdataexports": [
+    "AWS::BCMDataExports"
+  ],
+  "aws-bedrock": [
+    "AWS::Bedrock"
   ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
@@ -97,6 +112,9 @@
   ],
   "aws-cleanrooms": [
     "AWS::CleanRooms"
+  ],
+  "aws-cleanroomsml": [
+    "AWS::CleanRoomsML"
   ],
   "aws-cloud9": [
     "AWS::Cloud9"
@@ -121,6 +139,9 @@
   ],
   "aws-codecommit": [
     "AWS::CodeCommit"
+  ],
+  "aws-codeconnections": [
+    "AWS::CodeConnections"
   ],
   "aws-codedeploy": [
     "AWS::CodeDeploy"
@@ -176,8 +197,14 @@
   "aws-datasync": [
     "AWS::DataSync"
   ],
+  "aws-datazone": [
+    "AWS::DataZone"
+  ],
   "aws-dax": [
     "AWS::DAX"
+  ],
+  "aws-deadline": [
+    "AWS::Deadline"
   ],
   "aws-detective": [
     "AWS::Detective"
@@ -462,6 +489,9 @@
   "aws-neptune": [
     "AWS::Neptune"
   ],
+  "aws-neptunegraph": [
+    "AWS::NeptuneGraph"
+  ],
   "aws-networkfirewall": [
     "AWS::NetworkFirewall"
   ],
@@ -498,6 +528,9 @@
   "aws-panorama": [
     "AWS::Panorama"
   ],
+  "aws-paymentcryptography": [
+    "AWS::PaymentCryptography"
+  ],
   "aws-pcaconnectorad": [
     "AWS::PCAConnectorAD"
   ],
@@ -515,6 +548,9 @@
   ],
   "aws-proton": [
     "AWS::Proton"
+  ],
+  "aws-qbusiness": [
+    "AWS::QBusiness"
   ],
   "aws-qldb": [
     "AWS::QLDB"
@@ -558,6 +594,9 @@
   "aws-route53": [
     "AWS::Route53"
   ],
+  "aws-route53profiles": [
+    "AWS::Route53Profiles"
+  ],
   "aws-route53recoverycontrol": [
     "AWS::Route53RecoveryControl"
   ],
@@ -599,6 +638,9 @@
   ],
   "aws-securityhub": [
     "AWS::SecurityHub"
+  ],
+  "aws-securitylake": [
+    "AWS::SecurityLake"
   ],
   "aws-servicecatalog": [
     "AWS::ServiceCatalog"

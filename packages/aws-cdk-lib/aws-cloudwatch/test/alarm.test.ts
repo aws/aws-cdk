@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { Match, Template, Annotations } from '../../assertions';
-import { Duration, Stack } from '../../core';
+import { Ec2Action, Ec2InstanceAction } from '../../aws-cloudwatch-actions/lib';
+import { Duration, Stack, App } from '../../core';
+import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
 import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats } from '../lib';
 
 const testMetric = new Metric({
@@ -230,6 +232,65 @@ describe('Alarm', () => {
       Statistic: 'Minimum',
       Threshold: 1000,
     });
+  });
+
+  test('EC2 alarm actions with InstanceId dimension', () => {
+    // GIVEN
+    const app = new App({ context: { [ ENABLE_PARTITION_LITERALS]: true } });
+    const stack = new Stack(app, 'EC2AlarmStack', { env: { region: 'us-west-2', account: '123456789012' } });
+
+    // WHEN
+    const metric = new Metric({
+      namespace: 'CWAgent',
+      metricName: 'disk_used_percent',
+      dimensionsMap: {
+        InstanceId: 'instance-id',
+      },
+      period: Duration.minutes(5),
+      statistic: 'Average',
+    });
+
+    const sev3Alarm = new Alarm(stack, 'DISK_USED_PERCENT_SEV3', {
+      alarmName: 'DISK_USED_PERCENT_SEV3',
+      actionsEnabled: true,
+      metric: metric,
+      threshold: 1,
+      evaluationPeriods: 1,
+    });
+
+    expect(() => {
+      sev3Alarm.addAlarmAction(new Ec2Action(Ec2InstanceAction.REBOOT));
+    }).not.toThrow();
+  });
+
+  test('EC2 alarm actions without InstanceId dimension', () => {
+    // GIVEN
+    const app = new App({ context: { [ ENABLE_PARTITION_LITERALS]: true } });
+    const stack = new Stack(app, 'EC2AlarmStack', { env: { region: 'us-west-2', account: '123456789012' } });
+
+    // WHEN
+    const metric = new Metric({
+      namespace: 'CWAgent',
+      metricName: 'disk_used_percent',
+      dimensionsMap: {
+        ImageId: 'image-id',
+        InstanceType: 't2.micro',
+      },
+      period: Duration.minutes(5),
+      statistic: 'Average',
+    });
+
+    const sev3Alarm = new Alarm(stack, 'DISK_USED_PERCENT_SEV3', {
+      alarmName: 'DISK_USED_PERCENT_SEV3',
+      actionsEnabled: true,
+      metric: metric,
+      threshold: 1,
+      evaluationPeriods: 1,
+    });
+
+    expect(() => {
+      sev3Alarm.addAlarmAction(new Ec2Action(Ec2InstanceAction.REBOOT));
+    }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric/);
   });
 
   test('can use percentile string to make alarm', () => {

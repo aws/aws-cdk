@@ -30,7 +30,7 @@ export interface FormatStream extends NodeJS.WritableStream {
 export function formatDifferences(
   stream: FormatStream,
   templateDiff: TemplateDiff,
-  logicalToPathMap: { [logicalId: string]: string } = { },
+  logicalToPathMap: { [logicalId: string]: string } = {},
   context: number = 3) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
@@ -59,7 +59,7 @@ export function formatDifferences(
 export function formatSecurityChanges(
   stream: NodeJS.WritableStream,
   templateDiff: TemplateDiff,
-  logicalToPathMap: {[logicalId: string]: string} = {},
+  logicalToPathMap: { [logicalId: string]: string } = {},
   context?: number) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
@@ -79,8 +79,9 @@ const ADDITION = chalk.green('[+]');
 const CONTEXT = chalk.grey('[ ]');
 const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
+const IMPORT = chalk.blue('[←]');
 
-class Formatter {
+export class Formatter {
   constructor(
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
@@ -159,7 +160,7 @@ class Formatter {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // eslint-disable-next-line max-len
-    this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
+    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
       const differenceCount = diff.differenceCount;
@@ -169,6 +170,12 @@ class Formatter {
         this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
     }
+  }
+
+  public formatResourcePrefix(diff: ResourceDifference) {
+    if (diff.isImport) { return IMPORT; }
+
+    return this.formatPrefix(diff);
   }
 
   public formatPrefix<T>(diff: Difference<T>) {
@@ -204,6 +211,8 @@ class Formatter {
         return chalk.italic(chalk.bold(chalk.red('destroy')));
       case ResourceImpact.WILL_ORPHAN:
         return chalk.italic(chalk.yellow('orphan'));
+      case ResourceImpact.WILL_IMPORT:
+        return chalk.italic(chalk.blue('import'));
       case ResourceImpact.WILL_UPDATE:
       case ResourceImpact.WILL_CREATE:
       case ResourceImpact.NO_CHANGE:
@@ -245,7 +254,7 @@ class Formatter {
           const oldStr = JSON.stringify(oldObject, null, 2);
           const newStr = JSON.stringify(newObject, null, 2);
           const diff = _diffStrings(oldStr, newStr, this.context);
-          for (let i = 0 ; i < diff.length ; i++) {
+          for (let i = 0; i < diff.length; i++) {
             this.print('%s   %s %s', linePrefix, i === 0 ? '└─' : '  ', diff[i]);
           }
         } else {
@@ -373,6 +382,19 @@ class Formatter {
       this.printSectionHeader('IAM Policy Changes');
       this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()), this.stream.columns));
     }
+
+    if (changes.ssoPermissionSets.hasChanges || changes.ssoInstanceACAConfigs.hasChanges || changes.ssoAssignments.hasChanges) {
+      this.printSectionHeader('IAM Identity Center Changes');
+      if (changes.ssoPermissionSets.hasChanges) {
+        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoPermissionSets()), this.stream.columns));
+      }
+      if (changes.ssoInstanceACAConfigs.hasChanges) {
+        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoInstanceACAConfigs()), this.stream.columns));
+      }
+      if (changes.ssoAssignments.hasChanges) {
+        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoAssignments()), this.stream.columns));
+      }
+    }
   }
 
   public formatSecurityGroupChanges(changes: SecurityGroupChanges) {
@@ -457,7 +479,7 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
   function _findIndent(lines: string[]): number {
     let indent = Number.MAX_SAFE_INTEGER;
     for (const line of lines) {
-      for (let i = 1 ; i < line.length ; i++) {
+      for (let i = 1; i < line.length; i++) {
         if (line.charAt(i) !== ' ') {
           indent = indent > i - 1 ? i - 1 : indent;
           break;

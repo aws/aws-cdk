@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 process.env.AWS_REGION = 'us-east-1';
 
+import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
 import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import * as S3 from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -451,6 +452,34 @@ test('can specify apiVersion and region', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
+test('logApiResponseData can be false', async () => {
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        logApiResponseData: false,
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body => body.Status === 'SUCCESS');
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/@aws-sdk/client-s3';
 
@@ -743,5 +772,80 @@ test('automatic Uint8Array conversion when necessary', async () => {
       121, 45, 100, 97,
       116, 97,
     ]),
+  });
+});
+
+test('automatic Date conversion when necessary', async () => {
+  const cwMock = mockClient(CloudWatchClient);
+  cwMock.on(GetMetricDataCommand).resolves({
+    Messages: [],
+    MetricDataResults: [
+      {
+        Id: 'id1',
+        StatusCode: 'Complete',
+        Values: [0],
+      },
+    ],
+  });
+
+  await handler({
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: 'CloudWatch',
+        action: 'getMetricData',
+        parameters: {
+          MetricDataQueries: [
+            {
+              Id: 'id1',
+              MetricStat: {
+                Metric: {
+                  Namespace: 'AWS/SQS',
+                  MetricName: 'NumberOfMessagesReceived',
+                  Dimensions: [
+                    {
+                      Name: 'QueueName',
+                      Value: 'my-queue',
+                    },
+                  ],
+                },
+                Period: 60,
+                Stat: 'Sum',
+              },
+              ReturnData: true,
+            },
+          ],
+          StartTime: new Date('2023-01-01'),
+          EndTime: new Date('2023-01-02'),
+        },
+      } satisfies AwsSdkCall),
+    },
+  }, {} as AWSLambda.Context);
+
+  expect(cwMock).toHaveReceivedCommandWith(GetMetricDataCommand, {
+    MetricDataQueries: [
+      {
+        Id: 'id1',
+        MetricStat: {
+          Metric: {
+            Namespace: 'AWS/SQS',
+            MetricName: 'NumberOfMessagesReceived',
+            Dimensions: [
+              {
+                Name: 'QueueName',
+                Value: 'my-queue',
+              },
+            ],
+          },
+          Period: 60,
+          Stat: 'Sum',
+        },
+        ReturnData: true,
+      },
+    ],
+    StartTime: new Date('2023-01-01'),
+    EndTime: new Date('2023-01-02'),
   });
 });

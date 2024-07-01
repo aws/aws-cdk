@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "PipelineStackInteg/DefaultTest": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "assertionStack": "PipelineStackInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineStackIntegDefaultTestDeployAssertA8A39C70"
+    }
+  }
+}

@@ -779,7 +779,7 @@ export enum AttachmentTargetType {
   /**
    * AWS::DocDB::DBCluster
    */
-  DOCDB_DB_CLUSTER = 'AWS::DocDB::DBCluster'
+  DOCDB_DB_CLUSTER = 'AWS::DocDB::DBCluster',
 }
 
 /**

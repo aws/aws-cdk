@@ -40,4 +40,30 @@ alarm.addAlarmAction(
 );
 ```
 
+## Lambda Action Example
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda'
+declare const alarm: cloudwatch.Alarm;
+declare const fn: lambda.Function;
+declare const alias: lambda.Alias;
+declare const version: lambda.Version;
+
+// Attach a Lambda Function when alarm triggers
+alarm.addAlarmAction(
+  new actions.LambdaAction(fn)
+);
+
+// Attach a Lambda Function Alias when alarm triggers
+alarm.addAlarmAction(
+  new actions.LambdaAction(alias)
+);
+
+// Attach a Lambda Function version when alarm triggers
+alarm.addAlarmAction(
+  new actions.LambdaAction(version)
+);
+
+```
+
 See `aws-cdk-lib/aws-cloudwatch` for more information.

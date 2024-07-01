@@ -13,7 +13,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
-import { Aws, CfnCapabilities, Duration, Names, PhysicalName, Stack } from '../../../core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names, FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, DockerCredentialUsage, dockerCredentialsInstallCommands } from '../docker-credentials';
@@ -245,12 +245,25 @@ export interface CodePipelineProps {
    */
   readonly artifactBucket?: s3.IBucket;
 
+
   /**
    * If all "prepare" step should be placed all together as the first actions within a stage/wave
    * @default - False
    */
 
   readonly allPrepareNodesFirst?: boolean;
+
+  /**
+   * A map of region to S3 bucket name used for cross-region CodePipeline.
+   * For every Action that you specify targeting a different region than the Pipeline itself,
+   * if you don't provide an explicit Bucket for that region using this property,
+   * the construct will automatically create a Stack containing an S3 Bucket in that region.
+   * Passed directly through to the {@link cp.Pipeline}.
+   *
+   * @default - no cross region replication buckets.
+   */
+  readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
+
 }
 
 /**
@@ -465,6 +478,9 @@ export class CodePipeline extends PipelineBase {
           "Cannot set 'enableKeyRotation' if an existing CodePipeline is given using 'codePipeline'",
         );
       }
+      if (this.props.crossRegionReplicationBuckets !== undefined) {
+        throw new Error('Cannot set \'crossRegionReplicationBuckets\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error(
           "Cannot set 'reuseCrossRegionSupportStacks' if an existing CodePipeline is given using 'codePipeline'",
@@ -492,7 +508,9 @@ export class CodePipeline extends PipelineBase {
 
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
+        pipelineType: cp.PipelineType.V1,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
+        crossRegionReplicationBuckets: this.props.crossRegionReplicationBuckets,
         reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
         // This is necessary to make self-mutation work (deployments are guaranteed
         // to happen only after the builds of the latest pipeline definition).
@@ -1177,18 +1195,23 @@ export class CodePipeline extends PipelineBase {
 
     const stack = Stack.of(this);
 
+
+    const removeRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE);
+
+    const assumePrincipal = removeRootPrincipal ? new iam.CompositePrincipal(
+      new iam.ServicePrincipal('codebuild.amazonaws.com'),
+    ) :
+      new iam.CompositePrincipal(
+        new iam.ServicePrincipal('codebuild.amazonaws.com'),
+        new iam.AccountPrincipal(stack.account),
+      );
+
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
-    const assetRole = new AssetSingletonRole(
-      this.assetsScope,
-      `${rolePrefix}Role`,
-      {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.CompositePrincipal(
-          new iam.ServicePrincipal('codebuild.amazonaws.com'),
-          new iam.AccountPrincipal(stack.account),
-        ),
-      },
-    );
+    let assetRole = new AssetSingletonRole(this.assetsScope, `${rolePrefix}Role`, {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: assumePrincipal,
+    });
+
 
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {

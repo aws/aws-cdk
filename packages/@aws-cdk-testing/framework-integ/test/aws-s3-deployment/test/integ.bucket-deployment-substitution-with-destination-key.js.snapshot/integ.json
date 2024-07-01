@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "deploy-time-substitution-with-destination-key-integ-test/DefaultTest": {
+      "stacks": [
+        "test-s3-deploy-substitution-with-destination-key"
+      ],
+      "assertionStack": "deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7"
+    }
+  }
+}

@@ -1,9 +1,9 @@
-import { diffTemplate } from '../../lib';
+import { fullDiff } from '../../lib';
 import { resource, template } from '../util';
 
 test('detect addition of all types of rules', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     SG: resource('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {

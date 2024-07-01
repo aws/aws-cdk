@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "OpenSearchIpAddressTypeInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-ip-address-type"
+      ],
+      "diffAssets": true,
+      "assertionStack": "OpenSearchIpAddressTypeInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchIpAddressTypeIntegDefaultTestDeployAssertE117ADBF"
+    }
+  }
+}

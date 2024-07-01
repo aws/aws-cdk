@@ -98,7 +98,7 @@ export class NotificationsResourceHandler extends Construct {
         Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
         Role: this.role.roleArn,
-        Runtime: 'python3.9',
+        Runtime: 'python3.11',
         Timeout: 300,
       },
     });

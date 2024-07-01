@@ -221,7 +221,7 @@ export class PullRequestLinter {
    */
   private async deletePRLinterComment(): Promise<void> {
     // Since previous versions of this pr linter didn't add comments, we need to do this check first.
-    const comment = await this.findExistingComment();
+    const comment = await this.findExistingPRLinterComment();
     if (comment) {
       await this.client.issues.deleteComment({
         ...this.issueParams,
@@ -250,7 +250,7 @@ export class PullRequestLinter {
    * @param existingReview The review created by a previous run of the linter.
    */
   private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
-    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
+    let body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
       + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
       + 'If you would like to request an exemption from the status checks or clarification on feedback,'
       + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
@@ -265,6 +265,10 @@ export class PullRequestLinter {
       });
     }
 
+    const comments = await this.client.issues.listComments(this.issueParams);
+    if (comments.data.find(comment => comment.body?.toLowerCase().includes("exemption request"))) {
+      body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
+    }
     await this.client.issues.createComment({
       ...this.issueParams,
       body,
@@ -298,7 +302,7 @@ export class PullRequestLinter {
    * Finds existing review, if present
    * @returns Existing review, if present
    */
-  private async findExistingReview(): Promise<Review | undefined> {
+  private async findExistingPRLinterReview(): Promise<Review | undefined> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
     return reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
   }
@@ -307,7 +311,7 @@ export class PullRequestLinter {
    * Finds existing comment from previous review, if present
    * @returns Existing comment, if present
    */
-  private async findExistingComment(): Promise<Comment | undefined> {
+  private async findExistingPRLinterComment(): Promise<Comment | undefined> {
     const comments = await this.client.issues.listComments(this.issueParams);
     return comments.data.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
   }
@@ -317,7 +321,7 @@ export class PullRequestLinter {
    * @param result The result of the PR Linter run.
    */
   private async communicateResult(result: ValidationCollector): Promise<void> {
-    const existingReview = await this.findExistingReview();
+    const existingReview = await this.findExistingPRLinterReview();
     if (result.isValid()) {
       console.log('✅  Success');
       await this.dismissPRLinterReview(existingReview);
@@ -337,6 +341,8 @@ export class PullRequestLinter {
       repo: this.prParams.repo,
       ref: sha,
     });
+    let status = statuses.data.filter(status => status.context === CODE_BUILD_CONTEXT).map(status => status.state);
+    console.log("CodeBuild Commit Statuses: ", status);
     return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
   }
 
@@ -415,6 +421,7 @@ export class PullRequestLinter {
           [review.user!.login]: newest,
         };
       }, {} as Record<string, typeof reviews.data[0]>);
+    console.log('raw data: ', JSON.stringify(reviewsByTrustedCommunityMembers));
     const communityApproved = Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'APPROVED');
     const communityRequestedChanges = !communityApproved && Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'CHANGES_REQUESTED')
 
@@ -494,12 +501,12 @@ export class PullRequestLinter {
 
   /**
    * Trusted community reviewers is derived from the source of truth at this wiki:
-   * https://github.com/aws/aws-cdk/wiki/Introducing-CDK-Community-PR-Reviews
+   * https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews
    */
   private getTrustedCommunityMembers(): string[] {
     if (this.trustedCommunity.length > 0) { return this.trustedCommunity; }
 
-    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/Introducing-CDK-Community-PR-Reviews.md', { encoding: 'utf-8' }).toString();
+    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/CDK-Community-PR-Reviews.md', { encoding: 'utf-8' }).toString();
     const rawMdTable = wiki.split('<!--section-->')[1].split('\n').filter(l => l !== '');
     for (let i = 2; i < rawMdTable.length; i++) {
       this.trustedCommunity.push(rawMdTable[i].split('|')[1].trim());
@@ -543,20 +550,6 @@ export class PullRequestLinter {
     });
 
     validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateBreakingChangeFormat }],
-    });
-
-    validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateTitlePrefix }],
-    });
-    validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateTitleScope }],
-    });
-    validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateBranch }],
-    })
-
-    validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
       exemptionMessage: `Not validating breaking changes since the PR is labeled with '${Exemption.BREAKING_CHANGE}'`,
       testRuleSet: [{ test: assertStability }],
@@ -570,8 +563,19 @@ export class PullRequestLinter {
     validationCollector.validateRuleSet({
       exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
       testRuleSet: [{ test: noMetadataChanges }],
-    })
+    });
 
+    validationCollector.validateRuleSet({
+      testRuleSet: [
+        { test: validateBreakingChangeFormat },
+        { test: validateTitlePrefix },
+        { test: validateTitleScope },
+        { test: validateTitleLowercase },
+        { test: validateBranch },
+      ],
+    });
+
+    console.log("Deleting PR Linter Comment now");
     await this.deletePRLinterComment();
     try {
       await this.communicateResult(validationCollector);
@@ -580,7 +584,9 @@ export class PullRequestLinter {
       // also assess whether the PR needs review or not
       try {
         const state = await this.codeBuildJobSucceeded(sha);
+        console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
         if (state) {
+          console.log('Assessing if the PR needs a review now');
           await this.assessNeedsReview(pr);
         }
       } catch (e) {
@@ -732,6 +738,17 @@ function validateTitleScope(pr: GitHubPr): TestResult {
       `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
     );
   }
+  return result;
+}
+
+function validateTitleLowercase(pr: GitHubPr): TestResult {
+  const result = new TestResult();
+  const start = pr.title.indexOf(':');
+  const firstLetter = pr.title.charAt(start + 2);
+  result.assessFailure(
+    firstLetter !== firstLetter.toLocaleLowerCase(),
+    'The first word of the pull request title should not be capitalized. If the title starts with a CDK construct, it should be in backticks "``".',
+  );
   return result;
 }
 

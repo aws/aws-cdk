@@ -170,10 +170,10 @@ export class TestRepository {
   }
 
   private async ensureRepository(name: string, options?: {
-    readonly description?: string,
-    readonly external?: string,
-    readonly upstreams?: string[],
-    readonly tags?: Record<string, string>,
+    readonly description?: string;
+    readonly external?: string;
+    readonly upstreams?: string[];
+    readonly tags?: Record<string, string>;
   }) {
     if (await this.repositoryExists(name)) { return; }
 

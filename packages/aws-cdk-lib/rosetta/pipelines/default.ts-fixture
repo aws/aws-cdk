@@ -16,6 +16,7 @@ import secretsmanager = require('aws-cdk-lib/aws-secretsmanager');
 import sns = require('aws-cdk-lib/aws-sns');
 import subscriptions = require('aws-cdk-lib/aws-sns-subscriptions');
 import s3 = require('aws-cdk-lib/aws-s3');
+import kms = require('aws-cdk-lib/aws-kms');
 
 class MyApplicationStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {

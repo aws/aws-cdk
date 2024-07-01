@@ -58,7 +58,7 @@ export interface ResponseHeadersPolicyProps {
    *
    * @default - no headers are removed
    */
-  readonly removeHeaders?: string[]
+  readonly removeHeaders?: string[];
 
   /**
    * The percentage of responses that you want CloudFront to add the Server-Timing

@@ -115,7 +115,7 @@ export function transformObjectKeys(val: any, transform: (str: string) => string
     // since it makes no sense to specify different exclude options for each array element
     return val.map((input: any) => transformObjectKeys(input, transform, exclude));
   }
-  const ret: { [k: string]: any; } = {};
+  const ret: { [k: string]: any } = {};
   for (const [k, v] of Object.entries(val)) {
     const childExclude = exclude[k];
     if (childExclude === true) {

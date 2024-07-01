@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ClusterNeuronAmi/DefaultTest": {
+      "stacks": [
+        "integ-ecs-neuron-ami"
+      ],
+      "assertionStack": "ClusterNeuronAmi/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8"
+    }
+  }
+}

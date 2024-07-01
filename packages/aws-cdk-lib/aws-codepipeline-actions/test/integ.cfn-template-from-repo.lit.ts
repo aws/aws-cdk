@@ -3,7 +3,11 @@ import * as codepipeline from '../../aws-codepipeline';
 import * as cdk from '../../core';
 import * as cpactions from '../lib';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
 /// !show
@@ -52,6 +56,7 @@ const prodStage = {
 };
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
+  crossAccountKeys: true,
   stages: [
     sourceStage,
     prodStage,

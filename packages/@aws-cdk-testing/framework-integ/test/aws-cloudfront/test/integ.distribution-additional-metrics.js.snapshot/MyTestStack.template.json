@@ -1,0 +1,236 @@
+{
+ "Resources": {
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "MyTestStackDistOrigin1CBA48A7B",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "MyTestStackDistOrigin1CBA48A7B"
+      }
+     ]
+    }
+   }
+  },
+  "DistMonitoringSubscriptionDD7607C2": {
+   "Type": "AWS::CloudFront::MonitoringSubscription",
+   "Properties": {
+    "DistributionId": {
+     "Ref": "DistB3B78991"
+    },
+    "MonitoringSubscription": {
+     "RealtimeMetricsSubscriptionConfig": {
+      "RealtimeMetricsSubscriptionStatus": "Enabled"
+     }
+    }
+   }
+  },
+  "Alarm1F9009D71": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "OriginLatency",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Alarm2A7122E13": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "CacheHitRate",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Alarm32341D8D9": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "401ErrorRate",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Alarm4671832C8": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "403ErrorRate",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Alarm548383B2F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "404ErrorRate",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Alarm65738D89F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "502ErrorRate",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Alarm77B1024B6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "503ErrorRate",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  },
+  "Alarm8AEE8034F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DistributionId",
+      "Value": {
+       "Ref": "DistB3B78991"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "504ErrorRate",
+    "Namespace": "AWS/CloudFront",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

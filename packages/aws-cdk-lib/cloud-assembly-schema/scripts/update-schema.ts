@@ -26,7 +26,7 @@ const SCHEMA_DEFINITIONS: {
      * Usually this is just the file containing the root type.
      */
     files: string[];
-  }
+  };
 } = {
   'assets': {
     rootTypeName: 'AssetManifest',

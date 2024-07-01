@@ -22,6 +22,7 @@ const container = taskDefinition.addContainer('nginx', {
       log_group_name: 'ecs-integ-test',
       auto_create_group: 'true',
       log_stream_prefix: 'nginx',
+      log_retention_days: '1',
     },
   }),
 });

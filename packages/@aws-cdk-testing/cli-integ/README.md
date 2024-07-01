@@ -35,6 +35,42 @@ Each subdirectory contains one test **suite**, and in the development pipeline e
 
 Test suites are written as a collection of Jest tests, and they are run using Jest, using the code in the `lib/` directory as helpers.
 
+### Setup
+
+Building the @aws-cdk-testing package is not very different from building the rest of the CDK. However, If you are having issues with the tests, you can ensure your enviornment is built properly by following the steps below:
+
+```shell
+yarn install # Install dependencies
+npx lerna run build --scope=aws-cdk # Build the CDK cli
+yarn build # Build the @aws-cdk-testing/cli-integ package
+../../../scripts/align-version.sh # Align the versions of CDK packages
+```
+
+### Running tests with debugger
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "args": ["-a", "cli-integ-tests", "-t", "context in stage propagates to top"],
+      "name": "debug integ tests",
+      "program": "~/aws-cdk/packages/@aws-cdk-testing/cli-integ/bin/run-suite",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
+      "stopOnEntry": false
+    }
+  ]
+}
+```
+
+1. Assuming you checked out the `aws-cdk` repository in your `~` directory, use the above `launch.json`.
+2. In the `"args"` value after `"-t"`, place the name of the test that you'd like to run.
+3. Press the VS code green arrow to launch the debugger.
+
 ### Running a test suite
 
 You run a suite using the `bin/run-suite` tool. You must select either a version of the CLI and framework which can be `npm install`ed, or point to the root of the source tree:
@@ -66,7 +102,8 @@ $ ./build.sh
 $ ./pack.sh
 
 # Use publib to upload to CodeArtifact
-$ npm install -g publib-ca
+$ npm install -g publib
+# publib-ca is a CLI tool that comes with publib
 $ publib-ca create
 $ publib-ca publish /path/to/dist
 

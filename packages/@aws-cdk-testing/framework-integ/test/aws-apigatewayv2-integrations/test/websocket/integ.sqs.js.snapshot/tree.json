@@ -1,0 +1,371 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-aws-websocket-sqs-integration": {
+        "id": "integ-aws-websocket-sqs-integration",
+        "path": "integ-aws-websocket-sqs-integration",
+        "children": {
+          "MessageSQSQueue": {
+            "id": "MessageSQSQueue",
+            "path": "integ-aws-websocket-sqs-integration/MessageSQSQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-aws-websocket-sqs-integration/MessageSQSQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "fifoQueue": true,
+                    "queueName": "MessageSQSQueue.fifo"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "webSocketApi": {
+            "id": "webSocketApi",
+            "path": "integ-aws-websocket-sqs-integration/webSocketApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-aws-websocket-sqs-integration/webSocketApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "Send websocket data to SQS which is then processed by a Lambda 2",
+                    "name": "webSocketApi",
+                    "protocolType": "WEBSOCKET",
+                    "routeSelectionExpression": "$request.body.action"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "$default-Route": {
+                "id": "$default-Route",
+                "path": "integ-aws-websocket-sqs-integration/webSocketApi/$default-Route",
+                "children": {
+                  "SQSSendMessage": {
+                    "id": "SQSSendMessage",
+                    "path": "integ-aws-websocket-sqs-integration/webSocketApi/$default-Route/SQSSendMessage",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-aws-websocket-sqs-integration/webSocketApi/$default-Route/SQSSendMessage/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "webSocketApi5AB89700"
+                            },
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "webSocketApiRoleE85311F3",
+                                "Arn"
+                              ]
+                            },
+                            "integrationMethod": "POST",
+                            "integrationType": "AWS",
+                            "integrationUri": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:apigateway:",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  ":sqs:path/",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  "/",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "MessageSQSQueueF7E656B7",
+                                      "QueueName"
+                                    ]
+                                  }
+                                ]
+                              ]
+                            },
+                            "passthroughBehavior": "NEVER",
+                            "requestParameters": {
+                              "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
+                            },
+                            "requestTemplates": {
+                              "$default": "Action=SendMessage&MessageGroupId=$input.path('$.MessageGroupId')&MessageDeduplicationId=$context.requestId&MessageAttribute.1.Name=connectionId&MessageAttribute.1.Value.StringValue=$context.connectionId&MessageAttribute.1.Value.DataType=String&MessageAttribute.2.Name=requestId&MessageAttribute.2.Value.StringValue=$context.requestId&MessageAttribute.2.Value.DataType=String&MessageBody=$input.json('$')"
+                            },
+                            "templateSelectionExpression": "\\$default"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aws-websocket-sqs-integration/webSocketApi/$default-Route/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "webSocketApi5AB89700"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "$default",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "webSocketApidefaultRouteSQSSendMessageFC4F9133"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketApi",
+              "version": "0.0.0"
+            }
+          },
+          "DevStage": {
+            "id": "DevStage",
+            "path": "integ-aws-websocket-sqs-integration/DevStage",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-aws-websocket-sqs-integration/DevStage/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "webSocketApi5AB89700"
+                    },
+                    "autoDeploy": true,
+                    "stageName": "dev"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketStage",
+              "version": "0.0.0"
+            }
+          },
+          "webSocketApiRole": {
+            "id": "webSocketApiRole",
+            "path": "integ-aws-websocket-sqs-integration/webSocketApiRole",
+            "children": {
+              "ImportwebSocketApiRole": {
+                "id": "ImportwebSocketApiRole",
+                "path": "integ-aws-websocket-sqs-integration/webSocketApiRole/ImportwebSocketApiRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-aws-websocket-sqs-integration/webSocketApiRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "apigateway.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "integ-aws-websocket-sqs-integration/webSocketApiRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aws-websocket-sqs-integration/webSocketApiRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "MessageSQSQueueF7E656B7",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "webSocketApiRoleDefaultPolicyF067C420",
+                        "roles": [
+                          {
+                            "Ref": "webSocketApiRoleE85311F3"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-aws-websocket-sqs-integration/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-aws-websocket-sqs-integration/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "apigatewayv2-aws-integration-sqs-integ-test": {
+        "id": "apigatewayv2-aws-integration-sqs-integ-test",
+        "path": "apigatewayv2-aws-integration-sqs-integ-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "apigatewayv2-aws-integration-sqs-integ-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

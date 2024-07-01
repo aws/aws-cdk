@@ -62,7 +62,7 @@ export interface ShellScriptActionProps {
    *
    * @default LinuxBuildImage.STANDARD_7_0
    */
-  readonly environment?: codebuild.BuildEnvironment
+  readonly environment?: codebuild.BuildEnvironment;
 
   /**
    * Environment variables to send into build
@@ -105,7 +105,7 @@ export interface ShellScriptActionProps {
    *
    * @default - All private subnets.
    */
-  readonly subnetSelection?: ec2.SubnetSelection
+  readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
    * Which security group to associate with the script's project network interfaces.

@@ -13,7 +13,7 @@ export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
 export interface TestStackArtifact {
   stackName: string;
   template?: any;
-  env?: string,
+  env?: string;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
 
@@ -37,9 +37,9 @@ export class MockCloudExecutable extends CloudExecutable {
   public readonly configuration: Configuration;
   public readonly sdkProvider: MockSdkProvider;
 
-  constructor(assembly: TestAssembly) {
+  constructor(assembly: TestAssembly, sdkProviderArg?: MockSdkProvider) {
     const configuration = new Configuration();
-    const sdkProvider = new MockSdkProvider();
+    const sdkProvider = sdkProviderArg ?? new MockSdkProvider();
 
     super({
       configuration,

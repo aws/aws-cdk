@@ -1,0 +1,256 @@
+{
+ "Resources": {
+  "MySpecRestApiFB7DB2AB": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Body": {
+     "openapi": "3.0.2",
+     "paths": {
+      "/test": {
+       "get": {
+        "responses": {
+         "200": {
+          "content": {
+           "application/json": {
+            "schema": {
+             "$ref": "#/components/schemas/Empty"
+            }
+           }
+          }
+         }
+        },
+        "x-amazon-apigateway-integration": {
+         "responses": {
+          "default": {
+           "statusCode": "200"
+          }
+         },
+         "requestTemplates": {
+          "application/json": "{\"statusCode\": 200}"
+         },
+         "passthroughBehavior": "when_no_match",
+         "type": "mock"
+        }
+       }
+      }
+     },
+     "components": {
+      "schemas": {
+       "Empty": {
+        "title": "Empty Schema",
+        "type": "object"
+       }
+      }
+     }
+    },
+    "Name": "MySpecRestApi"
+   }
+  },
+  "MySpecRestApiDeployment5D02B5D9a8c154dd64ed0abf0243000795ad6206": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "MySpecRestApiFB7DB2AB"
+    }
+   }
+  },
+  "MySpecRestApiDeploymentStageprod8522A503": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "MySpecRestApiDeployment5D02B5D9a8c154dd64ed0abf0243000795ad6206"
+    },
+    "RestApiId": {
+     "Ref": "MySpecRestApiFB7DB2AB"
+    },
+    "StageName": "prod"
+   }
+  },
+  "MySpecRestApiEventsRole25C1D10F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MySpecRestApiEventsRoleDefaultPolicy6616420B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "execute-api:Invoke",
+        "execute-api:ManageConnections"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":execute-api:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":",
+          {
+           "Ref": "MySpecRestApiFB7DB2AB"
+          },
+          "/",
+          {
+           "Ref": "MySpecRestApiDeploymentStageprod8522A503"
+          },
+          "/*/"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MySpecRestApiEventsRoleDefaultPolicy6616420B",
+    "Roles": [
+     {
+      "Ref": "MySpecRestApiEventsRole25C1D10F"
+     }
+    ]
+   }
+  },
+  "Rule4C995B7F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":execute-api:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":",
+         {
+          "Ref": "MySpecRestApiFB7DB2AB"
+         },
+         "/",
+         {
+          "Ref": "MySpecRestApiDeploymentStageprod8522A503"
+         },
+         "/*/"
+        ]
+       ]
+      },
+      "HttpParameters": {},
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MySpecRestApiEventsRole25C1D10F",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "MySpecRestApiEndpoint564A2275": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MySpecRestApiFB7DB2AB"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "MySpecRestApiDeploymentStageprod8522A503"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ExportsOutputRefRule4C995B7FC04CD733": {
+   "Value": {
+    "Ref": "Rule4C995B7F"
+   },
+   "Export": {
+    "Name": "aws-events-targets-api-gateway-integ:ExportsOutputRefRule4C995B7FC04CD733"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -6,7 +6,11 @@ import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as codepipeline_actions from '../lib';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 /// !show
 const lambdaStack = new cdk.Stack(app, 'LambdaStack');
@@ -19,7 +23,9 @@ new lambda.Function(lambdaStack, 'Lambda', {
 // other resources that your Lambda needs, added to the lambdaStack...
 
 const pipelineStack = new cdk.Stack(app, 'PipelineStack');
-const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline');
+const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+  crossAccountKeys: true,
+});
 
 // add the source code repository containing this code to your Pipeline,
 // and the source code of the Lambda Function, if they're separate

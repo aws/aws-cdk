@@ -70,6 +70,8 @@ class ServiceConnect extends cdk.Stack {
           portMappingName: 'api',
           dnsName: 'api',
           port: 80,
+          idleTimeout: cdk.Duration.seconds(30),
+          perRequestTimeout: cdk.Duration.seconds(30),
         },
       ],
       namespace: ns.namespaceArn,
@@ -77,7 +79,11 @@ class ServiceConnect extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
+  },
+});
 const stack = new ServiceConnect(app, 'aws-ecs-service-connect');
 
 const test = new integ.IntegTest(app, 'ServiceConnect', {

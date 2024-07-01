@@ -90,12 +90,18 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDe
   // whether to ignore failure to fetch the status of alarms from CloudWatch
   // default: false
   ignorePollAlarmsFailure: false,
+  // whether to skip the step of checking CloudWatch alarms during the deployment process
+  // default: false
+  ignoreAlarmConfiguration: false,
   // auto-rollback configuration
   autoRollback: {
     failedDeployment: true, // default: true
     stoppedDeployment: true, // default: false
     deploymentInAlarm: true, // default: true if you provided any alarms, false otherwise
   },
+  // whether the deployment group was configured to have CodeDeploy install a termination hook into an Auto Scaling group
+  // default: false
+  terminationHook: true,
 });
 ```
 

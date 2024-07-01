@@ -156,7 +156,7 @@ export class FileAssetHandler implements IAssetHandler {
 enum BucketOwnership {
   DOES_NOT_EXIST,
   MINE,
-  SOMEONE_ELSES_OR_NO_ACCESS
+  SOMEONE_ELSES_OR_NO_ACCESS,
 }
 
 type BucketEncryption =

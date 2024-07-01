@@ -38,7 +38,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
     [feats.CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
     // Add new disabling feature flags below this line
-    // ...
+    [feats.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
 
   });
 });
@@ -70,7 +70,8 @@ test.each([
   expect(compareVersions(b, a)).toBeCloseTo(-expected, 10); // Gets around expect(-0).toEqual(0) failing... :x
 });
 
-const currentv2: string = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../../version.v2.json'), { encoding: 'utf-8' })).version;
+// eslint-disable-next-line @aws-cdk/no-invalid-path
+const currentv2: string = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', '..', 'version.v2.json'), { encoding: 'utf-8' })).version;
 
 describe(`introducedIn.v2 is either <= ${currentv2} or magic value "${MAGIC_V2NEXT}"`, () => {
   test.each(Object.keys(feats.FLAGS))('for flag %p', flag => {

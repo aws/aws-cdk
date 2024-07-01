@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "39bf1ae788d29e6def2af02690b18b4dd491662b26b445a93f9b8994e6f18990": {
+      "source": {
+        "path": "aws-cdk-rds-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "39bf1ae788d29e6def2af02690b18b4dd491662b26b445a93f9b8994e6f18990.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

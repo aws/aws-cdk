@@ -99,7 +99,7 @@ match is made after 30 seconds, gradually relax the skill requirements.
 ```ts
 new gamelift.MatchmakingRuleSet(this, 'RuleSet', {
   matchmakingRuleSetName: 'my-test-ruleset',
-  content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset/ruleset.json')),
+  content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset', 'ruleset.json')),
 });
 ```
 

@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cdk-ses-email-identity-integ": {
         "id": "cdk-ses-email-identity-integ",
         "path": "cdk-ses-email-identity-integ",
@@ -30,13 +22,198 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "Function": {
+            "id": "Function",
+            "path": "cdk-ses-email-identity-integ/Function",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "cdk-ses-email-identity-integ/Function/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-ses-email-identity-integ/Function/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-ses-email-identity-integ/Function/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "cdk-ses-email-identity-integ/Function/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-ses-email-identity-integ/Function/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ses:SendEmail",
+                                    "ses:SendRawEmail"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ses:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":identity/",
+                                        {
+                                          "Ref": "EmailIdentity7187767D"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "FunctionServiceRoleDefaultPolicy2F49994A",
+                            "roles": [
+                              {
+                                "Ref": "FunctionServiceRole675BB04A"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "cdk-ses-email-identity-integ/Function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "cdk-ses-email-identity-integ/Function/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "cdk-ses-email-identity-integ/Function/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-email-identity-integ/Function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "ab3156800c2f322f16da8bff913172139189a387dd64a4e622f82a790561fd4d.zip"
+                    },
+                    "functionName": "email-sending-lambda",
+                    "handler": "index.lambda_handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "FunctionServiceRole675BB04A",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.11"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -50,15 +227,14 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
                     "name": {
                       "Fn::GetAtt": [
                         "EmailIdentity7187767D",
                         "DkimDNSTokenName1"
                       ]
-                    },
-                    "type": "CNAME",
-                    "hostedZoneId": {
-                      "Ref": "HostedZoneDB99F866"
                     },
                     "resourceRecords": [
                       {
@@ -68,11 +244,12 @@
                         ]
                       }
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "CNAME"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                   "version": "0.0.0"
                 }
               },
@@ -82,15 +259,14 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
                     "name": {
                       "Fn::GetAtt": [
                         "EmailIdentity7187767D",
                         "DkimDNSTokenName2"
                       ]
-                    },
-                    "type": "CNAME",
-                    "hostedZoneId": {
-                      "Ref": "HostedZoneDB99F866"
                     },
                     "resourceRecords": [
                       {
@@ -100,11 +276,12 @@
                         ]
                       }
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "CNAME"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                   "version": "0.0.0"
                 }
               },
@@ -114,15 +291,14 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
                     "name": {
                       "Fn::GetAtt": [
                         "EmailIdentity7187767D",
                         "DkimDNSTokenName3"
                       ]
-                    },
-                    "type": "CNAME",
-                    "hostedZoneId": {
-                      "Ref": "HostedZoneDB99F866"
                     },
                     "resourceRecords": [
                       {
@@ -132,11 +308,12 @@
                         ]
                       }
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "CNAME"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                   "version": "0.0.0"
                 }
               },
@@ -153,7 +330,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.CfnEmailIdentity",
+                  "fqn": "aws-cdk-lib.aws_ses.CfnEmailIdentity",
                   "version": "0.0.0"
                 }
               },
@@ -167,11 +344,10 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                       "aws:cdk:cloudformation:props": {
-                        "name": "mail.cdk.dev.",
-                        "type": "MX",
                         "hostedZoneId": {
                           "Ref": "HostedZoneDB99F866"
                         },
+                        "name": "mail.cdk.dev.",
                         "resourceRecords": [
                           {
                             "Fn::Join": [
@@ -186,17 +362,18 @@
                             ]
                           }
                         ],
-                        "ttl": "1800"
+                        "ttl": "1800",
+                        "type": "MX"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                      "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.MxRecord",
+                  "fqn": "aws-cdk-lib.aws_route53.MxRecord",
                   "version": "0.0.0"
                 }
               },
@@ -210,38 +387,54 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                       "aws:cdk:cloudformation:props": {
-                        "name": "mail.cdk.dev.",
-                        "type": "TXT",
                         "hostedZoneId": {
                           "Ref": "HostedZoneDB99F866"
                         },
+                        "name": "mail.cdk.dev.",
                         "resourceRecords": [
                           "\"v=spf1 include:amazonses.com ~all\""
                         ],
-                        "ttl": "1800"
+                        "ttl": "1800",
+                        "type": "TXT"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                      "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.TxtRecord",
+                  "fqn": "aws-cdk-lib.aws_route53.TxtRecord",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ses.EmailIdentity",
+              "fqn": "aws-cdk-lib.aws_ses.EmailIdentity",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-ses-email-identity-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-ses-email-identity-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "EmailIdentityInteg": {
@@ -257,33 +450,59 @@
                 "path": "EmailIdentityInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "EmailIdentityInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "EmailIdentityInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "EmailIdentityInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

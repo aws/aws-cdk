@@ -77,7 +77,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * Specifies whether the service will use the daemon scheduling strategy.
    * If true, the service scheduler deploys exactly one task on each container instance in your cluster.
    *
-   * When you are using this strategy, do not specify a desired number of tasks orany task placement strategies.
+   * When you are using this strategy, do not specify a desired number of tasks or any task placement strategies.
    *
    * @default false
    */
@@ -140,7 +140,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     return fromServiceAttributes(scope, id, attrs);
   }
 
-  private readonly constraints: CfnService.PlacementConstraintProperty[];
+  private constraints?: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
 
@@ -179,12 +179,12 @@ export class Ec2Service extends BaseService implements IEc2Service {
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
-      placementConstraints: Lazy.any({ produce: () => this.constraints }, { omitEmptyArray: true }),
+      placementConstraints: Lazy.any({ produce: () => this.constraints }),
       placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.taskDefinition);
 
-    this.constraints = [];
+    this.constraints = undefined;
     this.strategies = [];
     this.daemon = props.daemon || false;
 
@@ -210,7 +210,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
       this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
     }
 
-    this.addPlacementConstraints(...props.placementConstraints || []);
+    if (props.placementConstraints) {
+      this.addPlacementConstraints(...props.placementConstraints);
+    }
     this.addPlacementStrategies(...props.placementStrategies || []);
 
     this.node.addValidation({
@@ -239,6 +241,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
+    this.constraints = [];
     for (const constraint of constraints) {
       this.constraints.push(...constraint.toJson());
     }

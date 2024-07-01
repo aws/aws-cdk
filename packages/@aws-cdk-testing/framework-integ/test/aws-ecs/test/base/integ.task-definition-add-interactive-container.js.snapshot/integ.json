@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-ecs-container-definition-interactive/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "aws-ecs-container-definition-interactive/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecscontainerdefinitioninteractiveDefaultTestDeployAssert6E49E825"
+    }
+  }
+}

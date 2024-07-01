@@ -3,7 +3,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { RemovalPolicy, Stack } from '../../core';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc } from '../lib';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc, FlowLogTrafficType } from '../lib';
 
 describe('vpc flow logs', () => {
   test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
@@ -542,6 +542,88 @@ describe('vpc flow logs', () => {
       MaxAggregationInterval: 60,
     });
   });
+
+  test('create from transit gateway`', () => {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromTransitGatewayId('tgw-123456'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'TransitGateway',
+      ResourceId: 'tgw-123456',
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'FlowLogsLogGroup9853A85F',
+      },
+    });
+  });
+
+  test('throw if transit gateway with traffic type', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayId('tgw-123456'),
+        trafficType: FlowLogTrafficType.REJECT,
+      });
+    }).toThrow(/trafficType is not supported for Transit Gateway and Transit Gateway Attachment/);
+  });
+
+  test('create from transit gateway attachment', () => {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId('tgw-attach-123456'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'TransitGatewayAttachment',
+      ResourceId: 'tgw-attach-123456',
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'FlowLogsLogGroup9853A85F',
+      },
+    });
+  });
+
+  test('throw if transit gateway attachment with traffic type', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId('tgw-attach-123456'),
+        trafficType: FlowLogTrafficType.REJECT,
+      });
+    }).toThrow(/trafficType is not supported for Transit Gateway and Transit Gateway Attachment/);
+  });
+
+  test('throw if transit gateway with value other than maxAggregationInterval.ONE_MINUTES', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayId('tgw-123456'),
+        maxAggregationInterval: FlowLogMaxAggregationInterval.TEN_MINUTES,
+      });
+    }).toThrow(/maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment/);
+  });
+
+  test('throw if transit gateway attachment with maxAggregationInterval value other than maxAggregationInterval.ONE_MINUTES', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId('tgw-attach-123456'),
+        maxAggregationInterval: FlowLogMaxAggregationInterval.TEN_MINUTES,
+      });
+    }).toThrow(/maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment/);
+  });
 });
 
 test('add to vpc with maxAggregationInterval', () => {
@@ -721,3 +803,4 @@ test('with custom log format set custom, it not creates with cloudwatch log dest
     },
   });
 });
+

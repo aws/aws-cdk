@@ -20,6 +20,27 @@
      }
     ]
    }
+  },
+  "RoleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyPolicyintegiamimportedrole2Roleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy9B3A4E53": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": "arn:aws:sqs:*:*:secondQueue"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Policyintegiamimportedrole2RoleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyBE9857E5",
+    "Roles": [
+     {
+      "Fn::ImportValue": "integ-iam-imported-role-role-stack:ExportsOutputRefTestRole6C9272DF9DD89F08"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

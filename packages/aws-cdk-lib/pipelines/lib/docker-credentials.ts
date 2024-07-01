@@ -79,7 +79,7 @@ export interface ExternalDockerCredentialOptions {
    * An IAM role to assume prior to accessing the secret.
    * @default - none. The current execution role will be used.
    */
-  readonly assumeRole?: iam.IRole
+  readonly assumeRole?: iam.IRole;
   /**
    * Defines which stages of the pipeline should be granted access to these credentials.
    * @default - all relevant stages (synth, self-update, asset publishing) are granted access.
@@ -93,7 +93,7 @@ export interface EcrDockerCredentialOptions {
    * An IAM role to assume prior to accessing the secret.
    * @default - none. The current execution role will be used.
    */
-  readonly assumeRole?: iam.IRole
+  readonly assumeRole?: iam.IRole;
   /**
    * Defines which stages of the pipeline should be granted access to these credentials.
    * @default - all relevant stages (synth, self-update, asset publishing) are granted access.

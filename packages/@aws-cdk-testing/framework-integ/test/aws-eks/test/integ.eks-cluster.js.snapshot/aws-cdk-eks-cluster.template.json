@@ -1008,7 +1008,8 @@
         ]
        }
       ]
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1016,7 +1017,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -3485,7 +3486,7 @@
     "InstanceTypes": [
      "c5.large",
      "c5a.large",
-     "c5d.large"
+     "m7i-flex.large"
     ],
     "NodeRole": {
      "Fn::GetAtt": [
@@ -4047,7 +4048,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "9c9c077e1db371e9d23da63db88926d5de460a4c66d88015384bf7156e8ef1b9"
+    "CodeHash": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4184,7 +4185,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/3493e8ce9588c884873ef71236a6aff232daa0649379782268a24e6269c55551.json"
+       "/ebf1736aa22fcd370cd5d8401e2507846723d1556a1cadda27ef43101e264ef8.json"
       ]
      ]
     }
@@ -4230,7 +4231,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/146ddc9b63ed73b366bbc659fcf2c5c0be0a93a7fa78a6530184c76989a923d5.json"
+       "/bfdcc1416928a630e76eeca1a5bb9b8ed027254118411b093a1799e7f5376a2a.json"
       ]
      ]
     }
@@ -4348,7 +4349,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "9c9c077e1db371e9d23da63db88926d5de460a4c66d88015384bf7156e8ef1b9.zip"
+     "S3Key": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4359,7 +4360,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -4394,7 +4395,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "f58e5b0009fc349d5e78d41594373bd6723e705a3c961a42adfbefa36cbe1bcf.zip"
+     "S3Key": "a4052fc8993f394f879e80c418974b5f01321a8ea600ed16668222a0705b6d1a.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4405,7 +4406,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
@@ -4506,6 +4507,14 @@
   "ClusterName": {
    "Value": {
     "Ref": "Cluster9EE0221C"
+   }
+  },
+  "NodegroupName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterNodegroupDefaultCapacityDA0920A3",
+     "NodegroupName"
+    ]
    }
   }
  },

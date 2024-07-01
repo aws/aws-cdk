@@ -21,7 +21,7 @@ export interface DeployAssertProps {
    *
    * @default - a stack is created for you
    */
-  readonly stack?: Stack
+  readonly stack?: Stack;
 }
 
 /**

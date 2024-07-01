@@ -49,7 +49,7 @@ export enum TableAction {
   /**
    * Grants all available privileges at once to the specified user or user group.
    */
-  ALL
+  ALL,
 }
 
 /**

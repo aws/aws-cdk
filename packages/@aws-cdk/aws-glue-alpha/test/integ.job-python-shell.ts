@@ -22,7 +22,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-glue-job-python-shell');
 
-const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py'));
+const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py'));
 
 new glue.Job(stack, 'ShellJob', {
   jobName: 'ShellJob',

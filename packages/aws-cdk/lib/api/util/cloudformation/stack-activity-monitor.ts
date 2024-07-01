@@ -348,7 +348,7 @@ interface PrinterProps {
   /**
    * Total resources to deploy
    */
-  readonly resourcesTotal?: number
+  readonly resourcesTotal?: number;
 
   /**
    * The with of the "resource type" column.

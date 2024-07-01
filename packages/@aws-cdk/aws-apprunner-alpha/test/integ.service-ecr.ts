@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as cdk from 'aws-cdk-lib';
 import { Service, Source } from '../lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -9,7 +10,7 @@ const stack = new cdk.Stack(app, 'integ-apprunner');
 
 // Scenario 3: Create the service from local code assets
 const imageAsset = new assets.DockerImageAsset(stack, 'ImageAssets', {
-  directory: path.join(__dirname, './docker.assets'),
+  directory: path.join(__dirname, 'docker.assets'),
 });
 const service3 = new Service(stack, 'Service3', {
   source: Source.fromAsset({
@@ -29,3 +30,7 @@ const service2 = new Service(stack, 'Service2', {
   }),
 });
 new cdk.CfnOutput(stack, 'URL2', { value: `https://${service2.serviceUrl}` });
+
+new integ.IntegTest(app, 'AppRunnerEcr', {
+  testCases: [stack],
+});

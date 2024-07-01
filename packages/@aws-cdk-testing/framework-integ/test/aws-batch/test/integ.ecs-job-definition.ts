@@ -60,6 +60,8 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
     memory: Size.mebibytes(32768),
     ephemeralStorageSize: Size.gibibytes(100),
     fargatePlatformVersion: FargatePlatformVersion.LATEST,
+    fargateCpuArchitecture: ecs.CpuArchitecture.ARM64,
+    fargateOperatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
   }),
   jobDefinitionName: 'foofoo',
   parameters: {
@@ -87,6 +89,18 @@ new batch.EcsJobDefinition(stack, 'ECSDockerJobDefn', {
     image: ecs.ContainerImage.fromDockerImageAsset(new DockerImageAsset(stack, 'dockerImageAsset', {
       directory: path.join(__dirname, 'batchjob-image'),
     })),
+  }),
+});
+
+// can successfully launch a Windows container
+new batch.EcsJobDefinition(stack, 'WindowsJobDefinitio', {
+  jobDefinitionName: 'windows-job-definition',
+  container: new batch.EcsFargateContainerDefinition(stack, 'WindowsFargateContainer', {
+    image: ecs.ContainerImage.fromRegistry('mcr.microsoft.com/dotnet/framework/runtime:4.7.2'),
+    memory: Size.gibibytes(8),
+    cpu: 2,
+    fargateCpuArchitecture: ecs.CpuArchitecture.X86_64,
+    fargateOperatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_FULL,
   }),
 });
 

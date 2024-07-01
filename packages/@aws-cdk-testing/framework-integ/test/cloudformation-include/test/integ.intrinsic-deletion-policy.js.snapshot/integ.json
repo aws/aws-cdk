@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DeletionPolicyTest/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "DeletionPolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DeletionPolicyTestDefaultTestDeployAssert6189EF04"
+    }
+  }
+}

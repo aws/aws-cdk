@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-lambda-logging-config.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c10a26dd32e7f7d2a9c057ec71b82b23ad867563a9b092f09ed73ef671035641.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca1d6ec19cef9e3b887e11f0ef107dd32ef686db5e138eee03b83852d2fe7db5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,6 +94,30 @@
             "data": "LambdaWithJSONFormat20E01C00"
           }
         ],
+        "/aws-cdk-lambda-logging-config/LambdaWithTextLoggingFormat/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithTextLoggingFormatServiceRole3ADC91E1"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithTextLoggingFormat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithTextLoggingFormatD614C37E"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithJSONLoggingFormat/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithJSONLoggingFormatServiceRole0B3D5672"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithJSONLoggingFormat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithJSONLoggingFormatFA0D6903"
+          }
+        ],
         "/aws-cdk-lambda-logging-config/LambdaWithLogLevel/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -104,6 +128,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaWithLogLevelCBBBEFFC"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogLevelV2ServiceRoleD184382A"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogLevelV2D4FB10AC"
           }
         ],
         "/aws-cdk-lambda-logging-config/BootstrapVersion": [

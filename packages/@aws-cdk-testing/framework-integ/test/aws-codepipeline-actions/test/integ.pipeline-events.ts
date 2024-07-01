@@ -9,11 +9,17 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-pipeline-event-target');
 
-const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
+const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+  crossAccountKeys: true,
+});
 
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', {
   repositoryName: 'foo',

@@ -40,10 +40,10 @@ export type FlagInfo = FlagInfoBase & (
   | { readonly type: FlagType.ApiDefault;
 
     /** Describe restoring old behavior or dealing with the change (Markdown) */
-    readonly compatibilityWithOldBehaviorMd: string }
+    readonly compatibilityWithOldBehaviorMd: string; }
   | { readonly type: FlagType.BugFix;
     /** Describe restoring old behavior or dealing with the change (Markdown) */
-    readonly compatibilityWithOldBehaviorMd?: string }
+    readonly compatibilityWithOldBehaviorMd?: string; }
   | { readonly type: FlagType.VisibleContext }
 );
 

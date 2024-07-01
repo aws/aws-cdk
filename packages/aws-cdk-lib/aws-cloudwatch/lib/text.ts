@@ -11,7 +11,7 @@ export enum TextWidgetBackground {
   /**
   * Transparent background
   */
-  TRANSPARENT = 'transparent'
+  TRANSPARENT = 'transparent',
 }
 
 /**

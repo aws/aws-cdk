@@ -142,7 +142,7 @@ function renderReference(ref: CfnReference) {
  * Finds all the CloudFormation references in a construct tree.
  */
 function findAllReferences(root: IConstruct) {
-  const result = new Array<{ source: CfnElement, value: CfnReference }>();
+  const result = new Array<{ source: CfnElement; value: CfnReference }>();
   for (const consumer of root.node.findAll()) {
 
     // include only CfnElements (i.e. resources)

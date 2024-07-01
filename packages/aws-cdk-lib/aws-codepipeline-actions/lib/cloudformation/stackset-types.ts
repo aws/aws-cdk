@@ -466,7 +466,7 @@ export enum StackSetOrganizationsAutoDeployment {
   /**
    * Stack resources are retained when an account is removed from a target organization or OU.
    */
-  ENABLED_WITH_STACK_RETENTION = 'EnabledWithStackRetention'
+  ENABLED_WITH_STACK_RETENTION = 'EnabledWithStackRetention',
 }
 
 /**

@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "iot-opensearch-action-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-iot-opensearch-integ-stack"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "iot-opensearch-action-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "iotopensearchactionintegtestDefaultTestDeployAssertD02B4332"
+    }
+  }
+}

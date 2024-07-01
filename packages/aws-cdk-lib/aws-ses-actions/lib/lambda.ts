@@ -28,7 +28,7 @@ export interface LambdaProps {
   /**
    * The Lambda function to invoke.
    */
-  readonly function: lambda.IFunction
+  readonly function: lambda.IFunction;
 
   /**
    * The invocation type of the Lambda function.

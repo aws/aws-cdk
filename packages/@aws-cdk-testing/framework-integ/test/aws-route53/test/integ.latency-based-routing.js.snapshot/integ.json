@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Route53LatencyBasedRoutingInteg/DefaultTest": {
+      "stacks": [
+        "latency-based-routing"
+      ],
+      "assertionStack": "Route53LatencyBasedRoutingInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53LatencyBasedRoutingIntegDefaultTestDeployAssert0B7B9B14"
+    }
+  }
+}

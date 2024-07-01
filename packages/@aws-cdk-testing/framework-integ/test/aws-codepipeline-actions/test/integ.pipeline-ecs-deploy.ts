@@ -9,7 +9,12 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 /* eslint-disable quote-props */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecs-deploy');
 

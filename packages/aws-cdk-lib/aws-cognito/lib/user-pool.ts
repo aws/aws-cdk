@@ -163,14 +163,14 @@ export interface UserPoolTriggers {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
    * @default - no trigger configured
    */
-  readonly customEmailSender?: lambda.IFunction
+  readonly customEmailSender?: lambda.IFunction;
 
   /**
    * Amazon Cognito invokes this trigger to send SMS notifications to users.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
    * @default - no trigger configured
    */
-  readonly customSmsSender?: lambda.IFunction
+  readonly customSmsSender?: lambda.IFunction;
 
   /**
    * Index signature.
@@ -230,9 +230,19 @@ export class UserPoolOperation {
 
   /**
    * Add or remove attributes in Id tokens
+   *
+   * Set this parameter for legacy purposes.
+   * If you also set an ARN in PreTokenGenerationConfig, its value must be identical to PreTokenGeneration.
+   * For new instances of pre token generation triggers, set the LambdaArn of PreTokenGenerationConfig.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
    */
   public static readonly PRE_TOKEN_GENERATION = new UserPoolOperation('preTokenGeneration');
+
+  /**
+   * Add or remove attributes in Id tokens
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   */
+  public static readonly PRE_TOKEN_GENERATION_CONFIG = new UserPoolOperation('preTokenGenerationConfig');
 
   /**
    * Migrate a user from an existing user directory to user pools
@@ -280,6 +290,22 @@ export enum VerificationEmailStyle {
   CODE = 'CONFIRM_WITH_CODE',
   /** Verify email via link */
   LINK = 'CONFIRM_WITH_LINK',
+}
+
+/**
+ * The user pool trigger version of the request that Amazon Cognito sends to your Lambda function.
+ */
+export enum LambdaVersion {
+  /**
+   * V1_0 trigger
+   */
+  V1_0 = 'V1_0',
+  /**
+   * V2_0 trigger
+   *
+   * This is supported only for PRE_TOKEN_GENERATION trigger.
+   */
+  V2_0 = 'V2_0',
 }
 
 /**
@@ -510,7 +536,7 @@ export enum AdvancedSecurityMode {
   /** gather metrics on detected risks without taking action. Metrics are published to Amazon CloudWatch */
   AUDIT = 'AUDIT',
   /** Advanced security mode is disabled */
-  OFF = 'OFF'
+  OFF = 'OFF',
 }
 
 /**
@@ -994,9 +1020,12 @@ export class UserPool extends UserPoolBase {
    * Add a lambda trigger to a user pool operation
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    */
-  public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
+  public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction, lambdaVersion?: LambdaVersion): void {
     if (operation.operationName in this.triggers) {
       throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
+    }
+    if (operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG && lambdaVersion === LambdaVersion.V2_0) {
+      throw new Error('Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version.');
     }
 
     this.addLambdaPermission(fn, operation.operationName);
@@ -1008,7 +1037,13 @@ export class UserPool extends UserPoolBase {
         }
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
-          lambdaVersion: 'V1_0',
+          lambdaVersion: LambdaVersion.V1_0,
+        };
+        break;
+      case 'preTokenGenerationConfig':
+        (this.triggers as any)[operation.operationName] = {
+          lambdaArn: fn.functionArn,
+          lambdaVersion: lambdaVersion ?? LambdaVersion.V1_0,
         };
         break;
       default:
@@ -1047,6 +1082,11 @@ export class UserPool extends UserPoolBase {
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
     const CODE_TEMPLATE = '{####}';
     const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
+    /**
+     * Email message placeholder regex
+     * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-verificationmessagetemplate.html#cfn-cognito-userpool-verificationmessagetemplate-emailmessagebylink
+     */
+    const VERIFY_EMAIL_REGEX = /\{##[\p{L}\p{M}\p{S}\p{N}\p{P}\s*]*##\}/u;
 
     const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
     const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
@@ -1069,7 +1109,7 @@ export class UserPool extends UserPoolBase {
     } else {
       const emailMessage = props.userVerification?.emailBody ??
         `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
-      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && !VERIFY_EMAIL_REGEX.test(emailMessage)) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {

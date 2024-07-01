@@ -3,16 +3,11 @@
   "MyUserDC45028B": {
    "Type": "AWS::IAM::User"
   },
-  "HelloPolicyD59007DF": {
+  "MyUserDefaultPolicy7B897426": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
-      {
-       "Action": "sqs:SendMessage",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
@@ -22,6 +17,27 @@
          "Arn"
         ]
        }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyUserDefaultPolicy7B897426",
+    "Users": [
+     {
+      "Ref": "MyUserDC45028B"
+     }
+    ]
+   }
+  },
+  "HelloPolicyD59007DF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"

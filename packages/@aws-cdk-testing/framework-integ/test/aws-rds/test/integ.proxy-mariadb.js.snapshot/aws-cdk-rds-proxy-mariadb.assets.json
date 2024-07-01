@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "f0fff306f7e137bbf1a002fa55210d252f5846dc8e753143422b180e68469441": {
+      "source": {
+        "path": "aws-cdk-rds-proxy-mariadb.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f0fff306f7e137bbf1a002fa55210d252f5846dc8e753143422b180e68469441.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

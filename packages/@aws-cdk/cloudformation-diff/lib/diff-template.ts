@@ -1,8 +1,14 @@
+// The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
+// The SDK should not make network calls here
+import type { DescribeChangeSetOutput as DescribeChangeSet } from '@aws-sdk/client-cloudformation';
 import * as impl from './diff';
+import { TemplateAndChangeSetDiffMerger } from './diff/template-and-changeset-diff-merger';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
 export * from './diff/types';
+
+export type DescribeChangeSetOutput = DescribeChangeSet;
 
 type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
@@ -33,12 +39,41 @@ const DIFF_HANDLERS: HandlerRegistry = {
  *
  * @param currentTemplate the current state of the stack.
  * @param newTemplate     the target state of the stack.
+ * @param changeSet       the change set for this stack.
  *
  * @returns a +types.TemplateDiff+ object that represents the changes that will happen if
  *      a stack which current state is described by +currentTemplate+ is updated with
  *      the template +newTemplate+.
  */
-export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
+export function fullDiff(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any },
+  changeSet?: DescribeChangeSetOutput,
+  isImport?: boolean,
+): types.TemplateDiff {
+
+  normalize(currentTemplate);
+  normalize(newTemplate);
+  const theDiff = diffTemplate(currentTemplate, newTemplate);
+  if (changeSet) {
+    // These methods mutate the state of theDiff, using the changeSet.
+    const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
+    theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
+      changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
+    );
+    changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
+  } else if (isImport) {
+    makeAllResourceChangesImports(theDiff);
+  }
+
+  return theDiff;
+}
+
+export function diffTemplate(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any },
+): types.TemplateDiff {
+
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
 
@@ -105,20 +140,12 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
     handler(differences, oldValue, newValue);
-
   }
   if (Object.keys(unknown).length > 0) {
     differences.unknown = new types.DifferenceCollection(unknown);
   }
 
   return new types.TemplateDiff(differences);
-}
-
-/**
- * Compare two CloudFormation resources and return semantic differences between them
- */
-export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
-  return impl.diffResource(oldValue, newValue);
 }
 
 /**
@@ -183,4 +210,36 @@ function deepCopy(x: any): any {
   }
 
   return x;
+}
+
+function makeAllResourceChangesImports(diff: types.TemplateDiff) {
+  diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
+    change.isImport = true;
+  });
+}
+
+function normalize(template: any) {
+  if (typeof template === 'object') {
+    for (const key of (Object.keys(template ?? {}))) {
+      if (key === 'Fn::GetAtt' && typeof template[key] === 'string') {
+        template[key] = template[key].split('.');
+        continue;
+      } else if (key === 'DependsOn') {
+        if (typeof template[key] === 'string') {
+          template[key] = [template[key]];
+        } else if (Array.isArray(template[key])) {
+          template[key] = template[key].sort();
+        }
+        continue;
+      }
+
+      if (Array.isArray(template[key])) {
+        for (const element of (template[key])) {
+          normalize(element);
+        }
+      } else {
+        normalize(template[key]);
+      }
+    }
+  }
 }

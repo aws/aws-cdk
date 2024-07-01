@@ -97,6 +97,7 @@ class EksClusterStack extends Stack {
     new CfnOutput(this, 'ClusterSecurityGroupId', { value: this.cluster.clusterSecurityGroupId });
     new CfnOutput(this, 'ClusterEncryptionConfigKeyArn', { value: this.cluster.clusterEncryptionConfigKeyArn });
     new CfnOutput(this, 'ClusterName', { value: this.cluster.clusterName });
+    new CfnOutput(this, 'NodegroupName', { value: this.cluster.defaultNodegroup!.nodegroupName });
   }
 
   private assertServiceAccount() {
@@ -223,7 +224,7 @@ class EksClusterStack extends Stack {
       instanceTypes: [
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('c5a.large'),
-        new ec2.InstanceType('c5d.large'),
+        new ec2.InstanceType('m7i-flex.large'),
       ],
       minSize: 3,
       // reusing the default capacity nodegroup instance role when available

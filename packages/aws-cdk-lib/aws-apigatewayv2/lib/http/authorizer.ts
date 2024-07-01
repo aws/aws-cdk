@@ -29,7 +29,7 @@ export enum AuthorizerPayloadVersion {
   VERSION_1_0 = '1.0',
 
   /** Version 2.0 */
-  VERSION_2_0 = '2.0'
+  VERSION_2_0 = '2.0',
 }
 
 /**
@@ -40,12 +40,12 @@ export interface HttpAuthorizerProps {
    * Name of the authorizer
    * @default - id of the HttpAuthorizer construct.
    */
-  readonly authorizerName?: string
+  readonly authorizerName?: string;
 
   /**
    * HTTP Api to attach the authorizer to
    */
-  readonly httpApi: IHttpApi
+  readonly httpApi: IHttpApi;
 
   /**
    * The type of authorizer
@@ -63,7 +63,7 @@ export interface HttpAuthorizerProps {
    * A valid JWT must provide an aud that matches at least one entry in this list.
    * @default - required for JWT authorizer typess.
    */
-  readonly jwtAudience?: string[]
+  readonly jwtAudience?: string[];
 
   /**
    * The base domain of the identity provider that issues JWT.
@@ -117,7 +117,7 @@ export interface HttpAuthorizerAttributes {
   /**
    * Id of the Authorizer
    */
-  readonly authorizerId: string
+  readonly authorizerId: string;
 
   /**
    * Type of authorizer
@@ -127,7 +127,7 @@ export interface HttpAuthorizerAttributes {
    * - CUSTOM - Lambda Authorizer
    * - NONE - No Authorization
    */
-  readonly authorizerType: string
+  readonly authorizerType: string;
 }
 
 /**

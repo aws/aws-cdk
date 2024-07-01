@@ -69,6 +69,7 @@ export class ExternalTable extends TableBase {
           'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
           'connectionName': props.connection.connectionName,
+          ...props.parameters,
         },
         storageDescriptor: {
           location: props.externalDataLocation,

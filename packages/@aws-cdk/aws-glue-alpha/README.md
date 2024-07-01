@@ -60,7 +60,7 @@ new glue.Job(this, 'PythonSparkStreamingJob', {
   executable: glue.JobExecutable.pythonStreaming({
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE,
-    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
   description: 'an example Python Streaming job',
 });
@@ -97,7 +97,7 @@ new glue.Job(this, 'RayJob', {
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
     runtime: glue.Runtime.RAY_TWO_FOUR,
-    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
   workerType: glue.WorkerType.Z_2X,
   workerCount: 2,
@@ -118,7 +118,7 @@ new glue.Job(this, 'EnableSparkUI', {
   executable: glue.JobExecutable.pythonEtl({
     glueVersion: glue.GlueVersion.V3_0,
     pythonVersion: glue.PythonVersion.THREE,
-    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
 });
 ```
@@ -202,7 +202,10 @@ See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-securi
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 
 ```ts
-new glue.Database(this, 'MyDatabase');
+new glue.Database(this, 'MyDatabase', {
+  databaseName: 'my_database',
+  description: 'my_database_description',
+});
 ```
 
 ## Table
@@ -254,6 +257,24 @@ new glue.S3Table(this, 'MyTable', {
     glue.StorageParameter.custom('separatorChar', ',')
   ],
   // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Glue tables can also be configured to contain user-defined table properties through the [`parameters`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters) property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  parameters: {
+    key1: 'val1',
+    key2: 'val2',
+  },
   database: myDatabase,
   columns: [{
     name: 'col1',

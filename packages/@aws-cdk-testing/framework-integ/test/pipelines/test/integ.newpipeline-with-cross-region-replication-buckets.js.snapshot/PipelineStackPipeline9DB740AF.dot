@@ -1,0 +1,55 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg PipelineStackPipeline9DB740AF.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.jose-clickup/cdk-pipelines-demo" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate";
+"Build.Synth" -> "UpdatePipeline.SelfMutate";
+"BEGIN UpdatePipeline" -> "UpdatePipeline.SelfMutate";
+"UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
+"BEGIN MultiRegion" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END MultiRegion" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN MultiRegion";
+"BEGIN MultiRegion.us-east-1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END MultiRegion.us-east-1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"BEGIN MultiRegion.us-east-1.Queue1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END MultiRegion.us-east-1.Queue1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"MultiRegion.us-east-1.Queue1.Deploy";
+"MultiRegion.us-east-1.Queue1.Prepare" -> "MultiRegion.us-east-1.Queue1.Deploy";
+"MultiRegion.us-east-1.Queue1.Prepare";
+"Build.Synth" -> "MultiRegion.us-east-1.Queue1.Prepare";
+"BEGIN MultiRegion.us-east-1.Queue1" -> "MultiRegion.us-east-1.Queue1.Prepare";
+"MultiRegion.us-east-1.Queue1.Deploy" -> "END MultiRegion.us-east-1.Queue1";
+"BEGIN MultiRegion.us-east-1" -> "BEGIN MultiRegion.us-east-1.Queue1";
+"END MultiRegion.us-east-1.Queue1" -> "END MultiRegion.us-east-1";
+"BEGIN MultiRegion.us-west-2" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END MultiRegion.us-west-2" [shape="cds", style="filled", fillcolor="#b7deff"];
+"BEGIN MultiRegion.us-west-2.Queue1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END MultiRegion.us-west-2.Queue1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"MultiRegion.us-west-2.Queue1.Deploy";
+"MultiRegion.us-west-2.Queue1.Prepare" -> "MultiRegion.us-west-2.Queue1.Deploy";
+"MultiRegion.us-west-2.Queue1.Prepare";
+"Build.Synth" -> "MultiRegion.us-west-2.Queue1.Prepare";
+"BEGIN MultiRegion.us-west-2.Queue1" -> "MultiRegion.us-west-2.Queue1.Prepare";
+"MultiRegion.us-west-2.Queue1.Deploy" -> "END MultiRegion.us-west-2.Queue1";
+"BEGIN MultiRegion.us-west-2" -> "BEGIN MultiRegion.us-west-2.Queue1";
+"END MultiRegion.us-west-2.Queue1" -> "END MultiRegion.us-west-2";
+"BEGIN MultiRegion" -> "BEGIN MultiRegion.us-east-1";
+"BEGIN MultiRegion" -> "BEGIN MultiRegion.us-west-2";
+"END MultiRegion.us-east-1" -> "END MultiRegion";
+"END MultiRegion.us-west-2" -> "END MultiRegion";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.jose-clickup/cdk-pipelines-demo";
+"BEGIN Source" -> "Source.jose-clickup/cdk-pipelines-demo";
+"Source.jose-clickup/cdk-pipelines-demo" -> "END Source";
+}

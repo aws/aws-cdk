@@ -1054,3 +1054,44 @@ test('throw an error when assignPublicIp is set to true for private subnets', ()
     }));
   }).toThrowError('assignPublicIp should be set to true only for PUBLIC subnets');
 });
+
+test.each([
+  ['EC2', ecs.LaunchType.EC2, ecs.Compatibility.EC2_AND_FARGATE],
+  ['FARGATE', ecs.LaunchType.FARGATE, ecs.Compatibility.EC2_AND_FARGATE],
+  ['EXTERNAL', ecs.LaunchType.EXTERNAL, ecs.Compatibility.EC2_AND_FARGATE],
+  ['EC2', undefined, ecs.Compatibility.EC2_AND_FARGATE],
+  ['FARGATE', undefined, ecs.Compatibility.FARGATE],
+])('launch type %s is set by %s type specified', (expected, launchType, compatibility) => {
+  // GIVEN
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+    networkMode: ecs.NetworkMode.AWS_VPC,
+    compatibility,
+    cpu: '256',
+    memoryMiB: '512',
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    launchType,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        EcsParameters: {
+          LaunchType: expected,
+        },
+      },
+    ],
+  });
+});

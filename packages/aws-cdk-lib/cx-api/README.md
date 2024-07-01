@@ -241,3 +241,138 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction`
+
+Enable this feature flag to change the logical ID of the `LambdaPermission` for the `LambdaAction` to include an alarm ID.
+
+Previously, only one alarm with the `LambdaAction` could be created per Lambda.
+This flag allows multiple alarms with the `LambdaAction` for the same Lambda to be created.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true
+  }
+}
+```
+
+* `@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse`
+
+Enables Pipeline to set the default value for `crossAccountKeys` to false.
+
+When this feature flag is enabled, and the `crossAccountKeys` property is not provided in a `Pipeline`
+construct, the construct automatically defaults the value of this property to false.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true
+  }
+}
+```
+
+* `@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2`
+
+Enables Pipeline to set the default pipeline type to V2.
+
+When this feature flag is enabled, and the `pipelineType` property is not provided in a `Pipeline`
+construct, the construct automatically defaults the value of this property to `PipelineType.V2`.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true
+  }
+}
+```
+
+* `@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope`
+
+Reduce resource scope of the IAM Policy created from KMS key grant to granting key only.
+
+When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
+'*' to this specific granting KMS key.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true
+  }
+}
+```
+
+* `@aws-cdk/aws-eks:nodegroupNameAttribute`
+
+When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.
+
+When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup
+without any prefix.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-eks:nodegroupNameAttribute": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ec2:ebsDefaultGp3Volume`
+
+When enabled, the default volume type of the EBS volume will be GP3.
+
+When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm`
+
+When enabled, remove default deployment alarm settings.
+
+When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+  }
+}
+```
+
+* `@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions`
+
+When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+
+When this feature flag is enabled, the IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
+for more details.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
+  }
+}
+```

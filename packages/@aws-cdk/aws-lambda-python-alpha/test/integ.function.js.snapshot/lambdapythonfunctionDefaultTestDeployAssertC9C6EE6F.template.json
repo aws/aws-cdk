@@ -14,11 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerD202FA8E369E8804"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerD202FA8E369E8804"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676327434136"
+    "salt": "1699568220314"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -143,6 +152,46 @@
            ]
           }
          ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerpypiBADBA141A80E83F9"
+             }
+            ]
+           ]
+          }
+         ]
         }
        ]
       }
@@ -153,12 +202,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "a5feac1d1e65b04919886f5961fd2ba1352489d558439d9d6592877e92fc2814.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -184,11 +233,20 @@
     "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerexcludes0437E0D23D81F234"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerexcludes0437E0D23D81F234"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676327434137"
+    "salt": "1699568220341"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -199,6 +257,53 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerexcludes0437E0D23D81F234"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokebf17ea3c33450c772e7434da9178bb06": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerpypiBADBA141A80E83F9"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1699568220342"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokebf17ea3c33450c772e7434da9178bb06InvokeFB23CCB3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "integ-lambda-python-function:ExportsOutputRefmyhandlerpypiBADBA141A80E83F9"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -222,6 +327,14 @@
    "Value": {
     "Fn::GetAtt": [
      "LambdaInvoke0e6bc88fc58c90a2753e79d6caf4bc14",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokebf17ea3c33450c772e7434da9178bb06": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokebf17ea3c33450c772e7434da9178bb06",
      "assertion"
     ]
    }

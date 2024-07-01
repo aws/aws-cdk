@@ -178,6 +178,13 @@ export interface EcsDeploymentGroupProps {
    * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
+
+  /**
+   * Whether to skip the step of checking CloudWatch alarms during the deployment process
+   *
+   * @default - false
+   */
+  readonly ignoreAlarmConfiguration?: boolean;
 }
 
 /**
@@ -261,7 +268,12 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       }),
       loadBalancerInfo: cdk.Lazy.any({ produce: () => this.renderLoadBalancerInfo(props.blueGreenDeploymentConfig) }),
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure, removeAlarmsFromDeploymentGroup),
+        produce: () => renderAlarmConfiguration({
+          alarms: this.alarms,
+          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+          removeAlarms: removeAlarmsFromDeploymentGroup,
+          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+        }),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });

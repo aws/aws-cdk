@@ -4,11 +4,12 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
- * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
+ * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
+ * or Archive storage.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
@@ -42,7 +43,22 @@ export enum LifecyclePolicy {
   /**
    * After 90 days of not being accessed.
    */
-  AFTER_90_DAYS = 'AFTER_90_DAYS'
+  AFTER_90_DAYS = 'AFTER_90_DAYS',
+
+  /**
+   * After 180 days of not being accessed.
+   */
+  AFTER_180_DAYS = 'AFTER_180_DAYS',
+
+  /**
+   * After 270 days of not being accessed.
+   */
+  AFTER_270_DAYS = 'AFTER_270_DAYS',
+
+  /**
+   * After 365 days of not being accessed.
+   */
+  AFTER_365_DAYS = 'AFTER_365_DAYS',
 }
 
 /**
@@ -55,7 +71,7 @@ export enum OutOfInfrequentAccessPolicy {
   /**
    * After 1 access
    */
-  AFTER_1_ACCESS = 'AFTER_1_ACCESS'
+  AFTER_1_ACCESS = 'AFTER_1_ACCESS',
 }
 
 /**
@@ -78,7 +94,7 @@ export enum PerformanceMode {
    * Highly parallelized applications and workloads, such as big data analysis,
    * media processing, and genomics analysis, can benefit from this mode.
    */
-  MAX_IO = 'maxIO'
+  MAX_IO = 'maxIO',
 }
 
 /**
@@ -100,7 +116,24 @@ export enum ThroughputMode {
   /**
   * This mode scales the throughput automatically regardless of file system size.
   */
-  ELASTIC = 'elastic'
+  ELASTIC = 'elastic',
+}
+
+/**
+ * The status of the file system's replication overwrite protection.
+ *
+ * @see https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemprotection.html
+ */
+export enum ReplicationOverwriteProtection {
+  /**
+   * Enable the filesystem's replication overwrite protection.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disable the filesystem's replication overwrite protection.
+   */
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -211,6 +244,14 @@ export interface FileSystemProps {
    * @default - None. EFS will not transition files from IA storage to primary storage.
    */
   readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy;
+
+  /**
+   * The number of days after files were last accessed in primary storage (the Standard storage class) at which to move them to Archive storage.
+   * Metadata operations such as listing the contents of a directory don't count as file access events.
+   *
+   * @default - None. EFS will not transition files to Archive storage class.
+   */
+  readonly transitionToArchivePolicy?: LifecyclePolicy;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -264,6 +305,32 @@ export interface FileSystemProps {
    * or set `@aws-cdk/aws-efs:denyAnonymousAccess` feature flag, otherwise true
    */
   readonly allowAnonymousAccess?: boolean;
+
+  /**
+   * Whether this is a One Zone file system.
+   * If enabled, `performanceMode` must be set to `GENERAL_PURPOSE` and `vpcSubnets` cannot be set.
+   *
+   * @default false
+   * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type
+   */
+  readonly oneZone?: boolean;
+
+  /**
+   * Whether to enable the filesystem's replication overwrite protection or not.
+   * Set false if you want to create a read-only filesystem for use as a replication destination.
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/replication-use-cases.html#replicate-existing-destination
+   *
+   * @default ReplicationOverwriteProtection.ENABLED
+   */
+  readonly replicationOverwriteProtection?: ReplicationOverwriteProtection;
+
+  /**
+   * Replication configuration for the file system.
+   *
+   * @default - no replication
+   */
+  readonly replicationConfiguration?: ReplicationConfiguration;
 }
 
 /**
@@ -290,10 +357,192 @@ export interface FileSystemAttributes {
   readonly fileSystemArn?: string;
 }
 
+/**
+ * Properties for the ReplicationConfiguration.
+ */
+export interface ReplicationConfigurationProps {
+  /**
+   * The existing destination file system for the replication.
+   *
+   * @default - None
+   */
+  readonly destinationFileSystem?: IFileSystem;
+
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   *
+   * @default - no availability zone is set
+   */
+  readonly availabilityZone?: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to a new One Zone file system.
+ */
+export interface OneZoneFileSystemProps {
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   */
+  readonly region: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   */
+  readonly availabilityZone: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to a new Regional file system.
+ */
+export interface RegionalFileSystemProps {
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to an existing file system.
+ */
+export interface ExistingFileSystemProps {
+  /**
+   * The existing destination file system for the replication.
+   */
+  readonly destinationFileSystem: IFileSystem;
+}
+
+/**
+ * EFS Replication Configuration
+ */
+export abstract class ReplicationConfiguration {
+  /**
+   * Specify the existing destination file system for the replication.
+   *
+   * @param destinationFileSystem The existing destination file system for the replication
+   */
+  public static existingFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
+    return new ExistingFileSystem({ destinationFileSystem });
+  }
+
+  /**
+   * Create a new regional destination file system for the replication.
+   *
+   * @param region The AWS Region in which the destination file system is located. Default is the region of the stack.
+   * @param kmsKey  AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
+   */
+  public static regionalFileSystem(region?: string, kmsKey?: kms.IKey): ReplicationConfiguration {
+    return new RegionalFileSystem({ region, kmsKey });
+  }
+
+  /**
+   * Create a new one zone destination file system for the replication.
+   *
+   * @param region The AWS Region in which the specified availability zone belongs to.
+   * @param availabilityZone The availability zone name of the destination file system.
+   * @param kmsKey AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
+   */
+  public static oneZoneFileSystem(region: string, availabilityZone: string, kmsKey?: kms.IKey): ReplicationConfiguration {
+    return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
+  }
+
+  /**
+   * The existing destination file system for the replication.
+   */
+  public readonly destinationFileSystem?: IFileSystem;
+
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   */
+  public readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   */
+  public readonly region?: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   */
+  public readonly availabilityZone?: string;
+
+  constructor(options: ReplicationConfigurationProps) {
+    this.destinationFileSystem = options.destinationFileSystem;
+    this.kmsKey = options.kmsKey;
+    this.region = options.region;
+    this.availabilityZone = options.availabilityZone;
+  }
+}
+
+/**
+ * Represents an existing file system used as the destination file system
+ * for ReplicationConfiguration.
+ */
+class ExistingFileSystem extends ReplicationConfiguration {
+  constructor(props: ExistingFileSystemProps) {
+    super(props);
+  }
+}
+
+/**
+ * Represents a new Regional file system used as the
+ * destination file system for ReplicationConfiguration.
+ */
+class RegionalFileSystem extends ReplicationConfiguration {
+  constructor(props: RegionalFileSystemProps) {
+    super(props);
+  }
+}
+
+/**
+ * Represents a new One Zone file system used as the
+ * destination file system for ReplicationConfiguration.
+ */
+class OneZoneFileSystem extends ReplicationConfiguration {
+  constructor(props: OneZoneFileSystemProps) {
+    super(props);
+  }
+}
+
 enum ClientAction {
   MOUNT = 'elasticfilesystem:ClientMount',
   WRITE = 'elasticfilesystem:ClientWrite',
-  ROOT_ACCESS = 'elasticfilesystem:ClientRootAccess'
+  ROOT_ACCESS = 'elasticfilesystem:ClientRootAccess',
 }
 
 abstract class FileSystemBase extends Resource implements IFileSystem {
@@ -472,11 +721,21 @@ export class FileSystem extends FileSystemBase {
 
   private readonly _mountTargetsAvailable = new DependencyGroup();
 
+  private readonly props: FileSystemProps;
+
   /**
    * Constructor for creating a new EFS FileSystem.
    */
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
+
+    this.props = props;
+
+    if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
+      throw new Error('performanceMode MAX_IO is not supported for One Zone file systems.');
+    }
+
+    if (props.oneZone) { this.oneZoneValidation(); }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
@@ -485,13 +744,18 @@ export class FileSystem extends FileSystemBase {
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
+
+    if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
+      throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
+    }
+
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
-    // LifecyclePolicies is an array of lists containing a single policy
-    let lifecyclePolicies = [];
+    // LifecyclePolicies must be an array of objects, each containing a single policy
+    const lifecyclePolicies: CfnFileSystem.LifecyclePolicyProperty[] = [];
 
     if (props.lifecyclePolicy) {
       lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
@@ -500,6 +764,32 @@ export class FileSystem extends FileSystemBase {
     if (props.outOfInfrequentAccessPolicy) {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
+
+    if (props.transitionToArchivePolicy) {
+      lifecyclePolicies.push({ transitionToArchive: props.transitionToArchivePolicy });
+    }
+
+    // if props.vpcSubnets.availabilityZones is defined, select the first one as the zone otherwise
+    // the first AZ of the VPC.
+    const oneZoneAzName = props.vpcSubnets?.availabilityZones ?
+      props.vpcSubnets.availabilityZones[0] : props.vpc.availabilityZones[0];
+
+    const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
+      replicationOverwriteProtection: props.replicationOverwriteProtection,
+    } : undefined;
+
+    const replicationConfiguration = props.replicationConfiguration ? {
+      destinations: [
+        {
+          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+          kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
+          region: props.replicationConfiguration.destinationFileSystem ?
+            props.replicationConfiguration.destinationFileSystem.env.region :
+            (props.replicationConfiguration.region ?? Stack.of(this).region),
+          availabilityZoneName: props.replicationConfiguration.availabilityZone,
+        },
+      ],
+    } : undefined;
 
     this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
@@ -531,6 +821,9 @@ export class FileSystem extends FileSystemBase {
           return this._fileSystemPolicy;
         },
       }),
+      fileSystemProtection,
+      availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
+      replicationConfiguration,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -549,7 +842,16 @@ export class FileSystem extends FileSystemBase {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
+    // When oneZone is specified, to avoid deployment failure, mountTarget should also be created only in the specified AZ.
+    let subnetSelection: ec2.SubnetSelection;
+    if (props.oneZone) {
+      subnetSelection = {
+        availabilityZones: [oneZoneAzName],
+      };
+    } else {
+      subnetSelection = props.vpcSubnets ?? { onePerAz: true };
+    }
+    const subnets = props.vpc.selectSubnets(subnetSelection);
 
     // We now have to create the mount target for each of the mentioned subnet
 
@@ -581,6 +883,29 @@ export class FileSystem extends FileSystemBase {
       });
     }
     this.mountTargetsAvailable = this._mountTargetsAvailable;
+  }
+
+  private oneZoneValidation() {
+    // validate when props.oneZone is enabled
+    if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
+      throw new Error('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.');
+    }
+    // when vpcSubnets.availabilityZones is defined
+    if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
+      // it has to be only one az
+      if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
+        throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
+      }
+      // it has to be in availabilityZones
+      // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
+      const isNotUnresolvedToken = (x: string) => !Token.isUnresolved(x);
+      const isNotDummy = (x: string) => !x.startsWith('dummy');
+      if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
+      this.props.vpc.availabilityZones.every(isNotDummy) &&
+      !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
+        throw new Error('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.');
+      }
+    }
   }
 
   /**

@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "LogGroupResourcePolicyAnyPrincialInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-log-group-resource-policy-any-integ"
+      ],
+      "assertionStack": "LogGroupResourcePolicyAnyPrincialInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupResourcePolicyAnyPrincialIntegDefaultTestDeployAssert1A3C13F5"
+    }
+  }
+}

@@ -162,11 +162,11 @@ export async function generateAll(
     },
   );
 
-  Object.keys(moduleMap).map(async (moduleName) => {
+  await Promise.all(Object.keys(moduleMap).map(async (moduleName) => {
     // Add generated resources and files to module in map
     moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
     moduleMap[moduleName].files = generated.modules[moduleName].flatMap((m) => m.outputFiles);
-  });
+  }));
 
   return moduleMap;
 }

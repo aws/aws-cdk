@@ -47,10 +47,10 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
    *
    * @param grantee The principal to grant access to
    */
-  grantDataApiAccess(grantee: iam.IGrantable): iam.Grant
+  grantDataApiAccess(grantee: iam.IGrantable): iam.Grant;
 }
 /**
- *  Common Properties to configure new Aurora Serverless Cluster or Aurora Serverless Cluster from snapshot
+ *  Common Properties to configure new Aurora Serverless v1 Cluster or Aurora Serverless v1 Cluster from snapshot
  */
 interface ServerlessClusterNewProps {
   /**
@@ -98,7 +98,7 @@ interface ServerlessClusterNewProps {
   readonly enableDataApi?: boolean;
 
   /**
-   * The VPC that this Aurora Serverless cluster has been created in.
+   * The VPC that this Aurora Serverless v1 Cluster has been created in.
    *
    * @default - the default VPC in the account and region will be used
    */
@@ -236,11 +236,31 @@ export enum AuroraCapacityUnit {
   /** 256 Aurora Capacity Units */
   ACU_256 = 256,
   /** 384 Aurora Capacity Units */
-  ACU_384 = 384
+  ACU_384 = 384,
 }
 
 /**
- * Options for configuring scaling on an Aurora Serverless cluster
+ * TimeoutAction defines the action to take when a timeout occurs if a scaling point is not found.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v1.how-it-works.html#aurora-serverless.how-it-works.timeout-action
+ */
+export enum TimeoutAction {
+  /**
+   * FORCE_APPLY_CAPACITY_CHANGE sets the capacity to the specified value as soon as possible.
+   * Transactions may be interrupted, and connections to temporary tables and locks may be dropped.
+   * Only select this option if your application can recover from dropped connections or incomplete transactions.
+   */
+  FORCE_APPLY_CAPACITY_CHANGE = 'ForceApplyCapacityChange',
+
+  /**
+   * ROLLBACK_CAPACITY_CHANGE ignores the capacity change if a scaling point is not found.
+   * This is the default behavior.
+   */
+  ROLLBACK_CAPACITY_CHANGE = 'RollbackCapacityChange',
+}
+
+/**
+ * Options for configuring scaling on an Aurora Serverless v1 Cluster
  *
  */
 export interface ServerlessScalingOptions {
@@ -272,6 +292,23 @@ export interface ServerlessScalingOptions {
    * @default - automatic pause enabled after 5 minutes
    */
   readonly autoPause?: Duration;
+
+  /**
+   * The amount of time that Aurora Serverless v1 tries to find a scaling point to perform
+   * seamless scaling before enforcing the timeout action.
+   *
+   * @default - 5 minutes
+   */
+  readonly timeout? : Duration;
+
+  /**
+   * The action to take when the timeout is reached.
+   * Selecting ForceApplyCapacityChange will force the capacity to the specified value as soon as possible, even without a scaling point.
+   * Selecting RollbackCapacityChange will ignore the capacity change if a scaling point is not found. This is the default behavior.
+   *
+   * @default - TimeoutAction.ROLLBACK_CAPACITY_CHANGE
+   */
+  readonly timeoutAction?: TimeoutAction;
 }
 
 /**
@@ -350,7 +387,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
 }
 
 /**
- * Create an Aurora Serverless Cluster
+ * Create an Aurora Serverless v1 Cluster
  *
  * @resource AWS::RDS::DBCluster
  */
@@ -444,6 +481,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
   private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
     const minCapacity = options.minCapacity;
     const maxCapacity = options.maxCapacity;
+    const timeout = options.timeout?.toSeconds();
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
       throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
@@ -454,17 +492,23 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       throw new Error('auto pause time must be between 5 minutes and 1 day.');
     }
 
+    if (timeout && (timeout < 60 || timeout > 600)) {
+      throw new Error(`timeout must be between 60 and 600 seconds, but got ${timeout} seconds.`);
+    }
+
     return {
       autoPause: (secondsToAutoPause === 0) ? false : true,
       minCapacity: options.minCapacity,
       maxCapacity: options.maxCapacity,
       secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
+      secondsBeforeTimeout: timeout,
+      timeoutAction: options.timeoutAction,
     };
   }
 }
 
 /**
- * Properties for a new Aurora Serverless Cluster
+ * Properties for a new Aurora Serverless v1 Cluster
  */
 export interface ServerlessClusterProps extends ServerlessClusterNewProps {
   /**
@@ -483,7 +527,7 @@ export interface ServerlessClusterProps extends ServerlessClusterNewProps {
 }
 
 /**
- * Create an Aurora Serverless Cluster
+ * Create an Aurora Serverless v1 Cluster
  *
  * @resource AWS::RDS::DBCluster
  *
@@ -665,7 +709,7 @@ export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterNew
 }
 
 /**
- * A Aurora Serverless Cluster restored from a snapshot.
+ * A Aurora Serverless v1 Cluster restored from a snapshot.
  *
  * @resource AWS::RDS::DBCluster
  */

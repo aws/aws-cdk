@@ -220,6 +220,22 @@ export interface ServerDeploymentGroupProps {
    * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
+
+  /**
+   * Whether to skip the step of checking CloudWatch alarms during the deployment process
+   *
+   * @default - false
+   */
+  readonly ignoreAlarmConfiguration?: boolean;
+
+  /**
+   * Indicates whether the deployment group was configured to have CodeDeploy install a termination hook into an Auto Scaling group.
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-auto-scaling.html#integrations-aws-auto-scaling-behaviors
+   *
+   * @default - false
+   */
+  readonly terminationHook?: boolean;
 }
 
 /**
@@ -303,9 +319,15 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure, removeAlarmsFromDeploymentGroup),
+        produce: () => renderAlarmConfiguration({
+          alarms: this.alarms,
+          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+          removeAlarms: removeAlarmsFromDeploymentGroup,
+          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+        }),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      terminationHookEnabled: props.terminationHook,
     });
 
     this._setNameAndArn(resource, this.application);
@@ -389,8 +411,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   private loadBalancersInfo(loadBalancers?: LoadBalancer[]):
   CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
     return loadBalancers?.reduce((accumulator : {
-      elbInfoList?: {name: string}[],
-      targetGroupInfoList?: {name: string}[]
+      elbInfoList?: {name: string}[];
+      targetGroupInfoList?: {name: string}[];
     }, loadBalancer: LoadBalancer) => {
       switch (loadBalancer.generation) {
         case LoadBalancerGeneration.FIRST:

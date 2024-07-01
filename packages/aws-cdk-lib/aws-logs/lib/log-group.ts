@@ -223,12 +223,12 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
     this.policy.document.addStatements(statement.copy({
-      principals: statement.principals.map(p => this.convertArnPrincpalToAccountId(p)),
+      principals: statement.principals.map(p => this.convertArnPrincipalToAccountId(p)),
     }));
     return { statementAdded: true, policyDependable: this.policy };
   }
 
-  private convertArnPrincpalToAccountId(principal: iam.IPrincipal) {
+  private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
     if (principal.principalAccount) {
       // we use ArnPrincipal here because the constructor inserts the argument
       // into the template without mutating it, which means that there is no
@@ -236,7 +236,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       return new iam.ArnPrincipal(principal.principalAccount);
     }
 
-    if (principal instanceof iam.ArnPrincipal) {
+    if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {
         return new iam.ArnPrincipal(parsedArn.account);
@@ -389,7 +389,7 @@ export interface LogGroupProps {
   /**
    * The KMS customer managed key to encrypt the log group with.
    *
-   * @default Server-side encrpytion managed by the CloudWatch Logs service
+   * @default Server-side encryption managed by the CloudWatch Logs service
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -438,6 +438,21 @@ export interface LogGroupProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * The method used to distribute log data to the destination.
+ */
+export enum Distribution {
+  /**
+   * Log events from the same log stream are kept together and sent to the same destination.
+   */
+  BY_LOG_STREAM = 'ByLogStream',
+
+  /**
+   * Log events are distributed across the log destinations randomly.
+   */
+  RANDOM = 'Random',
 }
 
 /**
@@ -573,6 +588,14 @@ export interface SubscriptionFilterOptions {
    * @default Automatically generated
    */
   readonly filterName?: string;
+
+  /**
+   * The method used to distribute log data to the destination.
+   * This property can only be used with KinesisDestination.
+   *
+   * @default Distribution.BY_LOG_STREAM
+   */
+  readonly distribution?: Distribution;
 }
 
 /**

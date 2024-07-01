@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "rds-instance-with-metric-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-with-metric"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "rds-instance-with-metric-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsinstancewithmetricintegtestDefaultTestDeployAssert50AA4D51"
+    }
+  }
+}

@@ -52,7 +52,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "integ-runner",
+    "integ": "integ-runner --language javascript",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -66,7 +66,10 @@
   "cdk-build": {
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    }
+    },
+    "pre": [
+      "./scripts/airlift-custom-resource-handlers.sh"
+    ]
   },
   "keywords": [
     "aws",
@@ -88,7 +91,7 @@
     "@aws-sdk/client-redshift": "3.452.0",
     "@aws-sdk/client-redshift-data": "3.451.0",
     "@aws-sdk/client-secrets-manager": "3.451.0",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"

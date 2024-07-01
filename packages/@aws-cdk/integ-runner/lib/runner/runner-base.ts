@@ -34,14 +34,14 @@ export interface IntegRunnerOptions {
    *
    * @default - no additional environment variables
    */
-  readonly env?: { [name: string]: string },
+  readonly env?: { [name: string]: string };
 
   /**
    * tmp cdk.out directory
    *
    * @default - directory will be `cdk-integ.out.${testName}`
    */
-  readonly integOutDir?: string,
+  readonly integOutDir?: string;
 
   /**
    * Instance of the CDK CLI to use

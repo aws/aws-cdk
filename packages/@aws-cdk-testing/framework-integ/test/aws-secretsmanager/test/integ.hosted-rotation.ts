@@ -19,6 +19,14 @@ class TestStack extends cdk.Stack {
       hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
       rotateImmediatelyOnUpdate: false,
     });
+
+    const mySecret = new secretsmanager.Secret(this, 'MySecret');
+    const importedSecret = secretsmanager.Secret.fromSecretNameV2(this, 'MasterSecretImported', 'MasterSecret');
+    mySecret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.postgreSqlMultiUser({
+        masterSecret: importedSecret,
+      }),
+    });
   }
 }
 

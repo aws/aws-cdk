@@ -59,7 +59,7 @@ export interface S3DownloadOptions {
    * The region of the S3 Bucket (needed for access via VPC Gateway)
    * @default none
    */
-  readonly region?: string
+  readonly region?: string;
 
 }
 
@@ -329,7 +329,7 @@ export interface MultipartBodyOptions {
    *
    * @default undefined - body will not be added to part
    */
-  readonly body?: string,
+  readonly body?: string;
 }
 
 /**

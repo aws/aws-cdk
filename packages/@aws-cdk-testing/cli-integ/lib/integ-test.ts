@@ -2,7 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { MemoryStream } from './corking';
 
-const SKIP_TESTS = fs.readFileSync(path.join(__dirname, '..', 'skip-tests.txt'), { encoding: 'utf-8' }).split('\n');
+const SKIP_TESTS = fs.readFileSync(path.join(__dirname, '..', 'skip-tests.txt'), { encoding: 'utf-8' })
+  .split('\n')
+  .map(x => x.trim())
+  .filter(x => x && !x.startsWith('#'));
+
+if (SKIP_TESTS) {
+  process.stderr.write(`ℹ️ Skipping tests: ${JSON.stringify(SKIP_TESTS)}\n`);
+}
 
 export interface TestContext {
   readonly randomString: string;
@@ -11,7 +18,7 @@ export interface TestContext {
 };
 
 if (process.env.JEST_TEST_CONCURRENT === 'true') {
-  process.stderr.write('ℹ️ JEST_TEST_CONCURRENT is true: tests will run concurrently and filters have no effect!');
+  process.stderr.write('ℹ️ JEST_TEST_CONCURRENT is true: tests will run concurrently and filters have no effect!\n0');
 }
 
 /**

@@ -3,8 +3,9 @@ import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '../../core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import * as cxapi from '../../cx-api';
 
 /**
  * Block device
@@ -65,7 +66,8 @@ export interface EbsDeviceOptionsBase {
    * The EBS volume type
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    *
-   * @default `EbsDeviceVolumeType.GP2`
+   * @default `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` or `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3` if
+   * `@aws-cdk/aws-ec2:ebsDefaultGp3Volume` is enabled.
    */
   readonly volumeType?: EbsDeviceVolumeType;
 }
@@ -344,7 +346,7 @@ export interface VolumeProps {
 
   /**
    * The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.
-   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
    * for details on the allowable size for each type of volume.
    *
    * @default If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
@@ -427,7 +429,7 @@ export interface VolumeProps {
   /**
    * The number of I/O operations per second (IOPS) to provision for the volume. The maximum ratio is 50 IOPS/GiB for PROVISIONED_IOPS_SSD,
    * and 500 IOPS/GiB for both PROVISIONED_IOPS_SSD_IO2 and GENERAL_PURPOSE_SSD_GP3.
-   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+   * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
    * for more information.
    *
    * This parameter is valid only for PROVISIONED_IOPS_SSD, PROVISIONED_IOPS_SSD_IO2 and GENERAL_PURPOSE_SSD_GP3 volumes.
@@ -446,7 +448,7 @@ export interface VolumeProps {
   /**
    * The throughput that the volume supports, in MiB/s
    * Takes a minimum of 125 and maximum of 1000.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
   readonly throughput?: number;
@@ -621,7 +623,9 @@ export class Volume extends VolumeBase {
       size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
       throughput: props.throughput,
-      volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      volumeType: props.volumeType ??
+        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
+          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -691,11 +695,11 @@ export class Volume extends VolumeBase {
         );
       }
       // Enforce minimum & maximum IOPS:
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
-      const iopsRanges: { [key: string]: { Min: number, Max: number } } = {};
+      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
+      const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
       iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
-      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
+      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
       const { Min, Max } = iopsRanges[volumeType];
       if (props.iops < Min || props.iops > Max) {
         throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
@@ -739,8 +743,8 @@ export class Volume extends VolumeBase {
     if (props.size) {
       const size = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
       // Enforce minimum & maximum volume size:
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
-      const sizeRanges: { [key: string]: { Min: number, Max: number } } = {};
+      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
+      const sizeRanges: { [key: string]: { Min: number; Max: number } } = {};
       sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD] = { Min: 1, Max: 16384 };
       sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 1, Max: 16384 };
       sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 4, Max: 16384 };

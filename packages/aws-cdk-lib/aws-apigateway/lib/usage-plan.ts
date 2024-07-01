@@ -32,7 +32,7 @@ export interface ThrottleSettings {
 export enum Period {
   DAY = 'DAY',
   WEEK = 'WEEK',
-  MONTH = 'MONTH'
+  MONTH = 'MONTH',
 }
 
 /**
@@ -80,7 +80,7 @@ export interface ThrottlingPerMethod {
  * Type of Usage Plan Key. Currently the only supported type is 'ApiKey'
  */
 enum UsagePlanKeyType {
-  API_KEY = 'API_KEY'
+  API_KEY = 'API_KEY',
 }
 
 /**

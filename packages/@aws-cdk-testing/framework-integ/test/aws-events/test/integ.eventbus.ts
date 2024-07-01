@@ -4,21 +4,25 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 
 const app = new App();
-const stack = new Stack(app, 'Stack', {
-  env: {
-    region: 'us-east-1',
-  },
-});
+const stack = new Stack(app, 'Stack');
 const bus = new EventBus(stack, 'Bus');
 
 bus.addToResourcePolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
   principals: [new iam.AccountPrincipal(stack.account)],
   actions: ['events:PutEvents'],
-  sid: '123',
+  sid: 'Statement1',
   resources: [bus.eventBusArn],
 }));
 
-new IntegTest(app, 'IntegTest-BatchDefaultEnvVarsStack', {
+bus.addToResourcePolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  principals: [new iam.AccountPrincipal(stack.account)],
+  actions: ['events:PutRule'],
+  sid: 'Statement2',
+  resources: [bus.eventBusArn],
+}));
+
+new IntegTest(app, 'IntegTest-EventBusStack', {
   testCases: [stack],
 });

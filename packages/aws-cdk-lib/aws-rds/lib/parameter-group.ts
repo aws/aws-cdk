@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
-import { IResource, Lazy, Resource } from '../../core';
+import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -71,6 +71,13 @@ export interface ParameterGroupProps {
   readonly engine: IEngine;
 
   /**
+   * The name of this parameter group.
+   *
+   * @default - CloudFormation-generated name
+   */
+  readonly name?: string;
+
+  /**
    * Description for this parameter group
    *
    * @default a CDK generated description
@@ -83,6 +90,14 @@ export interface ParameterGroupProps {
    * @default - None
    */
   readonly parameters?: { [key: string]: string };
+
+  /**
+   * The CloudFormation policy to apply when the instance is removed from the
+   * stack or replaced during an update.
+   *
+   * @default - RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -116,7 +131,9 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   private readonly parameters: { [key: string]: string };
   private readonly family: string;
+  private readonly removalPolicy?: RemovalPolicy;
   private readonly description?: string;
+  private readonly name?: string;
 
   private clusterCfnGroup?: CfnDBClusterParameterGroup;
   private instanceCfnGroup?: CfnDBParameterGroup;
@@ -130,7 +147,9 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     }
     this.family = family;
     this.description = props.description;
+    this.name = props.name;
     this.parameters = props.parameters ?? {};
+    this.removalPolicy = props.removalPolicy;
   }
 
   public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
@@ -139,8 +158,12 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
         description: this.description || `Cluster parameter group for ${this.family}`,
         family: this.family,
+        dbClusterParameterGroupName: this.name,
         parameters: Lazy.any({ produce: () => this.parameters }),
       });
+    }
+    if (this.removalPolicy) {
+      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
     }
     return {
       parameterGroupName: this.clusterCfnGroup.ref,
@@ -153,8 +176,12 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
         description: this.description || `Parameter group for ${this.family}`,
         family: this.family,
+        dbParameterGroupName: this.name,
         parameters: Lazy.any({ produce: () => this.parameters }),
       });
+    }
+    if (this.removalPolicy) {
+      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
     }
     return {
       parameterGroupName: this.instanceCfnGroup.ref,

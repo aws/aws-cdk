@@ -75,6 +75,7 @@ export class AssetManifestBuilder {
       dockerOutputs: asset.dockerOutputs,
       cacheFrom: asset.dockerCacheFrom,
       cacheTo: asset.dockerCacheTo,
+      cacheDisabled: asset.dockerCacheDisabled,
     }, {
       repositoryName: target.repositoryName,
       imageTag,

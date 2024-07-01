@@ -26,7 +26,7 @@ export interface IInput extends IResource {
    *
    * @param grantee the principal
    */
-  grantWrite(grantee: iam.IGrantable): iam.Grant
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
@@ -34,7 +34,7 @@ export interface IInput extends IResource {
    * @param grantee the principal
    * @param actions the set of actions to allow (i.e. "iotevents:BatchPutMessage")
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 abstract class InputBase extends Resource implements IInput {
@@ -64,7 +64,7 @@ export interface InputProps {
    *
    * @default - CloudFormation will generate a unique name of the input
    */
-  readonly inputName?: string,
+  readonly inputName?: string;
 
   /**
    * An expression that specifies an attribute-value pair in a JSON structure.

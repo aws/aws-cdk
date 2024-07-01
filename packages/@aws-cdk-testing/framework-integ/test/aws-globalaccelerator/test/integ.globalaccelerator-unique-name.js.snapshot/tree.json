@@ -18,8 +18,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
                   "aws:cdk:cloudformation:props": {
-                    "name": "globalacceleratoruniquenameAccelerator519EC5EE",
-                    "enabled": true
+                    "enabled": true,
+                    "name": "globalacceleratoruniquenameAccelerator519EC5EE"
                   }
                 },
                 "constructInfo": {
@@ -68,7 +68,7 @@
                 "path": "GlobalAcceleratorUniqueName/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -114,7 +114,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

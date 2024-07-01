@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
 import { StringDecoder } from 'string_decoder';
-import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
+import { fullDiff, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
@@ -15,14 +15,14 @@ interface SnapshotAssembly {
      * All templates for this stack, including nested stacks
      */
     templates: {
-      [templateId: string]: any
-    },
+      [templateId: string]: any;
+    };
 
     /**
      * List of asset Ids that are used by this assembly
      */
-    assets: string[]
-  }
+    assets: string[];
+  };
 }
 
 /**
@@ -40,7 +40,7 @@ export class IntegSnapshotRunner extends IntegRunner {
    *
    * @returns any diagnostics and any destructive changes
    */
-  public testSnapshot(options: SnapshotVerificationOptions = {}): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
+  public testSnapshot(options: SnapshotVerificationOptions = {}): { diagnostics: Diagnostic[]; destructiveChanges: DestructiveChange[] } {
     let doClean = true;
     try {
       const expectedSnapshotAssembly = this.getSnapshotAssembly(this.snapshotDir, this.expectedTestSuite?.stacks);
@@ -166,7 +166,7 @@ export class IntegSnapshotRunner extends IntegRunner {
   private diffAssembly(
     expected: SnapshotAssembly,
     actual: SnapshotAssembly,
-  ): { diagnostics: Diagnostic[], destructiveChanges: DestructiveChange[] } {
+  ): { diagnostics: Diagnostic[]; destructiveChanges: DestructiveChange[] } {
     const failures: Diagnostic[] = [];
     const destructiveChanges: DestructiveChange[] = [];
 
@@ -211,7 +211,7 @@ export class IntegSnapshotRunner extends IntegRunner {
             actualTemplate = this.canonicalizeTemplate(actualTemplate, actual[stackId].assets);
             expectedTemplate = this.canonicalizeTemplate(expectedTemplate, expected[stackId].assets);
           }
-          const templateDiff = diffTemplate(expectedTemplate, actualTemplate);
+          const templateDiff = fullDiff(expectedTemplate, actualTemplate);
           if (!templateDiff.isEmpty) {
             const allowedDestroyTypes = this.getAllowedDestroyTypesForStack(stackId) ?? [];
 

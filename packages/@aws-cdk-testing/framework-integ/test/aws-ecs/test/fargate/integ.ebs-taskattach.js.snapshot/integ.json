@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "EBSTaskAttach/DefaultTest": {
+      "stacks": [
+        "integ-aws-ecs-ebs-task-attach"
+      ],
+      "assertionStack": "EBSTaskAttach/DefaultTest/DeployAssert",
+      "assertionStackName": "EBSTaskAttachDefaultTestDeployAssertF52EF4F9"
+    }
+  }
+}

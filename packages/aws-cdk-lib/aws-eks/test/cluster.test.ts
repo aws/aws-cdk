@@ -350,20 +350,6 @@ describe('cluster', () => {
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
 
-  test('throws when a core construct is added as cdk8s chart', () => {
-    const { stack } = testFixture();
-
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      prune: false,
-    });
-
-    // create a plain construct, not a cdk8s chart
-    const someConstruct = new Construct(stack, 'SomeConstruct');
-
-    expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
-  });
-
   test('cdk8s chart can be added to cluster', () => {
     const { stack } = testFixture();
 
@@ -423,7 +409,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+      constructor(scope: Construct, id: string, props: { sg: ec2.ISecurityGroup; vpc: ec2.IVpc }) {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -2183,7 +2169,7 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('inf1.2xlarge'),
         minCapacity: 1,
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
 
       // THEN
@@ -2201,7 +2187,78 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('inf2.xlarge'),
         minCapacity: 1,
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('trn1 instances are supported', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('TrainiumInstances', {
+        instanceType: new ec2.InstanceType('trn1.2xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('trn1n instances are supported', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('TrainiumInstances', {
+        instanceType: new ec2.InstanceType('trn1n.2xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+
+    test('inf1 instances are supported in addNodegroupCapacity', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addNodegroupCapacity('InferenceInstances', {
+        instanceTypes: [new ec2.InstanceType('inf1.2xlarge')],
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('inf2 instances are supported in addNodegroupCapacity', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addNodegroupCapacity('InferenceInstances', {
+        instanceTypes: [new ec2.InstanceType('inf2.xlarge')],
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
 
       // THEN
@@ -3225,4 +3282,102 @@ describe('cluster', () => {
       },
     });
   });
+
+  describe('AccessConfig', () => {
+    test.each([
+      [eks.AuthenticationMode.API, 'API'],
+      [eks.AuthenticationMode.CONFIG_MAP, 'CONFIG_MAP'],
+      [eks.AuthenticationMode.API_AND_CONFIG_MAP, 'API_AND_CONFIG_MAP'],
+    ])(
+      'authenticationMode(%s) should work',
+      (a, b) => {
+        // GIVEN
+        const { stack } = testFixture();
+
+        // WHEN
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          authenticationMode: a,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+          Config: {
+            accessConfig: {
+              authenticationMode: b,
+            },
+          },
+        });
+      },
+    );
+
+    // bootstrapClusterCreatorAdminPermissions can be explicitly enabled or disabled
+    test.each([
+      [true, true],
+      [false, false],
+    ])('bootstrapClusterCreatorAdminPermissions(%s) should work',
+      (a, b) => {
+        // GIVEN
+        const { stack } = testFixture();
+
+        // WHEN
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          authenticationMode: eks.AuthenticationMode.API,
+          bootstrapClusterCreatorAdminPermissions: a,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+          Config: {
+            accessConfig: {
+              bootstrapClusterCreatorAdminPermissions: b,
+            },
+          },
+        });
+      },
+    );
+  });
+
+  describe('AccessEntry', () => {
+    // cluster can grantAccess();
+    test('cluster can grantAccess', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      // WHEN
+      const mastersRole = new iam.Role(stack, 'role', { assumedBy: new iam.AccountRootPrincipal() });
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        mastersRole,
+        version: CLUSTER_VERSION,
+      });
+      cluster.grantAccess('mastersAccess', mastersRole.roleArn, [
+        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: eks.AccessScopeType.CLUSTER,
+        }),
+      ]);
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        AccessPolicies: [
+          {
+            AccessScope: {
+              Type: 'cluster',
+            },
+            PolicyArn: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy',
+                ],
+              ],
+            },
+          },
+        ],
+
+      });
+    });
+
+  });
+
 });

@@ -197,6 +197,7 @@ class ContainerImageBuilder {
       outputs: source.dockerOutputs,
       cacheFrom: source.cacheFrom,
       cacheTo: source.cacheTo,
+      cacheDisabled: source.cacheDisabled,
       quiet: this.options.quiet,
     });
   }

@@ -548,7 +548,7 @@ describe('event bus', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-      StatementId: '123',
+      StatementId: 'cdk-123',
       EventBusName: {
         Ref: 'BusEA82B648',
       },
@@ -569,7 +569,7 @@ describe('event bus', () => {
             ],
           },
         },
-        Sid: '123',
+        Sid: 'cdk-123',
         Resource: {
           'Fn::GetAtt': [
             'BusEA82B648',
@@ -580,27 +580,36 @@ describe('event bus', () => {
     });
   });
 
-  test('cannot add more than one event bus policy', () => {
+  test('can add more than one event bus policy', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'Stack');
     const bus = new EventBus(stack, 'Bus');
 
-    const statement = new iam.PolicyStatement({
+    const statement1 = new iam.PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:PutEvents'],
-      sid: '123',
+      sid: 'statement1',
+      resources: [bus.eventBusArn],
+    });
+
+    const statement2 = new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new iam.ArnPrincipal('arn')],
+      actions: ['events:DeleteRule'],
+      sid: 'statement2',
       resources: [bus.eventBusArn],
     });
 
     // WHEN
-    const add1 = bus.addToResourcePolicy(statement);
-    const add2 = bus.addToResourcePolicy(statement);
+    const add1 = bus.addToResourcePolicy(statement1);
+    const add2 = bus.addToResourcePolicy(statement2);
 
     // THEN
     expect(add1.statementAdded).toBe(true);
-    expect(add2.statementAdded).toBe(false);
+    expect(add2.statementAdded).toBe(true);
+    Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 2);
   });
 
   test('Event Bus policy statements must have a sid', () => {

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-aws-cdk-ec2-vpc-reserved-public-subnet/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-vpc-reserved-public-subnet"
+      ],
+      "assertionStack": "integ-aws-cdk-ec2-vpc-reserved-public-subnet/DefaultTest/DeployAssert",
+      "assertionStackName": "integawscdkec2vpcreservedpublicsubnetDefaultTestDeployAssert469B3DFB"
+    }
+  }
+}

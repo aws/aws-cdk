@@ -1,12 +1,12 @@
 {
-  "version": "22.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "IntegTest-BatchDefaultEnvVarsStack/DefaultTest": {
+    "IntegTest-EventBusStack/DefaultTest": {
       "stacks": [
         "Stack"
       ],
-      "assertionStack": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2"
+      "assertionStack": "IntegTest-EventBusStack/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9"
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "EmrCreateClusterTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet"
+      ],
+      "assertionStack": "EmrCreateClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EmrCreateClusterTestDefaultTestDeployAssert697DC891"
+    }
+  }
+}

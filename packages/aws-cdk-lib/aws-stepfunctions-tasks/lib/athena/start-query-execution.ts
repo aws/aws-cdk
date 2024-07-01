@@ -256,9 +256,9 @@ export interface ResultConfiguration {
   /**
    * Encryption option used if enabled in S3
    *
-   * @default - SSE_S3 encrpytion is enabled with default encryption key
+   * @default - SSE_S3 encryption is enabled with default encryption key
    */
-  readonly encryptionConfiguration?: EncryptionConfiguration
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
 
 /**
@@ -308,7 +308,7 @@ export enum EncryptionOption {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
-  CLIENT_SIDE_KMS = 'CSE_KMS'
+  CLIENT_SIDE_KMS = 'CSE_KMS',
 }
 
 /**

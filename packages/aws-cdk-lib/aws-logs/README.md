@@ -61,7 +61,7 @@ const logGroup = new logs.LogGroup(this, 'LogGroup');
 logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
-Similarily, read permissions can be granted to the log group as follows.
+Similarly, read permissions can be granted to the log group as follows.
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');
@@ -117,6 +117,25 @@ new logs.SubscriptionFilter(this, 'Subscription', {
   destination: new destinations.LambdaDestination(fn),
   filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
   filterName: 'ErrorInMainThread',
+});
+```
+
+When you use `KinesisDestination`, you can choose the method used to
+distribute log data to the destination by setting the `distribution` property.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+declare const stream: kinesis.Stream;
+declare const logGroup: logs.LogGroup;
+
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination: new destinations.KinesisDestination(stream),
+  filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
+  filterName: 'ErrorInMainThread',
+  distribution: logs.Distribution.RANDOM,
 });
 ```
 
@@ -342,11 +361,14 @@ Creates a data protection policy and assigns it to the log group. A data protect
 
 For more information, see [Protect sensitive log data with masking](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html).
 
-For a list of types of identifiers that can be audited and masked, see [Types of data that you can protect](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protect-sensitive-log-data-types.html)
+For a list of types of managed identifiers that can be audited and masked, see [Types of data that you can protect](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protect-sensitive-log-data-types.html).
 
-If a new identifier is supported but not yet in the `DataIdentifiers` enum, the full ARN of the identifier can be supplied in `identifierArnStrings` instead. 
+If a new identifier is supported but not yet in the `DataIdentifiers` enum, the name of the identifier can be supplied as `name` in the constructor instead.
 
-Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stream audit destination.  
+To add a custom data identifier, supply a custom `name` and `regex` to the `CustomDataIdentifiers` constructor.
+For more information on custom data identifiers, see [Custom data identifiers](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-custom-data-identifiers.html).
+
+Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stream audit destination.
 
 Example:
 
@@ -368,7 +390,10 @@ const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream
 const dataProtectionPolicy = new logs.DataProtectionPolicy({
   name: 'data protection policy',
   description: 'policy description',
-  identifiers: [logs.DataIdentifier.DRIVERSLICENSE_US, new logs.DataIdentifier('EmailAddress')],
+  identifiers: [
+    logs.DataIdentifier.DRIVERSLICENSE_US, // managed data identifier
+    new logs.DataIdentifier('EmailAddress'), // forward compatibility for new managed data identifiers
+    new logs.CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')], // custom data identifier
   logGroupAuditDestination: logGroupDestination,
   s3BucketAuditDestination: bucket,
   deliveryStreamNameAuditDestination: deliveryStream.deliveryStreamName,

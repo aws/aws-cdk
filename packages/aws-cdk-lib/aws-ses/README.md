@@ -111,13 +111,19 @@ When you create a new Amazon SES account, your emails are sent from IP addresses
 Amazon SES users. For [an additional monthly charge](https://aws.amazon.com/ses/pricing/), you can lease
 dedicated IP addresses that are reserved for your exclusive use.
 
-Use the `DedicatedIpPool` construct to create a pool of dedicated IP addresses:
+Use the DedicatedIpPool construct to create a pool of dedicated IP addresses. When specifying a name for your dedicated IP pool, ensure that it adheres to the following naming convention:
+
+- The name must include only lowercase letters (a-z), numbers (0-9), underscores (_), and hyphens (-).
+- The name must not exceed 64 characters in length.
 
 ```ts
-new ses.DedicatedIpPool(this, 'Pool');
+new ses.DedicatedIpPool(this, 'Pool', {
+  dedicatedIpPoolName: 'mypool',
+  scalingMode: ses.ScalingMode.STANDARD,
+});
 ```
 
-The pool can then be used in a configuration set.
+The pool can then be used in a configuration set. If the provided dedicatedIpPoolName does not follow the specified naming convention, an error will be thrown.
 
 ### Configuration sets
 
@@ -204,6 +210,22 @@ for (const record of identity.dkimRecords) {
 }
 ```
 
+#### Grants
+
+To grant a specific action to a principal use the `grant` method.
+For sending emails, `grantSendEmail` can be used instead:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const user: iam.User;
+
+const identity = new ses.EmailIdentity(this, 'Identity', {
+  identity: ses.Identity.domain('cdk.dev'),
+});
+
+identity.grantSendEmail(user);
+```
+
 ### Virtual Deliverability Manager (VDM)
 
 Virtual Deliverability Manager is an Amazon SES feature that helps you enhance email deliverability,
@@ -216,4 +238,19 @@ Use the `VdmAttributes` construct to configure the Virtual Deliverability Manage
 ```ts
 // Enables engagement tracking and optimized shared delivery by default
 new ses.VdmAttributes(this, 'Vdm');
+```
+
+If you want to override the VDM settings in the specified configuration set, use `vdmOptions` in the `ConfigurationSet` construct.
+
+> **Note:** The configuration set level settings need to be used together with the account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
+If you enable only the configuration set level settings, VDM will not be enabled until the account level settings are configured.
+For more information, see [Virtual Deliverability Manager settings](https://docs.aws.amazon.com/ses/latest/dg/vdm-settings.html).
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSetWithVdmOptions', {
+  vdmOptions: {
+    engagementMetrics: true,
+    optimizedSharedDelivery: true,
+  },
+});
 ```

@@ -19,7 +19,7 @@ interface VirtualGatewayListenerCommonOptions {
    *
    * @default - 8080
    */
-  readonly port?: number
+  readonly port?: number;
 
   /**
    * The health check information for the listener

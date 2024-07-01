@@ -117,7 +117,7 @@ export interface IGroup extends IResource {
   /**
    * Grant delete schedule permission for schedules in this group to the given principal
    */
-  grantDeleteSchedules(identity: iam.IGrantable): iam.Grant
+  grantDeleteSchedules(identity: iam.IGrantable): iam.Grant;
 }
 
 abstract class GroupBase extends Resource implements IGroup {

@@ -140,7 +140,7 @@ export interface ResourceCreationLimitPolicy {
    *
    * @default no policy period
    */
-  readonly policyPeriod?: cdk.Duration,
+  readonly policyPeriod?: cdk.Duration;
 }
 
 /**

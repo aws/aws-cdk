@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
+import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import { Size, SizeRoundingBehavior } from '../../../core';
 import { ContainerDefinition } from '../container-definition';
@@ -19,7 +20,7 @@ export enum AwsLogDriverMode {
    * The non-blocking message delivery mode prevents applications from blocking due to logging back pressure.
    * Applications are likely to fail in unexpected ways when STDERR or STDOUT streams block.
    */
-  NON_BLOCKING = 'non-blocking'
+  NON_BLOCKING = 'non-blocking',
 }
 
 /**
@@ -135,7 +136,16 @@ export class AwsLogDriver extends LogDriver {
       ? `${this.props.maxBufferSize.toBytes({ rounding: SizeRoundingBehavior.FLOOR })}b`
       : undefined;
 
-    this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
+    // These policies are required for the Execution role to use awslogs driver.
+    // In cases where `addToExecutionRolePolicy` is not implemented,
+    // for example, when used from aws-batch construct,
+    // use `obtainExecutionRole` instead of `addToExecutionRolePolicy` to grant policies to the Execution role.
+    // See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html#enable_awslogs
+    const execRole = containerDefinition.taskDefinition.obtainExecutionRole();
+    execRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+      resources: [this.logGroup.logGroupArn],
+    }));
 
     return {
       logDriver: 'awslogs',
@@ -150,5 +160,4 @@ export class AwsLogDriver extends LogDriver {
       }),
     };
   }
-
 }

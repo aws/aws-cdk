@@ -345,6 +345,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                       "aws:cdk:cloudformation:props": {
+                        "artifactStore": {
+                          "type": "S3",
+                          "location": {
+                            "Ref": "PipelineArtifactsBucketAEA9A052"
+                          }
+                        },
+                        "pipelineType": "V1",
+                        "restartExecutionOnUpdate": true,
                         "roleArn": {
                           "Fn::GetAtt": [
                             "PipelineRoleB27FAA37",
@@ -1947,14 +1955,7 @@
                               }
                             ]
                           }
-                        ],
-                        "artifactStore": {
-                          "type": "S3",
-                          "location": {
-                            "Ref": "PipelineArtifactsBucketAEA9A052"
-                          }
-                        },
-                        "restartExecutionOnUpdate": true
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1986,12 +1987,12 @@
                                     "matchEquals": "refs/heads/{Branch}"
                                   }
                                 ],
+                                "registerWithThirdParty": true,
                                 "targetAction": "colifran_cdk-pipelines-demo",
                                 "targetPipeline": {
                                   "Ref": "Pipeline9850B417"
                                 },
-                                "targetPipelineVersion": 1,
-                                "registerWithThirdParty": true
+                                "targetPipelineVersion": 1
                               }
                             },
                             "constructInfo": {
@@ -2002,13 +2003,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "Build": {
@@ -2302,12 +2303,27 @@
                                     "artifacts": {
                                       "type": "CODEPIPELINE"
                                     },
+                                    "cache": {
+                                      "type": "NO_CACHE"
+                                    },
+                                    "description": "Pipeline step PipelineStack/Pipeline/Build/Synth",
+                                    "encryptionKey": "alias/aws/s3",
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
                                       "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
+                                    },
+                                    "logsConfig": {
+                                      "s3Logs": {
+                                        "status": "ENABLED",
+                                        "location": "bucket-name"
+                                      },
+                                      "cloudWatchLogs": {
+                                        "status": "ENABLED",
+                                        "groupName": "log-group-name"
+                                      }
                                     },
                                     "serviceRole": {
                                       "Fn::GetAtt": [
@@ -2318,21 +2334,6 @@
                                     "source": {
                                       "type": "CODEPIPELINE",
                                       "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm ci\",\n        \"npm run build\",\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}"
-                                    },
-                                    "cache": {
-                                      "type": "NO_CACHE"
-                                    },
-                                    "description": "Pipeline step PipelineStack/Pipeline/Build/Synth",
-                                    "encryptionKey": "alias/aws/s3",
-                                    "logsConfig": {
-                                      "s3Logs": {
-                                        "status": "ENABLED",
-                                        "location": "bucket-name"
-                                      },
-                                      "cloudWatchLogs": {
-                                        "status": "ENABLED",
-                                        "groupName": "log-group-name"
-                                      }
                                     }
                                   }
                                 },
@@ -2350,13 +2351,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "UpdatePipeline": {
@@ -2368,13 +2369,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "Beta": {
@@ -2386,7 +2387,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack1.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Stack1.Deploy": {
@@ -2394,7 +2395,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack1.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Stack2.Prepare": {
@@ -2402,7 +2403,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack2.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Stack2.Deploy": {
@@ -2410,13 +2411,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack2.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -2436,7 +2437,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -2470,7 +2471,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack1.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod2.Stack1.Prepare": {
@@ -2478,7 +2479,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack1.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod1.Stack1.Deploy": {
@@ -2486,7 +2487,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack1.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod2.Stack1.Deploy": {
@@ -2494,7 +2495,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack1.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod1.Stack2.Prepare": {
@@ -2502,7 +2503,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack2.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod2.Stack2.Prepare": {
@@ -2510,7 +2511,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack2.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod1.Stack2.Deploy": {
@@ -2518,7 +2519,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack2.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod2.Stack2.Deploy": {
@@ -2526,13 +2527,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack2.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "Wave2": {
@@ -2544,7 +2545,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack1.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod4.Stack1.Prepare": {
@@ -2552,7 +2553,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack1.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod5.Stack1.Prepare": {
@@ -2560,7 +2561,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack1.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod6.Stack1.Prepare": {
@@ -2568,7 +2569,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack1.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod3.Stack1.Deploy": {
@@ -2576,7 +2577,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack1.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod4.Stack1.Deploy": {
@@ -2584,7 +2585,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack1.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod5.Stack1.Deploy": {
@@ -2592,7 +2593,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack1.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod6.Stack1.Deploy": {
@@ -2600,7 +2601,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack1.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod3.Stack2.Prepare": {
@@ -2608,7 +2609,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack2.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod4.Stack2.Prepare": {
@@ -2616,7 +2617,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack2.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod5.Stack2.Prepare": {
@@ -2624,7 +2625,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack2.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod6.Stack2.Prepare": {
@@ -2632,7 +2633,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack2.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod3.Stack2.Deploy": {
@@ -2640,7 +2641,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack2.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod4.Stack2.Deploy": {
@@ -2648,7 +2649,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack2.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod5.Stack2.Deploy": {
@@ -2656,7 +2657,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack2.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       },
                       "Prod6.Stack2.Deploy": {
@@ -2664,13 +2665,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack2.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -3096,12 +3097,27 @@
                             "artifacts": {
                               "type": "CODEPIPELINE"
                             },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "description": "Pipeline step PipelineStack/Pipeline/UpdatePipeline/SelfMutate",
+                            "encryptionKey": "alias/aws/s3",
                             "environment": {
                               "type": "LINUX_CONTAINER",
                               "image": "aws/codebuild/standard:7.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
+                            },
+                            "logsConfig": {
+                              "s3Logs": {
+                                "status": "ENABLED",
+                                "location": "bucket-name"
+                              },
+                              "cloudWatchLogs": {
+                                "status": "ENABLED",
+                                "groupName": "log-group-name"
+                              }
                             },
                             "serviceRole": {
                               "Fn::GetAtt": [
@@ -3112,21 +3128,6 @@
                             "source": {
                               "type": "CODEPIPELINE",
                               "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy PipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}"
-                            },
-                            "cache": {
-                              "type": "NO_CACHE"
-                            },
-                            "description": "Pipeline step PipelineStack/Pipeline/UpdatePipeline/SelfMutate",
-                            "encryptionKey": "alias/aws/s3",
-                            "logsConfig": {
-                              "s3Logs": {
-                                "status": "ENABLED",
-                                "location": "bucket-name"
-                              },
-                              "cloudWatchLogs": {
-                                "status": "ENABLED",
-                                "groupName": "log-group-name"
-                              }
                             }
                           }
                         },
@@ -3144,7 +3145,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               }
             },
@@ -3198,7 +3199,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -3329,7 +3330,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -3460,7 +3461,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -3591,7 +3592,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -3722,7 +3723,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -3853,7 +3854,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -3984,7 +3985,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -4105,7 +4106,7 @@
                 "path": "PipelineWithCustomStepStackOutputTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -4151,7 +4152,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "Assertions.assets": {
       "type": "cdk:asset-manifest",
@@ -78,7 +78,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e01d7d1d71b079819d9e433311d9475a6aaece447884c16b6b41f29619e0920.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/deb0e1633db00cfb33f701e2e3833a30bfea3ff4eeb19de099a3ffde8e833dd6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -129,6 +129,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclientssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclientssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/BootstrapVersion": [

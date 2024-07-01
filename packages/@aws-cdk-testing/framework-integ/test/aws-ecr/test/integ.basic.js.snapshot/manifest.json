@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecr-integ-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecr-integ-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a047e78171779d23d25e3fc35f2b3ce7ff7313e616a588b6f8773b9360f12b26.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a0c9ab351877403efca7490b5ac5c6c52cc4738e9f7e5ec7c38fb974a3aba7b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,22 +40,58 @@
             "data": "Repo02AC86CF"
           }
         ],
-        "/aws-ecr-integ-stack/MyUser/Resource": [
+        "/aws-ecr-integ-stack/MyIamUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyUserDC45028B"
+            "data": "MyIamUser046086A4"
           }
         ],
-        "/aws-ecr-integ-stack/MyUser/DefaultPolicy/Resource": [
+        "/aws-ecr-integ-stack/MyIamUser/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyUserDefaultPolicy7B897426"
+            "data": "MyIamUserDefaultPolicy4B9C0A95"
+          }
+        ],
+        "/aws-ecr-integ-stack/RepoWithEmptyOnDelete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoWithEmptyOnDeleteCA5C67FA"
           }
         ],
         "/aws-ecr-integ-stack/RepositoryURI": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RepositoryURI"
+          }
+        ],
+        "/aws-ecr-integ-stack/RepoOnEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnEvent13B6ADDB"
+          }
+        ],
+        "/aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnEventOnEventTargetLambda2934FA99"
+          }
+        ],
+        "/aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda/AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnEventOnEventTargetLambdaAllowEventRuleawsecrintegstackLambdaFunctionB6045AA7FBA3AA33"
+          }
+        ],
+        "/aws-ecr-integ-stack/LambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionServiceRoleC555A460"
+          }
+        ],
+        "/aws-ecr-integ-stack/LambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionBF21E41F"
           }
         ],
         "/aws-ecr-integ-stack/BootstrapVersion": [
@@ -85,6 +122,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdkecrintegtestbasicDefaultTestDeployAssert4F7FBFB4.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

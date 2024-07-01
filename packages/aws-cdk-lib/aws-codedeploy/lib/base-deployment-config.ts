@@ -51,7 +51,7 @@ export enum ComputePlatform {
   /**
    * The deployment will target an ECS server
    */
-  ECS = 'ECS'
+  ECS = 'ECS',
 }
 
 /**

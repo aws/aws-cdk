@@ -84,6 +84,25 @@ new autoscaling.AutoScalingGroup(stack, 'AsgFromMipWithoutDistribution', {
   desiredCapacity: 5,
 });
 
+new autoscaling.AutoScalingGroup(stack, 'AsgFromMipWithInstanceRequirements', {
+  vpc,
+  mixedInstancesPolicy: {
+    launchTemplate: lt,
+    launchTemplateOverrides: [
+      {
+        instanceRequirements: {
+          vCpuCount: { min: 4, max: 8 },
+          memoryMiB: { min: 16384 },
+          cpuManufacturers: ['intel'],
+        },
+      },
+    ],
+  },
+  minCapacity: 0,
+  maxCapacity: 10,
+  desiredCapacity: 5,
+});
+
 new autoscaling.AutoScalingGroup(stack, 'AsgWithGp3Blockdevice', {
   minCapacity: 0,
   maxCapacity: 10,

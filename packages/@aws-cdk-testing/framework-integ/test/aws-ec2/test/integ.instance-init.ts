@@ -49,6 +49,16 @@ new ec2.Instance(stack, 'Instance2', {
         ec2.InitUser.fromName('sysuser2'),
         ec2.InitSource.fromAsset('/tmp/sourceDir', tmpDir),
       ]),
+      service: new ec2.InitConfig([
+        ec2.InitFile.fromString('/myvars.env', 'OTHER_VAR="im from the file :3"'),
+        ec2.InitService.systemdConfigFile('myapp', {
+          command: '/bin/bash -c "echo HELLO_WORLD=${MY_VAR} | FROM_FILE=${OTHER_VAR}"',
+          environmentVariables: {
+            MY_VAR: 'its me :)',
+          },
+          environmentFiles: ['/myvars.env'],
+        }),
+      ]),
     },
   }),
 });

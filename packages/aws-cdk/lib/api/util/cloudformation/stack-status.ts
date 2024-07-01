@@ -41,6 +41,11 @@ export class StackStatus {
     return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE' || this.name === 'IMPORT_COMPLETE');
   }
 
+  get isRollbackSuccess(): boolean {
+    return this.name === 'ROLLBACK_COMPLETE'
+      || this.name === 'UPDATE_ROLLBACK_COMPLETE';
+  }
+
   public toString(): string {
     return this.name + (this.reason ? ` (${this.reason})` : '');
   }

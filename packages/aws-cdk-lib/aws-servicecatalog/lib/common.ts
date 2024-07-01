@@ -22,5 +22,5 @@ export enum MessageLanguage {
   /**
    * Chinese
    */
-  ZH = 'zh'
+  ZH = 'zh',
 }

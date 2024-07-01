@@ -15,7 +15,7 @@ export interface VirtualNodeListenerConfig {
   /**
    * Single listener config for a VirtualNode
    */
-  readonly listener: CfnVirtualNode.ListenerProperty,
+  readonly listener: CfnVirtualNode.ListenerProperty;
 }
 
 /**
@@ -27,7 +27,7 @@ interface VirtualNodeListenerCommonOptions {
    *
    * @default - 8080
    */
-  readonly port?: number
+  readonly port?: number;
 
   /**
    * The health check information for the listener

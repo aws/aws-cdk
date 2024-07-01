@@ -82,7 +82,7 @@ export class UserTablePrivileges extends Construct {
                 actions: Array.from(new Set(actions)),
               };
               return privileges;
-            }, {} as { [key: string]: { tableName: string, actions: TableAction[] } });
+            }, {} as { [key: string]: { tableName: string; actions: TableAction[] } });
             const serializedPrivileges: SerializedTablePrivilege[] = Object.entries(reducedPrivileges).map(([tableId, config]) => ({
               tableId,
               tableName: config.tableName,

@@ -185,7 +185,7 @@ function localCdkVersion(): string {
   return _cdkVersion;
 }
 
-function findParentPkgJson(dir: string, depth: number = 1, limit: number = 5): { version: string; } {
+function findParentPkgJson(dir: string, depth: number = 1, limit: number = 5): { version: string } {
   const target = path.join(dir, 'package.json');
   if (fs.existsSync(target)) {
     return JSON.parse(fs.readFileSync(target, 'utf8'));

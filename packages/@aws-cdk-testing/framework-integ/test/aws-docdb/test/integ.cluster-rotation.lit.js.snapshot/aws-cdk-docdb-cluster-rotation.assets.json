@@ -1,7 +1,7 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "files": {
-    "8a58fa97a651075da97dae0f25e1a6d749868a97b0aaa5cad68bc5b40a6ad731": {
+    "3c9156cdc8ad159436e7f5cb61779d4c5d50cd06b66950b225e3154c85941930": {
       "source": {
         "path": "aws-cdk-docdb-cluster-rotation.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8a58fa97a651075da97dae0f25e1a6d749868a97b0aaa5cad68bc5b40a6ad731.json",
+          "objectKey": "3c9156cdc8ad159436e7f5cb61779d4c5d50cd06b66950b225e3154c85941930.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

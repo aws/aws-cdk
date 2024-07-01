@@ -85,7 +85,7 @@ describe('Code', () => {
   });
 
   describe('.fromAsset()', () => {
-    const filePath = path.join(__dirname, 'job-script/hello_world.py');
+    const filePath = path.join(__dirname, 'job-script', 'hello_world.py');
     const directoryPath = path.join(__dirname, 'job-script');
 
     beforeEach(() => {

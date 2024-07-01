@@ -88,10 +88,16 @@ export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]:
 
 export const config: HandlerFrameworkConfig = {
   'aws-amplify-alpha': {
-    'asset-deployment-handler': [
+    'asset-deployment-provider': [
       {
-        type: ComponentType.NO_OP,
+        type: ComponentType.FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
+        handler: 'index.onEvent',
+      },
+      {
+        type: ComponentType.FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
+        handler: 'index.isComplete',
       },
     ],
   },
@@ -226,7 +232,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-redshift-alpha': {
     'cluster-reboot-provider': [
       {
-        type: ComponentType.SINGLETON_FUNCTION,
+        type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler', 'index.ts'),
       },
     ],
@@ -280,6 +286,12 @@ export const config: HandlerFrameworkConfig = {
     ],
   },
   'aws-stepfunctions-tasks': {
+    'cross-region-aws-sdk-provider': [
+      {
+        type: ComponentType.SINGLETON_FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'cross-region-aws-sdk-handler', 'index.ts'),
+      },
+    ],
     'eval-nodejs-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,

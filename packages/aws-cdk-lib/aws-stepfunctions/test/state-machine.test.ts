@@ -145,6 +145,50 @@ describe('State Machine', () => {
 
   }),
 
+  test('Instantiate State Machine With Distributed Map State', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new sfn.DistributedMap(stack, 'Map State');
+    map.itemProcessor(new sfn.Pass(stack, 'Pass'));
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definition: map,
+    });
+
+    // THEN
+    stack;
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: 'MyStateMachine6C968CA5' },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [{ Ref: 'MyStateMachine6C968CA5' }, ':*']],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineDistributedMapPolicy11E47E72',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  }),
+
   test('State Machine with invalid name', () => {
     // GIVEN
     const stack = new cdk.Stack();

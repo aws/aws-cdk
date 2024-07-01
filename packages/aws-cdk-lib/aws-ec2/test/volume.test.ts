@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import { AccountRootPrincipal, Role } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -454,6 +455,23 @@ describe('volume', () => {
           ],
         }],
       },
+    });
+  });
+
+  test('EBS_DEFAULT_GP3 feature flag', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    stack.node.setContext(cxapi.EBS_DEFAULT_GP3, true);
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(500),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
+      VolumeType: 'gp3',
     });
   });
 
@@ -1279,7 +1297,7 @@ describe('volume', () => {
     for (const testData of [
       [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 3000, 16000],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 100, 64000],
-      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 100, 64000],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 100, 256000],
     ]) {
       const volumeType = testData[0] as EbsDeviceVolumeType;
       const min = testData[1] as number;

@@ -13,7 +13,7 @@
     "api": "listNamespaces",
     "expected": "{\"$ObjectLike\":{\"Namespaces\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"whistler.com\",\"Type\":\"HTTP\"}}]}}}",
     "flattenResponse": "false",
-    "salt": "1688419686481"
+    "salt": "1706273891298"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,7 +76,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5afd122c605f8f3ce8ca9656e47d6db7acb702ecd2bc9823eadde03a2ceb9e8.zip"
+     "S3Key": "3f0f15596be1e3fbbf4a0571522aa1e5312d44abff27360f8d043c1b0704bcf4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

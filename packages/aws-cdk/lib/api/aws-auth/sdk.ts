@@ -64,7 +64,7 @@ export interface ISDK {
   secretsManager(): AWS.SecretsManager;
   kms(): AWS.KMS;
   stepFunctions(): AWS.StepFunctions;
-  codeBuild(): AWS.CodeBuild
+  codeBuild(): AWS.CodeBuild;
   cloudWatchLogs(): AWS.CloudWatchLogs;
   appsync(): AWS.AppSync;
 }

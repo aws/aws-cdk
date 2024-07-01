@@ -16,7 +16,7 @@ export enum SnsActionMessageFormat {
   /**
    * JSON message format.
    */
-  JSON = 'JSON'
+  JSON = 'JSON',
 }
 
 /**

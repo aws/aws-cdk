@@ -164,9 +164,7 @@ test('asks human to confirm automic import if identifier is in template', async 
   };
 
   // WHEN
-  await importer.importResources(importMap, {
-    stack: STACK_WITH_QUEUE,
-  });
+  await importer.importResourcesFromMap(importMap, {});
 
   expect(createChangeSetInput?.ResourcesToImport).toEqual([
     {
@@ -175,6 +173,50 @@ test('asks human to confirm automic import if identifier is in template', async 
       ResourceType: 'AWS::SQS::Queue',
     },
   ]);
+});
+
+test('importing resources from migrate strips cdk metadata and outputs', async () => {
+  // GIVEN
+
+  const MyQueue = {
+    Type: 'AWS::SQS::Queue',
+    Properties: {},
+  };
+  const stack = {
+    stackName: 'StackWithQueue',
+    template: {
+      Resources: {
+        MyQueue,
+        CDKMetadata: {
+          Type: 'AWS::CDK::Metadata',
+          Properties: {
+            Analytics: 'exists',
+          },
+        },
+      },
+      Outputs: {
+        Output: {
+          Description: 'There is an output',
+          Value: 'OutputValue',
+        },
+      },
+    },
+  };
+
+  givenCurrentStack(stack.stackName, stack);
+  const importer = new ResourceImporter(testStack(stack), deployments);
+  const migrateMap = [{
+    LogicalResourceId: 'MyQueue',
+    ResourceIdentifier: { QueueName: 'TheQueueName' },
+    ResourceType: 'AWS::SQS::Queue',
+  }];
+
+  // WHEN
+  await importer.importResourcesFromMigrate(migrateMap, STACK_WITH_QUEUE.template);
+
+  // THEN
+  expect(createChangeSetInput?.ResourcesToImport).toEqual(migrateMap);
+  expect(createChangeSetInput?.TemplateBody).toEqual('Resources:\n  MyQueue:\n    Type: AWS::SQS::Queue\n    Properties: {}\n');
 });
 
 test('only use one identifier if multiple are in template', async () => {
@@ -289,7 +331,7 @@ async function importTemplateFromClean(stack: ReturnType<typeof testStack>) {
   const importer = new ResourceImporter(stack, deployments);
   const { additions } = await importer.discoverImportableResources();
   const importable = await importer.askForResourceIdentifiers(additions);
-  await importer.importResources(importable, { stack });
+  await importer.importResourcesFromMap(importable, {});
   return importable;
 }
 

@@ -19,7 +19,7 @@ export enum CustomLambdaDeploymentConfigType {
    * Linear deployment type
    * @deprecated Use `LambdaDeploymentConfig`
    */
-  LINEAR = 'Linear'
+  LINEAR = 'Linear',
 }
 
 /**

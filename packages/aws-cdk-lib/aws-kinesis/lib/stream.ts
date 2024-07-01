@@ -4,7 +4,7 @@ import { CfnStream } from './kinesis.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -710,6 +710,13 @@ export interface StreamProps {
    * @default StreamMode.PROVISIONED
    */
   readonly streamMode?: StreamMode;
+
+  /**
+   * Policy to apply when the stream is removed from the stack.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -788,6 +795,7 @@ export class Stream extends StreamBase {
         }
         : undefined),
     });
+    this.stream.applyRemovalPolicy(props.removalPolicy);
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
       service: 'kinesis',
@@ -804,8 +812,8 @@ export class Stream extends StreamBase {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable
-    encryptionKey?: kms.IKey
+    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable;
+    encryptionKey?: kms.IKey;
   } {
 
     // if encryption properties are not set, default to KMS in regions where KMS is available
@@ -883,7 +891,7 @@ export enum StreamEncryption {
   /**
    * Server-side encryption with a master key managed by Amazon Kinesis
    */
-  MANAGED = 'MANAGED'
+  MANAGED = 'MANAGED',
 }
 
 /**
@@ -900,5 +908,5 @@ export enum StreamMode {
    * Specify the on-demand capacity mode. The stream will autoscale and be billed according to the
    * volume of data ingested and retrieved.
    */
-  ON_DEMAND = 'ON_DEMAND'
+  ON_DEMAND = 'ON_DEMAND',
 }

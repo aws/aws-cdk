@@ -3,7 +3,7 @@ import * as path from 'path';
 
 const docker = process.env.CDK_DOCKER ?? 'docker';
 beforeAll(() => {
-  spawnSync(docker, ['build', '-t', 'golang', path.join(__dirname, '../lib')]);
+  spawnSync(docker, ['build', '-t', 'golang', path.join(__dirname, '..', 'lib')]);
 });
 
 test('golang is available', async () => {

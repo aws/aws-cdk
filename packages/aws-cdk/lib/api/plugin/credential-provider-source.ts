@@ -2,7 +2,7 @@ import * as aws from 'aws-sdk';
 
 export enum Mode {
   ForReading,
-  ForWriting
+  ForWriting,
 }
 
 /**

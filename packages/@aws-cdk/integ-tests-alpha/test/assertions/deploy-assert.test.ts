@@ -191,6 +191,57 @@ describe('DeployAssert', () => {
       template.resourceCountIs('AWS::Lambda::Function', 1);
       template.resourceCountIs(truncatedType, 1);
     });
+
+    test('can use v3 package name and command class name', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deplossert = new DeployAssert(app);
+      deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand');
+
+      // THEN
+      const template = Template.fromStack(deplossert.scope);
+
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourcePropertiesCountIs(
+        'Custom::DeployAssert@SdkCall@aws-sdkclient-ssmGetParameterC',
+        {
+          service: '@aws-sdk/client-ssm',
+          api: 'GetParameterCommand',
+        },
+        1,
+      );
+    });
+
+    test('can use v3 package name and command class name with assertions', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deplossert = new DeployAssert(app);
+      deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand').expect(
+        ExpectedResult.objectLike({}),
+      );;
+
+      // THEN
+      const template = Template.fromStack(deplossert.scope);
+
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourcePropertiesCountIs(
+        'Custom::DeployAssert@SdkCall@aws-sdkclient-ssmGetParameterC',
+        {
+          service: '@aws-sdk/client-ssm',
+          api: 'GetParameterCommand',
+        },
+        1,
+      );
+      template.hasOutput('AssertionResultsAwsApiCallawssdkclientssmGetParameterCommand', {
+        Value: {
+          'Fn::GetAtt': ['AwsApiCallawssdkclientssmGetParameterCommand', 'assertion'],
+        },
+      });
+    });
   });
 
   describe('httpApiCall', () => {
@@ -215,6 +266,27 @@ describe('DeployAssert', () => {
           },
         }),
       }));
+    });
+
+    test('expect creates a valid CfnOutput', () => {
+      // GIVEN
+      const app = new App();
+      const deplossert = new DeployAssert(app);
+
+      // WHEN
+      const query = deplossert.httpApiCall('https://example.com/test/123?param=value&param2#hash');
+      query.expect(ExpectedResult.objectLike({ status: 200 }));
+
+      // THEN
+      Template.fromStack(deplossert.scope).hasOutput(
+        // Output name should only contain alphanumeric characters
+        'AssertionResultsHttpApiCallexamplecomtest1237c0018be9f253e38cad30092c2fa2a91',
+        {
+          Value: {
+            'Fn::GetAtt': ['HttpApiCallexamplecomtest1237c0018be9f253e38cad30092c2fa2a91', 'assertion'],
+          },
+        },
+      );
     });
 
     test('multiple calls can be configured', () => {

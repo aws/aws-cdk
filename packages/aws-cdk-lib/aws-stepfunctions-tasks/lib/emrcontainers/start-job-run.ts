@@ -587,7 +587,7 @@ export interface Monitoring {
    *
    * @default true - true if values are provided for `logGroup` or `logBucket`, false otherwise
    */
-  readonly logging?: boolean
+  readonly logging?: boolean;
 
   /**
    * A log group for CloudWatch monitoring.

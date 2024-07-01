@@ -4,8 +4,8 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { DatabaseCluster, InstanceType, LogType } from '../lib';
-import { ClusterParameterGroup } from '../lib/parameter-group';
+import { DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
+import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-group';
 
 /*
  * Test creating a cluster without specifying engine version.
@@ -27,6 +27,7 @@ const kmsKey = new kms.Key(stack, 'DbSecurity', {
 
 const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
   description: 'A nice parameter group',
+  family: ParameterGroupFamily.NEPTUNE_1_2,
   parameters: {
     neptune_enable_audit_log: '1',
     neptune_query_timeout: '100000',
@@ -37,6 +38,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   instanceType: InstanceType.R5_LARGE,
+  engineVersion: EngineVersion.V1_2_1_0,
   clusterParameterGroup,
   kmsKey,
   removalPolicy: cdk.RemovalPolicy.DESTROY,

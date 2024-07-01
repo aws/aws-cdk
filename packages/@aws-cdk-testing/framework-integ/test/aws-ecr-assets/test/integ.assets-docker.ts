@@ -41,6 +41,11 @@ const asset7 = new assets.DockerImageAsset(stack, 'DockerImage7', {
   buildSsh: 'default',
 });
 
+const asset8 = new assets.DockerImageAsset(stack, 'DockerImage8', {
+  directory: path.join(__dirname, 'demo-image'),
+  cacheDisabled: true,
+});
+
 const user = new iam.User(stack, 'MyUser');
 asset.repository.grantPull(user);
 asset2.repository.grantPull(user);
@@ -49,6 +54,7 @@ asset4.repository.grantPull(user);
 asset5.repository.grantPull(user);
 asset6.repository.grantPull(user);
 asset7.repository.grantPull(user);
+asset8.repository.grantPull(user);
 
 new cdk.CfnOutput(stack, 'ImageUri', { value: asset.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri2', { value: asset2.imageUri });
@@ -57,5 +63,6 @@ new cdk.CfnOutput(stack, 'ImageUri4', { value: asset4.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri5', { value: asset5.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri6', { value: asset6.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri7', { value: asset7.imageUri });
+new cdk.CfnOutput(stack, 'ImageUri8', { value: asset8.imageUri });
 
 app.synth();

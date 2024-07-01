@@ -1066,6 +1066,47 @@ test('can associate an external location with the glue table', () => {
   });
 });
 
+test('can specify table parameter', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack');
+  const database = new glue.Database(stack, 'Database');
+  const connection = new glue.Connection(stack, 'Connection', {
+    connectionName: 'my_connection',
+    type: glue.ConnectionType.JDBC,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+  new glue.ExternalTable(stack, 'Table', {
+    database,
+    tableName: 'my_table',
+    connection,
+    columns: [{
+      name: 'col',
+      type: glue.Schema.STRING,
+    }],
+    dataFormat: glue.DataFormat.JSON,
+    externalDataLocation,
+    parameters: {
+      key1: 'val1',
+      key2: 'val2',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+    TableInput: {
+      Parameters: {
+        key1: 'val1',
+        key2: 'val2',
+        classification: 'json',
+        has_encrypted_data: true,
+      },
+    },
+  });
+});
+
 function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
   const stack = new cdk.Stack();
   const connection = new glue.Connection(stack, 'Connection', {

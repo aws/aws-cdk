@@ -6,6 +6,34 @@ import { SecurityGroupChanges } from '../network/security-group-changes';
 
 export type PropertyMap = {[key: string]: any };
 
+export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
+
+/**
+ * @param beforeContext is the BeforeContext field from the ChangeSet.ResourceChange.BeforeContext. This is the part of the CloudFormation template
+ * that defines what the resource is before the change is applied; that is, BeforeContext is CloudFormationTemplate.Resources[LogicalId] before the ChangeSet is executed.
+ *
+ * @param afterContext same as beforeContext but for after the change is made; that is, AfterContext is CloudFormationTemplate.Resources[LogicalId] after the ChangeSet is executed.
+ *
+ *  * Here is an example of what a beforeContext/afterContext looks like:
+ *  '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdk/mySsmParameter/Resource"}}'
+ */
+export interface ChangeSetResource {
+  resourceWasReplaced: boolean;
+  resourceType: string | undefined;
+  propertyReplacementModes: PropertyReplacementModeMap | undefined;
+}
+
+export type PropertyReplacementModeMap = {
+  [propertyName: string]: {
+    replacementMode: ReplacementModes | undefined;
+  };
+}
+
+/**
+ * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.
+ */
+export type ReplacementModes = 'Always' | 'Never' | 'Conditionally';
+
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
   public awsTemplateFormatVersion?: Difference<string>;
@@ -119,11 +147,13 @@ export class TemplateDiff implements ITemplateDiff {
         continue;
       }
 
-      if (!resourceChange.newResourceType) {
+      if (!resourceChange.resourceType) {
+        // We use resourceChange.resourceType to loadResourceModel so that we can inspect the
+        // properties of a resource even after the resource is removed from the template.
         continue;
       }
 
-      const newTypeProps = loadResourceModel(resourceChange.newResourceType)?.properties || {};
+      const newTypeProps = loadResourceModel(resourceChange.resourceType)?.properties || {};
       for (const [propertyName, prop] of Object.entries(newTypeProps)) {
         const propScrutinyType = prop.scrutinizable || PropertyScrutinyType.None;
         if (scrutinyTypes.includes(propScrutinyType)) {
@@ -187,6 +217,10 @@ export class TemplateDiff implements ITemplateDiff {
           }
         }
       } else {
+        if (!resourceChange.resourceType) {
+          continue;
+        }
+
         const resourceModel = loadResourceModel(resourceChange.resourceType);
         if (resourceModel && this.resourceIsScrutinizable(resourceModel, scrutinyTypes)) {
           ret.push({
@@ -296,7 +330,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
    *
    * isDifferent => (isUpdate | isRemoved | isUpdate)
    */
-  public readonly isDifferent: boolean;
+  public isDifferent: boolean;
 
   /**
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
@@ -327,7 +361,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
 }
 
 export class PropertyDifference<ValueType> extends Difference<ValueType> {
-  public readonly changeImpact?: ResourceImpact;
+  public changeImpact?: ResourceImpact;
 
   constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
     super(oldValue, newValue);
@@ -350,6 +384,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     const ret = this.diffs[logicalId];
     if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
     return ret;
+  }
+
+  public remove(logicalId: string): void {
+    delete this.diffs[logicalId];
   }
 
   public get logicalIds(): string[] {
@@ -385,10 +423,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
    * @param cb
    */
   public forEachDifference(cb: (logicalId: string, change: T) => any): void {
-    const removed = new Array<{ logicalId: string, change: T }>();
-    const added = new Array<{ logicalId: string, change: T }>();
-    const updated = new Array<{ logicalId: string, change: T }>();
-    const others = new Array<{ logicalId: string, change: T }>();
+    const removed = new Array<{ logicalId: string; change: T }>();
+    const added = new Array<{ logicalId: string; change: T }>();
+    const updated = new Array<{ logicalId: string; change: T }>();
+    const others = new Array<{ logicalId: string; change: T }>();
 
     for (const logicalId of this.logicalIds) {
       const change: T = this.changes[logicalId]!;
@@ -467,6 +505,8 @@ export enum ResourceImpact {
   WILL_DESTROY = 'WILL_DESTROY',
   /** The existing physical resource will be removed from CloudFormation supervision */
   WILL_ORPHAN = 'WILL_ORPHAN',
+  /** The existing physical resource will be added to CloudFormation supervision */
+  WILL_IMPORT = 'WILL_IMPORT',
   /** There is no change in this resource */
   NO_CHANGE = 'NO_CHANGE',
 }
@@ -482,6 +522,7 @@ function worstImpact(one: ResourceImpact, two?: ResourceImpact): ResourceImpact 
   if (!two) { return one; }
   const badness = {
     [ResourceImpact.NO_CHANGE]: 0,
+    [ResourceImpact.WILL_IMPORT]: 0,
     [ResourceImpact.WILL_UPDATE]: 1,
     [ResourceImpact.WILL_CREATE]: 2,
     [ResourceImpact.WILL_ORPHAN]: 3,
@@ -515,6 +556,11 @@ export class ResourceDifference implements IDifference<Resource> {
    */
   public readonly isRemoval: boolean;
 
+  /**
+   * Whether this resource was imported
+   */
+  public isImport?: boolean;
+
   /** Property-level changes on the resource */
   private readonly propertyDiffs: { [key: string]: PropertyDifference<any> };
 
@@ -522,15 +568,15 @@ export class ResourceDifference implements IDifference<Resource> {
   private readonly otherDiffs: { [key: string]: Difference<any> };
 
   /** The resource type (or old and new type if it has changed) */
-  private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
+  private readonly resourceTypes: { readonly oldType?: string; readonly newType?: string };
 
   constructor(
     public readonly oldValue: Resource | undefined,
     public readonly newValue: Resource | undefined,
     args: {
-      resourceType: { oldType?: string, newType?: string },
-      propertyDiffs: { [key: string]: PropertyDifference<any> },
-      otherDiffs: { [key: string]: Difference<any> }
+      resourceType: { oldType?: string; newType?: string };
+      propertyDiffs: { [key: string]: PropertyDifference<any> };
+      otherDiffs: { [key: string]: Difference<any> };
     },
   ) {
     this.resourceTypes = args.resourceType;
@@ -539,6 +585,7 @@ export class ResourceDifference implements IDifference<Resource> {
 
     this.isAddition = oldValue === undefined;
     this.isRemoval = newValue === undefined;
+    this.isImport = undefined;
   }
 
   public get oldProperties(): PropertyMap | undefined {
@@ -602,11 +649,11 @@ export class ResourceDifference implements IDifference<Resource> {
    *
    * If the resource type was changed, it's an error to call this.
    */
-  public get resourceType(): string {
+  public get resourceType(): string | undefined {
     if (this.resourceTypeChanged) {
       throw new Error('Cannot get .resourceType, because the type was changed');
     }
-    return this.resourceTypes.oldType || this.resourceTypes.newType!;
+    return this.resourceTypes.oldType || this.resourceTypes.newType;
   }
 
   /**
@@ -621,7 +668,22 @@ export class ResourceDifference implements IDifference<Resource> {
     this.propertyDiffs[propertyName] = change;
   }
 
+  /**
+   * Replace a OtherChange in this object
+   *
+   * This affects the property diff as it is summarized to users, but it DOES
+   * NOT affect either the "oldValue" or "newValue" values; those still contain
+   * the actual template values as provided by the user (they might still be
+   * used for downstream processing).
+   */
+  public setOtherChange(otherName: string, change: PropertyDifference<any>) {
+    this.otherDiffs[otherName] = change;
+  }
+
   public get changeImpact(): ResourceImpact {
+    if (this.isImport) {
+      return ResourceImpact.WILL_IMPORT;
+    }
     // Check the Type first
     if (this.resourceTypes.oldType !== this.resourceTypes.newType) {
       if (this.resourceTypes.oldType === undefined) { return ResourceImpact.WILL_CREATE; }

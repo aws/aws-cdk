@@ -29,7 +29,7 @@ export enum Weekday {
   /**
    * Sunday
    */
-  SUNDAY = '7'
+  SUNDAY = '7',
 }
 
 /**
@@ -41,7 +41,7 @@ export interface LustreMaintenanceTimeProps {
    */
   readonly day: Weekday;
   /**
-   * The hour of the day (from 0-24) for maintenance to be performed.
+   * The hour of the day (from 0-23) for maintenance to be performed.
    */
   readonly hour: number;
   /**
@@ -51,7 +51,7 @@ export interface LustreMaintenanceTimeProps {
 }
 
 /**
- * Class for scheduling a weekly manitenance time.
+ * Class for scheduling a weekly maintenance time.
  */
 export class LustreMaintenanceTime {
   /**
@@ -59,7 +59,7 @@ export class LustreMaintenanceTime {
    */
   private readonly day: Weekday;
   /**
-   * The hour of the day (from 00-24) for maintenance to be performed.
+   * The hour of the day (from 00-23) for maintenance to be performed.
    */
   private readonly hour: string;
   /**
@@ -96,8 +96,8 @@ export class LustreMaintenanceTime {
    * Validation needed for the values of the maintenance time.
    */
   private validate(hour: number, minute: number) {
-    if (!Number.isInteger(hour) || hour < 0 || hour > 24) {
-      throw new Error('Maintenance time hour must be an integer between 0 and 24');
+    if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
+      throw new Error('Maintenance time hour must be an integer between 0 and 23');
     }
     if (!Number.isInteger(minute) || minute < 0 || minute > 59) {
       throw new Error('Maintenance time minute must be an integer between 0 and 59');

@@ -89,7 +89,12 @@
   },
   "ImageUri7": {
    "Value": {
-    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:6308cecadfac022764e8f3e3272baeab95b48a260cae3978b7ef93bd3ff2be17"
+    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:615e365307bd4811880256cf541a7d05b5d4a752ee76ac03863a0a39631607a6"
+   }
+  },
+  "ImageUri8": {
+   "Value": {
+    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
    }
   }
  },

@@ -173,7 +173,7 @@ export class CfnInclude extends core.CfnElement {
       this.createHook(hookName);
     }
 
-    const outputScope = new Construct(this, '$Ouputs');
+    const outputScope = new Construct(this, '$Outputs');
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
     }

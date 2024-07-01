@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
-import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret, SubnetGroup } from '../lib';
+import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret, SubnetGroup, TimeoutAction } from '../lib';
 
 describe('serverless cluster', () => {
   test('can create a Serverless Cluster with Aurora Postgres database engine', () => {
@@ -20,7 +20,7 @@ describe('serverless cluster', () => {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
@@ -28,7 +28,7 @@ describe('serverless cluster', () => {
       Properties: {
         Engine: 'aurora-postgresql',
         CopyTagsToSnapshot: true,
-        DBClusterParameterGroupName: 'default.aurora-postgresql10',
+        DBClusterParameterGroupName: 'default.aurora-postgresql11',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
@@ -113,13 +113,13 @@ describe('serverless cluster', () => {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       vpc,
       securityGroups: [sg],
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
-      DBClusterParameterGroupName: 'default.aurora-postgresql10',
+      DBClusterParameterGroupName: 'default.aurora-postgresql11',
       EngineMode: 'serverless',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: {
@@ -892,7 +892,7 @@ describe('serverless cluster', () => {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
@@ -909,7 +909,7 @@ describe('serverless cluster', () => {
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       copyTagsToSnapshot: false,
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
@@ -926,7 +926,7 @@ describe('serverless cluster', () => {
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       copyTagsToSnapshot: true,
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
@@ -935,6 +935,56 @@ describe('serverless cluster', () => {
     });
   });
 
+  test('check properties propagation of ServerlessScalingOptions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+      scaling: {
+        autoPause: cdk.Duration.minutes(10),
+        minCapacity: AuroraCapacityUnit.ACU_8,
+        maxCapacity: AuroraCapacityUnit.ACU_32,
+        timeout: cdk.Duration.minutes(10),
+        timeoutAction: TimeoutAction.FORCE_APPLY_CAPACITY_CHANGE,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      ScalingConfiguration: {
+        AutoPause: true,
+        MaxCapacity: 32,
+        MinCapacity: 8,
+        SecondsUntilAutoPause: 600,
+        SecondsBeforeTimeout: 600,
+        TimeoutAction: 'ForceApplyCapacityChange',
+      },
+    });
+  });
+
+  test.each([
+    cdk.Duration.seconds(59),
+    cdk.Duration.seconds(601),
+  ])('invalid ServerlessScalingOptions throws', (duration) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // THEN
+    expect(() => new ServerlessCluster(stack, 'Database1', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      scaling: {
+        autoPause: cdk.Duration.minutes(10),
+        minCapacity: AuroraCapacityUnit.ACU_8,
+        maxCapacity: AuroraCapacityUnit.ACU_32,
+        timeout: duration,
+      },
+    })).toThrow(/timeout must be between 60 and 600 seconds/);
+  });
 });
 
 function testStack(app?: cdk.App, id?: string): cdk.Stack {

@@ -58,22 +58,22 @@ export interface SearchComponents {
   /**
    * The namespace to be used in the search expression
    */
-  readonly namespace: string,
+  readonly namespace: string;
 
   /**
    * The list of dimensions to be used in the search expression
    */
-  readonly dimensions: string[],
+  readonly dimensions: string[];
 
   /**
    * The metric name to be used in the search expression
    */
-  readonly metricName: string,
+  readonly metricName: string;
 
   /**
    * The dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from
    */
-  readonly populateFrom: string,
+  readonly populateFrom: string;
 }
 
 /**

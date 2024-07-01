@@ -105,7 +105,7 @@ test('with env vars', () => {
 test('with asset deployment', () => {
   // WHEN
   const asset = new Asset(app, 'SampleAsset', {
-    path: path.join(__dirname, './test-asset'),
+    path: path.join(__dirname, 'test-asset'),
   });
   app.addBranch('dev', { asset });
 

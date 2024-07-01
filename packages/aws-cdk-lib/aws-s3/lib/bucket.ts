@@ -357,7 +357,7 @@ export interface IBucket extends IResource {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void
+  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 
   /**
    * Subscribes a destination to receive notifications when an object is
@@ -1177,7 +1177,7 @@ export enum InventoryFrequency {
   /**
    * A report is generated every Sunday (UTC timezone) after the initial report.
    */
-  WEEKLY = 'Weekly'
+  WEEKLY = 'Weekly',
 }
 
 /**
@@ -1287,7 +1287,9 @@ export enum ObjectOwnership {
    */
   BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
   /**
-   * Objects uploaded to the bucket change ownership to the bucket owner .
+   * The bucket owner will own the object if the object is uploaded with
+   * the bucket-owner-full-control canned ACL. Without this setting and
+   * canned ACL, the object is uploaded and remains owned by the uploading account.
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
   /**
@@ -1336,6 +1338,68 @@ export interface IntelligentTieringConfiguration {
   readonly deepArchiveAccessTierTime?: Duration;
 }
 
+/**
+ * The date source for the partitioned prefix.
+ */
+export enum PartitionDateSource {
+  /**
+   * The year, month, and day will be based on the timestamp of the S3 event in the file that's been delivered.
+   */
+  EVENT_TIME = 'EventTime',
+
+  /**
+   * The year, month, and day will be based on the time when the log file was delivered to S3.
+   */
+  DELIVERY_TIME = 'DeliveryTime',
+}
+
+/**
+ * The key format for the log object.
+ */
+export abstract class TargetObjectKeyFormat {
+  /**
+   * Use partitioned prefix for log objects.
+   * If you do not specify the dateSource argument, the default is EventTime.
+   *
+   * The partitioned prefix format as follow:
+   * [DestinationPrefix][SourceAccountId]/​[SourceRegion]/​[SourceBucket]/​[YYYY]/​[MM]/​[DD]/​[YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  public static partitionedPrefix(dateSource?: PartitionDateSource): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
+      public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
+        return {
+          partitionedPrefix: {
+            partitionDateSource: dateSource,
+          },
+        };
+      }
+    }();
+  }
+
+  /**
+   * Use the simple prefix for log objects.
+   *
+   * The simple prefix format as follow:
+   * [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  public static simplePrefix(): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
+      public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
+        return {
+          simplePrefix: {},
+        };
+      }
+    }();
+  }
+
+  /**
+   * Render the log object key format.
+   *
+   * @internal
+   */
+  public abstract _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'];
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1376,7 +1440,7 @@ export interface BucketProps {
    *   attendant cost implications of that).
    * - If enabled, S3 will use its own time-limited key instead.
    *
-   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
+   * Only relevant, when Encryption is not set to `BucketEncryption.UNENCRYPTED`.
    *
    * @default - false
    */
@@ -1406,6 +1470,11 @@ export interface BucketProps {
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
    * all objects in the bucket being deleted. Be sure to update your bucket resources
    * by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
+   *
+   * Setting `autoDeleteObjects` to true on a bucket will add `s3:PutBucketPolicy` to the
+   * bucket policy. This is because during bucket deletion, the custom resource provider
+   * needs to update the bucket policy by adding a deny policy for `s3:PutObject` to
+   * prevent race conditions with external bucket writers.
    *
    * @default false
    */
@@ -1545,6 +1614,13 @@ export interface BucketProps {
   readonly serverAccessLogsPrefix?: string;
 
   /**
+   * Optional key format for log objects.
+   *
+   * @default - the default key format is: [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  readonly targetObjectKeyFormat?: TargetObjectKeyFormat;
+
+  /**
    * The inventory configuration of the bucket.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
@@ -1657,7 +1733,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
-    Bucket.validateBucketName(bucketName);
+    Bucket.validateBucketName(bucketName, true);
 
     const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
@@ -1764,8 +1840,9 @@ export class Bucket extends BucketBase {
    * Thrown an exception if the given bucket name is not valid.
    *
    * @param physicalName name of the bucket.
+   * @param allowLegacyBucketNaming allow legacy bucket naming style, default is false.
    */
-  public static validateBucketName(physicalName: string): void {
+  public static validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
@@ -1779,9 +1856,10 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    const charsetRegex = allowLegacyBucketNaming ? /[^a-z0-9._-]/ : /[^a-z0-9.-]/;
+    const charsetMatch = bucketName.match(charsetRegex);
     if (charsetMatch) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+      errors.push(`Bucket name must only contain lowercase characters and the symbols, period (.)${allowLegacyBucketNaming ? ', underscore (_), ' : ' '}and dash (-) `
         + `(offset: ${charsetMatch.index})`);
     }
     if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
@@ -1924,6 +2002,10 @@ export class Bucket extends BucketBase {
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
 
     if (props.publicReadAccess) {
+      if (props.blockPublicAccess === undefined) {
+        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+      }
+
       this.grantPublicAccess();
     }
 
@@ -2029,6 +2111,7 @@ export class Bucket extends BucketBase {
    * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
    * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
    * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+   * | S3_MANAGED       | undefined           | e                      | SSE-S3, bucketKeyEnabled = e    | undefined                    |
    * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
    * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
    * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
@@ -2036,8 +2119,8 @@ export class Bucket extends BucketBase {
    * | S3_MANAGED       | k                   | e                      | ERROR!                          | ERROR!                       |
    */
   private parseEncryption(props: BucketProps): {
-    bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.IKey
+    bucketEncryption?: CfnBucket.BucketEncryptionProperty;
+    encryptionKey?: kms.IKey;
   } {
 
     // default based on whether encryptionKey is specified
@@ -2051,12 +2134,9 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
-    if (
-      props.bucketKeyEnabled &&
-      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
-    ) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
+    if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2085,7 +2165,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+          },
         ],
       };
 
@@ -2213,6 +2296,7 @@ export class Bucket extends BucketBase {
     return {
       destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
+      targetObjectKeyFormat: props.targetObjectKeyFormat?._render(),
     };
   }
 

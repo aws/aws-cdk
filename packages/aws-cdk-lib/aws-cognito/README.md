@@ -79,6 +79,11 @@ Users can either be signed up by the app's administrators or can sign themselves
 account needs to be confirmed. Cognito provides several ways to sign users up and confirm their accounts. Learn more
 about [user sign up here](https://docs.aws.amazon.com/cognito/latest/developerguide/signing-up-users-in-your-app.html).
 
+To verify the email address of a user in your user pool with Amazon Cognito, you can send the user an email message
+with a link that they can select, or you can send them a code that they can enter.
+
+#### Code Verification
+
 When a user signs up, email and SMS messages are used to verify their account and contact methods. The following code
 snippet configures a user pool with properties relevant to these verification messages -
 
@@ -109,6 +114,20 @@ new cognito.UserPool(this, 'myuserpool', {
     emailSubject: 'Invite to join our awesome app!',
     emailBody: 'Hello {username}, you have been invited to join our awesome app! Your temporary password is {####}',
     smsMessage: 'Hello {username}, your temporary password for our awesome app is {####}',
+  },
+});
+```
+
+#### Link Verification
+Alternatively, users can use link as a verification method. The following code snippet configures a user pool with
+properties relevant to these verification messages and link verification method.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  userVerification: {
+    emailStyle: cognito.VerificationEmailStyle.LINK,
+    emailSubject: 'Invite to join our awesome app!',
+    emailBody: 'You have been invited to join our awesome app! {##Verify Your Email##}',
   },
 });
 ```
@@ -474,6 +493,15 @@ userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Functio
 }));
 ```
 
+Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0:
+
+```ts
+declare const userpool: cognito.UserPool;
+declare const preTokenGenerationFn: lambda.Function;
+
+userpool.addTrigger(cognito.UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGenerationFn, cognito.LambdaVersion.V2_0);
+```
+
 The following table lists the set of triggers available, and their corresponding method to add it to the user pool.
 For more information on the function of these triggers and how to configure them, read [User Pool Workflows with
 Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
@@ -570,6 +598,30 @@ const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
 });
 ```
 
+Using SAML identity provider is possible to use SAML metadata file content or SAML metadata file url.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+
+// specify the metadata as a file content
+new cognito.UserPoolIdentityProviderSaml(this, 'userpoolIdpFile', {
+  userPool: userpool,
+  metadata: cognito.UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+  // Whether to require encrypted SAML assertions from IdP
+  encryptedResponses: true,
+  // The signing algorithm for the SAML requests
+  requestSigningAlgorithm: cognito.SigningAlgorithm.RSA_SHA256,
+  // Enable IdP initiated SAML auth flow
+  idpInitiated: true,
+});
+
+// specify the metadata as a URL
+new cognito.UserPoolIdentityProviderSaml(this, 'userpoolidpUrl', {
+  userPool: userpool,
+  metadata: cognito.UserPoolIdentityProviderSamlMetadata.url('https://my-metadata-url.com'),
+});
+```
+
 Attribute mapping allows mapping attributes provided by the third-party identity providers to [standard and custom
 attributes](#Attributes) of the user pool. Learn more about [Specifying Identity Provider Attribute Mappings for Your
 User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html).
@@ -660,6 +712,24 @@ pool.addClient('app-client', {
     },
     scopes: [ cognito.OAuthScope.OPENID ],
     callbackUrls: [ 'https://my-app-domain.com/welcome' ],
+    logoutUrls: [ 'https://my-app-domain.com/signin' ],
+  },
+});
+```
+
+To set a default redirect URI, use the `defaultRedirectUri` property.
+Its value must be present in the `callbackUrls` list.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  oAuth: {
+    flows: {
+      authorizationCodeGrant: true,
+    },
+    scopes: [ cognito.OAuthScope.OPENID ],
+    defaultRedirectUri: 'https://my-app-domain.com/welcome',
+    callbackUrls: [ 'https://my-app-domain.com/welcome', 'https://my-app-domain.com/hello' ],
     logoutUrls: [ 'https://my-app-domain.com/signin' ],
   },
 });
@@ -794,6 +864,23 @@ const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
 // Allows you to pass the generated secret to other pieces of infrastructure
 const secret = userPoolClient.userPoolClientSecret;
 ```
+
+If you set `enablePropagateAdditionalUserContextData: true`, you can collect and pass
+information about your user's session to Amazon Cognito advanced security
+when you use the API to sign them up, sign them in, and reset their password.
+
+
+```ts
+declare const importedPool: cognito.UserPool;
+
+const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
+  userPool: importedPool,
+  generateSecret: true,
+  enablePropagateAdditionalUserContextData: true,
+});
+```
+
+See [Adding user device and session data to API requests](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html#user-pool-settings-adaptive-authentication-device-fingerprint) for more information.
 
 ### Resource Servers
 

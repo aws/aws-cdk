@@ -519,6 +519,7 @@ Resources:
                 Effect: Allow
                 Action:
                   - ssm:GetParameter
+                  - ssm:GetParameters # CreateChangeSet uses this to evaluate any SSM parameters (like `CdkBootstrapVersion`)
                 Resource:
                   - Fn::Sub: "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CdkBootstrapVersion}"
             Version: '2012-10-17'
@@ -618,7 +619,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '19'
+      Value: '20'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack
