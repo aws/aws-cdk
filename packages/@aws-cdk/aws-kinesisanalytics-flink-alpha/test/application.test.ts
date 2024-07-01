@@ -35,7 +35,7 @@ describe('Application', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationName: 'MyFlinkApplication',
-      RuntimeEnvironment: 'FLINK-1_11',
+      RuntimeEnvironment: 'FLINK-1_19',
       ServiceExecutionRole: {
         'Fn::GetAtt': [
           'FlinkApplicationRole2F7BCBF6',
