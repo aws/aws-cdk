@@ -841,7 +841,7 @@ export interface SecurityGroupLookupOptions {
    *
    * If given, will import the SecurityGroup with this name.
    *
-   * @default Don't filter on securityGroupName
+   * @default - Don't filter on securityGroupName
    */
   readonly securityGroupName?: string;
 
@@ -850,7 +850,7 @@ export interface SecurityGroupLookupOptions {
    *
    * If given, will import the SecurityGroup with this ID.
    *
-   * @default Don't filter on securityGroupId
+   * @default - Don't filter on securityGroupId
    */
   readonly securityGroupId?: string;
 
@@ -859,35 +859,35 @@ export interface SecurityGroupLookupOptions {
    *
    * If given, will filter the SecurityGroup based on the VPC.
    *
-   * @default Don't filter on VPC
+   * @default - Don't filter on VPC
    */
   readonly vpc?: IVpc;
 
   /**
    * Security group description
    *
-   * @default Don't filter on description
+   * @default - Don't filter on description
    */
   readonly description?: string;
 
   /**
    * Account ID of the owner of the security group
    *
-   * @default Don't filter on owner ID
+   * @default - Don't filter on owner ID
    */
   readonly ownerId?: string;
 
   /**
    * The keys of tags assigned to the security group
    *
-   * @default Don't filter on tag key
+   * @default - Don't filter on tag key
    */
   readonly tagKeys?: string[];
 
   /**
    * The key/value combination of a tag assigned to the security group
    *
-   * @default Don't filter on tags
+   * @default - Don't filter on tags
    */
   readonly tags?: Record<string, string[]>;
 }
