@@ -247,7 +247,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
     await cfn.deleteStack({ StackName: deployName }).promise();
     const deletedStack = await waitForStackDelete(cfn, deployName);
-    if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
+    if (deletedStack && deletedStack.stackStatus.event !== 'DELETE_COMPLETE') {
       throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`);
     }
     // Update variable to mark that the stack does not exist anymore, but avoid
@@ -357,7 +357,7 @@ class FullCloudFormationDeployment {
     this.cfn = options.sdk.cloudFormation();
     this.stackName = options.deployName ?? stackArtifact.stackName;
 
-    this.update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
+    this.update = cloudFormationStack.exists && cloudFormationStack.stackStatus.event !== 'REVIEW_IN_PROGRESS';
     this.verb = this.update ? 'update' : 'create';
     this.uuid = uuid.v4();
   }
@@ -594,7 +594,7 @@ export async function destroyStack(options: DestroyStackOptions) {
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();
     const destroyedStack = await waitForStackDelete(cfn, deployName);
-    if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
+    if (destroyedStack && destroyedStack.stackStatus.event !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
   } catch (e: any) {

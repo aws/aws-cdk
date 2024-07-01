@@ -7,49 +7,52 @@ import * as AWS from 'aws-sdk';
  */
 export class StackStatus {
   public static fromStackDescription(description: AWS.CloudFormation.Stack) {
-    return new StackStatus(description.StackStatus, description.StackStatusReason);
+    return new StackStatus(description.StackStatus, description.StackStatusReason, description.DetailedStatus);
   }
 
-  constructor(public readonly name: string, public readonly reason?: string) {}
+  constructor(public readonly event: string, public readonly reason?: string, public readonly detailedEvent?: string) {}
 
   get isCreationFailure(): boolean {
-    return this.name === 'ROLLBACK_COMPLETE'
-      || this.name === 'ROLLBACK_FAILED';
+    return this.event === 'ROLLBACK_COMPLETE'
+      || this.event === 'ROLLBACK_FAILED';
   }
 
   get isDeleted(): boolean {
-    return this.name.startsWith('DELETE_');
+    return this.event.startsWith('DELETE_');
   }
 
   get isFailure(): boolean {
-    return this.name.endsWith('FAILED');
+    return this.event.endsWith('FAILED');
   }
 
-  get isInProgress(): boolean {
-    return this.name.endsWith('_IN_PROGRESS') && !this.isReviewInProgress;
+  public isInProgress(exitOnConfigComplete?: boolean): boolean {
+    if (exitOnConfigComplete && this.isConfigurationComplete) {
+      return false;
+    }
+    return this.event.endsWith('_IN_PROGRESS') && !this.isReviewInProgress;
   }
 
   get isReviewInProgress(): boolean {
-    return this.name === 'REVIEW_IN_PROGRESS';
+    return this.event === 'REVIEW_IN_PROGRESS';
   }
 
   get isNotFound(): boolean {
-    return this.name === 'NOT_FOUND';
+    return this.event === 'NOT_FOUND';
   }
 
   public isDeploySuccess(exitOnConfigComplete?: boolean): boolean {
-    if (exitOnConfigComplete && this.name === 'CONFIGURATION_COMPLETE') {
+    if (exitOnConfigComplete && this.isConfigurationComplete) {
       return true;
     }
-    return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE' || this.name === 'IMPORT_COMPLETE');
+    return !this.isNotFound && (this.event === 'CREATE_COMPLETE' || this.event === 'UPDATE_COMPLETE' || this.event === 'IMPORT_COMPLETE');
   }
 
   get isRollbackSuccess(): boolean {
-    return this.name === 'ROLLBACK_COMPLETE'
-      || this.name === 'UPDATE_ROLLBACK_COMPLETE';
+    return this.event === 'ROLLBACK_COMPLETE'
+      || this.event === 'UPDATE_ROLLBACK_COMPLETE';
   }
 
-  public toString(): string {
-    return this.name + (this.reason ? ` (${this.reason})` : '');
+  private get isConfigurationComplete() {
+    return this.detailedEvent === 'CONFIGURATION_COMPLETE';
   }
 }

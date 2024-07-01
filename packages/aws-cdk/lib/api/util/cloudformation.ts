@@ -467,7 +467,7 @@ export async function waitForStackDeploy(
   exitOnConfigComplete?: boolean,
 ): Promise<CloudFormationStack | undefined> {
 
-  const stack = await stabilizeStack(cfn, stackName);
+  const stack = await stabilizeStack(cfn, stackName, exitOnConfigComplete);
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
@@ -484,7 +484,7 @@ export async function waitForStackDeploy(
 /**
  * Wait for a stack to become stable (no longer _IN_PROGRESS), returning it
  */
-export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
+export async function stabilizeStack(cfn: CloudFormation, stackName: string, exitOnConfigComplete?: boolean) {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
     const stack = await CloudFormationStack.lookup(cfn, stackName);
@@ -493,7 +493,7 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
       return null;
     }
     const status = stack.stackStatus;
-    if (status.isInProgress) {
+    if (status.isInProgress(exitOnConfigComplete)) {
       debug('Stack %s has an ongoing operation in progress and is not stable (%s)', stackName, status);
       return undefined;
     } else if (status.isReviewInProgress) {

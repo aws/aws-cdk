@@ -124,7 +124,7 @@ export async function readFromStack(stackName: string, sdkProvider: SdkProvider,
   if (stack.stackStatus.isDeploySuccess() || stack.stackStatus.isRollbackSuccess) {
     return JSON.stringify(await stack.template());
   } else {
-    throw new Error(`Stack '${stackName}' in account ${environment.account} and region ${environment.region} has a status of '${stack.stackStatus.name}' due to '${stack.stackStatus.reason}'. The stack cannot be migrated until it is in a healthy state.`);
+    throw new Error(`Stack '${stackName}' in account ${environment.account} and region ${environment.region} has a status of '${stack.stackStatus.event}' due to '${stack.stackStatus.reason}'. The stack cannot be migrated until it is in a healthy state.`);
   }
   return;
 }

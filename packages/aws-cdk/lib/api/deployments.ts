@@ -212,7 +212,7 @@ export interface DeployStackOptions {
    *
    * @default false
    */
-  readonly optimistic?: boolean;
+  readonly exitOnConfigurationComplete?: boolean;
 }
 
 interface AssetOptions {
@@ -421,7 +421,7 @@ export class Deployments {
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
       assetParallelism: options.assetParallelism,
-      optimistic: options.optimistic,
+      optimistic: options.exitOnConfigurationComplete,
     });
   }
 

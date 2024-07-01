@@ -350,7 +350,7 @@ export class CdkToolkit {
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,
-          optimistic: options.optimistic,
+          exitOnConfigurationComplete: options.exitOnConfigurationComplete,
         });
 
         const message = result.noOp
@@ -1346,7 +1346,7 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    *
    * @default false
    */
-  readonly optimistic?: boolean;
+  readonly exitOnConfigurationComplete?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
