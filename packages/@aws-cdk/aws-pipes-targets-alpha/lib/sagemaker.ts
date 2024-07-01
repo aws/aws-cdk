@@ -22,7 +22,7 @@ export interface SageMakerTargetParameters {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargetsagemakerpipelineparameters.html#cfn-pipes-pipe-pipetargetsagemakerpipelineparameters-pipelineparameterlist
    * @default - none
    */
-  readonly pipelineParameterList?: Record<string, string>;
+  readonly pipelineParameters?: Record<string, string>;
 }
 
 /**
@@ -31,14 +31,14 @@ export interface SageMakerTargetParameters {
 export class SageMakerTarget implements ITarget {
   private pipeline: IPipeline;
   private sagemakerParameters?: SageMakerTargetParameters;
-  private pipelineParameterList?: Record<string, string>;
+  private pipelineParameters?: Record<string, string>;
   public readonly targetArn: string;
 
   constructor(pipeline: IPipeline, parameters?: SageMakerTargetParameters) {
     this.pipeline = pipeline;
     this.targetArn = pipeline.pipelineArn;
     this.sagemakerParameters = parameters;
-    this.pipelineParameterList = this.sagemakerParameters?.pipelineParameterList;
+    this.pipelineParameters = this.sagemakerParameters?.pipelineParameters;
   }
 
   grantPush(grantee: IRole): void {
@@ -56,8 +56,8 @@ export class SageMakerTarget implements ITarget {
       targetParameters: {
         inputTemplate: this.sagemakerParameters.inputTransformation?.bind(pipe).inputTemplate,
         sageMakerPipelineParameters: {
-          pipelineParameterList: this.pipelineParameterList ?
-            Object.entries(this.pipelineParameterList).map(([key, value]) => ({
+          pipelineParameterList: this.pipelineParameters ?
+            Object.entries(this.pipelineParameters).map(([key, value]) => ({
               name: key,
               value: value,
             })) : undefined,
