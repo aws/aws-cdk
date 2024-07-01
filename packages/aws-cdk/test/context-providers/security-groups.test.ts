@@ -234,11 +234,8 @@ describe('security group context provider plugin', () => {
 
     AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
       expect(_params).toEqual({
+        GroupIds: undefined,
         Filters: [
-          {
-            Name: 'owner-id',
-            Values: ['012345678901'],
-          },
           {
             Name: 'description',
             Values: ['my description'],
@@ -246,6 +243,10 @@ describe('security group context provider plugin', () => {
           {
             Name: 'tag-key',
             Values: ['tagA', 'tagB'],
+          },
+          {
+            Name: 'owner-id',
+            Values: ['012345678901'],
           },
           {
             Name: 'tag:tagC',
