@@ -135,12 +135,9 @@ const targetPipeline = new FakePipeline(stack, 'Pipeline', {
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
   target: new SageMakerTarget(targetPipeline, {
-    pipelineParameterList: [
-      {
-        name: 'foor',
-        value: 'bar',
-      },
-    ],
+    pipelineParameterList: {
+      foor: 'bar',
+    },
   }),
 });
 
