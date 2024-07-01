@@ -2,7 +2,7 @@ import * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
-import { DatabaseCluster, DatabaseInstance } from '../lib';
+import { CaCertificate, DatabaseCluster, DatabaseInstance } from '../lib';
 
 const CLUSTER_INSTANCE_TYPE = ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE);
 const SINGLE_INSTANCE_TYPE = ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.XLARGE);
@@ -55,6 +55,27 @@ describe('DatabaseInstance', () => {
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
+    });
+  });
+
+  test('check that CA certificate identifier works', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceType: SINGLE_INSTANCE_TYPE,
+      caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
+      Properties: {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: EXPECTED_SYNTH_INSTANCE_TYPE,
+        CACertificateIdentifier: 'rds-ca-rsa4096-g1',
+      },
     });
   });
 
