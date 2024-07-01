@@ -569,7 +569,7 @@ test('Incorrect esbuild version', () => {
 
   expect(() => bundler.local?.tryBundle('/outdir', {
     image: STANDARD_RUNTIME.bundlingImage,
-  })).toThrow(/Expected esbuild version 0.21.x but got 3.4.5/);
+  })).toThrow(/Expected esbuild version 0.x but got 3.4.5/);
 });
 
 test('Custom bundling docker image', () => {

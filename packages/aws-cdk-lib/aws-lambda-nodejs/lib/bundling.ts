@@ -8,6 +8,7 @@ import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2R
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 
+const ESBUILD_MAJOR_VERSION = '0';
 const ESBUILD_DEFAULT_VERSION = '0.21';
 
 /**
@@ -310,8 +311,8 @@ export class Bundling implements cdk.BundlingOptions {
           return false;
         }
 
-        if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_DEFAULT_VERSION}.`)) {
-          throw new Error(`Expected esbuild version ${ESBUILD_DEFAULT_VERSION}.x but got ${Bundling.esbuildInstallation.version}`);
+        if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
+          throw new Error(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`);
         }
 
         const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
