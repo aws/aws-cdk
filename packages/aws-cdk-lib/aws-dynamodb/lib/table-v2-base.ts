@@ -462,7 +462,6 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       account: props?.account ?? this.stack.account,
     });
   }
-}
 
   /**
    * Adds a statement to the resource policy associated with this file system.
