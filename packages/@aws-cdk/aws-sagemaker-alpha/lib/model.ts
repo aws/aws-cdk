@@ -208,7 +208,7 @@ export interface ModelProps {
   readonly allowAllOutbound?: boolean;
 
   /**
-   * Whether to isolate to enable network isolation for the model container.
+   * Whether to enable network isolation for the model container.
    *
    * When enabled, no inbound or outbound network calls can be made to or from the model container.
    *
