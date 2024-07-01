@@ -208,8 +208,9 @@ export interface ModelProps {
   readonly allowAllOutbound?: boolean;
 
   /**
-   * Whether to isolate the model container,
-   * ensuring that no inbound or outbound network calls can be made to or from the model container.
+   * Whether to isolate to enable network isolation for the model container.
+   *
+   * When enabled, no inbound or outbound network calls can be made to or from the model container.
    *
    * @see https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html
    *
