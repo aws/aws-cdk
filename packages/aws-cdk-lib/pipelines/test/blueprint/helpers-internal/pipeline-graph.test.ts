@@ -3,7 +3,7 @@ import * as cdkp from '../../../lib';
 import { ManualApprovalStep, Step } from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
-import { AppWithOutput, AppWithExposedStacks, OneStackApp, TestApp } from '../../testhelpers/test-app';
+import { AppWithExposedStacks, AppWithOutput, OneStackApp, TestApp } from '../../testhelpers/test-app';
 
 let app: TestApp;
 
@@ -43,7 +43,7 @@ describe('blueprint with one stage', () => {
     ]);
 
     expect(childrenAt(graph, 'CrossAccount', 'Stack')).toEqual([
-      'Prepare',
+      'Prepare-CrossAccount-Stack',
       'Deploy',
     ]);
   });
@@ -114,6 +114,47 @@ describe('blueprint with wave and stage', () => {
     ]);
   });
 
+  test('postPrepare and prepareNodes are added correctly inside stack graph', () => {
+    // GIVEN
+    const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
+
+    blueprint.waves[0].addStage(appWithExposedStacks, {
+      postPrepare: [
+        new cdkp.ManualApprovalStep('Step1'),
+        // new cdkp.ManualApprovalStep('Step2'),
+        // new cdkp.ManualApprovalStep('Step3'),
+      ],
+      // stackSteps: [
+      //   {
+      //     stack,
+      //     pre: [
+      //       new cdkp.ManualApprovalStep('Step1'),
+      //       new cdkp.ManualApprovalStep('Step2'),
+      //       new cdkp.ManualApprovalStep('Step3'),
+      //     ],
+      //     changeSet: [new cdkp.ManualApprovalStep('Manual Approval')],
+      //     post: [new cdkp.ManualApprovalStep('Post Approval')],
+      //   },
+      // ],
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint, { allPrepareNodesFirst: true }).graph;
+    // THEN
+    // console.log(childrenAt(graph, 'Wave', 'Gamma'));
+    // console.log(childrenAt(graph, 'Wave', 'Gamma', 'Stack1'));
+    expect(childrenAt(graph, 'Wave', 'Gamma')).toEqual([
+      'Prepare-Gamma-Stack1',
+      'Prepare-Gamma-Stack2',
+      'Prepare-Gamma-Stack3',
+      'Step1',
+      'Stack1',
+      'Stack2',
+      'Stack3',
+    ]);
+
+  });
+
   test('pre, changeSet, and post are added correctly inside stack graph', () => {
     // GIVEN
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
@@ -135,7 +176,7 @@ describe('blueprint with wave and stage', () => {
       'Step1',
       'Step2',
       'Step3',
-      'Prepare',
+      'Prepare-Gamma-Stack1',
       'Manual Approval',
       'Deploy',
       'Post Approval',

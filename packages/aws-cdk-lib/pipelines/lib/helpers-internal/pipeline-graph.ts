@@ -32,6 +32,12 @@ export interface PipelineGraphProps {
    * @default true
    */
   readonly prepareStep?: boolean;
+
+  /**
+   * If all "prepare" step should be placed all together as the first actions within a stage/wave
+   */
+
+  readonly allPrepareNodesFirst?: boolean;
 }
 
 /**
@@ -43,7 +49,7 @@ export class PipelineGraph {
   /**
    * A Step object that may be used as the producer of FileSets that should not be represented in the graph
    */
-  public static readonly NO_STEP: Step = new class extends Step { }('NO_STEP');
+  public static readonly NO_STEP: Step = new (class extends Step {})('NO_STEP');
 
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
@@ -54,23 +60,30 @@ export class PipelineGraph {
   private readonly assetNodesByType = new Map<AssetType, AGraphNode>();
   private readonly synthNode?: AGraphNode;
   private readonly selfMutateNode?: AGraphNode;
-  private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment>();
+  private readonly stackOutputDependencies =
+  new DependencyBuilders<StackDeployment>();
   /** Mapping steps to depbuilders, satisfied by the step itself  */
   private readonly nodeDependencies = new DependencyBuilders<Step>();
   private readonly publishTemplate: boolean;
   private readonly prepareStep: boolean;
   private readonly singlePublisher: boolean;
+  private readonly allPrepareNodesFirst: boolean;
 
   private lastPreparationNode?: AGraphNode;
   private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
-  constructor(public readonly pipeline: PipelineBase, props: PipelineGraphProps = {}) {
+  constructor(
+    public readonly pipeline: PipelineBase,
+    props: PipelineGraphProps = {},
+  ) {
     this.publishTemplate = props.publishTemplate ?? false;
     this.prepareStep = props.prepareStep ?? true;
     this.singlePublisher = props.singlePublisherPerAssetType ?? false;
 
     this.queries = new PipelineQueries(pipeline);
+
+    this.allPrepareNodesFirst = props.allPrepareNodesFirst ?? false;
 
     if (pipeline.synth instanceof Step) {
       this.synthNode = this.addBuildStep(pipeline.synth);
@@ -82,7 +95,9 @@ export class PipelineGraph {
 
     const cloudAssembly = pipeline.synth.primaryOutput?.primaryOutput;
     if (!cloudAssembly) {
-      throw new Error(`The synth step must produce the cloud assembly artifact, but doesn't: ${pipeline.synth}`);
+      throw new Error(
+        `The synth step must produce the cloud assembly artifact, but doesn't: ${pipeline.synth}`,
+      );
     }
 
     this.cloudAssemblyFileSet = cloudAssembly;
@@ -97,7 +112,7 @@ export class PipelineGraph {
       this.lastPreparationNode = this.selfMutateNode;
     }
 
-    const waves = pipeline.waves.map(w => this.addWave(w));
+    const waves = pipeline.waves.map((w) => this.addWave(w));
 
     // Make sure the waves deploy sequentially
     for (let i = 1; i < waves.length; i++) {
@@ -116,26 +131,60 @@ export class PipelineGraph {
   }
 
   private addWave(wave: Wave): AGraph {
+    if (wave.postPrepare.length > 0 && this.allPrepareNodesFirst === false) {
+      throw new Error(
+        '"postPrepare" is set, but property "allPrepareNodesFirst" is not set to "true"',
+      );
+    }
+
     // If the wave only has one Stage in it, don't add an additional Graph around it
-    const retGraph: AGraph = wave.stages.length === 1
-      ? this.addStage(wave.stages[0])
-      : Graph.of(wave.id, { type: 'group' }, wave.stages.map(s => this.addStage(s)));
+    const retGraph: AGraph =
+      wave.stages.length === 1
+        ? this.addStage(
+          wave.stages[0],
+          wave.postPrepare ?? [],
+        )
+        : Graph.of(
+          wave.id,
+          { type: 'group' },
+          wave.stages.map((s) =>
+            this.addStage(
+              s,
+              wave.postPrepare ?? [],
+            ),
+          ),
+        );
 
     this.addPrePost(wave.pre, wave.post, retGraph);
+    // this.addPostPrepare(wave.postPrepare, retGraph);
     retGraph.dependOn(this.lastPreparationNode);
     this.graph.add(retGraph);
 
     return retGraph;
   }
 
-  private addStage(stage: StageDeployment): AGraph {
+  private addStage(
+    stage: StageDeployment,
+    wavePostPrepareSteps: Step[],
+  ): AGraph {
     const retGraph: AGraph = Graph.of(stage.stageName, { type: 'group' });
-
+    const prepareNodes = new GraphNodeCollection(new Array<AGraphNode>());
     const stackGraphs = new Map<StackDeployment, AGraph>();
 
+    if (stage.postPrepare.length > 0 && this.allPrepareNodesFirst === false) {
+      throw new Error(
+        '"postPrepare" is set, but property "allPrepareNodesFirst" is not set to "true"',
+      );
+    }
+
     for (const stack of stage.stacks) {
-      const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
-      const prepareNode: AGraphNode | undefined = this.prepareStep ? aGraphNode('Prepare', { type: 'prepare', stack }) : undefined;
+      const stackGraph: AGraph = Graph.of(
+        this.simpleStackName(stack.stackName, stage.stageName),
+        { type: 'stack-group', stack },
+      );
+      const prepareNode: AGraphNode | undefined = this.prepareStep
+        ? aGraphNode('Prepare-' + stack.stackName, { type: 'prepare', stack })
+        : undefined;
       const deployNode: AGraphNode = aGraphNode('Deploy', {
         type: 'execute',
         stack,
@@ -149,8 +198,43 @@ export class PipelineGraph {
       // node or node collection that represents first point of contact in each stack
       let firstDeployNode;
       if (prepareNode) {
-        stackGraph.add(prepareNode);
-        deployNode.dependOn(prepareNode);
+        prepareNodes.nodes.push(prepareNode);
+        // retGraph.add(prepareNode);
+
+        if (this.allPrepareNodesFirst) {
+          retGraph.add(prepareNode);
+        } else {
+          stackGraph.add(prepareNode);
+
+          // this.addPostPrepare(stage.postPrepare, stackGraph);
+        }
+
+        const postPrepareNodesWave = this.addPostPrepare(
+          wavePostPrepareSteps ?? [],
+          retGraph,
+        );
+        if (postPrepareNodesWave.nodes.length > 0) {
+          for (const n of postPrepareNodesWave.nodes) {
+            deployNode.dependOn(n);
+            n.dependOn(prepareNode);
+          }
+        } else {
+          deployNode.dependOn(prepareNode);
+        }
+
+        const postPrepareNodes = this.addPostPrepare(
+          stage.postPrepare,
+          retGraph,
+        );
+        if (postPrepareNodes.nodes.length > 0) {
+          for (const n of postPrepareNodes.nodes) {
+            deployNode.dependOn(n);
+            n.dependOn(prepareNode);
+          }
+        } else {
+          deployNode.dependOn(prepareNode);
+        }
+
         firstDeployNode = prepareNode;
       } else {
         firstDeployNode = deployNode;
@@ -159,9 +243,16 @@ export class PipelineGraph {
       // add changeset steps at the stack level
       if (stack.changeSet.length > 0) {
         if (prepareNode) {
-          this.addChangeSetNode(stack.changeSet, prepareNode, deployNode, stackGraph);
+          this.addChangeSetNode(
+            stack.changeSet,
+            prepareNode,
+            deployNode,
+            stackGraph,
+          );
         } else {
-          throw new Error(`Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`);
+          throw new Error(
+            `Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`,
+          );
         }
       }
 
@@ -175,12 +266,16 @@ export class PipelineGraph {
 
       const cloudAssembly = this.cloudAssemblyFileSet;
 
-      firstDeployNode.dependOn(this.addStepNode(cloudAssembly.producer, retGraph));
+      firstDeployNode.dependOn(
+        this.addStepNode(cloudAssembly.producer, retGraph),
+      );
 
       // add the template asset
       if (this.publishTemplate) {
         if (!stack.templateAsset) {
-          throw new Error(`"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`);
+          throw new Error(
+            `"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`,
+          );
         }
 
         firstDeployNode.dependOn(this.publishAsset(stack.templateAsset));
@@ -215,16 +310,33 @@ export class PipelineGraph {
     }
 
     this.addPrePost(stage.pre, stage.post, retGraph);
-
+    // this.addPostPrepare(stage.addPostPrepare,)
+    // this.addPostPrepare(stage.postPrepare, retGraph);
     return retGraph;
   }
 
-  private addChangeSetNode(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
+  private addChangeSetNode(
+    changeSet: Step[],
+    prepareNode: AGraphNode,
+    deployNode: AGraphNode,
+    graph: AGraph,
+  ) {
     for (const c of changeSet) {
       const changeSetNode = this.addStepNode(c, graph);
       changeSetNode?.dependOn(prepareNode);
       deployNode.dependOn(changeSetNode);
     }
+  }
+
+  private addPostPrepare(postPrepare: Step[], parent: AGraph) {
+    const currentNodes = new GraphNodeCollection(parent.nodes);
+    const postPrepareNodes = new GraphNodeCollection(new Array<AGraphNode>());
+    for (const p of postPrepare) {
+      const preNode = this.addStepNode(p, parent);
+      postPrepareNodes?.dependOn(...currentNodes.nodes);
+      postPrepareNodes.nodes.push(preNode!);
+    }
+    return postPrepareNodes;
   }
 
   private addPrePost(pre: Step[], post: Step[], parent: AGraph) {
@@ -257,10 +369,14 @@ export class PipelineGraph {
    * Adds all dependencies for that Node to the same Step as well.
    */
   private addStepNode(step: Step, parent: AGraph) {
-    if (step === PipelineGraph.NO_STEP) { return undefined; }
+    if (step === PipelineGraph.NO_STEP) {
+      return undefined;
+    }
 
     const previous = this.added.get(step);
-    if (previous) { return previous; }
+    if (previous) {
+      return previous;
+    }
 
     const node: AGraphNode = aGraphNode(step.id, { type: 'step', step });
 
@@ -302,25 +418,38 @@ export class PipelineGraph {
     // May need to do this more than once to recursively add all missing producers
     let attempts = 20;
     while (attempts-- > 0) {
-      const unsatisfied = this.nodeDependencies.unsatisfiedBuilders().filter(([s]) => s !== PipelineGraph.NO_STEP);
-      if (unsatisfied.length === 0) { return; }
+      const unsatisfied = this.nodeDependencies
+        .unsatisfiedBuilders()
+        .filter(([s]) => s !== PipelineGraph.NO_STEP);
+      if (unsatisfied.length === 0) {
+        return;
+      }
 
       for (const [step, builder] of unsatisfied) {
         // Add a new node for this step to the parent of the "leftmost" consumer.
-        const leftMostConsumer = new GraphNodeCollection(builder.consumers).first();
+        const leftMostConsumer = new GraphNodeCollection(
+          builder.consumers,
+        ).first();
         const parent = leftMostConsumer.parentGraph;
         if (!parent) {
-          throw new Error(`Consumer doesn't have a parent graph: ${leftMostConsumer}`);
+          throw new Error(
+            `Consumer doesn't have a parent graph: ${leftMostConsumer}`,
+          );
         }
         this.addStepNode(step, parent);
       }
     }
 
     const unsatisfied = this.nodeDependencies.unsatisfiedBuilders();
-    throw new Error([
-      'Recursion depth too large while adding dependency nodes:',
-      unsatisfied.map(([step, builder]) => `${builder.consumersAsString()} awaiting ${step}.`),
-    ].join(' '));
+    throw new Error(
+      [
+        'Recursion depth too large while adding dependency nodes:',
+        unsatisfied.map(
+          ([step, builder]) =>
+            `${builder.consumersAsString()} awaiting ${step}.`,
+        ),
+      ].join(' '),
+    );
   }
 
   private publishAsset(stackAsset: StackAsset): AGraphNode {
@@ -330,14 +459,22 @@ export class PipelineGraph {
     if (assetNode) {
       // If there's already a node publishing this asset, add as a new publishing
       // destination to the same node.
-    } else if (this.singlePublisher && this.assetNodesByType.has(stackAsset.assetType)) {
+    } else if (
+      this.singlePublisher &&
+      this.assetNodesByType.has(stackAsset.assetType)
+    ) {
       // If we're doing a single node per type, lookup by that
       assetNode = this.assetNodesByType.get(stackAsset.assetType)!;
     } else {
       // Otherwise add a new one
-      const id = stackAsset.assetType === AssetType.FILE
-        ? (this.singlePublisher ? 'FileAsset' : `FileAsset${++this._fileAssetCtr}`)
-        : (this.singlePublisher ? 'DockerAsset' : `DockerAsset${++this._dockerAssetCtr}`);
+      const id =
+        stackAsset.assetType === AssetType.FILE
+          ? this.singlePublisher
+            ? 'FileAsset'
+            : `FileAsset${++this._fileAssetCtr}`
+          : this.singlePublisher
+            ? 'DockerAsset'
+            : `DockerAsset${++this._dockerAssetCtr}`;
 
       assetNode = aGraphNode(id, { type: 'publish-assets', assets: [] });
       assetsGraph.add(assetNode);
@@ -352,7 +489,9 @@ export class PipelineGraph {
       throw new Error(`${assetNode} has the wrong data.type: ${data?.type}`);
     }
 
-    if (!data.assets.some(a => a.assetSelector === stackAsset.assetSelector)) {
+    if (
+      !data.assets.some((a) => a.assetSelector === stackAsset.assetSelector)
+    ) {
       data.assets.push(stackAsset);
     }
 
@@ -378,8 +517,7 @@ type GraphAnnotation =
   // Explicitly disable exhaustiveness checking on GraphAnnotation.  This forces all consumers to adding
   // a 'default' clause which allows us to extend this list in the future.
   // The code below looks weird, 'type' must be a non-enumerable type that is not assignable to 'string'.
-  | { readonly type: { error: 'you must add a default case to your switch' } }
-  ;
+  | { readonly type: { error: 'you must add a default case to your switch' } };
 
 interface ExecuteAnnotation {
   readonly type: 'execute';

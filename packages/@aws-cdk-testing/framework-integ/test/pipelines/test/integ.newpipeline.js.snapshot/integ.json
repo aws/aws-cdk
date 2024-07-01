@@ -1,16 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "integ.newpipeline": {
+    "Integ/DefaultTest": {
       "stacks": [
         "PipelineStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
-  },
-  "synthContext": {
-    "@aws-cdk/core:newStyleStackSynthesis": "true"
-  },
-  "enableLookups": false
+  }
 }

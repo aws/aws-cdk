@@ -1,0 +1,53 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "PipelineWithAllPrepareNodesFirstStackProd4Stack2CBC2D372.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineWithAllPrepareNodesFirstStackProd4Stack2CBC2D372.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineWithAllPrepareNodesFirstStackProd4Stack2CBC2D372": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PipelineWithAllPrepareNodesFirstStackProd4Stack2CBC2D372.template.json",
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineWithAllPrepareNodesFirstStackProd4Stack2CBC2D372.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "Prod4-Stack2"
+      },
+      "dependencies": [
+        "PipelineWithAllPrepareNodesFirstStackProd4Stack2CBC2D372.assets"
+      ],
+      "metadata": {
+        "/PipelineWithAllPrepareNodesFirstStack/Prod4/Stack2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PipelineWithAllPrepareNodesFirstStack/Prod4/Stack2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PipelineWithAllPrepareNodesFirstStack/Prod4/Stack2"
+    }
+  }
+}

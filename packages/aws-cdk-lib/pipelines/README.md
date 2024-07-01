@@ -1,6 +1,5 @@
 # CDK Pipelines
 
-
 A construct library for painless Continuous Delivery of CDK applications.
 
 CDK Pipelines is an *opinionated construct library*. It is purpose-built to
@@ -164,9 +163,9 @@ has been bootstrapped (see below), and then execute deploying the
 Run the following commands to get the pipeline going:
 
 ```console
-$ git commit -a
-$ git push
-$ cdk deploy PipelineStack
+git commit -a
+git push
+cdk deploy PipelineStack
 ```
 
 Administrative permissions to the account are only necessary up until
@@ -566,6 +565,38 @@ class PipelineStack extends Stack {
   }
 }
 ```
+
+#### Deploying with all change sets at first
+
+Deployment is done by default with `CodePipeline` engine using change sets,
+i.e. to first create a change set and then execute it. This allows you to inject
+steps that inspect the change set and approve or reject it, but failed deployments
+are not retryable and creation of the change set costs time. The change sets tough are
+being sorted within the pipeline by its dependencies. This means that some of the change set
+might not be at the top level of a stage. Therefore there is the possibility to define, that
+every change set is set as the first action (all in parallel)
+
+The creation of change sets at the top level can be switched on by setting `allPrepareNodesFirst: true`.
+`useChangeSets` needs to be activated in order to use this feature.
+
+```ts
+declare const synth: pipelines.ShellStep;
+
+class PipelineStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+      synth,
+
+      allPrepareNodesFirst: true,
+    });
+  }
+}
+```
+
+It is further possible to add Steps in between the change sets and the deploy nodes (e.g. a manual approval step). This allows inspecting all change sets before deploying the stacks
+in the desired order.
 
 ### Validation
 
@@ -1656,7 +1687,7 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
 ```
 
 - Update all impacted stacks in the pipeline to use this new qualifier.
-See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more info.
+See <https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html> for more info.
 
 ```ts
 new Stack(this, 'MyStack', {

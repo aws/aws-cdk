@@ -1,6 +1,17 @@
 import { Match, Template } from '../../../assertions';
 import { App, Stack } from '../../../core';
-import { behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortByRunOrder, TestApp, ThreeStackApp, TwoStackApp } from '../testhelpers';
+import {
+  LegacyTestGitHubNpmPipeline,
+  ModernTestGitHubNpmPipeline,
+  OneStackApp,
+  PIPELINE_ENV,
+  TestApp,
+  ThreeStackApp,
+  TwoStackApp,
+  behavior,
+  sortByRunOrder,
+  stringLike,
+} from '../testhelpers';
 
 let app: App;
 let pipelineStack: Stack;
@@ -31,9 +42,9 @@ behavior('interdependent stacks are in the right order', (suite) => {
       Stages: Match.arrayWith([{
         Name: 'MyApp',
         Actions: sortByRunOrder([
-          Match.objectLike({ Name: 'Stack1.Prepare' }),
+          Match.objectLike({ Name: stringLike('Stack1.Prepare*') }),
           Match.objectLike({ Name: 'Stack1.Deploy' }),
-          Match.objectLike({ Name: 'Stack2.Prepare' }),
+          Match.objectLike({ Name: stringLike('Stack2.Prepare*') }),
           Match.objectLike({ Name: 'Stack2.Deploy' }),
         ]),
       }]),
@@ -58,21 +69,26 @@ behavior('multiple independent stacks go in parallel', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'MyApp',
-        Actions: sortByRunOrder([
-          // 1 and 2 in parallel
-          Match.objectLike({ Name: 'Stack1.Prepare' }),
-          Match.objectLike({ Name: 'Stack2.Prepare' }),
-          Match.objectLike({ Name: 'Stack1.Deploy' }),
-          Match.objectLike({ Name: 'Stack2.Deploy' }),
-          // Then 3
-          Match.objectLike({ Name: 'Stack3.Prepare' }),
-          Match.objectLike({ Name: 'Stack3.Deploy' }),
+    Template.fromStack(pipelineStack).hasResourceProperties(
+      'AWS::CodePipeline::Pipeline',
+      {
+        Stages: Match.arrayWith([
+          {
+            Name: 'MyApp',
+            Actions: sortByRunOrder([
+              // 1 and 2 in parallel
+              Match.objectLike({ Name: stringLike('Stack1.Prepare*') }),
+              Match.objectLike({ Name: stringLike('Stack2.Prepare*') }),
+              Match.objectLike({ Name: 'Stack1.Deploy' }),
+              Match.objectLike({ Name: 'Stack2.Deploy' }),
+              // Then 3
+              Match.objectLike({ Name: stringLike('Stack3.Prepare*') }),
+              Match.objectLike({ Name: 'Stack3.Deploy' }),
+            ]),
+          },
         ]),
-      }]),
-    });
+      },
+    );
   }
 });
 
