@@ -159,6 +159,16 @@
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
+     "BlockDeviceMappings": [
+      {
+       "DeviceName": "/dev/xvda",
+       "Ebs": {
+        "Throughput": 250,
+        "VolumeSize": 15,
+        "VolumeType": "gp3"
+       }
+      }
+     ],
      "MetadataOptions": {
       "HttpEndpoint": "enabled",
       "HttpProtocolIpv6": "enabled",

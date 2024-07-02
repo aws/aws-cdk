@@ -1543,8 +1543,8 @@ new ec2.Instance(this, 'Instance', {
 ### Block Devices
 
 To add EBS block device mappings, specify the `blockDevices` property. The following example sets the EBS-backed
-root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
-size:
+root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed GP3 device mapped to `/dev/sdm` that is 100 GiB in
+size, with the GP3-specific `throughput` option set to 250 MiB/s:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1565,7 +1565,10 @@ new ec2.Instance(this, 'Instance', {
     },
     {
       deviceName: '/dev/sdm',
-      volume: ec2.BlockDeviceVolume.ebs(100),
+      volume: ec2.BlockDeviceVolume.ebs(100, {
+        volumeType: ec2.EbsDeviceVolumeType.GP3,
+        throughput: 250,
+      }),
     },
   ],
 });
