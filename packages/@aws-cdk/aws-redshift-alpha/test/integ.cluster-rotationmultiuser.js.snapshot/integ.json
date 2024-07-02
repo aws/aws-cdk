@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ClusterMultiUserRotationInteg/DefaultTest": {
+      "stacks": [
+        "redshift-cluster-rotationmultiuser-integ"
+      ],
+      "assertionStack": "ClusterMultiUserRotationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterMultiUserRotationIntegDefaultTestDeployAssert9A5C1D17"
+    }
+  }
+}

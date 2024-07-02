@@ -11,11 +11,12 @@ describe('cluster user', () => {
   let cluster: redshift.ICluster;
   const databaseName = 'databaseName';
   let databaseOptions: redshift.DatabaseOptions;
+  let databaseOptionsWithAdminUser: redshift.DatabaseOptions;
 
   beforeEach(() => {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
-    cluster = new redshift.Cluster(stack, 'Cluster', {
+    const clusterImpl = new redshift.Cluster(stack, 'Cluster', {
       vpc: vpc,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC,
@@ -25,9 +26,14 @@ describe('cluster user', () => {
       },
       publiclyAccessible: true,
     });
+    cluster = clusterImpl;
     databaseOptions = {
       cluster,
       databaseName,
+    };
+    databaseOptionsWithAdminUser = {
+      ...databaseOptions,
+      adminUser: clusterImpl.secret,
     };
   });
 
@@ -55,6 +61,30 @@ describe('cluster user', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         SecretStringTemplate: `{"username":"${cdk.Names.uniqueId(user).toLowerCase()}"}`,
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::SecretTargetAttachment', {
+      SecretId: { Ref: 'UserSecretE2C04A69' },
+    });
+  });
+
+  it('creates database secret with admin user secret', () => {
+    const user = new redshift.User(stack, 'User', databaseOptionsWithAdminUser);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: {
+          'Fn::Join': [
+            '',
+            [
+              `{"username":"${cdk.Names.uniqueId(user).toLowerCase()}","masterarn":"`,
+              {
+                Ref: 'ClusterSecretAttachment769E6258',
+              },
+              '"}',
+            ],
+          ],
+        },
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::SecretTargetAttachment', {
