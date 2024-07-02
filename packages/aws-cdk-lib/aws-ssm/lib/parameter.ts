@@ -469,6 +469,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     return this.fromStringParameterAttributes(scope, id, { parameterName: stringParameterName });
   }
 
+  /**
+   * Imports an external string parameter by ARN.
+   */
   public static fromStringParameterArn(scope: Construct, id: string, stringParameterArn: string): IStringParameter {
     if (Token.isUnresolved(stringParameterArn)) {
       throw new Error('stringParameterArn cannot be an unresolved token');
