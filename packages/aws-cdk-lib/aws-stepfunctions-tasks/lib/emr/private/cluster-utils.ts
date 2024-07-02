@@ -59,6 +59,17 @@ export function ApplicationConfigPropertyToJson(property: EmrCreateCluster.Appli
 }
 
 /**
+ * Render the AutoTerminationPolicyProperty as JSON
+ *
+ * @param property
+ */
+export function AutoTerminationPolicyPropertyToJson(property: EmrCreateCluster.AutoTerminationPolicyProperty) {
+  return {
+    IdleTimeout: cdk.numberToCloudFormation(property.idleTimeout.toSeconds()),
+  };
+}
+
+/**
  * Render the ConfigurationProperty as JSON
  *
  * @param property
