@@ -2,6 +2,7 @@ import { TagType } from './cfn-resource';
 import { CfnTag } from './cfn-tag';
 import { Lazy } from './lazy';
 import { IResolvable } from './resolvable';
+import { Token } from './token';
 
 const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
 
@@ -361,6 +362,9 @@ export class TagManager {
   public setTag(key: string, value: string, priority = 0, applyToLaunchedInstances = true): void {
     // This method mostly exists because we don't want to expose the 'Tag' type used (it will be confusing
     // to users).
+    if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
+      throw new Error(`Stack tags cannot include unresolved tokens, found a tag with key '${key}' and value '${value}'`);
+    }
     this._setTag({ key, value, priority, applyToLaunchedInstances });
   }
 
