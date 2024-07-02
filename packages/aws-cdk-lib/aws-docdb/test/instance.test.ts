@@ -138,7 +138,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            ':rds:us-test-1:12345:db:',
+            ':rds:us-test-1:123456789012:db:',
             { Ref: 'InstanceC1063A87' },
           ],
         ],
@@ -181,7 +181,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            `:rds:us-test-1:12345:db:${instanceIdentifier}`,
+            `:rds:us-test-1:123456789012:db:${instanceIdentifier}`,
           ],
         ],
       },
@@ -221,7 +221,7 @@ class TestStack extends cdk.Stack {
   constructor(scope?: constructs.Construct, id?: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    this.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+    this.node.setContext('availability-zones:123456789012:us-test-1', ['us-test-1a', 'us-test-1b']);
 
     this.vpc = new ec2.Vpc(this, 'VPC');
     this.cluster = new DatabaseCluster(this, 'Database', {
@@ -236,6 +236,6 @@ class TestStack extends cdk.Stack {
 }
 
 function testStack() {
-  const stack = new TestStack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
+  const stack = new TestStack(undefined, undefined, { env: { account: '123456789012', region: 'us-test-1' } });
   return stack;
 }

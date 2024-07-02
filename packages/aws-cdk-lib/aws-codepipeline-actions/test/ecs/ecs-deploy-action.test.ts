@@ -193,7 +193,7 @@ describe('ecs deploy action', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'PipelineStack', {
         env: {
-          region: 'pipeline-region', account: 'pipeline-account',
+          region: 'pipeline-region', account: '123456789012',
         },
       });
       const clusterName = 'cluster-name';

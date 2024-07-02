@@ -534,13 +534,13 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {});
+      await toolkit.bootstrap(['aws://234567890123/south-pole'], bootstrapper, {});
 
       // THEN
       expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
-        account: '56789',
+        account: '234567890123',
         region: 'south-pole',
-        name: 'aws://56789/south-pole',
+        name: 'aws://234567890123/south-pole',
       }, expect.anything(), expect.anything());
       expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
     });

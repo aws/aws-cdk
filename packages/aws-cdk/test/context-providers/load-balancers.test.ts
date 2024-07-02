@@ -183,7 +183,7 @@ describe('load balancer context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerArn: 'arn:load-balancer1',
@@ -236,7 +236,7 @@ describe('load balancer context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerTags: [
@@ -267,7 +267,7 @@ describe('load balancer context provider plugin', () => {
 
     // WHEN
     const result = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerArn: 'arn:load-balancer1',
@@ -327,7 +327,7 @@ describe('load balancer context provider plugin', () => {
 
     // WHEN
     const result = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [
@@ -379,7 +379,7 @@ describe('load balancer context provider plugin', () => {
 
     // WHEN
     const loadBalancer = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerTags: [{ key: 'some', value: 'tag' }],
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
@@ -401,7 +401,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -433,7 +433,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerArn: 'arn:load-balancer',
@@ -487,7 +487,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -522,7 +522,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       listenerArn: 'arn:listener-arn',
@@ -561,7 +561,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerArn: 'arn:load-balancer-arn1',
@@ -627,7 +627,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [
@@ -742,7 +742,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -800,7 +800,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,
       loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -840,7 +840,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.NETWORK,
         listenerArn: 'arn:listener-arn1',

@@ -259,7 +259,7 @@ describe('rule', () => {
 
     const rule = new Rule(stack, 'MyRule');
     rule.addEventPattern({
-      account: ['12345'],
+      account: ['123456789012'],
       detail: {
         foo: ['hello', 'bar', 'hello'],
       },
@@ -282,7 +282,7 @@ describe('rule', () => {
           'Properties': {
             'EventPattern': {
               'account': [
-                '12345',
+                '123456789012',
               ],
               'detail': {
                 'foo': [

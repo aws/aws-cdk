@@ -31,7 +31,7 @@ test('looks up the requested Key - single result', async () => {
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     aliasName: 'alias/foo',
   });
@@ -68,7 +68,7 @@ test('looks up the requested Key - multiple results', async () => {
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     aliasName: 'alias/foo',
   });
@@ -125,7 +125,7 @@ test('looks up the requested Key - multiple results with pagination', async () =
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     aliasName: 'alias/foo',
   });
@@ -148,7 +148,7 @@ test('throw exception - no key found', async () => {
 
   // WHEN
   await expect(provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     aliasName: 'alias/foo',
   })).rejects.toThrow(/Could not find any key with alias named/);

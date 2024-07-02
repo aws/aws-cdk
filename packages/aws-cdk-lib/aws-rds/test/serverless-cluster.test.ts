@@ -620,7 +620,7 @@ describe('serverless cluster', () => {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
-        ':rds:us-test-1:12345:cluster:',
+        ':rds:us-test-1:123456789012:cluster:',
         { Ref: 'DatabaseB269D8BB' },
       ]],
     });
@@ -988,7 +988,7 @@ describe('serverless cluster', () => {
 });
 
 function testStack(app?: cdk.App, id?: string): cdk.Stack {
-  const stack = new cdk.Stack(app, id, { env: { account: '12345', region: 'us-test-1' } });
-  stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  const stack = new cdk.Stack(app, id, { env: { account: '123456789012', region: 'us-test-1' } });
+  stack.node.setContext('availability-zones:123456789012:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

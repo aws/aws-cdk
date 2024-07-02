@@ -2118,11 +2118,11 @@ test.each([
 describe('cross-account instance', () => {
   test.each([
     ['MyInstance', 'MyInstance', 'myinstance'],
-    ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba83756a6dfc7154'],
+    ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba832991dc808c38'],
   ])("with database identifier '%s' can be referenced from a Stack in a different account", (_, providedInstanceId, expectedInstanceId) => {
     const app = new cdk.App();
     const instanceStack = new cdk.Stack(app, 'InstanceStack', {
-      env: { account: '123', region: 'my-region' },
+      env: { account: '123456789012', region: 'my-region' },
     });
     const instance = new rds.DatabaseInstance(instanceStack, 'Instance', {
       vpc: new ec2.Vpc(instanceStack, 'Vpc'),
@@ -2148,7 +2148,7 @@ describe('cross-account instance', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              `:rds:my-region:123:db:${expectedInstanceId}`,
+              `:rds:my-region:123456789012:db:${expectedInstanceId}`,
             ]],
           },
         },

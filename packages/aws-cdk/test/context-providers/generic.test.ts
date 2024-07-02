@@ -20,7 +20,7 @@ test('errors are reported into the context value', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: { account: '1234', region: 'us-east-1' }, provider: TEST_PROVIDER },
+    { key: 'asdf', props: { account: '123456789012', region: 'us-east-1' }, provider: TEST_PROVIDER },
   ], context, mockSDK);
 
   // THEN - error is now in context
@@ -52,7 +52,7 @@ test('lookup role ARN is resolved', async () => {
     {
       key: 'asdf',
       props: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         lookupRoleArn: 'arn:${AWS::Partition}:iam::280619947791:role/cdk-hnb659fds-lookup-role-280619947791-us-east-1',
       },
@@ -75,7 +75,7 @@ test('errors are marked transient', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: { account: '1234', region: 'us-east-1' }, provider: TEST_PROVIDER },
+    { key: 'asdf', props: { account: '123456789012', region: 'us-east-1' }, provider: TEST_PROVIDER },
   ], context, mockSDK);
 
   // THEN - error is marked transient
@@ -96,7 +96,7 @@ test('context provider can be registered using PluginHost', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: { account: '1234', region: 'us-east-1', pluginName: 'prov' }, provider: PLUGIN_PROVIDER },
+    { key: 'asdf', props: { account: '123456789012', region: 'us-east-1', pluginName: 'prov' }, provider: PLUGIN_PROVIDER },
   ], context, mockSDK);
 
   // THEN - error is marked transient

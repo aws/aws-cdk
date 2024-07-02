@@ -8,7 +8,7 @@ import { App, AppProps, Environment, CfnOutput, Stage, StageProps, Stack, StackP
 import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
-  account: '123pipeline',
+  account: '123456789012',
   region: 'us-pipeline',
 };
 

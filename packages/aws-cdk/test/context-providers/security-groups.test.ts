@@ -27,7 +27,7 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         securityGroupId: 'sg-1234',
       }),
@@ -65,7 +65,7 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       securityGroupId: 'sg-1234',
     });
@@ -114,7 +114,7 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       securityGroupId: 'sg-1234',
       vpcId: 'vpc-1234567',
@@ -163,7 +163,7 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       securityGroupName: 'my-security-group',
     });
@@ -215,7 +215,7 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       securityGroupName: 'my-security-group',
       vpcId: 'vpc-1234567',
@@ -251,7 +251,7 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       securityGroupId: 'sg-1234',
     });
@@ -297,7 +297,7 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         securityGroupId: 'sg-1234',
       }),
@@ -311,7 +311,7 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         securityGroupId: 'sg-1234',
         securityGroupName: 'my-security-group',
@@ -326,7 +326,7 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       }),
     ).rejects.toThrow(/\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group/i);

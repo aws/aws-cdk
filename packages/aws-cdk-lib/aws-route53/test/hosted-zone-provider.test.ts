@@ -7,7 +7,7 @@ describe('hosted zone provider', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' },
+        env: { account: '123456789012', region: 'us-east-1' },
       });
       const filter = { domainName: 'test.com' };
 
@@ -30,7 +30,7 @@ describe('hosted zone provider', () => {
       };
 
       const stack2 = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' },
+        env: { account: '123456789012', region: 'us-east-1' },
       });
       stack2.node.setContext(missing[0].key, fakeZone);
 
@@ -45,7 +45,7 @@ describe('hosted zone provider', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' },
+        env: { account: '123456789012', region: 'us-east-1' },
       });
       const filter = { domainName: 'test.com' };
 
@@ -68,7 +68,7 @@ describe('hosted zone provider', () => {
       };
 
       const stack2 = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '12345', region: 'us-east-1' },
+        env: { account: '123456789012', region: 'us-east-1' },
       });
       stack2.node.setContext(missing[0].key, fakeZone);
 
