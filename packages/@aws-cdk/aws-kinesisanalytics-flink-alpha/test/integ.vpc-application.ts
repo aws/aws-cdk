@@ -10,7 +10,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 new flink.Application(stack, 'App', {
   code: flink.ApplicationCode.fromAsset(path.join(__dirname, 'code-asset')),
-  runtime: flink.Runtime.FLINK_1_18,
+  runtime: flink.Runtime.FLINK_1_19,
   vpc,
 });
 
