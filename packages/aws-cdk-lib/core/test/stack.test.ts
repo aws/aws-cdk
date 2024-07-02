@@ -1370,47 +1370,8 @@ describe('stack', () => {
 
     // THEN - producers are the same
     expect(() => {
-      resourceM.overrideLogicalId('OVERRIDELOGICALID');
+      resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
     }).toThrow(/The logicalId for resource at path Producer\/ResourceXXX has been locked and cannot be overridden/);
-  });
-
-  test('throw error if overrideLogicalId contains non-alphanumeric characters', () => {
-    // GIVEN: manual
-    const appM = new App();
-    const producerM = new Stack(appM, 'Producer');
-    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
-
-    // THEN - producers are the same
-    expect(() => {
-      resourceM.overrideLogicalId('INVALID_LOGICAL_ID');
-    }).toThrow(/must only contain alphanumeric characters/);
-  });
-
-  test('throw error if overrideLogicalId is over 255 characters', () => {
-    // GIVEN: manual
-    const appM = new App();
-    const producerM = new Stack(appM, 'Producer');
-    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
-
-    // THEN - producers are the same
-    expect(() => {
-      resourceM.overrideLogicalId(
-        // 256 character long string of "aaaa..."
-        Array(256).fill('a').join(''),
-      );
-    }).toThrow(/must be at most 255 characters long, got 256 characters/);
-  });
-
-  test('throw error if overrideLogicalId is an empty string', () => {
-    // GIVEN: manual
-    const appM = new App();
-    const producerM = new Stack(appM, 'Producer');
-    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
-
-    // THEN - producers are the same
-    expect(() => {
-      resourceM.overrideLogicalId('');
-    }).toThrow('Cannot set an empty logical ID');
   });
 
   test('do not throw error if overrideLogicalId is used and logicalId is not locked', () => {
@@ -1420,59 +1381,26 @@ describe('stack', () => {
     const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
 
     // THEN - producers are the same
-    resourceM.overrideLogicalId('OVERRIDELOGICALID');
+    resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
     producerM.exportValue(resourceM.getAtt('Att'));
 
     const template = appM.synth().getStackByName(producerM.stackName).template;
     expect(template).toMatchObject({
       Outputs: {
-        ExportsOutputFnGetAttOVERRIDELOGICALIDAtt76AC816F: {
+        ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019: {
           Export: {
-            Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt76AC816F',
+            Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019',
           },
           Value: {
             'Fn::GetAtt': [
-              'OVERRIDELOGICALID',
+              'OVERRIDE_LOGICAL_ID',
               'Att',
             ],
           },
         },
       },
       Resources: {
-        OVERRIDELOGICALID: {
-          Type: 'AWS::Resource',
-        },
-      },
-    });
-  });
-
-  test('do not throw if overrideLogicalId is unresolved', () => {
-    // GIVEN: manual
-    const appM = new App();
-    const producerM = new Stack(appM, 'Producer');
-    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
-
-    // THEN - producers are the same
-    resourceM.overrideLogicalId(Lazy.string({ produce: () => 'INVALID_LOGICAL_ID' }));
-    producerM.exportValue(resourceM.getAtt('Att'));
-
-    const template = appM.synth().getStackByName(producerM.stackName).template;
-    expect(template).toMatchObject({
-      Outputs: {
-        ExportsOutputFnGetAttINVALIDLOGICALIDAtt6CB9E5B9: {
-          Export: {
-            Name: 'Producer:ExportsOutputFnGetAttINVALIDLOGICALIDAtt6CB9E5B9',
-          },
-          Value: {
-            'Fn::GetAtt': [
-              'INVALID_LOGICAL_ID',
-              'Att',
-            ],
-          },
-        },
-      },
-      Resources: {
-        INVALID_LOGICAL_ID: {
+        OVERRIDE_LOGICAL_ID: {
           Type: 'AWS::Resource',
         },
       },
