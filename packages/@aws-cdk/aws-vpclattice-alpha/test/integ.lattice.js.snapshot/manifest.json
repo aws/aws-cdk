@@ -1,0 +1,501 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "ServiceNetwork.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ServiceNetwork.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ServiceNetwork": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ServiceNetwork.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2448c46722751a1f236d57d0a10ca4109704d3bc2200a4673ab81b40619059fb.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ServiceNetwork.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ServiceNetwork.assets"
+      ],
+      "metadata": {
+        "/ServiceNetwork/supportresources/VPC1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC18839F4CE"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet1Subnet8B1DC710"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet1RouteTableB8941B9C"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet1RouteTableAssociationA020707E"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet1DefaultRoute914CAD15"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet2SubnetCCD4BCCB"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet2RouteTable8A7AE7EC"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet2RouteTableAssociation11A8011F"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1PublicSubnet2DefaultRouteCD671524"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1IsolatedSubnet1Subnet5EBC89AB"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1IsolatedSubnet1RouteTableAB36A6C5"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1IsolatedSubnet1RouteTableAssociation554AB7C2"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1IsolatedSubnet2Subnet9810FE1A"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1IsolatedSubnet2RouteTable8878A7AC"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1IsolatedSubnet2RouteTableAssociation2FCFEFB3"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1IGWCA6B77AA"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1VPCGWC673247F"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC1/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC1RestrictDefaultSecurityGroupCustomResourceAC31AEEA"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2422D6D3C"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet1SubnetCF10E696"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet1RouteTableE0042590"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet1RouteTableAssociationFA92A094"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet1DefaultRoute61464EE9"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet2Subnet66DF954E"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet2RouteTable171505D5"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet2RouteTableAssociation02E48837"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2PublicSubnet2DefaultRoute30FCB267"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2IsolatedSubnet1Subnet9158D0D0"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2IsolatedSubnet1RouteTable0564697B"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2IsolatedSubnet1RouteTableAssociation924926F4"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2IsolatedSubnet2Subnet76FC46B7"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2IsolatedSubnet2RouteTableE11CE090"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2IsolatedSubnet2RouteTableAssociation8551E3E6"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2IGWF3C0577A"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2VPCGW96F29950"
+          }
+        ],
+        "/ServiceNetwork/supportresources/VPC2/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesVPC2RestrictDefaultSecurityGroupCustomResource9177A5C5"
+          }
+        ],
+        "/ServiceNetwork/supportresources/helloRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourceshelloRole5ADF3862"
+          }
+        ],
+        "/ServiceNetwork/supportresources/helloRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourceshelloRoleDefaultPolicyE0D968C9"
+          }
+        ],
+        "/ServiceNetwork/supportresources/checkRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcescheckRoleEC7B26D5"
+          }
+        ],
+        "/ServiceNetwork/supportresources/checkRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcescheckRoleDefaultPolicy5FCF6FFE"
+          }
+        ],
+        "/ServiceNetwork/supportresources/Helloworld/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesHelloworld33AB6114"
+          }
+        ],
+        "/ServiceNetwork/supportresources/Goodbye/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "supportresourcesGoodbye40E30F7A"
+          }
+        ],
+        "/ServiceNetwork/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/ServiceNetwork/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/ServiceNetwork/myLatticeService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myLatticeServiceB48AE2A4"
+          }
+        ],
+        "/ServiceNetwork/myLatticeService/getOrgId": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
+          }
+        ],
+        "/ServiceNetwork/myLatticeService/getOrgId/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myLatticeServicegetOrgIdA7E4A3CD"
+          }
+        ],
+        "/ServiceNetwork/myLatticeService/getOrgId/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myLatticeServicegetOrgIdCustomResourcePolicy39F918AC"
+          }
+        ],
+        "/ServiceNetwork/myLatticeService/ServiceAuthPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myLatticeServiceServiceAuthPolicy11FE73CA"
+          }
+        ],
+        "/ServiceNetwork/DefaultCrNodeVersionMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultCrNodeVersionMap"
+          }
+        ],
+        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/ServiceNetwork/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/ServiceNetwork/myListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myListener5A585B50"
+          }
+        ],
+        "/ServiceNetwork/myListener/rule1-Rule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myListenerrule1RuleD6C7DEE9"
+          }
+        ],
+        "/ServiceNetwork/myListener/rule2-Rule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myListenerrule2Rule8ACEA5A3"
+          }
+        ],
+        "/ServiceNetwork/myListener/rule3-Rule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myListenerrule3Rule792B157E"
+          }
+        ],
+        "/ServiceNetwork/lambdatargetsHello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdatargetsHello2848EB94"
+          }
+        ],
+        "/ServiceNetwork/lambdatargetsGoodbye/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdatargetsGoodbye101C963F"
+          }
+        ],
+        "/ServiceNetwork/lambdatargetsGoodbye3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdatargetsGoodbye3A0FDBCC2"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetwork096BE615"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/AssociateVPCc828b31996782a89ad0d8eb64c5e667267406c5deb/ServiceNetworkSecurityGroupc8dd26e85e459a6f20ef5ed85aa08802d7c373d01b/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkAssociateVPCc828b31996782a89ad0d8eb64c5e667267406c5debServiceNetworkSecurityGroupc8dd26e85e459a6f20ef5ed85aa08802d7c373d01bFAB84352"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/AssociateVPCc828b31996782a89ad0d8eb64c5e667267406c5deb/VpcAssociationc8dd26e85e459a6f20ef5ed85aa08802d7c373d01b": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkAssociateVPCc828b31996782a89ad0d8eb64c5e667267406c5debVpcAssociationc8dd26e85e459a6f20ef5ed85aa08802d7c373d01b318F5F6B"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/AssociateVPCc8fce2581f0d4a81ec49720563203d212b420ac491/ServiceNetworkSecurityGroupc8bf1a957d89895bb3925c63487c8651c126c8b944/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkAssociateVPCc8fce2581f0d4a81ec49720563203d212b420ac491ServiceNetworkSecurityGroupc8bf1a957d89895bb3925c63487c8651c126c8b94489726640"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/AssociateVPCc8fce2581f0d4a81ec49720563203d212b420ac491/VpcAssociationc8bf1a957d89895bb3925c63487c8651c126c8b944": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkAssociateVPCc8fce2581f0d4a81ec49720563203d212b420ac491VpcAssociationc8bf1a957d89895bb3925c63487c8651c126c8b944B7AE391A"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/ServiceAssociationc8d3a05f1dfe56d6abf5f40dc9e25b78a42a3c6c94/LatticeServicec85bc3ba081d155be21f5efdc66365136968a57d16": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkServiceAssociationc8d3a05f1dfe56d6abf5f40dc9e25b78a42a3c6c94LatticeServicec85bc3ba081d155be21f5efdc66365136968a57d16DB2C09FB"
+          }
+        ],
+        "/ServiceNetwork/LatticeServiceNetwork/AuthPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatticeServiceNetworkAuthPolicy2788B62F"
+          }
+        ],
+        "/ServiceNetwork/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ServiceNetwork/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ServiceNetwork"
+    },
+    "vpcLatticeTestStackIntegDefaultTestDeployAssertB4F53850.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "vpcLatticeTestStackIntegDefaultTestDeployAssertB4F53850.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "vpcLatticeTestStackIntegDefaultTestDeployAssertB4F53850": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "vpcLatticeTestStackIntegDefaultTestDeployAssertB4F53850.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "vpcLatticeTestStackIntegDefaultTestDeployAssertB4F53850.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "vpcLatticeTestStackIntegDefaultTestDeployAssertB4F53850.assets"
+      ],
+      "metadata": {
+        "/vpcLatticeTestStackInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/vpcLatticeTestStackInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "vpcLatticeTestStackInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
