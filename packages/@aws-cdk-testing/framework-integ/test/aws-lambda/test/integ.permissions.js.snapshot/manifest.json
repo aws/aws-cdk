@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "lambda-permissions.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a7337dac9cfd962c6206c10044011cbcfe4c604459c5eada3df438eb578f341.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1a743b710c7ecd428918f2c36c87ccee4561ad5e3b7ea92c07269338e7baaddf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,6 +76,12 @@
             "data": "MyLambdaInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU41318F58"
           }
         ],
+        "/lambda-permissions/MyLambda/InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaInvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPIBE1EB3A4"
+          }
+        ],
         "/lambda-permissions/MyRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -88,6 +94,12 @@
             "data": "MyRoleDefaultPolicyA36BE1DD"
           }
         ],
+        "/lambda-permissions/v1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "v192FF9954"
+          }
+        ],
         "/lambda-permissions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -98,15 +110,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "MyLambdaInvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE95D85164": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaInvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE95D85164",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
