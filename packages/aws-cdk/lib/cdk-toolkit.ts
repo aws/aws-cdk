@@ -6,7 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { DeploymentMethod } from './api';
+import { DeploymentMethod, StackNotFoundError } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
@@ -620,8 +620,12 @@ export class CdkToolkit {
         });
         success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
       } catch (e) {
-        error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.displayName), e);
-        throw e;
+        if (e instanceof StackNotFoundError) {
+          error(`\n ❌  %s: ${action} skipped`, chalk.blue(stack.displayName), e);
+        } else {
+          error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.displayName), e);
+          throw e;
+        }
       }
     }
   }

@@ -63,7 +63,7 @@ import * as fs from 'fs-extra';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { DeployStackResult } from '../lib/api/deploy-stack';
+import { DeployStackResult, StackNotFoundError } from '../lib/api/deploy-stack';
 import { Deployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
@@ -591,14 +591,36 @@ describe('destroy', () => {
   test('destroy correct stack', async () => {
     const toolkit = defaultToolkitSetup();
 
-    await expect(() => {
-      return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
-        exclusively: true,
-        force: true,
-        fromDeploy: true,
-      });
-    }).resolves;
+    expect(toolkit.destroy({
+      selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    })).resolves;
+  });
+
+  test('destroy keeps running when one of the stacks is not deployed', async () => {
+    const toolkit = defaultToolkitSetup();
+    jest.spyOn(FakeCloudFormation.prototype, 'destroyStack').mockImplementationOnce(() => Promise.reject(new StackNotFoundError('')));
+
+    expect(toolkit.destroy({
+      selector: { patterns: ['Test-Stack-A', 'Test-Stack-B', 'Test-Stack-C'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    })).resolves;
+  });
+
+  test('destroy stops if actual error occurs', async () => {
+    const toolkit = defaultToolkitSetup();
+    jest.spyOn(FakeCloudFormation.prototype, 'destroyStack').mockImplementationOnce(() => Promise.reject(new Error('Some error')));
+
+    await expect(toolkit.destroy({
+      selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    })).rejects.toThrow('Some error');
   });
 });
 
