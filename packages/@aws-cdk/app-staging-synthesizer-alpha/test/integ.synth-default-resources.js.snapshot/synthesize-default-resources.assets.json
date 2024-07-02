@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "37.0.0",
   "files": {
     "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4": {
+    "f8f281289f79da2c3a0b6831ce6cb7c7f701b0083d846e3820a1847793b668d1": {
       "source": {
         "path": "synthesize-default-resources.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "deploy-time/60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4.json",
+          "objectKey": "deploy-time/f8f281289f79da2c3a0b6831ce6cb7c7f701b0083d846e3820a1847793b668d1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-file-role-${AWS::Region}"
         }
       }

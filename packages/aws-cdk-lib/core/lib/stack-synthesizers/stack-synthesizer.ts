@@ -255,6 +255,13 @@ export interface SynthesizeStackArtifactOptions {
   readonly lookupRole?: cxschema.BootstrapRole;
 
   /**
+   * The role that needs to be assumed to perform operations on the changeset other than execution
+   *
+   * @default - None
+   */
+  readonly changesetRole?: cxschema.BootstrapRole;
+
+  /**
    * If the stack template has already been included in the asset manifest, its asset URL
    *
    * @default - Not uploaded yet, upload just before deploying

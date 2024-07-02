@@ -370,6 +370,10 @@
                     "description": "The role to use to look up values from the target AWS account (Default - No role is assumed (current credentials are used))",
                     "$ref": "#/definitions/BootstrapRole"
                 },
+                "changesetRole": {
+                    "description": "The role that needs to be assumed to perform operations on the changeset other than execution (Default - No role is assumed (current credentials are used))",
+                    "$ref": "#/definitions/BootstrapRole"
+                },
                 "stackTemplateAssetObjectUrl": {
                     "description": "If the stack template has already been included in the asset manifest, its asset URL (Default - Not uploaded yet, upload just before deploying)",
                     "type": "string"

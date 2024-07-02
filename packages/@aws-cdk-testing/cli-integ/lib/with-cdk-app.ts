@@ -620,7 +620,9 @@ export async function installNpmPackages(fixture: TestFixture, packages: Record<
   }, undefined, 2), { encoding: 'utf-8' });
 
   // Now install that `package.json` using NPM7
-  await fixture.shell(['node', require.resolve('npm'), 'install']);
+  const isRepoMode = !!process.env.REPO_ROOT;
+  const npmPath = isRepoMode ? path.join(__dirname, 'package-sources/repo-tools/npm') : require.resolve('npm');
+  await fixture.shell(['node', npmPath, 'install']);
 }
 
 const ALREADY_BOOTSTRAPPED_IN_THIS_RUN = new Set();

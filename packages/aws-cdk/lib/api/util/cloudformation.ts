@@ -331,7 +331,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
 
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
-    const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+    const preparedSdk = (await options.deployments.prepareSdkWithChangesetOrDeployRole(options.stack));
     const bodyParameter = await makeBodyParameterAndUpload(
       options.stack,
       preparedSdk.resolvedEnvironment,
@@ -342,7 +342,6 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
     const cfn = preparedSdk.stackSdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-    const executionRoleArn = preparedSdk.cloudFormationRoleArn;
     options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
 
     return await createChangeSet({
@@ -355,7 +354,6 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       bodyParameter,
       parameters: options.parameters,
       resourcesToImport: options.resourcesToImport,
-      role: executionRoleArn,
     });
   } catch (e: any) {
     debug(e.message);
@@ -383,7 +381,6 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
     TemplateBody: options.bodyParameter.TemplateBody,
     Parameters: stackParams.apiParameters,
     ResourcesToImport: options.resourcesToImport,
-    RoleARN: options.role,
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
   }).promise();
 

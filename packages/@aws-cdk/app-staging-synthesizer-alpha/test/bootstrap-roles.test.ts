@@ -8,6 +8,7 @@ import { AppStagingSynthesizer, BootstrapRole, DeploymentIdentities } from '../l
 const CLOUDFORMATION_EXECUTION_ROLE = 'cloudformation-execution-role';
 const DEPLOY_ACTION_ROLE = 'deploy-action-role';
 const LOOKUP_ROLE = 'lookup-role';
+const CHANG_SET_ROLE = 'changeset-role';
 
 describe('Boostrap Roles', () => {
   test('default bootstrap role name is always under 64 characters', () => {
@@ -48,6 +49,7 @@ describe('Boostrap Roles', () => {
           cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
           lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
           deploymentRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
+          changesetRole: BootstrapRole.fromRoleArn(CHANG_SET_ROLE),
         }),
         stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       }),
@@ -72,6 +74,7 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual(CLOUDFORMATION_EXECUTION_ROLE);
     expect(stackArtifact.lookupRole).toEqual({ arn: LOOKUP_ROLE });
     expect(stackArtifact.assumeRoleArn).toEqual(DEPLOY_ACTION_ROLE);
+    expect(stackArtifact.changesetRole).toEqual({ arn: CHANG_SET_ROLE });
   });
 
   test('can request other bootstrap region', () => {
@@ -93,6 +96,7 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-cfn-exec-role-000000000000-us-west-2');
     expect(stackArtifact.lookupRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-lookup-role-000000000000-us-west-2' });
     expect(stackArtifact.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-deploy-role-000000000000-us-west-2');
+    expect(stackArtifact.changesetRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-cfn-changeset-review-role-000000000000-us-west-2' });
   });
 
   test('can request other qualifier', () => {
@@ -115,6 +119,7 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-cfn-exec-role-000000000000-us-west-2');
     expect(stackArtifact.lookupRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-lookup-role-000000000000-us-west-2' });
     expect(stackArtifact.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-deploy-role-000000000000-us-west-2');
+    expect(stackArtifact.changesetRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-cfn-changeset-review-role-000000000000-us-west-2' });
   });
 
   test('can supply existing arn for bucket staging role', () => {
@@ -210,6 +215,7 @@ describe('Boostrap Roles', () => {
     expect(stackArtifact.cloudFormationExecutionRoleArn).toBeUndefined();
     expect(stackArtifact.lookupRole).toBeUndefined();
     expect(stackArtifact.assumeRoleArn).toBeUndefined();
+    expect(stackArtifact.changesetRole).toBeUndefined();
   });
 
   test('qualifier is resolved in the synthesizer', () => {
