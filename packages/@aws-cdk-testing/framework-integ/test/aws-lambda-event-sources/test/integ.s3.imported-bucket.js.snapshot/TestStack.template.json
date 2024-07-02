@@ -9,7 +9,7 @@
       "Arn"
      ]
     },
-    "BucketName": "cdk-integration-test-s3imported-bucket-name",
+    "BucketName": "cdk-integration-test-s3-imported-bucket-name",
     "NotificationConfiguration": {
      "LambdaFunctionConfigurations": [
       {
@@ -53,7 +53,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":s3:::cdk-integration-test-s3imported-bucket-name"
+       ":s3:::cdk-integration-test-s3-imported-bucket-name"
       ]
      ]
     }
