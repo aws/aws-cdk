@@ -576,6 +576,10 @@
                             "type": "string"
                         }
                     }
+                },
+                "additionalCacheKey": {
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
+                    "type": "string"
                 }
             },
             "required": [
@@ -704,6 +708,10 @@
                 "returnVpnGateways": {
                     "description": "Whether to populate the `vpnGatewayId` field of the `VpcContextResponse`,\nwhich contains the VPN Gateway ID, if one exists. You can explicitly\ndisable this in order to avoid the lookup if you know the VPC does not have\na VPN Gatway attached. (Default true)",
                     "type": "boolean"
+                },
+                "additionalCacheKey": {
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
+                    "type": "string"
                 }
             },
             "required": [
@@ -753,6 +761,10 @@
                 },
                 "lookupRoleArn": {
                     "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
+                    "type": "string"
+                },
+                "additionalCacheKey": {
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
                     "type": "string"
                 },
                 "loadBalancerType": {
@@ -821,6 +833,10 @@
                     "description": "Filter listeners by listener port (Default - does not filter by a listener port)",
                     "type": "number"
                 },
+                "additionalCacheKey": {
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
+                    "type": "string"
+                },
                 "loadBalancerType": {
                     "$ref": "#/definitions/LoadBalancerType",
                     "description": "Filter load balancers by their type"
@@ -870,6 +886,10 @@
                 "vpcId": {
                     "description": "VPC ID (Default - None)",
                     "type": "string"
+                },
+                "additionalCacheKey": {
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
+                    "type": "string"
                 }
             },
             "required": [
@@ -895,6 +915,10 @@
                 },
                 "aliasName": {
                     "description": "Alias name used to search the Key",
+                    "type": "string"
+                },
+                "additionalCacheKey": {
+                    "description": "Adds an additional discriminator to the `cdk.context.json` cache key. (Default - no additional cache key)",
                     "type": "string"
                 }
             },

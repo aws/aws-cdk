@@ -92,6 +92,13 @@ export interface AmiContextQuery {
    * Filters to DescribeImages call
    */
   readonly filters: {[key: string]: string[]};
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -245,6 +252,13 @@ export interface VpcContextQuery {
    * @default true
    */
   readonly returnVpnGateways?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -331,6 +345,13 @@ export interface LoadBalancerContextQuery extends LoadBalancerFilter {
    * @default - None
    */
   readonly lookupRoleArn?: string;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -406,6 +427,13 @@ export interface LoadBalancerListenerContextQuery extends LoadBalancerFilter {
    * @default - does not filter by a listener port
    */
   readonly listenerPort?: number;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -449,6 +477,13 @@ export interface SecurityGroupContextQuery {
    * @default - None
    */
   readonly vpcId?: string;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -476,6 +511,13 @@ export interface KeyContextQuery {
    * Alias name used to search the Key
    */
   readonly aliasName: string;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**

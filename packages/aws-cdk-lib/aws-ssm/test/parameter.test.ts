@@ -652,6 +652,30 @@ test('fromLookup will use the SSM context provider to read value during synthesi
   ]);
 });
 
+test('fromLookup will use the SSM context provider to read value during synthesis when linked to scope', () => {
+  // GIVEN
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+
+  // WHEN
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', 'extraKey');
+
+  // THEN
+  expect(value).toEqual('dummy-value-for-my-param-name');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=12344:additionalCacheKey=extraKey:parameterName=my-param-name:region=us-east-1',
+      props: {
+        account: '12344',
+        region: 'us-east-1',
+        parameterName: 'my-param-name',
+        additionalCacheKey: 'extraKey',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
 describe('from string list parameter', () => {
   testDeprecated('valueForTypedStringParameter list type throws error', () => {
     // GIVEN
