@@ -12,6 +12,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { Deployments } from './api/deployments';
+import { GarbageCollector } from './api/garbage-collector';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
@@ -709,6 +710,32 @@ export class CdkToolkit {
     print(`Supply a stack id (${stacks.stackArtifacts.map(s => chalk.green(s.hierarchicalId)).join(', ')}) to display its template.`);
 
     return undefined;
+  }
+
+  public async garbageCollect(environment: string, dryRun: boolean, type: 'ecr' | 's3' | 'all', days: number) {
+    // eslint-disable-next-line no-console
+    console.log(environment, dryRun, type, days);
+
+    if (environment === undefined) {
+      throw new Error('You must include the environment');
+    }
+    // need to handle case where environment is null
+
+    const splitEnv = environment.split('/');
+    const resolvedEnvironment: cxapi.Environment = {
+      name: 'garbage env',
+      account: splitEnv[2],
+      region: splitEnv[3],
+    };
+
+    const gc = new GarbageCollector({
+      dryRun,
+      type,
+      isolationDays: days,
+      resolvedEnvironment,
+      sdkProvider: this.props.sdkProvider,
+    });
+    await gc.garbageCollect();
   }
 
   /**

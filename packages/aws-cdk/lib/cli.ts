@@ -269,6 +269,10 @@ async function parseCommandLineArguments(args: string[]) {
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
+    .command('gc [ENVIRONMENT]', 'Garbage collects assets', (yargs: Argv) => yargs
+      .option('dry-run', { type: 'boolean', desc: 'List assets instead of garbage collecting them', default: false })
+      .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
+      .option('days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 30 }))
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
@@ -655,6 +659,14 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           roleArn: args.roleArn,
           ci: args.ci,
         });
+
+      case 'gc':
+        return cli.garbageCollect(
+          args.ENVIRONMENT,
+          args['dry-run'],
+          args.type,
+          args.days,
+        );
 
       case 'synthesize':
       case 'synth':
