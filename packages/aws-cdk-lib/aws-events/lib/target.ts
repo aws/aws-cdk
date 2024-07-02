@@ -99,6 +99,13 @@ export interface RuleTargetConfig {
   readonly sqsParameters?: CfnRule.SqsParametersProperty;
 
   /**
+   * Parameters used when the rule invokes Amazon Redshift Queries
+   *
+   * @default - no parameters set
+   */
+  readonly redshiftDataParameters?: CfnRule.RedshiftDataParametersProperty;
+
+  /**
    * What input to send to the event target
    *
    * @default the entire event
