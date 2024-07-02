@@ -375,19 +375,3 @@ _cdk.json_
     "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
   }
 }
-```
-
-* `@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled`
-
-Enable this feature flag to delete the existing S3 event notifications.
-When this feature flag is enabled, user can remove the existing S3 event notifications.
-
-_cdk.json_
-
-```json
-{
-  "context": {
-    "@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled": true
-  }
-}
-```

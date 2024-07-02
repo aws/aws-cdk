@@ -71,7 +71,6 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | (default) |
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
-| [@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled](#aws-cdkaws-s3s3existingnotificationsdeleteenabled) | Enable deletion of existing S3 event notifications | 2.145.0 | (fix) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions](#aws-cdkaws-stepfunctions-tasksecsreduceruntaskpermissions) | When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN. | V2NEXT | (fix) |
 
@@ -136,8 +135,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true,
-    "@aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled": true
+    "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
   }
 }
 ```
@@ -1338,22 +1336,6 @@ When this featuer flag is enabled, remove the default deployment alarm settings 
 | 2.143.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set AWS::ECS::Service 'DeploymentAlarms' manually to restore the previous behavior.
-
-
-### @aws-cdk/aws-s3:s3ExistingNotificationsDeleteEnabled
-
-*Enable deletion of existing S3 event notifications* (fix)
-
-This flag enables the deletion of existing S3 event notifications. 
-When trying to delete existing S3 event notifications, the S3 bucket event notification handler Lambda function can fail due to overlapping event type suffixes.
-See https://github.com/aws/aws-cdk/issues/28915 for more details.
-Enabling this flag allows you to successfully delete existing S3 event notifications.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault
