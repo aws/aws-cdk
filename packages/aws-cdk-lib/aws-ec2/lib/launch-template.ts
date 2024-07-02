@@ -8,6 +8,7 @@ import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice } from './volume';
+import { ISubnet } from './vpc';
 import * as iam from '../../aws-iam';
 import {
   Annotations,
@@ -67,6 +68,234 @@ export enum InstanceInitiatedShutdownBehavior {
    */
   TERMINATE = 'terminate',
 };
+
+/**
+ * InterfaceType
+ */
+export enum InterfaceType {
+  /**
+   * efa
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html
+   */
+  EFA = 'efa',
+
+  /**
+   * interface
+   */
+  INTERFACE = 'interface',
+}
+
+/**
+ * A security group connection tracking specification that enables you to set the idle timeout for connection tracking on an Elastic network interface.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html#connection-tracking-timeouts
+ */
+export interface ConnectionTrackingSpecification extends CfnLaunchTemplate.ConnectionTrackingSpecificationProperty {};
+
+/**
+ * ENA Express uses AWS Scalable Reliable Datagram (SRD) technology to increase the maximum bandwidth used per stream and minimize tail latency of network traffic between EC2 instances.
+ *
+ * With ENA Express, you can communicate between two EC2 instances in the same subnet within the same account, or in different accounts. Both sending and receiving instances must have ENA Express enabled.
+ *
+ * To improve the reliability of network packet delivery, ENA Express reorders network packets on the receiving end by default. However, some UDP-based applications are designed to handle network packets that are out of order to reduce the overhead for packet delivery at the network layer. When ENA Express is enabled, you can specify whether UDP network traffic uses it.
+ */
+export interface EnaSrdSpecification extends CfnLaunchTemplate.EnaSrdSpecificationProperty {};
+
+/**
+ * Specifies an IPv4 prefix for a network interface.
+ */
+export interface Ipv4PrefixSpecification extends CfnLaunchTemplate.Ipv4PrefixSpecificationProperty {};
+
+/**
+ * Specifies an IPv6 address in an Amazon EC2 launch template.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-networkinterface.html
+ */
+export interface Ipv6Add extends CfnLaunchTemplate.Ipv6AddProperty {};
+
+/**
+ * Specifies an IPv6 prefix for a network interface.
+ */
+export interface Ipv6PrefixSpecification extends CfnLaunchTemplate.Ipv6PrefixSpecificationProperty {};
+
+/**
+ * Specifies a secondary private IPv4 address for a network interface.
+ */
+export interface PrivateIpAdd extends CfnLaunchTemplate.PrivateIpAddProperty {};
+
+/**
+ * Specifies the parameters for a Launch Template network interface definition.
+ */
+export interface NetworkInterface {
+  /**
+   * Associates a Carrier IP address with eth0 for a new network interface.
+   *
+   * Use this option when you launch an instance in a Wavelength Zone and want to associate a Carrier IP address with the network interface. For more information about Carrier IP addresses, see Carrier IP addresses in the AWS Wavelength Developer Guide.
+   *
+   * @default No carrier IP address is assigned
+   */
+  readonly associateCarrierIpAddress?: boolean;
+
+  /**
+   * Associates a public IPv4 address with eth0 for a new network interface. Note that when multiple network interface cards are defined, this value must be `false` on all of them.
+   *
+   * @default No public IPv4 address is assigned
+   */
+  readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * A connection tracking specification for the network interface.
+   *
+   * @default Default connection tracking timeouts are used.
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html#connection-tracking-timeouts
+   */
+  readonly connectionTrackingSpecification?: ConnectionTrackingSpecification;
+
+  /**
+   * Indicates whether the network interface is deleted when the instance is terminated.
+   *
+   * @default The network interface is deleted when the instance is terminated.
+   */
+  readonly deleteOnTermination?: boolean;
+
+  /**
+   * A description for the network interface.
+   *
+   * @default An empty string.
+   */
+  readonly description?: string;
+
+  /**
+   * The device index for the network interface attachment.
+   *
+   * @default Index is `0`
+   */
+  readonly deviceIndex: number;
+
+  /**
+   * The ENA Express configuration for the network interface.
+   *
+   * @default EnaSrd is not enabled
+   */
+  readonly enaSrdSpecification?: EnaSrdSpecification;
+
+  /**
+   * One or more security groups to attach to the interface.
+   *
+   * @default No security groups are attached to the interface.
+   */
+  readonly groups?: ISecurityGroup[];
+
+  /**
+   * The type of network interface. To create an Elastic Fabric Adapter (EFA), specify `InterfaceType.efa`. For more information, see Elastic Fabric Adapter in the Amazon Elastic Compute Cloud User Guide.
+   *
+   * @default Interface type is `InterfaceType.INTERFACE`.
+   */
+  readonly interfaceType?: InterfaceType;
+
+  /**
+   * The number of IPv4 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the Ipv4Prefix option.
+   *
+   * @default One prefix is assigned
+   */
+  readonly ipv4PrefixCount?: number;
+
+  /**
+   * One or more IPv4 prefixes to be assigned to the network interface. You cannot use this option if you use the Ipv4PrefixCount option.
+   *
+   * @default A single prefix is assigned via `ipv4PrefixCount`
+   */
+  readonly ipv4Prefixes?: Ipv4PrefixSpecification[];
+
+  /**
+   * The number of IPv6 addresses to assign to a network interface. Amazon EC2 automatically selects the IPv6 addresses from the subnet range. You can't use this option if specifying specific IPv6 addresses.
+   *
+   * @default No IPv6 addresses are assigned.
+   */
+  readonly ipv6AddressCount?: number;
+
+  /**
+   * One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet. You can't use this option if you're specifying a number of IPv6 addresses.
+   *
+   * @default No IPv6 addresses are assigned.
+   */
+  readonly ipv6Addresses?: Ipv6Add[];
+
+  /**
+   * The number of IPv6 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the Ipv6Prefix option.
+   *
+   * @default No prefixes are assigned.
+   */
+  readonly ipv6PrefixCount?: number;
+
+  /**
+   * One or more IPv6 prefixes to be assigned to the network interface. You cannot use this option if you use the Ipv6PrefixCount option.
+   *
+   * @default No prefixes are assigned.
+   */
+  readonly ipv6Prefixes?: Ipv6PrefixSpecification[];
+
+  /**
+   * The index of the network card. Some instance types support multiple network cards. The primary network interface must be assigned to network card index 0. The default is network card index 0.
+   *
+   * @default First network interface card gets assigned index `0`.
+   */
+  readonly networkCardIndex?: number;
+
+  /**
+   * The primary IPv6 address of the network interface. When you enable an IPv6 GUA address to be a primary IPv6, the first IPv6 GUA will be made the primary IPv6 address until the instance is terminated or the network interface is detached. For more information about primary IPv6 addresses, see RunInstances.
+   *
+   * @default First IPv6 address is made primary.
+   */
+  readonly primaryIpv6?: boolean;
+
+  /**
+   * The primary private IPv4 address of the network interface.
+   *
+   * @default A random IP address is assigned from one of the subnets.
+   */
+  readonly privateIpAddress?: string;
+
+  /**
+   * One or more private IPv4 addresses.
+   *
+   * @default A random IP address is assigned from one of the subnets.
+   */
+  readonly privateIpAddresses?: PrivateIpAdd[];
+
+  /**
+   * The number of secondary private IPv4 addresses to assign to a network interface.
+   *
+   * @default No secondary addresses are assigned
+   */
+  readonly secondaryPrivateIpAddressCount?: number;
+
+  /**
+   * List of subnets to which to place the interface in
+   *
+   * @default No subnets are defined.
+   */
+  readonly subnet?: ISubnet;
+}
+
+function synthesizeNetworkInterfaces(networkInterfaces: NetworkInterface[]): CfnLaunchTemplate.NetworkInterfaceProperty[] {
+  return networkInterfaces.map((networkInterface) => {
+    return {
+      ...networkInterface,
+      groups: Lazy.list({
+        produce: () => {
+          return networkInterface.groups ? networkInterface.groups.map((sg) => sg.securityGroupId) : undefined;
+        },
+      }),
+      subnetId: Lazy.string({
+        produce: () => {
+          return networkInterface.subnet ? networkInterface.subnet.subnetId : undefined;
+        },
+      }),
+    };
+  });
+}
 
 /**
  * Interface for LaunchTemplate-like objects.
@@ -429,6 +658,15 @@ export interface LaunchTemplateProps {
    * @default - No instance profile
    */
   readonly instanceProfile?: iam.IInstanceProfile;
+
+  /**
+   * Network interface definitions for the EC2 instances.
+   *
+   * Note: If defined, overrides settings `associatePublicIpAddress` and `securityGroup`.
+   *
+   * @default: A single network interface using `associatePublicIpAddress` and `securityGroup`is created
+   */
+  readonly networkInterfaces?: NetworkInterface[];
 }
 
 /**
@@ -600,6 +838,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
     }
 
+    // Basic validation of the provided network interface cards
+    if (props.networkInterfaces && props.networkInterfaces.length > 1) {
+      if (!props.networkInterfaces.every((nic) => !nic.associatePublicIpAddress)) {
+        Annotations.of(this).addError('associatePublicIpAddress must be `false` or `undefined` when defining multiple network interfaces');
+      }
+    }
+
     if (props.instanceProfile && props.role) {
       throw new Error('You cannot provide both an instanceProfile and a role');
     }
@@ -731,9 +976,20 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       },
     });
 
-    const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{ deviceIndex: 0, associatePublicIpAddress: props.associatePublicIpAddress, groups: securityGroupsToken }]
-      : undefined;
+    let networkInterfaces: NetworkInterface[] | undefined;
+    if (props.networkInterfaces) {
+      networkInterfaces = props.networkInterfaces;
+    } else {
+      networkInterfaces = props.associatePublicIpAddress !== undefined
+        ? [
+          {
+            deviceIndex: 0,
+            associatePublicIpAddress: props.associatePublicIpAddress,
+            groups: props.securityGroup ? [props.securityGroup] : undefined,
+          },
+        ]
+        : undefined;
+    }
 
     const resource = new CfnLaunchTemplate(this, 'Resource', {
       launchTemplateName: props?.launchTemplateName,
@@ -763,7 +1019,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         tagSpecifications: tagsToken,
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
-        networkInterfaces,
+        networkInterfaces: networkInterfaces ? synthesizeNetworkInterfaces(networkInterfaces) : undefined,
 
         // Fields not yet implemented:
         // ==========================
