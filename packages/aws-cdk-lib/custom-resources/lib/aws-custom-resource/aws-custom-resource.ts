@@ -4,7 +4,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
-import { Annotations } from '../../../core';
+import { Annotations, Duration } from '../../../core';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
@@ -342,6 +342,16 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration;
 
   /**
+   * The ServiceTimeout property from Cloudformation
+   *
+   * The value must be a duration between 1 and 3600 seconds.
+   * The default value is 1800 seconds (30 minutes).
+   *
+   * @default Duration.minutes(30)
+   */
+  readonly serviceTimeout?: Duration;
+
+  /**
    * The memory size for the singleton Lambda function implementing this custom resource.
    *
    * @default 512 mega in case if installLatestAwsSdk is false.
@@ -519,6 +529,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
+      serviceTimeout: props.serviceTimeout || cdk.Duration.minutes(30),
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
       removalPolicy: props.removalPolicy,

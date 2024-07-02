@@ -1,5 +1,5 @@
 import { toCloudFormation } from './util';
-import { CustomResource, RemovalPolicy, Stack } from '../lib';
+import { CustomResource, Duration, RemovalPolicy, Stack } from '../lib';
 
 describe('custom resource', () => {
   test('simple case provider identified by service token', () => {
@@ -77,6 +77,30 @@ describe('custom resource', () => {
           },
           UpdateReplacePolicy: 'Retain',
           DeletionPolicy: 'Retain',
+        },
+      },
+    });
+  });
+
+  test('custom cfn timeout', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new CustomResource(stack, 'MyCustomResource', {
+      serviceToken: 'MyServiceToken',
+      serviceTimeout: Duration.minutes(5),
+    });
+
+    // THEN
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        MyCustomResource: {
+          Type: 'AWS::CloudFormation::CustomResource',
+          Properties: {
+            ServiceToken: 'MyServiceToken',
+          },
+          ServiceTimeout: '300',
         },
       },
     });

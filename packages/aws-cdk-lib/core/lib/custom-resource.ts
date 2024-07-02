@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
+import { Duration } from './duration';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -92,6 +93,16 @@ export interface CustomResourceProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * The ServiceTimeout property from Cloudformation
+   *
+   * The value must be a duration between 1 and 3600 seconds.
+   * The default value is 1800 seconds (30 minutes).
+   *
+   * @default Duration.minutes(30)
+   */
+  readonly serviceTimeout?: Duration;
+
+  /**
    * Convert all property keys to pascal case.
    *
    * @default false
@@ -131,6 +142,7 @@ export class CustomResource extends Resource {
     const type = renderResourceType(props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
+    const serviceTimeout = renderServiceTimeout(props.serviceTimeout) || '1800';
 
     this.resource = new CfnResource(this, 'Default', {
       type,
@@ -143,6 +155,10 @@ export class CustomResource extends Resource {
     this.resource.applyRemovalPolicy(props.removalPolicy, {
       default: RemovalPolicy.DESTROY,
     });
+
+    if (serviceTimeout) {
+      this.resource.addPropertyOverride('ServiceTimeout', serviceTimeout);
+    }
   }
 
   /**
@@ -213,4 +229,19 @@ function renderResourceType(resourceType?: string) {
   }
 
   return resourceType;
+}
+
+function renderServiceTimeout(serviceTimeout?: Duration): string|undefined {
+
+  if (!serviceTimeout) {
+    return undefined;
+  }
+
+  let timeoutSeconds = serviceTimeout.toSeconds();
+
+  if (timeoutSeconds < 1 || timeoutSeconds > 3600) {
+    throw new Error('ServiceTimeout must be an integer from 1 to 3600');
+  }
+
+  return timeoutSeconds.toString();
 }

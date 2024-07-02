@@ -596,6 +596,47 @@ test('timeout defaults to 2 minutes', () => {
   });
 });
 
+test('cfn timeout defaults to 30 minutes', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CustomResource', {
+    Timeout: '1800',
+  });
+});
+
+test('set cfn timeout to 5 minutes', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    serviceTimeout: cdk.Duration.minutes(5),
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CustomResource', {
+    Timeout: '300',
+  });
+});
+
 test('memorySize defaults to 512 M if installLatestAwsSdk is true', () => {
   // GIVEN
   const stack = new cdk.Stack();
