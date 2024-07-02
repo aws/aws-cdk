@@ -398,19 +398,6 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
    */
   readonly forceDynamicReference?: boolean;
 
-  /**
-   * Specifies the AWS account that is sharing the SSM parameter with the current deploying account.
-   *
-   * When this property is set, the following must occur:
-   * 1. The sharing account must create an AWS RAM ResourceShare that shares the parameter.
-   * 2. The current account must accept the invitation to the resource share.
-   *
-   * Setting this property implies that a `CfnParameter` must be used, and `forceDynamicReference` cannot be enabled.
-   * This is because CloudFormation dynamic references do not support cross-account parameter sharing.
-   *
-   * @default - The parameter is not being shared from a different AWS account.
-   */
-  readonly sharingAccount?: string;
 }
 
 /**
@@ -482,6 +469,25 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     return this.fromStringParameterAttributes(scope, id, { parameterName: stringParameterName });
   }
 
+  public static fromStringParameterArn(scope: Construct, id: string, stringParameterArn: string): IStringParameter {
+    if (Token.isUnresolved(stringParameterArn)) {
+      throw new Error('stringParameterArn cannot be an unresolved token');
+    }
+
+    const parameterType = ParameterValueType.STRING;
+
+    let stringValue: string;
+    stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${parameterType}>`, default: stringParameterArn }).valueAsString;
+    class Import extends ParameterBase {
+      public readonly parameterName = stringParameterArn.split('/').pop()?.replace(/parameter\/$/, '') ?? '';
+      public readonly parameterArn = stringParameterArn;
+      public readonly parameterType = parameterType;
+      public readonly stringValue = stringValue;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Imports an external string parameter with name and optional version.
    */
@@ -495,28 +501,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
     const forceDynamicReference = attrs.forceDynamicReference ?? false;
-    const sharingAccount = attrs.sharingAccount;
 
     let stringValue: string;
-    // if sharingAccount specified, we just build a CfnParameter with the sharing parameter arn as its default value
-    if (sharingAccount) {
-      const sharingParameterArn = Stack.of(scope).formatArn({
-        service: 'ssm',
-        account: attrs.sharingAccount,
-        resource: 'parameter',
-        resourceName: attrs.parameterName,
-      });
-      if (forceDynamicReference) {
-        throw new Error('forceDynamicReference cannot be enabled when sharingAccount is specified');
-      }
-      if (Token.isUnresolved(attrs.parameterName) && Fn._isFnBase(Tokenization.reverseString(attrs.parameterName).firstToken)) {
-        // the default value of a CfnParameter can only contain strings, so we cannot use it when a parameter name contains tokens.
-        throw new Error('parameter name cannot contain tokens with sharingAccount');
-      } else {
-        stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: sharingParameterArn }).valueAsString;
-      }
-    } else
-    // not from a sharing account
     if (attrs.version) {
       stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
     } else if (forceDynamicReference) {
