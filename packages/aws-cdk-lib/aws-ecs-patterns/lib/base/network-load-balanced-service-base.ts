@@ -4,7 +4,7 @@ import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '../../../aws-ecs';
-import { INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancer, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import { IListenerCertificate, INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancer, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
@@ -132,9 +132,18 @@ export interface NetworkLoadBalancedServiceBaseProps {
   /**
    * Listener port of the network load balancer that will serve traffic to the service.
    *
-   * @default 80
+   * @default 80 or 443 with listenerCertificate provided
    */
   readonly listenerPort?: number;
+
+  /**
+   * Listener certificate list of ACM cert ARNs.
+   * If you provide a certificate, the listener's protocol will be TLS.
+   * If not, the listener's protocol will be TCP.
+   *
+   * @default - none
+   */
+  readonly listenerCertificate?: IListenerCertificate;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -279,7 +288,7 @@ export interface NetworkLoadBalancedTaskImageOptions {
    * For more information, see
    * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
    *
-   * @default 80
+   * @default 80 or 443 with listenerCertificate provided
    */
   readonly containerPort?: number;
 
@@ -368,12 +377,17 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     };
 
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
-    const listenerPort = props.listenerPort ?? 80;
-    const targetProps = {
-      port: props.taskImageOptions?.containerPort ?? 80,
-    };
 
-    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
+    const defaultPort = props.listenerCertificate ? 443 : 80;
+    const listenerProps = {
+      port: props.listenerPort ?? defaultPort,
+      certificates: props.listenerCertificate ? [props.listenerCertificate] : undefined,
+    };
+    this.listener = loadBalancer.addListener('PublicListener', listenerProps);
+
+    const targetProps = {
+      port: props.taskImageOptions?.containerPort ?? defaultPort,
+    };
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
