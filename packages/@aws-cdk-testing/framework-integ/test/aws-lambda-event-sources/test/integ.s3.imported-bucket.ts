@@ -5,7 +5,7 @@ import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
-const bucketName = 'cdk-integ-test-imported-bucket-name';
+const bucketName = 'cdk-integration-test-s3-imported-bucket-name';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
