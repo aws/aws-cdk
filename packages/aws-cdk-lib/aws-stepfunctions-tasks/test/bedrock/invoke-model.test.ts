@@ -203,6 +203,52 @@ describe('Invoke Model', () => {
     });
   });
 
+  test('invoke model allows input and output json path', () => {
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      inputPath: sfn.JsonPath.stringAt('$.prompt'),
+      outputPath: sfn.JsonPath.stringAt('$.prompt'),
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      InputPath: '$.prompt',
+      OutputPath: '$.prompt',
+      Parameters: {
+        ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+        Input: {
+          //Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
+          //Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
+          'S3Uri.$': '$.prompt',
+        },
+        Output: {
+          'S3Uri.$': '$.prompt',
+        },
+      },
+    });
+  });
+
   test('S3 permissions are created in generated policy when input and output locations are specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -266,6 +312,68 @@ describe('Invoke Model', () => {
                     Ref: 'AWS::Partition',
                   },
                   ':s3:::output-bucket/output-key',
+                ],
+              ],
+            },
+          },
+        ]),
+      }),
+    });
+  });
+
+  test('S3 permissions are created in generated policy when input and output path are specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    // WHEN
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      inputPath: sfn.JsonPath.stringAt('$.prompt'),
+      outputPath: sfn.JsonPath.stringAt('$.prompt'),
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          {
+            Action: 'bedrock:InvokeModel',
+            Effect: 'Allow',
+            Resource: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+          },
+          {
+            Action: 's3:GetObject',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':s3:::*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':s3:::*',
                 ],
               ],
             },
