@@ -41,6 +41,7 @@ describe('layers', () => {
     // WHEN
     layer.addPermission('GrantUsage-123456789012', { accountId: '123456789012' });
     layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
+    layer.addPermission('GrantUsage-o-011235', { accountId: '*', organizationId: 'o-011235', removalPolicy: cdk.RemovalPolicy.RETAIN });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersionPermission', {
@@ -53,6 +54,16 @@ describe('layers', () => {
       LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '*',
       OrganizationId: 'o-123456',
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::LayerVersionPermission', {
+      Properties: {
+        Action: 'lambda:GetLayerVersion',
+        LayerVersionArn: stack.resolve(layer.layerVersionArn),
+        Principal: '*',
+        OrganizationId: 'o-011235',
+      },
+      UpdateReplacePolicy: cdk.CfnDeletionPolicy.RETAIN,
+      DeletionPolicy: cdk.CfnDeletionPolicy.RETAIN,
     });
   });
 

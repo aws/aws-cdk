@@ -558,6 +558,8 @@ new lambda.LayerVersion(this, 'MyLayer', {
 });
 ```
 
+The `addPermission()` function can be used to allow access to the layer version from other AWS accounts or AWS Organizations. You can also specify `removalPolicy: RemovalPolicy.RETAIN` as part of the LayerVersionPermission. That way when new layers versions are creatd, old versions remain accessable from other acconts. 
+
 ## Architecture
 
 Lambda functions, by default, run on compute systems that have the 64 bit x86 architecture.

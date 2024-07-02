@@ -101,12 +101,16 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
       throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`);
     }
 
-    new CfnLayerVersionPermission(this, id, {
+    const cfnLayerVersionPermission = new CfnLayerVersionPermission(this, id, {
       action: 'lambda:GetLayerVersion',
       layerVersionArn: this.layerVersionArn,
       principal: permission.accountId,
       organizationId: permission.organizationId,
     });
+
+    if (permission.removalPolicy != null) {
+      cfnLayerVersionPermission.applyRemovalPolicy(permission.removalPolicy);
+    }
   }
 }
 
@@ -126,6 +130,14 @@ export interface LayerVersionPermission {
    * Can only be specified if ``accountId`` is ``'*'``
    */
   readonly organizationId?: string;
+
+  /**
+   * Whether to retain this permission when a new version is added
+   * or when the stack is deleted.
+   *
+   * @default null
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
