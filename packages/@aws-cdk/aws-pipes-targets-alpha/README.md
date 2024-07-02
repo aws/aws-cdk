@@ -171,3 +171,19 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
     target: pipeTarget
 });
 ```
+
+### Amazon CloudWatch Logs Log Group
+
+A log group can be used as a target for a pipe. The log will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetLogGroup: logs.LogGroup;
+
+const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup, {});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: logGroupTarget,
+});
+```
