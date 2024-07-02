@@ -212,9 +212,9 @@ describe('record set', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
-        Name: '_foo.myzone.',
-        Type: 'A',
-        HealthCheckId: stack.resolve(healthCheck.healthCheckId),
+      Name: '_foo.myzone.',
+      Type: 'A',
+      HealthCheckId: stack.resolve(healthCheck.healthCheckId),
     });
   });
 
