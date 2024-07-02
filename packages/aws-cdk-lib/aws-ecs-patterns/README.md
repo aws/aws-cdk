@@ -1123,7 +1123,7 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 });
 ```
 
-### Use dualstack NLB
+### Use dualstack Load Balancer
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
@@ -1143,6 +1143,22 @@ const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
 });
 
 const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Service(this, 'NlbEc2Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+
+const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'myService', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+
+const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'myService', {
   cluster,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
