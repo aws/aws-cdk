@@ -67,6 +67,13 @@ export enum DataSource {
   ESRI = 'Esri',
 
   /**
+   * Grab provides routing functionality for Southeast Asia.
+   *
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/grab.html
+   */
+  GRAB = 'Grab',
+
+  /**
    * HERE
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/HERE.html
