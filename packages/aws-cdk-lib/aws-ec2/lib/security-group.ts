@@ -388,7 +388,7 @@ export class SecurityGroup extends SecurityGroupBase {
   }
 
   /**
-   * Look up a security group by name.
+   * Look up a security group by filters
    */
   public static fromLookupByFilters(scope: Construct, id: string, filters: SecurityGroupLookupOptions) {
     return this.fromLookupAttributes(scope, id, filters);
