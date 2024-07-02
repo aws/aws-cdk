@@ -162,9 +162,20 @@ export interface VpcPeeringConnectionProps {
   readonly peerRoleArn?: string;
 }
 
+/**
+ * Creates a carrier gateway
+ * @resource AWS::EC2::CarrierGateway
+ */
 export class CarrierGateway extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
 
   public readonly resource: CfnCarrierGateway;
 
@@ -181,9 +192,20 @@ export class CarrierGateway extends Resource implements IRouteTarget {
   }
 }
 
+/**
+ * Creates an egress-only internet gateway
+ * @resource AWS::EC2::EgressOnlyInternetGateway
+ */
 export class EgressOnlyInternetGateway extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
 
   public readonly resource: CfnEgressOnlyInternetGateway;
 
@@ -200,9 +222,24 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
   }
 }
 
+/**
+ * Creates an internet gateway
+ * @resource AWS::EC2::InternetGateway
+ */
 export class InternetGateway extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
+
+  /**
+   * The ID of the VPC for which to create the internet gateway.
+   */
   public readonly vpcId: string;
 
   public readonly resource: CfnInternetGateway;
@@ -219,9 +256,24 @@ export class InternetGateway extends Resource implements IRouteTarget {
   }
 }
 
+/**
+ * Creates a virtual private gateway
+ * @resource AWS::EC2::VPNGateway
+ */
 export class VPNGateway extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
+
+  /**
+   * The ID of the VPC for which to create the VPN gateway.
+   */
   public readonly vpcId: string;
 
   public readonly resource: CfnVPNGateway;
@@ -244,11 +296,39 @@ export class VPNGateway extends Resource implements IRouteTarget {
   }
 }
 
+/**
+ * Creates a network address translation (NAT) gateway
+ * @resource AWS::EC2::NatGateway
+ */
 export class NatGateway extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
+
+  /**
+   * [Public NAT gateway only] The allocation ID of the Elastic IP address that's
+   * associated with the NAT gateway. This property is required for a public NAT 
+   * gateway and cannot be specified with a private NAT gateway.
+   */
   public readonly allocationId?: string;
+
+  /**
+   * Indicates whether the NAT gateway supports public or private connectivity.
+   * @default public
+   */
   public readonly connectivityType?: string;
+
+  /**
+   * The maximum amount of time to wait (in seconds) before forcibly releasing the 
+   * IP addresses if connections are still in progress.
+   * @default 350
+   */
   public readonly maxDrainDurationSeconds?: number;
 
   public readonly resource: CfnNatGateway;
@@ -286,9 +366,20 @@ export class NatGateway extends Resource implements IRouteTarget {
   }
 }
 
+/**
+ * Creates a network interface
+ * @resource AWS::EC2::NetworkInterface
+ */
 export class NetworkInterface extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
 
   public readonly resource: CfnNetworkInterface;
 
@@ -305,9 +396,20 @@ export class NetworkInterface extends Resource implements IRouteTarget {
   }
 }
 
+/**
+ * Creates a transit gateway
+ * @resource AWS::EC2::TransitGateway
+ */
 export class TransitGateway extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
 
   public readonly resource: CfnTransitGateway;
 
@@ -322,9 +424,21 @@ export class TransitGateway extends Resource implements IRouteTarget {
   }
 }
 
+/**
+ * Creates a request for a VPC peering connection between two VPCs: a requester VPC that
+ * you own and an accepter VPC with which to create the connection.
+ * @resource AWS::EC2::VPCPeeringConnection
+ */
 export class VpcPeeringConnection extends Resource implements IRouteTarget {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerId: string;
 
   public readonly resource: CfnVPCPeeringConnection;
 
@@ -384,8 +498,21 @@ export interface RouteProps {
  * @resource AWS::EC2::Route
  */
 export class Route extends Resource implements IRouteV2 {
+  /**
+   * The IPv4 or IPv6 CIDR block used for the destination match.
+   * 
+   * Routing decisions are based on the most specific match.
+   */
   public readonly destination: IIpAddresses;
+
+  /**
+   * The gateway or endpoint targeted by the route.
+   */
   public readonly target: IRouteTarget | IVpcEndpoint;
+
+  /**
+   * The ID of the route table for the route.
+   */
   public readonly routeTable: IRouteTable;
 
   /**
@@ -431,10 +558,13 @@ export class Route extends Resource implements IRouteV2 {
 }
 
 /**
- * Creates a Route Table
+ * Creates a route table for the specified VPC
  * @resource AWS::EC2::RouteTable
  */
 export class RouteTable extends Resource implements IRouteTable, IDependable {
+  /**
+   * The ID of the VPC.
+   */
   public readonly routeTableId: string;
 
   public readonly resource: CfnRouteTable;
@@ -451,6 +581,9 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
 }
 
 export interface RouteTableProps {
+  /**
+   * The ID of the VPC.
+   */
   readonly vpcId: string;
 }
 
