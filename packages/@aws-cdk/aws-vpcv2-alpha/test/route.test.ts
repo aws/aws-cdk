@@ -657,4 +657,45 @@ describe('EC2 Routing', () => {
     });
   });
 
+  test('Route to network interface', () => {
+    const nif = new route.NetworkInterface(stack, 'TestNIF', {
+      subnet: mySubnet,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: nif,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // Network interface should be in stack
+        TestNIFNetworkInterface7A9E3A76: {
+          Type: 'AWS::EC2::NetworkInterface',
+          Properties: {
+            SubnetId: {
+              Ref: 'TestSubnet2A4BE4CA',
+            },
+          },
+        },
+        // Route linking IP to IGW should be in stack
+        TestRoute4CB59404: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NetworkInterfaceId: {
+              'Fn::GetAtt': [
+                'TestNIFNetworkInterface7A9E3A76', 'Id',
+              ],
+            },
+            RouteTableId: {
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C', 'RouteTableId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
 });
