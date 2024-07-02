@@ -684,7 +684,9 @@ switch (stackSet) {
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
-    new NotificationArnPropStack(app, `${stackPrefix}-test-notification-arn-prop`);
+    new NotificationArnPropStack(app, `${stackPrefix}-test-notification-arn-prop`, {
+      notificationArns: [`${stackPrefix}-test-topic-prop`],
+    });
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);
