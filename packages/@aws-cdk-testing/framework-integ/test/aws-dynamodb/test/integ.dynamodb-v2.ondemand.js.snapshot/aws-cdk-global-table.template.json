@@ -46,8 +46,7 @@
       ],
       "Projection": {
        "ProjectionType": "ALL"
-      },
-      "WriteOnDemandThroughputSettings": {}
+      }
      },
      {
       "IndexName": "gsi2",
@@ -162,7 +161,6 @@
       "PointInTimeRecoverySpecification": {
        "PointInTimeRecoveryEnabled": true
       },
-      "ReadOnDemandThroughputSettings": {},
       "Region": "us-east-1",
       "TableClass": "STANDARD_INFREQUENT_ACCESS",
       "Tags": [

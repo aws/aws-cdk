@@ -85,8 +85,7 @@
                         ],
                         "projection": {
                           "projectionType": "ALL"
-                        },
-                        "writeOnDemandThroughputSettings": {}
+                        }
                       },
                       {
                         "indexName": "gsi2",
@@ -208,8 +207,7 @@
                             "key": "primaryTableTagKey",
                             "value": "primaryTableTagValue"
                           }
-                        ],
-                        "readOnDemandThroughputSettings": {}
+                        ]
                       }
                     ],
                     "sseSpecification": {
@@ -233,7 +231,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
               "version": "0.0.0"
             }
           },
