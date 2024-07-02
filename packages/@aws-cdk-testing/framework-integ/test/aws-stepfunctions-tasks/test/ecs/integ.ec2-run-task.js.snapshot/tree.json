@@ -1765,7 +1765,7 @@
             "id": "Run",
             "path": "aws-sfn-tasks-ecs-run-task/Run",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EcsRunTask",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.TaskStateBase",
               "version": "0.0.0"
             }
           },
@@ -1825,231 +1825,118 @@
                                 {
                                   "Action": "ecs:RunTask",
                                   "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Fn::Select": [
-                                              1,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              2,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              3,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              4,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              0,
-                                              {
-                                                "Fn::Split": [
-                                                  "/",
-                                                  {
-                                                    "Fn::Select": [
-                                                      5,
-                                                      {
-                                                        "Fn::Split": [
-                                                          ":",
-                                                          {
-                                                            "Ref": "TaskDef54694570"
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          "/",
-                                          {
-                                            "Fn::Select": [
-                                              1,
-                                              {
-                                                "Fn::Split": [
-                                                  "/",
-                                                  {
-                                                    "Fn::Select": [
-                                                      5,
-                                                      {
-                                                        "Fn::Split": [
-                                                          ":",
-                                                          {
-                                                            "Ref": "TaskDef54694570"
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":*"
-                                        ]
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Fn::Select": [
+                                            1,
+                                            {
+                                              "Fn::Split": [
+                                                ":",
+                                                {
+                                                  "Ref": "TaskDef54694570"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        ":",
+                                        {
+                                          "Fn::Select": [
+                                            2,
+                                            {
+                                              "Fn::Split": [
+                                                ":",
+                                                {
+                                                  "Ref": "TaskDef54694570"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        ":",
+                                        {
+                                          "Fn::Select": [
+                                            3,
+                                            {
+                                              "Fn::Split": [
+                                                ":",
+                                                {
+                                                  "Ref": "TaskDef54694570"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        ":",
+                                        {
+                                          "Fn::Select": [
+                                            4,
+                                            {
+                                              "Fn::Split": [
+                                                ":",
+                                                {
+                                                  "Ref": "TaskDef54694570"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        ":",
+                                        {
+                                          "Fn::Select": [
+                                            0,
+                                            {
+                                              "Fn::Split": [
+                                                "/",
+                                                {
+                                                  "Fn::Select": [
+                                                    5,
+                                                    {
+                                                      "Fn::Split": [
+                                                        ":",
+                                                        {
+                                                          "Ref": "TaskDef54694570"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        "/",
+                                        {
+                                          "Fn::Select": [
+                                            1,
+                                            {
+                                              "Fn::Split": [
+                                                "/",
+                                                {
+                                                  "Fn::Select": [
+                                                    5,
+                                                    {
+                                                      "Fn::Split": [
+                                                        ":",
+                                                        {
+                                                          "Ref": "TaskDef54694570"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        ":*"
                                       ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Fn::Select": [
-                                              1,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              2,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              3,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              4,
-                                              {
-                                                "Fn::Split": [
-                                                  ":",
-                                                  {
-                                                    "Ref": "TaskDef54694570"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          ":",
-                                          {
-                                            "Fn::Select": [
-                                              0,
-                                              {
-                                                "Fn::Split": [
-                                                  "/",
-                                                  {
-                                                    "Fn::Select": [
-                                                      5,
-                                                      {
-                                                        "Fn::Split": [
-                                                          ":",
-                                                          {
-                                                            "Ref": "TaskDef54694570"
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          "/",
-                                          {
-                                            "Fn::Select": [
-                                              1,
-                                              {
-                                                "Fn::Split": [
-                                                  "/",
-                                                  {
-                                                    "Fn::Select": [
-                                                      5,
-                                                      {
-                                                        "Fn::Split": [
-                                                          ":",
-                                                          {
-                                                            "Ref": "TaskDef54694570"
-                                                          }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      ]
-                                    }
-                                  ]
+                                    ]
+                                  }
                                 },
                                 {
                                   "Action": [

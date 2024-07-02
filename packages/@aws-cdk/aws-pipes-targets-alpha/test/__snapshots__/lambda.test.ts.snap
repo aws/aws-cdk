@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lambda-function should grant lambda function invoke 1`] = `
+{
+  "MyLambdaPipeRoleEF32F0E5": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
