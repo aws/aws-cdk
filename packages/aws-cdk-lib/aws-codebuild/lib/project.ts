@@ -84,6 +84,13 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   readonly role?: iam.IRole;
 
   /**
+   * If true, batch builds have been enabled.
+   *
+   * @default false - batch builds have not been enabled.
+   */
+  readonly isBatchBuildEnabled: boolean;
+
+  /**
    * Enable batch builds.
    *
    * Returns an object contining the batch service role if batch builds
@@ -277,6 +284,14 @@ abstract class ProjectBase extends Resource implements IProject {
       throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
     }
     return this._connections;
+  }
+
+  /**
+   * Actual value will be determined for a Project
+   * using a getter depending on the effect of enableBatchBuilds
+   */
+  public get isBatchBuildEnabled(): boolean {
+    return false;
   }
 
   public enableBatchBuilds(): BatchBuildConfig | undefined {
@@ -1045,6 +1060,7 @@ export class Project extends ProjectBase {
   private readonly _secondarySources: CfnProject.SourceProperty[];
   private readonly _secondarySourceVersions: CfnProject.ProjectSourceVersionProperty[];
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
+  private readonly _environment?: CfnProject.EnvironmentProperty;
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
   private _batchServiceRole?: iam.Role;
@@ -1107,6 +1123,8 @@ export class Project extends ProjectBase {
       this.addFileSystemLocation(fileSystemLocation);
     }
 
+    this._environment = this.renderEnvironment(props, environmentVariables);
+
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: {
@@ -1115,7 +1133,7 @@ export class Project extends ProjectBase {
       },
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
-      environment: this.renderEnvironment(props, environmentVariables),
+      environment: this._environment,
       fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
@@ -1204,7 +1222,15 @@ export class Project extends ProjectBase {
     this.node.addValidation({ validate: () => this.validateProject() });
   }
 
+  public get isBatchBuildEnabled(): boolean {
+    return !!this._batchServiceRole;
+  }
+
   public enableBatchBuilds(): BatchBuildConfig | undefined {
+    if (this._environment?.fleet) {
+      throw new Error('Build batch is not supported for project using reserved capacity');
+    }
+
     if (!this._batchServiceRole) {
       this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
@@ -1424,6 +1450,13 @@ export class Project extends ProjectBase {
   private configureFleet({ fleet }: BuildEnvironment): { fleetArn: string } | undefined {
     if (!fleet) {
       return undefined;
+    }
+
+    // !! Failsafe !! This should not occur with the current methods, given:
+    // * The fleet can only be set with the constructor
+    // * The batch builds can only be enabled with the `enableBatchBuilds` method
+    if (this.isBatchBuildEnabled) {
+      throw new Error('Build batch is not supported for project using reserved capacity');
     }
 
     // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
