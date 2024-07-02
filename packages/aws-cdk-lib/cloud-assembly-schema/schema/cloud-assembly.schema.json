@@ -345,6 +345,12 @@
                         "type": "string"
                     }
                 },
+                "notificationArns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "stackName": {
                     "description": "The name to use for the CloudFormation stack. (Default - name derived from artifact ID)",
                     "type": "string"

@@ -48,6 +48,7 @@ export function addStackArtifactToAssembly(
     terminationProtection: stack.terminationProtection,
     tags: nonEmptyDict(stack.tags.tagValues()),
     validateOnSynth: session.validateOnSynth,
+    notificationArns: stack._notificationArns,
     ...stackProps,
     ...stackNameProperty,
   };
