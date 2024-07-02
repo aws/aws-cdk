@@ -466,8 +466,8 @@ integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => 
   );
 }));
 
-integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => {
-  const topicName = `${fixture.stackNamePrefix}-test-topic`;
+integTest('deploy with notification ARN as flag', withDefaultFixture(async (fixture) => {
+  const topicName = `${fixture.stackNamePrefix}-test-topic-flag`;
 
   const response = await fixture.aws.sns('createTopic', { Name: topicName });
   const topicArn = response.TopicArn!;
@@ -479,6 +479,26 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
     // verify that the stack we deployed has our notification ARN
     const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
       StackName: fixture.fullStackName('test-2'),
+    });
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
+  } finally {
+    await fixture.aws.sns('deleteTopic', {
+      TopicArn: topicArn,
+    });
+  }
+}));
+
+integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixture) => {
+  const topicName = `${fixture.stackNamePrefix}-test-topic-prop`;
+
+  const response = await fixture.aws.sns('createTopic', { Name: topicName });
+  const topicArn = response.TopicArn!;
+  try {
+    await fixture.cdkDeploy('test-notification-arn-prop');
+
+    // verify that the stack we deployed has our notification ARN
+    const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
+      StackName: fixture.fullStackName('test-notification-arn-prop'),
     });
     expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
   } finally {
