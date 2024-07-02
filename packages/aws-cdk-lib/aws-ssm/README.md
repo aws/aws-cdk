@@ -1,6 +1,5 @@
 # AWS Systems Manager Construct Library
 
-
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Using existing SSM Parameters in your CDK app
@@ -143,3 +142,32 @@ When specifying an `allowedPattern`, the values provided as string literals
 are validated against the pattern and an exception is raised if a value
 provided does not comply.
 
+## Using Tokens in parameter name
+
+When using [CDK Tokens](https://docs.aws.amazon.com/cdk/v2/guide/tokens.html) in parameter name,
+you need to explicitly set the `simpleName` property. Setting `simpleName` to an incorrect boolean
+value may result in unexpected behaviours, such as having duplicate '/' in the parameter ARN
+or missing a '/' in the parameter ARN.
+
+`simpleName` is used to indicates whether the parameter name is a simple name. A parameter name
+without any '/' is considered a simple name, thus you should set `simpleName` to `true`.
+If the parameter name includes '/', set `simpleName` to `false`.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+const simpleParameter = new ssm.StringParameter(this, 'StringParameter', {
+  // the parameter name doesn't contain any '/'
+  parameterName: 'parameter',
+  stringValue: 'SOME_VALUE',
+  simpleName: true, // set `simpleName` to true
+});
+
+declare const func: lambda.IFunction;
+const nonSimpleParameter = new ssm.StringParameter(this, 'StringParameter', {
+  // the parameter name contains '/'
+  parameterName: `/${func.functionName}/my/app/param`,
+  stringValue: 'SOME_VALUE',
+  simpleName: false, // set `simpleName` to false
+});
+```
