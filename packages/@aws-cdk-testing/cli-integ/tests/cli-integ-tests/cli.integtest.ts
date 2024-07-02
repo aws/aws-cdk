@@ -494,11 +494,11 @@ integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixt
   const response = await fixture.aws.sns('createTopic', { Name: topicName });
   const topicArn = response.TopicArn!;
   try {
-    await fixture.cdkDeploy('test-notification-arn-prop');
+    await fixture.cdkDeploy('notification-arn-prop');
 
     // verify that the stack we deployed has our notification ARN
     const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
-      StackName: fixture.fullStackName('test-notification-arn-prop'),
+      StackName: fixture.fullStackName('notification-arn-prop'),
     });
     expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
   } finally {
