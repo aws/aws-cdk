@@ -596,6 +596,30 @@ describe('security group lookup', () => {
 
   });
 
+  test('can look up a security group by filters', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const securityGroup = SecurityGroup.fromLookupByFilters(stack, 'SG1', {
+      ownerId: '012345678901',
+      description: 'my description',
+      tagKeys: ['tagA', 'tagB'],
+      tags: { tagC: ['valueC', 'otherValueC'], tagD: ['valueD'] },
+    });
+
+    // THEN
+    expect(securityGroup.securityGroupId).toEqual('sg-12345678');
+    expect(securityGroup.allowAllOutbound).toEqual(true);
+
+  });
+
   test('can look up a security group and use it as a peer', () => {
     // GIVEN
     const app = new App();
