@@ -353,6 +353,42 @@ test('StringParameter.fromStringParameterName', () => {
   });
 });
 
+test('StringParameter.fromStringParameterArn', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const sharingParameterArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sharingParameterArn);
+
+  // THEN
+  expect(stack.resolve(param.parameterArn)).toEqual(sharingParameterArn);
+  expect(stack.resolve(param.parameterName)).toEqual('dummyName');
+  expect(stack.resolve(param.parameterType)).toEqual('String');
+  expect(stack.resolve(param.stringValue)).toEqual({ Ref: 'MyParamNameParameter' });
+  Template.fromStack(stack).templateMatches({
+    Parameters: {
+      MyParamNameParameter: {
+        Type: 'AWS::SSM::Parameter::Value<String>',
+        Default: sharingParameterArn,
+      },
+    },
+  });
+});
+
+test('throws when StringParameter.fromStringParameterArn is called with a token ARN', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const tokenizedParam = new cdk.CfnParameter(stack, 'TokenParam', {
+    type: 'String',
+  }).valueAsString;
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', tokenizedParam);
+  }).toThrow(/stringParameterArn cannot be an unresolved token/);
+});
+
 test('StringParameter.fromStringParameterAttributes', () => {
   // GIVEN
   const stack = new cdk.Stack();
