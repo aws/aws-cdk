@@ -293,13 +293,16 @@ describe('User Pool', () => {
 
   test('import using arn', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: { region: 'us-east-1', account: '0123456789012' },
+    });
     const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
 
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
     expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    expect(stack.resolve(pool.userPoolProviderName)).toEqual('cognito-idp.us-east-1.amazonaws.com/test-user-pool');
   });
 
   test('import using arn without resourceName fails', () => {
