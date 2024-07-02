@@ -517,7 +517,7 @@ const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
 const listener = nlb.addListener('listener', { port: 80 });
 
 listener.addTargets('Targets', {
-  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  targets: [new targets.AlbListenerTarget(svc.listener)],
   port: 80,
 });
 
