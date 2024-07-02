@@ -375,3 +375,4 @@ _cdk.json_
     "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
   }
 }
+```
