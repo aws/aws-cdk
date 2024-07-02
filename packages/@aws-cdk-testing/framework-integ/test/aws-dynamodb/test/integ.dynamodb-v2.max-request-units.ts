@@ -7,8 +7,8 @@ class TestStack extends Stack {
   public constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    new TableV2(this, 'GlobalTable', {
-      tableName: 'my-global-table',
+    new TableV2(this, 'GlobalTableV2', {
+      tableName: 'my-global-table-v2',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.onDemand({
@@ -17,7 +17,7 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       replicas: [
         {
-          region: 'eu-west-1',
+          region: 'us-east-1',
           maxReadRequestUnits: 222,
         },
       ],
@@ -34,8 +34,8 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new IntegTest(app, 'aws-cdk-global-table-integ', {
-  testCases: [new TestStack(app, 'aws-cdk-global-table', { env: { region: 'us-east-1' } })],
-  regions: ['us-east-1'],
+new IntegTest(app, 'aws-cdk-global-table-integ-v2', {
+  testCases: [new TestStack(app, 'aws-cdk-global-table-v2', { env: { region: 'eu-west-1' } })],
+  regions: ['eu-west-1'],
   stackUpdateWorkflow: false,
 });

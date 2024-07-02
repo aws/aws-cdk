@@ -535,10 +535,6 @@ export class TableV2 extends TableBaseV2 {
       this.billingMode = props.billing.mode;
     }
 
-    this.billingMode = props.billing?.mode ?? BillingMode.PAY_PER_REQUEST;
-    this.readProvisioning = props.billing?._renderReadCapacity();
-    this.writeProvisioning = props.billing?._renderWriteCapacity();
-
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
 
@@ -691,7 +687,9 @@ export class TableV2 extends TableBaseV2 {
       tags: props.tags,
       readOnDemandThroughputSettings: props.maxReadRequestUnits
         ? { maxReadRequestUnits: props.maxReadRequestUnits }
-        :{ maxReadRequestUnits: this.maxReadRequestUnits },
+        : this.maxReadRequestUnits
+          ? { maxReadRequestUnits: this.maxReadRequestUnits }
+          : undefined,
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
         : undefined,
@@ -706,8 +704,10 @@ export class TableV2 extends TableBaseV2 {
     const writeProvisionedThroughputSettings = props.writeCapacity ? props.writeCapacity._renderWriteCapacity() : this.writeProvisioning;
 
     props.maxReadRequestUnits && this.globalSecondaryIndexMaxReadUnits.set(props.indexName, props.maxReadRequestUnits);
-    const writeOnDemandThroughputSettings: CfnGlobalTable.WriteOnDemandThroughputSettingsProperty =
-      { maxWriteRequestUnits: props.maxWriteRequestUnits };
+
+    const writeOnDemandThroughputSettings: CfnGlobalTable.WriteOnDemandThroughputSettingsProperty | undefined = props.maxWriteRequestUnits
+      ? { maxWriteRequestUnits: props.maxWriteRequestUnits }
+      : undefined;
 
     return {
       indexName: props.indexName,
@@ -749,8 +749,9 @@ export class TableV2 extends TableBaseV2 {
 
       const readProvisionedThroughputSettings = readCapacity?._renderReadCapacity() ?? this.readProvisioning;
 
-      const readOnDemandThroughputSettings: CfnGlobalTable.ReadOnDemandThroughputSettingsProperty =
-      { maxReadRequestUnits: maxReadRequestUnits };
+      const readOnDemandThroughputSettings: CfnGlobalTable.ReadOnDemandThroughputSettingsProperty | undefined = maxReadRequestUnits
+        ? { maxReadRequestUnits: maxReadRequestUnits }
+        : undefined;
 
       replicaGlobalSecondaryIndexes.push({
         indexName,
