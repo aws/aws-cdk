@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.147.3](https://github.com/aws/aws-cdk/compare/v2.147.2...v2.147.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** breaking change in esbuild causes import module error ([#30726](https://github.com/aws/aws-cdk/issues/30726)) ([06c14b1](https://github.com/aws/aws-cdk/commit/06c14b16d04353e9e108b58edc1450d018c24b12)), closes [#30717](https://github.com/aws/aws-cdk/issues/30717)
+
+## [2.147.2](https://github.com/aws/aws-cdk/compare/v2.147.1...v2.147.2) (2024-06-27)
+
+
+### Reverts
+
+* fix(core): overrideLogicalId validation ([#29708](https://github.com/aws/aws-cdk/pull/29708)) ([b196b13](https://github.com/aws/aws-cdk/commit/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d))
+
+## [2.147.1](https://github.com/aws/aws-cdk/compare/v2.147.0...v2.147.1) (2024-06-21)
+
+
+### Reverts
+
+* route53 CrossAccountZoneDelegationRecord fails at deployment time with imported `delegatedZone` ([#30440](https://github.com/aws/aws-cdk/issues/30440)) ([a3d9b10](https://github.com/aws/aws-cdk/commit/a3d9b10ad9036486961f74e852493aa9684cfdb4))
+
+## [2.147.0](https://github.com/aws/aws-cdk/compare/v2.146.0...v2.147.0) (2024-06-20)
+
+
+### Features
+
+* **ec2:** add nitro enclave and hibernation settings to the Instance Construct ([#30228](https://github.com/aws/aws-cdk/issues/30228)) ([4e9ef15](https://github.com/aws/aws-cdk/commit/4e9ef15a0cf8b1bc664b5d22b34af9eaaa17bec8))
+* **ses:** allow VDM settings at the configuration set level ([#30051](https://github.com/aws/aws-cdk/issues/30051)) ([49a98ac](https://github.com/aws/aws-cdk/commit/49a98ac978701383390cfc9ab62d38603469295a)), closes [#30041](https://github.com/aws/aws-cdk/issues/30041)
+* **stepfunctions-tasks:** support FLEX execution class for GlueStartJobRun ([#30534](https://github.com/aws/aws-cdk/issues/30534)) ([c826d8f](https://github.com/aws/aws-cdk/commit/c826d8faaeb310623eb9a1a1c82930b679768007)), closes [#30533](https://github.com/aws/aws-cdk/issues/30533)
+* update L1 CloudFormation resource definitions ([#30569](https://github.com/aws/aws-cdk/issues/30569)) ([a5c6d21](https://github.com/aws/aws-cdk/commit/a5c6d2159d22aaa1f5f67dce45d87fe86aea35fe)), closes [/docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html#aurora-serverless-v2](https://github.com/aws//docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html/issues/aurora-serverless-v2) [/docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html#aurora-serverless-v2](https://github.com/aws//docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html/issues/aurora-serverless-v2)
+
+
+### Bug Fixes
+
+* **apigateway:** remove timeout upper bound max ([#30547](https://github.com/aws/aws-cdk/issues/30547)) ([3c36fe9](https://github.com/aws/aws-cdk/commit/3c36fe968e2f2c121e5bfc828100a9e7dafb5c26)), closes [#30539](https://github.com/aws/aws-cdk/issues/30539)
+* **core:** overrideLogicalId validation ([#29708](https://github.com/aws/aws-cdk/issues/29708)) ([b196b13](https://github.com/aws/aws-cdk/commit/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d)), closes [#29701](https://github.com/aws/aws-cdk/issues/29701)
+* **globalaccelerator-endpoints:** add preserveClientIp option for net… ([#30346](https://github.com/aws/aws-cdk/issues/30346)) ([c1e1b4d](https://github.com/aws/aws-cdk/commit/c1e1b4d777a65ba3fcb6a108c43b10b4e7b9ace6))
+* **stepfunctions:** add docs and warning DistributedMap Class ignores executionType in the ProcessorConfig ([#30301](https://github.com/aws/aws-cdk/issues/30301)) ([0499adf](https://github.com/aws/aws-cdk/commit/0499adf035061997c1a845ff7f2f10a1759c6cb7)), closes [#30194](https://github.com/aws/aws-cdk/issues/30194) [#27913](https://github.com/aws/aws-cdk/issues/27913) [#28821](https://github.com/aws/aws-cdk/issues/28821)
+
+## [2.146.0](https://github.com/aws/aws-cdk/compare/v2.145.0...v2.146.0) (2024-06-13)
+
+
+### Features
+
+* **appsync:** add `maxBatchSize` property to the `AppSyncFunction` Construct ([#30266](https://github.com/aws/aws-cdk/issues/30266)) ([f1dc142](https://github.com/aws/aws-cdk/commit/f1dc1429c8d2253fb8b0f7570443d0881921d6d4))
+* **eks:** support AccessConfig for the Cluster construct ([#30016](https://github.com/aws/aws-cdk/issues/30016)) ([f45f2ca](https://github.com/aws/aws-cdk/commit/f45f2cac7ec36932b204e1000bd7eb7f784c930c)), closes [#28588](https://github.com/aws/aws-cdk/issues/28588)
+* **opensearch:** add OpenSearch 2.13 engine version ([#30399](https://github.com/aws/aws-cdk/issues/30399)) ([db3e77d](https://github.com/aws/aws-cdk/commit/db3e77d4b32a7464b38f8502d7c113ac163e17dc))
+* implement node runtime region awareness for cdk vended custom resources ([#30108](https://github.com/aws/aws-cdk/issues/30108)) ([69c5dde](https://github.com/aws/aws-cdk/commit/69c5dde9c88e496a4f0c406cb53f85fb22cb0e28))
+* **codebuild:** add missing types for webhook filters ([#30064](https://github.com/aws/aws-cdk/issues/30064)) ([1d93094](https://github.com/aws/aws-cdk/commit/1d93094318ddb216ddaea344f92eaf830fb8b3ef)), closes [#30062](https://github.com/aws/aws-cdk/issues/30062)
+* **sns:** add grantSubscribe method ([#30486](https://github.com/aws/aws-cdk/issues/30486)) ([36a48ad](https://github.com/aws/aws-cdk/commit/36a48adb8cf9ecfa21fbdee4d61baee16391f07a)), closes [#29049](https://github.com/aws/aws-cdk/issues/29049)
+* update L1 CloudFormation resource definitions ([#30508](https://github.com/aws/aws-cdk/issues/30508)) ([06d0a1b](https://github.com/aws/aws-cdk/commit/06d0a1b3d2fb1627901031b96f81cb9d39086463))
+
+
+### Bug Fixes
+
+* **cloudfront:** make long function name deterministic ([#30392](https://github.com/aws/aws-cdk/issues/30392)) ([e19d18b](https://github.com/aws/aws-cdk/commit/e19d18bc1c5f580e1d6dba9965268aedb894340d)), closes [#20017](https://github.com/aws/aws-cdk/issues/20017) [#15523](https://github.com/aws/aws-cdk/issues/15523) [#28629](https://github.com/aws/aws-cdk/issues/28629)
+* **route53:** delegation fails with public and private hosted zones with same name ([#30439](https://github.com/aws/aws-cdk/issues/30439)) ([1f866c9](https://github.com/aws/aws-cdk/commit/1f866c92d755948a82c01c78e37b122c2cab8ed5)), closes [#30262](https://github.com/aws/aws-cdk/issues/30262)
+
 ## [2.145.0](https://github.com/aws/aws-cdk/compare/v2.144.0...v2.145.0) (2024-06-07)
 
 
