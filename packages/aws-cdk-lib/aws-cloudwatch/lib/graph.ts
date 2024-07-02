@@ -72,6 +72,18 @@ export interface YAxisProps {
 }
 
 /**
+ * Properties for lables shown on the graph.
+ */
+export interface LabelProps {
+  /**
+   * Whether to display labels on chart.
+   *
+   * @default - No value
+   */
+  readonly visible?: boolean;
+}
+
+/**
  * Properties for an AlarmWidget
  */
 export interface AlarmWidgetProps extends MetricWidgetProps {
@@ -374,6 +386,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly view?: GraphWidgetView;
 
   /**
+   * Properties for the graph's labels. Only applicable for Pie charts.
+   *
+   * @default - None
+   */
+  readonly labels?: LabelProps;
+
+  /**
    * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
    *
    * If false, values will be from the most recent period of your chosen time range;
@@ -508,6 +527,7 @@ export class GraphWidget extends ConcreteWidget {
           right: this.props.rightYAxis ?? undefined,
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
+        labels: this.props.labels,
         liveData: this.props.liveData,
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         period: this.props.period?.toSeconds(),
