@@ -26,15 +26,13 @@ describe('fargate task definition', () => {
       const stack = new cdk.Stack();
 
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: cdk.Lazy.number({ produce: () => 128 }),
+        cpu: cdk.Lazy.number({ produce: () => 256 }),
         memoryLimitMiB: cdk.Lazy.number({ produce: () => 1024 }),
       });
 
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '128',
-        Memory: '1024',
-      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
 
     });
 
@@ -42,7 +40,7 @@ describe('fargate task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 128,
+        cpu: 256,
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
@@ -72,7 +70,7 @@ describe('fargate task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '128',
+        Cpu: '256',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -215,6 +213,32 @@ describe('fargate task definition', () => {
           },
         });
       }).toThrow(/'pidMode' can only be set to 'task' for Linux Fargate containers, got: 'host'./);
+    });
+
+    test('throws error when invalid CPU and memory combination is provided', () => {
+      const stack = new cdk.Stack();
+
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 256,
+        memoryLimitMiB: 125,
+      });
+
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
+    });
+
+    test('succesfull when valid CPU and memory combination is provided', () => {
+      const stack = new cdk.Stack();
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 256,
+        memoryLimitMiB: 512,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Cpu: '256',
+        Memory: '512',
+      });
     });
   });
   describe('When configuredAtLaunch in the Volume', ()=> {

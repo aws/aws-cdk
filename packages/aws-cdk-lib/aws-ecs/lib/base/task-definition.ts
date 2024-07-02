@@ -432,22 +432,8 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
-    if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
-      throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
-    }
     if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
-    }
-    if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
-      throw new Error('Cannot set placement constraints on tasks that run on Fargate');
-    }
-
-    if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
-      throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
-    }
-
-    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
-      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
     if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
@@ -456,6 +442,35 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     if (!this.isFargateCompatible && props.runtimePlatform) {
       throw new Error('Cannot specify runtimePlatform in non-Fargate compatible tasks');
+    }
+
+    //FARGATE compatible tasks pre-checks
+    if (this.isFargateCompatible) {
+      if (this.networkMode !== NetworkMode.AWS_VPC) {
+        throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
+      }
+
+      if (props.placementConstraints && props.placementConstraints.length > 0) {
+        throw new Error('Cannot set placement constraints on tasks that run on Fargate');
+      }
+
+      if (!props.cpu || !props.memoryMiB) {
+        throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
+      }
+
+      if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0) {
+        throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+      }
+
+      // Validate the CPU and memory size for the Windows operation system family.
+      if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
+        this.checkFargateWindowsBasedTasksSize(props.cpu, props.memoryMiB, props.runtimePlatform);
+      }
+
+      // Check the combination as per doc https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
+      this.node.addValidation({
+        validate: () => this.validateFargateTaskDefinitionMemoryCpu(props.cpu!, props.memoryMiB!),
+      });
     }
 
     this._executionRole = props.executionRole;
@@ -470,13 +485,6 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
     this.pidMode = props.pidMode;
-
-    // validate the cpu and memory size for the Windows operation system family.
-    if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
-      // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
-      // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
-      this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
-    }
 
     this.runtimePlatform = props.runtimePlatform;
     this._cpu = props.cpu;
@@ -899,6 +907,38 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
     }
   };
+
+  private validateFargateTaskDefinitionMemoryCpu(cpu: string, memory: string): string[] {
+    const ret = new Array<string>();
+    const validCpuMemoryCombinations = [
+      { cpu: '256', memory: ['512', '1024', '2048'] },
+      { cpu: '512', memory: this.range(1024, 4096, 1024) },
+      { cpu: '1024', memory: this.range(2048, 8192, 1024) },
+      { cpu: '2048', memory: this.range(4096, 16384, 1024) },
+      { cpu: '4096', memory: this.range(8192, 30720, 1024) },
+      { cpu: '8192', memory: this.range(16384, 61440, 4096) },
+      { cpu: '16384', memory: this.range(32768, 122880, 8192) },
+    ];
+
+    const isValidCombination = validCpuMemoryCombinations.some((combo) => {
+      return combo.cpu === cpu && combo.memory.includes(memory);
+    });
+
+    if (!isValidCombination) {
+      ret.push('Invalid CPU and memory combinations for FARGATE compatible task definition - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html');
+    }
+
+    return ret;
+  }
+
+  private range(start: number, end: number, step: number): string[] {
+    const result = [];
+    for (let i = start; i <= end; i += step) {
+      result.push(String(i));
+    }
+    return result;
+  }
+
 }
 
 /**
