@@ -98,6 +98,20 @@ const arnLookup = ssm.StringParameter.valueFromLookup(this, '/my/role/arn');
 iam.Role.fromRoleArn(this, 'role', Lazy.string({ produce: () => arnLookup }));
 ```
 
+
+#### Enhanced Control over Context Caching
+
+The `ssm.StringParameter.valueFromLookup` method in AWS CDK supports an optional `disableContextCaching` flag, allowing developers to control the caching of context values fetched from AWS SSM Parameter Store. This feature is aimed at providing flexibility for scenarios where parameters may frequently change or when ensuring the freshness of data is critical.
+
+```ts
+const parameterValue = ssm.StringParameter.valueFromLookup(this, 'parameterName', {
+  disableContextCaching: true,
+});
+```
+
+Setting `disableContextCaching` to `true` bypasses the default caching mechanism, ensuring the parameter value is retrieved directly from the source on each synthesis. 
+
+
 ## Creating new SSM Parameters in your CDK app
 
 You can create either `ssm.StringParameter` or `ssm.StringListParameter`s in

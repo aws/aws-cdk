@@ -6,7 +6,7 @@ import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  ContextProvider, Fn, IResource, Resource, Stack, Token,
+  ContextProvider, ContextProviderConfig, Fn, IResource, Resource, Stack, Token,
   Tokenization,
 } from '../../core';
 
@@ -536,11 +536,12 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
    */
-  public static valueFromLookup(scope: Construct, parameterName: string): string {
+  public static valueFromLookup(scope: Construct, parameterName: string, contextOpts?: ContextProviderConfig): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
       dummyValue: `dummy-value-for-${parameterName}`,
+      disableContextCaching: contextOpts?.disableContextCaching,
     }).value;
 
     return value;
