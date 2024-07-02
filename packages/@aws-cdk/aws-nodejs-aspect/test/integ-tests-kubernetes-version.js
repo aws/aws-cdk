@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getClusterVersionConfig = void 0;
+const lambda_layer_kubectl_v24_1 = require("@aws-cdk/lambda-layer-kubectl-v24");
+const lambda_layer_kubectl_v29_1 = require("@aws-cdk/lambda-layer-kubectl-v29");
+const eks = require("aws-cdk-lib/aws-eks");
+const versionMap = {
+    1.24: lambda_layer_kubectl_v24_1.KubectlV24Layer,
+    1.29: lambda_layer_kubectl_v29_1.KubectlV29Layer,
+};
+function getClusterVersionConfig(scope, version) {
+    const _version = version ?? eks.KubernetesVersion.V1_24;
+    return {
+        version: _version,
+        // Crazy type-casting is required because KubectlLayer peer depends on
+        // types from aws-cdk-lib, but we run integration tests in the @aws-cdk/
+        // v1-style directory, not in the aws-cdk-lib v2-style directory.
+        // kubectlLayer: new KubectlV24Layer(scope, 'KubectlLayer') as unknown as lambda.ILayerVersion,
+        kubectlLayer: new versionMap[_version.version](scope, 'KubectlLayer'),
+    };
+}
+exports.getClusterVersionConfig = getClusterVersionConfig;
+;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWctdGVzdHMta3ViZXJuZXRlcy12ZXJzaW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWctdGVzdHMta3ViZXJuZXRlcy12ZXJzaW9uLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUNBLGdGQUFvRTtBQUNwRSxnRkFBb0U7QUFFcEUsMkNBQTJDO0FBRTNDLE1BQU0sVUFBVSxHQUEyQjtJQUN6QyxJQUFJLEVBQUUsMENBQWU7SUFDckIsSUFBSSxFQUFFLDBDQUFlO0NBQ3RCLENBQUM7QUFFRixTQUFnQix1QkFBdUIsQ0FBQyxLQUFnQixFQUFFLE9BQStCO0lBQ3ZGLE1BQU0sUUFBUSxHQUFHLE9BQU8sSUFBSSxHQUFHLENBQUMsaUJBQWlCLENBQUMsS0FBSyxDQUFDO0lBQ3hELE9BQU87UUFDTCxPQUFPLEVBQUUsUUFBUTtRQUNqQixzRUFBc0U7UUFDdEUsd0VBQXdFO1FBQ3hFLGlFQUFpRTtRQUNqRSwrRkFBK0Y7UUFDL0YsWUFBWSxFQUFFLElBQUksVUFBVSxDQUFDLFFBQVEsQ0FBQyxPQUFPLENBQUMsQ0FBQyxLQUFLLEVBQUUsY0FBYyxDQUFvQztLQUN6RyxDQUFDO0FBQ0osQ0FBQztBQVZELDBEQVVDO0FBQUEsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIGxhbWJkYSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtbGFtYmRhJztcbmltcG9ydCB7IEt1YmVjdGxWMjRMYXllciB9IGZyb20gJ0Bhd3MtY2RrL2xhbWJkYS1sYXllci1rdWJlY3RsLXYyNCc7XG5pbXBvcnQgeyBLdWJlY3RsVjI5TGF5ZXIgfSBmcm9tICdAYXdzLWNkay9sYW1iZGEtbGF5ZXIta3ViZWN0bC12MjknO1xuaW1wb3J0IHsgQ29uc3RydWN0IH0gZnJvbSAnY29uc3RydWN0cyc7XG5pbXBvcnQgKiBhcyBla3MgZnJvbSAnYXdzLWNkay1saWIvYXdzLWVrcyc7XG5cbmNvbnN0IHZlcnNpb25NYXA6IHsgW2tleTogc3RyaW5nXTogYW55IH0gPSB7XG4gIDEuMjQ6IEt1YmVjdGxWMjRMYXllcixcbiAgMS4yOTogS3ViZWN0bFYyOUxheWVyLFxufTtcblxuZXhwb3J0IGZ1bmN0aW9uIGdldENsdXN0ZXJWZXJzaW9uQ29uZmlnKHNjb3BlOiBDb25zdHJ1Y3QsIHZlcnNpb24/OiBla3MuS3ViZXJuZXRlc1ZlcnNpb24pIHtcbiAgY29uc3QgX3ZlcnNpb24gPSB2ZXJzaW9uID8/IGVrcy5LdWJlcm5ldGVzVmVyc2lvbi5WMV8yNDtcbiAgcmV0dXJuIHtcbiAgICB2ZXJzaW9uOiBfdmVyc2lvbixcbiAgICAvLyBDcmF6eSB0eXBlLWNhc3RpbmcgaXMgcmVxdWlyZWQgYmVjYXVzZSBLdWJlY3RsTGF5ZXIgcGVlciBkZXBlbmRzIG9uXG4gICAgLy8gdHlwZXMgZnJvbSBhd3MtY2RrLWxpYiwgYnV0IHdlIHJ1biBpbnRlZ3JhdGlvbiB0ZXN0cyBpbiB0aGUgQGF3cy1jZGsvXG4gICAgLy8gdjEtc3R5bGUgZGlyZWN0b3J5LCBub3QgaW4gdGhlIGF3cy1jZGstbGliIHYyLXN0eWxlIGRpcmVjdG9yeS5cbiAgICAvLyBrdWJlY3RsTGF5ZXI6IG5ldyBLdWJlY3RsVjI0TGF5ZXIoc2NvcGUsICdLdWJlY3RsTGF5ZXInKSBhcyB1bmtub3duIGFzIGxhbWJkYS5JTGF5ZXJWZXJzaW9uLFxuICAgIGt1YmVjdGxMYXllcjogbmV3IHZlcnNpb25NYXBbX3ZlcnNpb24udmVyc2lvbl0oc2NvcGUsICdLdWJlY3RsTGF5ZXInKSBhcyB1bmtub3duIGFzIGxhbWJkYS5JTGF5ZXJWZXJzaW9uLFxuICB9O1xufTsiXX0=

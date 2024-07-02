@@ -48,10 +48,19 @@ export abstract class CustomResourceProviderBase extends Construct {
     return this._codeHash;
   }
 
+  /**
+   * Returns the current runtime value passed under props
+   */
+  public get runtime(): string {
+    if (!this._runtime) {
+      throw new Error('This custom resource runtime does not have an input runtime');
+    }
+    return this._runtime;
+  }
   private _codeHash?: string;
   private policyStatements?: any[];
   private role?: CfnResource;
-
+  private _runtime?: string;
   /**
    * The ARN of the provider's AWS Lambda function which should be used as the `serviceToken` when defining a custom
    * resource.
@@ -88,6 +97,7 @@ export abstract class CustomResourceProviderBase extends Construct {
     // need to initialize this attribute, but there should never be an instance
     // where config.enabled=true && config.preventSynthesis=true
     this.roleArn = '';
+    this._runtime = props.runtimeName;
     if (config.enabled) {
       // gives policyStatements a chance to resolve
       this.node.addValidation({
@@ -250,7 +260,6 @@ export abstract class CustomResourceProviderBase extends Construct {
       });
 
       this._codeHash = staging.assetHash;
-
       return {
         code: {
           S3Bucket: asset.bucketName,
@@ -279,3 +288,4 @@ export type Code = {
   S3Bucket: string;
   S3Key: string;
 };
+
