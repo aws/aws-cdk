@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "4fbcb1396d413264c2962a109ddc7d4a604c44aa26cd8ad7c1fe6d6a0e003245": {
+      "source": {
+        "path": "aws-cdk-route53-health-check.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4fbcb1396d413264c2962a109ddc7d4a604c44aa26cd8ad7c1fe6d6a0e003245.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

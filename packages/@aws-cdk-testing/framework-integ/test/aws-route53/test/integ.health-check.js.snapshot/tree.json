@@ -1,0 +1,429 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-route53-health-check": {
+        "id": "aws-cdk-route53-health-check",
+        "path": "aws-cdk-route53-health-check",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "aws-cdk-route53-health-check/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk.test."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckHttp": {
+            "id": "HealthCheckHttp",
+            "path": "aws-cdk-route53-health-check/HealthCheckHttp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckHttp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "HTTP",
+                      "failureThreshold": 3,
+                      "fullyQualifiedDomainName": "lb.cdk.test",
+                      "requestInterval": 30,
+                      "resourcePath": "/health"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttp": {
+            "id": "ARecordHttp",
+            "path": "aws-cdk-route53-health-check/ARecordHttp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckHttp45CD8FAC"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttp450B1986",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttp2": {
+            "id": "ARecordHttp2",
+            "path": "aws-cdk-route53-health-check/ARecordHttp2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttp2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttp22B2DEA01",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckHttps": {
+            "id": "HealthCheckHttps",
+            "path": "aws-cdk-route53-health-check/HealthCheckHttps",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckHttps/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "HTTPS",
+                      "failureThreshold": 3,
+                      "fullyQualifiedDomainName": "lb-ssl.cdk.test",
+                      "port": 443,
+                      "requestInterval": 30,
+                      "resourcePath": "/health"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttps": {
+            "id": "ARecordHttps",
+            "path": "aws-cdk-route53-health-check/ARecordHttps",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttps/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckHttpsE7EFCB62"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_foo.cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttps207C4ED0",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttps2": {
+            "id": "ARecordHttps2",
+            "path": "aws-cdk-route53-health-check/ARecordHttps2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttps2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_foo.cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttps25F6F420F",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckTcp": {
+            "id": "HealthCheckTcp",
+            "path": "aws-cdk-route53-health-check/HealthCheckTcp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckTcp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "TCP",
+                      "failureThreshold": 3,
+                      "fullyQualifiedDomainName": "lb-tcp.cdk.test",
+                      "port": 443,
+                      "requestInterval": 30
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordTcp": {
+            "id": "ARecordTcp",
+            "path": "aws-cdk-route53-health-check/ARecordTcp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordTcp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckTcpC39A45DC"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_bar.cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordTcpEB5E7F54",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordTcp2": {
+            "id": "ARecordTcp2",
+            "path": "aws-cdk-route53-health-check/ARecordTcp2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordTcp2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_bar.cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordTcp2987B773D",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-route53-health-check/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-route53-health-check/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-test": {
+        "id": "integ-test",
+        "path": "integ-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

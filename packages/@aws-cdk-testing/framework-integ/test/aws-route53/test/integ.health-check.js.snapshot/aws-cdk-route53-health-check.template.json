@@ -1,0 +1,186 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.test."
+   }
+  },
+  "HealthCheckHttp45CD8FAC": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "FailureThreshold": 3,
+     "FullyQualifiedDomainName": "lb.cdk.test",
+     "RequestInterval": 30,
+     "ResourcePath": "/health",
+     "Type": "HTTP"
+    }
+   }
+  },
+  "ARecordHttp1E242324": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckHttp45CD8FAC"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttp450B1986",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordHttp2C99D5094": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttp22B2DEA01",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  },
+  "HealthCheckHttpsE7EFCB62": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "FailureThreshold": 3,
+     "FullyQualifiedDomainName": "lb-ssl.cdk.test",
+     "Port": 443,
+     "RequestInterval": 30,
+     "ResourcePath": "/health",
+     "Type": "HTTPS"
+    }
+   }
+  },
+  "ARecordHttps92EB971E": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckHttpsE7EFCB62"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_foo.cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttps207C4ED0",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordHttps2771FA16F": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_foo.cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttps25F6F420F",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  },
+  "HealthCheckTcpC39A45DC": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "FailureThreshold": 3,
+     "FullyQualifiedDomainName": "lb-tcp.cdk.test",
+     "Port": 443,
+     "RequestInterval": 30,
+     "Type": "TCP"
+    }
+   }
+  },
+  "ARecordTcp8F151AA4": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckTcpC39A45DC"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_bar.cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordTcpEB5E7F54",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordTcp21F5B796C": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_bar.cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordTcp2987B773D",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

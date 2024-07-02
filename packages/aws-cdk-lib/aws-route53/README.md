@@ -220,6 +220,37 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
+### Health Checks
+
+You can associate health checks with records:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+const healthCheck = new route53.HealthCheck(this, 'HealthCheck', {
+  type: route53.HealthCheckType.HTTP,
+  fqdn: 'example.com',
+  port: 80,
+  resourcePath: '/health',
+  failureThreshold: 3,
+  requestInterval: Duration.seconds(30),
+});
+
+new route53.ARecord(this, 'ARecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  healthCheck,
+  weight: 100,
+});
+new route53.ARecord(this, 'ARecord2', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+  weight: 0,
+});
+```
+
+Possible values for `type` are `HTTP`, `HTTPS`, `TCP`, `CLOUDWATCH_METRIC`, `CALCULATED` and `RECOVERY_CONTROL`.
+
 ### Replacing existing record sets (dangerous!)
 
 Use the `deleteExisting` prop to delete an existing record set before deploying the new one.
