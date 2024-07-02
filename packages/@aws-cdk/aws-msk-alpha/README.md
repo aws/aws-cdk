@@ -143,6 +143,25 @@ const cluster = new msk.Cluster(this, 'cluster', {
 });
 ```
 
+### SASL/SCRAM + SASL/IAM
+
+Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html) and [SASL/SCRAM](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html):
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new msk.Cluster(this, 'cluster', {
+  clusterName: 'myCluster',
+  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  vpc,
+  encryptionInTransit: {
+    clientBroker: msk.ClientBrokerEncryption.TLS,
+  },
+  clientAuthentication: msk.ClientAuthentication.sasl({
+    iam: true,
+    scram: true,
+  }),
+});
+```
 
 ### SASL/IAM + TLS
 
