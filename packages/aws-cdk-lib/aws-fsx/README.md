@@ -196,8 +196,8 @@ const lustreConfiguration = {
 
 When you turn data compression on for an existing file system, only newly written files are compressed.  Existing files are not compressed. For more information, see [Compressing previously written files](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html#migrate-compression).
 
-
 ### Backups
+
 You can take daily automatic backups by setting `automaticBackupRetention` to a non-zero day in the `lustreConfiguration`.
 
 Additionally, you can set the backup window by specifying the `dailyAutomaticBackupStartTime`.
@@ -216,6 +216,27 @@ const lustreConfiguration = {
 
 For more information, see [Working with backups
 ](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-backups-fsx.html).
+
+### Storage Type
+
+By default, FSx for Lustre uses SSD storage. To use HDD storage, specify `storageType`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.PERSISTENT_1 },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  storageType: fsx.StorageType.HDD,
+});
+```
+
+- HDD storage type is only supported for `PERSISTENT_1` deployment type.
+- If you specify `HDD` storage type, FileSystem implicitly uses cache to improve the performance for frequently accessed files by caching up to 20% of the total storage capacity of the file system.
+
+For more information, see [document](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html#storage-options).
 
 ## FSx for Windows File Server
 
