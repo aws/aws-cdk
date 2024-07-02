@@ -265,7 +265,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
       .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false })
-      .option('change-set', { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
+      .option('change-set', { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.' }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -514,7 +514,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           stream: args.ci ? process.stdout : undefined,
           compareAgainstProcessedTemplate: args.processed,
           quiet: args.quiet,
-          changeSet: args['change-set'],
+          changeSet: args['change-set'] ?? configuration.settings.get(['diff', 'changeSet']) ?? true,
         });
 
       case 'bootstrap':

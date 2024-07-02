@@ -343,7 +343,7 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
     const executionRoleArn = preparedSdk.cloudFormationRoleArn;
-    options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
+    debug('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)');
 
     return await createChangeSet({
       cfn,
