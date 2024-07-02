@@ -148,6 +148,7 @@ Note: You can create an instance of the `TableV2` construct with as many `replic
 
 The `TableV2` construct can be configured with on-demand or provisioned billing:
 * On-demand - The default option. This is a flexible billing option capable of serving requests without capacity planning. The billing mode will be `PAY_PER_REQUEST`.
+* You can optionally specify the `maxReadRequestUnits` or `maxWriteRequestUnits` on individual tables and associated global secondary indexes (GSIs). When you configure maximum throughput for an on-demand table, throughput requests that exceed the maximum amount specified will be throttled.
 * Provisioned - Specify the `readCapacity` and `writeCapacity` that you need for your application. The billing mode will be `PROVISIONED`. Capacity can be configured using one of the following modes:
   * Fixed - provisioned throughput capacity is configured with a fixed number of I/O operations per second.
   * Autoscaled - provisioned throughput capacity is dynamically adjusted on your behalf in response to actual traffic patterns.
@@ -160,6 +161,18 @@ The following example shows how to configure `TableV2` with on-demand billing:
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   billing: dynamodb.Billing.onDemand(),
+})
+```
+
+The following example shows how to configure `TableV2` with on-demand billing with optional maximum throughput configured:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.onDemand({
+    maxReadRequestUnits: 100,
+    maxWriteRequestUnits: 115,
+  }),
 })
 ```
 
