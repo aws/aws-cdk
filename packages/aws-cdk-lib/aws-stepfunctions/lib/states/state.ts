@@ -1,9 +1,25 @@
 import { IConstruct, Construct, Node } from 'constructs';
+import * as iam from '../../../aws-iam';
 import { Token } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
+import { StateMachine } from '../state-machine';
 import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+
+/**
+ * Options for state machine binding
+ */
+export interface IBindToStateMachineProps {
+  /**
+   * We create a cyclic dependency if we include a call to DistributedMap.isDistributedMap in State. Instead, accept
+   * it as an option for bindToStateMachine.
+   *
+   * @param x the element to check if it is a distributed map.
+   * @internal
+   */
+  _isDistributedMap(x: any): boolean;
+}
 
 /**
  * Properties shared by all states
@@ -274,6 +290,43 @@ export abstract class State extends Construct implements IChainable {
     }
     if (!!this.processor) {
       this.processor.registerSuperGraph(this.containingGraph);
+    }
+  }
+
+  /**
+   * Binds this state to the provided state machine. If there are any branches, also binds them.
+   *
+   * @param stateMachine the state machine to bind to [disable-awslint:ref-via-interface]
+   * @param props bind options (currently this only includes a function for determining if isDistributedMap)
+   * @internal
+   */
+  public _bindToStateMachine(stateMachine: StateMachine, props: IBindToStateMachineProps) {
+    if (stateMachine.node.tryFindChild('DistributedMapPolicy')) {
+      return;
+    }
+
+    if (props._isDistributedMap(this)) {
+      stateMachine.role.attachInlinePolicy(new iam.Policy(stateMachine, 'DistributedMapPolicy', {
+        document: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['states:StartExecution'],
+              resources: [stateMachine.stateMachineArn],
+            }),
+            new iam.PolicyStatement({
+              actions: ['states:DescribeExecution', 'states:StopExecution'],
+              resources: [`${stateMachine.stateMachineArn}:*`],
+            }),
+          ],
+        }),
+      }));
+
+      return;
+    }
+
+    // nothing here, let's check the branches.
+    for (const graph of this.branches) {
+      graph.bind(stateMachine);
     }
   }
 

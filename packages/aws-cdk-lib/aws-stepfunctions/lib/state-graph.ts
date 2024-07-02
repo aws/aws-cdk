@@ -166,24 +166,9 @@ export class StateGraph {
    */
   public bind(stateMachine: StateMachine) {
     for (const state of this.allStates) {
-      if (DistributedMap.isDistributedMap(state)) {
-        stateMachine.role.attachInlinePolicy(new iam.Policy(stateMachine, 'DistributedMapPolicy', {
-          document: new iam.PolicyDocument({
-            statements: [
-              new iam.PolicyStatement({
-                actions: ['states:StartExecution'],
-                resources: [stateMachine.stateMachineArn],
-              }),
-              new iam.PolicyStatement({
-                actions: ['states:DescribeExecution', 'states:StopExecution'],
-                resources: [`${stateMachine.stateMachineArn}:*`],
-              }),
-            ],
-          }),
-        }));
-
-        break;
-      }
+      state._bindToStateMachine(stateMachine, {
+        _isDistributedMap: DistributedMap.isDistributedMap,
+      });
     }
   }
 }
