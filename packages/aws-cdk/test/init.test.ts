@@ -181,6 +181,38 @@ describe('constructs version', () => {
     expect(await fs.pathExists(path.join(workDir, '.git'))).toBeFalsy();
   });
 
+  cliTest('--project-name should change the output directory', async (workDir) => {
+    const projectName = 'custom_project-name';
+    await cliInit({
+      type: 'app',
+      language: 'javascript',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+      projectName,
+    });
+
+    // Check that lib/, bin/ and test/ files have been set correctly
+    expect(await fs.pathExists(path.join(workDir, 'bin', `${projectName}.js`))).toBeTruthy();
+    expect(await fs.pathExists(path.join(workDir, 'lib', `${projectName}-stack.js`))).toBeTruthy();
+    expect(await fs.pathExists(path.join(workDir, 'test', `${projectName}.test.js`))).toBeTruthy();
+
+    // Check that the package.json "name" and "bin" properties have been set correctly
+    const packageJsonFile = path.join(workDir, 'package.json');
+    expect(await fs.pathExists(packageJsonFile)).toBeTruthy();
+
+    const packageJson = JSON.parse(await fs.readFile(packageJsonFile, 'utf8'));
+    expect(packageJson.name).toEqual(projectName);
+    expect(packageJson.bin).toEqual({ [projectName]: `bin/${projectName}.js` });
+
+    // Check that the cdk.json "app" property has been set correctly
+    const cdkJsonFile = path.join(workDir, 'cdk.json');
+    expect(await fs.pathExists(cdkJsonFile)).toBeTruthy();
+
+    const cdkJson = JSON.parse(await fs.readFile(cdkJsonFile, 'utf8'));
+    expect(cdkJson.app).toEqual(`node bin/${projectName}.js`);
+  });
+
   cliTest('git directory does not throw off the initer!', async (workDir) => {
     fs.mkdirSync(path.join(workDir, '.git'));
 
