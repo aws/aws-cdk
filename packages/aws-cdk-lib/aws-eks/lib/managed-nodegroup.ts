@@ -79,6 +79,10 @@ export enum NodegroupAmiType {
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
+  /**
+   * Custom AMI defined in the launch template
+   */
+  CUSTOM = 'CUSTOM',
 }
 
 /**
@@ -426,7 +430,7 @@ export class Nodegroup extends Resource implements INodegroup {
        * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
        */
-      possibleAmiTypes = getPossibleAmiTypes(instanceTypes);
+      possibleAmiTypes = getPossibleAmiTypes(instanceTypes).concat(NodegroupAmiType.CUSTOM);
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
@@ -440,6 +444,11 @@ export class Nodegroup extends Resource implements INodegroup {
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
         + 'R3 instances aren\'t supported for Windows workloads.');
       }
+    }
+
+    // custom AMI type can be used only when there's a launch template that picks an AMI
+    if (props.amiType === NodegroupAmiType.CUSTOM && !props.launchTemplateSpec) {
+      throw new Error('When amiType is CUSTOM, launchTemplateSpec must be defined');
     }
 
     if (!props.nodeRole) {
