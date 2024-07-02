@@ -1,8 +1,11 @@
 import { Construct } from 'constructs';
+import { Trigger } from './trigger';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
+
+const ACTION_PROVIDER = 'CodeStarSourceConnection';
 
 /**
  * The CodePipeline variables emitted by CodeStar source Action.
@@ -83,8 +86,23 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
    *
    * @default true
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
+   *
+   * @deprecated - use `trigger` instead.
    */
   readonly triggerOnPush?: boolean;
+
+  /**
+   * The trigger configuration for this action.
+   *
+   * In a V1 pipeline, only `Trigger.ALL` or `Trigger.NONE` may be used.
+   *
+   * In a V2 pipeline, a trigger may have up to three of each type of filter
+   * (Pull Request or Push) or may trigger on every change to the default branch
+   * if no filters are provided.
+   *
+   * @default - The pipeline is triggered on all changes to the default branch.
+   */
+  readonly trigger?: Trigger;
 }
 
 /**
@@ -107,7 +125,7 @@ export class CodeStarConnectionsSourceAction extends Action {
       ...props,
       category: codepipeline.ActionCategory.SOURCE,
       owner: 'AWS', // because props also has a (different!) owner property!
-      provider: 'CodeStarSourceConnection',
+      provider: ACTION_PROVIDER,
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
     });
@@ -158,8 +176,41 @@ export class CodeStarConnectionsSourceAction extends Action {
         OutputArtifactFormat: this.props.codeBuildCloneOutput === true
           ? 'CODEBUILD_CLONE_REF'
           : undefined,
-        DetectChanges: this.props.triggerOnPush,
+        // For a v2 pipeline, if `trigger` is set this configuration property is disabled
+        // and the trigger setting is used. For a v1 pipeline, `trigger` can still be used to
+        // turn on/off `DetectChanges`.
+        //
+        // __attachActionToPipeline() will update this value so that it is handled correctly depending
+        // on the pipeline version.
+        DetectChanges: this.props.trigger ? this.renderDetectChanges(this.props.trigger) : this.props.triggerOnPush,
       },
     };
+  }
+
+  private renderTriggerGitConfiguration(trigger: Trigger): codepipeline.CfnPipeline.PipelineTriggerDeclarationProperty {
+    const providerType = ACTION_PROVIDER;
+    const push: codepipeline.CfnPipeline.GitPushFilterProperty[] = trigger._filters.map((_filter) =>
+      _filter._push).filter(item => item) as codepipeline.CfnPipeline.GitPushFilterProperty[];
+
+    const pullRequest: codepipeline.CfnPipeline.GitPullRequestFilterProperty[] = trigger._filters.map((_filter) =>
+      _filter._pullRequest).filter(item => item) as codepipeline.CfnPipeline.GitPullRequestFilterProperty[];
+
+    return (push.length === 0 && pullRequest.length === 0) ? {
+      providerType,
+    } : {
+      providerType,
+      gitConfiguration: {
+        push: push.length > 0 ? push : undefined,
+        pullRequest: pullRequest.length > 0 ? pullRequest : undefined,
+        sourceActionName: this.actionProperties.actionName,
+      },
+    };
+  }
+
+  private renderDetectChanges(trigger: Trigger): boolean | codepipeline.CfnPipeline.PipelineTriggerDeclarationProperty {
+    // No trigger or change detection
+    if (!trigger._enabled) return false;
+
+    return this.renderTriggerGitConfiguration(trigger);
   }
 }

@@ -3,6 +3,8 @@ import { CfnPipeline } from './codepipeline.generated';
 
 /**
  * Git push filter for trigger.
+ *
+ * @deprecated - Use trigger in CodeStarSourceConnection Source Action instead
  */
 export interface GitPushFilter {
   /**
@@ -34,6 +36,8 @@ export interface GitPushFilter {
 
 /**
  * Git pull request filter for trigger.
+ *
+ * @deprecated - Use trigger in CodeStarSourceConnection Source Action instead
  */
 export interface GitPullRequestFilter {
   /**
@@ -99,6 +103,8 @@ export interface GitPullRequestFilter {
 
 /**
  * Event for trigger with pull request filter.
+ *
+ * @deprecated - Use trigger in CodeStarSourceConnection Source Action instead
  */
 export enum GitPullRequestEvent {
   /**
@@ -119,6 +125,8 @@ export enum GitPullRequestEvent {
 
 /**
  * Git configuration for trigger.
+ *
+ * @deprecated - Use trigger in CodeStarSourceConnection Source Action instead
  */
 export interface GitConfiguration {
   /**
@@ -157,6 +165,8 @@ export interface GitConfiguration {
 
 /**
  * Provider type for trigger.
+ *
+ * @deprecated - Use trigger in CodeStarSourceConnection Source Action instead
  */
 export enum ProviderType {
   /**
@@ -167,6 +177,7 @@ export enum ProviderType {
 
 /**
  * Properties of trigger.
+ * @deprecated - Use Triggers in CodeStarSourceConnection Source Action instead
  */
 export interface TriggerProps {
   /**
@@ -186,6 +197,8 @@ export interface TriggerProps {
 
 /**
  * Trigger.
+ *
+ * @deprecated - Use Trigger in CodeStarSourceConnection Source Action instead
  */
 export class Trigger {
   /**
