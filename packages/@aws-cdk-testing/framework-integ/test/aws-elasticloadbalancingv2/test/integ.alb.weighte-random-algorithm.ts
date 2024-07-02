@@ -34,6 +34,6 @@ class WeightRandomAlgorithmStack extends Stack {
 const app = new App();
 const stack = new WeightRandomAlgorithmStack(app, 'alb-weight-rando-algorithm-test-stack');
 
-new IntegTest(app, 'issue-24805', {
+new IntegTest(app, 'alb-weight-rando-algorithm-test-integ', {
   testCases: [stack],
 });
