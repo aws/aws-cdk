@@ -401,6 +401,7 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
    * @default false
    */
   readonly forceDynamicReference?: boolean;
+
 }
 
 /**
@@ -470,6 +471,25 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterName(scope: Construct, id: string, stringParameterName: string): IStringParameter {
     return this.fromStringParameterAttributes(scope, id, { parameterName: stringParameterName });
+  }
+
+  public static fromStringParameterArn(scope: Construct, id: string, stringParameterArn: string): IStringParameter {
+    if (Token.isUnresolved(stringParameterArn)) {
+      throw new Error('stringParameterArn cannot be an unresolved token');
+    }
+
+    const parameterType = ParameterValueType.STRING;
+
+    let stringValue: string;
+    stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${parameterType}>`, default: stringParameterArn }).valueAsString;
+    class Import extends ParameterBase {
+      public readonly parameterName = stringParameterArn.split('/').pop()?.replace(/parameter\/$/, '') ?? '';
+      public readonly parameterArn = stringParameterArn;
+      public readonly parameterType = parameterType;
+      public readonly stringValue = stringValue;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
