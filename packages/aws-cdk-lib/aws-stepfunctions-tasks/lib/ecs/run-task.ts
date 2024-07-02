@@ -91,6 +91,20 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    * @default false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * Cpu setting override
+   *
+   * @default - No override
+   */
+  readonly cpu?: string;
+
+  /**
+   * Memory setting override
+   *
+   * @default - No override
+   */
+  readonly memoryMiB?: string;
 }
 
 /**
@@ -311,7 +325,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
-        Overrides: renderOverrides(this.props.containerOverrides),
+        Overrides: renderOverrides(this.props.cpu, this.props.memoryMiB, this.props.containerOverrides),
         PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
         EnableExecuteCommand: this.props.enableExecuteCommand,
@@ -436,26 +450,33 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   }
 }
 
-function renderOverrides(containerOverrides?: ContainerOverride[]) {
-  if (!containerOverrides || containerOverrides.length === 0) {
+function renderOverrides(cpu?: string, memoryMiB?: string, containerOverrides?: ContainerOverride[]) {
+  const noContainerOverrides = !containerOverrides || containerOverrides.length === 0;
+  if (noContainerOverrides && !cpu && !memoryMiB) {
     return undefined;
   }
 
   const ret = new Array<any>();
-  for (const override of containerOverrides) {
-    ret.push({
-      Name: override.containerDefinition.containerName,
-      Command: override.command,
-      Cpu: override.cpu,
-      Memory: override.memoryLimit,
-      MemoryReservation: override.memoryReservation,
-      Environment:
-        override.environment?.map((e) => ({
-          Name: e.name,
-          Value: e.value,
-        })),
-    });
+  if (!noContainerOverrides) {
+    for (const override of containerOverrides) {
+      ret.push({
+        Name: override.containerDefinition.containerName,
+        Command: override.command,
+        Cpu: override.cpu,
+        Memory: override.memoryLimit,
+        MemoryReservation: override.memoryReservation,
+        Environment:
+          override.environment?.map((e) => ({
+            Name: e.name,
+            Value: e.value,
+          })),
+      });
+    }
   }
 
-  return { ContainerOverrides: ret };
+  return {
+    Cpu: cpu,
+    Memory: memoryMiB,
+    ContainerOverrides: noContainerOverrides ? undefined : ret,
+  };
 }
