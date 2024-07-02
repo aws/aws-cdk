@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ResourceTagIntrinsicStack/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "ResourceTagIntrinsicStack/DefaultTest/DeployAssert",
+      "assertionStackName": "ResourceTagIntrinsicStackDefaultTestDeployAssert069A8F1A"
+    }
+  }
+}
