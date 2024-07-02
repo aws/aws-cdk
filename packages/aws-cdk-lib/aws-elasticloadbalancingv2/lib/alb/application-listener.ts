@@ -5,6 +5,7 @@ import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './appl
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Lazy, Resource, Token } from '../../../core';
@@ -96,6 +97,62 @@ export interface BaseApplicationListenerProps {
    * @default true
    */
   readonly open?: boolean;
+
+  /**
+   * The mutual authentication configuration information
+   *
+   * @default - No mutual authentication configuration
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html
+   */
+  readonly mutualAuthentication?: MutualAuthentication;
+}
+
+/**
+ * The mutual authentication configuration information
+ *
+ */
+export interface MutualAuthentication {
+  /**
+   * Indicates whether expired client certificates are ignored
+   *
+   * @default false
+   */
+  readonly ignoreClientCertificateExpiry?: boolean;
+
+  /**
+   * The client certificate handling method
+   *
+   * @default Mode.OFF
+   */
+  readonly mode?: Mode;
+
+  /**
+   * The trust store
+   *
+   * @default - no trust store
+   */
+  readonly trustStore?: ITrustStore;
+}
+
+/**
+ * The client certificate handling method
+ */
+export enum Mode {
+  /**
+   * Off
+   */
+  OFF = 'off',
+
+  /**
+   * Application Load Balancer sends the whole client certificate chain to the target using HTTP headers
+   */
+  PASS_THROUGH = 'passthrough',
+
+  /**
+   * Application Load Balancer performs X.509 client certificate authentication for clients when a load balancer negotiates TLS connections
+   */
+  VERIFY = 'verify',
 }
 
 /**
@@ -188,12 +245,32 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error('At least one of \'port\' or \'protocol\' is required');
     }
 
+    if (props.mutualAuthentication?.mode === Mode.VERIFY
+      && !Token.isUnresolved(props.mutualAuthentication.trustStore) && !props.mutualAuthentication.trustStore) {
+      throw new Error('You must set \'trustStore\' when \'mode\' is \'Mode.VERIFY\'');
+    }
+
+    if ((props.mutualAuthentication?.mode === Mode.OFF || props.mutualAuthentication?.mode === Mode.PASS_THROUGH)
+      && !Token.isUnresolved(props.mutualAuthentication.trustStore) && props.mutualAuthentication.trustStore) {
+      throw new Error('You cannot set \'trustStore\' when \'mode\' is \'OFF\' or \'PASS_THROUGH\'');
+    }
+
+    if ((props.mutualAuthentication?.mode === Mode.OFF || props.mutualAuthentication?.mode === Mode.PASS_THROUGH)
+      && props.mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
+      throw new Error('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'OFF\' or \'PASS_THROUGH\'');
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
       sslPolicy: props.sslPolicy,
+      mutualAuthentication: props.mutualAuthentication ? {
+        ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
+        mode: props.mutualAuthentication?.mode,
+        trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
+      } : undefined,
     });
 
     this.loadBalancer = props.loadBalancer;
