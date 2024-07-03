@@ -106,7 +106,7 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 
 ## Routing
 
-`RouteTable` is a new construct that allows for route tables to be customized in a variety of ways. For instance, the following example shows how a custom route table can be created and appended to a subnet.
+`RouteTable` is a new construct that allows for route tables to be customized in a variety of ways. For instance, the following example shows how a custom route table can be created and appended to a subnet:
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
@@ -120,4 +120,66 @@ const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {
   ...,
 });
 ```
+`Route`s can be created to link subnets to various different AWS services via gateways and endpoints. Each unique route target has its own dedicated construct that can be routed to a given subnet via the `Route` construct. An example using the `InternetGateway` construct can be seen below:
+```ts
+import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
+const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
+  vpcId: vpc.vpcId,
+});
+const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
+
+const igw = new vpc_v2.InternetGateway(stack, 'IGW', {
+  vpcId: vpc.vpcId,
+});
+new vpc_v2.Route(stack, 'IgwRoute', {
+  routeTable,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: igw,
+});
+```
+Other route targets may require a deeper set of parameters to set up properly. For instance, the example below illustrates how to set up a `NatGateway`:
+```ts
+import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
+
+const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
+  vpcId: vpc.vpcId,
+});
+const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
+
+const natgw = new vpc_v2.NatGateway(stack, 'NatGW', {
+  subnet: subnet,
+  vpcId: vpc.vpcId,
+  connectivityType: 'private',
+  privateIpAddress: '10.0.0.42',
+});
+new vpc_v2.Route(stack, 'NatGwRoute', {
+  routeTable,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: natgw,
+});
+```
+It is also possible to set up endpoints connecting other AWS services. For instance, the example below illustrates the linking of a Dynamo DB endpoint via the existing `ec2.GatewayVpcEndpoint` construct as a route target:
+```ts
+import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
+  vpcId: vpc.vpcId,
+});
+const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
+
+const dynamoEndpoint = new GatewayVpcEndpoint(stack, 'DynamoEndpoint', {
+  service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+  vpc: vpc,
+  subnets: [subnet],
+});
+new vpc_v2.Route(stack, 'DynamoDBRoute', {
+  routeTable,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: dynamoEndpoint,
+});
+```
