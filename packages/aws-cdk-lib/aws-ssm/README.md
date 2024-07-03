@@ -112,7 +112,7 @@ parameter value, even though the parameter itself is owned and managed by a diff
 ```ts
 const sharingParameterArn = 'arn:aws:ssm:us-east-1:1234567890:parameter/dummyName';
 const sharedParam = ssm.StringParameter.fromStringParameterArn(this, 'SharedParam', sharingParameterArn);
-new CfnOutput(this, 'SharedParamValue', { value: sharedParam.stringValue });
+// the value can be accessed via sharedParam.stringValue
 ```
 
 Things to note:
