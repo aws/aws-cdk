@@ -18,14 +18,14 @@
      "arn:aws:ram::aws:permission/AWSRAMDefaultPermissionSSMParameterReadOnly"
     ],
     "Principals": [
-     "230908471955"
+     "234567890123"
     ],
     "ResourceArns": [
      {
       "Fn::Join": [
        "",
        [
-        "arn:aws:ssm:us-east-1:903779448426:parameter",
+        "arn:aws:ssm:us-east-1:12345678:parameter",
         {
          "Ref": "String0BA8456E"
         }
@@ -53,7 +53,7 @@
     "Fn::Join": [
      "",
      [
-      "arn:aws:ssm:us-east-1:903779448426:parameter",
+      "arn:aws:ssm:us-east-1:12345678:parameter",
       {
        "Ref": "String0BA8456E"
       }

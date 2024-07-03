@@ -1,17 +1,17 @@
 {
   "version": "36.0.0",
   "files": {
-    "6f29ce93f042ba9c6716633880f77cafc9b7e641b287d861fe2857d8063ceb5f": {
+    "1b7aa89e67d6991fb0e7d5f88d3fdb614a729104c92491a5b8c8d824b76bd5de": {
       "source": {
         "path": "integ-ssmps-sharing-consuming.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "230908471955-us-east-1": {
-          "bucketName": "cdk-hnb659fds-assets-230908471955-us-east-1",
-          "objectKey": "6f29ce93f042ba9c6716633880f77cafc9b7e641b287d861fe2857d8063ceb5f.json",
+        "234567890123-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-us-east-1",
+          "objectKey": "1b7aa89e67d6991fb0e7d5f88d3fdb614a729104c92491a5b8c8d824b76bd5de.json",
           "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::230908471955:role/cdk-hnb659fds-file-publishing-role-230908471955-us-east-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-us-east-1"
         }
       }
     }

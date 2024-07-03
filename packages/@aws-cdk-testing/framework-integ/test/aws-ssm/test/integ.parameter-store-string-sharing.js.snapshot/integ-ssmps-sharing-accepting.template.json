@@ -16,7 +16,7 @@
      "resourceShareInvitations.0",
      "resourceShareInvitations.0.resourceShareInvitationArn"
     ],
-    "salt": "1720030297720"
+    "salt": "1720032123973"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,7 +76,7 @@
    "Properties": {
     "Runtime": "nodejs20.x",
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-230908471955-us-east-1",
+     "S3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
      "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
     },
     "Timeout": 120,
@@ -118,7 +118,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720030297721"
+    "salt": "1720032123974"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

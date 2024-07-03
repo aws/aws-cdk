@@ -1,17 +1,17 @@
 {
   "version": "36.0.0",
   "files": {
-    "b26c094957b34ba049e4ebf11271896faa2c8058ba7d643e076d8fa21dc7714e": {
+    "aa41721ed29bc9f51115827aee8e887c385c2d09b5bf38af62291d579b1d57b4": {
       "source": {
         "path": "integ-ssmps-sharing-producing.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "903779448426-us-east-1": {
-          "bucketName": "cdk-hnb659fds-assets-903779448426-us-east-1",
-          "objectKey": "b26c094957b34ba049e4ebf11271896faa2c8058ba7d643e076d8fa21dc7714e.json",
+        "12345678-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "aa41721ed29bc9f51115827aee8e887c385c2d09b5bf38af62291d579b1d57b4.json",
           "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::903779448426:role/cdk-hnb659fds-file-publishing-role-903779448426-us-east-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
         }
       }
     }

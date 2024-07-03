@@ -2,7 +2,7 @@
  "Parameters": {
   "RemoteParamParameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "arn:aws:ssm:us-east-1:903779448426:parameter/My/Public/Parameter"
+   "Default": "arn:aws:ssm:us-east-1:12345678:parameter/My/Public/Parameter"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
