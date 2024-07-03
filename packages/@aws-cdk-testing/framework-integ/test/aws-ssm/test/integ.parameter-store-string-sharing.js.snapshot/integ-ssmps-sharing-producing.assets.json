@@ -1,0 +1,20 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "b26c094957b34ba049e4ebf11271896faa2c8058ba7d643e076d8fa21dc7714e": {
+      "source": {
+        "path": "integ-ssmps-sharing-producing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "903779448426-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-903779448426-us-east-1",
+          "objectKey": "b26c094957b34ba049e4ebf11271896faa2c8058ba7d643e076d8fa21dc7714e.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::903779448426:role/cdk-hnb659fds-file-publishing-role-903779448426-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
