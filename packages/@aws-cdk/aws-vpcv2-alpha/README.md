@@ -106,5 +106,18 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 
 ## Routing
 
-<!-- How to use new RouteTable and Route classes (e.g. add IGW, Nat etc.)? -->
+`RouteTable` is a new construct that allows for route tables to be customized in a variety of ways. For instance, the following example shows how a custom route table can be created and appended to a subnet.
+```ts
+import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
+
+const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
+  vpcId: vpc.vpcId,
+});
+const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {
+  vpc,
+  routeTable,
+  ...,
+});
+```
 

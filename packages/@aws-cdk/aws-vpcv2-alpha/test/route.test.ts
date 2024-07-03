@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
-import { CfnEIP, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
 import { Template } from 'aws-cdk-lib/assertions';
 
@@ -690,6 +690,147 @@ describe('EC2 Routing', () => {
             RouteTableId: {
               'Fn::GetAtt': [
                 'TestRouteTableC34C2E1C', 'RouteTableId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+  
+  test('Route to DynamoDB Endpoint', () => {
+    const dynamodb = new GatewayVpcEndpoint(stack, 'TestDB', {
+      vpc: myVpc,
+      service: GatewayVpcEndpointAwsService.DYNAMODB,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: dynamodb,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // DynamoDB endpoint should be in stack
+        TestDB27CDA92F: {
+          Type: 'AWS::EC2::VPCEndpoint',
+          Properties: {
+            RouteTableIds: [
+              {
+                'Fn::GetAtt': [
+                  'TestRouteTableC34C2E1C',
+                  'RouteTableId',
+                ],
+              },
+            ],
+            ServiceName: {
+              'Fn::Join': [
+                '',
+                [
+                  'com.amazonaws.',
+                  {Ref: 'AWS::Region'},
+                  '.dynamodb',
+                ],
+              ],
+            },
+            VpcEndpointType: 'Gateway',
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678',
+                'VpcId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('Route to S3 Endpoint', () => {
+    const dynamodb = new GatewayVpcEndpoint(stack, 'TestS3', {
+      vpc: myVpc,
+      service: GatewayVpcEndpointAwsService.S3,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: dynamodb,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // S3 endpoint should be in stack
+        TestS38FCC715C: {
+          Type: 'AWS::EC2::VPCEndpoint',
+          Properties: {
+            RouteTableIds: [
+              {
+                'Fn::GetAtt': [
+                  'TestRouteTableC34C2E1C',
+                  'RouteTableId',
+                ],
+              },
+            ],
+            ServiceName: {
+              'Fn::Join': [
+                '',
+                [
+                  'com.amazonaws.',
+                  {Ref: 'AWS::Region'},
+                  '.s3',
+                ],
+              ],
+            },
+            VpcEndpointType: 'Gateway',
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678',
+                'VpcId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('Route to S3 Express Endpoint', () => {
+    const dynamodb = new GatewayVpcEndpoint(stack, 'TestS3E', {
+      vpc: myVpc,
+      service: GatewayVpcEndpointAwsService.S3_EXPRESS,
+    });
+    new route.Route(stack, 'TestRoute', {
+      routeTable: routeTable,
+      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      target: dynamodb,
+    });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // S3 endpoint should be in stack
+        TestS3E055E5994: {
+          Type: 'AWS::EC2::VPCEndpoint',
+          Properties: {
+            RouteTableIds: [
+              {
+                'Fn::GetAtt': [
+                  'TestRouteTableC34C2E1C',
+                  'RouteTableId',
+                ],
+              },
+            ],
+            ServiceName: {
+              'Fn::Join': [
+                '',
+                [
+                  'com.amazonaws.',
+                  {Ref: 'AWS::Region'},
+                  '.s3express',
+                ],
+              ],
+            },
+            VpcEndpointType: 'Gateway',
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678',
+                'VpcId',
               ],
             },
           },
