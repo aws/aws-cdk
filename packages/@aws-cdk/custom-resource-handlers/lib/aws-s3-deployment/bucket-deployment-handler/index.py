@@ -146,6 +146,9 @@ def handler(event, context):
 #---------------------------------------------------------------------------------------------------
 # Sanitize the message to mitigate CWE-117 and CWE-93 vulnerabilities
 def sanitize_message(message):
+    if not message:
+        return message
+
     # Sanitize the message to prevent log injection and HTTP response splitting
     sanitized_message = message.replace('\n', '').replace('\r', '')
 
