@@ -166,7 +166,7 @@ async function parseCommandLineArguments(args: string[]) {
       })
       .option('hotswap-ecs-maximum-healthy-percent', {
         type: 'number',
-        desc: 'When using hotswap for ECS, set the minimum healthy percent' +
+        desc: 'When using hotswap for ECS, set the maximum healthy percent' +
           'for the updated task definition',
       })
       .option('watch', {
