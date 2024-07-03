@@ -1,4 +1,4 @@
-# An example Construct Library module
+# Amazon VpcV2 Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 
@@ -12,81 +12,99 @@
 
 <!--END STABILITY BANNER-->
 
-This package contains an example CDK construct library
-for an imaginary resource called ExampleResource.
-Its target audience are construct library authors -
-both when contributing to the core CDK codebase,
-or when writing your own construct library.
+## VpcV2
 
-Even though different construct libraries model vastly different services,
-a large percentage of the structure of the construct libraries
-(what we often call Layer 2 constructs, or L2s for short)
-is actually strikingly similar between all of them.
-This module hopes to present a skeleton of that structure,
-that you can literally copy&paste to your own construct library,
-and then edit to suit your needs.
-It also attempts to explain the elements of that skeleton as best as it can,
-through inline comments on the code itself.
+`VpcV2` is a re-write of the [`ec2.Vpc`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html) construct. This new construct enables higher level of customization
+on the VPC being created. `VpcV2` implements the existing [`IVpc`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.IVpc.html), therefore,
+`VpcV2` is compatible with other constructs that accepts `IVpc` (e.g. [`ApplicationLoadBalancer`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer.html#construct-props)).
 
-## Using when contributing to the CDK codebase
+To create a VPC with both IPv4 and IPv6 support:
+```ts
+import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
-If you're creating a completely new module,
-feel free to copy&paste this entire directory,
-and then edit the `package.json` and `README.md`
-files as necessary (see the "Package structure" section below).
-Make sure to remove the `"private": true` line from `package.json`
-after copying, as otherwise your package will not be published!
+const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
+new vpc_v2.VpcV2(stack, 'Vpc', {
+  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
+  secondaryAddressBlocks: [
+    vpc_v2.IpAddresses.amazonProvidedIpv6(),
+  ],
+});
+```
 
-If you're contributing a new resource to an existing package,
-feel free to copy&paste the following files,
-instead of the entire package:
+`VpcV2` does not automatically create subnets or allocate IP addresses, which is different from the `Vpc` construct.
 
-* [`lib/example-resource.ts`](lib/example-resource.ts)
-* [`lib/private/example-resource-common.ts`](lib/private/example-resource-common.ts)
-* [`test/example-resource.test.ts`](test/example-resource.test.ts)
-* [`test/integ.example-resource.ts`](test/integ.example-resource.ts)
-* [`test/integ.example-resource.expected.json`](test/integ.example-resource.expected.json)
+Importing existing VPC in an account into CDK as a `VpcV2` is not yet supported.
 
-And proceed to edit and rename them from there.
+## SubnetV2
 
-## Using for your own construct libraries
+`SubnetV2` is a re-write of the [`ec2.Subnet`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Subnet.html) construct.
+This new construct can be used to add subnets to a `VpcV2` instance:
+```ts
+import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-Feel free to use this package as the basis of your own construct library;
-note, however, that you will have to change a few things in `package.json` to get it to build:
+const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
+const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {
+  secondaryAddressBlocks: [
+    vpc_v2.IpAddresses.amazonProvidedIpv6(),
+  ],
+});
+const vpcFirstIpV6Cidr = Fn.select(0, vpc.ipv6CidrBlocks);
+const subCidrs = Fn.cidr(vpcFirstIpV6Cidr, 3, 32);
+new vpc_v2.SubnetV2(stack, 'subnetA', {
+  vpc,
+  availabilityZone: 'us-east-1a',
+  cidrBlock: new vpc_v2.Ipv4Cidr('10.0.0.0/24'),
+  ipv6CidrBlock: new vpc_v2.Ipv6Cidr(Fn.select(0, subCidrs)),
+  subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+})
+```
 
-* Remove the `"private": true` flag if you intend to publish your package to npmjs.org
-  (see https://docs.npmjs.com/files/package.json#private for details).
-* Remove the `devDependencies` on `cdk-build-tools`, `cdk-integ-tools` and `pkglint`.
-* Remove the `lint`, `integ`, `pkglint`, `package`, `build+test+package`, `awslint`, and `compat` entries in the `scripts` section.
-* The `build` script should be just `tsc`, `watch` just `tsc -w`, and `test` just `jest`.
-* Finally, the `awscdkio` key should be completely removed.
+Same as `VpcV2`, importing existing subnets is not yet supported.
 
-You will also have to get rid of the integration test files,
-[`test/integ.example-resource.ts`](test/integ.example-resource.ts) and
-[`test/integ.example-resource.expected.json`](test/integ.example-resource.expected.json),
-as those styles of integration tests are not available outside the CDK main repo.
+## IP Addresses Management
 
-## Code structure
+By default `VpcV2` uses `10.0.0.0/16` as the primary CIDR if none is defined. 
+Additional CIDRs can be adding to the VPC via the `secondaryAddressBlocks` prop.
+The following example illustrates the different options of defining the address blocks:
+```ts
+import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
-The code structure is explained through inline comments in the files themselves.
-Probably [`lib/example-resource.ts`](lib/example-resource.ts) is a good place to start reading.
+const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
+const ipam = new Ipam(stack, 'Ipam');
+const ipamPublicPool = ipam.publicScope.addPool('PublicPoolA', {
+  addressFamily: vpc_v2.AddressFamily.IP_V6,
+  awsService: 'ec2',
+  locale: 'us-east-1',
+  publicIpSource: vpc_v2.IpamPoolPublicIpSource.AMAZON,
+});
+ipamPublicPool.provisionCidr('PublicPoolACidrA', { netmaskLength: 52 } );
 
-### Tests
+const ipamPrivatePool = ipam.privateScope.addPool('PrivatePoolA', {
+  addressFamily: vpc_v2.AddressFamily.IP_V4,
+});
+ipamPrivatePool.provisionCidr('PrivatePoolACidrA', { netmaskLength: 8 } );
 
-The package contains examples of unit tests in the [`test/example-resource.test.ts`](test/example-resource.test.ts)
-file.
+new vpc_v2.VpcV2(stack, 'Vpc', {
+  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
+  secondaryAddressBlocks: [
+    vpc_v2.IpAddresses.amazonProvidedIpv6(),
+    vpc_v2.IpAddresses.ipv6Ipam({
+      ipv6IpamPool: ipamPublicPool,
+      ipv6NetmaskLength: 52,
+    }),
+    vpc_v2.IpAddresses.ipv4Ipam({
+      ipv6IpamPool: ipamPrivatePool,
+      ipv6NetmaskLength: 8,
+    }),
+  ],
+});
+```
 
-It also contains an example integration test in [`test/integ.example-resource.ts`](test/integ.example-resource.ts).
-For more information on CDK integ tests, see the
-[main `Contributing.md` file](../../../CONTRIBUTING.md#integration-tests).
+Since `VpcV2` does not create subnets automatically, users have full control over IP addresses allocation across subnets.
 
-## Package structure
 
-The package uses the standard build and test tools available in the CDK repo.
-Even though it's not published,
-it also uses [JSII](https://github.com/aws/jsii),
-the technology that allows CDK logic to be written once,
-but used from multiple programming languages.
-Its configuration lives the `jsii` key in `package.json`.
-It's mainly used as a validation tool in this package,
-as JSII places some constraints on the TypeScript code that you can write.
+## Routing
+
+<!-- How to use new RouteTable and Route classes (e.g. add IGW, Nat etc.)? -->
+

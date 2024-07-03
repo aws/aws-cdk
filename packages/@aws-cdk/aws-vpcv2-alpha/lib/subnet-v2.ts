@@ -10,10 +10,6 @@ export interface ICidr {
   readonly cidr: string;
 }
 
-export interface cidrBlockProps {
-  readonly cidrBlock: string;
-}
-
 export class Ipv4Cidr implements ICidr {
 
   public readonly cidr: string;
@@ -34,28 +30,28 @@ export interface SubnetPropsV2 {
 /**
  * VPC Prop
  */
-  vpc: IVpcV2;
+  readonly vpc: IVpcV2;
 
   /**
    * ipv4 cidr to assign to this subnet.
    * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-cidrblock
    */
-  cidrBlock: Ipv4Cidr;
+  readonly cidrBlock: Ipv4Cidr;
 
   /**
    * Ipv6 CIDR Range for subnet
    */
-  ipv6CidrBlock?: Ipv6Cidr;
+  readonly ipv6CidrBlock?: Ipv6Cidr;
 
   /**
    * Custom AZ
    */
-  availabilityZone: string;
+  readonly availabilityZone: string;
 
   /**
    * Custom Route for subnet
    */
-  routeTable?: IRouteTable;
+  readonly routeTable?: IRouteTable;
 
   /**
    * The type of Subnet to configure.
@@ -65,7 +61,7 @@ export interface SubnetPropsV2 {
    *
    * TODO: Add validation check `subnetType` when adding resources (e.g. cannot add NatGateway to private)
    */
-  subnetType: SubnetType;
+  readonly subnetType: SubnetType;
 
 }
 
@@ -110,7 +106,7 @@ export class SubnetV2 extends Resource implements ISubnet {
   /**
    *
    */
-  public subnetType: SubnetType;
+  public readonly subnetType: SubnetType;
 
   /**
    *
@@ -126,20 +122,18 @@ export class SubnetV2 extends Resource implements ISubnet {
     const ipv4CidrBlock = props.cidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
-    if(!checkCidrRanges(props.vpc, props.cidrBlock.cidr)){
+    if (!checkCidrRanges(props.vpc, props.cidrBlock.cidr)) {
       throw new Error('CIDR block should be in the same VPC');
     };
 
-
     let overlap: boolean = false;
-    try{
-      overlap = validateOverlappingCidrRanges(props.vpc,  props.cidrBlock.cidr);
-    }
-    catch(e){
-      "No Subnets in VPC";
+    try {
+      overlap = validateOverlappingCidrRanges(props.vpc, props.cidrBlock.cidr);
+    } catch (e) {
+      'No Subnets in VPC';
     }
 
-    if (overlap){
+    if (overlap) {
       throw new Error('CIDR block should not overlap with existing subnet blocks');
     }
 
@@ -185,7 +179,7 @@ export class SubnetV2 extends Resource implements ISubnet {
   /**
    * Associate a Network ACL with this subnet
    *
-   * @param acl The Network ACL to associate
+   * @param networkAcl The Network ACL to associate
    */
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
     this._networkAcl = networkAcl;
@@ -246,15 +240,15 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
 
   for (const cidrs of vpc.secondaryCidrBlock) {
-    if(cidrs.cidrBlock) {
-    vpcCidrBlock.push(cidrs.cidrBlock);
+    if (cidrs.cidrBlock) {
+      vpcCidrBlock.push(cidrs.cidrBlock);
     }
   }
 
   const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
 
   const subnetCidrBlock = new CidrBlock(cidrRange);
-  
+
   return cidrs.some(vpcCidrBlock => vpcCidrBlock.containsCidr(subnetCidrBlock));
 
 }
@@ -269,18 +263,16 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
 
   const inputIpMap: [string, string] = [inputRange.minIp(), inputRange.maxIp()];
 
-  for (const subnet of allSubnets){
+  for (const subnet of allSubnets) {
     const cidrBlock = new CidrBlock(subnet.ipv4CidrBlock);
     ipMap.push([cidrBlock.minIp(), cidrBlock.maxIp()]);
   }
 
-  for(const range of ipMap) {
+  for (const range of ipMap) {
     if (inputRange.rangesOverlap(range, inputIpMap)) {
       return true;
     }
   }
   return false;
 }
-
-
 
