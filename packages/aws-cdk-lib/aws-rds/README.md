@@ -938,7 +938,7 @@ Data in S3 buckets can be imported to and exported from certain database engines
 functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
 configured, the CDK automatically creates and configures IAM roles as required.
 Additionally, the `s3ImportRole` and `s3ExportRole` properties can be used to set this role directly.
-Note that when using  `s3ImportRole` and/or `s3ExportRole` with AuroraPostgres, you need to enable the respectives feature when declaring the DatabaseClusterEngine.
+Note that when using  `s3ImportRole` and/or `s3ExportRole` with AuroraPostgres, you need to enable the respective feature when declaring the DatabaseClusterEngine.
 
 You can read more about loading data to (or from) S3 here:
 
