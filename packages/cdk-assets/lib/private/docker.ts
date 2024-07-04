@@ -234,6 +234,10 @@ export class Docker {
     }
     return flag;
   }
+
+  public get configDirectory(): string | undefined {
+    return this.configDir;
+  }
 }
 
 export interface DockerFactoryOptions {

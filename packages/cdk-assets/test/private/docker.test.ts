@@ -207,7 +207,7 @@ describe('Docker', () => {
 
       expect(docker.configureCdkCredentials()).toBeTruthy();
 
-      const config = JSON.parse(readFileSync(path.join(docker.configDir!, 'config.json'), 'utf-8'));
+      const config = JSON.parse(readFileSync(path.join(docker.configDirectory!, 'config.json'), 'utf-8'));
       expect(config).toBeDefined();
       expect(config).toEqual({
         credHelpers: {
@@ -239,7 +239,7 @@ describe('Docker', () => {
 
       expect(docker.configureCdkCredentials()).toBeTruthy();
 
-      const config = JSON.parse(readFileSync(path.join(docker.configDir!, 'config.json'), 'utf-8'));
+      const config = JSON.parse(readFileSync(path.join(docker.configDirectory!, 'config.json'), 'utf-8'));
       expect(config).toBeDefined();
       expect(config).toEqual({
         credHelpers: {
