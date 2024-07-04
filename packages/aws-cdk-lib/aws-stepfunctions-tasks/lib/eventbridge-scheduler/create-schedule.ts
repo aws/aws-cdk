@@ -36,9 +36,6 @@ export class Schedule {
     if (duration.toMilliseconds() < Duration.minutes(1).toMilliseconds()) {
       throw new Error('Duration cannot be less than 1 minute');
     }
-    if (duration.toMinutes() === 0) {
-      throw new Error('Duration cannot be 0');
-    }
 
     const maybeRate = (value: number, unit: string) => (value > 0 && Number.isInteger(value)) ? `${value} ${unit}` : undefined;
 
@@ -62,7 +59,7 @@ export class Schedule {
     const month = options.month ?? '*';
 
     // Weekday defaults to '?' if not supplied. If it is supplied, day must become '?'
-    const day = options.day ?? options.weekDay !== undefined ? '?' : '*';
+    const day = options.day ?? (options.weekDay !== undefined ? '?' : '*');
     const weekDay = options.weekDay ?? '?';
 
     const year = options.year ?? '*';
@@ -71,24 +68,6 @@ export class Schedule {
   }
 
   private constructor(public readonly expressionString: string) {}
-}
-
-/**
- * Unit of time for rate expressions
- */
-export enum RateUnit {
-  /**
-   * minutes
-   */
-  MINUTES = 'minutes',
-  /**
-   * hours
-   */
-  HOURS = 'hours',
-  /**
-   * days
-   */
-  DAYS = 'days',
 }
 
 /**
