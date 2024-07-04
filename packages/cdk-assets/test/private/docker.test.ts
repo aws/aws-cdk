@@ -1,9 +1,9 @@
+import { readFileSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as mockfs from 'mock-fs';
 import { Docker } from '../../lib/private/docker';
 import { ShellOptions, ProcessFailedError } from '../../lib/private/shell';
-import { readFileSync } from 'fs';
 
 type ShellExecuteMock = jest.SpyInstance<ReturnType<Docker['execute']>, Parameters<Docker['execute']>>;
 
@@ -48,9 +48,9 @@ describe('Docker', () => {
     test('throws when the error is a shell failure but the exit code is unrecognized', async () => {
       makeShellExecuteMock(() => {
         throw new (class extends Error implements ProcessFailedError {
-          public readonly code = 'PROCESS_FAILED'
-          public readonly exitCode = 47
-          public readonly signal = null
+          public readonly code = 'PROCESS_FAILED';
+          public readonly exitCode = 47;
+          public readonly signal = null;
 
           constructor() {
             super('foo');
@@ -64,9 +64,9 @@ describe('Docker', () => {
     test('returns false when the error is a shell failure and the exit code is 1 (Docker)', async () => {
       makeShellExecuteMock(() => {
         throw new (class extends Error implements ProcessFailedError {
-          public readonly code = 'PROCESS_FAILED'
-          public readonly exitCode = 1
-          public readonly signal = null
+          public readonly code = 'PROCESS_FAILED';
+          public readonly exitCode = 1;
+          public readonly signal = null;
 
           constructor() {
             super('foo');
@@ -82,9 +82,9 @@ describe('Docker', () => {
     test('returns false when the error is a shell failure and the exit code is 125 (Podman)', async () => {
       makeShellExecuteMock(() => {
         throw new (class extends Error implements ProcessFailedError {
-          public readonly code = 'PROCESS_FAILED'
-          public readonly exitCode = 125
-          public readonly signal = null
+          public readonly code = 'PROCESS_FAILED';
+          public readonly exitCode = 125;
+          public readonly signal = null;
 
           constructor() {
             super('foo');
@@ -113,7 +113,7 @@ describe('Docker', () => {
     test('Can be overridden by CDK_DOCKER_CONFIG_FILE', () => {
       const configFile = '/tmp/insertfilenamehere_docker_config.json';
       process.env.CDK_DOCKER_CONFIG_FILE = configFile;
-  
+
       expect(docker.dockerConfigFile()).toEqual(configFile);
     });
 
@@ -143,28 +143,28 @@ describe('Docker', () => {
     test('returns empty object if no config exists', () => {
       expect(docker.dockerConfig()).toEqual({});
     });
-  
+
     test('returns parsed config if it exists', () => {
       mockfs({
         [configFile]: JSON.stringify({
           proxies: {
             default: {
-                httpProxy: "http://proxy.com",
-                httpsProxy: "https://proxy.com",
-                noProxy: ".amazonaws.com"
-            }
-          }
+              httpProxy: 'http://proxy.com',
+              httpsProxy: 'https://proxy.com',
+              noProxy: '.amazonaws.com',
+            },
+          },
         }),
       });
-  
+
       const config = docker.dockerConfig();
       expect(config).toBeDefined();
       expect(config.proxies).toEqual({
         default: {
-            httpProxy: "http://proxy.com",
-            httpsProxy: "https://proxy.com",
-            noProxy: ".amazonaws.com"
-        }
+          httpProxy: 'http://proxy.com',
+          httpsProxy: 'https://proxy.com',
+          noProxy: '.amazonaws.com',
+        },
       });
     });
   });
@@ -206,14 +206,14 @@ describe('Docker', () => {
       });
 
       expect(docker.configureCdkCredentials()).toBeTruthy();
-  
-      const config = JSON.parse(readFileSync(path.join(docker['configDir']!, 'config.json'), 'utf-8'));
+
+      const config = JSON.parse(readFileSync(path.join(docker.configDir!, 'config.json'), 'utf-8'));
       expect(config).toBeDefined();
       expect(config).toEqual({
         credHelpers: {
           'test1.example.com': 'cdk-assets',
-          'test2.example.com': 'cdk-assets'
-        }
+          'test2.example.com': 'cdk-assets',
+        },
       });
     });
 
@@ -229,33 +229,32 @@ describe('Docker', () => {
         [configFile]: JSON.stringify({
           proxies: {
             default: {
-                httpProxy: "http://proxy.com",
-                httpsProxy: "https://proxy.com",
-                noProxy: ".amazonaws.com"
-            }
-          }
+              httpProxy: 'http://proxy.com',
+              httpsProxy: 'https://proxy.com',
+              noProxy: '.amazonaws.com',
+            },
+          },
         }),
       });
 
       expect(docker.configureCdkCredentials()).toBeTruthy();
-  
-      const config = JSON.parse(readFileSync(path.join(docker['configDir']!, 'config.json'), 'utf-8'));
+
+      const config = JSON.parse(readFileSync(path.join(docker.configDir!, 'config.json'), 'utf-8'));
       expect(config).toBeDefined();
       expect(config).toEqual({
         credHelpers: {
           'test1.example.com': 'cdk-assets',
-          'test2.example.com': 'cdk-assets'
+          'test2.example.com': 'cdk-assets',
         },
         proxies: {
           default: {
-              httpProxy: "http://proxy.com",
-              httpsProxy: "https://proxy.com",
-              noProxy: ".amazonaws.com"
-          }
-        }
+            httpProxy: 'http://proxy.com',
+            httpsProxy: 'https://proxy.com',
+            noProxy: '.amazonaws.com',
+          },
+        },
       });
     });
   });
 });
-
 

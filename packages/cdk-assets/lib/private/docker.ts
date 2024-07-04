@@ -187,7 +187,7 @@ export class Docker {
       } else {
         return {};
       }
-    } catch(e: any) {
+    } catch (e: any) {
       if (e instanceof SyntaxError) {
         throw new Error(`Unable to parse \'${this.dockerConfigFile()}\' in order to determine the configuration. Please ensure \'${this.dockerConfigFile()}\' is a valid JSON.`);
       }
