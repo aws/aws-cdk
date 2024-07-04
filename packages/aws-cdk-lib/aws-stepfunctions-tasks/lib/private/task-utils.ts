@@ -1,7 +1,7 @@
 import {
   IntegrationPattern,
 } from '../../../aws-stepfunctions';
-import { Aws, Duration } from '../../../core';
+import { Aws } from '../../../core';
 
 /**
  * Verifies that a validation pattern is supported for a service integration

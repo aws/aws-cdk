@@ -5,7 +5,7 @@ import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { ActionAfterCompletion, EventBridgeSchedulerCreateScheduleTask } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'createScheduleInteg');
@@ -28,10 +28,10 @@ schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
 }));
 kmsKey.grantEncryptDecrypt(schedulerRole);
 
-const testDate = new Date('2024-03-19T00:00:00Z');
-const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule1', {
-  scheduleName: 'TestSchedule',
-  actionAfterCompletion: ActionAfterCompletion.NONE,
+const testDate = new Date('2030-01-01T00:00:00Z');
+const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule1', {
+  scheduleName: 'TestScheduleA',
+  actionAfterCompletion: tasks.ActionAfterCompletion.NONE,
   clientToken: 'testToken',
   description: 'Testdescription',
   startDate: testDate,
@@ -39,23 +39,27 @@ const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'c
   flexibleTimeWindow: cdk.Duration.minutes(5),
   groupName: scheduleGroup.ref,
   kmsKey,
-  scheduleExpression: 'rate(1 minute)',
+  schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
   timezone: 'UTC',
   enabled: true,
-  target: targetQueue.queueArn,
-  role: schedulerRole,
-  retryPolicy: {
-    maximumRetryAttempts: 2,
-    maximumEventAge: cdk.Duration.minutes(5),
-  },
-  deadLetterQueue,
+  target: new tasks.EventBridgeSchedulerTarget({
+    arn: targetQueue.queueArn,
+    role: schedulerRole,
+    retryPolicy: {
+      maximumRetryAttempts: 2,
+      maximumEventAge: cdk.Duration.minutes(5),
+    },
+    deadLetterQueue,
+  }),
 });
 
-const createScheduleTask2 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule2', {
-  scheduleName: 'TestSchedule2',
-  scheduleExpression: 'rate(1 minute)',
-  target: targetQueue.queueArn,
-  role: schedulerRole,
+const createScheduleTask2 = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule2', {
+  scheduleName: 'TestScheduleB',
+  schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+  target: new tasks.EventBridgeSchedulerTarget({
+    arn: targetQueue.queueArn,
+    role: schedulerRole,
+  }),
 });
 
 const startTask = new sfn.Pass(stack, 'Start Task');

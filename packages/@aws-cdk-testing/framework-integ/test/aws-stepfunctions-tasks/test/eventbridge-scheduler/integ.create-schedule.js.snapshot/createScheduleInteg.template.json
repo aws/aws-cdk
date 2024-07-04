@@ -155,7 +155,7 @@
            {
             "Ref": "ScheduleGroup"
            },
-           "/TestSchedule"
+           "/TestScheduleA"
           ]
          ]
         },
@@ -175,7 +175,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":schedule/default/TestSchedule2"
+           ":schedule/default/TestScheduleB"
           ]
          ]
         }
@@ -213,7 +213,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"ClientToken\":\"testToken\",\"Description\":\"Testdescription\",\"EndDate\":\"2024-03-19T01:00:00.000Z\",\"FlexibleTimeWindow\":{\"Mode\":\"FLEXIBLE\",\"MaximumWindowInMinutes\":5},\"GroupName\":\"",
+       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"ClientToken\":\"testToken\",\"Description\":\"Testdescription\",\"EndDate\":\"2030-01-01T01:00:00.000Z\",\"FlexibleTimeWindow\":{\"Mode\":\"FLEXIBLE\",\"MaximumWindowInMinutes\":5},\"GroupName\":\"",
        {
         "Ref": "ScheduleGroup"
        },
@@ -224,7 +224,7 @@
          "Arn"
         ]
        },
-       "\",\"Name\":\"TestSchedule\",\"ScheduleExpression\":\"rate(1 minute)\",\"ScheduleExpressionTimezone\":\"UTC\",\"StartDate\":\"2024-03-19T00:00:00.000Z\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+       "\",\"Name\":\"TestScheduleA\",\"ScheduleExpression\":\"rate(1 minutes)\",\"ScheduleExpressionTimezone\":\"UTC\",\"StartDate\":\"2030-01-01T00:00:00.000Z\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
        {
         "Fn::GetAtt": [
          "TargetQueue08AD2B3C",
@@ -249,7 +249,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestSchedule2\",\"ScheduleExpression\":\"rate(1 minute)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestScheduleB\",\"ScheduleExpression\":\"rate(1 minutes)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
        {
         "Fn::GetAtt": [
          "TargetQueue08AD2B3C",
