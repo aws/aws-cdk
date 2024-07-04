@@ -6,7 +6,6 @@ import * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
 import * as tasks from '../../../aws-stepfunctions-tasks';
 import { Duration, RemovalPolicy, Stack } from '../../../core';
-import { ScheduleExpression } from '../../../../@aws-cdk/aws-scheduler-alpha/lib/schedule-expression';
 
 describe('Create Schedule', () => {
   let stack: Stack;
