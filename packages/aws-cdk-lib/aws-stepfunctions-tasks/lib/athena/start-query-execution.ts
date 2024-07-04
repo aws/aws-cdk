@@ -108,7 +108,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     }
     const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
     if (maxAgeInMinutes > 10080) {
-      throw new Error(`resultReuseConfigurationMaxAge must be between 0 and 10080 minutes, got ${maxAgeInMinutes}`);
+      throw new Error(`resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`);
     };
   }
 
