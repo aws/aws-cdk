@@ -25,17 +25,17 @@ import { Fn } from 'aws-cdk-lib';
 const app = new cdk.App();
 
 const stacks: {[id: string] : cdk.Stack} = {
-  'default': new cdk.Stack(app, 'aws-cdk-routev2-alpha', {stackName: 'DefaultVpcDeploy'}),
+  default: new cdk.Stack(app, 'aws-cdk-routev2-alpha', { stackName: 'DefaultVpcDeploy' }),
   // 'cgw': new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha', {stackName: 'CarrierGatewayVpc'}),
-  'eigw': new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', {stackName: 'EgressOnlyIgwVpc'}),
-  'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}),
-  'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}),
-  'natgw_pub': new cdk.Stack(app, 'aws-cdk-routev2-publicnatgw-alpha', {stackName: 'NatGwPubVpc'}),
-  'natgw_priv': new cdk.Stack(app, 'aws-cdk-routev2-privatenatgw-alpha', {stackName: 'NatGwPrivVpc'}),
-  'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', {stackName: 'NetworkInterfaceVpc'}),
+  eigw: new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', { stackName: 'EgressOnlyIgwVpc' }),
+  igw: new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', { stackName: 'InternetGatewayVpc' }),
+  vpgw: new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', { stackName: 'VirtualPrivateGwVpc' }),
+  natgw_pub: new cdk.Stack(app, 'aws-cdk-routev2-publicnatgw-alpha', { stackName: 'NatGwPubVpc' }),
+  natgw_priv: new cdk.Stack(app, 'aws-cdk-routev2-privatenatgw-alpha', { stackName: 'NatGwPrivVpc' }),
+  nif: new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', { stackName: 'NetworkInterfaceVpc' }),
   // 'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}),
-  'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}),
-  'dynamodb': new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', {stackName: 'DynamodbEndpointVpc'}),
+  vpcpc: new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', { stackName: 'VpcPeerConnection' }),
+  dynamodb: new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', { stackName: 'DynamodbEndpointVpc' }),
 };
 
 var vpcs: {[id: string] : vpc_v2.VpcV2} = {};
@@ -187,7 +187,6 @@ new Route(stacks.dynamodb, 'testDynamoRoute', {
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
   target: dynamoEndpoint,
 });
-
 
 var i = 0;
 for (const stackName in stacks) {

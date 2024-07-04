@@ -65,6 +65,10 @@ export interface SubnetPropsV2 {
 
 }
 
+/**
+ * Subnet to allow custom routes
+ * @resource AWS::EC2::Subnet
+ */
 export class SubnetV2 extends Resource implements ISubnet {
 
   /**
@@ -140,7 +144,7 @@ export class SubnetV2 extends Resource implements ISubnet {
       try {
         overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
       } catch (e) {
-        console.log('No subnets in VPC');
+        'No subnets in VPC';
       }
     }
 
@@ -182,25 +186,25 @@ export class SubnetV2 extends Resource implements ISubnet {
     storeSubnetToVpcByType(props.vpc, this, props.subnetType);
   }
 
-    /**
+  /**
    * Associate a Network ACL with this subnet
    *
    * @param networkAcl The Network ACL to associate
    */
-    public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
-      this._networkAcl = networkAcl;
-  
-      const scope = networkAcl instanceof Construct ? networkAcl : this;
-      const other = networkAcl instanceof Construct ? this : networkAcl;
-      new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
-        networkAcl,
-        subnet: this,
-      });
-    }
-  
-    public get networkAcl(): INetworkAcl {
-      return this._networkAcl;
-    }
+  public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
+    this._networkAcl = networkAcl;
+
+    const scope = networkAcl instanceof Construct ? networkAcl : this;
+    const other = networkAcl instanceof Construct ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
+      networkAcl,
+      subnet: this,
+    });
+  }
+
+  public get networkAcl(): INetworkAcl {
+    return this._networkAcl;
+  }
 }
 
 function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
@@ -246,20 +250,16 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
 
-  for (const cidrs of vpc.secondaryCidrBlock) {
-    if (cidrs.cidrBlock) {
-      vpcCidrBlock.push(cidrs.cidrBlock);
-    if (cidrs.cidrBlock) {
-      vpcCidrBlock.push(cidrs.cidrBlock);
+  for (const ipAddress of vpc.secondaryCidrBlock) {
+    if (ipAddress.cidrBlock) {
+      vpcCidrBlock.push(ipAddress.cidrBlock);
     }
   }
-}
   const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
 
   const subnetCidrBlock = new CidrBlock(cidrRange);
 
-
-  return cidrs.some(vpcCidrBlock => vpcCidrBlock.containsCidr(subnetCidrBlock));
+  return cidrs.some(c => c.containsCidr(subnetCidrBlock));
 
 }
 
@@ -298,17 +298,14 @@ function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): 
   let result : boolean = false;
 
   for (const subnet of allSubnets) {
-    if(subnet.ipv6CidrBlock){
-    console.log(subnet.ipv6CidrBlock);
-    const cidrBlock = new CidrBlockIpv6(subnet.ipv6CidrBlock);
-    ipv6Map.push(cidrBlock.cidr);
+    if (subnet.ipv6CidrBlock) {
+      const cidrBlock = new CidrBlockIpv6(subnet.ipv6CidrBlock);
+      ipv6Map.push(cidrBlock.cidr);
     }
   }
 
   for (const range of ipv6Map) {
-    console.log(range, inputRange);
     if (inputRange.rangesOverlap(range, inputRange.cidr)) {
-      console.log('overlaps');
       result = true;
     }
   }

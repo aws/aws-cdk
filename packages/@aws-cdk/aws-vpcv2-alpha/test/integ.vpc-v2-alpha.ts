@@ -86,7 +86,6 @@ new SubnetV2(stack, 'testsubnet', {
 // const cidr2 = new CidrBlockIpv6('2001:db8:1234:0001:0000::/68');
 // console.log(cidr2.minIp(), cidr2.maxIp());
 
-
 //validate ipv6
 new SubnetV2(stack, 'validateIpv6', {
   vpc,
@@ -95,8 +94,6 @@ new SubnetV2(stack, 'validateIpv6', {
   ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
-
-
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],

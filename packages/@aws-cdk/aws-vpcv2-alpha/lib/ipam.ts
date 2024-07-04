@@ -80,6 +80,11 @@ export interface IpamPoolCidrProvisioningOptions {
   readonly cidr?: string;
 }
 
+/**
+ * Creates new IPAM Pool
+ *
+ * @resource AWS::EC2::IPAMPool
+ */
 export class IpamPool extends Resource {
 
   public readonly ipamPoolId: string;
@@ -112,6 +117,11 @@ export class IpamPool extends Resource {
 export interface IpamPoolCidrProps extends IpamPoolCidrProvisioningOptions {
   readonly ipamPoolId: string;
 }
+
+/**
+ * Creates new IPAM Pool Cidr
+ * @resource AWS::EC2::IPAMPoolCidr
+ */
 export class IpamPoolCidr extends Resource {
 
   constructor(scope: Construct, id: string, props: IpamPoolCidrProps) {
@@ -142,7 +152,6 @@ export class IpamIpv4 implements IIpAddresses {
  * (can be used for adding custom scopes to an existing IPAM)
  * @resource AWS::EC2::IPAMScope
  */
-
 export class IpamScope extends Resource {
 
   private readonly _ipamScope: CfnIPAMScope;
@@ -158,8 +167,9 @@ export class IpamScope extends Resource {
 
 /**
  * Creates new IPAM with default public and private scope
+ *
+ * @resource AWS::EC2::IPAM
  */
-
 export class Ipam extends Resource {
   //Refers to default public scope
   public readonly publicScope: IpamPublicScope;
@@ -260,11 +270,3 @@ export class IpamIpv6 implements IIpAddresses {
     };
   }
 }
-
-// function generateUUID(): string {
-//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-//     const r = (Math.random() * 16) | 0;
-//     const v = c === 'x' ? r : (r & 0x3) | 0x8;
-//     return v.toString(16);
-//   });
-// }
