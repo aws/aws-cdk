@@ -481,6 +481,17 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       throw new Error('stringParameterArn cannot be an unresolved token');
     }
 
+    // has to be the same region
+    // split the arn string to get the region string
+    // arn sample: arn:aws:ssm:us-east-1:123456789012:parameter/dummyName
+    const arnParts = stringParameterArn.split(':');
+    const stackRegion = Stack.of(scope).region;
+    if (arnParts.length !== 6) {
+      throw new Error('unexpected StringParameterArn format');
+    } else if (!Token.isUnresolved(stackRegion) && arnParts[3] !== stackRegion) {
+      throw new Error('stringParameterArn must be in the same region as the stack');
+    }
+
     const parameterType = ParameterValueType.STRING;
 
     let stringValue: string;
