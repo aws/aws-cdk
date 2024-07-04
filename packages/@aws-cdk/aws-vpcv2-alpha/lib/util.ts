@@ -268,8 +268,76 @@ export class CidrBlock {
   public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
     const [start1, end1] = range1;
     const [start2, end2] = range2;
-  
+
     // Check if ranges overlap
     return start1 <= end2 && start2 <= end1;
   }
+
 }
+
+export class CidrBlockIpv6 {
+  public cidr: string;
+  public cidrPrefix: number;
+  private ipParts: bigint[];
+  private networkBits: number;
+  private networkPart: bigint[];
+
+  constructor(cidr: string) {
+    this.cidr = cidr;
+    const [ipAddress, prefix] = cidr.split('/');
+    this.cidrPrefix = parseInt(prefix, 10);
+    this.ipParts = this.parseBigIntParts(ipAddress);
+    this.networkBits = this.cidrPrefix;
+    this.networkPart = this.ipParts.slice(0, Math.ceil(this.networkBits / 16));
+  }
+
+  private parseBigIntParts(ipAddress: string): bigint[] {
+    return ipAddress.split(':').map((part) => BigInt(`0x${part.padStart(4, '0')}` || '0'));
+  }
+
+  public minIp(): string {
+    const startIP = [...this.networkPart];
+    for (let i = this.networkPart.length; i < 8; i++) {
+      startIP.push(BigInt(0));
+    }
+    return startIP.map(this.formatIPv6Part).join(':');
+  }
+
+  public maxIp(): string {
+    const endIP = [...this.networkPart];
+    const hostPart = Array(8 - this.networkPart.length).fill(BigInt(0xffff));
+    endIP.push(...hostPart);
+
+    return endIP.map(this.formatIPv6Part).join(':');
+  }
+
+  private formatIPv6Part = (part: bigint) => part.toString(16).padStart(4, '0');
+
+  public rangesOverlap(range1: string, range2: string): boolean {
+    const [start1, end1] = this.getIPv6Range(range1);
+    const [start2, end2] = this.getIPv6Range(range2);
+
+    return (start1 <= end2) && (start2 <= end1);
+  }
+
+  private getIPv6Range(cidr: string): [bigint, bigint] {
+    const [ipv6Address, prefixLength] = cidr.split('/');
+    const ipv6Number = this.ipv6ToNumber(ipv6Address);
+    const mask = (BigInt(1) << BigInt(128 - Number(prefixLength))) - BigInt(1);
+    const networkPrefix = ipv6Number & ~mask;
+    const start = networkPrefix;
+    const end = networkPrefix | mask;
+
+    return [start, end];
+  }
+
+  private ipv6ToNumber(ipv6Address: string): bigint {
+    const blocks = this.parseBigIntParts(ipv6Address);
+    let ipv6Number = BigInt(0);
+    for (const block of blocks) {
+      ipv6Number = (ipv6Number << BigInt(16)) + block;
+    }
+    return ipv6Number;
+  }
+}
+

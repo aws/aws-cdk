@@ -78,7 +78,7 @@ describe('EC2 Routing', () => {
             },
           },
         },
-      }
+      },
     });
   });
 
@@ -98,7 +98,7 @@ describe('EC2 Routing', () => {
         TestVpnGwIGW11AF5344: {
           Type: 'AWS::EC2::VPNGateway',
           Properties: {
-            Type: 'ipsec.1'
+            Type: 'ipsec.1',
           },
         },
         // Route linking IP to VPN GW should be in stack
@@ -208,5 +208,5 @@ describe('EC2 Routing', () => {
         },
       },
     });
-  })
+  });
 });

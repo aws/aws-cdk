@@ -4,7 +4,7 @@ import { Resource, Names } from 'aws-cdk-lib';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
-import { CidrBlock } from './util';
+import { CidrBlock, CidrBlockIpv6 } from './util';
 
 export interface ICidr {
   readonly cidr: string;
@@ -100,7 +100,7 @@ export class SubnetV2 extends Resource implements ISubnet {
   /**
    * The IPv6 CIDR Block for this subnet
    */
-  public readonly ipv6CidrBlocks: string[];
+  public readonly ipv6CidrBlock?: string;
 
   /**
    * The route table for this subnet
@@ -126,26 +126,30 @@ export class SubnetV2 extends Resource implements ISubnet {
     const ipv4CidrBlock = props.cidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
-    if(!checkCidrRanges(props.vpc, props.cidrBlock.cidr)){
+    if (!checkCidrRanges(props.vpc, props.cidrBlock.cidr)) {
       throw new Error('CIDR block should be in the same VPC');
     };
 
-
     let overlap: boolean = false;
-    try{
-      overlap = validateOverlappingCidrRanges(props.vpc,  props.cidrBlock.cidr);
-    }
-    catch(e){
-      "No Subnets in VPC";
-    }
-
-    if (overlap){
-      throw new Error('CIDR block should not overlap with existing subnet blocks');
+    let overlapIpv6: boolean = false;
+    try {
+      overlap = validateOverlappingCidrRanges(props.vpc, props.cidrBlock.cidr);
+    } catch (e) {
+      'No Subnets in VPC';
     }
 
     //check whether VPC supports ipv6
-    if (ipv6CidrBlock) {
+    if (props.ipv6CidrBlock?.cidr) {
       validateSupportIpv6(props.vpc);
+      try {
+        overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
+      } catch (e) {
+        console.log('No subnets in VPC');
+      }
+    }
+
+    if (overlap || overlapIpv6) {
+      throw new Error('CIDR block should not overlap with existing subnet blocks');
     }
 
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -156,7 +160,7 @@ export class SubnetV2 extends Resource implements ISubnet {
     });
 
     this.ipv4CidrBlock = props.cidrBlock.cidr;
-    this.ipv6CidrBlocks = subnet.attrIpv6CidrBlocks;
+    this.ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
     this.subnetId = subnet.ref;
     this.availabilityZone = props.availabilityZone;
 
@@ -234,7 +238,8 @@ const subnetTypeMap = {
  */
 
 function validateSupportIpv6(vpc: IVpcV2) {
-  if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true)) {
+  if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
+  secondaryAddress.ipv6IpamPoolId != undefined)) {
     return true;
   } else {
     throw new Error('To use IPv6, the VPC must enable IPv6 support.');
@@ -246,15 +251,15 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
 
   for (const cidrs of vpc.secondaryCidrBlock) {
-    if(cidrs.cidrBlock) {
-    vpcCidrBlock.push(cidrs.cidrBlock);
+    if (cidrs.cidrBlock) {
+      vpcCidrBlock.push(cidrs.cidrBlock);
     }
   }
 
   const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
 
   const subnetCidrBlock = new CidrBlock(cidrRange);
-  
+
   return cidrs.some(vpcCidrBlock => vpcCidrBlock.containsCidr(subnetCidrBlock));
 
 }
@@ -269,18 +274,46 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
 
   const inputIpMap: [string, string] = [inputRange.minIp(), inputRange.maxIp()];
 
-  for (const subnet of allSubnets){
+  for (const subnet of allSubnets) {
     const cidrBlock = new CidrBlock(subnet.ipv4CidrBlock);
     ipMap.push([cidrBlock.minIp(), cidrBlock.maxIp()]);
   }
 
-  for(const range of ipMap) {
+  for (const range of ipMap) {
     if (inputRange.rangesOverlap(range, inputIpMap)) {
       return true;
     }
   }
+
   return false;
 }
 
+function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
 
+  let allSubnets: ISubnet[] = vpc.selectSubnets().subnets;
+
+  const ipv6Map: string[]= [];
+
+  const inputRange = new CidrBlockIpv6(ipv6CidrBlock);
+
+  let result : boolean = false;
+
+  for (const subnet of allSubnets) {
+    if(subnet.ipv6CidrBlock){
+    console.log(subnet.ipv6CidrBlock);
+    const cidrBlock = new CidrBlockIpv6(subnet.ipv6CidrBlock);
+    ipv6Map.push(cidrBlock.cidr);
+    }
+  }
+
+  for (const range of ipv6Map) {
+    console.log(range, inputRange);
+    if (inputRange.rangesOverlap(range, inputRange.cidr)) {
+      console.log('overlaps');
+      result = true;
+    }
+  }
+
+  return result;
+}
 

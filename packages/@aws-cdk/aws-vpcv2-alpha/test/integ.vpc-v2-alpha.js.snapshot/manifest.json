@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af7b52ab0210d9ab7eeafa6133a6509bcdb11e835a11574064df49596f551e51.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/592dc28b2692f29ce439a6ca59a275fe5a8ec5e9b0f88625af900b926687b7b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,6 +94,12 @@
             "data": "Vpcintegtest2SecondaryIp23EC83AC8"
           }
         ],
+        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpcintegtest2SecondaryIp3FBF3248A"
+          }
+        ],
         "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -128,6 +134,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testsubnetRouteTableAssociationC106676D"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/validateIpv6/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "validateIpv6Subnet07BD40AE"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "validateIpv6RouteTable10861B00"
+          }
+        ],
+        "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "validateIpv6RouteTableAssociationD6330457"
           }
         ],
         "/aws-cdk-vpcv2-alpha/BootstrapVersion": [

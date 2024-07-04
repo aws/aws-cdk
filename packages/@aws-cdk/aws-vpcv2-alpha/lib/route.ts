@@ -139,7 +139,7 @@ export class NatGateway extends Resource implements IRouteTarget {
     super(scope, id);
 
     this.routerType = RouterType.NAT_GATEWAY;
-    
+
     // If user does not provide EIP, generate one for them
     var aId: string = props.allocationId || '';
     if (!props.allocationId) {
@@ -148,16 +148,16 @@ export class NatGateway extends Resource implements IRouteTarget {
       });
       aId = eip.attrAllocationId;
     }
-    
+
     // TODO: Give user warning if no InternetGateway exists
-    
+
     this.resource = new CfnNatGateway(this, 'NATGateway', {
       subnetId: props.subnet.subnetId,
       allocationId: aId,
     });
-    
+
     this.routerId = this.resource.attrNatGatewayId;
-    
+
     // new CfnEIPAssociation(this, 'EIPAssociation', {
     //   allocationId: aId,
     //   networkInterfaceId: this.routerId,
@@ -294,7 +294,7 @@ export class Route extends Resource implements IRouteV2 {
         new CfnVPCGatewayAttachment(this, 'GWAttachment', {
           vpcId: this.target.vpcId,
           vpnGatewayId: this.target.routerId,
-        })
+        });
       }
     }
   }
