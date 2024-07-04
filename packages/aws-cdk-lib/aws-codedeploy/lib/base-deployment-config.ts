@@ -61,7 +61,9 @@ export interface ZonalConfig {
   /**
    * The period of time that CodeDeploy must wait after completing a deployment to an Availability Zone.
    *
-   * Minimum value is 1 second or 0.
+   * Accepted Values:
+   *  * 0
+   *  * Greater than or equal to 1
    *
    * @default - CodeDeploy starts deploying to the next Availability Zone immediately
    */
