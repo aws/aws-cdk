@@ -213,7 +213,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
   private validateMinimumDuration(duration: Duration, name: string) {
     const milliseconds = duration.toMilliseconds();
     if (milliseconds > 0 && milliseconds < 1000) {
-      throw new Error(`${name} must be greater than or equal to 1 second or 0, got ${milliseconds}ms`);
+      throw new Error(`${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`);
     }
   }
 }

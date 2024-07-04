@@ -117,7 +117,7 @@ describe('CodeDeploy DeploymentConfig', () => {
             monitorDuration: cdk.Duration.millis(500),
           },
         });
-      }).toThrow('monitorDuration must be greater than or equal to 1 second or 0, got 500ms');
+      }).toThrow('monitorDuration must be greater than or equal to 1 second or be equal to 0, got 500ms');
     });
 
     test('throw error for invalid firstZoneMonitorDuration', () => {
@@ -130,7 +130,7 @@ describe('CodeDeploy DeploymentConfig', () => {
             firstZoneMonitorDuration: cdk.Duration.millis(500),
           },
         });
-      }).toThrow('firstZoneMonitorDuration must be greater than or equal to 1 second or 0, got 500ms');
+      }).toThrow('firstZoneMonitorDuration must be greater than or equal to 1 second or be equal to 0, got 500ms');
     });
   });
 });
