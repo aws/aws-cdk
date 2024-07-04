@@ -1,0 +1,274 @@
+{
+ "Resources": {
+  "AwsApiCallSESV2GetAccount": {
+   "Type": "Custom::DeployAssert@SdkCallSESV2GetAccount",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SESV2",
+    "api": "GetAccount",
+    "expected": "{\"$ObjectLike\":{\"VdmAttributes\":{\"DashboardAttributes\":{\"EngagementMetrics\":\"ENABLED\"},\"GuardianAttributes\":{\"OptimizedSharedDelivery\":\"ENABLED\"},\"VdmEnabled\":\"ENABLED\"}}}",
+    "flattenResponse": "false",
+    "salt": "1714899948716"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ses:GetAccount"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ses:GetConfigurationSet"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ses:GetConfigurationSet"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ses:GetConfigurationSet"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs18.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09": {
+   "Type": "Custom::DeployAssert@SdkCallSESV2GetConfigurationSet",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SESV2",
+    "api": "GetConfigurationSet",
+    "expected": "{\"$ObjectLike\":{\"VdmOptions\":{\"DashboardOptions\":{\"EngagementMetrics\":\"ENABLED\"},\"GuardianOptions\":{\"OptimizedSharedDelivery\":\"ENABLED\"}}}}",
+    "parameters": {
+     "ConfigurationSetName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-ses-configuration-set-vdmoptions-integ:ExportsOutputRefVdmOptionsEnabled69EBE7CE3C47B59E"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1714899948718"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416": {
+   "Type": "Custom::DeployAssert@SdkCallSESV2GetConfigurationSet",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SESV2",
+    "api": "GetConfigurationSet",
+    "expected": "{\"$ObjectLike\":{\"VdmOptions\":{\"DashboardOptions\":{\"EngagementMetrics\":\"DISABLED\"},\"GuardianOptions\":{\"OptimizedSharedDelivery\":\"DISABLED\"}}}}",
+    "parameters": {
+     "ConfigurationSetName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-ses-configuration-set-vdmoptions-integ:ExportsOutputRefVdmOptionsDisabledE1F2258ECF65F287"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1714899948719"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9": {
+   "Type": "Custom::DeployAssert@SdkCallSESV2GetConfigurationSet",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SESV2",
+    "api": "GetConfigurationSet",
+    "expected": "{\"$ObjectLike\":{}}",
+    "parameters": {
+     "ConfigurationSetName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-ses-configuration-set-vdmoptions-integ:ExportsOutputRefVdmOptionsNotConfigured273D33265DF527D8"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1714899948719"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallSESV2GetAccount": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSESV2GetAccount",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
