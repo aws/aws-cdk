@@ -185,25 +185,25 @@ export class SubnetV2 extends Resource implements ISubnet {
     storeSubnetToVpcByType(props.vpc, this, props.subnetType);
   }
 
-  /**
+    /**
    * Associate a Network ACL with this subnet
    *
    * @param networkAcl The Network ACL to associate
    */
-  public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
-    this._networkAcl = networkAcl;
-
-    const scope = networkAcl instanceof Construct ? networkAcl : this;
-    const other = networkAcl instanceof Construct ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
-      networkAcl,
-      subnet: this,
-    });
-  }
-
-  public get networkAcl(): INetworkAcl {
-    return this._networkAcl;
-  }
+    public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
+      this._networkAcl = networkAcl;
+  
+      const scope = networkAcl instanceof Construct ? networkAcl : this;
+      const other = networkAcl instanceof Construct ? this : networkAcl;
+      new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
+        networkAcl,
+        subnet: this,
+      });
+    }
+  
+    public get networkAcl(): INetworkAcl {
+      return this._networkAcl;
+    }
 }
 
 function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
@@ -254,7 +254,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
       vpcCidrBlock.push(cidrs.cidrBlock);
     }
   }
-
+}
   const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
 
   const subnetCidrBlock = new CidrBlock(cidrRange);
@@ -315,4 +315,3 @@ function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): 
 
   return result;
 }
-
