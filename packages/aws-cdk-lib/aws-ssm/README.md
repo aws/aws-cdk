@@ -123,6 +123,8 @@ Things to note:
 
 - Once the resource share is created by the sharing account, the consuming account(s) will receive an invitation to join the resource share. For the consuming account(s) to access and use the shared SSM parameter(s), they must accept the resource share invitation from the sharing account.
 
+- The AWS Systems Manager Parameter Store parameter being referenced must be located in the same AWS region as the AWS CDK stack that is consuming or using the parameter.
+
 In summary, the process involves three main steps:
 
 1. The sharing account creates the SSM parameter(s) in the advanced tier.
