@@ -509,7 +509,7 @@ describe('Invoke Model', () => {
     });
   });
 
-  test('guardrail fails when invalid guardrailIdentifier is set', () => {
+  test('guardrail fails when guardrailIdentifier is set to invalid id', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -526,7 +526,27 @@ describe('Invoke Model', () => {
         guardrail: Guardrail.enableDraft('invalid-id'),
       });
       // THEN
-    }).toThrow('You must set guardrailIdentifier to the id or the arn of Guardrail, got invalid-id');
+    }).toThrow('The id of Guardrail must contain only lowercase letters and numbers, got invalid-id');
+  });
+
+  test('guardrail fails when guardrailIdentifier is set to invalid ARN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      // WHEN
+      new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        body: sfn.TaskInput.fromObject(
+          {
+            prompt: 'Hello world',
+          },
+        ),
+        guardrail: Guardrail.enableDraft('arn:aws:bedrock:us-turbo-2:123456789012:guardrail'),
+      });
+      // THEN
+    }).toThrow('Invalid ARN format. The ARN of Guradrail should have the format: `arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>`, got arn:aws:bedrock:us-turbo-2:123456789012:guardrail.');
   });
 
   test('guardrail fails when guardrailIdentifier length is invalid', () => {

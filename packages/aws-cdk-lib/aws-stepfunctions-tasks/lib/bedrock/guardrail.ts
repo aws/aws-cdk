@@ -1,4 +1,4 @@
-import { Token } from '../../../core';
+import { Arn, ArnFormat, Token } from '../../../core';
 
 /**
  * Guradrail settings for BedrockInvokeModel
@@ -34,10 +34,21 @@ export class Guardrail {
    */
   private constructor(public readonly guardrailIdentifier: string, public readonly guardrailVersion: string) {
     if (!Token.isUnresolved(guardrailIdentifier)) {
-      const guardrailPattern = /^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail\/[a-z0-9]+))$/;
+      let gurdrailId = undefined;
 
-      if (!guardrailPattern.test(guardrailIdentifier)) {
-        throw new Error(`You must set guardrailIdentifier to the id or the arn of Guardrail, got ${guardrailIdentifier}`);
+      if (guardrailIdentifier.startsWith('arn:')) {
+        const arn = Arn.split(guardrailIdentifier, ArnFormat.SLASH_RESOURCE_NAME);
+        if (!arn.resourceName) {
+          throw new Error(`Invalid ARN format. The ARN of Guradrail should have the format: \`arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>\`, got ${guardrailIdentifier}.`);
+        }
+        gurdrailId = arn.resourceName;
+      } else {
+        gurdrailId = guardrailIdentifier;
+      }
+
+      const guardrailPattern = /^[a-z0-9]+$/;
+      if (!guardrailPattern.test(gurdrailId)) {
+        throw new Error(`The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`);
       }
 
       if (guardrailIdentifier.length > 2048) {
