@@ -158,16 +158,47 @@ export class Docker {
     const config = cdkCredentialsConfig();
     if (!config) { return false; }
 
-    this.configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdkDockerConfig'));
+    // Condition configured for supporting testing, it is not expected the CDK_DOCKER_TMP_CONFIG_DIR to be set in production
+    if (process.env.CDK_DOCKER_TMP_CONFIG_DIR) {
+      fs.mkdirSync(process.env.CDK_DOCKER_TMP_CONFIG_DIR, { recursive: true });
+      this.configDir = process.env.CDK_DOCKER_TMP_CONFIG_DIR;
+    } else {
+      this.configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdkDockerConfig'));
+    }
 
     const domains = Object.keys(config.domainCredentials);
     const credHelpers = domains.reduce((map: Record<string, string>, domain) => {
       map[domain] = 'cdk-assets'; // Use docker-credential-cdk-assets for this domain
       return map;
     }, {});
-    fs.writeFileSync(path.join(this.configDir, 'config.json'), JSON.stringify({ credHelpers }), { encoding: 'utf-8' });
+
+    // Parsing the original Docker config file to ensure additional configuration is not lost like proxy settings
+    const originalDockerConfig = this.dockerConfig();
+    const mergedConfig = { ...originalDockerConfig, credHelpers };
+
+    fs.writeFileSync(path.join(this.configDir, 'config.json'), JSON.stringify(mergedConfig), { encoding: 'utf-8' });
 
     return true;
+  }
+
+  public dockerConfigFile(): string {
+    return process.env.CDK_DOCKER_CONFIG_FILE ?? path.join((os.userInfo().homedir ?? os.homedir()).trim() || '/', '.docker', 'config.json');
+  }
+
+  public dockerConfig(): any | undefined {
+    try {
+
+      if (fs.existsSync(this.dockerConfigFile())) {
+        return JSON.parse(fs.readFileSync(this.dockerConfigFile(), { encoding: 'utf-8' }));
+      } else {
+        return {};
+      }
+    } catch(e: any) {
+      if (e instanceof SyntaxError) {
+        throw new Error(`Unable to parse \'${this.dockerConfigFile()}\' in order to determine the configuration. Please ensure \'${this.dockerConfigFile()}\' is a valid JSON.`);
+      }
+      throw e;
+    }
   }
 
   /**
