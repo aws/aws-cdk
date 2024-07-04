@@ -158,13 +158,7 @@ export class Docker {
     const config = cdkCredentialsConfig();
     if (!config) { return false; }
 
-    // Condition configured for supporting testing, it is not expected the CDK_DOCKER_TMP_CONFIG_DIR to be set in production
-    if (process.env.CDK_DOCKER_TMP_CONFIG_DIR) {
-      fs.mkdirSync(process.env.CDK_DOCKER_TMP_CONFIG_DIR, { recursive: true });
-      this.configDir = process.env.CDK_DOCKER_TMP_CONFIG_DIR;
-    } else {
-      this.configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdkDockerConfig'));
-    }
+    this.configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdkDockerConfig'));
 
     const domains = Object.keys(config.domainCredentials);
     const credHelpers = domains.reduce((map: Record<string, string>, domain) => {

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as mockfs from 'mock-fs';
 import { Docker } from '../../lib/private/docker';
 import { ShellOptions, ProcessFailedError } from '../../lib/private/shell';
-import { read, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 
 type ShellExecuteMock = jest.SpyInstance<ReturnType<Docker['execute']>, Parameters<Docker['execute']>>;
 
@@ -173,7 +173,6 @@ describe('Docker', () => {
     let docker: Docker;
     const credsFile = '/tmp/foo/bar/does/not/exist/config-cred.json';
     const configFile = '/tmp/foo/bar/does/not/exist/config.json';
-    const tmpConfigDir = path.join(os.tmpdir(), 'cdkDockerConfig');
 
     afterEach(() => {
       jest.resetModules();
@@ -184,10 +183,6 @@ describe('Docker', () => {
       docker = new Docker();
       process.env.CDK_DOCKER_CREDS_FILE = credsFile;
       process.env.CDK_DOCKER_CONFIG_FILE = configFile;
-      process.env.CDK_DOCKER_TMP_CONFIG_DIR = tmpConfigDir;
-      mockfs({
-        [tmpConfigDir]: {}
-      })
     });
 
     afterEach(() => {
@@ -212,7 +207,7 @@ describe('Docker', () => {
 
       expect(docker.configureCdkCredentials()).toBeTruthy();
   
-      const config = JSON.parse(readFileSync(path.join(tmpConfigDir, 'config.json'), 'utf-8'));
+      const config = JSON.parse(readFileSync(path.join(docker['configDir']!, 'config.json'), 'utf-8'));
       expect(config).toBeDefined();
       expect(config).toEqual({
         credHelpers: {
@@ -244,7 +239,7 @@ describe('Docker', () => {
 
       expect(docker.configureCdkCredentials()).toBeTruthy();
   
-      const config = JSON.parse(readFileSync(path.join(tmpConfigDir, 'config.json'), 'utf-8'));
+      const config = JSON.parse(readFileSync(path.join(docker['configDir']!, 'config.json'), 'utf-8'));
       expect(config).toBeDefined();
       expect(config).toEqual({
         credHelpers: {
