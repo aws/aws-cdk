@@ -67,7 +67,11 @@ export class Schedule {
     return new Schedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`);
   }
 
-  private constructor(public readonly expressionString: string) {}
+  private constructor(
+    /**
+     * The Schedule expression
+     */
+    public readonly expressionString: string) {}
 }
 
 /**
