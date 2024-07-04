@@ -26,7 +26,7 @@ describe('Create Schedule', () => {
       resources: [targetQueue.queueArn],
     }));
 
-    const schedule = tasks.Schedule.rate(1, tasks.RateUnit.MINUTES);
+    const schedule = tasks.Schedule.rate(Duration.minutes(1));
 
     const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
@@ -167,7 +167,7 @@ describe('Create Schedule', () => {
     const testDate = new Date();
     const testEndDate = new Date(testDate.getTime() + 1000 * 60 * 60);
 
-    const schedule = tasks.Schedule.rate(1, tasks.RateUnit.MINUTES);
+    const schedule = tasks.Schedule.rate(Duration.minutes(1));
 
     const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
@@ -376,9 +376,9 @@ describe('Create Schedule', () => {
   });
 
   test.each([
-    tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
-    tasks.Schedule.rate(1, tasks.RateUnit.HOURS),
-    tasks.Schedule.rate(1, tasks.RateUnit.DAYS),
+    tasks.Schedule.rate(Duration.minutes(5)),
+    tasks.Schedule.rate(Duration.hours(5)),
+    tasks.Schedule.rate(Duration.days(5)),
     tasks.Schedule.cron({ minute: '0', hour: '12' }),
     tasks.Schedule.cron({ minute: '0', hour: '12', day: '29', month: '12' }),
     tasks.Schedule.cron({ minute: '0', hour: '12', day: '29', month: '12', year: '2023' }),
@@ -450,7 +450,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+        schedule: tasks.Schedule.rate(Duration.minutes(1)),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -464,7 +464,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+        schedule: tasks.Schedule.rate(Duration.minutes(1)),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -479,7 +479,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+        schedule: tasks.Schedule.rate(Duration.minutes(1)),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -495,7 +495,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+        schedule: tasks.Schedule.rate(Duration.minutes(1)),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -511,7 +511,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+        schedule: tasks.Schedule.rate(Duration.minutes(1)),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -525,7 +525,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+        schedule: tasks.Schedule.rate(Duration.minutes(1)),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -539,7 +539,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+        schedule: tasks.Schedule.rate(Duration.minutes(1)),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,

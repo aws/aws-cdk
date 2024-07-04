@@ -32,12 +32,21 @@ export class Schedule {
    *
    * The minimum interval is 1 minute.
    */
-  public static rate(value: number, unit: RateUnit): Schedule {
-    if (!Number.isInteger(value)) {
-      throw new Error('Rate value must be an integer');
+  public static rate(duration: Duration): Schedule {
+    if (duration.toMilliseconds() < Duration.minutes(1).toMilliseconds()) {
+      throw new Error('Duration cannot be less than 1 minute');
+    }
+    if (duration.toMinutes() === 0) {
+      throw new Error('Duration cannot be 0');
     }
 
-    return new Schedule(`rate(${value} ${unit})`);
+    const maybeRate = (value: number, unit: string) => (value > 0 && Number.isInteger(value)) ? `${value} ${unit}` : undefined;
+
+    let rate = maybeRate(duration.toDays({ integral: false }), 'days');
+    if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hours'); }
+    if (rate === undefined) { rate = maybeRate(duration.toMinutes({ integral: true }), 'minutes'); }
+
+    return new Schedule(`rate(${rate})`);
   }
 
   /**

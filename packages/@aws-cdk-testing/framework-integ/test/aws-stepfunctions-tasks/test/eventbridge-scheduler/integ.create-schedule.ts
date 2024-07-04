@@ -39,7 +39,7 @@ const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(sta
   flexibleTimeWindow: cdk.Duration.minutes(5),
   groupName: scheduleGroup.ref,
   kmsKey,
-  schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+  schedule: tasks.Schedule.rate(cdk.Duration.minutes(1)),
   timezone: 'UTC',
   enabled: true,
   target: new tasks.EventBridgeSchedulerTarget({
@@ -55,7 +55,7 @@ const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(sta
 
 const createScheduleTask2 = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule2', {
   scheduleName: 'TestScheduleB',
-  schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+  schedule: tasks.Schedule.rate(cdk.Duration.minutes(1)),
   target: new tasks.EventBridgeSchedulerTarget({
     arn: targetQueue.queueArn,
     role: schedulerRole,
