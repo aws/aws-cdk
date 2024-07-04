@@ -701,7 +701,7 @@
                     "value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
                   }
                 ],
-                "solutionStackName": "64bit Amazon Linux 2023 v6.1.6 running Node.js 20"
+                "solutionStackName": "64bit Amazon Linux 2023 v6.1.7 running Node.js 20"
               }
             },
             "constructInfo": {
