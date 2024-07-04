@@ -559,6 +559,7 @@ describe('Create Schedule', () => {
       { schedule: tasks.Schedule.cron({ minute: '0', hour: '12', day: '29', month: '12', year: '2023' }), expression: 'cron(0 12 29 12 ? 2023)' },
       { schedule: tasks.Schedule.cron({ minute: '0', hour: '12', weekDay: 'MON' }), expression: 'cron(0 12 ? * MON *)' },
       { schedule: tasks.Schedule.oneTime(new Date('2023-12-29T11:55:00')), expression: '2023-12-29T11:55:00' },
+      { schedule: tasks.Schedule.oneTime(new Date('2024-01-01T00:00:00')), expression: '2024-01-01T00:00:00' },
     ])('valid schedule', (schedule) => {
       expect(schedule.schedule.expressionString).toBe(schedule.expression);
     });
