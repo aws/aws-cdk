@@ -20,6 +20,17 @@
     }
    }
   },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "tgw23F41D77",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "tgwSubnet9ACC0C41": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -47,25 +58,14 @@
     "tgwSecondaryIp1BF847949"
    ]
   },
-  "tgwSubnetRouteTableE925C2DB": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "tgw23F41D77",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "tgwSecondaryIp1BF847949"
-   ]
-  },
   "tgwSubnetRouteTableAssociation4C4F1286": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "tgwSubnetRouteTableE925C2DB"
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "tgwSubnet9ACC0C41"
@@ -74,17 +74,6 @@
    "DependsOn": [
     "tgwSecondaryIp1BF847949"
    ]
-  },
-  "TestRoottableRouteTableFA28AA38": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "tgw23F41D77",
-      "VpcId"
-     ]
-    }
-   }
   },
   "testTGWC8435D4D": {
    "Type": "AWS::EC2::TransitGateway"

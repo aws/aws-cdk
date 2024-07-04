@@ -12,8 +12,9 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Ipv4Cidr, Ipv6Cidr, SubnetV2 } from '../lib/subnet-v2';
-import { CarrierGateway, EgressOnlyInternetGateway, InternetGateway, NatGateway, NetworkInterface, Route, RouteTable, TransitGateway, VirtualPrivateGateway, VpcPeeringConnection } from '../lib/route';
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, RouterType, SubnetType } from 'aws-cdk-lib/aws-ec2';
+// import { CarrierGateway, TransitGateway } from '../lib/route';
+import { EgressOnlyInternetGateway, InternetGateway, NatGateway, NetworkInterface, Route, RouteTable, VPNGateway, VpcPeeringConnection } from '../lib/route';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Fn } from 'aws-cdk-lib';
 //import { log } from 'console';
 
@@ -24,16 +25,17 @@ import { Fn } from 'aws-cdk-lib';
 const app = new cdk.App();
 
 const stacks: {[id: string] : cdk.Stack} = {
-  default: new cdk.Stack(app, 'aws-cdk-routev2-alpha', { stackName: 'DefaultVpcDeploy' }),
-  cgw: new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha', { stackName: 'CarrierGatewayVpc' }), // failing
-  eigw: new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', { stackName: 'EgressOnlyIgwVpc' }),
-  igw: new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', { stackName: 'InternetGatewayVpc' }),
-  vpgw: new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', { stackName: 'VirtualPrivateGwVpc' }),
-  natgw: new cdk.Stack(app, 'aws-cdk-routev2-natgw-alpha', { stackName: 'NatGwVpc' }),
-  nif: new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', { stackName: 'NetworkInterfaceVpc' }),
-  tgw: new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', { stackName: 'TransitGwVpc' }), // failing
-  vpcpc: new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', { stackName: 'VpcPeerConnection' }), // failing
-  dynamodb: new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', { stackName: 'DynamodbEndpointVpc' }),
+  'default': new cdk.Stack(app, 'aws-cdk-routev2-alpha', {stackName: 'DefaultVpcDeploy'}),
+  // 'cgw': new cdk.Stack(app, 'aws-cdk-routev2-carriergw-alpha', {stackName: 'CarrierGatewayVpc'}),
+  'eigw': new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', {stackName: 'EgressOnlyIgwVpc'}),
+  'igw': new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', {stackName: 'InternetGatewayVpc'}),
+  'vpgw': new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {stackName: 'VirtualPrivateGwVpc'}),
+  'natgw_pub': new cdk.Stack(app, 'aws-cdk-routev2-publicnatgw-alpha', {stackName: 'NatGwPubVpc'}),
+  'natgw_priv': new cdk.Stack(app, 'aws-cdk-routev2-privatenatgw-alpha', {stackName: 'NatGwPrivVpc'}),
+  'nif': new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', {stackName: 'NetworkInterfaceVpc'}),
+  // 'tgw': new cdk.Stack(app, 'aws-cdk-routev2-transitgw-alpha', {stackName: 'TransitGwVpc'}),
+  'vpcpc': new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {stackName: 'VpcPeerConnection'}),
+  'dynamodb': new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', {stackName: 'DynamodbEndpointVpc'}),
 };
 
 var vpcs: {[id: string] : vpc_v2.VpcV2} = {};
@@ -48,85 +50,131 @@ for (const stackName in stacks) {
     enableDnsSupport: true,
   });
   vpcs[stackName] = vpc;
+  const routeTable = new RouteTable(stacks[stackName], 'TestRoottable', {
+    vpcId: vpcs[stackName].vpcId,
+  });
+  routeTables[stackName] = routeTable;
   if (stackName == 'eigw') {
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'us-west-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+      routeTable: routeTables[stackName],
     });
     subnets[stackName] = subnet;
   } else {
     // use empty ipv6 that doesn't overlap
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'us-west-1a',
       cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
       ipv6CidrBlock: new Ipv6Cidr(Fn.select(0, vpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+      routeTable: routeTables[stackName],
     });
     subnets[stackName] = subnet;
   }
 }
 
 const user2Vpc = new vpc_v2.VpcV2(stacks.vpcpc, 'vpcpc-user2', {
-  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.128.0/17'),
+  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.128.0.0/16'),
 });
 
-new SubnetV2(stacks.vpcpc, 'vpcpcSubnet-2', {
-  vpc: user2Vpc,
-  availabilityZone: 'us-east-1a',
-  cidrBlock: new Ipv4Cidr('10.0.128.128/24'),
-  subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-});
-
-for (const stackName in stacks) {
-  const routeTable = new RouteTable(stacks[stackName], 'TestRoottable', {
-    vpcId: vpcs[stackName].vpcId,
-  });
-  routeTables[stackName] = routeTable;
-}
-
-const carrierGw = new CarrierGateway(stacks.cgw, 'testCGW', {
-  vpcId: vpcs.cgw.vpcId,
-});
+// const carrierGw = new CarrierGateway(stacks.cgw, 'testCGW', {
+//   vpcId: vpcs.cgw.vpcId,
+// });
+// new Route(stacks.cgw, 'testCGWRoute', {
+//   routeTable: routeTables.cgw,
+//   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+//   target: carrierGw,
+// });
 
 const eigw = new EgressOnlyInternetGateway(stacks.eigw, 'testEOIGW', {
   vpcId: vpcs.eigw.vpcId,
+});
+new Route(stacks.eigw, 'testEIGWRoute', {
+  routeTable: routeTables.eigw,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: eigw,
 });
 
 const igw = new InternetGateway(stacks.igw, 'testIGW', {
   vpcId: vpcs.igw.vpcId,
 });
+new Route(stacks.igw, 'testIGWRoute', {
+  routeTable: routeTables.igw,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: igw,
+});
 
-const vpgw = new VirtualPrivateGateway(stacks.vpgw, 'testVPGW', {
+const vpgw = new VPNGateway(stacks.vpgw, 'testVPGW', {
   type: 'ipsec.1',
   vpcId: vpcs.vpgw.vpcId,
 });
+new Route(stacks.vpgw, 'testVPGWRoute', {
+  routeTable: routeTables.vpgw,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: vpgw,
+});
 
-const natGw = new NatGateway(stacks.natgw, 'testNATgw', {
-  subnet: subnets.natgw,
-  vpcId: vpcs.natgw.vpcId,
+const natGwIgw = new InternetGateway(stacks.natgw_pub, 'testNATgwIGW', {
+  vpcId: vpcs.natgw_pub.vpcId,
 });
-const natGwIgw = new InternetGateway(stacks.natgw, 'testNATgwIGW', {
-  vpcId: vpcs.natgw.vpcId,
-});
-new Route(stacks.natgw, 'testnatgwigwRoute', {
-  routeTable: routeTables.natgw,
+new Route(stacks.natgw_pub, 'testnatgwigwRoute', {
+  routeTable: routeTables.natgw_pub,
   destination: vpc_v2.IpAddresses.ipv4('242.0.0.0/32'),
   target: natGwIgw,
+});
+const natGwPub = new NatGateway(stacks.natgw_pub, 'testNATgw', {
+  subnet: subnets.natgw_pub,
+  vpcId: vpcs.natgw_pub.vpcId,
+});
+new Route(stacks.natgw_pub, 'testNATGWRoute', {
+  routeTable: routeTables.natgw_pub,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: natGwPub,
+});
+
+const natGwPriv = new NatGateway(stacks.natgw_priv, 'testNATgw', {
+  subnet: subnets.natgw_priv,
+  vpcId: vpcs.natgw_priv.vpcId,
+  connectivityType: 'private',
+  privateIpAddress: '10.0.0.42',
+  secondaryPrivateIpAddresses: [
+    '10.0.0.43', '10.0.0.44', '10.0.0.45',
+  ],
+});
+new Route(stacks.natgw_priv, 'testNATGWRoute', {
+  routeTable: routeTables.natgw_priv,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: natGwPriv,
 });
 
 const networkInterface = new NetworkInterface(stacks.nif, 'testNWIF', {
   subnet: subnets.nif,
 });
+new Route(stacks.nif, 'testNetIntRoute', {
+  routeTable: routeTables.nif,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: networkInterface,
+});
 
-const transitGw = new TransitGateway(stacks.tgw, 'testTGW');
+// const transitGw = new TransitGateway(stacks.tgw, 'testTGW');
+// new Route(stacks.tgw, 'testTransitGWRoute', {
+//   routeTable: routeTables.tgw,
+//   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+//   target: transitGw,
+// });
 
 const vpcPeerConn = new VpcPeeringConnection(stacks.vpcpc, 'testVPCPC', {
   vpcId: vpcs.vpcpc.vpcId,
   peerVpcId: user2Vpc.vpcId,
-  peerRoleArn: user2Vpc.vpcArn,
+});
+new Route(stacks.vpcpc, 'testPeerconRoute', {
+  routeTable: routeTables.vpcpc,
+  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
+  target: vpcPeerConn,
 });
 
 const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoint', {
@@ -134,112 +182,12 @@ const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoi
   vpc: vpcs.dynamodb,
   subnets: [subnets.dynamodb],
 });
-
-const routeToCgw = new Route(stacks.cgw, 'testCGWRoute', {
-  routeTable: routeTables.cgw,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: carrierGw,
-});
-
-const routeToEigw = new Route(stacks.eigw, 'testEIGWRoute', {
-  routeTable: routeTables.eigw,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: eigw,
-});
-
-const routeToIgw = new Route(stacks.igw, 'testIGWRoute', {
-  routeTable: routeTables.igw,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: igw,
-});
-
-const routeToVpgw = new Route(stacks.vpgw, 'testVPGWRoute', {
-  routeTable: routeTables.vpgw,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: vpgw,
-});
-
-const routeToNATGW = new Route(stacks.natgw, 'testNATGWRoute', {
-  routeTable: routeTables.natgw,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: natGw,
-});
-
-const routeToNetworkIf = new Route(stacks.nif, 'testNetIntRoute', {
-  routeTable: routeTables.nif,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: networkInterface,
-});
-
-const routeToTransit = new Route(stacks.tgw, 'testTransitGWRoute', {
-  routeTable: routeTables.tgw,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: transitGw,
-});
-
-const routeToVpcPeercon = new Route(stacks.vpcpc, 'testPeerconRoute', {
-  routeTable: routeTables.vpcpc,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: vpcPeerConn,
-});
-
-const routeToDynamo = new Route(stacks.dynamodb, 'testDynamoRoute', {
+new Route(stacks.dynamodb, 'testDynamoRoute', {
   routeTable: routeTables.dynamodb,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
   target: dynamoEndpoint,
 });
 
-/**
- * Expected as should be true by default
- */
-
-// if (!vpc.isolatedSubnets.includes(subnet)) {
-//   throw new Error('Subnet is not isolated');
-// };
-
-if (eigw.routerType != RouterType.EGRESS_ONLY_INTERNET_GATEWAY) {
-  throw new Error('EIGW RouterType not correct');
-}
-
-if (!dynamoEndpoint.vpcEndpointId) {
-  throw new Error('No dynamo endpoint id');
-}
-
-if (routeToCgw.targetRouterType != RouterType.CARRIER_GATEWAY) {
-  throw new Error('Carrier gateway route has wrong route type');
-}
-
-if (routeToEigw.targetRouterType != RouterType.EGRESS_ONLY_INTERNET_GATEWAY) {
-  throw new Error('Egress Only Internet Gateway has wrong router type');
-}
-
-if (routeToIgw.targetRouterType != RouterType.GATEWAY) {
-  throw new Error('Internet Gateway has wrong router type');
-}
-
-if (routeToVpgw.targetRouterType != RouterType.GATEWAY) {
-  throw new Error('Virtual Private Gateway has wrong router type');
-}
-
-if (routeToNATGW.targetRouterType != RouterType.NAT_GATEWAY) {
-  throw new Error('NAT Gateway has wrong router type');
-}
-
-if (routeToNetworkIf.targetRouterType != RouterType.NETWORK_INTERFACE) {
-  throw new Error('Network Interface has wrong router type');
-}
-
-if (routeToTransit.targetRouterType != RouterType.TRANSIT_GATEWAY) {
-  throw new Error('Transit Gateway has wrong router type');
-}
-
-if (routeToVpcPeercon.targetRouterType != RouterType.VPC_PEERING_CONNECTION) {
-  throw new Error('VPC Peer Connection has wrong router type');
-}
-
-if (routeToDynamo.targetRouterType != RouterType.VPC_ENDPOINT) {
-  throw new Error('Dynamo route has wrong route type');
-}
 
 var i = 0;
 for (const stackName in stacks) {

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "natgw9631C9BB": {
+  "natgwpub2FB85986": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
@@ -8,19 +8,30 @@
     "EnableDnsSupport": true
    }
   },
-  "natgwSecondaryIp196041245": {
+  "natgwpubSecondaryIp1B0697165": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
     "VpcId": {
      "Fn::GetAtt": [
-      "natgw9631C9BB",
+      "natgwpub2FB85986",
       "VpcId"
      ]
     }
    }
   },
-  "natgwSubnetD255A267": {
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpub2FB85986",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "natgwpubSubnet79D316E5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": "us-east-1a",
@@ -30,7 +41,7 @@
       0,
       {
        "Fn::GetAtt": [
-        "natgw9631C9BB",
+        "natgwpub2FB85986",
         "Ipv6CidrBlocks"
        ]
       }
@@ -38,83 +49,30 @@
     },
     "VpcId": {
      "Fn::GetAtt": [
-      "natgw9631C9BB",
+      "natgwpub2FB85986",
       "VpcId"
      ]
     }
    },
    "DependsOn": [
-    "natgwSecondaryIp196041245"
+    "natgwpubSecondaryIp1B0697165"
    ]
   },
-  "natgwSubnetRouteTable74636743": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "natgw9631C9BB",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "natgwSecondaryIp196041245"
-   ]
-  },
-  "natgwSubnetRouteTableAssociationF02D8461": {
+  "natgwpubSubnetRouteTableAssociation019CE26A": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "natgwSubnetRouteTable74636743"
-    },
-    "SubnetId": {
-     "Ref": "natgwSubnetD255A267"
-    }
-   },
-   "DependsOn": [
-    "natgwSecondaryIp196041245"
-   ]
-  },
-  "TestRoottableRouteTableFA28AA38": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
      "Fn::GetAtt": [
-      "natgw9631C9BB",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "testNATgwEIP1C260FAD": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": {
-     "Fn::GetAtt": [
-      "natgw9631C9BB",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "natgwSubnetRouteTableAssociationF02D8461"
-   ]
-  },
-  "testNATgwNATGateway1533420D": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "testNATgwEIP1C260FAD",
-      "AllocationId"
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
      ]
     },
     "SubnetId": {
-     "Ref": "natgwSubnetD255A267"
+     "Ref": "natgwpubSubnet79D316E5"
     }
    },
    "DependsOn": [
-    "natgwSubnetRouteTableAssociationF02D8461"
+    "natgwpubSecondaryIp1B0697165"
    ]
   },
   "testNATgwIGW6AC97E9A": {
@@ -149,11 +107,42 @@
     },
     "VpcId": {
      "Fn::GetAtt": [
-      "natgw9631C9BB",
+      "natgwpub2FB85986",
       "VpcId"
      ]
     }
    }
+  },
+  "testNATgwEIP1C260FAD": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": {
+     "Fn::GetAtt": [
+      "natgwpub2FB85986",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "natgwpubSubnetRouteTableAssociation019CE26A"
+   ]
+  },
+  "testNATgwNATGateway1533420D": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "testNATgwEIP1C260FAD",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "natgwpubSubnet79D316E5"
+    }
+   },
+   "DependsOn": [
+    "natgwpubSubnetRouteTableAssociation019CE26A"
+   ]
   },
   "testNATGWRoute7A26EC80": {
    "Type": "AWS::EC2::Route",

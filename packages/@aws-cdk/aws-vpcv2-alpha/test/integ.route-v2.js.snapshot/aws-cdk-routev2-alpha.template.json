@@ -20,6 +20,17 @@
     }
    }
   },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "defaultC974F9E3",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "defaultSubnetDFB3A3B6": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -47,25 +58,14 @@
     "defaultSecondaryIp18DFC7C62"
    ]
   },
-  "defaultSubnetRouteTable76D6FE5A": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "defaultC974F9E3",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "defaultSecondaryIp18DFC7C62"
-   ]
-  },
   "defaultSubnetRouteTableAssociationF1D85D29": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "defaultSubnetRouteTable76D6FE5A"
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "defaultSubnetDFB3A3B6"
@@ -74,17 +74,6 @@
    "DependsOn": [
     "defaultSecondaryIp18DFC7C62"
    ]
-  },
-  "TestRoottableRouteTableFA28AA38": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "defaultC974F9E3",
-      "VpcId"
-     ]
-    }
-   }
   }
  },
  "Parameters": {
