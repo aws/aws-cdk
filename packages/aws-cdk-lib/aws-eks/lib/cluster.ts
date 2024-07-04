@@ -915,6 +915,7 @@ export class KubernetesVersion {
    * When creating a `Cluster` with this version, you need to also specify the
    * `kubectlLayer` property with a `KubectlV22Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v22`.
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_22 = KubernetesVersion.of('1.22');
 
