@@ -123,7 +123,6 @@ export class SubnetV2 extends Resource implements ISubnet {
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
     if (!checkCidrRanges(props.vpc, props.cidrBlock.cidr)) {
-    if (!checkCidrRanges(props.vpc, props.cidrBlock.cidr)) {
       throw new Error('CIDR block should be in the same VPC');
     };
 
@@ -183,25 +182,25 @@ export class SubnetV2 extends Resource implements ISubnet {
     storeSubnetToVpcByType(props.vpc, this, props.subnetType);
   }
 
-  /**
+    /**
    * Associate a Network ACL with this subnet
    *
    * @param networkAcl The Network ACL to associate
    */
-  public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
-    this._networkAcl = networkAcl;
-
-    const scope = networkAcl instanceof Construct ? networkAcl : this;
-    const other = networkAcl instanceof Construct ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
-      networkAcl,
-      subnet: this,
-    });
-  }
-
-  public get networkAcl(): INetworkAcl {
-    return this._networkAcl;
-  }
+    public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
+      this._networkAcl = networkAcl;
+  
+      const scope = networkAcl instanceof Construct ? networkAcl : this;
+      const other = networkAcl instanceof Construct ? this : networkAcl;
+      new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
+        networkAcl,
+        subnet: this,
+      });
+    }
+  
+    public get networkAcl(): INetworkAcl {
+      return this._networkAcl;
+    }
 }
 
 function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
@@ -254,7 +253,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
       vpcCidrBlock.push(cidrs.cidrBlock);
     }
   }
-
+}
   const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
 
   const subnetCidrBlock = new CidrBlock(cidrRange);
@@ -275,12 +274,10 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
   const inputIpMap: [string, string] = [inputRange.minIp(), inputRange.maxIp()];
 
   for (const subnet of allSubnets) {
-  for (const subnet of allSubnets) {
     const cidrBlock = new CidrBlock(subnet.ipv4CidrBlock);
     ipMap.push([cidrBlock.minIp(), cidrBlock.maxIp()]);
   }
 
-  for (const range of ipMap) {
   for (const range of ipMap) {
     if (inputRange.rangesOverlap(range, inputIpMap)) {
       return true;
@@ -318,4 +315,3 @@ function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): 
 
   return result;
 }
-
