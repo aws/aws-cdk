@@ -19,6 +19,7 @@ on the VPC being created. `VpcV2` implements the existing [`IVpc`](https://docs.
 `VpcV2` is compatible with other constructs that accepts `IVpc` (e.g. [`ApplicationLoadBalancer`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer.html#construct-props)).
 
 To create a VPC with both IPv4 and IPv6 support:
+
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
@@ -39,6 +40,7 @@ Importing existing VPC in an account into CDK as a `VpcV2` is not yet supported.
 
 `SubnetV2` is a re-write of the [`ec2.Subnet`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Subnet.html) construct.
 This new construct can be used to add subnets to a `VpcV2` instance:
+
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -67,6 +69,7 @@ Same as `VpcV2`, importing existing subnets is not yet supported.
 By default `VpcV2` uses `10.0.0.0/16` as the primary CIDR if none is defined. 
 Additional CIDRs can be adding to the VPC via the `secondaryAddressBlocks` prop.
 The following example illustrates the different options of defining the address blocks:
+
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
@@ -107,6 +110,7 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 ## Routing
 
 `RouteTable` is a new construct that allows for route tables to be customized in a variety of ways. For instance, the following example shows how a custom route table can be created and appended to a subnet:
+
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
@@ -120,7 +124,9 @@ const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {
   ...,
 });
 ```
+
 `Route`s can be created to link subnets to various different AWS services via gateways and endpoints. Each unique route target has its own dedicated construct that can be routed to a given subnet via the `Route` construct. An example using the `InternetGateway` construct can be seen below:
+
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
@@ -139,7 +145,9 @@ new vpc_v2.Route(stack, 'IgwRoute', {
   target: igw,
 });
 ```
+
 Other route targets may require a deeper set of parameters to set up properly. For instance, the example below illustrates how to set up a `NatGateway`:
+
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
@@ -161,7 +169,9 @@ new vpc_v2.Route(stack, 'NatGwRoute', {
   target: natgw,
 });
 ```
+
 It is also possible to set up endpoints connecting other AWS services. For instance, the example below illustrates the linking of a Dynamo DB endpoint via the existing `ec2.GatewayVpcEndpoint` construct as a route target:
+
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';

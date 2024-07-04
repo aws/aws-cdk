@@ -1,3 +1,5 @@
+/*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
+
 import { ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 /**
@@ -323,9 +325,12 @@ export class CidrBlockIpv6 {
   private getIPv6Range(cidr: string): [bigint, bigint] {
     const [ipv6Address, prefixLength] = cidr.split('/');
     const ipv6Number = this.ipv6ToNumber(ipv6Address);
+    /* eslint:disable:no-bitwise */
     const mask = (BigInt(1) << BigInt(128 - Number(prefixLength))) - BigInt(1);
+    /* eslint:disable:no-bitwise */
     const networkPrefix = ipv6Number & ~mask;
     const start = networkPrefix;
+    /* eslint:disable:no-bitwise */
     const end = networkPrefix | mask;
 
     return [start, end];
@@ -335,6 +340,7 @@ export class CidrBlockIpv6 {
     const blocks = this.parseBigIntParts(ipv6Address);
     let ipv6Number = BigInt(0);
     for (const block of blocks) {
+      /* tslint:disable:no-bitwise */
       ipv6Number = (ipv6Number << BigInt(16)) + block;
     }
     return ipv6Number;

@@ -229,11 +229,11 @@ describe('EC2 Routing', () => {
             ConnectivityType: 'private',
             PrivateIpAddress: '10.0.0.42',
             SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA' 
+              Ref: 'TestSubnet2A4BE4CA',
             },
           },
           DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30'
+            'TestSubnetRouteTableAssociationFE267B30',
           ],
         },
         // Route linking private IP to NAT Gateway should be in stack
@@ -241,13 +241,13 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::Route',
           Properties: {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: { 
+            NatGatewayId: {
               'Fn::GetAtt': [
                 'TestNATGWNATGatewayBE4F6F2D',
                 'NatGatewayId',
               ],
             },
-            RouteTableId: { 
+            RouteTableId: {
               'Fn::GetAtt': [
                 'TestRouteTableC34C2E1C',
                 'RouteTableId',
@@ -267,7 +267,7 @@ describe('EC2 Routing', () => {
       secondaryPrivateIpAddresses: [
         '10.0.1.0/28',
         '10.0.2.0/28',
-      ]
+      ],
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
@@ -287,11 +287,11 @@ describe('EC2 Routing', () => {
               '10.0.2.0/28',
             ],
             SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA' 
+              Ref: 'TestSubnet2A4BE4CA',
             },
           },
           DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30' 
+            'TestSubnetRouteTableAssociationFE267B30',
           ],
         },
 
@@ -321,11 +321,11 @@ describe('EC2 Routing', () => {
             PrivateIpAddress: '10.0.0.42',
             SecondaryPrivateIpAddressCount: 2,
             SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA' 
+              Ref: 'TestSubnet2A4BE4CA',
             },
           },
           DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30' 
+            'TestSubnetRouteTableAssociationFE267B30',
           ],
         },
         // Route linking private IP to NAT Gateway should be in stack
@@ -333,13 +333,13 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::Route',
           Properties: {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: { 
+            NatGatewayId: {
               'Fn::GetAtt': [
                 'TestNATGWNATGatewayBE4F6F2D',
                 'NatGatewayId',
               ],
             },
-            RouteTableId: { 
+            RouteTableId: {
               'Fn::GetAtt': [
                 'TestRouteTableC34C2E1C',
                 'RouteTableId',
@@ -367,11 +367,11 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::NatGateway',
           Properties: {
             SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA' 
+              Ref: 'TestSubnet2A4BE4CA',
             },
           },
           DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30' 
+            'TestSubnetRouteTableAssociationFE267B30',
           ],
         },
         // Route linking private IP to NAT Gateway should be in stack
@@ -379,13 +379,13 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::Route',
           Properties: {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: { 
+            NatGatewayId: {
               'Fn::GetAtt': [
                 'TestNATGWNATGatewayBE4F6F2D',
                 'NatGatewayId',
               ],
             },
-            RouteTableId: { 
+            RouteTableId: {
               'Fn::GetAtt': [
                 'TestRouteTableC34C2E1C',
                 'RouteTableId',
@@ -424,11 +424,11 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::NatGateway',
           Properties: {
             SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA' 
+              Ref: 'TestSubnet2A4BE4CA',
             },
           },
           DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30' 
+            'TestSubnetRouteTableAssociationFE267B30',
           ],
         },
         // Route linking private IP to NAT Gateway should be in stack
@@ -436,13 +436,13 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::Route',
           Properties: {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: { 
+            NatGatewayId: {
               'Fn::GetAtt': [
                 'TestNATGWNATGatewayBE4F6F2D',
                 'NatGatewayId',
               ],
             },
-            RouteTableId: { 
+            RouteTableId: {
               'Fn::GetAtt': [
                 'TestRouteTableC34C2E1C',
                 'RouteTableId',
@@ -454,10 +454,10 @@ describe('EC2 Routing', () => {
         MyEIP: {
           Type: 'AWS::EC2::EIP',
           Properties: {
-            Domain: { 
+            Domain: {
               'Fn::GetAtt': [
                 'TestVpcE77CE678',
-                'VpcId'
+                'VpcId',
               ],
             },
           },
@@ -484,7 +484,7 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::NatGateway',
           Properties: {
             AllocationId: {
-              'Fn::GetAtt':[
+              'Fn::GetAtt': [
                 'TestNATGWEIP0A279819',
                 'AllocationId',
               ],
@@ -492,11 +492,11 @@ describe('EC2 Routing', () => {
             ConnectivityType: 'public',
             MaxDrainDurationSeconds: 2001,
             SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA' 
+              Ref: 'TestSubnet2A4BE4CA',
             },
           },
           DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30' 
+            'TestSubnetRouteTableAssociationFE267B30',
           ],
         },
         // Route linking private IP to NAT Gateway should be in stack
@@ -504,13 +504,13 @@ describe('EC2 Routing', () => {
           Type: 'AWS::EC2::Route',
           Properties: {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: { 
+            NatGatewayId: {
               'Fn::GetAtt': [
                 'TestNATGWNATGatewayBE4F6F2D',
                 'NatGatewayId',
               ],
             },
-            RouteTableId: { 
+            RouteTableId: {
               'Fn::GetAtt': [
                 'TestRouteTableC34C2E1C',
                 'RouteTableId',
@@ -697,7 +697,7 @@ describe('EC2 Routing', () => {
       },
     });
   });
-  
+
   test('Route to DynamoDB Endpoint', () => {
     const dynamodb = new GatewayVpcEndpoint(stack, 'TestDB', {
       vpc: myVpc,
@@ -727,7 +727,7 @@ describe('EC2 Routing', () => {
                 '',
                 [
                   'com.amazonaws.',
-                  {Ref: 'AWS::Region'},
+                  { Ref: 'AWS::Region' },
                   '.dynamodb',
                 ],
               ],
@@ -774,7 +774,7 @@ describe('EC2 Routing', () => {
                 '',
                 [
                   'com.amazonaws.',
-                  {Ref: 'AWS::Region'},
+                  { Ref: 'AWS::Region' },
                   '.s3',
                 ],
               ],
@@ -821,7 +821,7 @@ describe('EC2 Routing', () => {
                 '',
                 [
                   'com.amazonaws.',
-                  {Ref: 'AWS::Region'},
+                  { Ref: 'AWS::Region' },
                   '.s3express',
                 ],
               ],

@@ -67,7 +67,7 @@ export interface NatGatewayProps {
 
   /**
    * [Public NAT gateway only] The allocation ID of the Elastic IP address that's
-   * associated with the NAT gateway. This property is required for a public NAT 
+   * associated with the NAT gateway. This property is required for a public NAT
    * gateway and cannot be specified with a private NAT gateway.
    */
   readonly allocationId?: string;
@@ -79,7 +79,7 @@ export interface NatGatewayProps {
   readonly connectivityType?: string;
 
   /**
-   * The maximum amount of time to wait (in seconds) before forcibly releasing the 
+   * The maximum amount of time to wait (in seconds) before forcibly releasing the
    * IP addresses if connections are still in progress.
    * @default 350
    */
@@ -98,10 +98,10 @@ export interface NatGatewayProps {
   readonly secondaryAllocationIds?: string[];
 
   /**
-   * [Private NAT gateway only] The number of secondary private IPv4 addresses you 
+   * [Private NAT gateway only] The number of secondary private IPv4 addresses you
    * want to assign to the NAT gateway.
-   * 
-   * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be 
+   *
+   * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be
    * set at the same time.
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
    */
@@ -109,7 +109,7 @@ export interface NatGatewayProps {
 
   /**
    * Secondary private IPv4 addresses.
-   * 
+   *
    * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be
    * set at the same time.
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
@@ -147,7 +147,7 @@ export interface VpcPeeringConnectionProps {
   readonly peerOwnerId?: string;
 
   /**
-   * The Region code for the accepter VPC, if the accepter VPC is located in a Region 
+   * The Region code for the accepter VPC, if the accepter VPC is located in a Region
    * other than the Region in which you make the request.
    * @default - The Region in which you make the request
    */
@@ -156,7 +156,7 @@ export interface VpcPeeringConnectionProps {
   /**
    * The Amazon Resource Name (ARN) of the VPC peer role for the peering connection in
    * another AWS account.
-   * 
+   *
    * This is required when you are peering a VPC in a different AWS account.
    */
   readonly peerRoleArn?: string;
@@ -325,7 +325,7 @@ export class NatGateway extends Resource implements IRouteTarget {
 
   /**
    * [Public NAT gateway only] The allocation ID of the Elastic IP address that's
-   * associated with the NAT gateway. This property is required for a public NAT 
+   * associated with the NAT gateway. This property is required for a public NAT
    * gateway and cannot be specified with a private NAT gateway.
    */
   public readonly allocationId?: string;
@@ -337,7 +337,7 @@ export class NatGateway extends Resource implements IRouteTarget {
   public readonly connectivityType?: string;
 
   /**
-   * The maximum amount of time to wait (in seconds) before forcibly releasing the 
+   * The maximum amount of time to wait (in seconds) before forcibly releasing the
    * IP addresses if connections are still in progress.
    * @default 350
    */
@@ -355,7 +355,7 @@ export class NatGateway extends Resource implements IRouteTarget {
 
     this.connectivityType = props.connectivityType || 'public';
     this.maxDrainDurationSeconds = props.maxDrainDurationSeconds || 350;
-    
+
     // If user does not provide EIP, generate one for them
     var aId: string | undefined;
     if (this.connectivityType == 'public') {
@@ -368,11 +368,11 @@ export class NatGateway extends Resource implements IRouteTarget {
         aId = props.allocationId;
       }
     }
-      
+
     this.resource = new CfnNatGateway(this, 'NATGateway', {
       subnetId: props.subnet.subnetId,
       allocationId: aId,
-      ...props
+      ...props,
     });
 
     this.routerId = this.resource.attrNatGatewayId;
@@ -487,7 +487,7 @@ export interface IRouteV2 {
 
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
-   * 
+   *
    * Routing decisions are based on the most specific match.
    */
   readonly destination: IIpAddresses;
@@ -506,7 +506,7 @@ export interface RouteProps {
 
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
-   * 
+   *
    * Routing decisions are based on the most specific match.
    */
   readonly destination: IIpAddresses;
@@ -524,7 +524,7 @@ export interface RouteProps {
 export class Route extends Resource implements IRouteV2 {
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
-   * 
+   *
    * Routing decisions are based on the most specific match.
    */
   public readonly destination: IIpAddresses;
