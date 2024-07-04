@@ -7,6 +7,134 @@ import { Stack, Duration, Token } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
 /**
+ * Schedule for EventBridge Scheduler
+ */
+export class Schedule {
+
+  /**
+   * Construct a schedule from a Date.
+   */
+  public static oneTime(time: Date): Schedule {
+    const pad = (num: number) => (num < 10 ? '0' + num : num);
+
+    const year = time.getFullYear();
+    const month = pad(time.getMonth() + 1);
+    const day = pad(time.getDate());
+    const hours = pad(time.getHours());
+    const minutes = pad(time.getMinutes());
+    const seconds = pad(time.getSeconds());
+
+    return new Schedule(`${year}-${month}-${day}T${hours}:${minutes}:${seconds}`);
+  }
+
+  /**
+   * Construct a schedule from an interval.
+   *
+   * The minimum interval is 1 minute.
+   */
+  public static rate(value: number, unit: RateUnit): Schedule {
+    if (!Number.isInteger(value)) {
+      throw new Error('Rate value must be an integer');
+    }
+
+    return new Schedule(`rate(${value} ${unit})`);
+  }
+
+  /**
+   * Create a schedule from a set of cron fields
+   */
+  public static cron(options: CronOptions): Schedule {
+    if (options.weekDay !== undefined && options.day !== undefined) {
+      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+    }
+
+    const minute = options.minute ?? '*';
+    const hour = options.hour ?? '*';
+    const month = options.month ?? '*';
+
+    // Weekday defaults to '?' if not supplied. If it is supplied, day must become '?'
+    const day = options.day ?? options.weekDay !== undefined ? '?' : '*';
+    const weekDay = options.weekDay ?? '?';
+
+    const year = options.year ?? '*';
+
+    return new Schedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`);
+  }
+
+  private constructor(public readonly expressionString: string) {}
+}
+
+/**
+ * Unit of time for rate expressions
+ */
+export enum RateUnit {
+  /**
+   * minutes
+   */
+  MINUTES = 'minutes',
+  /**
+   * hours
+   */
+  HOURS = 'hours',
+  /**
+   * days
+   */
+  DAYS = 'days',
+}
+
+/**
+ * Options to configure a cron expression
+ *
+ * All fields are strings so you can use complex expressions. Absence of
+ * a field implies '*' or '?', whichever one is appropriate.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html
+ */
+export interface CronOptions {
+  /**
+   * The minute to run this rule at
+   *
+   * @default - Every minute
+   */
+  readonly minute?: string;
+
+  /**
+   * The hour to run this rule at
+   *
+   * @default - Every hour
+   */
+  readonly hour?: string;
+
+  /**
+   * The day of the month to run this rule at
+   *
+   * @default - Every day of the month
+   */
+  readonly day?: string;
+
+  /**
+   * The month to run this rule at
+   *
+   * @default - Every month
+   */
+  readonly month?: string;
+
+  /**
+   * The day of the week to run this rule at
+   *
+   * @default - Any day of the week
+   */
+  readonly weekDay?: string;
+
+  /**
+   * The year to run this rule at
+   *
+   * @default - Every year
+   */
+  readonly year?: string;
+}
+
+/**
  * The action that EventBridge Scheduler applies to the schedule after the schedule completes invoking the target.
  */
 export enum ActionAfterCompletion {
@@ -86,11 +214,11 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
   readonly kmsKey?: kms.IKey;
 
   /**
-   * The expression that defines when the schedule runs.
+   * The scehdule that defines when the schedule will trigger.
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html
    */
-  readonly scheduleExpression: string;
+  readonly schedule: Schedule;
 
   /**
    * The timezone in which the scheduling expression is evaluated.
@@ -309,7 +437,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         GroupName: this.props.groupName,
         KmsKeyArn: this.props.kmsKey?.keyArn,
         Name: this.props.scheduleName,
-        ScheduleExpression: this.props.scheduleExpression,
+        ScheduleExpression: this.props.schedule.expressionString,
         ScheduleExpressionTimezone: this.props.timezone,
         StartDate: this.props.startDate ? this.props.startDate.toISOString() : undefined,
         State: (this.props.enabled ?? true) ? 'ENABLED' : 'DISABLED',

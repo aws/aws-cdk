@@ -6,6 +6,7 @@ import * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
 import * as tasks from '../../../aws-stepfunctions-tasks';
 import { Duration, RemovalPolicy, Stack } from '../../../core';
+import { ScheduleExpression } from '../../../../@aws-cdk/aws-scheduler-alpha/lib/schedule-expression';
 
 describe('Create Schedule', () => {
   let stack: Stack;
@@ -25,9 +26,11 @@ describe('Create Schedule', () => {
       resources: [targetQueue.queueArn],
     }));
 
+    const schedule = tasks.Schedule.rate(1, tasks.RateUnit.MINUTES);
+
     const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
-      scheduleExpression: 'rate(1 minute)',
+      schedule,
       target: new tasks.EventBridgeSchedulerTarget({
         arn: targetQueue.queueArn,
         role: schedulerRole,
@@ -58,7 +61,7 @@ describe('Create Schedule', () => {
           Mode: 'OFF',
         },
         Name: 'TestSchedule',
-        ScheduleExpression: 'rate(1 minute)',
+        ScheduleExpression: schedule.expressionString,
         State: 'ENABLED',
         Target: {
           Arn: {
@@ -164,6 +167,8 @@ describe('Create Schedule', () => {
     const testDate = new Date();
     const testEndDate = new Date(testDate.getTime() + 1000 * 60 * 60);
 
+    const schedule = tasks.Schedule.rate(1, tasks.RateUnit.MINUTES);
+
     const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
       actionAfterCompletion: tasks.ActionAfterCompletion.NONE,
@@ -174,7 +179,7 @@ describe('Create Schedule', () => {
       flexibleTimeWindow: Duration.minutes(5),
       groupName: scheduleGroup.ref,
       kmsKey,
-      scheduleExpression: 'rate(1 minute)',
+      schedule,
       timezone: 'UTC',
       enabled: true,
       target: new tasks.EventBridgeSchedulerTarget({
@@ -226,7 +231,7 @@ describe('Create Schedule', () => {
           ],
         },
         Name: 'TestSchedule',
-        ScheduleExpression: 'rate(1 minute)',
+        ScheduleExpression: schedule.expressionString,
         ScheduleExpressionTimezone: 'UTC',
         StartDate: testDate.toISOString(),
         State: 'ENABLED',
@@ -371,12 +376,81 @@ describe('Create Schedule', () => {
   });
 
   test.each([
+    tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
+    tasks.Schedule.rate(1, tasks.RateUnit.HOURS),
+    tasks.Schedule.rate(1, tasks.RateUnit.DAYS),
+    tasks.Schedule.cron({ minute: '0', hour: '12' }),
+    tasks.Schedule.cron({ minute: '0', hour: '12', day: '29', month: '12' }),
+    tasks.Schedule.cron({ minute: '0', hour: '12', day: '29', month: '12', year: '2023' }),
+    tasks.Schedule.cron({ minute: '0', hour: '12', weekDay: 'MON' }),
+    tasks.Schedule.oneTime(new Date('2023-12-29T11:55:00Z')),
+  ])('with schedule', (schedule) => {
+    const targetQueue = new sqs.Queue(stack, 'TargetQueue');
+    schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [targetQueue.queueArn],
+    }));
+
+    const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+      scheduleName: 'TestSchedule',
+      schedule,
+      target: new tasks.EventBridgeSchedulerTarget({
+        arn: targetQueue.queueArn,
+        role: schedulerRole,
+      }),
+    });
+
+    new sfn.StateMachine(stack, 'stateMachine', {
+      definition: sfn.Chain.start(createScheduleTask),
+    });
+
+    expect(stack.resolve(createScheduleTask.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::aws-sdk:scheduler:createSchedule',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        FlexibleTimeWindow: {
+          Mode: 'OFF',
+        },
+        Name: 'TestSchedule',
+        ScheduleExpression: schedule.expressionString,
+        State: 'ENABLED',
+        Target: {
+          Arn: {
+            'Fn::GetAtt': [
+              'TargetQueue08AD2B3C',
+              'Arn',
+            ],
+          },
+          RoleArn: {
+            'Fn::GetAtt': [
+              'SchedulerRole59E73443',
+              'Arn',
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
     '', 'a'.repeat(65),
   ])('throw error for invalid clientToken length', (clientToken) => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        scheduleExpression: 'rate(1 minute)',
+        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -390,7 +464,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        scheduleExpression: 'rate(1 minute)',
+        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -405,7 +479,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        scheduleExpression: 'rate(1 minute)',
+        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -421,7 +495,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        scheduleExpression: 'rate(1 minute)',
+        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -437,7 +511,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        scheduleExpression: 'rate(1 minute)',
+        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -451,7 +525,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        scheduleExpression: 'rate(1 minute)',
+        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
@@ -465,7 +539,7 @@ describe('Create Schedule', () => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
-        scheduleExpression: 'rate(1 minute)',
+        schedule: tasks.Schedule.rate(1, tasks.RateUnit.MINUTES),
         target: new tasks.EventBridgeSchedulerTarget({
           arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
           role: schedulerRole,
