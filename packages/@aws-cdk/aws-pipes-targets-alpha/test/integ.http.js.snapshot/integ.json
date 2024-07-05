@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-pipe-target-http/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-https"
+      ],
+      "assertionStack": "integtest-pipe-target-http/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargethttpDefaultTestDeployAssertEA540809"
+    }
+  }
+}
