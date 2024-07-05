@@ -259,7 +259,7 @@ abstract class IpamScopeBase {
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.scopeId,
-      locale: options.locale ?? Stack.of(this.scope).node.tryGetContext('region'),
+      locale: options.locale ?? Stack.of(this.scope).region,
       publicIpSource: options.publicIpSource,
       awsService: options.awsService,
     });

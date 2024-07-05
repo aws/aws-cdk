@@ -9,12 +9,15 @@ describe('IPAM Test', () => {
   let ipam: Ipam;
 
   beforeEach(() => {
+    const envUSA = { region: 'us-west-2' };
     const app = new cdk.App({
       context: {
         '@aws-cdk/core:newStyleStackSynthesis': false,
       },
     });
-    stack = new cdk.Stack(app);
+    stack = new cdk.Stack(app, 'IPAMTestStack' ,{
+      env: envUSA,
+    });
     ipam = new Ipam(stack, 'Ipam');
   });
 
@@ -34,8 +37,6 @@ describe('IPAM Test', () => {
         ipv6NetmaskLength: 52,
       })],
     });
-    // const template = Template.fromStack(stack);
-    // console.log(JSON.stringify(template.toJSON(), null, 2));
     Template.fromStack(stack).hasResourceProperties(
       'AWS::EC2::IPAMPool',
       {
@@ -80,4 +81,70 @@ describe('IPAM Test', () => {
       },
     ); //End Template
   });
-}); // End Test
+
+  test('Creates IPAM CIDR pool under public scope for IPv6', () => {
+    // Create IPAM resources
+    const ipam = new Ipam(stack, 'TestIpam');
+    const poolOptions: vpc.PoolOptions = {
+      addressFamily: AddressFamily.IP_V6,
+      awsService: 'ec2',
+      publicIpSource: IpamPoolPublicIpSource.AMAZON,
+      locale: 'us-east-1',
+    };
+    ipam.publicScope.addPool('TestPool', poolOptions);
+
+    // Define the expected CloudFormation template
+    const expectedTemplate = {
+        Resources: {
+          Ipam50346F82: { Type: 'AWS::EC2::IPAM' },
+          TestIpamDBF92BA8: { Type: 'AWS::EC2::IPAM' },
+          TestIpamTestPool5D90F91B: { 
+            Type: 'AWS::EC2::IPAMPool', 
+            Properties: {
+              AddressFamily: 'ipv6',
+              IpamScopeId: { 
+                'Fn::GetAtt': 
+                [ 'TestIpamDBF92BA8', 
+                'PublicDefaultScopeId' ] },
+              Locale: 'us-east-1',
+             }
+          } 
+        }
+      }
+    // // Assert that the generated template matches the expected template
+    Template.fromStack(stack).templateMatches(expectedTemplate);
+  });
+
+  test('Get region from stack env', () => {
+    // Create IPAM resources
+    const ipam = new Ipam(stack, 'TestIpam');
+    const poolOptions: vpc.PoolOptions = {
+      addressFamily: AddressFamily.IP_V6,
+      awsService: 'ec2',
+      publicIpSource: IpamPoolPublicIpSource.AMAZON,
+    };
+    ipam.publicScope.addPool('TestPool', poolOptions);
+
+    // Define the expected CloudFormation template
+    const expectedTemplate = {
+        Resources: {
+          Ipam50346F82: { Type: 'AWS::EC2::IPAM' },
+          TestIpamDBF92BA8: { Type: 'AWS::EC2::IPAM' },
+          TestIpamTestPool5D90F91B: { 
+            Type: 'AWS::EC2::IPAMPool', 
+            Properties: {
+              AddressFamily: 'ipv6',
+              IpamScopeId: { 
+                'Fn::GetAtt': 
+                [ 'TestIpamDBF92BA8', 
+                'PublicDefaultScopeId' ] },
+                Locale: 'us-west-2',
+             }
+          } 
+        }
+      }
+    // // Assert that the generated template matches the expected template
+    Template.fromStack(stack).templateMatches(expectedTemplate);
+  });
+
+  });// End Test
