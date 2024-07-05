@@ -410,7 +410,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
    *
    * LaunchType will be omitted if capacity provider strategies are specified on the service.
    *
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE or LaunchType.EXTERNAL
    */
@@ -518,7 +518,7 @@ export abstract class BaseService extends Resource
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = arn.resourceName;
     if (!resourceName) {
-      throw new Error('Missing resource Name from service ARN: ${serviceArn}');
+      throw new Error(`Missing resource Name from service ARN: ${serviceArn}`);
     }
     const resourceNameParts = resourceName.split('/');
     if (resourceNameParts.length !== 2) {

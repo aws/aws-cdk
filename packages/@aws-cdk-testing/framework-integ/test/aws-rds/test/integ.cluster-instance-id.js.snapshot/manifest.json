@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "Default.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "Default.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4341f9db698fa2f306e4cabc0cdac628e923e1ff6006ed5058ec60659714b6b3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be7c83333c44afcade1e443b5925922c4a8eea387b43914470e347433cd0904d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +178,12 @@
             "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
           }
         ],
+        "/Default/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/Default/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -187,12 +194,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/Default/Database": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "There are provisioned readers in the highest promotion tier 2 that do not have the same InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event of a failover.\nWriter InstanceSize: t3.small\nReader InstanceSizes: t3.medium [ack: @aws-cdk/aws-rds:provisionedReadersDontMatchWriter]"
           }
         ],
         "/Default/Database/Subnets/Default": [
@@ -265,6 +266,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "instanceIdentifiersTestDefaultTestDeployAssertC062AEBE.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
