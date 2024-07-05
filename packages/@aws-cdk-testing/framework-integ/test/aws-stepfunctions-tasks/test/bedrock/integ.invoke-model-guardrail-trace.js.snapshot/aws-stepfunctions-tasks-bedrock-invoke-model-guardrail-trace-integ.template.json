@@ -1,0 +1,257 @@
+{
+ "Resources": {
+  "Guardrail": {
+   "Type": "AWS::Bedrock::Guardrail",
+   "Properties": {
+    "BlockedInputMessaging": "blocked input message by guardrail",
+    "BlockedOutputsMessaging": "blocked output message by guardrail",
+    "ContentPolicyConfig": {
+     "FiltersConfig": [
+      {
+       "InputStrength": "LOW",
+       "OutputStrength": "NONE",
+       "Type": "PROMPT_ATTACK"
+      }
+     ]
+    },
+    "Name": "MyGuardrail",
+    "WordPolicyConfig": {
+     "WordsConfig": [
+      {
+       "Text": "attack"
+      }
+     ]
+    }
+   }
+  },
+  "GuardrailVersion": {
+   "Type": "AWS::Bedrock::GuardrailVersion",
+   "Properties": {
+    "GuardrailIdentifier": {
+     "Fn::GetAtt": [
+      "Guardrail",
+      "GuardrailId"
+     ]
+    }
+   }
+  },
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineRoleDefaultPolicyDF1E6607": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock:InvokeModel",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/amazon.titan-text-express-v1"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "bedrock:ApplyGuardrail",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":guardrail/",
+           {
+            "Fn::GetAtt": [
+             "Guardrail",
+             "GuardrailArn"
+            ]
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":guardrail/",
+           {
+            "Fn::GetAtt": [
+             "Guardrail",
+             "GuardrailId"
+            ]
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+    "Roles": [
+     {
+      "Ref": "StateMachineRoleB840431D"
+     }
+    ]
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"Prompt1\",\"States\":{\"Prompt1\":{\"Next\":\"Prompt2\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"output.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"test attack\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
+       {
+        "Fn::GetAtt": [
+         "Guardrail",
+         "GuardrailId"
+        ]
+       },
+       "\",\"GuardrailVersion\":\"DRAFT\",\"Trace\":\"ENABLED\"}},\"Prompt2\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"output.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"test attack\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
+       {
+        "Fn::GetAtt": [
+         "Guardrail",
+         "GuardrailArn"
+        ]
+       },
+       "\",\"GuardrailVersion\":\"1\",\"Trace\":\"ENABLED\"}}},\"TimeoutSeconds\":30}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineRoleDefaultPolicyDF1E6607",
+    "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
