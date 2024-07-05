@@ -862,9 +862,8 @@ function __extends(d, b) {
 }
 function __rest(s, e) {
   var t = {};
-  for (var p in s)
-    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-      t[p] = s[p];
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+    t[p] = s[p];
   if (s != null && typeof Object.getOwnPropertySymbols === "function")
     for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
       if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
@@ -874,12 +873,8 @@ function __rest(s, e) {
 }
 function __decorate(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-    r = Reflect.decorate(decorators, target, key, desc);
-  else
-    for (var i = decorators.length - 1; i >= 0; i--)
-      if (d = decorators[i])
-        r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
   return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
 function __param(paramIndex, decorator) {
@@ -889,8 +884,7 @@ function __param(paramIndex, decorator) {
 }
 function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
   function accept(f) {
-    if (f !== void 0 && typeof f !== "function")
-      throw new TypeError("Function expected");
+    if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
     return f;
   }
   var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
@@ -899,36 +893,25 @@ function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, e
   var _, done = false;
   for (var i = decorators.length - 1; i >= 0; i--) {
     var context = {};
-    for (var p in contextIn)
-      context[p] = p === "access" ? {} : contextIn[p];
-    for (var p in contextIn.access)
-      context.access[p] = contextIn.access[p];
+    for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+    for (var p in contextIn.access) context.access[p] = contextIn.access[p];
     context.addInitializer = function(f) {
-      if (done)
-        throw new TypeError("Cannot add initializers after decoration has completed");
+      if (done) throw new TypeError("Cannot add initializers after decoration has completed");
       extraInitializers.push(accept(f || null));
     };
     var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
     if (kind === "accessor") {
-      if (result === void 0)
-        continue;
-      if (result === null || typeof result !== "object")
-        throw new TypeError("Object expected");
-      if (_ = accept(result.get))
-        descriptor.get = _;
-      if (_ = accept(result.set))
-        descriptor.set = _;
-      if (_ = accept(result.init))
-        initializers.unshift(_);
+      if (result === void 0) continue;
+      if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+      if (_ = accept(result.get)) descriptor.get = _;
+      if (_ = accept(result.set)) descriptor.set = _;
+      if (_ = accept(result.init)) initializers.unshift(_);
     } else if (_ = accept(result)) {
-      if (kind === "field")
-        initializers.unshift(_);
-      else
-        descriptor[key] = _;
+      if (kind === "field") initializers.unshift(_);
+      else descriptor[key] = _;
     }
   }
-  if (target)
-    Object.defineProperty(target, contextIn.name, descriptor);
+  if (target) Object.defineProperty(target, contextIn.name, descriptor);
   done = true;
 }
 function __runInitializers(thisArg, initializers, value) {
@@ -942,13 +925,11 @@ function __propKey(x) {
   return typeof x === "symbol" ? x : "".concat(x);
 }
 function __setFunctionName(f, name, prefix) {
-  if (typeof name === "symbol")
-    name = name.description ? "[".concat(name.description, "]") : "";
+  if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
   return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 }
 function __metadata(metadataKey, metadataValue) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-    return Reflect.metadata(metadataKey, metadataValue);
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
 }
 function __awaiter(thisArg, _arguments, P, generator) {
   function adopt(value) {
@@ -979,8 +960,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
 }
 function __generator(thisArg, body) {
   var _ = { label: 0, sent: function() {
-    if (t[0] & 1)
-      throw t[1];
+    if (t[0] & 1) throw t[1];
     return t[1];
   }, trys: [], ops: [] }, f, y, t, g;
   return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
@@ -992,103 +972,88 @@ function __generator(thisArg, body) {
     };
   }
   function step(op) {
-    if (f)
-      throw new TypeError("Generator is already executing.");
-    while (g && (g = 0, op[0] && (_ = 0)), _)
-      try {
-        if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
-          return t;
-        if (y = 0, t)
-          op = [op[0] & 2, t.value];
-        switch (op[0]) {
-          case 0:
-          case 1:
+    if (f) throw new TypeError("Generator is already executing.");
+    while (g && (g = 0, op[0] && (_ = 0)), _) try {
+      if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+      if (y = 0, t) op = [op[0] & 2, t.value];
+      switch (op[0]) {
+        case 0:
+        case 1:
+          t = op;
+          break;
+        case 4:
+          _.label++;
+          return { value: op[1], done: false };
+        case 5:
+          _.label++;
+          y = op[1];
+          op = [0];
+          continue;
+        case 7:
+          op = _.ops.pop();
+          _.trys.pop();
+          continue;
+        default:
+          if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+            _ = 0;
+            continue;
+          }
+          if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+            _.label = op[1];
+            break;
+          }
+          if (op[0] === 6 && _.label < t[1]) {
+            _.label = t[1];
             t = op;
             break;
-          case 4:
-            _.label++;
-            return { value: op[1], done: false };
-          case 5:
-            _.label++;
-            y = op[1];
-            op = [0];
-            continue;
-          case 7:
-            op = _.ops.pop();
-            _.trys.pop();
-            continue;
-          default:
-            if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-              _ = 0;
-              continue;
-            }
-            if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-              _.label = op[1];
-              break;
-            }
-            if (op[0] === 6 && _.label < t[1]) {
-              _.label = t[1];
-              t = op;
-              break;
-            }
-            if (t && _.label < t[2]) {
-              _.label = t[2];
-              _.ops.push(op);
-              break;
-            }
-            if (t[2])
-              _.ops.pop();
-            _.trys.pop();
-            continue;
-        }
-        op = body.call(thisArg, _);
-      } catch (e) {
-        op = [6, e];
-        y = 0;
-      } finally {
-        f = t = 0;
+          }
+          if (t && _.label < t[2]) {
+            _.label = t[2];
+            _.ops.push(op);
+            break;
+          }
+          if (t[2]) _.ops.pop();
+          _.trys.pop();
+          continue;
       }
-    if (op[0] & 5)
-      throw op[1];
+      op = body.call(thisArg, _);
+    } catch (e) {
+      op = [6, e];
+      y = 0;
+    } finally {
+      f = t = 0;
+    }
+    if (op[0] & 5) throw op[1];
     return { value: op[0] ? op[1] : void 0, done: true };
   }
 }
 function __exportStar(m, o) {
-  for (var p in m)
-    if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p))
-      __createBinding(o, m, p);
+  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
 }
 function __values(o) {
   var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-  if (m)
-    return m.call(o);
-  if (o && typeof o.length === "number")
-    return {
-      next: function() {
-        if (o && i >= o.length)
-          o = void 0;
-        return { value: o && o[i++], done: !o };
-      }
-    };
+  if (m) return m.call(o);
+  if (o && typeof o.length === "number") return {
+    next: function() {
+      if (o && i >= o.length) o = void 0;
+      return { value: o && o[i++], done: !o };
+    }
+  };
   throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 }
 function __read(o, n) {
   var m = typeof Symbol === "function" && o[Symbol.iterator];
-  if (!m)
-    return o;
+  if (!m) return o;
   var i = m.call(o), r, ar = [], e;
   try {
-    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-      ar.push(r.value);
+    while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
   } catch (error) {
     e = { error };
   } finally {
     try {
-      if (r && !r.done && (m = i["return"]))
-        m.call(i);
+      if (r && !r.done && (m = i["return"])) m.call(i);
     } finally {
-      if (e)
-        throw e.error;
+      if (e) throw e.error;
     }
   }
   return ar;
@@ -1099,41 +1064,44 @@ function __spread() {
   return ar;
 }
 function __spreadArrays() {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++)
-    s += arguments[i].length;
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
   for (var r = Array(s), k = 0, i = 0; i < il; i++)
     for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
       r[k] = a[j];
   return r;
 }
 function __spreadArray(to, from, pack) {
-  if (pack || arguments.length === 2)
-    for (var i = 0, l = from.length, ar; i < l; i++) {
-      if (ar || !(i in from)) {
-        if (!ar)
-          ar = Array.prototype.slice.call(from, 0, i);
-        ar[i] = from[i];
-      }
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
     }
+  }
   return to.concat(ar || Array.prototype.slice.call(from));
 }
 function __await(v) {
   return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 function __asyncGenerator(thisArg, _arguments, generator) {
-  if (!Symbol.asyncIterator)
-    throw new TypeError("Symbol.asyncIterator is not defined.");
+  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
   var g = generator.apply(thisArg, _arguments || []), i, q = [];
-  return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
+  return i = {}, verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function() {
     return this;
   }, i;
-  function verb(n) {
-    if (g[n])
+  function awaitReturn(f) {
+    return function(v) {
+      return Promise.resolve(v).then(f, reject);
+    };
+  }
+  function verb(n, f) {
+    if (g[n]) {
       i[n] = function(v) {
         return new Promise(function(a, b) {
           q.push([n, v, a, b]) > 1 || resume(n, v);
         });
       };
+      if (f) i[n] = f(i[n]);
+    }
   }
   function resume(n, v) {
     try {
@@ -1152,8 +1120,7 @@ function __asyncGenerator(thisArg, _arguments, generator) {
     resume("throw", value);
   }
   function settle(f, v) {
-    if (f(v), q.shift(), q.length)
-      resume(q[0][0], q[0][1]);
+    if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]);
   }
 }
 function __asyncDelegator(o) {
@@ -1170,8 +1137,7 @@ function __asyncDelegator(o) {
   }
 }
 function __asyncValues(o) {
-  if (!Symbol.asyncIterator)
-    throw new TypeError("Symbol.asyncIterator is not defined.");
+  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
   var m = o[Symbol.asyncIterator], i;
   return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
     return this;
@@ -1198,13 +1164,10 @@ function __makeTemplateObject(cooked, raw) {
   return cooked;
 }
 function __importStar(mod) {
-  if (mod && mod.__esModule)
-    return mod;
+  if (mod && mod.__esModule) return mod;
   var result = {};
   if (mod != null) {
-    for (var k in mod)
-      if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-        __createBinding(result, mod, k);
+    for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
   }
   __setModuleDefault(result, mod);
   return result;
@@ -1213,43 +1176,41 @@ function __importDefault(mod) {
   return mod && mod.__esModule ? mod : { default: mod };
 }
 function __classPrivateFieldGet(receiver, state, kind, f) {
-  if (kind === "a" && !f)
-    throw new TypeError("Private accessor was defined without a getter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-    throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 }
 function __classPrivateFieldSet(receiver, state, value, kind, f) {
-  if (kind === "m")
-    throw new TypeError("Private method is not writable");
-  if (kind === "a" && !f)
-    throw new TypeError("Private accessor was defined without a setter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-    throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
   return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 }
 function __classPrivateFieldIn(state, receiver) {
-  if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function")
-    throw new TypeError("Cannot use 'in' operator on non-object");
+  if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function") throw new TypeError("Cannot use 'in' operator on non-object");
   return typeof state === "function" ? receiver === state : state.has(receiver);
 }
 function __addDisposableResource(env, value, async) {
   if (value !== null && value !== void 0) {
-    if (typeof value !== "object" && typeof value !== "function")
-      throw new TypeError("Object expected.");
-    var dispose;
+    if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
+    var dispose, inner;
     if (async) {
-      if (!Symbol.asyncDispose)
-        throw new TypeError("Symbol.asyncDispose is not defined.");
+      if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
       dispose = value[Symbol.asyncDispose];
     }
     if (dispose === void 0) {
-      if (!Symbol.dispose)
-        throw new TypeError("Symbol.dispose is not defined.");
+      if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
       dispose = value[Symbol.dispose];
+      if (async) inner = dispose;
     }
-    if (typeof dispose !== "function")
-      throw new TypeError("Object not disposable.");
+    if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
+    if (inner) dispose = function() {
+      try {
+        inner.call(this);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
     env.stack.push({ value, dispose, async });
   } else if (async) {
     env.stack.push({ async: true });
@@ -1266,17 +1227,15 @@ function __disposeResources(env) {
       var rec = env.stack.pop();
       try {
         var result = rec.dispose && rec.dispose.call(rec.value);
-        if (rec.async)
-          return Promise.resolve(result).then(next, function(e) {
-            fail(e);
-            return next();
-          });
+        if (rec.async) return Promise.resolve(result).then(next, function(e) {
+          fail(e);
+          return next();
+        });
       } catch (e) {
         fail(e);
       }
     }
-    if (env.hasError)
-      throw env.error;
+    if (env.hasError) throw env.error;
   }
   return next();
 }
@@ -1287,9 +1246,7 @@ var init_tslib_es6 = __esm({
       extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
         d2.__proto__ = b2;
       } || function(d2, b2) {
-        for (var p in b2)
-          if (Object.prototype.hasOwnProperty.call(b2, p))
-            d2[p] = b2[p];
+        for (var p in b2) if (Object.prototype.hasOwnProperty.call(b2, p)) d2[p] = b2[p];
       };
       return extendStatics(d, b);
     };
@@ -1297,17 +1254,14 @@ var init_tslib_es6 = __esm({
       __assign = Object.assign || function __assign2(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
+          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
         }
         return t;
       };
       return __assign.apply(this, arguments);
     };
     __createBinding = Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -1316,8 +1270,7 @@ var init_tslib_es6 = __esm({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     };
     __setModuleDefault = Object.create ? function(o, v) {
@@ -9791,8 +9744,7 @@ var require_validator = __commonJS({
         if (xmlData[i] === "<" && xmlData[i + 1] === "?") {
           i += 2;
           i = readPI(xmlData, i);
-          if (i.err)
-            return i;
+          if (i.err) return i;
         } else if (xmlData[i] === "<") {
           let tagStartPos = i;
           i++;
@@ -9878,8 +9830,7 @@ var require_validator = __commonJS({
                   continue;
                 } else if (xmlData[i + 1] === "?") {
                   i = readPI(xmlData, ++i);
-                  if (i.err)
-                    return i;
+                  if (i.err) return i;
                 } else {
                   break;
                 }
@@ -10147,13 +10098,11 @@ var require_xmlNode = __commonJS({
         this[":@"] = {};
       }
       add(key, val2) {
-        if (key === "__proto__")
-          key = "#__proto__";
+        if (key === "__proto__") key = "#__proto__";
         this.child.push({ [key]: val2 });
       }
       addChild(node) {
-        if (node.tagname === "__proto__")
-          node.tagname = "#__proto__";
+        if (node.tagname === "__proto__") node.tagname = "#__proto__";
         if (node[":@"] && Object.keys(node[":@"]).length > 0) {
           this.child.push({ [node.tagname]: node.child, [":@"]: node[":@"] });
         } else {
@@ -10186,16 +10135,11 @@ var require_DocTypeReader = __commonJS({
                   regx: RegExp(`&${entityName};`, "g"),
                   val
                 };
-            } else if (hasBody && isElement(xmlData, i))
-              i += 8;
-            else if (hasBody && isAttlist(xmlData, i))
-              i += 8;
-            else if (hasBody && isNotation(xmlData, i))
-              i += 9;
-            else if (isComment)
-              comment = true;
-            else
-              throw new Error("Invalid DOCTYPE");
+            } else if (hasBody && isElement(xmlData, i)) i += 8;
+            else if (hasBody && isAttlist(xmlData, i)) i += 8;
+            else if (hasBody && isNotation(xmlData, i)) i += 9;
+            else if (isComment) comment = true;
+            else throw new Error("Invalid DOCTYPE");
             angleBracketsCount++;
             exp = "";
           } else if (xmlData[i] === ">") {
@@ -10230,8 +10174,7 @@ var require_DocTypeReader = __commonJS({
         entityName2 += xmlData[i];
       }
       entityName2 = entityName2.trim();
-      if (entityName2.indexOf(" ") !== -1)
-        throw new Error("External entites are not supported");
+      if (entityName2.indexOf(" ") !== -1) throw new Error("External entites are not supported");
       const startChar = xmlData[i++];
       let val2 = "";
       for (; i < xmlData.length && xmlData[i] !== startChar; i++) {
@@ -10240,28 +10183,23 @@ var require_DocTypeReader = __commonJS({
       return [entityName2, val2, i];
     }
     function isComment(xmlData, i) {
-      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "-" && xmlData[i + 3] === "-")
-        return true;
+      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "-" && xmlData[i + 3] === "-") return true;
       return false;
     }
     function isEntity(xmlData, i) {
-      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "E" && xmlData[i + 3] === "N" && xmlData[i + 4] === "T" && xmlData[i + 5] === "I" && xmlData[i + 6] === "T" && xmlData[i + 7] === "Y")
-        return true;
+      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "E" && xmlData[i + 3] === "N" && xmlData[i + 4] === "T" && xmlData[i + 5] === "I" && xmlData[i + 6] === "T" && xmlData[i + 7] === "Y") return true;
       return false;
     }
     function isElement(xmlData, i) {
-      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "E" && xmlData[i + 3] === "L" && xmlData[i + 4] === "E" && xmlData[i + 5] === "M" && xmlData[i + 6] === "E" && xmlData[i + 7] === "N" && xmlData[i + 8] === "T")
-        return true;
+      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "E" && xmlData[i + 3] === "L" && xmlData[i + 4] === "E" && xmlData[i + 5] === "M" && xmlData[i + 6] === "E" && xmlData[i + 7] === "N" && xmlData[i + 8] === "T") return true;
       return false;
     }
     function isAttlist(xmlData, i) {
-      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "A" && xmlData[i + 3] === "T" && xmlData[i + 4] === "T" && xmlData[i + 5] === "L" && xmlData[i + 6] === "I" && xmlData[i + 7] === "S" && xmlData[i + 8] === "T")
-        return true;
+      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "A" && xmlData[i + 3] === "T" && xmlData[i + 4] === "T" && xmlData[i + 5] === "L" && xmlData[i + 6] === "I" && xmlData[i + 7] === "S" && xmlData[i + 8] === "T") return true;
       return false;
     }
     function isNotation(xmlData, i) {
-      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "N" && xmlData[i + 3] === "O" && xmlData[i + 4] === "T" && xmlData[i + 5] === "A" && xmlData[i + 6] === "T" && xmlData[i + 7] === "I" && xmlData[i + 8] === "O" && xmlData[i + 9] === "N")
-        return true;
+      if (xmlData[i + 1] === "!" && xmlData[i + 2] === "N" && xmlData[i + 3] === "O" && xmlData[i + 4] === "T" && xmlData[i + 5] === "A" && xmlData[i + 6] === "T" && xmlData[i + 7] === "I" && xmlData[i + 8] === "O" && xmlData[i + 9] === "N") return true;
       return false;
     }
     function validateEntityName(name) {
@@ -10294,11 +10232,9 @@ var require_strnum = __commonJS({
     };
     function toNumber(str, options = {}) {
       options = Object.assign({}, consider, options);
-      if (!str || typeof str !== "string")
-        return str;
+      if (!str || typeof str !== "string") return str;
       let trimmedStr = str.trim();
-      if (options.skipLike !== void 0 && options.skipLike.test(trimmedStr))
-        return str;
+      if (options.skipLike !== void 0 && options.skipLike.test(trimmedStr)) return str;
       else if (options.hex && hexRegex.test(trimmedStr)) {
         return Number.parseInt(trimmedStr, 16);
       } else {
@@ -10308,45 +10244,30 @@ var require_strnum = __commonJS({
           const leadingZeros = match[2];
           let numTrimmedByZeros = trimZeros(match[3]);
           const eNotation = match[4] || match[6];
-          if (!options.leadingZeros && leadingZeros.length > 0 && sign && trimmedStr[2] !== ".")
-            return str;
-          else if (!options.leadingZeros && leadingZeros.length > 0 && !sign && trimmedStr[1] !== ".")
-            return str;
+          if (!options.leadingZeros && leadingZeros.length > 0 && sign && trimmedStr[2] !== ".") return str;
+          else if (!options.leadingZeros && leadingZeros.length > 0 && !sign && trimmedStr[1] !== ".") return str;
           else {
             const num = Number(trimmedStr);
             const numStr = "" + num;
             if (numStr.search(/[eE]/) !== -1) {
-              if (options.eNotation)
-                return num;
-              else
-                return str;
+              if (options.eNotation) return num;
+              else return str;
             } else if (eNotation) {
-              if (options.eNotation)
-                return num;
-              else
-                return str;
+              if (options.eNotation) return num;
+              else return str;
             } else if (trimmedStr.indexOf(".") !== -1) {
-              if (numStr === "0" && numTrimmedByZeros === "")
-                return num;
-              else if (numStr === numTrimmedByZeros)
-                return num;
-              else if (sign && numStr === "-" + numTrimmedByZeros)
-                return num;
-              else
-                return str;
+              if (numStr === "0" && numTrimmedByZeros === "") return num;
+              else if (numStr === numTrimmedByZeros) return num;
+              else if (sign && numStr === "-" + numTrimmedByZeros) return num;
+              else return str;
             }
             if (leadingZeros) {
-              if (numTrimmedByZeros === numStr)
-                return num;
-              else if (sign + numTrimmedByZeros === numStr)
-                return num;
-              else
-                return str;
+              if (numTrimmedByZeros === numStr) return num;
+              else if (sign + numTrimmedByZeros === numStr) return num;
+              else return str;
             }
-            if (trimmedStr === numStr)
-              return num;
-            else if (trimmedStr === sign + numStr)
-              return num;
+            if (trimmedStr === numStr) return num;
+            else if (trimmedStr === sign + numStr) return num;
             return str;
           }
         } else {
@@ -10357,12 +10278,9 @@ var require_strnum = __commonJS({
     function trimZeros(numStr) {
       if (numStr && numStr.indexOf(".") !== -1) {
         numStr = numStr.replace(/0+$/, "");
-        if (numStr === ".")
-          numStr = "0";
-        else if (numStr[0] === ".")
-          numStr = "0" + numStr;
-        else if (numStr[numStr.length - 1] === ".")
-          numStr = numStr.substr(0, numStr.length - 1);
+        if (numStr === ".") numStr = "0";
+        else if (numStr[0] === ".") numStr = "0" + numStr;
+        else if (numStr[numStr.length - 1] === ".") numStr = numStr.substr(0, numStr.length - 1);
         return numStr;
       }
       return numStr;
@@ -10436,8 +10354,7 @@ var require_OrderedObjParser = __commonJS({
           val2 = val2.trim();
         }
         if (val2.length > 0) {
-          if (!escapeEntities)
-            val2 = this.replaceEntitiesValue(val2);
+          if (!escapeEntities) val2 = this.replaceEntitiesValue(val2);
           const newval = this.options.tagValueProcessor(tagName, val2, jPath, hasAttributes, isLeafNode);
           if (newval === null || newval === void 0) {
             return val2;
@@ -10483,8 +10400,7 @@ var require_OrderedObjParser = __commonJS({
             if (this.options.transformAttributeName) {
               aName = this.options.transformAttributeName(aName);
             }
-            if (aName === "__proto__")
-              aName = "#__proto__";
+            if (aName === "__proto__") aName = "#__proto__";
             if (oldVal !== void 0) {
               if (this.options.trimValues) {
                 oldVal = oldVal.trim();
@@ -10559,8 +10475,7 @@ var require_OrderedObjParser = __commonJS({
             i = closeIndex;
           } else if (xmlData[i + 1] === "?") {
             let tagData = readTagExp(xmlData, i, false, "?>");
-            if (!tagData)
-              throw new Error("Pi Tag is not closed.");
+            if (!tagData) throw new Error("Pi Tag is not closed.");
             textData = this.saveTextToParentTag(textData, currentNode, jPath);
             if (this.options.ignoreDeclaration && tagData.tagName === "?xml" || this.options.ignorePiTags) {
             } else {
@@ -10592,8 +10507,7 @@ var require_OrderedObjParser = __commonJS({
               currentNode.add(this.options.cdataPropName, [{ [this.options.textNodeName]: tagExp }]);
             } else {
               let val2 = this.parseTextData(tagExp, currentNode.tagname, jPath, true, false, true);
-              if (val2 == void 0)
-                val2 = "";
+              if (val2 == void 0) val2 = "";
               currentNode.add(this.options.textNodeName, val2);
             }
             i = closeIndex + 2;
@@ -10627,8 +10541,7 @@ var require_OrderedObjParser = __commonJS({
                 i = result.closeIndex;
               } else {
                 const result2 = this.readStopNodeData(xmlData, tagName, closeIndex + 1);
-                if (!result2)
-                  throw new Error(`Unexpected end of ${tagName}`);
+                if (!result2) throw new Error(`Unexpected end of ${tagName}`);
                 i = result2.i;
                 tagContent = result2.tagContent;
               }
@@ -10710,8 +10623,7 @@ var require_OrderedObjParser = __commonJS({
     };
     function saveTextToParentTag(textData, currentNode, jPath, isLeafNode) {
       if (textData) {
-        if (isLeafNode === void 0)
-          isLeafNode = Object.keys(currentNode.child).length === 0;
+        if (isLeafNode === void 0) isLeafNode = Object.keys(currentNode.child).length === 0;
         textData = this.parseTextData(
           textData,
           currentNode.tagname,
@@ -10730,8 +10642,7 @@ var require_OrderedObjParser = __commonJS({
       const allNodesExp = "*." + currentTagName;
       for (const stopNodePath in stopNodes) {
         const stopNodeExp = stopNodes[stopNodePath];
-        if (allNodesExp === stopNodeExp || jPath === stopNodeExp)
-          return true;
+        if (allNodesExp === stopNodeExp || jPath === stopNodeExp) return true;
       }
       return false;
     }
@@ -10741,8 +10652,7 @@ var require_OrderedObjParser = __commonJS({
       for (let index = i; index < xmlData.length; index++) {
         let ch = xmlData[index];
         if (attrBoundary) {
-          if (ch === attrBoundary)
-            attrBoundary = "";
+          if (ch === attrBoundary) attrBoundary = "";
         } else if (ch === '"' || ch === "'") {
           attrBoundary = ch;
         } else if (ch === closingChar[0]) {
@@ -10775,8 +10685,7 @@ var require_OrderedObjParser = __commonJS({
     }
     function readTagExp(xmlData, i, removeNSPrefix, closingChar = ">") {
       const result = tagExpWithClosingIndex(xmlData, i + 1, closingChar);
-      if (!result)
-        return;
+      if (!result) return;
       let tagExp = result.data;
       const closeIndex = result.index;
       const separatorIndex = tagExp.search(/\s/);
@@ -10843,12 +10752,9 @@ var require_OrderedObjParser = __commonJS({
     function parseValue(val2, shouldParse, options) {
       if (shouldParse && typeof val2 === "string") {
         const newval = val2.trim();
-        if (newval === "true")
-          return true;
-        else if (newval === "false")
-          return false;
-        else
-          return toNumber(val2, options);
+        if (newval === "true") return true;
+        else if (newval === "false") return false;
+        else return toNumber(val2, options);
       } else {
         if (util.isExist(val2)) {
           return val2;
@@ -10875,15 +10781,11 @@ var require_node2json = __commonJS({
         const tagObj = arr[i];
         const property = propName(tagObj);
         let newJpath = "";
-        if (jPath === void 0)
-          newJpath = property;
-        else
-          newJpath = jPath + "." + property;
+        if (jPath === void 0) newJpath = property;
+        else newJpath = jPath + "." + property;
         if (property === options.textNodeName) {
-          if (text === void 0)
-            text = tagObj[property];
-          else
-            text += "" + tagObj[property];
+          if (text === void 0) text = tagObj[property];
+          else text += "" + tagObj[property];
         } else if (property === void 0) {
           continue;
         } else if (tagObj[property]) {
@@ -10894,10 +10796,8 @@ var require_node2json = __commonJS({
           } else if (Object.keys(val2).length === 1 && val2[options.textNodeName] !== void 0 && !options.alwaysCreateTextNode) {
             val2 = val2[options.textNodeName];
           } else if (Object.keys(val2).length === 0) {
-            if (options.alwaysCreateTextNode)
-              val2[options.textNodeName] = "";
-            else
-              val2 = "";
+            if (options.alwaysCreateTextNode) val2[options.textNodeName] = "";
+            else val2 = "";
           }
           if (compressedObj[property] !== void 0 && compressedObj.hasOwnProperty(property)) {
             if (!Array.isArray(compressedObj[property])) {
@@ -10914,18 +10814,15 @@ var require_node2json = __commonJS({
         }
       }
       if (typeof text === "string") {
-        if (text.length > 0)
-          compressedObj[options.textNodeName] = text;
-      } else if (text !== void 0)
-        compressedObj[options.textNodeName] = text;
+        if (text.length > 0) compressedObj[options.textNodeName] = text;
+      } else if (text !== void 0) compressedObj[options.textNodeName] = text;
       return compressedObj;
     }
     function propName(obj) {
       const keys = Object.keys(obj);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
-        if (key !== ":@")
-          return key;
+        if (key !== ":@") return key;
       }
     }
     function assignAttributes(obj, attrMap, jpath, options) {
@@ -10982,8 +10879,7 @@ var require_XMLParser = __commonJS({
           throw new Error("XML data is accepted in String or Bytes[] form.");
         }
         if (validationOption) {
-          if (validationOption === true)
-            validationOption = {};
+          if (validationOption === true) validationOption = {};
           const result = validator.validate(xmlData, validationOption);
           if (result !== true) {
             throw Error(`${result.err.msg}:${result.err.line}:${result.err.col}`);
@@ -10992,10 +10888,8 @@ var require_XMLParser = __commonJS({
         const orderedObjParser = new OrderedObjParser(this.options);
         orderedObjParser.addExternalEntities(this.externalEntities);
         const orderedResult = orderedObjParser.parseXml(xmlData);
-        if (this.options.preserveOrder || orderedResult === void 0)
-          return orderedResult;
-        else
-          return prettify(orderedResult, this.options);
+        if (this.options.preserveOrder || orderedResult === void 0) return orderedResult;
+        else return prettify(orderedResult, this.options);
       }
       /**
        * Add Entity which is not by default supported by this library
@@ -11036,10 +10930,8 @@ var require_orderedJs2Xml = __commonJS({
         const tagObj = arr[i];
         const tagName = propName(tagObj);
         let newJPath = "";
-        if (jPath.length === 0)
-          newJPath = tagName;
-        else
-          newJPath = `${jPath}.${tagName}`;
+        if (jPath.length === 0) newJPath = tagName;
+        else newJPath = `${jPath}.${tagName}`;
         if (tagName === options.textNodeName) {
           let tagText = tagObj[tagName];
           if (!isStopNode(newJPath, options)) {
@@ -11080,10 +10972,8 @@ var require_orderedJs2Xml = __commonJS({
         const tagStart = indentation + `<${tagName}${attStr}`;
         const tagValue = arrToStr(tagObj[tagName], options, newJPath, newIdentation);
         if (options.unpairedTags.indexOf(tagName) !== -1) {
-          if (options.suppressUnpairedNode)
-            xmlStr += tagStart + ">";
-          else
-            xmlStr += tagStart + "/>";
+          if (options.suppressUnpairedNode) xmlStr += tagStart + ">";
+          else xmlStr += tagStart + "/>";
         } else if ((!tagValue || tagValue.length === 0) && options.suppressEmptyNode) {
           xmlStr += tagStart + "/>";
         } else if (tagValue && tagValue.endsWith(">")) {
@@ -11105,8 +10995,7 @@ var require_orderedJs2Xml = __commonJS({
       const keys = Object.keys(obj);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
-        if (key !== ":@")
-          return key;
+        if (key !== ":@") return key;
       }
     }
     function attr_to_str(attrMap, options) {
@@ -11128,8 +11017,7 @@ var require_orderedJs2Xml = __commonJS({
       jPath = jPath.substr(0, jPath.length - options.textNodeName.length - 1);
       let tagName = jPath.substr(jPath.lastIndexOf(".") + 1);
       for (let index in options.stopNodes) {
-        if (options.stopNodes[index] === jPath || options.stopNodes[index] === "*." + tagName)
-          return true;
+        if (options.stopNodes[index] === jPath || options.stopNodes[index] === "*." + tagName) return true;
       }
       return false;
     }
@@ -11226,10 +11114,8 @@ var require_json2xml = __commonJS({
       for (let key in jObj) {
         if (typeof jObj[key] === "undefined") {
         } else if (jObj[key] === null) {
-          if (key[0] === "?")
-            val2 += this.indentate(level) + "<" + key + "?" + this.tagEndChar;
-          else
-            val2 += this.indentate(level) + "<" + key + "/" + this.tagEndChar;
+          if (key[0] === "?") val2 += this.indentate(level) + "<" + key + "?" + this.tagEndChar;
+          else val2 += this.indentate(level) + "<" + key + "/" + this.tagEndChar;
         } else if (jObj[key] instanceof Date) {
           val2 += this.buildTextValNode(jObj[key], key, "", level);
         } else if (typeof jObj[key] !== "object") {
@@ -11251,10 +11137,8 @@ var require_json2xml = __commonJS({
             const item = jObj[key][j];
             if (typeof item === "undefined") {
             } else if (item === null) {
-              if (key[0] === "?")
-                val2 += this.indentate(level) + "<" + key + "?" + this.tagEndChar;
-              else
-                val2 += this.indentate(level) + "<" + key + "/" + this.tagEndChar;
+              if (key[0] === "?") val2 += this.indentate(level) + "<" + key + "?" + this.tagEndChar;
+              else val2 += this.indentate(level) + "<" + key + "/" + this.tagEndChar;
             } else if (typeof item === "object") {
               if (this.options.oneListGroup) {
                 listTagVal += this.j2x(item, level + 1).val;
@@ -11288,8 +11172,7 @@ var require_json2xml = __commonJS({
       val2 = this.replaceEntitiesValue(val2);
       if (this.options.suppressBooleanAttributes && val2 === "true") {
         return " " + attrName;
-      } else
-        return " " + attrName + '="' + val2 + '"';
+      } else return " " + attrName + '="' + val2 + '"';
     };
     function processTextOrObjNode(object, key, level) {
       const result = this.j2x(object, level + 1);
@@ -11301,8 +11184,7 @@ var require_json2xml = __commonJS({
     }
     Builder.prototype.buildObjectNode = function(val2, key, attrStr, level) {
       if (val2 === "") {
-        if (key[0] === "?")
-          return this.indentate(level) + "<" + key + attrStr + "?" + this.tagEndChar;
+        if (key[0] === "?") return this.indentate(level) + "<" + key + attrStr + "?" + this.tagEndChar;
         else {
           return this.indentate(level) + "<" + key + attrStr + this.closeTag(key) + this.tagEndChar;
         }
@@ -11325,8 +11207,7 @@ var require_json2xml = __commonJS({
     Builder.prototype.closeTag = function(key) {
       let closeTag = "";
       if (this.options.unpairedTags.indexOf(key) !== -1) {
-        if (!this.options.suppressUnpairedNode)
-          closeTag = "/";
+        if (!this.options.suppressUnpairedNode) closeTag = "/";
       } else if (this.options.suppressEmptyNode) {
         closeTag = "/";
       } else {
@@ -22856,8 +22737,7 @@ var require_lib2 = __commonJS({
       const moduloVal = typeOpts.moduloBitLength ? Math.pow(2, typeOpts.moduloBitLength) : Math.pow(2, bitLength);
       const moduloBound = typeOpts.moduloBitLength ? Math.pow(2, typeOpts.moduloBitLength - 1) : Math.pow(2, bitLength - 1);
       return function(V, opts) {
-        if (!opts)
-          opts = {};
+        if (!opts) opts = {};
         let x = +V;
         if (opts.enforceRange) {
           if (!Number.isFinite(x)) {
@@ -22871,10 +22751,8 @@ var require_lib2 = __commonJS({
         }
         if (!isNaN(x) && opts.clamp) {
           x = evenRound(x);
-          if (x < lowerBound)
-            x = lowerBound;
-          if (x > upperBound)
-            x = upperBound;
+          if (x < lowerBound) x = lowerBound;
+          if (x > upperBound) x = upperBound;
           return x;
         }
         if (!Number.isFinite(x) || x === 0) {
@@ -22925,8 +22803,7 @@ var require_lib2 = __commonJS({
     conversions["float"] = conversions["double"];
     conversions["unrestricted float"] = conversions["unrestricted double"];
     conversions["DOMString"] = function(V, opts) {
-      if (!opts)
-        opts = {};
+      if (!opts) opts = {};
       if (opts.treatNullAsEmptyString && V === null) {
         return "";
       }
@@ -23163,8 +23040,7 @@ var require_tr46 = __commonJS({
           }
         }
       }
-      if (result.error)
-        return null;
+      if (result.error) return null;
       return labels.join(".");
     };
     module2.exports.toUnicode = function(domain_name, useSTD3) {
@@ -24575,8 +24451,7 @@ var require_URL = __commonJS({
         return obj;
       },
       setup(obj, constructorArgs, privateData) {
-        if (!privateData)
-          privateData = {};
+        if (!privateData) privateData = {};
         privateData.wrapper = obj;
         obj[impl] = new Impl.implementation(constructorArgs, privateData);
         obj[impl][utils.wrapperSymbol] = obj;
@@ -24615,18 +24490,14 @@ var require_safer = __commonJS({
     var safer = {};
     var key;
     for (key in buffer) {
-      if (!buffer.hasOwnProperty(key))
-        continue;
-      if (key === "SlowBuffer" || key === "Buffer")
-        continue;
+      if (!buffer.hasOwnProperty(key)) continue;
+      if (key === "SlowBuffer" || key === "Buffer") continue;
       safer[key] = buffer[key];
     }
     var Safer = safer.Buffer = {};
     for (key in Buffer2) {
-      if (!Buffer2.hasOwnProperty(key))
-        continue;
-      if (key === "allocUnsafe" || key === "allocUnsafeSlow")
-        continue;
+      if (!Buffer2.hasOwnProperty(key)) continue;
+      if (key === "allocUnsafe" || key === "allocUnsafeSlow") continue;
       Safer[key] = Buffer2[key];
     }
     safer.Buffer.prototype = Buffer2.prototype;
@@ -25074,14 +24945,10 @@ var require_utf32 = __commonJS({
                   return "utf-32be";
                 }
               }
-              if (b[0] !== 0 || b[1] > 16)
-                invalidBE++;
-              if (b[3] !== 0 || b[2] > 16)
-                invalidLE++;
-              if (b[0] === 0 && b[1] === 0 && (b[2] !== 0 || b[3] !== 0))
-                bmpCharsBE++;
-              if ((b[0] !== 0 || b[1] !== 0) && b[2] === 0 && b[3] === 0)
-                bmpCharsLE++;
+              if (b[0] !== 0 || b[1] > 16) invalidBE++;
+              if (b[3] !== 0 || b[2] > 16) invalidLE++;
+              if (b[0] === 0 && b[1] === 0 && (b[2] !== 0 || b[3] !== 0)) bmpCharsBE++;
+              if ((b[0] !== 0 || b[1] !== 0) && b[2] === 0 && b[3] === 0) bmpCharsLE++;
               b.length = 0;
               charsProcessed++;
               if (charsProcessed >= 100) {
@@ -25090,10 +24957,8 @@ var require_utf32 = __commonJS({
             }
           }
         }
-      if (bmpCharsBE - invalidBE > bmpCharsLE - invalidLE)
-        return "utf-32be";
-      if (bmpCharsBE - invalidBE < bmpCharsLE - invalidLE)
-        return "utf-32le";
+      if (bmpCharsBE - invalidBE > bmpCharsLE - invalidLE) return "utf-32be";
+      if (bmpCharsBE - invalidBE < bmpCharsLE - invalidLE) return "utf-32le";
       return defaultEncoding || "utf-32le";
     }
   }
@@ -25213,15 +25078,11 @@ var require_utf16 = __commonJS({
             b.push(buf[j]);
             if (b.length === 2) {
               if (charsProcessed === 0) {
-                if (b[0] === 255 && b[1] === 254)
-                  return "utf-16le";
-                if (b[0] === 254 && b[1] === 255)
-                  return "utf-16be";
+                if (b[0] === 255 && b[1] === 254) return "utf-16le";
+                if (b[0] === 254 && b[1] === 255) return "utf-16be";
               }
-              if (b[0] === 0 && b[1] !== 0)
-                asciiCharsBE++;
-              if (b[0] !== 0 && b[1] === 0)
-                asciiCharsLE++;
+              if (b[0] === 0 && b[1] !== 0) asciiCharsBE++;
+              if (b[0] !== 0 && b[1] === 0) asciiCharsLE++;
               b.length = 0;
               charsProcessed++;
               if (charsProcessed >= 100) {
@@ -25230,10 +25091,8 @@ var require_utf16 = __commonJS({
             }
           }
         }
-      if (asciiCharsBE > asciiCharsLE)
-        return "utf-16be";
-      if (asciiCharsBE < asciiCharsLE)
-        return "utf-16le";
+      if (asciiCharsBE > asciiCharsLE) return "utf-16be";
+      if (asciiCharsBE < asciiCharsLE) return "utf-16le";
       return defaultEncoding || "utf-16le";
     }
   }
@@ -26184,10 +26043,8 @@ var require_dbcs_codec = __commonJS({
             this._setEncodeChar(uChar.charCodeAt(0), codecOptions.encodeAdd[uChar]);
       }
       this.defCharSB = this.encodeTable[0][iconv.defaultCharSingleByte.charCodeAt(0)];
-      if (this.defCharSB === UNASSIGNED)
-        this.defCharSB = this.encodeTable[0]["?"];
-      if (this.defCharSB === UNASSIGNED)
-        this.defCharSB = "?".charCodeAt(0);
+      if (this.defCharSB === UNASSIGNED) this.defCharSB = this.encodeTable[0]["?"];
+      if (this.defCharSB === UNASSIGNED) this.defCharSB = "?".charCodeAt(0);
     }
     DBCSCodec.prototype.encoder = DBCSEncoder;
     DBCSCodec.prototype.decoder = DBCSDecoder;
@@ -26268,8 +26125,7 @@ var require_dbcs_codec = __commonJS({
         node = this.encodeTableSeq[SEQ_START - bucket[low]];
       } else {
         node = {};
-        if (bucket[low] !== UNASSIGNED)
-          node[DEF_CHAR] = bucket[low];
+        if (bucket[low] !== UNASSIGNED) node[DEF_CHAR] = bucket[low];
         bucket[low] = SEQ_START - this.encodeTableSeq.length;
         this.encodeTableSeq.push(node);
       }
@@ -26326,8 +26182,7 @@ var require_dbcs_codec = __commonJS({
       var newBuf = Buffer2.alloc(str.length * (this.gb18030 ? 4 : 3)), leadSurrogate = this.leadSurrogate, seqObj = this.seqObj, nextChar = -1, i2 = 0, j = 0;
       while (true) {
         if (nextChar === -1) {
-          if (i2 == str.length)
-            break;
+          if (i2 == str.length) break;
           var uCode = str.charCodeAt(i2++);
         } else {
           var uCode = nextChar;
@@ -28068,8 +27923,7 @@ var require_streams = __commonJS({
           return done(new Error("Iconv encoding stream needs strings as its input."));
         try {
           var res = this.conv.write(chunk);
-          if (res && res.length)
-            this.push(res);
+          if (res && res.length) this.push(res);
           done();
         } catch (e) {
           done(e);
@@ -28078,8 +27932,7 @@ var require_streams = __commonJS({
       IconvLiteEncoderStream.prototype._flush = function(done) {
         try {
           var res = this.conv.end();
-          if (res && res.length)
-            this.push(res);
+          if (res && res.length) this.push(res);
           done();
         } catch (e) {
           done(e);
@@ -28110,8 +27963,7 @@ var require_streams = __commonJS({
           return done(new Error("Iconv decoding stream needs buffers as its input."));
         try {
           var res = this.conv.write(chunk);
-          if (res && res.length)
-            this.push(res, this.encoding);
+          if (res && res.length) this.push(res, this.encoding);
           done();
         } catch (e) {
           done(e);
@@ -28120,8 +27972,7 @@ var require_streams = __commonJS({
       IconvLiteDecoderStream.prototype._flush = function(done) {
         try {
           var res = this.conv.end();
-          if (res && res.length)
-            this.push(res, this.encoding);
+          if (res && res.length) this.push(res, this.encoding);
           done();
         } catch (e) {
           done(e);
@@ -28457,16 +28308,13 @@ var require_lib4 = __commonJS({
         body = null;
       } else if (isURLSearchParams(body)) {
         body = Buffer.from(body.toString());
-      } else if (isBlob(body))
-        ;
-      else if (Buffer.isBuffer(body))
-        ;
+      } else if (isBlob(body)) ;
+      else if (Buffer.isBuffer(body)) ;
       else if (Object.prototype.toString.call(body) === "[object ArrayBuffer]") {
         body = Buffer.from(body);
       } else if (ArrayBuffer.isView(body)) {
         body = Buffer.from(body.buffer, body.byteOffset, body.byteLength);
-      } else if (body instanceof Stream)
-        ;
+      } else if (body instanceof Stream) ;
       else {
         body = Buffer.from(String(body));
       }
@@ -28809,8 +28657,7 @@ var require_lib4 = __commonJS({
           }
           return;
         }
-        if (init == null)
-          ;
+        if (init == null) ;
         else if (typeof init === "object") {
           const method = init[Symbol.iterator];
           if (method != null) {
@@ -29192,8 +29039,7 @@ var require_lib4 = __commonJS({
           }
         }
         let signal = isRequest(input) ? input.signal : null;
-        if ("signal" in init)
-          signal = init.signal;
+        if ("signal" in init) signal = init.signal;
         if (signal != null && !isAbortSignal(signal)) {
           throw new TypeError("Expected signal to be an instanceof AbortSignal");
         }
@@ -29330,8 +29176,7 @@ var require_lib4 = __commonJS({
           if (request2.body && request2.body instanceof Stream.Readable) {
             destroyStream(request2.body, error);
           }
-          if (!response || !response.body)
-            return;
+          if (!response || !response.body) return;
           response.body.emit("error", error);
         };
         if (signal && signal.aborted) {
@@ -29349,8 +29194,7 @@ var require_lib4 = __commonJS({
         }
         function finalize() {
           req.abort();
-          if (signal)
-            signal.removeEventListener("abort", abortAndFinalize);
+          if (signal) signal.removeEventListener("abort", abortAndFinalize);
           clearTimeout(reqTimeout);
         }
         if (request2.timeout) {
@@ -29459,8 +29303,7 @@ var require_lib4 = __commonJS({
             }
           }
           res.once("end", function() {
-            if (signal)
-              signal.removeEventListener("abort", abortAndFinalize);
+            if (signal) signal.removeEventListener("abort", abortAndFinalize);
           });
           let body = res.pipe(new PassThrough$1());
           const response_options = {
@@ -31153,8 +30996,7 @@ var require_lib5 = __commonJS({
   "../aws-custom-resource-sdk-adapter/lib/index.js"(exports2) {
     "use strict";
     var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -31163,14 +31005,11 @@ var require_lib5 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
-      for (var p in m)
-        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p))
-          __createBinding2(exports3, m, p);
+      for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding2(exports3, m, p);
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.normalizeActionName = exports2.normalizeServiceName = exports2.findV3ClientConstructor = exports2.coerceApiParameters = void 0;
