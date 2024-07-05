@@ -78,6 +78,8 @@ enum Partition {
   UsGov = 'aws-us-gov',
   UsIso = 'aws-iso',
   UsIsoB = 'aws-iso-b',
+  UsIsoF = 'aws-iso-f',
+  EuIsoE = 'aws-iso-e',
 }
 
 interface Region { partition: Partition; domainSuffix: string }
@@ -88,6 +90,31 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-gov-': { partition: Partition.UsGov, domainSuffix: 'amazonaws.com' },
   'us-iso-': { partition: Partition.UsIso, domainSuffix: 'c2s.ic.gov' },
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
+  'us-isof-': { partition: Partition.UsIsoF, domainSuffix: 'csp.hci.ic.gov' },
+  'eu-isoe-': { partition: Partition.EuIsoE, domainSuffix: 'cloud.adc-e.uk' },
+};
+
+export const PARTITION_SAML_SIGN_ON_URL: Partial<Record<Partition, string>> = {
+  [Partition.Default]: 'https://signin.aws.amazon.com/saml',
+  [Partition.Cn]: 'https://signin.amazonaws.cn/saml',
+  [Partition.UsGov]: 'https://signin.amazonaws-us-gov.com/saml',
+  [Partition.UsIso]: 'https://signin.c2shome.ic.gov/saml',
+  [Partition.UsIsoB]: 'https://signin.sc2shome.sgov.gov/saml',
+};
+
+enum Runtime {
+  NODE_18 = 'nodejs18.x',
+  NODE_20 = 'nodejs20.x',
+}
+
+export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
+  [Partition.Default]: Runtime.NODE_20,
+  [Partition.Cn]: Runtime.NODE_18,
+  [Partition.UsGov]: Runtime.NODE_18,
+  [Partition.UsIso]: Runtime.NODE_18,
+  [Partition.UsIsoB]: Runtime.NODE_18,
+  [Partition.UsIsoF]: Runtime.NODE_18,
+  [Partition.EuIsoE]: Runtime.NODE_18,
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -3692,20 +3719,4 @@ export const ADOT_LAMBDA_LAYER_ARNS: { [key: string]: any } = {
   JAVASCRIPT_SDK: ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS,
   PYTHON_SDK: ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS,
   GENERIC: ADOT_LAMBDA_LAYER_GENERIC_ARNS,
-};
-
-export const PARTITION_SAML_SIGN_ON_URL: Record<Partition, string> = {
-  [Partition.Default]: 'https://signin.aws.amazon.com/saml',
-  [Partition.Cn]: 'https://signin.amazonaws.cn/saml',
-  [Partition.UsGov]: 'https://signin.amazonaws-us-gov.com/saml',
-  [Partition.UsIso]: 'https://signin.c2shome.ic.gov/saml',
-  [Partition.UsIsoB]: 'https://signin.sc2shome.sgov.gov/saml',
-};
-
-export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
-  [Partition.Default]: 'nodejs20.x',
-  [Partition.Cn]: 'nodejs18.x',
-  [Partition.UsGov]: 'nodejs18.x',
-  [Partition.UsIso]: 'nodejs18.x',
-  [Partition.UsIsoB]: 'nodejs18.x',
 };
