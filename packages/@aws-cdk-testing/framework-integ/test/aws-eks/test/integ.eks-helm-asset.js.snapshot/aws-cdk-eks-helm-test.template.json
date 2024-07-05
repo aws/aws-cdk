@@ -1157,8 +1157,7 @@
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
     "CreateNamespace": true,
-    "SkipCrds": true,
-    "Atomic": true
+    "SkipCrds": true
    },
    "DependsOn": [
     "ClusterKubectlReadyBarrier200052AF"
