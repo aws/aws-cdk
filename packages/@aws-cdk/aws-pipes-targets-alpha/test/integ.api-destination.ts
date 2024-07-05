@@ -1,10 +1,10 @@
 import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { HttpTarget } from '../lib/http';
+import { ApiDestinationTarget } from '../lib/api-destination';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-https');
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-dest');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 
 class TestSource implements ISource {
@@ -45,11 +45,11 @@ const destination = new cdk.aws_events.ApiDestination(stack, 'MyDestination', {
 
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
-  target: new HttpTarget(destination),
+  target: new ApiDestinationTarget(destination),
 
 });
 
-const test = new IntegTest(app, 'integtest-pipe-target-http', {
+const test = new IntegTest(app, 'integtest-pipe-target-api-dest', {
   testCases: [stack],
 });
 

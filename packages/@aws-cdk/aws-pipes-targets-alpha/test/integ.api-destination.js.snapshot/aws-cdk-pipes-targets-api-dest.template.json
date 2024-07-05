@@ -145,7 +145,7 @@
     "Ref": "SourceQueue6E809DF0"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-targets-https:ExportsOutputRefSourceQueue6E809DF09604904F"
+    "Name": "aws-cdk-pipes-targets-api-dest:ExportsOutputRefSourceQueue6E809DF09604904F"
    }
   }
  },
