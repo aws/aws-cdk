@@ -22,9 +22,9 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"CodeDeploy\",\"action\":\"createDeploymentConfig\",\"parameters\":{\"deploymentConfigName\":\"hello\",\"computePlatform\":\"Lambda\",\"trafficRoutingConfig\":{\"type\":\"TimeBasedLinear\",\"timeBasedLinear\":{\"linearInterval\":1,\"linearPercentage\":5}}},\"physicalResourceId\":{\"id\":\"hello\"},\"logApiResponseData\":true}",
-    "Update": "{\"service\":\"CodeDeploy\",\"action\":\"createDeploymentConfig\",\"parameters\":{\"deploymentConfigName\":\"hello\",\"computePlatform\":\"Lambda\",\"trafficRoutingConfig\":{\"type\":\"TimeBasedLinear\",\"timeBasedLinear\":{\"linearInterval\":1,\"linearPercentage\":5}}},\"physicalResourceId\":{\"id\":\"hello\"},\"logApiResponseData\":true}",
-    "Delete": "{\"service\":\"CodeDeploy\",\"action\":\"deleteDeploymentConfig\",\"parameters\":{\"deploymentConfigName\":\"hello\"},\"logApiResponseData\":true}",
+    "Create": "{\"service\":\"CodeDeploy\",\"action\":\"createDeploymentConfig\",\"parameters\":{\"deploymentConfigName\":\"hello\",\"computePlatform\":\"Lambda\",\"trafficRoutingConfig\":{\"type\":\"TimeBasedLinear\",\"timeBasedLinear\":{\"linearInterval\":1,\"linearPercentage\":5}}},\"physicalResourceId\":{\"id\":\"hello\"}}",
+    "Update": "{\"service\":\"CodeDeploy\",\"action\":\"createDeploymentConfig\",\"parameters\":{\"deploymentConfigName\":\"hello\",\"computePlatform\":\"Lambda\",\"trafficRoutingConfig\":{\"type\":\"TimeBasedLinear\",\"timeBasedLinear\":{\"linearInterval\":1,\"linearPercentage\":5}}},\"physicalResourceId\":{\"id\":\"hello\"}}",
+    "Delete": "{\"service\":\"CodeDeploy\",\"action\":\"deleteDeploymentConfig\",\"parameters\":{\"deploymentConfigName\":\"hello\"}}",
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
