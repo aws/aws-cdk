@@ -86,7 +86,7 @@ export async function main(): Promise<void> {
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
 
-    registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition]);
+    registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition] || '');
 
     registerFact(region, 'LATEST_NODE_RUNTIME', LATEST_NODE_RUNTIME_MAP[partition]);
 

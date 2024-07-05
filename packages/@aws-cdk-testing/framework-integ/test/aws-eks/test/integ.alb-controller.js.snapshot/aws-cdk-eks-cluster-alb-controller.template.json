@@ -1056,7 +1056,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/8cef919709334806828263085b34beb96a356e0826668c03914f8899bbe0f04e.json"
+       "/747185c746dc5024d2fb306a5bac8b540a2b2df23f759acd03d937485f668bee.json"
       ]
      ]
     }
@@ -1106,7 +1106,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6746b754b3db6762bc833cdc322e572da19c6b8c354197887eeab99e82edfe1c.json"
+       "/5dfda7d74d3645d32a63b8314e4d246102cc310ed29108b51f5b89a2f6dcdf40.json"
       ]
      ]
     }
@@ -2109,7 +2109,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -2123,6 +2132,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -2149,6 +2161,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {

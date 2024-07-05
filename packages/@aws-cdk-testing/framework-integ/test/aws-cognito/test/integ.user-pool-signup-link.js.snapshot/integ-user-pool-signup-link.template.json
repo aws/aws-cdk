@@ -101,9 +101,6 @@
   "myuserpoolclient8A58A3E4": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "myuserpool01998219"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -123,7 +120,10 @@
     "GenerateSecret": false,
     "SupportedIdentityProviders": [
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "myuserpool01998219"
+    }
    }
   }
  },

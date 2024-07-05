@@ -698,6 +698,14 @@
                       "version": "10.3.0"
                     }
                   },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
                   "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812": {
                     "id": "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812",
                     "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812",
