@@ -91,7 +91,7 @@ new SubnetV2(stack, 'validateIpv6', {
   vpc,
   cidrBlock: new Ipv4Cidr('10.3.0.0/24'),
   availabilityZone: 'us-west-2a',
-  ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),
+  //ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 

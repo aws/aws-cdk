@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/592dc28b2692f29ce439a6ca59a275fe5a8ec5e9b0f88625af900b926687b7b7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/102802600c6342cc869f7cf9081cdac98fbaecf44047a1a4c27a81f6cd9cd70d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -121,7 +121,10 @@
         "/aws-cdk-vpcv2-alpha/testsubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetSubnetDD417829"
+            "data": "testsubnetSubnetDD417829",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsubnet/RouteTable": [
@@ -139,7 +142,10 @@
         "/aws-cdk-vpcv2-alpha/validateIpv6/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "validateIpv6Subnet07BD40AE"
+            "data": "validateIpv6Subnet07BD40AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTable": [

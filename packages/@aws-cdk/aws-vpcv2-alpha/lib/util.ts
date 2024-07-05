@@ -146,6 +146,10 @@ export class NetworkUtils {
   }
 }
 
+/**
+ * Exported class from VPC to support subnet filtering
+ * and CIDR validation
+ */
 export class CidrBlock {
 
   /**
@@ -277,7 +281,16 @@ export class CidrBlock {
 
 }
 
+
+/**
+ * Class with helper functions to support
+ * Subnet Ipv6 Address Validation
+ */
 export class CidrBlockIpv6 {
+
+  /**
+   * Ipv6 CIDR range
+   */
   public cidr: string;
   public cidrPrefix: number;
   private ipParts: bigint[];
@@ -297,6 +310,9 @@ export class CidrBlockIpv6 {
     return ipAddress.split(':').map((part) => BigInt(`0x${part.padStart(4, '0')}` || '0'));
   }
 
+  /**
+   * @returns Minimum IPv6 address for a provided CIDR
+   */
   public minIp(): string {
     const startIP = [...this.networkPart];
     for (let i = this.networkPart.length; i < 8; i++) {
@@ -305,6 +321,9 @@ export class CidrBlockIpv6 {
     return startIP.map(this.formatIPv6Part).join(':');
   }
 
+  /**
+   * @returns Maximum IPv6 address for a provided CIDR
+   */
   public maxIp(): string {
     const endIP = [...this.networkPart];
     const hostPart = Array(8 - this.networkPart.length).fill(BigInt(0xffff));
@@ -315,6 +334,12 @@ export class CidrBlockIpv6 {
 
   private formatIPv6Part = (part: bigint) => part.toString(16).padStart(4, '0');
 
+  /**
+   * 
+   * @param range1 Ipv6 CIDR range to compare
+   * @param range2 Ipv6 CIDR range to compare
+   * @returns true if two ranges overlap, false otherwise
+   */
   public rangesOverlap(range1: string, range2: string): boolean {
     const [start1, end1] = this.getIPv6Range(range1);
     const [start2, end2] = this.getIPv6Range(range2);
@@ -322,20 +347,27 @@ export class CidrBlockIpv6 {
     return (start1 <= end2) && (start2 <= end1);
   }
 
+  /**
+   * 
+   * @param cidr 
+   * @returns Range in the from of big int number [start, end]
+   */
   private getIPv6Range(cidr: string): [bigint, bigint] {
     const [ipv6Address, prefixLength] = cidr.split('/');
     const ipv6Number = this.ipv6ToNumber(ipv6Address);
-    /* eslint:disable:no-bitwise */
     const mask = (BigInt(1) << BigInt(128 - Number(prefixLength))) - BigInt(1);
-    /* eslint:disable:no-bitwise */
     const networkPrefix = ipv6Number & ~mask;
     const start = networkPrefix;
-    /* eslint:disable:no-bitwise */
     const end = networkPrefix | mask;
 
     return [start, end];
   }
 
+  /**
+   * 
+   * @param ipv6Address 
+   * @returns Converts given ipv6 address range to big int number
+   */
   private ipv6ToNumber(ipv6Address: string): bigint {
     const blocks = this.parseBigIntParts(ipv6Address);
     let ipv6Number = BigInt(0);
