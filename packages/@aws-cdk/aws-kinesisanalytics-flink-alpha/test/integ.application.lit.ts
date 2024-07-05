@@ -3,13 +3,14 @@ import * as path from 'path';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as core from 'aws-cdk-lib';
 import * as flink from '../lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new core.App();
 const stack = new core.Stack(app, 'FlinkAppTest');
 
 const flinkApp = new flink.Application(stack, 'App', {
   code: flink.ApplicationCode.fromAsset(path.join(__dirname, 'code-asset')),
-  runtime: flink.Runtime.FLINK_1_18,
+  runtime: flink.Runtime.FLINK_1_19,
 });
 
 new cloudwatch.Alarm(stack, 'Alarm', {
@@ -19,4 +20,6 @@ new cloudwatch.Alarm(stack, 'Alarm', {
 });
 ///! hide
 
-app.synth();
+new integ.IntegTest(app, 'VpcTest', {
+  testCases: [stack],
+});

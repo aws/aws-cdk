@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as assets from 'aws-cdk-lib/aws-s3-assets';
 import * as core from 'aws-cdk-lib';
 import * as flink from '../lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new core.App();
 const stack = new core.Stack(app, 'FlinkAppCodeFromBucketTest');
@@ -15,8 +16,10 @@ const fileKey = asset.s3ObjectKey;
 ///! show
 new flink.Application(stack, 'App', {
   code: flink.ApplicationCode.fromBucket(bucket, fileKey),
-  runtime: flink.Runtime.FLINK_1_18,
+  runtime: flink.Runtime.FLINK_1_19,
 });
 ///! hide
 
-app.synth();
+new integ.IntegTest(app, 'VpcTest', {
+  testCases: [stack],
+});
