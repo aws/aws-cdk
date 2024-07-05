@@ -1,0 +1,476 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-pipes-targets-https": {
+        "id": "aws-cdk-pipes-targets-https",
+        "path": "aws-cdk-pipes-targets-https",
+        "children": {
+          "SourceQueue": {
+            "id": "SourceQueue",
+            "path": "aws-cdk-pipes-targets-https/SourceQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes-targets-https/SourceQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MySecret": {
+            "id": "MySecret",
+            "path": "aws-cdk-pipes-targets-https/MySecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes-targets-https/MySecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "secretString": "abc123"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MyConnection": {
+            "id": "MyConnection",
+            "path": "aws-cdk-pipes-targets-https/MyConnection",
+            "children": {
+              "Connection": {
+                "id": "Connection",
+                "path": "aws-cdk-pipes-targets-https/MyConnection/Connection",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Connection",
+                  "aws:cdk:cloudformation:props": {
+                    "authorizationType": "API_KEY",
+                    "authParameters": {
+                      "apiKeyAuthParameters": {
+                        "apiKeyName": "x-api-key",
+                        "apiKeyValue": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "{{resolve:secretsmanager:",
+                              {
+                                "Ref": "MySecret8FE80B51"
+                              },
+                              ":SecretString:::}}"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "description": "Connection with API Key x-api-key",
+                    "name": "MyConnection"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MyDestination": {
+            "id": "MyDestination",
+            "path": "aws-cdk-pipes-targets-https/MyDestination",
+            "children": {
+              "ApiDestination": {
+                "id": "ApiDestination",
+                "path": "aws-cdk-pipes-targets-https/MyDestination/ApiDestination",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::ApiDestination",
+                  "aws:cdk:cloudformation:props": {
+                    "connectionArn": {
+                      "Fn::GetAtt": [
+                        "MyConnection925E5E94",
+                        "Arn"
+                      ]
+                    },
+                    "description": "Calling example.com with API key x-api-key",
+                    "httpMethod": "GET",
+                    "invocationEndpoint": "https://httpbin.org/headers",
+                    "invocationRateLimitPerSecond": 1,
+                    "name": "MyDestination"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Pipe": {
+            "id": "Pipe",
+            "path": "aws-cdk-pipes-targets-https/Pipe",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-pipes-targets-https/Pipe/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-pipes-targets-https/Pipe/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-pipes-targets-https/Pipe/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "pipes.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-pipes-targets-https/Pipe/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-pipes-targets-https/Pipe/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "sqs:ChangeMessageVisibility",
+                                    "sqs:DeleteMessage",
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:ReceiveMessage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "SourceQueue6E809DF0",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "events:InvokeApiDestination",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyDestinationApiDestination78511D9A",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PipeRoleDefaultPolicy56E6A74D",
+                            "roles": [
+                              {
+                                "Ref": "PipeRole7D4AFC73"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes-targets-https/Pipe/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Pipes::Pipe",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "PipeRole7D4AFC73",
+                        "Arn"
+                      ]
+                    },
+                    "source": {
+                      "Fn::GetAtt": [
+                        "SourceQueue6E809DF0",
+                        "Arn"
+                      ]
+                    },
+                    "sourceParameters": {},
+                    "target": {
+                      "Fn::GetAtt": [
+                        "MyDestinationApiDestination78511D9A",
+                        "Arn"
+                      ]
+                    },
+                    "targetParameters": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-pipes-alpha.Pipe",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-pipes-targets-https/Exports",
+            "children": {
+              "Output{\"Ref\":\"SourceQueue6E809DF0\"}": {
+                "id": "Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "path": "aws-cdk-pipes-targets-https/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-pipes-targets-https/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-pipes-targets-https/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "integtest-pipe-target-http": {
+        "id": "integtest-pipe-target-http",
+        "path": "integtest-pipe-target-http",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integtest-pipe-target-http/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integtest-pipe-target-http/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integtest-pipe-target-http/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3": {
+                    "id": "AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3",
+                    "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3/Default/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integtest-pipe-target-http/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}
