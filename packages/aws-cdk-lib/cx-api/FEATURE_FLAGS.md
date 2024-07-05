@@ -72,7 +72,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
-| [@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions](#aws-cdkaws-stepfunctions-tasksecsreduceruntaskpermissions) | When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN. | V2NEXT | (fix) |
+| [@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions](#aws-cdkaws-stepfunctions-tasksecsreduceruntaskpermissions) | When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN. | 2.148.0 | (fix) |
 
 <!-- END table -->
 
@@ -1370,7 +1370,7 @@ for more details.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.148.0 | `false` | `true` |
 
 
 <!-- END details -->

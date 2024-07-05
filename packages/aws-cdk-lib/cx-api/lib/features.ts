@@ -1118,7 +1118,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
       for more details.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.148.0' },
     recommendedValue: true,
   },
 };
