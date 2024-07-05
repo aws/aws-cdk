@@ -23,15 +23,13 @@ All notable changes to this project will be documented in this file. See [standa
 * **ecs:** let AsgCapacityProvider use IAutoScalingGroup only when Managed Termination Protection is disable ([#30335](https://github.com/aws/aws-cdk/issues/30335)) ([efee07d](https://github.com/aws/aws-cdk/commit/efee07d6f17356b52b2a2e120ebe0404f554188b)), closes [#29174](https://github.com/aws/aws-cdk/issues/29174)
 * **lambda-nodejs:** breaking change in esbuild causes import module error ([#30726](https://github.com/aws/aws-cdk/issues/30726)) ([7f5ce4b](https://github.com/aws/aws-cdk/commit/7f5ce4bfe94b19efe6c0c8aa0ec850cdfc4b8ebb)), closes [#30717](https://github.com/aws/aws-cdk/issues/30717)
 * **s3:** allow import S3 bucket with a legacy name ([#30679](https://github.com/aws/aws-cdk/issues/30679)) ([e09126f](https://github.com/aws/aws-cdk/commit/e09126f6d97a52ee39811f8cbf874b722928debc)), closes [#22640](https://github.com/aws/aws-cdk/issues/22640)
-* **s3-notifications:** unable to delete the existing S3 event notifications  (under feature flag) ([#30610](https://github.com/aws/aws-cdk/issues/30610)) ([b880067](https://github.com/aws/aws-cdk/commit/b8800675d638bd866dc2444af895a650aea12ca7)), closes [#28915](https://github.com/aws/aws-cdk/issues/28915)
-* **s3-notifications:** unable to delete the existing S3 event notifications (under feature flag) ([#30706](https://github.com/aws/aws-cdk/issues/30706)) ([1fcef63](https://github.com/aws/aws-cdk/commit/1fcef6309e54d7ec1e179c22a47a235b38fa1673)), closes [#28915](https://github.com/aws/aws-cdk/issues/28915)
+* **s3-notifications:** unable to delete the existing S3 event notifications ([#30610](https://github.com/aws/aws-cdk/issues/30610)) ([b880067](https://github.com/aws/aws-cdk/commit/b8800675d638bd866dc2444af895a650aea12ca7)), closes [#28915](https://github.com/aws/aws-cdk/issues/28915)
 * **stepfunctions-tasks:** run task permission is too broad (under feature flag) ([#30389](https://github.com/aws/aws-cdk/issues/30389)) ([8ebfade](https://github.com/aws/aws-cdk/commit/8ebfadeb8d7a8c15176ed9e5f106a49fc84040a6)), closes [#30368](https://github.com/aws/aws-cdk/issues/30368)
 
 
 ### Reverts
 
 * fix(core): overrideLogicalId validation ([#30695](https://github.com/aws/aws-cdk/issues/30695)) ([0aa2be7](https://github.com/aws/aws-cdk/commit/0aa2be754ad667d40791557f0a8707b4ab6e6d4c)), closes [aws/aws-cdk#29708](https://github.com/aws/aws-cdk/issues/29708)
-* fix(s3-notifications): unable to delete the existing S3 event notifications  (under feature flag) ([#30699](https://github.com/aws/aws-cdk/issues/30699)) ([2869aaa](https://github.com/aws/aws-cdk/commit/2869aaa35b07b5730c8787e4c1962981339e3c47)), closes [aws/aws-cdk#30610](https://github.com/aws/aws-cdk/issues/30610)
 * route53 CrossAccountZoneDelegationRecord fails at deployment time with imported `delegatedZone` ([#30440](https://github.com/aws/aws-cdk/issues/30440))" ([#30606](https://github.com/aws/aws-cdk/issues/30606)) ([95280a0](https://github.com/aws/aws-cdk/commit/95280a080a6e5a6f02932c80c092c8b7dac8ded8)), closes [#30600](https://github.com/aws/aws-cdk/issues/30600)
 
 ## [2.147.3](https://github.com/aws/aws-cdk/compare/v2.147.2...v2.147.3) (2024-07-01)
