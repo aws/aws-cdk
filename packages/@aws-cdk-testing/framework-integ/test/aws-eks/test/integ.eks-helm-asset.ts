@@ -86,6 +86,7 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
       skipCrds: true,
+      atomic: true,
     });
 
     //testing installation with atomic flag set to true
