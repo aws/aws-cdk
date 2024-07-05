@@ -86,11 +86,6 @@ export interface VpcCidrOptions {
   readonly ipv6IpamPool?: IpamPool;
 
   /**
-   * required with cidr block for BYOL IP
-   */
-  //readonly ipv6Pool?: string;
-
-  /**
    * use amazon provided IP range
    */
   readonly amazonProvided?: boolean;

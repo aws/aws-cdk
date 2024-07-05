@@ -366,7 +366,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -382,7 +382,7 @@
                   "aws:cdk:cloudformation:props": {
                     "availabilityZone": "us-west-2a",
                     "cidrBlock": "10.2.0.0/24",
-                    "ipv6CidrBlock": "2001:0db8:0000:0001::/64",
+                    "ipv6CidrBlock": "2001:db8:1::/64",
                     "vpcId": {
                       "Fn::GetAtt": [
                         "Vpcintegtest20DAD8F9D",
@@ -444,7 +444,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -460,7 +460,6 @@
                   "aws:cdk:cloudformation:props": {
                     "availabilityZone": "us-west-2a",
                     "cidrBlock": "10.3.0.0/24",
-                    "ipv6CidrBlock": "2001:db8:1234:0001:0000::/68",
                     "vpcId": {
                       "Fn::GetAtt": [
                         "Vpcintegtest20DAD8F9D",
@@ -522,7 +521,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },

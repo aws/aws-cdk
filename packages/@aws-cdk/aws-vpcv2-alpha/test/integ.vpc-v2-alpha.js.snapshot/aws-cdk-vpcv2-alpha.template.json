@@ -194,7 +194,7 @@
    "Properties": {
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.2.0.0/24",
-    "Ipv6CidrBlock": "2001:0db8:0000:0001::/64",
+    "Ipv6CidrBlock": "2001:db8:1::/64",
     "VpcId": {
      "Fn::GetAtt": [
       "Vpcintegtest20DAD8F9D",
@@ -245,7 +245,6 @@
    "Properties": {
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.3.0.0/24",
-    "Ipv6CidrBlock": "2001:db8:1234:0001:0000::/68",
     "VpcId": {
      "Fn::GetAtt": [
       "Vpcintegtest20DAD8F9D",
