@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-pipes-targets-https:ExportsOutputRefSourceQueue6E809DF09604904F"
+         "Fn::ImportValue": "aws-cdk-pipes-targets-api-dest:ExportsOutputRefSourceQueue6E809DF09604904F"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      "MessageBody": "\"USA\""
     },
     "flattenResponse": "false",
-    "salt": "1720137437334"
+    "salt": "1720196920277"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

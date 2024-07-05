@@ -172,19 +172,19 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
-### Http Endpoints
+### Amazon EventBridge API Destination
 
-An API Gateway REST API or EventBridge API destination can be used as a target for a pipe. 
-The http endpoint will receive the (enriched/filtered) source payload.
+An EventBridge API destination can be used as a target for a pipe. 
+The API destination will receive the (enriched/filtered) source payload.
 
 ```ts
 declare const sourceQueue: sqs.Queue;
-declare const httpEndpoint: events.ApiDestination;
+declare const dest: events.ApiDestination;
 
-const httpTarget = new targets.HttpTarget(httpEndpoint, {});
+const apiTarget = new targets.ApiDestinationTarget(dest);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
-    target: httpTarget,
+    target: apiTarget,
 });
 ```
