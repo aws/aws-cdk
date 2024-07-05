@@ -23,7 +23,7 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-eks-call-integ-test');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const cluster = new eks.Cluster(stack, 'EksCluster', {
-  version: eks.KubernetesVersion.V1_22,
+  version: eks.KubernetesVersion.V1_30,
   clusterName: 'eksCluster',
 });
 

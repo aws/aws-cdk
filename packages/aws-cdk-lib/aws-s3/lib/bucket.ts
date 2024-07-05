@@ -1733,7 +1733,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
-    Bucket.validateBucketName(bucketName);
+    Bucket.validateBucketName(bucketName, true);
 
     const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
@@ -1840,8 +1840,9 @@ export class Bucket extends BucketBase {
    * Thrown an exception if the given bucket name is not valid.
    *
    * @param physicalName name of the bucket.
+   * @param allowLegacyBucketNaming allow legacy bucket naming style, default is false.
    */
-  public static validateBucketName(physicalName: string): void {
+  public static validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
@@ -1855,9 +1856,10 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    const charsetRegex = allowLegacyBucketNaming ? /[^a-z0-9._-]/ : /[^a-z0-9.-]/;
+    const charsetMatch = bucketName.match(charsetRegex);
     if (charsetMatch) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+      errors.push(`Bucket name must only contain lowercase characters and the symbols, period (.)${allowLegacyBucketNaming ? ', underscore (_), ' : ' '}and dash (-) `
         + `(offset: ${charsetMatch.index})`);
     }
     if (!/[a-z0-9]/.test(bucketName.charAt(0))) {

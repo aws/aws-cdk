@@ -225,6 +225,10 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
+Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
+permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+are not allowed in the bucket name.
+
 ```ts
 declare const myLambda: lambda.Function;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {

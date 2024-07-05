@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AppRunnerObservabilityConfiguration/DefaultTest": {
+      "stacks": [
+        "integ-apprunner-observability-configuration"
+      ],
+      "assertionStack": "AppRunnerObservabilityConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "AppRunnerObservabilityConfigurationDefaultTestDeployAssertFEB7E279"
+    }
+  }
+}

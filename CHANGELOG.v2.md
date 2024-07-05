@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.148.0](https://github.com/aws/aws-cdk/compare/v2.147.3...v2.148.0) (2024-07-05)
+
+
+### Features
+
+* **lambda:** add grantInvokeLatestVersion to grant invoke only to latest function version ([#29856](https://github.com/aws/aws-cdk/issues/29856)) ([61c28dd](https://github.com/aws/aws-cdk/commit/61c28dd79603ae50865f8b7a7f535ba4f7f69500)), closes [#20177](https://github.com/aws/aws-cdk/issues/20177)
+* update L1 CloudFormation resource definitions ([#30722](https://github.com/aws/aws-cdk/issues/30722)) ([4ceeced](https://github.com/aws/aws-cdk/commit/4ceecedd3d91465b29db21b10239937b99b5f79c)), closes [/docs.aws.amazon.com/service-terms/#87](https://github.com/aws//docs.aws.amazon.com/service-terms//issues/87)
+* **codebuild:** adding `project.visibility` ([#30103](https://github.com/aws/aws-cdk/issues/30103)) ([1bacb69](https://github.com/aws/aws-cdk/commit/1bacb69b6976dd75da78b45b07d6fec9306a6d72))
+* **codedeploy:** termination hook ([#30644](https://github.com/aws/aws-cdk/issues/30644)) ([8f652a7](https://github.com/aws/aws-cdk/commit/8f652a7f9090502f70d2c733dd8a87619663ceb8))
+* **cognito:** add defaultRedirectUri to UserPoolClient ([#30481](https://github.com/aws/aws-cdk/issues/30481)) ([f2c5f68](https://github.com/aws/aws-cdk/commit/f2c5f68b04e0cf89a7dcd453448988ba727c3363))
+* **eks:** eks pod identities ([#30576](https://github.com/aws/aws-cdk/issues/30576)) ([9437b4d](https://github.com/aws/aws-cdk/commit/9437b4dbbea15db18ff2991d410e033cc3437001)), closes [/github.com/aws/aws-cdk/blob/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d/packages/aws-cdk-lib/aws-eks/lib/oidc-provider.ts#L36](https://github.com/aws//github.com/aws/aws-cdk/blob/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d/packages/aws-cdk-lib/aws-eks/lib/oidc-provider.ts/issues/L36) [/github.com/aws/aws-cdk/blob/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d/packages/aws-cdk-lib/aws-eks/lib/oidc-provider.ts#L36](https://github.com/aws//github.com/aws/aws-cdk/blob/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d/packages/aws-cdk-lib/aws-eks/lib/oidc-provider.ts/issues/L36) [/github.com/aws/aws-cdk/blob/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d/packages/aws-cdk-lib/aws-iam/lib/role.ts#L373](https://github.com/aws//github.com/aws/aws-cdk/blob/b196b13b0b8a54dcacadf87fdbe744772a6e6c4d/packages/aws-cdk-lib/aws-iam/lib/role.ts/issues/L373) [#30519](https://github.com/aws/aws-cdk/issues/30519)
+* **stepfunctions-tasks:** step functions task for cross-region AWS API call ([#30061](https://github.com/aws/aws-cdk/issues/30061)) ([1397737](https://github.com/aws/aws-cdk/commit/1397737e16066d9101fd1c2fc85cd8396d738869)), closes [#29918](https://github.com/aws/aws-cdk/issues/29918)
+* update L1 CloudFormation resource definitions ([#30642](https://github.com/aws/aws-cdk/issues/30642)) ([2a659f0](https://github.com/aws/aws-cdk/commit/2a659f0ebbc039a03402b7f99a36dbf461e026aa))
+* **fsx:** add properties to enable automatic backups  for Lustre file system ([#30343](https://github.com/aws/aws-cdk/issues/30343)) ([3b95777](https://github.com/aws/aws-cdk/commit/3b95777ee5dae32fd41481d81922d07c804a2c6b)), closes [#30340](https://github.com/aws/aws-cdk/issues/30340)
+
+
+### Bug Fixes
+
+* **ecs:** let AsgCapacityProvider use IAutoScalingGroup only when Managed Termination Protection is disable ([#30335](https://github.com/aws/aws-cdk/issues/30335)) ([efee07d](https://github.com/aws/aws-cdk/commit/efee07d6f17356b52b2a2e120ebe0404f554188b)), closes [#29174](https://github.com/aws/aws-cdk/issues/29174)
+* **lambda-nodejs:** breaking change in esbuild causes import module error ([#30726](https://github.com/aws/aws-cdk/issues/30726)) ([7f5ce4b](https://github.com/aws/aws-cdk/commit/7f5ce4bfe94b19efe6c0c8aa0ec850cdfc4b8ebb)), closes [#30717](https://github.com/aws/aws-cdk/issues/30717)
+* **s3:** allow import S3 bucket with a legacy name ([#30679](https://github.com/aws/aws-cdk/issues/30679)) ([e09126f](https://github.com/aws/aws-cdk/commit/e09126f6d97a52ee39811f8cbf874b722928debc)), closes [#22640](https://github.com/aws/aws-cdk/issues/22640)
+* **s3-notifications:** unable to delete the existing S3 event notifications ([#30610](https://github.com/aws/aws-cdk/issues/30610)) ([b880067](https://github.com/aws/aws-cdk/commit/b8800675d638bd866dc2444af895a650aea12ca7)), closes [#28915](https://github.com/aws/aws-cdk/issues/28915)s too broad (under feature flag) ([#30389](https://github.com/aws/aws-cdk/issues/30389)) ([8ebfade](https://github.com/aws/aws-cdk/commit/8ebfadeb8d7a8c15176ed9e5f106a49fc84040a6)), closes [#30368](https://github.com/aws/aws-cdk/issues/30368)
+
+
+### Reverts
+
+* fix(core): overrideLogicalId validation ([#30695](https://github.com/aws/aws-cdk/issues/30695)) ([0aa2be7](https://github.com/aws/aws-cdk/commit/0aa2be754ad667d40791557f0a8707b4ab6e6d4c)), closes [aws/aws-cdk#29708](https://github.com/aws/aws-cdk/issues/29708)
+* route53 CrossAccountZoneDelegationRecord fails at deployment time with imported `delegatedZone` ([#30440](https://github.com/aws/aws-cdk/issues/30440))" ([#30606](https://github.com/aws/aws-cdk/issues/30606)) ([95280a0](https://github.com/aws/aws-cdk/commit/95280a080a6e5a6f02932c80c092c8b7dac8ded8)), closes [#30600](https://github.com/aws/aws-cdk/issues/30600)
+
 ## [2.147.3](https://github.com/aws/aws-cdk/compare/v2.147.2...v2.147.3) (2024-07-01)
 
 

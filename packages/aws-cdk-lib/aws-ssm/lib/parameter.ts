@@ -99,8 +99,10 @@ export interface ParameterOptions {
   readonly parameterName?: string;
 
   /**
-   * Indicates if the parameter name is a simple name (i.e. does not include "/"
-   * separators).
+   * Indicates whether the parameter name is a simple name. A parameter name
+   * without any "/" is considered a simple name. If the parameter name includes
+   * "/", setting simpleName to true might cause unintended issues such
+   * as duplicate "/" in the resulting ARN.
    *
    * This is required only if `parameterName` is a token, which means we
    * are unable to detect if the name is simple or "path-like" for the purpose
@@ -337,8 +339,10 @@ export interface CommonStringParameterAttributes {
   readonly parameterName: string;
 
   /**
-   * Indicates if the parameter name is a simple name (i.e. does not include "/"
-   * separators).
+   * Indicates whether the parameter name is a simple name. A parameter name
+   * without any "/" is considered a simple name. If the parameter name includes
+   * "/", setting simpleName to true might cause unintended issues such
+   * as duplicate "/" in the resulting ARN.
    *
    * This is required only if `parameterName` is a token, which means we
    * are unable to detect if the name is simple or "path-like" for the purpose

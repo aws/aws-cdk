@@ -631,7 +631,7 @@ export interface CommonProjectProps {
    * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
    * AWS service access, add VPC Endpoints to your private subnets.
    *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html for more details.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
    * @default - private subnets if available else public subnets
    */
@@ -727,6 +727,13 @@ export interface CommonProjectProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * Specifies the visibility of the project's builds.
+   *
+   * @default - no visibility is set
+   */
+  readonly visibility?: ProjectVisibility;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -1126,6 +1133,7 @@ export class Project extends ProjectBase {
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
+      visibility: props.visibility,
       logsConfig: this.renderLoggingConfiguration(props.logging),
       buildBatchConfig: Lazy.any({
         produce: () => {
@@ -1835,7 +1843,7 @@ export class LinuxBuildImage implements IBuildImage {
    * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
   /**
-   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0".
    * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0}
    * */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
@@ -2266,6 +2274,21 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in AWS Secrets Manager.
    */
   SECRETS_MANAGER = 'SECRETS_MANAGER',
+}
+
+/**
+ * Specifies the visibility of the project's builds.
+ */
+export enum ProjectVisibility {
+  /**
+   * The project builds are visible to the public.
+   */
+  PUBLIC_READ = 'PUBLIC_READ',
+
+  /**
+   * The project builds are not visible to the public.
+   */
+  PRIVATE = 'PRIVATE',
 }
 
 /**

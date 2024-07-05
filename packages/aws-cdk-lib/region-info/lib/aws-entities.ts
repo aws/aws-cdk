@@ -52,16 +52,21 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
   'ap-east-1', // Asia Pacific (Hong Kong)
   'me-south-1', // Middle East (Bahrain)
-  'eu-south-1', // Europe (Milan)
   'af-south-1', // Africa (Cape Town)
+  'eu-south-1', // Europe (Milan)
   'us-iso-west-1', // US ISO West
-  'eu-south-2', // Europe (Spain)
   'ap-southeast-3', // Asia Pacific (Jakarta)
   'me-central-1', // Middle East (UAE)
-  'ap-south-2', // Asia Pacific (Hyderabad)
   'eu-central-2', // Europe (Zurich)
-  'il-central-1', // Israel (Tel Aviv)
+  'eu-south-2', // Europe (Spain)
+  'ap-south-2', // Asia Pacific (Hyderabad)
   'ap-southeast-4', // Asia Pacific (Melbourne)
+  'il-central-1', // Israel (Tel Aviv)
+  'ca-west-1', // Canada West (Calgary)
+  'ap-southeast-5', // Asia Pacific (Malaysia)
+  'ap-southeast-7', // Asia Pacific (Thailand)
+  'mx-central-1', // Mexico (Central)
+  'eu-isoe-west-1', // EU ISO-E West
 ];
 
 /**
@@ -128,6 +133,8 @@ const PARTITION_MAP: {readonly [region: string]: Region } = {
   'us-gov-': { partition: 'aws-us-gov', domainSuffix: 'amazonaws.com' },
   'us-iso-': { partition: 'aws-iso', domainSuffix: 'c2s.ic.gov' },
   'us-isob-': { partition: 'aws-iso-b', domainSuffix: 'sc2s.sgov.gov' },
+  'us-isof-': { partition: 'aws-iso-f', domainSuffix: 'csp.hci.ic.gov' },
+  'eu-isoe-': { partition: 'aws-iso-e', domainSuffix: 'cloud.adc-e.uk' },
 };
 
 export function partitionInformation(region: string): Region {

@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-apprunner.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-apprunner.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3f9deb43f8f02da8be7c2aa727a501250dbddc1fd19e848d488e7071380ce060.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95d77364316b51a2e7967588a396f49e865192168822e58a293f02a3ea2abeac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,12 @@
         "integ-apprunner.assets"
       ],
       "metadata": {
+        "/integ-apprunner/Service3/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service3InstanceRoleD40BEE82"
+          }
+        ],
         "/integ-apprunner/Service3/AccessRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -55,6 +62,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "URL3"
+          }
+        ],
+        "/integ-apprunner/Service2/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service2InstanceRole3F57F2AA"
           }
         ],
         "/integ-apprunner/Service2/AccessRole/Resource": [

@@ -53,6 +53,9 @@
   "aws-appsync": [
     "AWS::AppSync"
   ],
+  "aws-apptest": [
+    "AWS::AppTest"
+  ],
   "aws-aps": [
     "AWS::APS"
   ],

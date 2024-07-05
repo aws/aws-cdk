@@ -679,4 +679,23 @@ describe('CodeDeploy Server Deployment Group', () => {
       },
     });
   });
+
+  test('set termination hook', () => {
+    const stack = new cdk.Stack();
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      autoScalingGroups: [
+        new autoscaling.AutoScalingGroup(stack, 'ASG', {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
+          machineImage: new ec2.AmazonLinuxImage(),
+          vpc: new ec2.Vpc(stack, 'VPC'),
+        }),
+      ],
+      terminationHook: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      TerminationHookEnabled: true,
+    });
+  });
 });

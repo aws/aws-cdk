@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3f16c34f2559b7cf29e8c8f040cf0f714c7971ce01b1cf8c868d65bc2d9bb809.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/afc48d18079ead86139ceb93b1c5b248db7cf62bccddc757fc0bcb86d42f2166.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -435,141 +435,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "SynNodejsPuppeteer40ArtifactsBucket30A9D9DC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer40ArtifactsBucket30A9D9DC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer40ArtifactsBucketPolicy881746F6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer40ArtifactsBucketPolicy881746F6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer40ServiceRole800C58BD": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer40ServiceRole800C58BD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer406C46FFAF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer406C46FFAF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer40AutoDeleteUnderlyingResourcesCustomResourceD78DC158": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer40AutoDeleteUnderlyingResourcesCustomResourceD78DC158",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium13ArtifactsBucket084C41C8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium13ArtifactsBucket084C41C8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium13ArtifactsBucketPolicyB7EBE638": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium13ArtifactsBucketPolicyB7EBE638",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium13ServiceRoleD35450CA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium13ServiceRoleD35450CA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium13F92D8275": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium13F92D8275",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium13AutoDeleteUnderlyingResourcesCustomResourceA39E1D51": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium13AutoDeleteUnderlyingResourcesCustomResourceA39E1D51",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium20ArtifactsBucketE94A12F1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium20ArtifactsBucketE94A12F1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium20ArtifactsBucketPolicy2F884CB7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium20ArtifactsBucketPolicy2F884CB7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium20ServiceRoleD31F079A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium20ServiceRoleD31F079A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium2059750767": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium2059750767",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynPythonSelenium20AutoDeleteUnderlyingResourcesCustomResourceB460A8E8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynPythonSelenium20AutoDeleteUnderlyingResourcesCustomResourceB460A8E8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "canary-one"
@@ -591,7 +456,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b8e43dbb91f820799fdf7264e49de35a96118fba54dd98b629cb1ca5f32737d6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c604634d500d8e3c2fcc8b1d12a69a0e3728d5bb5e9e3e7118abad1baa677eac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

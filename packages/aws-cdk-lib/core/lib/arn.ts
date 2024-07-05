@@ -64,7 +64,7 @@ export interface ArnComponents {
 
   /**
    * The service namespace that identifies the AWS product (for example,
-   * 's3', 'iam', 'codepipline').
+   * 's3', 'iam', 'codepipeline').
    */
   readonly service: string;
 
