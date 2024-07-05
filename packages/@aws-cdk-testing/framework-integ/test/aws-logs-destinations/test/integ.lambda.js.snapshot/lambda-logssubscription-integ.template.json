@@ -218,7 +218,7 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -233,12 +233,12 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"lambdalogssubscriptionintegEventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7F3616134\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"lambdalogssubscriptionintegEventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7F3616134\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7CustomResourcePolicy0DA87EF1"
@@ -368,7 +368,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -382,6 +391,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -408,6 +420,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {
