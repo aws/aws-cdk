@@ -45,7 +45,7 @@ export interface ApiDestinationTargetParameters {
 export class ApiDestinationTarget implements ITarget {
   private destination: IApiDestination;
   private apiParameters?: ApiDestinationTargetParameters;
-  public readonly targetArn: string = '';
+  public readonly targetArn;
 
   constructor(destination: IApiDestination, parameters?: ApiDestinationTargetParameters) {
     this.destination = destination;
@@ -58,7 +58,6 @@ export class ApiDestinationTarget implements ITarget {
       resources: [this.destination.apiDestinationArn],
       actions: ['events:InvokeApiDestination'],
     }));
-
   }
 
   bind(pipe: IPipe): TargetConfig {
