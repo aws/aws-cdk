@@ -1147,7 +1147,6 @@ Here is an example of how to create a schedule that puts an event to SQS queue e
 ```ts
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Duration } from 'aws-cdk-lib';
 
 declare const key: kms.Key;
 declare const scheduleGroup: scheduler.CfnScheduleGroup;
