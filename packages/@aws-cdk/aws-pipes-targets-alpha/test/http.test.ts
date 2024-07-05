@@ -1,5 +1,4 @@
 import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
-
 import { App, Stack, SecretValue } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway';
@@ -19,7 +18,6 @@ describe('Http - API destination', () => {
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'TestStack');
-
     secret = new Secret(stack, 'MySecret', {
       secretStringValue: SecretValue.unsafePlainText('abc123'),
     });
@@ -185,7 +183,6 @@ describe('Http - API Gateway REST API', () => {
     app = new App();
     stack = new Stack(app, 'TestStack');
     restApi = newTestRestApi(stack);
-
   });
 
   it('should have only target arn', () => {
