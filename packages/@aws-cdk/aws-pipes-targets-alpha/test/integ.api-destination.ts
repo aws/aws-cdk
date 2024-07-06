@@ -36,7 +36,7 @@ class TestSource implements ISource {
 }
 
 const fn = new lambda.Function(stack, 'ConnectHandler', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "connected" }; };'),
 });
