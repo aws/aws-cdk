@@ -205,3 +205,48 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
     target: apiTarget,
 });
 ```
+
+### Amazon API Gateway Rest API
+
+A REST API can be used as a target for a pipe. 
+The REST API will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+
+const fn = new lambda.Function( this, 'MyFunc', {
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
+} );
+
+const restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );
+const apiTarget = new targets.ApiGatewayTarget(restApi);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: apiTarget,
+});
+```
+
+The input to the target REST API can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+
+const fn = new lambda.Function( this, 'MyFunc', {
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
+} );
+
+const restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );
+const apiTarget = new targets.ApiGatewayTarget(restApi), {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+};
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: apiTarget,
+});
+```
