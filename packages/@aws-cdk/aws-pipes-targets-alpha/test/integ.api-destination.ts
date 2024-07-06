@@ -12,7 +12,7 @@ const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 
 /*
  * This integration test creates an API Gateway HTTP API in order to
- * validate that the pipe executes propers. The flow is as follows:
+ * validate that the pipe executes properly. The flow is as follows:
  *
  * SQS (pipe source) --> EventBridge API destination (pipe target)
  * --> API Gateway HTTP API --> Lambda function
