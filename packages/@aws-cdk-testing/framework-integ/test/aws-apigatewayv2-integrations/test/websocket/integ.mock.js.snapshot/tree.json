@@ -127,13 +127,13 @@
                       "version": "0.0.0"
                     }
                   },
-                  "integmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse": {
-                    "id": "integmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse",
-                    "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route/integmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse",
+                  "defaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24": {
+                    "id": "defaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24",
+                    "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route/defaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route/integmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse/Resource",
+                        "path": "integ-mock-websocket-integration/mywsapi/sendmessage-Route/defaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::IntegrationResponse",
                           "aws:cdk:cloudformation:props": {

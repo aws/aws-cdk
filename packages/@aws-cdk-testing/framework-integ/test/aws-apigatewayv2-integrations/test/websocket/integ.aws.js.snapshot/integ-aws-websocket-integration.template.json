@@ -149,7 +149,7 @@
     "TimeoutInMillis": 10000
    }
   },
-  "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse2F8E9302": {
+  "mywsapiputItemRoutedefaultintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3FB3E47D1": {
    "Type": "AWS::ApiGatewayV2::IntegrationResponse",
    "Properties": {
     "ApiId": {
@@ -164,7 +164,7 @@
     }
    }
   },
-  "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponseF586C3A5": {
+  "mywsapiputItemRoute4d2integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3F51371BC": {
    "Type": "AWS::ApiGatewayV2::IntegrationResponse",
    "Properties": {
     "ApiId": {

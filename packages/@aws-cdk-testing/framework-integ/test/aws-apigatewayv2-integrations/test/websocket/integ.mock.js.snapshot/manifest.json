@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/43b6f9a29d4e912c98de61b419a73a4a8b88a1d03f0bbd785122e0c5f6b32aea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7e2a768753bb503ef2a3ff486e3dab6211b724491d63d2690f26df5e2147b3f6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,10 +58,10 @@
             "data": "mywsapisendmessageRouteDefaultIntegration702159AD"
           }
         ],
-        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/integmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse/Resource": [
+        "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/defaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse72380ED8"
+            "data": "mywsapisendmessageRoutedefaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D2401A55BEB"
           }
         ],
         "/integ-mock-websocket-integration/mywsapi/sendmessage-Route/Resource": [
@@ -98,6 +98,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "mywsapisendmessageRouteintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse72380ED8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapisendmessageRouteintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse72380ED8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

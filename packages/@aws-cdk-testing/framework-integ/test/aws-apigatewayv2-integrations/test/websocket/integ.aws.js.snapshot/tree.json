@@ -285,13 +285,13 @@
                       "version": "0.0.0"
                     }
                   },
-                  "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse": {
-                    "id": "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse",
-                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse",
+                  "defaultintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3": {
+                    "id": "defaultintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3",
+                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/defaultintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse/Resource",
+                        "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/defaultintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::IntegrationResponse",
                           "aws:cdk:cloudformation:props": {
@@ -318,13 +318,13 @@
                       "version": "0.0.0"
                     }
                   },
-                  "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse": {
-                    "id": "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse",
-                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse",
+                  "4d2integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3": {
+                    "id": "4d2integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3",
+                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/4d2integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse/Resource",
+                        "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/4d2integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::IntegrationResponse",
                           "aws:cdk:cloudformation:props": {

@@ -49,7 +49,7 @@
     "IntegrationUri": ""
    }
   },
-  "mywsapisendmessageRouteintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D24defaultIntegrationResponse72380ED8": {
+  "mywsapisendmessageRoutedefaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D2401A55BEB": {
    "Type": "AWS::ApiGatewayV2::IntegrationResponse",
    "Properties": {
     "ApiId": {

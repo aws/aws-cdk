@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4cfebf4b7a0bf9c38f92436e41d550e7f7df52d1f8306d5efcfbde8fc674be94.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/53824d3d2f5a61e7b41fae900d4616b5151557c4b2cded050381cb51c5cb8461.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -84,16 +84,16 @@
             "data": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
           }
         ],
-        "/integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse/Resource": [
+        "/integ-aws-websocket-integration/mywsapi/putItem-Route/defaultintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse2F8E9302"
+            "data": "mywsapiputItemRoutedefaultintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3FB3E47D1"
           }
         ],
-        "/integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse/Resource": [
+        "/integ-aws-websocket-integration/mywsapi/putItem-Route/4d2integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponseF586C3A5"
+            "data": "mywsapiputItemRoute4d2integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3F51371BC"
           }
         ],
         "/integ-aws-websocket-integration/mywsapi/putItem-Route/Resource": [

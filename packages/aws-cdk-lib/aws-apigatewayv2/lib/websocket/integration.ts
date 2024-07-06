@@ -336,10 +336,11 @@ export abstract class CustomResponseWebSocketRoute extends WebSocketRouteIntegra
       }, {});
 
       for (const responseProps of this.responses) {
+        const prefix = slugify(responseProps.responseKey.key);
+
         new WebSocketIntegrationResponse(
           options.scope,
-          // FIXME any better way to generate a unique id?
-          Names.nodeUniqueId(this.integration.node) + slugify(responseProps.responseKey.key) + 'IntegrationResponse',
+          `${prefix}${Names.uniqueResourceName(this.integration, { maxLength: 256 - prefix.length })}`,
           { ...responseProps, integration: this },
         );
       }
