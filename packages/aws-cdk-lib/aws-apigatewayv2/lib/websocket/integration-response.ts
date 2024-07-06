@@ -73,7 +73,28 @@ export class WebSocketIntegrationResponseKey {
    */
   public static fromStatusCode(httpStatusCode: number): WebSocketIntegrationResponseKey {
     return new WebSocketIntegrationResponseKey(`/${httpStatusCode}/`);
+  }
 
+  /**
+   * Generate an integration response key from a list of keys
+   * @param keys keys to generate the key from
+   *
+   * @example
+   * // Match 200 OK, 201 Created, and all 4xx Client Error status codes
+   * apigwv2.WebSocketIntegrationResponseKey.fromKeys(
+   *   WebSocketIntegrationResponseKey.ok,
+   *   WebSocketIntegrationResponseKey.fromStatusCode(201),
+   *   WebSocketIntegrationResponseKey.clientError
+   * )
+   */
+  public static fromKeys(...keys: WebSocketIntegrationResponseKey[]): WebSocketIntegrationResponseKey {
+    if (keys.includes(WebSocketIntegrationResponseKey.default)) {
+      throw new Error('Cannot use the $default key in a list of keys');
+    }
+
+    return WebSocketIntegrationResponseKey.fromStatusRegExp(
+      keys.map(({ key }) => key.slice(1, -1)).join('|'),
+    );
   }
 
   /**

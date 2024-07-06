@@ -68,6 +68,27 @@ describe('WebSocketIntegrationResponseKey', () => {
     expect(key).toEqual('/404/');
   });
 
+  test('can generate fromKeys', () => {
+    // GIVEN
+    const { key } = WebSocketIntegrationResponseKey.fromKeys(
+      WebSocketIntegrationResponseKey.ok,
+      WebSocketIntegrationResponseKey.fromStatusCode(201),
+      WebSocketIntegrationResponseKey.clientError,
+    );
+
+    // THEN
+    expect(key).toEqual('/200|201|4\\d{2}/');
+  });
+
+  test('throws is fromKeys includes a non-regex key', () => {
+    expect(
+      () => WebSocketIntegrationResponseKey.fromKeys(
+        WebSocketIntegrationResponseKey.default,
+        WebSocketIntegrationResponseKey.clientError,
+      ),
+    ).toThrow('Cannot use the $default key in a list of keys');
+  });
+
   test('can generate fromStatusRegExp', () => {
     // GIVEN
     const { key } = WebSocketIntegrationResponseKey.fromStatusRegExp(/4\d{2}/.source);
