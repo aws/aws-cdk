@@ -1,10 +1,10 @@
 import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { ApiDestinationTarget } from '../lib/api-destination';
-import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { ApiDestinationTarget } from '../lib/api-destination';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-dest');
