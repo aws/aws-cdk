@@ -117,12 +117,7 @@ export class WebSocketIntegrationResponseKey {
  *
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
  */
-export interface InternalWebSocketIntegrationResponseProps {
-  /**
-   * The HTTP status code or regular expression the response will be mapped to
-   */
-  readonly responseKey: WebSocketIntegrationResponseKey;
-
+export interface InternalWebSocketIntegrationResponseOptions {
   /**
    * The templates that are used to transform the integration response body.
    * Specify templates as key-value pairs, with a content type as the key and
@@ -164,6 +159,19 @@ export interface InternalWebSocketIntegrationResponseProps {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-data-transformations.html#apigateway-websocket-api-integration-response-selection-expressions
    */
   readonly templateSelectionExpression?: string;
+}
+
+/**
+ * WebSocket integration response properties, used internally for Integration implementations
+ * The integration will add itself these props during the bind process
+ *
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
+ */
+export interface InternalWebSocketIntegrationResponseProps extends InternalWebSocketIntegrationResponseOptions {
+  /**
+   * The HTTP status code or regular expression the response will be mapped to
+   */
+  readonly responseKey: WebSocketIntegrationResponseKey;
 }
 
 /**

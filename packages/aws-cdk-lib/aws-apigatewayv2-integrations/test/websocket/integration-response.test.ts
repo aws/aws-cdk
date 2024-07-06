@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import { ContentHandling, InternalWebSocketIntegrationResponseProps, WebSocketApi, WebSocketIntegration, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey, WebSocketIntegrationType, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, CustomResponseWebSocketRoute } from '../../../aws-apigatewayv2';
+import { ContentHandling, InternalWebSocketIntegrationResponseProps, WebSocketApi, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey, WebSocketIntegrationType, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, CustomResponseWebSocketRoute, InternalWebSocketIntegrationResponseOptions } from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
@@ -39,7 +39,7 @@ class WebSocketTestIntegration extends CustomResponseWebSocketRoute {
    */
   addResponse(
     responseKey: WebSocketIntegrationResponseKey,
-    options: Omit<InternalWebSocketIntegrationResponseProps, 'responseKey'> = {}) {
+    options: InternalWebSocketIntegrationResponseOptions = {}) {
     super.addResponse(responseKey, options);
   }
 }

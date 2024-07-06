@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
-import { InternalWebSocketIntegrationResponseProps, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey } from './integration-response';
+import { InternalWebSocketIntegrationResponseOptions, InternalWebSocketIntegrationResponseProps, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey } from './integration-response';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
@@ -356,7 +356,7 @@ export abstract class CustomResponseWebSocketRoute extends WebSocketRouteIntegra
    */
   addResponse(
     responseKey: WebSocketIntegrationResponseKey,
-    options: Omit<InternalWebSocketIntegrationResponseProps, 'responseKey'> = {}) {
+    options: InternalWebSocketIntegrationResponseOptions = {}) {
     this.responses.push({ ...options, responseKey });
   }
 }
