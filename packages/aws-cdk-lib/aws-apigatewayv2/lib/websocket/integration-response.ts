@@ -82,9 +82,9 @@ export class WebSocketIntegrationResponseKey {
    * @example
    * // Match 200 OK, 201 Created, and all 4xx Client Error status codes
    * apigwv2.WebSocketIntegrationResponseKey.fromKeys(
-   *   WebSocketIntegrationResponseKey.ok,
-   *   WebSocketIntegrationResponseKey.fromStatusCode(201),
-   *   WebSocketIntegrationResponseKey.clientError
+   *   apigwv2.WebSocketIntegrationResponseKey.ok,
+   *   apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(201),
+   *   apigwv2.WebSocketIntegrationResponseKey.clientError
    * )
    */
   public static fromKeys(...keys: WebSocketIntegrationResponseKey[]): WebSocketIntegrationResponseKey {
