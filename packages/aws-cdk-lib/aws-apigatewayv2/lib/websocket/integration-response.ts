@@ -33,7 +33,7 @@ export class WebSocketIntegrationResponseKey {
   public static ok = WebSocketIntegrationResponseKey.fromStatusCode(200);
 
   /**
-   * Match 204 Created status code
+   * Match 204 No Content status code
    */
   public static noContent = WebSocketIntegrationResponseKey.fromStatusCode(204);
 
