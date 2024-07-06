@@ -30,6 +30,294 @@
               "version": "10.3.0"
             }
           },
+          "ConnectHandler": {
+            "id": "ConnectHandler",
+            "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: \"connected\" }; };"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ConnectHandlerServiceRole7E4A9B1F",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ConnectHandler-LogGroup": {
+                "id": "ConnectHandler-LogGroup",
+                "path": "aws-cdk-pipes-targets-api-dest/ConnectHandler/ConnectHandler-LogGroup",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "HttpApi": {
+            "id": "HttpApi",
+            "path": "aws-cdk-pipes-targets-api-dest/HttpApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes-targets-api-dest/HttpApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "HttpApi",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "aws-cdk-pipes-targets-api-dest/HttpApi/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-pipes-targets-api-dest/HttpApi/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpApiF5A9A8A7"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "GET--books": {
+                "id": "GET--books",
+                "path": "aws-cdk-pipes-targets-api-dest/HttpApi/GET--books",
+                "children": {
+                  "LambdaIntegration": {
+                    "id": "LambdaIntegration",
+                    "path": "aws-cdk-pipes-targets-api-dest/HttpApi/GET--books/LambdaIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-pipes-targets-api-dest/HttpApi/GET--books/LambdaIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "HttpApiF5A9A8A7"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "ConnectHandler2FFD52D8",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LambdaIntegration-Permission": {
+                    "id": "LambdaIntegration-Permission",
+                    "path": "aws-cdk-pipes-targets-api-dest/HttpApi/GET--books/LambdaIntegration-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "ConnectHandler2FFD52D8",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "HttpApiF5A9A8A7"
+                              },
+                              "/*/*/books"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-pipes-targets-api-dest/HttpApi/GET--books/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpApiF5A9A8A7"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "GET /books",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "HttpApiGETbooksLambdaIntegration5D2CF39E"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
           "MySecret": {
             "id": "MySecret",
             "path": "aws-cdk-pipes-targets-api-dest/MySecret",
@@ -113,11 +401,24 @@
                         "Arn"
                       ]
                     },
-                    "description": "Calling example.com with API key x-api-key",
+                    "description": "Calling API GW HTTP API",
                     "httpMethod": "GET",
-                    "invocationEndpoint": "https://httpbin.org/headers",
+                    "invocationEndpoint": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "HttpApiF5A9A8A7",
+                              "ApiEndpoint"
+                            ]
+                          },
+                          "/books"
+                        ]
+                      ]
+                    },
                     "invocationRateLimitPerSecond": 1,
-                    "name": "MyDestination"
+                    "name": "ApiGwHttpApi"
                   }
                 },
                 "constructInfo": {
@@ -263,7 +564,17 @@
                         "Arn"
                       ]
                     },
-                    "targetParameters": {}
+                    "targetParameters": {
+                      "httpParameters": {
+                        "headerParameters": {
+                          "x-header": "myheader",
+                          "x-api-key": "apiKeyFromHeaderParams"
+                        },
+                        "queryStringParameters": {
+                          "key": "harrypotter"
+                        }
+                      }
+                    }
                   }
                 },
                 "constructInfo": {
@@ -277,6 +588,157 @@
               "version": "0.0.0"
             }
           },
+          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
+            "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:DeleteRetentionPolicy",
+                                    "logs:PutRetentionPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+                            "roles": [
+                              {
+                                "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes-targets-api-dest/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-pipes-targets-api-dest/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
             "path": "aws-cdk-pipes-targets-api-dest/Exports",
@@ -284,6 +746,14 @@
               "Output{\"Ref\":\"SourceQueue6E809DF0\"}": {
                 "id": "Output{\"Ref\":\"SourceQueue6E809DF0\"}",
                 "path": "aws-cdk-pipes-targets-api-dest/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"ConnectHandlerLogRetention2F222483\",\"LogGroupName\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"ConnectHandlerLogRetention2F222483\",\"LogGroupName\"]}",
+                "path": "aws-cdk-pipes-targets-api-dest/Exports/Output{\"Fn::GetAtt\":[\"ConnectHandlerLogRetention2F222483\",\"LogGroupName\"]}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -420,6 +890,206 @@
                   "LatestNodeRuntimeMap": {
                     "id": "LatestNodeRuntimeMap",
                     "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e": {
+                    "id": "AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e",
+                    "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/Default/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsddfc9e665fb26b0519a1e92e7ed8e95e/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-pipe-target-api-dest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
