@@ -18,7 +18,7 @@ export interface ApiDestinationTargetParameters {
    * The headers to send as part of the request invoking the EventBridge API destination.
    *
    * The headers are merged with the headers from the API destination.
-   * If there are conflicts, the headers from the API desintation take precedence.
+   * If there are conflicts, the headers from the API destination take precedence.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargethttpparameters.html#cfn-pipes-pipe-pipetargethttpparameters-headerparameters
    * @default - none
