@@ -296,6 +296,10 @@ export class Topic extends TopicBase {
       throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
     }
 
+    if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
+      throw new Error(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`);
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
       archivePolicy: props.messageRetentionPeriodInDays ? {
         MessageRetentionPeriod: props.messageRetentionPeriodInDays,
