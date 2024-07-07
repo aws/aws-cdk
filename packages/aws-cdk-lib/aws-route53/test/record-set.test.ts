@@ -199,7 +199,7 @@ describe('record set', () => {
     const healthCheck = new route53.HealthCheck(stack, 'HealthCheck', {
       type: route53.HealthCheckType.HTTP,
       fqdn: 'example.com',
-      resourcePath: '/health',
+      resourcePath: 'health',
     });
 
     // WHEN
@@ -215,6 +215,14 @@ describe('record set', () => {
       Name: '_foo.myzone.',
       Type: 'A',
       HealthCheckId: stack.resolve(healthCheck.healthCheckId),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+      HealthCheckConfig: {
+        Type: 'HTTP',
+        FullyQualifiedDomainName: 'example.com',
+        ResourcePath: 'health',
+      },
     });
   });
 
