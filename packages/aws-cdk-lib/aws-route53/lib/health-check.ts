@@ -15,6 +15,67 @@ export interface IHealthCheck extends IResource {
 }
 
 /**
+ * The type of health check to be associated with the record.
+ */
+export enum HealthCheckType {
+  /**
+   * HTTP health check
+   *
+   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and waits for an HTTP status code of 200 or greater and less than 400.
+   */
+  HTTP = 'HTTP',
+
+  /**
+   * HTTPS health check
+   *
+   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and waits for an HTTP status code of 200 or greater and less than 400.
+   */
+  HTTPS = 'HTTPS',
+
+  /**
+   * HTTP health check with string matching
+   *
+   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and searches the first 5,120 bytes of the response body for the string that you specify in SearchString.
+   */
+  HTTP_STR_MATCH = 'HTTP_STR_MATCH',
+
+  /**
+   * HTTPS health check with string matching
+   *
+   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and searches the first 5,120 bytes of the response body for the string that you specify in SearchString.
+   */
+  HTTPS_STR_MATCH = 'HTTPS_STR_MATCH',
+
+  /**
+   * TCP health check
+   *
+   * Route 53 tries to establish a TCP connection.
+   */
+  TCP = 'TCP',
+
+  /**
+   * CloudWatch metric health check
+   *
+   * The health check is associated with a CloudWatch alarm. If the state of the alarm is OK, the health check is considered healthy. If the state is ALARM, the health check is considered unhealthy. If CloudWatch doesn't have sufficient data to determine whether the state is OK or ALARM, the health check status depends on the setting for InsufficientDataHealthStatus: Healthy, Unhealthy, or LastKnownStatus.
+   */
+  CLOUDWATCH_METRIC = 'CLOUDWATCH_METRIC',
+
+  /**
+   * Calculated health check
+   *
+   * For health checks that monitor the status of other health checks, Route 53 adds up the number of health checks that Route 53 health checkers consider to be healthy and compares that number with the value of HealthThreshold.
+   */
+  CALCULATED = 'CALCULATED',
+
+  /**
+   * Recovery control health check
+   *
+   * The health check is assocated with a Route53 Application Recovery Controller routing control. If the routing control state is ON, the health check is considered healthy. If the state is OFF, the health check is considered unhealthy.
+   */
+  RECOVERY_CONTROL = 'RECOVERY_CONTROL',
+}
+
+/**
  * Properties for a new health check.
  */
 export interface HealthCheckProps {
@@ -225,6 +286,88 @@ export class HealthCheck extends Resource implements IHealthCheck {
   }
 }
 
+const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => void)[]> = {
+  [HealthCheckType.HTTP]: [
+    ruleAlarmIdentifierIsNotAllowed,
+    ruleEnableSNIIsNotAllowed,
+    ruleSearchStringIsNotAllowed,
+    ruleChildHealthChecksIsNotAllowed,
+    ruleRoutingControlIsNotAllowed,
+    ruleHealthThresholdIsNotAllowed,
+    validateFqdn,
+    validateIpAddress,
+    validateEitherFqdnOrIpAddressRequired,
+  ],
+  [HealthCheckType.HTTPS]: [
+    ruleAlarmIdentifierIsNotAllowed,
+    ruleSearchStringIsNotAllowed,
+    ruleChildHealthChecksIsNotAllowed,
+    ruleRoutingControlIsNotAllowed,
+    ruleHealthThresholdIsNotAllowed,
+    validateFqdn,
+    validateIpAddress,
+    validateEitherFqdnOrIpAddressRequired,
+  ],
+  [HealthCheckType.HTTP_STR_MATCH]: [
+    ruleAlarmIdentifierIsNotAllowed,
+    validateSearchStringForStringMatch,
+    ruleEnableSNIIsNotAllowed,
+    ruleChildHealthChecksIsNotAllowed,
+    ruleRoutingControlIsNotAllowed,
+    ruleHealthThresholdIsNotAllowed,
+    validateFqdn,
+    validateIpAddress,
+    validateEitherFqdnOrIpAddressRequired,
+  ],
+  [HealthCheckType.HTTPS_STR_MATCH]: [
+    ruleAlarmIdentifierIsNotAllowed,
+    validateSearchStringForStringMatch,
+    ruleChildHealthChecksIsNotAllowed,
+    ruleRoutingControlIsNotAllowed,
+    ruleHealthThresholdIsNotAllowed,
+    validateFqdn,
+    validateIpAddress,
+    validateEitherFqdnOrIpAddressRequired,
+  ],
+  [HealthCheckType.TCP]: [
+    ruleAlarmIdentifierIsNotAllowed,
+    ruleEnableSNIIsNotAllowed,
+    ruleSearchStringIsNotAllowed,
+    ruleChildHealthChecksIsNotAllowed,
+    ruleRoutingControlIsNotAllowed,
+    ruleHealthThresholdIsNotAllowed,
+    validateFqdn,
+    validateIpAddress,
+    validateEitherFqdnOrIpAddressRequired,
+  ],
+  [HealthCheckType.CLOUDWATCH_METRIC]: [
+    ruleAlarmIdentifierIsRequired,
+    rulePortIsNotAllowed,
+    ruleEnableSNIIsNotAllowed,
+    ruleSearchStringIsNotAllowed,
+    ruleChildHealthChecksIsNotAllowed,
+    ruleRoutingControlIsNotAllowed,
+    ruleHealthThresholdIsNotAllowed,
+  ],
+  [HealthCheckType.CALCULATED]: [
+    validateChildHealthChecks,
+    ruleAlarmIdentifierIsNotAllowed,
+    rulePortIsNotAllowed,
+    ruleEnableSNIIsNotAllowed,
+    ruleSearchStringIsNotAllowed,
+    ruleRoutingControlIsNotAllowed,
+  ],
+  [HealthCheckType.RECOVERY_CONTROL]: [
+    ruleAlarmIdentifierIsNotAllowed,
+    ruleRoutingControlIsRequired,
+    ruleEnableSNIIsNotAllowed,
+    ruleSearchStringIsNotAllowed,
+    ruleChildHealthChecksIsNotAllowed,
+    rulePortIsNotAllowed,
+    ruleHealthThresholdIsNotAllowed,
+  ],
+};
+
 function getDefaultResourcePathForType(type: HealthCheckType): string | undefined {
   switch (type) {
     case HealthCheckType.HTTP:
@@ -307,96 +450,8 @@ function getDefaultPortForType(type: HealthCheckType): number | undefined {
 }
 
 function validateProperties(props: HealthCheckProps) {
-  switch (props.type) {
-    case HealthCheckType.HTTP: {
-      ruleAlarmIdentifierIsNotAllowed(props);
-      ruleEnableSNIIsNotAllowed(props);
-      ruleSearchStringIsNotAllowed(props);
-      ruleChildHealthChecksIsNotAllowed(props);
-      ruleRoutingControlIsNotAllowed(props);
-      ruleHealthThresholdIsNotAllowed(props);
-      validateFqdn(props);
-      validateIpAddress(props);
-      validateEitherFqdnOrIpAddressRequired(props);
-      break;
-    }
-    case HealthCheckType.HTTPS: {
-      ruleAlarmIdentifierIsNotAllowed(props);
-      ruleSearchStringIsNotAllowed(props);
-      ruleChildHealthChecksIsNotAllowed(props);
-      ruleRoutingControlIsNotAllowed(props);
-      ruleHealthThresholdIsNotAllowed(props);
-      validateFqdn(props);
-      validateIpAddress(props);
-      validateEitherFqdnOrIpAddressRequired(props);
-      break;
-    }
-    case HealthCheckType.HTTP_STR_MATCH: {
-      ruleAlarmIdentifierIsNotAllowed(props);
-      validateSearchStringForStringMatch(props);
-      ruleEnableSNIIsNotAllowed(props);
-      ruleChildHealthChecksIsNotAllowed(props);
-      ruleRoutingControlIsNotAllowed(props);
-      ruleHealthThresholdIsNotAllowed(props);
-      validateFqdn(props);
-      validateIpAddress(props);
-      validateEitherFqdnOrIpAddressRequired(props);
-      break;
-    }
-    case HealthCheckType.HTTPS_STR_MATCH: {
-      ruleAlarmIdentifierIsNotAllowed(props);
-      validateSearchStringForStringMatch(props);
-      ruleChildHealthChecksIsNotAllowed(props);
-      ruleRoutingControlIsNotAllowed(props);
-      ruleHealthThresholdIsNotAllowed(props);
-      validateFqdn(props);
-      validateIpAddress(props);
-      validateEitherFqdnOrIpAddressRequired(props);
-      break;
-    }
-    case HealthCheckType.TCP: {
-      ruleAlarmIdentifierIsNotAllowed(props);
-      ruleEnableSNIIsNotAllowed(props);
-      ruleSearchStringIsNotAllowed(props);
-      ruleChildHealthChecksIsNotAllowed(props);
-      ruleRoutingControlIsNotAllowed(props);
-      ruleHealthThresholdIsNotAllowed(props);
-      validateFqdn(props);
-      validateIpAddress(props);
-      validateEitherFqdnOrIpAddressRequired(props);
-      break;
-    }
-    case HealthCheckType.RECOVERY_CONTROL: {
-      ruleAlarmIdentifierIsNotAllowed(props);
-      ruleRoutingControlIsRequired(props);
-      ruleEnableSNIIsNotAllowed(props);
-      ruleSearchStringIsNotAllowed(props);
-      ruleChildHealthChecksIsNotAllowed(props);
-      rulePortIsNotAllowed(props);
-      ruleHealthThresholdIsNotAllowed(props);
-      break;
-    }
-    case HealthCheckType.CALCULATED: {
-      validateChildHealthChecks(props);
-      ruleAlarmIdentifierIsNotAllowed(props);
-      rulePortIsNotAllowed(props);
-      ruleEnableSNIIsNotAllowed(props);
-      ruleSearchStringIsNotAllowed(props);
-      ruleRoutingControlIsNotAllowed(props);
-      break;
-    }
-    case HealthCheckType.CLOUDWATCH_METRIC: {
-      ruleAlarmIdentifierIsRequired(props);
-      rulePortIsNotAllowed(props);
-      ruleEnableSNIIsNotAllowed(props);
-      ruleSearchStringIsNotAllowed(props);
-      ruleChildHealthChecksIsNotAllowed(props);
-      ruleRoutingControlIsNotAllowed(props);
-      ruleHealthThresholdIsNotAllowed(props);
-      break;
-    }
-    default:
-      throw new Error(`Unsupported health check type: ${props.type}`);
+  for (const rule of validationRules[props.type]) {
+    rule(props);
   }
 
   validateRequestInterval(props);
@@ -532,67 +587,6 @@ export enum InsufficientDataHealthStatusEnum {
    * Route 53 health check status will be the status of the health check before Route 53 had insufficient data.
    */
   LAST_KNOWN_STATUS = 'LastKnownStatus',
-}
-
-/**
- * The type of health check to be associated with the record.
- */
-export enum HealthCheckType {
-  /**
-   * HTTP health check
-   *
-   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and waits for an HTTP status code of 200 or greater and less than 400.
-   */
-  HTTP = 'HTTP',
-
-  /**
-   * HTTPS health check
-   *
-   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and waits for an HTTP status code of 200 or greater and less than 400.
-   */
-  HTTPS = 'HTTPS',
-
-  /**
-   * HTTP health check with string matching
-   *
-   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and searches the first 5,120 bytes of the response body for the string that you specify in SearchString.
-   */
-  HTTP_STR_MATCH = 'HTTP_STR_MATCH',
-
-  /**
-   * HTTPS health check with string matching
-   *
-   * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and searches the first 5,120 bytes of the response body for the string that you specify in SearchString.
-   */
-  HTTPS_STR_MATCH = 'HTTPS_STR_MATCH',
-
-  /**
-   * TCP health check
-   *
-   * Route 53 tries to establish a TCP connection.
-   */
-  TCP = 'TCP',
-
-  /**
-   * CloudWatch metric health check
-   *
-   * The health check is associated with a CloudWatch alarm. If the state of the alarm is OK, the health check is considered healthy. If the state is ALARM, the health check is considered unhealthy. If CloudWatch doesn't have sufficient data to determine whether the state is OK or ALARM, the health check status depends on the setting for InsufficientDataHealthStatus: Healthy, Unhealthy, or LastKnownStatus.
-   */
-  CLOUDWATCH_METRIC = 'CLOUDWATCH_METRIC',
-
-  /**
-   * Calculated health check
-   *
-   * For health checks that monitor the status of other health checks, Route 53 adds up the number of health checks that Route 53 health checkers consider to be healthy and compares that number with the value of HealthThreshold.
-   */
-  CALCULATED = 'CALCULATED',
-
-  /**
-   * Recovery control health check
-   *
-   * The health check is assocated with a Route53 Application Recovery Controller routing control. If the routing control state is ON, the health check is considered healthy. If the state is OFF, the health check is considered unhealthy.
-   */
-  RECOVERY_CONTROL = 'RECOVERY_CONTROL',
 }
 
 /**
