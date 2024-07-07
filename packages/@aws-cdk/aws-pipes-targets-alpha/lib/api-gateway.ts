@@ -85,10 +85,7 @@ export class ApiGatewayTarget implements ITarget {
   grantPush(grantee: IRole): void {
     grantee.addToPrincipalPolicy(new PolicyStatement({
       resources: [this.restApiArn],
-      actions: [
-        'execute-api:Invoke',
-        'execute-api:ManageConnections',
-      ],
+      actions: ['execute-api:Invoke'],
     }));
   }
 
