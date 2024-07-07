@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80d67c586121bfb16a6b0cc5d7fa7ec3ded0dd3ecad967675da137878d1d6d11.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e6eaacc75b0378ba9b1e447618e74a78c9c92a5c179421a135582948f9140de.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -67,7 +67,7 @@
         "/aws-cdk-pipes-targets-api-gw/RestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846"
+            "data": "RestApiDeployment180EC503faa60e2bc033df5b02cc72aec1d329ce"
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/DeploymentStage.prod/Resource": [
@@ -88,22 +88,28 @@
             "data": "RestApibooksA2500ABD"
           }
         ],
-        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/GET/ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books": [
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApibooksGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksC7AEADBC"
+            "data": "RestApibooksfictionA7F01220"
           }
         ],
-        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/GET/ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books": [
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books.fiction": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApibooksGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksD6C689C0"
+            "data": "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction63E0426F"
           }
         ],
-        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/GET/Resource": [
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books.fiction": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApibooksGET46F66C0A"
+            "data": "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionDF7E9804"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApibooksfictionGETE32E77E7"
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/Pipe/Role/Resource": [
@@ -172,37 +178,37 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "RestApiDeployment180EC503d3de1faf8e34b80337ed5bd330bcf45e": [
+        "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApiDeployment180EC503d3de1faf8e34b80337ed5bd330bcf45e",
+            "data": "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "RestApiGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETF076EDAB": [
+        "RestApibooksGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksC7AEADBC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApiGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETF076EDAB",
+            "data": "RestApibooksGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksC7AEADBC",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "RestApiGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETF04B0452": [
+        "RestApibooksGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksD6C689C0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApiGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETF04B0452",
+            "data": "RestApibooksGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksD6C689C0",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "RestApiGET0F59260B": [
+        "RestApibooksGET46F66C0A": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApiGET0F59260B",
+            "data": "RestApibooksGET46F66C0A",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -228,7 +234,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1cad10190750791ae9317d7b5db45b30696895d6f80b2bf7e11ebb9335b85214.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8534e2fff1823e2bdb37c76fafc946c2de4da56d7afa6f95ad670c9661b5f524.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
