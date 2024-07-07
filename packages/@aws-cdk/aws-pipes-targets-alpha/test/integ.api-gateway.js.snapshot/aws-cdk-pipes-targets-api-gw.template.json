@@ -83,7 +83,7 @@
     "Name": "RestApi"
    }
   },
-  "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846": {
+  "RestApiDeployment180EC503faa60e2bc033df5b02cc72aec1d329ce": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -92,7 +92,8 @@
     }
    },
    "DependsOn": [
-    "RestApibooksGET46F66C0A",
+    "RestApibooksfictionGETE32E77E7",
+    "RestApibooksfictionA7F01220",
     "RestApibooksA2500ABD"
    ]
   },
@@ -100,7 +101,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846"
+     "Ref": "RestApiDeployment180EC503faa60e2bc033df5b02cc72aec1d329ce"
     },
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
@@ -123,7 +124,19 @@
     }
    }
   },
-  "RestApibooksGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksC7AEADBC": {
+  "RestApibooksfictionA7F01220": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "RestApibooksA2500ABD"
+    },
+    "PathPart": "fiction",
+    "RestApiId": {
+     "Ref": "RestApi0C43BF4B"
+    }
+   }
+  },
+  "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction63E0426F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -158,13 +171,13 @@
        {
         "Ref": "RestApiDeploymentStageprod3855DE66"
        },
-       "/GET/books"
+       "/GET/books/fiction"
       ]
      ]
     }
    }
   },
-  "RestApibooksGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksD6C689C0": {
+  "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionDF7E9804": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -195,13 +208,13 @@
        {
         "Ref": "RestApi0C43BF4B"
        },
-       "/test-invoke-stage/GET/books"
+       "/test-invoke-stage/GET/books/fiction"
       ]
      ]
     }
    }
   },
-  "RestApibooksGET46F66C0A": {
+  "RestApibooksfictionGETE32E77E7": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
@@ -234,7 +247,7 @@
      }
     },
     "ResourceId": {
-     "Ref": "RestApibooksA2500ABD"
+     "Ref": "RestApibooksfictionA7F01220"
     },
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
@@ -280,10 +293,7 @@
        }
       },
       {
-       "Action": [
-        "execute-api:Invoke",
-        "execute-api:ManageConnections"
-       ],
+       "Action": "execute-api:Invoke",
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
@@ -309,7 +319,7 @@
           {
            "Ref": "RestApiDeploymentStageprod3855DE66"
           },
-          "/GET/books"
+          "/GET/books/*"
          ]
         ]
        }
@@ -365,7 +375,7 @@
        {
         "Ref": "RestApiDeploymentStageprod3855DE66"
        },
-       "/GET/books"
+       "/GET/books/*"
       ]
      ]
     },
@@ -374,6 +384,9 @@
       "HeaderParameters": {
        "x-header": "myheader"
       },
+      "PathParameterValues": [
+       "fiction"
+      ],
       "QueryStringParameters": {
        "key": "USA"
       }
