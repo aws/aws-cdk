@@ -172,7 +172,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
-### Amazon API Gateway Rest API
+### Amazon API Gateway REST API
 
 A REST API can be used as a target for a pipe. 
 The REST API will receive the (enriched/filtered) source payload.
