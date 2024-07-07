@@ -203,7 +203,7 @@
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
                         "deploymentId": {
-                          "Ref": "RestApiDeployment180EC503d3de1faf8e34b80337ed5bd330bcf45e"
+                          "Ref": "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846"
                         },
                         "restApiId": {
                           "Ref": "RestApi0C43BF4B"
@@ -234,158 +234,188 @@
                 "id": "Default",
                 "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default",
                 "children": {
-                  "GET": {
-                    "id": "GET",
-                    "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/GET",
+                  "books": {
+                    "id": "books",
+                    "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/books",
                     "children": {
-                      "ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..": {
-                        "id": "ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..",
-                        "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/GET/ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                          "aws:cdk:cloudformation:props": {
-                            "action": "lambda:InvokeFunction",
-                            "functionName": {
-                              "Fn::GetAtt": [
-                                "ConnectHandler2FFD52D8",
-                                "Arn"
-                              ]
-                            },
-                            "principal": "apigateway.amazonaws.com",
-                            "sourceArn": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":execute-api:",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  ":",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":",
-                                  {
-                                    "Ref": "RestApi0C43BF4B"
-                                  },
-                                  "/",
-                                  {
-                                    "Ref": "RestApiDeploymentStageprod3855DE66"
-                                  },
-                                  "/GET/"
-                                ]
-                              ]
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..": {
-                        "id": "ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..",
-                        "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/GET/ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                          "aws:cdk:cloudformation:props": {
-                            "action": "lambda:InvokeFunction",
-                            "functionName": {
-                              "Fn::GetAtt": [
-                                "ConnectHandler2FFD52D8",
-                                "Arn"
-                              ]
-                            },
-                            "principal": "apigateway.amazonaws.com",
-                            "sourceArn": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":execute-api:",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  ":",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":",
-                                  {
-                                    "Ref": "RestApi0C43BF4B"
-                                  },
-                                  "/test-invoke-stage/GET/"
-                                ]
-                              ]
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/GET/Resource",
+                        "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/books/Resource",
                         "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
                           "aws:cdk:cloudformation:props": {
-                            "authorizationType": "NONE",
-                            "httpMethod": "GET",
-                            "integration": {
-                              "type": "AWS_PROXY",
-                              "uri": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":apigateway:",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ":lambda:path/2015-03-31/functions/",
-                                    {
-                                      "Fn::GetAtt": [
-                                        "ConnectHandler2FFD52D8",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "/invocations"
-                                  ]
-                                ]
-                              },
-                              "integrationHttpMethod": "POST"
-                            },
-                            "resourceId": {
+                            "parentId": {
                               "Fn::GetAtt": [
                                 "RestApi0C43BF4B",
                                 "RootResourceId"
                               ]
                             },
+                            "pathPart": "books",
                             "restApiId": {
                               "Ref": "RestApi0C43BF4B"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/books/GET",
+                        "children": {
+                          "ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books": {
+                            "id": "ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books",
+                            "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/books/GET/ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "ConnectHandler2FFD52D8",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "RestApi0C43BF4B"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "RestApiDeploymentStageprod3855DE66"
+                                      },
+                                      "/GET/books"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books": {
+                            "id": "ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books",
+                            "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/books/GET/ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "ConnectHandler2FFD52D8",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "RestApi0C43BF4B"
+                                      },
+                                      "/test-invoke-stage/GET/books"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-pipes-targets-api-gw/RestApi/Default/books/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "GET",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "ConnectHandler2FFD52D8",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "RestApibooksA2500ABD"
+                                },
+                                "restApiId": {
+                                  "Ref": "RestApi0C43BF4B"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
                       "version": "0.0.0"
                     }
                   }
@@ -500,7 +530,7 @@
                                         {
                                           "Ref": "RestApiDeploymentStageprod3855DE66"
                                         },
-                                        "/GET/"
+                                        "/GET/books"
                                       ]
                                     ]
                                   }
@@ -576,13 +606,14 @@
                           {
                             "Ref": "RestApiDeploymentStageprod3855DE66"
                           },
-                          "/GET/"
+                          "/GET/books"
                         ]
                       ]
                     },
                     "targetParameters": {
                       "httpParameters": {
                         "method": "GET",
+                        "path": "/books",
                         "headerParameters": {
                           "x-header": "myheader"
                         },

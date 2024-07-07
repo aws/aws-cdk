@@ -35,12 +35,13 @@ const fn = new lambda.Function(stack, 'ConnectHandler', {
 });
 
 const restApi = new apigw.RestApi(stack, 'RestApi', {});
-restApi.root.addMethod('GET', new apigw.LambdaIntegration(fn));
+restApi.root.addResource('books').addMethod('GET', new apigw.LambdaIntegration(fn));
 
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
   target: new ApiGatewayTarget(restApi, {
     method: 'GET',
+    path: '/books',
     headerParameters: {
       'x-header': 'myheader',
     },

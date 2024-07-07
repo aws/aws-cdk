@@ -27,7 +27,7 @@
      "MessageBody": "\"USA\""
     },
     "flattenResponse": "false",
-    "salt": "1720307912292"
+    "salt": "1720363079380"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -154,7 +154,7 @@
     "outputPaths": [
      "events.0.message"
     ],
-    "salt": "1720307912295"
+    "salt": "1720363079383"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3"
