@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DeliveryPolicy } from './delivery-policy';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
@@ -67,6 +68,13 @@ export interface SubscriptionOptions {
    * @default - No subscription role is provided
    */
   readonly subscriptionRoleArn?: string;
+
+  /**
+   * The delivery policy.
+   *
+   * @default - if the initial delivery of the message fails, three retries with a delay between failed attempts set at 20 seconds
+   */
+  readonly deliveryPolicy?: DeliveryPolicy;
 }
 /**
  * Properties for creating a new subscription
@@ -136,6 +144,43 @@ export class Subscription extends Resource {
       throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
     }
 
+    if (props.deliveryPolicy) {
+      if (props.protocol !== SubscriptionProtocol.HTTP && props.protocol !== SubscriptionProtocol.HTTPS) {
+        throw new Error('Delivery policy is only supported for HTTP and HTTPS subscriptions');
+      }
+      const { healthyRetryPolicy, throttlePolicy } = props.deliveryPolicy;
+      if (healthyRetryPolicy) {
+        const delayTargetLimit = 3600;
+        if (healthyRetryPolicy.minDelayTarget < 1 || healthyRetryPolicy.minDelayTarget > delayTargetLimit) {
+          throw new Error(`minDelayTarget must be between 1 and ${delayTargetLimit} inclusive`);
+        }
+        if (healthyRetryPolicy.maxDelayTarget < 1 || healthyRetryPolicy.maxDelayTarget > delayTargetLimit) {
+          throw new Error(`maxDelayTarget must be between 1 and ${delayTargetLimit} inclusive`);
+        }
+        if (healthyRetryPolicy.minDelayTarget > healthyRetryPolicy.maxDelayTarget) {
+          throw new Error('minDelayTarget must not exceed maxDelayTarget');
+        }
+        const numRetriesLimit = 100;
+        if (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit) {
+          throw new Error(`numRetries must be between 0 and ${numRetriesLimit} inclusive`);
+        }
+        if (healthyRetryPolicy.numNoDelayRetries && healthyRetryPolicy.numNoDelayRetries < 0) {
+          throw new Error('numNoDelayRetries must be zero or greater');
+        }
+        if (healthyRetryPolicy.numMinDelayRetries && healthyRetryPolicy.numMinDelayRetries < 0) {
+          throw new Error('numMinDelayRetries must be zero or greater');
+        }
+        if (healthyRetryPolicy.numMaxDelayRetries && healthyRetryPolicy.numMaxDelayRetries < 0) {
+          throw new Error('numMaxDelayRetries must be zero or greater');
+        }
+      }
+      if (throttlePolicy) {
+        if (throttlePolicy.maxReceivesPerSecond !== undefined && throttlePolicy.maxReceivesPerSecond < 1) {
+          throw new Error('maxReceivesPerSecond must be greater than zero');
+        }
+      }
+    }
+
     // Format filter policy
     const filterPolicy = this.filterPolicyWithMessageBody
       ? buildFilterPolicyWithMessageBody(this.filterPolicyWithMessageBody)
@@ -152,8 +197,29 @@ export class Subscription extends Resource {
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
+      deliveryPolicy: props.deliveryPolicy ? this.renderDeliveryPolicy(props.deliveryPolicy): undefined,
     });
 
+  }
+
+  private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy): any {
+    return {
+      healthyRetryPolicy: deliveryPolicy.healthyRetryPolicy ? {
+        minDelayTarget: deliveryPolicy.healthyRetryPolicy.minDelayTarget,
+        maxDelayTarget: deliveryPolicy.healthyRetryPolicy.maxDelayTarget,
+        numRetries: deliveryPolicy.healthyRetryPolicy.numRetries,
+        numNoDelayRetries: deliveryPolicy.healthyRetryPolicy.numNoDelayRetries,
+        numMinDelayRetries: deliveryPolicy.healthyRetryPolicy.numMinDelayRetries,
+        numMaxDelayRetries: deliveryPolicy.healthyRetryPolicy.numMaxDelayRetries,
+        backoffFunction: deliveryPolicy.healthyRetryPolicy.backoffFunction,
+      }: undefined,
+      throttlePolicy: deliveryPolicy.throttlePolicy ? {
+        maxReceivesPerSecond: deliveryPolicy.throttlePolicy.maxReceivesPerSecond,
+      }: undefined,
+      requestPolicy: deliveryPolicy.requestPolicy ? {
+        headerContentType: deliveryPolicy.requestPolicy.headerContentType,
+      }: undefined,
+    };
   }
 
   private buildDeadLetterQueue(props: SubscriptionProps) {

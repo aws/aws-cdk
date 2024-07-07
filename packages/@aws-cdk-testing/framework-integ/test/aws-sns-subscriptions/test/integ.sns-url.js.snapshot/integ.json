@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cdk-integ/DefaultTest": {
+      "stacks": [
+        "SnsToUrlStack"
+      ],
+      "assertionStack": "cdk-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegDefaultTestDeployAssert83AD650C"
+    }
+  }
+}
