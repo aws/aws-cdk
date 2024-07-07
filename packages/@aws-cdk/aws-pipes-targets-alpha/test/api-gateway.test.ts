@@ -170,10 +170,7 @@ describe('API Gateway REST API', () => {
         }],
         PolicyDocument: {
           Statement: [{
-            Action: [
-              'execute-api:Invoke',
-              'execute-api:ManageConnections',
-            ],
+            Action: 'execute-api:Invoke',
             Resource: {
               'Fn::Join': [
                 '',
