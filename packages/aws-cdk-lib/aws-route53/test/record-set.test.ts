@@ -226,6 +226,32 @@ describe('record set', () => {
     });
   });
 
+  test('A record with imported health check', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const healthCheck = route53.HealthCheck.fromHealthCheckId(stack, 'HealthCheck', 'abcdef');
+
+    // WHEN
+    new route53.ARecord(stack, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromValues('1.2.3.4'),
+      healthCheck,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      HealthCheckId: 'abcdef',
+    });
+  });
+
   test('A record with imported alias', () => {
     // GIVEN
     const stack = new Stack();
