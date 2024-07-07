@@ -54,6 +54,44 @@ describe('API Gateway REST API', () => {
     });
   });
 
+  it('should have only target arn with stage/method/path', () => {
+    // ARRANGE
+    const target = new ApiGatewayTarget(restApi, {
+      stage: 'prod',
+      method: 'GET',
+      path: '/books',
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      Target: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'MyLambdaRestApiECB8AFAF' },
+            '/prod/GET/books',
+          ],
+        ],
+      },
+      TargetParameters: {},
+    });
+  });
+
   it('should have target parameters', () => {
     // ARRANGE
     const target = new ApiGatewayTarget(restApi, {

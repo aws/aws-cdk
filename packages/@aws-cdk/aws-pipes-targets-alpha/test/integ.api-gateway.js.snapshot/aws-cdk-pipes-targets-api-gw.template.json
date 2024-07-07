@@ -83,7 +83,7 @@
     "Name": "RestApi"
    }
   },
-  "RestApiDeployment180EC503d3de1faf8e34b80337ed5bd330bcf45e": {
+  "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -92,14 +92,15 @@
     }
    },
    "DependsOn": [
-    "RestApiGET0F59260B"
+    "RestApibooksGET46F66C0A",
+    "RestApibooksA2500ABD"
    ]
   },
   "RestApiDeploymentStageprod3855DE66": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "RestApiDeployment180EC503d3de1faf8e34b80337ed5bd330bcf45e"
+     "Ref": "RestApiDeployment180EC5039ff38f17bb7ad19bf2bf33486b286846"
     },
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
@@ -107,7 +108,22 @@
     "StageName": "prod"
    }
   },
-  "RestApiGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETF076EDAB": {
+  "RestApibooksA2500ABD": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RestApi0C43BF4B",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "books",
+    "RestApiId": {
+     "Ref": "RestApi0C43BF4B"
+    }
+   }
+  },
+  "RestApibooksGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksC7AEADBC": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -142,13 +158,13 @@
        {
         "Ref": "RestApiDeploymentStageprod3855DE66"
        },
-       "/GET/"
+       "/GET/books"
       ]
      ]
     }
    }
   },
-  "RestApiGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETF04B0452": {
+  "RestApibooksGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksD6C689C0": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -179,13 +195,13 @@
        {
         "Ref": "RestApi0C43BF4B"
        },
-       "/test-invoke-stage/GET/"
+       "/test-invoke-stage/GET/books"
       ]
      ]
     }
    }
   },
-  "RestApiGET0F59260B": {
+  "RestApibooksGET46F66C0A": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
@@ -218,10 +234,7 @@
      }
     },
     "ResourceId": {
-     "Fn::GetAtt": [
-      "RestApi0C43BF4B",
-      "RootResourceId"
-     ]
+     "Ref": "RestApibooksA2500ABD"
     },
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
@@ -296,7 +309,7 @@
           {
            "Ref": "RestApiDeploymentStageprod3855DE66"
           },
-          "/GET/"
+          "/GET/books"
          ]
         ]
        }
@@ -352,7 +365,7 @@
        {
         "Ref": "RestApiDeploymentStageprod3855DE66"
        },
-       "/GET/"
+       "/GET/books"
       ]
      ]
     },
