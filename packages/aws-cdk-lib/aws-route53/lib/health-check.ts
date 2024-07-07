@@ -26,28 +26,30 @@ export interface HealthCheckProps {
   /**
    * CloudWatch alarm that you want Amazon Route 53 health checkers to use to determine whether the specified health check is healthy.
    *
-   * @default - no alarm identifier
+   * @default - if the type is CLOUDWATCH_METRIC, this property is required. Otherwise, it is not configured.
    */
   readonly alarmIdentifier?: AlarmIdentifier;
 
   /**
-   * A complex type that contains one ChildHealthCheck element for each health check that you want to associate with a CALCULATED health check.
+   * A list of health checks to monitor for this 'CALCULATED' health check.
    *
-   * @default - no child health checks
+   * @default - if the type is CALCULATED, this property is required. Otherwise, it is not configured.
    */
-  readonly childHealthChecks?: string[];
+  readonly childHealthChecks?: IHealthCheck[];
 
   /**
    * Specify whether you want Amazon Route 53 to send the value of FullyQualifiedDomainName to the endpoint in the client_hello message during TLS negotiation. This allows the endpoint to respond to HTTPS health check requests with the applicable SSL/TLS certificate.
    *
-   * @default - not configured
+   * @default - if the type is HTTPS or HTTPS_STR_MATCH, this property default value is true. Otherwise, it is not configured.
    */
   readonly enableSNI?: boolean;
 
   /**
    * The number of consecutive health checks that an endpoint must pass or fail for Amazon Route 53 to change the current status of the endpoint from unhealthy to healthy or vice versa.
    *
-   * @default 3
+   * @default - if the type is CALCULATED it's not configured
+   * - if the type is CLOUDWATCH_METRIC it's not configured
+   * - otherwise, the default value is 3.
    */
   readonly failureThreshold?: number;
 
@@ -74,21 +76,21 @@ export interface HealthCheckProps {
   /**
    * The number of child health checks that are associated with a CALCULATED health that Amazon Route 53 must consider healthy for the CALCULATED health check to be considered healthy.
    *
-   * @default - not configured
+   * @default - if the type is CALCULATED, the default value is number of child health checks. Otherwise, it is not configured.
    */
   readonly healthThreshold?: number;
 
   /**
    * The status of the health check when CloudWatch has insufficient data about the state of associated alarm.
    *
-   * @default - not configured
+   * @default - if the type is CLOUDWATCH_METRIC, the default value is InsufficientDataHealthStatus.LAST_KNOWN_STATUS. Otherwise, it is not configured.
    */
   readonly insufficientDataHealthStatus?: InsufficientDataHealthStatusEnum;
 
   /**
    * Specify whether you want Amazon Route 53 to invert the status of a health check, so a health check that would normally be considered unhealthy is considered healthy, and vice versa.
    *
-   * @default - not configured
+   * @default false
    */
   readonly inverted?: boolean;
 
@@ -102,14 +104,18 @@ export interface HealthCheckProps {
   /**
    * Specify whether you want Amazon Route 53 to measure the latency between health checkers in multiple AWS regions and your endpoint, and to display CloudWatch latency graphs on the Health Checks page in the Route 53 console.
    *
-   * @default - not configured
+   * @default - if the type is CALCULATED it's not configured
+   * - if the type is CLOUDWATCH_METRIC it's not configured
+   * - otherwise, the default value is false.
    */
   readonly measureLatency?: boolean;
 
   /**
    * The port on the endpoint that you want Amazon Route 53 to perform health checks on.
    *
-   * @default - not configured
+   * @default - if the type is HTTP or HTTP_STR_MATCH, the default value is 80.
+   * - if the type is HTTPS or HTTPS_STR_MATCH, the default value is 443.
+   * - otherwise, it is not configured.
    */
   readonly port?: number;
 
@@ -121,23 +127,26 @@ export interface HealthCheckProps {
   readonly regions?: string[];
 
   /**
-   * The number of seconds between the time that Amazon Route 53 gets a response from your endpoint and the time that it sends the next health check request. Each Route 53 health checker makes requests at this interval.
+   * The duration between the time that Amazon Route 53 gets a response from your endpoint and the time that it sends the next health check request. Each Route 53 health checker makes requests at this interval.
    *
-   * @default 30
+   * @default - if the type is CALCULATED it's not configured
+   * - if the type is CLOUDWATCH_METRIC it's not configured
+   * - otherwise, the default value is 30 seconds.
    */
   readonly requestInterval?: Duration;
 
   /**
    * The path that you want Amazon Route 53 to request when performing health checks. The path can be any value for which your endpoint will return an HTTP status code of 2xx or 3xx when the endpoint is healthy, for example the file /docs/route53-health-check.html. Route 53 automatically adds the DNS name for the service and a leading forward slash (/) character.
    *
-   * @default - not configured
+   * @default - if the type is HTTP, HTTPS, HTTP_STR_MATCH, or HTTPS_STR_MATCH, the default value is empty string.
+   * - otherwise, it is not configured.
    */
   readonly resourcePath?: string;
 
   /**
    * The Amazon Resource Name (ARN) of the Route 53 Application Recovery Controller routing control that you want Amazon Route 53 health checkers to use to determine whether the specified health check is healthy.
    *
-   * @default - not configured
+   * @default - if the type is RECOVERY_CONTROL, this property is required. Otherwise, it is not configured.
    */
   readonly routingControl?: string;
 
@@ -146,7 +155,7 @@ export interface HealthCheckProps {
    *
    * Route 53 considers case when searching for SearchString in the response body.
    *
-   * @default - not configured
+   * @default - if the type is HTTP_STR_MATCH or HTTPS_STR_MATCH, this property is required. Otherwise, it is not configured.
    */
   readonly searchString?: string;
 }
@@ -194,25 +203,106 @@ export class HealthCheck extends Resource implements IHealthCheck {
       healthCheckConfig: {
         type: props.type,
         alarmIdentifier: props.alarmIdentifier,
-        childHealthChecks: props.childHealthChecks,
-        enableSni: props.enableSNI,
-        failureThreshold: props.failureThreshold ?? 3,
+        childHealthChecks: props.childHealthChecks?.map((childHealthCheck) => childHealthCheck.healthCheckId),
+        enableSni: props.enableSNI ?? getDefaultEnableSNIForType(props.type),
+        failureThreshold: props.failureThreshold ?? getDefaultFailureThresholdForType(props.type),
         fullyQualifiedDomainName: props.fqdn,
-        healthThreshold: props.healthThreshold,
-        insufficientDataHealthStatus: props.insufficientDataHealthStatus,
-        inverted: props.inverted,
+        healthThreshold: props.healthThreshold ?? getDefaultHealthThresholdForType(props),
+        insufficientDataHealthStatus: props.insufficientDataHealthStatus ?? getDefaultInsufficientDataHealthStatusForType(props.type),
+        inverted: props.inverted ?? false,
         ipAddress: props.ipAddress,
-        measureLatency: props.measureLatency,
-        port: props.port,
+        measureLatency: props.measureLatency ?? getDefaultMeasureLatencyForType(props.type),
+        port: props.port ?? getDefaultPortForType(props.type),
         regions: props.regions,
-        requestInterval: (props.requestInterval && props.requestInterval.toSeconds()) ?? 30,
-        resourcePath: props.resourcePath,
+        requestInterval: props.requestInterval?.toSeconds() ?? getDefaultRequestIntervalForType(props.type)?.toSeconds(),
+        resourcePath: props.resourcePath ?? getDefaultResourcePathForType(props.type),
         routingControlArn: props.routingControl,
         searchString: props.searchString,
       },
     });
 
     this.healthCheckId = resource.ref;
+  }
+}
+
+function getDefaultResourcePathForType(type: HealthCheckType): string | undefined {
+  switch (type) {
+    case HealthCheckType.HTTP:
+    case HealthCheckType.HTTP_STR_MATCH:
+    case HealthCheckType.HTTPS:
+    case HealthCheckType.HTTPS_STR_MATCH:
+      return '';
+    default:
+      return undefined;
+  }
+}
+
+function getDefaultInsufficientDataHealthStatusForType(type: HealthCheckType): InsufficientDataHealthStatusEnum | undefined {
+  if (type === HealthCheckType.CLOUDWATCH_METRIC) {
+    return InsufficientDataHealthStatusEnum.LAST_KNOWN_STATUS;
+  }
+
+  return undefined;
+}
+
+function getDefaultMeasureLatencyForType(type: HealthCheckType): boolean | undefined {
+  switch (type) {
+    case HealthCheckType.CALCULATED:
+    case HealthCheckType.CLOUDWATCH_METRIC:
+      return undefined;
+    default:
+      return false;
+  }
+}
+
+function getDefaultHealthThresholdForType(props: HealthCheckProps): number | undefined {
+  if (props.type === HealthCheckType.CALCULATED) {
+    return props.childHealthChecks!.length;
+  }
+
+  return undefined;
+}
+
+function getDefaultFailureThresholdForType(type: HealthCheckType): number | undefined {
+  switch (type) {
+    case HealthCheckType.CALCULATED:
+    case HealthCheckType.CLOUDWATCH_METRIC:
+      return undefined;
+    default:
+      return 3;
+  }
+}
+
+function getDefaultRequestIntervalForType(type: HealthCheckType): Duration | undefined {
+  switch (type) {
+    case HealthCheckType.CALCULATED:
+    case HealthCheckType.CLOUDWATCH_METRIC:
+      return undefined;
+    default:
+      return Duration.seconds(30);
+  }
+}
+
+function getDefaultEnableSNIForType(type: HealthCheckType): boolean | undefined {
+  switch (type) {
+    case HealthCheckType.HTTPS:
+    case HealthCheckType.HTTPS_STR_MATCH:
+      return true;
+    default:
+      return undefined;
+  }
+}
+
+function getDefaultPortForType(type: HealthCheckType): number | undefined {
+  switch (type) {
+    case HealthCheckType.HTTP:
+    case HealthCheckType.HTTP_STR_MATCH:
+      return 80;
+    case HealthCheckType.HTTPS:
+    case HealthCheckType.HTTPS_STR_MATCH:
+      return 443;
+    default:
+      return undefined;
   }
 }
 
@@ -227,6 +317,7 @@ function validateProperties(props: HealthCheckProps) {
       ruleHealthThresholdIsNotAllowed(props);
       validateFqdn(props);
       validateIpAddress(props);
+      validateEitherFqdnOrIpAddressRequired(props);
       break;
     }
     case HealthCheckType.HTTPS: {
@@ -237,6 +328,7 @@ function validateProperties(props: HealthCheckProps) {
       ruleHealthThresholdIsNotAllowed(props);
       validateFqdn(props);
       validateIpAddress(props);
+      validateEitherFqdnOrIpAddressRequired(props);
       break;
     }
     case HealthCheckType.HTTP_STR_MATCH: {
@@ -248,6 +340,7 @@ function validateProperties(props: HealthCheckProps) {
       ruleHealthThresholdIsNotAllowed(props);
       validateFqdn(props);
       validateIpAddress(props);
+      validateEitherFqdnOrIpAddressRequired(props);
       break;
     }
     case HealthCheckType.HTTPS_STR_MATCH: {
@@ -258,6 +351,7 @@ function validateProperties(props: HealthCheckProps) {
       ruleHealthThresholdIsNotAllowed(props);
       validateFqdn(props);
       validateIpAddress(props);
+      validateEitherFqdnOrIpAddressRequired(props);
       break;
     }
     case HealthCheckType.TCP: {
@@ -269,6 +363,7 @@ function validateProperties(props: HealthCheckProps) {
       ruleHealthThresholdIsNotAllowed(props);
       validateFqdn(props);
       validateIpAddress(props);
+      validateEitherFqdnOrIpAddressRequired(props);
       break;
     }
     case HealthCheckType.RECOVERY_CONTROL: {
@@ -288,7 +383,6 @@ function validateProperties(props: HealthCheckProps) {
       ruleEnableSNIIsNotAllowed(props);
       ruleSearchStringIsNotAllowed(props);
       ruleRoutingControlIsNotAllowed(props);
-      ruleHealthThresholdIsRequired(props);
       break;
     }
     case HealthCheckType.CLOUDWATCH_METRIC: {
@@ -309,8 +403,14 @@ function validateProperties(props: HealthCheckProps) {
   validateFailureThreshold(props);
 }
 
+function validateEitherFqdnOrIpAddressRequired(props: HealthCheckProps) {
+  if (props.fqdn === undefined && props.ipAddress === undefined) {
+    throw new Error('Either FQDN or IPAddress must be specified');
+  }
+}
+
 function validateFqdn(props: HealthCheckProps) {
-  if (props.fqdn && props.fqdn.length > 255) {
+  if (props.fqdn !== undefined && props.fqdn.length > 255) {
     throw new Error('FQDN must be between 0 and 255 characters long');
   }
 }
@@ -328,12 +428,6 @@ function validateSearchStringForStringMatch(props: HealthCheckProps) {
 function validateChildHealthChecks(props: HealthCheckProps) {
   if (!props.childHealthChecks || props.childHealthChecks.length === 0) {
     throw new Error(`ChildHealthChecks is required for health check type: ${props.type}`);
-  }
-}
-
-function ruleHealthThresholdIsRequired(props: HealthCheckProps) {
-  if (props.healthThreshold === undefined) {
-    throw new Error(`HealthThreshold is required for health check type: ${props.type}`);
   }
 }
 
@@ -427,17 +521,17 @@ export enum InsufficientDataHealthStatusEnum {
   /**
    * Route 53 health check status will be healthy.
    */
-  HEALTHY = 'HEALTHY',
+  HEALTHY = 'Healthy',
 
   /**
    * Route 53 health check status will be unhealthy.
    */
-  UNHEALTHY = 'UNHEALTHY',
+  UNHEALTHY = 'Unhealthy',
 
   /**
    * Route 53 health check status will be the status of the health check before Route 53 had insufficient data.
    */
-  LAST_KNOWN_STATUS = 'LAST_KNOWN_STATUS',
+  LAST_KNOWN_STATUS = 'LastKnownStatus',
 }
 
 /**

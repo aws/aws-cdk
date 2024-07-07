@@ -36,6 +36,229 @@ describe('health check', () => {
     expect(healthCheck.healthCheckId).toEqual('health-check-id');
   });
 
+  describe('defaults', () => {
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP}            | ${{}}
+      ${HealthCheckType.HTTPS}           | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ searchString: 'search' }}
+      ${HealthCheckType.TCP}             | ${{ port: 443 }}
+    `('failure threshold defaults to 3', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type,
+        fqdn: 'lb.cdk.test',
+        ...props,
+        failureThreshold: undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          FailureThreshold: 3,
+        },
+      });
+    });
+
+    test('health threshold defaults to number of child health checks for calculated health checks', () => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      const childHealthCheck1 = new HealthCheck(stack, 'ChildHealthCheck1', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb1.cdk.test',
+      });
+      const childHealthCheck2 = new HealthCheck(stack, 'ChildHealthCheck2', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb2.cdk.test',
+      });
+      const childHealthCheck3 = new HealthCheck(stack, 'ChildHealthCheck3', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb3.cdk.test',
+      });
+
+      new HealthCheck(stack, 'HealthCheck1', {
+        type: HealthCheckType.CALCULATED,
+        childHealthChecks: [childHealthCheck1],
+      });
+
+      new HealthCheck(stack, 'HealthCheck2', {
+        type: HealthCheckType.CALCULATED,
+        childHealthChecks: [childHealthCheck1, childHealthCheck2],
+      });
+
+      new HealthCheck(stack, 'HealthCheck3', {
+        type: HealthCheckType.CALCULATED,
+        childHealthChecks: [childHealthCheck1, childHealthCheck2, childHealthCheck3],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          HealthThreshold: 1,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          HealthThreshold: 2,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          HealthThreshold: 3,
+        },
+      });
+    });
+
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP}            | ${{}}
+      ${HealthCheckType.HTTPS}           | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ searchString: 'search' }}
+      ${HealthCheckType.TCP}             | ${{ port: 443 }}
+    `('request interval defaults to 30 seconds', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type,
+        ...props,
+        fqdn: 'lb.cdk.test',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          RequestInterval: 30,
+        },
+      });
+    });
+
+    test.each`
+      type                               | defaultPort | props
+      ${HealthCheckType.HTTP}            | ${80}       | ${{}}
+      ${HealthCheckType.HTTPS}           | ${443}      | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${80}       | ${{ searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${443}      | ${{ searchString: 'search' }}
+    `('port defaults to $defaultPort for $type health check', ({ type, defaultPort, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type,
+        fqdn: 'lb.cdk.test',
+        ...props,
+        port: undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Port: defaultPort,
+        },
+      });
+    });
+
+    test.each`
+      type                               | enableSni | props
+      ${HealthCheckType.HTTPS}           | ${true}   | ${{}}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${true}   | ${{ searchString: 'search' }}
+    `('enableSni defaults to $enableSni for $type health check', ({ type, enableSni, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type,
+        fqdn: 'lb-ssl.cdk.test',
+        ...props,
+        enableSni: undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          EnableSNI: enableSni,
+        },
+      });
+    });
+
+    test('insufficient data health check defaults to LastKnownStatus', () => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.CLOUDWATCH_METRIC,
+        alarmIdentifier: {
+          name: 'alarm-name',
+          region: 'us-east-1',
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          InsufficientDataHealthStatus: 'LastKnownStatus',
+        },
+      });
+    });
+
+    test.each`
+      type                               | measureLatency | props
+      ${HealthCheckType.HTTP}            | ${false}       | ${{ fqdn: 'lb.cdk.test' }}
+      ${HealthCheckType.HTTPS}           | ${false}       | ${{ fqdn: 'lb-ssl.cdk.test' }}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${false}       | ${{ fqdn: 'lb.cdk.test', searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${false}       | ${{ fqdn: 'lb-ssl.cdk.test', searchString: 'search' }}
+      ${HealthCheckType.TCP}             | ${false}       | ${{ fqdn: 'lb-tcp.cdk.test' }}
+    `('measure latency defaults to $measureLatency for $type health check', ({ type, measureLatency, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type,
+        ...props,
+        measureLatency: undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          MeasureLatency: measureLatency,
+        },
+      });
+    });
+
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP}            | ${{}}
+      ${HealthCheckType.HTTPS}           | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ searchString: 'search' }}
+    `('resource path defaults to empty string for $type health check', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type,
+        fqdn: 'lb.cdk.test',
+        ...props,
+        resourcePath: undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          ResourcePath: '',
+        },
+      });
+    });
+  });
+
   describe('properties validation', () => {
     test.each([undefined, []])('calculated health check requires child health checks', (childHealthChecks) => {
       const stack = new cdk.Stack(undefined, 'TestStack', {
@@ -78,10 +301,15 @@ describe('health check', () => {
         env: { account: '123456789012', region: 'us-east-1' },
       });
 
+      const childHealthCheck = new HealthCheck(stack, 'ChildHealthCheck', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb.cdk.test',
+      });
+
       expect(() => {
         new HealthCheck(stack, 'HealthCheck', {
           type: HealthCheckType.CALCULATED,
-          childHealthChecks: ['child1', 'child2'],
+          childHealthChecks: [childHealthCheck],
           healthThreshold: 1,
         });
       }).not.toThrow();
@@ -211,22 +439,6 @@ describe('health check', () => {
       }).toThrow(/FQDN must be between 0 and 255 characters long/);
     });
 
-    test('failure threshold defaults to 3', () => {
-      const stack = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '123456789012', region: 'us-east-1' },
-      });
-
-      new HealthCheck(stack, 'HealthCheck', {
-        type: HealthCheckType.HTTP,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
-        HealthCheckConfig: {
-          FailureThreshold: 3,
-        },
-      });
-    });
-
     test.each([0, 11])('failure threshold must be between 1 and 10', (threshold) => {
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
@@ -235,25 +447,10 @@ describe('health check', () => {
       expect(() => {
         new HealthCheck(stack, 'HealthCheck', {
           type: HealthCheckType.HTTP,
+          fqdn: 'lb.cdk.test',
           failureThreshold: threshold,
         });
       }).toThrow(/FailureThreshold must be between 1 and 10/);
-    });
-
-    test('request interval defaults to 30 seconds', () => {
-      const stack = new cdk.Stack(undefined, 'TestStack', {
-        env: { account: '123456789012', region: 'us-east-1' },
-      });
-
-      new HealthCheck(stack, 'HealthCheck', {
-        type: HealthCheckType.HTTP,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
-        HealthCheckConfig: {
-          RequestInterval: 30,
-        },
-      });
     });
 
     test.each([cdk.Duration.seconds(0), cdk.Duration.seconds(31)])('request interval must be between 10 and 30 seconds', (interval) => {
@@ -264,6 +461,7 @@ describe('health check', () => {
       expect(() => {
         new HealthCheck(stack, 'HealthCheck', {
           type: HealthCheckType.HTTP,
+          fqdn: 'lb.cdk.test',
           requestInterval: interval,
         });
       }).toThrow(/RequestInterval must be between 10 and 30 seconds/);
@@ -284,6 +482,7 @@ describe('health check', () => {
       expect(() => {
         new HealthCheck(stack, 'HealthCheck', {
           type,
+          fqdn: 'lb.cdk.test',
           ...props,
           port: 80,
         });

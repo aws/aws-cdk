@@ -1,4 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -64,6 +66,60 @@ new route53.ARecord(stack, 'ARecordTcp', {
 new route53.ARecord(stack, 'ARecordTcp2', {
   zone,
   recordName: '_bar',
+  target: route53.RecordTarget.fromValues('5.6.7.8'),
+  weight: 0,
+});
+
+const healthCheckCalculated = new route53.HealthCheck(stack, 'HealthCheckCalculated', {
+  type: route53.HealthCheckType.CALCULATED,
+  healthThreshold: 2,
+  childHealthChecks: [healthCheckHttp, healthCheckHttps],
+});
+
+new route53.ARecord(stack, 'ARecordCalculated', {
+  zone,
+  recordName: '_calculated',
+  target: route53.RecordTarget.fromValues('1.2.3.4'),
+  healthCheck: healthCheckCalculated,
+  weight: 100,
+});
+new route53.ARecord(stack, 'ARecordCalculated2', {
+  zone,
+  recordName: '_calculated',
+  target: route53.RecordTarget.fromValues('5.6.7.8'),
+  weight: 0,
+});
+
+const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = async function(event) { return { statusCode: 200, body: "OK" }; }'),
+});
+
+const cloudwatchAlarm = new cloudwatch.Alarm(stack, 'Alarm', {
+  metric: lambdaFunction.metricErrors({ period: cdk.Duration.minutes(1) }),
+  threshold: 100,
+  evaluationPeriods: 10,
+});
+
+const healthCheckCloudWatch = new route53.HealthCheck(stack, 'HealthCheckCloudWatch', {
+  type: route53.HealthCheckType.CLOUDWATCH_METRIC,
+  alarmIdentifier: {
+    region: stack.region,
+    name: cloudwatchAlarm.alarmName,
+  },
+});
+
+new route53.ARecord(stack, 'ARecordCloudWatch', {
+  zone,
+  recordName: '_cloudwatch',
+  target: route53.RecordTarget.fromValues('1.2.3.4'),
+  healthCheck: healthCheckCloudWatch,
+  weight: 100,
+});
+new route53.ARecord(stack, 'ARecordCloudWatch2', {
+  zone,
+  recordName: '_cloudwatch',
   target: route53.RecordTarget.fromValues('5.6.7.8'),
   weight: 0,
 });

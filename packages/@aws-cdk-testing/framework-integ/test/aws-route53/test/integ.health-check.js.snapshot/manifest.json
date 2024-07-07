@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4fbcb1396d413264c2962a109ddc7d4a604c44aa26cd8ad7c1fe6d6a0e003245.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/730092669b05ba9b6bb4e9ce36341a9dd3bb071d01e514b8c118ee3d71f2df61.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,6 +94,60 @@
             "data": "ARecordTcp21F5B796C"
           }
         ],
+        "/aws-cdk-route53-health-check/HealthCheckCalculated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckCalculated4BA910E7"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCalculated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCalculatedFD72BD16"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCalculated2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCalculated22107FE58"
+          }
+        ],
+        "/aws-cdk-route53-health-check/LambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionServiceRoleC555A460"
+          }
+        ],
+        "/aws-cdk-route53-health-check/LambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionBF21E41F"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Alarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm7103F465"
+          }
+        ],
+        "/aws-cdk-route53-health-check/HealthCheckCloudWatch/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckCloudWatch996681BB"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCloudWatch/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCloudWatchD1A5EC36"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCloudWatch2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCloudWatch26685731B"
+          }
+        ],
         "/aws-cdk-route53-health-check/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -104,24 +158,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "HealthCheckA1C381C7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HealthCheckA1C381C7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ARecordE7B57761": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ARecordE7B57761",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
