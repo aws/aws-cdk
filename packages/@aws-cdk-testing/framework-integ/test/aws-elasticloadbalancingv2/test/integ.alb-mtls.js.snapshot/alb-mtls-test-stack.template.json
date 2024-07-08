@@ -181,7 +181,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "1773eb643fedf0374dba43a375dcaa66b0ec16749c9f7076e253673c3a30e8d4.zip"
+     "3641a095d2059a31d1fc859958f71b8ee5d665fa3b7657263b5d2607e63fa295.zip"
     ],
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
@@ -1226,7 +1226,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -1240,6 +1249,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -1266,6 +1278,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {
