@@ -268,7 +268,48 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (bucket.encryptionKey) {
       throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
     }
-    super.logAccessLogs(bucket, prefix);
+
+    prefix = prefix || '';
+    this.setAttribute('access_logs.s3.enabled', 'true');
+    this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
+    this.setAttribute('access_logs.s3.prefix', prefix);
+
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+    bucket.addToResourcePolicy(new PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [this.resourcePolicyPrincipal()],
+      resources: [
+        bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+      ],
+    }));
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
+        ],
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
+      }),
+    );
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetBucketAcl'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [bucket.bucketArn],
+      }),
+    );
+
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
+    // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528
+    // and https://github.com/aws/aws-cdk/issues/27928)
+    const lb = this.node.defaultChild;
+    const bucketPolicy = bucket.policy?.node.defaultChild;
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+      lb.addDependency(bucketPolicy);
+    }
   }
 
   /**
@@ -280,7 +321,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
     /**
     * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
+    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#connection-log-create-bucket
     */
     if (bucket.encryptionKey) {
       throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
