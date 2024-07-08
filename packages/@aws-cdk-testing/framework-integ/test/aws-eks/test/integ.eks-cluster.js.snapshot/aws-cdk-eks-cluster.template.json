@@ -1008,7 +1008,8 @@
         ]
        }
       ]
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1016,7 +1017,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -4184,7 +4185,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/10f5ded2bcaf431b1b53dee93b4f8f2ff792fa05be7c645b168d95f1ea2af945.json"
+       "/ebf1736aa22fcd370cd5d8401e2507846723d1556a1cadda27ef43101e264ef8.json"
       ]
      ]
     }
@@ -4230,7 +4231,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/74c025d7a98c8ff2cf1a80b67704a0682d85de6687f3db0cc3e038b2dbb3623a.json"
+       "/bfdcc1416928a630e76eeca1a5bb9b8ed027254118411b093a1799e7f5376a2a.json"
       ]
      ]
     }

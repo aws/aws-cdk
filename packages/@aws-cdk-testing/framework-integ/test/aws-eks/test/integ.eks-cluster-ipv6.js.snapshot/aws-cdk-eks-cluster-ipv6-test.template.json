@@ -1227,7 +1227,8 @@
         ]
        }
       ]
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1235,7 +1236,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "CIDR6",
@@ -4824,7 +4825,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/3a1b587a4d0ca4b42fa41abc01fc25e3b006d0a74b6b6728436e72988c2666bd.json"
+       "/2dd62bdac80800cc04503e18019c4d15332c1973fa268e7a831410c86f95ff3c.json"
       ]
      ]
     }
@@ -4870,7 +4871,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/1d560c71ea4393c70f6df1f6036b9e8aacc33d88bf496d908ed627e7804fe4c9.json"
+       "/91f7dd9956fa7c0875fee130b3b0014671c5e0fdb7e9401d2d2cbdeb0fe35ab2.json"
       ]
      ]
     }

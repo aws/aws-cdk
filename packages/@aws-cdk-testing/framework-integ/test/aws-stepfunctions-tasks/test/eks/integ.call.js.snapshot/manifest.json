@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4a92c42d7fc91b01ef610766456f44b21c3dfff1d5f6816c590280e2529ae6c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/683bdaa3b33e5e72d6e208abf41cb3b55e4fb98ef540d73b2c616232f8e0686b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,7 @@
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster": [
           {
             "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.22 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v22. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
+            "data": "You created a cluster with Kubernetes Version 1.30 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v30. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
           }
         ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/Resource": [
