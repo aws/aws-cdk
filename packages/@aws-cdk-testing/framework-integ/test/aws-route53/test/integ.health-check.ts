@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-route53-health-check');
@@ -124,8 +124,132 @@ new route53.ARecord(stack, 'ARecordCloudWatch2', {
   weight: 0,
 });
 
-new IntegTest(app, 'integ-test', {
+const integ = new IntegTest(app, 'integ-test', {
   testCases: [stack],
   diffAssets: true,
   enableLookups: true,
 });
+
+// healthCheckHttp
+const httpHealthCheckCreated = integ.assertions.awsApiCall('Route53', 'GetHealthCheck', {
+  HealthCheckId: healthCheckHttp.healthCheckId,
+});
+
+httpHealthCheckCreated.expect(
+  ExpectedResult.objectLike({
+    HealthCheck: {
+      HealthCheckConfig: {
+        Type: 'HTTP',
+        FullyQualifiedDomainName: 'lb.cdk.test',
+        ResourcePath: '/health',
+        RequestInterval: 30,
+        Port: 80,
+        FailureThreshold: 3,
+        Inverted: false,
+        MeasureLatency: false,
+        Disabled: false,
+      },
+    },
+  }),
+);
+
+// HealthCheckHttps
+const httpsHealthCheckCreated = integ.assertions.awsApiCall('Route53', 'GetHealthCheck', {
+  HealthCheckId: healthCheckHttps.healthCheckId,
+});
+
+httpsHealthCheckCreated.expect(
+  ExpectedResult.objectLike({
+    HealthCheck: {
+      HealthCheckConfig: {
+        Type: 'HTTPS',
+        FullyQualifiedDomainName: 'lb-ssl.cdk.test',
+        ResourcePath: '/health',
+        RequestInterval: 30,
+        Port: 443,
+        FailureThreshold: 3,
+        Inverted: false,
+        MeasureLatency: false,
+        Disabled: false,
+      },
+    },
+  }),
+);
+
+// healthCheckTcp
+const tcpHealthCheckCreated = integ.assertions.awsApiCall('Route53', 'GetHealthCheck', {
+  HealthCheckId: healthCheckTcp.healthCheckId,
+});
+
+tcpHealthCheckCreated.expect(
+  ExpectedResult.objectLike({
+    HealthCheck: {
+      HealthCheckConfig: {
+        Type: 'TCP',
+        FullyQualifiedDomainName: 'lb-tcp.cdk.test',
+        RequestInterval: 30,
+        Port: 443,
+        FailureThreshold: 3,
+        Inverted: false,
+        MeasureLatency: false,
+        Disabled: false,
+      },
+    },
+  }),
+);
+
+// HealthCheckCalculated
+const calculatedHealthCheckCreated = integ.assertions.awsApiCall('Route53', 'GetHealthCheck', {
+  HealthCheckId: healthCheckCalculated.healthCheckId,
+});
+
+calculatedHealthCheckCreated.expect(
+  ExpectedResult.objectLike({
+    HealthCheck: {
+      HealthCheckConfig: {
+        Type: 'CALCULATED',
+        ChildHealthChecks: Match.arrayWith([healthCheckHttp.healthCheckId, healthCheckHttps.healthCheckId]),
+        HealthThreshold: 2,
+        Inverted: false,
+        Disabled: false,
+      },
+    },
+  }),
+);
+
+// healthCheckCloudWatch
+const cloudWatchHealthCheckCreated = integ.assertions.awsApiCall('Route53', 'GetHealthCheck', {
+  HealthCheckId: healthCheckCloudWatch.healthCheckId,
+});
+
+cloudWatchHealthCheckCreated.expect(
+  ExpectedResult.objectLike({
+    HealthCheck: {
+      CloudWatchAlarmConfiguration: {
+        ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+        EvaluationPeriods: 10,
+        MetricName: 'Errors',
+        Namespace: 'AWS/Lambda',
+        Period: 60,
+        Statistic: 'Sum',
+        Threshold: 100,
+        Dimensions: [
+          {
+            Name: 'FunctionName',
+            Value: lambdaFunction.functionName,
+          },
+        ],
+      },
+      HealthCheckConfig: {
+        Type: 'CLOUDWATCH_METRIC',
+        AlarmIdentifier: {
+          Region: stack.region,
+          Name: cloudwatchAlarm.alarmName,
+        },
+        InsufficientDataHealthStatus: 'LastKnownStatus',
+        Inverted: false,
+        Disabled: false,
+      },
+    },
+  }),
+);

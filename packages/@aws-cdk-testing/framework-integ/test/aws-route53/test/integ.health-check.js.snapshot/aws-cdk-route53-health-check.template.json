@@ -333,6 +333,64 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9": {
+   "Value": {
+    "Ref": "HealthCheckHttp45CD8FAC"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
+   }
+  },
+  "ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7": {
+   "Value": {
+    "Ref": "HealthCheckHttpsE7EFCB62"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
+   }
+  },
+  "ExportsOutputRefHealthCheckTcpC39A45DCAEC05583": {
+   "Value": {
+    "Ref": "HealthCheckTcpC39A45DC"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckTcpC39A45DCAEC05583"
+   }
+  },
+  "ExportsOutputRefHealthCheckCalculated4BA910E7270DC992": {
+   "Value": {
+    "Ref": "HealthCheckCalculated4BA910E7"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckCalculated4BA910E7270DC992"
+   }
+  },
+  "ExportsOutputRefLambdaFunctionBF21E41F66817B40": {
+   "Value": {
+    "Ref": "LambdaFunctionBF21E41F"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefLambdaFunctionBF21E41F66817B40"
+   }
+  },
+  "ExportsOutputRefAlarm7103F465225BDD34": {
+   "Value": {
+    "Ref": "Alarm7103F465"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefAlarm7103F465225BDD34"
+   }
+  },
+  "ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D": {
+   "Value": {
+    "Ref": "HealthCheckCloudWatch996681BB"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
