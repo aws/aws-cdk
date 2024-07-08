@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib';
