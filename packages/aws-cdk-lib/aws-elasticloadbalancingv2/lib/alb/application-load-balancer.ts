@@ -321,7 +321,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
     /**
     * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#connection-log-create-bucket
+    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
     */
     if (bucket.encryptionKey) {
       throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
