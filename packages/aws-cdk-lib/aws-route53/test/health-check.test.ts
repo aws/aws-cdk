@@ -1,28 +1,242 @@
 import { Template } from '../../assertions';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as lambda from '../../aws-lambda';
 import { CfnRoutingControl } from '../../aws-route53recoverycontrol';
 import * as cdk from '../../core';
 import { HealthCheck, HealthCheckType } from '../lib';
 
 describe('health check', () => {
-  test('resolves routing control arn', () => {
-    const stack = new cdk.Stack(undefined, 'TestStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
+  describe('properly sets health check properties', () => {
+    test.each`
+      props                                                                 | expectedProps
+      ${{ fqdn: 'lb.cdk.test' }}                                            | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb.cdk.test', port: 8080 }}                                | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Port: 8080, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ ipAddress: '1.2.3.4' }}                                           | ${{ IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}           | ${{ IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ ipAddress: '1.2.3.4', fqdn: 'lb.cdk.test' }}                      | ${{ FullyQualifiedDomainName: 'lb.cdk.test', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb.cdk.test', resourcePath: 'health-check' }}              | ${{ FullyQualifiedDomainName: 'lb.cdk.test', ResourcePath: 'health-check', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ FullyQualifiedDomainName: 'lb.cdk.test', RequestInterval: 20, Port: 80, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb.cdk.test', failureThreshold: 5 }}                       | ${{ FullyQualifiedDomainName: 'lb.cdk.test', FailureThreshold: 5, Port: 80, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb.cdk.test', measureLatency: true }}                      | ${{ FullyQualifiedDomainName: 'lb.cdk.test', MeasureLatency: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
+      ${{ fqdn: 'lb.cdk.test', inverted: true }}                            | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Inverted: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
+    `('http health check', ({ props, expectedProps }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.HTTP,
+        ...props,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Type: 'HTTP',
+          ...expectedProps,
+        },
+      });
     });
 
-    const routingControl = new CfnRoutingControl(stack, 'RoutingControl', {
-      name: 'routing-control-name',
+    test.each`
+      props                                                                     | expectedProps
+      ${{ fqdn: 'lb-ssl.cdk.test' }}                                            | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', port: 8443 }}                                | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 8443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ ipAddress: '1.2.3.4' }}                                               | ${{ IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}               | ${{ IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ ipAddress: '1.2.3.4', fqdn: 'lb-ssl.cdk.test' }}                      | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', resourcePath: 'health-check' }}              | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', ResourcePath: 'health-check', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', RequestInterval: 20, Port: 443, EnableSNI: true, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', failureThreshold: 5 }}                       | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', FailureThreshold: 5, Port: 443, EnableSNI: true, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', measureLatency: true }}                      | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', MeasureLatency: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', inverted: true }}                            | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Inverted: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', enableSNI: true }}                           | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: true, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ fqdn: 'lb-ssl.cdk.test', enableSNI: false }}                          | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: false, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+    `('https health check', ({ props, expectedProps }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.HTTPS,
+        ...props,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Type: 'HTTPS',
+          ...expectedProps,
+        },
+      });
     });
 
-    new HealthCheck(stack, 'HealthCheck', {
-      type: HealthCheckType.RECOVERY_CONTROL,
-      routingControl: routingControl.attrRoutingControlArn,
+    test.each`
+      props                                                                                               | expectedProps
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test' }}                                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', port: 8080 }}                                | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Port: 8080, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4' }}                                           | ${{ SearchString: 'searchString', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}           | ${{ SearchString: 'searchString', IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4', fqdn: 'lb.cdk.test' }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', resourcePath: 'health-check' }}              | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', ResourcePath: 'health-check', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', RequestInterval: 20, Port: 80, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', failureThreshold: 5 }}                       | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', FailureThreshold: 5, Port: 80, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', measureLatency: true }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', MeasureLatency: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', inverted: true }}                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Inverted: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
+    `('http_str_match health check', ({ props, expectedProps }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.HTTP_STR_MATCH,
+        ...props,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Type: 'HTTP_STR_MATCH',
+          ...expectedProps,
+        },
+      });
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
-      HealthCheckConfig: {
-        Type: 'RECOVERY_CONTROL',
-        RoutingControlArn: stack.resolve(routingControl.attrRoutingControlArn),
-      },
+    test.each`
+      props                                                                                                   | expectedProps
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test' }}                                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', port: 8443 }}                                | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 8443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4' }}                                               | ${{ SearchString: 'searchString', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}               | ${{ SearchString: 'searchString', IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4', fqdn: 'lb-ssl.cdk.test' }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', resourcePath: 'health-check' }}              | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', ResourcePath: 'health-check', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', RequestInterval: 20, Port: 443, EnableSNI: true, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', failureThreshold: 5 }}                       | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', FailureThreshold: 5, Port: 443, EnableSNI: true, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', measureLatency: true }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', MeasureLatency: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', inverted: true }}                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Inverted: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', enableSNI: true }}                           | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: true, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', enableSNI: false }}                          | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: false, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+    `('https_str_match health check', ({ props, expectedProps }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.HTTPS_STR_MATCH,
+        ...props,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Type: 'HTTPS_STR_MATCH',
+          ...expectedProps,
+        },
+      });
+    });
+
+    test.each`
+      props                     | expectedProps
+      ${{ healthThreshold: 1 }} | ${{ HealthThreshold: 1, Inverted: false }}
+      ${{ inverted: true }}     | ${{ Inverted: true, HealthThreshold: 3 }}
+    `('calculated health check', ({ props, expectedProps }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      const childHealthCheck1 = new HealthCheck(stack, 'ChildHealthCheck1', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb1.cdk.test',
+      });
+
+      const childHealthCheck2 = new HealthCheck(stack, 'ChildHealthCheck2', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb2.cdk.test',
+      });
+
+      const childHealthCheck3 = new HealthCheck(stack, 'ChildHealthCheck3', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb3.cdk.test',
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.CALCULATED,
+        childHealthChecks: [childHealthCheck1, childHealthCheck2, childHealthCheck3],
+        ...props,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Type: 'CALCULATED',
+          ...expectedProps,
+        },
+      });
+    });
+
+    test.each`
+      props                 | expectedProps
+      ${{ inverted: true }} | ${{ Inverted: true }}
+    `('cloudwatch metric health check', ({ props, expectedProps }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
+        runtime: lambda.Runtime.NODEJS_20_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async function(event, context) { return { statusCode: 200 }; }'),
+      });
+
+      const cloudwatchAlarm = new cloudwatch.Alarm(stack, 'Alarm', {
+        metric: new cloudwatch.Metric({
+          namespace: 'AWS/Lambda',
+          metricName: 'Errors',
+          dimensions: {
+            FunctionName: lambdaFunction.functionName,
+          },
+          statistic: 'Sum',
+        }),
+        threshold: 1,
+        evaluationPeriods: 1,
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.CLOUDWATCH_METRIC,
+        ...props,
+        alarmIdentifier: {
+          name: cloudwatchAlarm.alarmName,
+          region: stack.region,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Type: 'CLOUDWATCH_METRIC',
+          ...expectedProps,
+          AlarmIdentifier: {
+            Name: stack.resolve(cloudwatchAlarm.alarmName),
+            Region: stack.region,
+          },
+        },
+      });
+    });
+
+    test('routing control health check', () => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      const routingControl = new CfnRoutingControl(stack, 'RoutingControl', {
+        name: 'routing-control-name',
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.RECOVERY_CONTROL,
+        routingControl: routingControl.attrRoutingControlArn,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Type: 'RECOVERY_CONTROL',
+          RoutingControlArn: stack.resolve(routingControl.attrRoutingControlArn),
+        },
+      });
     });
   });
 
@@ -178,7 +392,7 @@ describe('health check', () => {
         type,
         fqdn: 'lb-ssl.cdk.test',
         ...props,
-        enableSni: undefined,
+        enableSNI: undefined,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
@@ -439,6 +653,47 @@ describe('health check', () => {
       }).toThrow(/FQDN must be between 0 and 255 characters long/);
     });
 
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP}            | ${{}}
+      ${HealthCheckType.HTTPS}           | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ searchString: 'search' }}
+      ${HealthCheckType.TCP}             | ${{}}
+    `('failure threshold is allowed for $type health check', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HealthCheck', {
+          type,
+          fqdn: 'lb.cdk.test',
+          ...props,
+          failureThreshold: 5,
+        });
+      }).not.toThrow();
+    });
+
+    test.each`
+      type                                 | props
+      ${HealthCheckType.CALCULATED}        | ${{ childHealthChecks: ['child1', 'child2'] }}
+      ${HealthCheckType.CLOUDWATCH_METRIC} | ${{ alarmIdentifier: { name: 'alarm-name', region: 'us-east-1' } }}
+      ${HealthCheckType.RECOVERY_CONTROL}  | ${{ routingControl: 'arn:aws:route53resolver:us-east-1:123456789012:routing-control/routing-control-id' }}
+    `('failure threshold is not allowed for $type health check', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HealthCheck', {
+          type,
+          ...props,
+          failureThreshold: 5,
+        });
+      }).toThrow(/FailureThreshold is not supported for health check type:/);
+    });
+
     test.each([0, 11])('failure threshold must be between 1 and 10', (threshold) => {
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
@@ -451,6 +706,47 @@ describe('health check', () => {
           failureThreshold: threshold,
         });
       }).toThrow(/FailureThreshold must be between 1 and 10/);
+    });
+
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP}            | ${{}}
+      ${HealthCheckType.HTTPS}           | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ searchString: 'search' }}
+      ${HealthCheckType.TCP}             | ${{}}
+    `('request interval is allowed for $type health check', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HealthCheck', {
+          type,
+          ...props,
+          fqdn: 'lb.cdk.test',
+          requestInterval: cdk.Duration.seconds(20),
+        });
+      }).not.toThrow();
+    });
+
+    test.each`
+      type                                 | props
+      ${HealthCheckType.CALCULATED}        | ${{ childHealthChecks: ['child1', 'child2'] }}
+      ${HealthCheckType.CLOUDWATCH_METRIC} | ${{ alarmIdentifier: { name: 'alarm-name', region: 'us-east-1' } }}
+      ${HealthCheckType.RECOVERY_CONTROL}  | ${{ routingControl: 'arn:aws:route53resolver:us-east-1:123456789012:routing-control/routing-control-id' }}
+    `('request interval is not allowed for $type health check', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HealthCheck', {
+          type,
+          ...props,
+          requestInterval: cdk.Duration.seconds(20),
+        });
+      }).toThrow(/RequestInterval is not supported for health check type:/);
     });
 
     test.each([cdk.Duration.seconds(0), cdk.Duration.seconds(31)])('request interval must be between 10 and 30 seconds', (interval) => {

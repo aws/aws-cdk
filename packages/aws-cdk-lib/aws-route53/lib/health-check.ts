@@ -297,6 +297,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateFqdn,
     validateIpAddress,
     validateEitherFqdnOrIpAddressRequired,
+    validateRequestInterval,
+    validateFailureThreshold,
   ],
   [HealthCheckType.HTTPS]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -307,6 +309,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateFqdn,
     validateIpAddress,
     validateEitherFqdnOrIpAddressRequired,
+    validateRequestInterval,
+    validateFailureThreshold,
   ],
   [HealthCheckType.HTTP_STR_MATCH]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -318,6 +322,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateFqdn,
     validateIpAddress,
     validateEitherFqdnOrIpAddressRequired,
+    validateRequestInterval,
+    validateFailureThreshold,
   ],
   [HealthCheckType.HTTPS_STR_MATCH]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -328,6 +334,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateFqdn,
     validateIpAddress,
     validateEitherFqdnOrIpAddressRequired,
+    validateRequestInterval,
+    validateFailureThreshold,
   ],
   [HealthCheckType.TCP]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -339,6 +347,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateFqdn,
     validateIpAddress,
     validateEitherFqdnOrIpAddressRequired,
+    validateRequestInterval,
+    validateFailureThreshold,
   ],
   [HealthCheckType.CLOUDWATCH_METRIC]: [
     ruleAlarmIdentifierIsRequired,
@@ -348,6 +358,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     ruleChildHealthChecksIsNotAllowed,
     ruleRoutingControlIsNotAllowed,
     ruleHealthThresholdIsNotAllowed,
+    ruleRequestIntervalIsNotAllowed,
+    ruleFailureThresholdIsNotAllowed,
   ],
   [HealthCheckType.CALCULATED]: [
     validateChildHealthChecks,
@@ -356,6 +368,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     ruleEnableSNIIsNotAllowed,
     ruleSearchStringIsNotAllowed,
     ruleRoutingControlIsNotAllowed,
+    ruleRequestIntervalIsNotAllowed,
+    ruleFailureThresholdIsNotAllowed,
   ],
   [HealthCheckType.RECOVERY_CONTROL]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -365,6 +379,8 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     ruleChildHealthChecksIsNotAllowed,
     rulePortIsNotAllowed,
     ruleHealthThresholdIsNotAllowed,
+    ruleRequestIntervalIsNotAllowed,
+    ruleFailureThresholdIsNotAllowed,
   ],
 };
 
@@ -453,9 +469,6 @@ function validateProperties(props: HealthCheckProps) {
   for (const rule of validationRules[props.type]) {
     rule(props);
   }
-
-  validateRequestInterval(props);
-  validateFailureThreshold(props);
 }
 
 function validateEitherFqdnOrIpAddressRequired(props: HealthCheckProps) {
@@ -483,6 +496,18 @@ function validateSearchStringForStringMatch(props: HealthCheckProps) {
 function validateChildHealthChecks(props: HealthCheckProps) {
   if (!props.childHealthChecks || props.childHealthChecks.length === 0) {
     throw new Error(`ChildHealthChecks is required for health check type: ${props.type}`);
+  }
+}
+
+function ruleRequestIntervalIsNotAllowed(props: HealthCheckProps) {
+  if (props.requestInterval !== undefined) {
+    throw new Error(`RequestInterval is not supported for health check type: ${props.type}`);
+  }
+}
+
+function ruleFailureThresholdIsNotAllowed(props: HealthCheckProps) {
+  if (props.failureThreshold !== undefined) {
+    throw new Error(`FailureThreshold is not supported for health check type: ${props.type}`);
   }
 }
 
