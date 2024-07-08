@@ -1833,8 +1833,8 @@ integTest('hotswap ECS deployment respects properties override', withDefaultFixt
   await fixture.cdkDeploy('ecs-hotswap', {
     options: [
       '--hotswap',
-      '--hotswap-ecs-minimum-healthy-percent 50',
-      '--hotswap-ecs-maximum-healthy-percent 100',
+      '--hotswap-ecs-minimum-healthy-percent', '100',
+      '--hotswap-ecs-maximum-healthy-percent', '200',
     ],
     modEnv: {
       DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
@@ -1853,7 +1853,8 @@ integTest('hotswap ECS deployment respects properties override', withDefaultFixt
     cluster: clusterName,
     services: [serviceName],
   });
-  expect(describeServicesResponse.services?.[0].deployments).toHaveLength(2);
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(100);
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(200);
 
 }));
 
