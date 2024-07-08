@@ -787,6 +787,8 @@ To set mTLS, you must create an instance of `TrustStore` and set it to `Applicat
 For more information, see [Mutual authentication with TLS in Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html)
 
 ```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
 declare const certificate: acm.Certificate;
 declare const lb: elbv2.ApplicationLoadBalancer;
 declare const bucket: s3.Bucket;
