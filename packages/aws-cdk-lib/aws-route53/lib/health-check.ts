@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnHealthCheck } from './route53.generated';
 import { Duration, IResource, Resource } from '../../core';
 
+const VALID_REGIONS = ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'];
+
 /**
  * Imported or created health check
  */
@@ -181,11 +183,13 @@ export interface HealthCheckProps {
   readonly port?: number;
 
   /**
-   * A complex type that contains one Region element for each region from which you want Amazon Route 53 health checkers to check the specified endpoint.
+   * An array of region identifiers that you want Amazon Route 53 health checkers to check the health of the endpoint from.
    *
-   * @default - not configured
+   * Valid values are: 'us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'
+   * @default - if the type is CALCULATED, CLOUDWATCH_METRIC, or RECOVERY_CONTROL, this property is not configured.
+   * - otherwise, the default value is all valid regions: 'us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'
    */
-  readonly regions?: string[];
+  readonly regions?: ('us-east-1' | 'us-west-1' | 'us-west-2' | 'eu-west-1' | 'ap-southeast-1' | 'ap-southeast-2' | 'ap-northeast-1' | 'sa-east-1')[];
 
   /**
    * The duration between the time that Amazon Route 53 gets a response from your endpoint and the time that it sends the next health check request. Each Route 53 health checker makes requests at this interval.
@@ -274,7 +278,7 @@ export class HealthCheck extends Resource implements IHealthCheck {
         ipAddress: props.ipAddress,
         measureLatency: props.measureLatency ?? getDefaultMeasureLatencyForType(props.type),
         port: props.port ?? getDefaultPortForType(props.type),
-        regions: props.regions,
+        regions: props.regions ?? getDefaultRegionsForType(props.type),
         requestInterval: props.requestInterval?.toSeconds() ?? getDefaultRequestIntervalForType(props.type)?.toSeconds(),
         resourcePath: props.resourcePath ?? getDefaultResourcePathForType(props.type),
         routingControlArn: props.routingControl,
@@ -299,6 +303,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateEitherFqdnOrIpAddressRequired,
     validateRequestInterval,
     validateFailureThreshold,
+    validateRegions,
   ],
   [HealthCheckType.HTTPS]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -311,6 +316,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateEitherFqdnOrIpAddressRequired,
     validateRequestInterval,
     validateFailureThreshold,
+    validateRegions,
   ],
   [HealthCheckType.HTTP_STR_MATCH]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -324,6 +330,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateEitherFqdnOrIpAddressRequired,
     validateRequestInterval,
     validateFailureThreshold,
+    validateRegions,
   ],
   [HealthCheckType.HTTPS_STR_MATCH]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -336,6 +343,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateEitherFqdnOrIpAddressRequired,
     validateRequestInterval,
     validateFailureThreshold,
+    validateRegions,
   ],
   [HealthCheckType.TCP]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -349,6 +357,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     validateEitherFqdnOrIpAddressRequired,
     validateRequestInterval,
     validateFailureThreshold,
+    validateRegions,
   ],
   [HealthCheckType.CLOUDWATCH_METRIC]: [
     ruleAlarmIdentifierIsRequired,
@@ -360,6 +369,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     ruleHealthThresholdIsNotAllowed,
     ruleRequestIntervalIsNotAllowed,
     ruleFailureThresholdIsNotAllowed,
+    ruleRegionsIsNotAllowed,
   ],
   [HealthCheckType.CALCULATED]: [
     validateChildHealthChecks,
@@ -370,6 +380,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     ruleRoutingControlIsNotAllowed,
     ruleRequestIntervalIsNotAllowed,
     ruleFailureThresholdIsNotAllowed,
+    ruleRegionsIsNotAllowed,
   ],
   [HealthCheckType.RECOVERY_CONTROL]: [
     ruleAlarmIdentifierIsNotAllowed,
@@ -381,6 +392,7 @@ const validationRules: Record<HealthCheckType, ((props: HealthCheckProps) => voi
     ruleHealthThresholdIsNotAllowed,
     ruleRequestIntervalIsNotAllowed,
     ruleFailureThresholdIsNotAllowed,
+    ruleRegionsIsNotAllowed,
   ],
 };
 
@@ -452,6 +464,17 @@ function getDefaultEnableSNIForType(type: HealthCheckType): boolean | undefined 
   }
 }
 
+function getDefaultRegionsForType(type: HealthCheckType): string[] | undefined {
+  switch (type) {
+    case HealthCheckType.CALCULATED:
+    case HealthCheckType.CLOUDWATCH_METRIC:
+    case HealthCheckType.RECOVERY_CONTROL:
+      return undefined;
+    default:
+      return VALID_REGIONS;
+  }
+}
+
 function getDefaultPortForType(type: HealthCheckType): number | undefined {
   switch (type) {
     case HealthCheckType.HTTP:
@@ -505,6 +528,12 @@ function ruleRequestIntervalIsNotAllowed(props: HealthCheckProps) {
   }
 }
 
+function ruleRegionsIsNotAllowed(props: HealthCheckProps) {
+  if (props.regions && props.regions.length > 0) {
+    throw new Error(`Regions is not supported for health check type: ${props.type}`);
+  }
+}
+
 function ruleFailureThresholdIsNotAllowed(props: HealthCheckProps) {
   if (props.failureThreshold !== undefined) {
     throw new Error(`FailureThreshold is not supported for health check type: ${props.type}`);
@@ -544,6 +573,17 @@ function ruleChildHealthChecksIsNotAllowed(props: HealthCheckProps) {
 function ruleSearchStringIsNotAllowed(props: HealthCheckProps) {
   if (props.searchString) {
     throw new Error(`SearchString is only supported for health check types: ${HealthCheckType.HTTP_STR_MATCH}, ${HealthCheckType.HTTPS_STR_MATCH}`);
+  }
+}
+
+function validateRegions(props: HealthCheckProps) {
+  if (props.regions === undefined) {
+    // if regions are not specified, use the default regions
+    return;
+  }
+
+  if (new Set(props.regions).size < 3) {
+    throw new Error('Regions must be a list of at least three regions');
   }
 }
 

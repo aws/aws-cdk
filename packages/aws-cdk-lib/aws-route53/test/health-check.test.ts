@@ -3,22 +3,23 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as lambda from '../../aws-lambda';
 import { CfnRoutingControl } from '../../aws-route53recoverycontrol';
 import * as cdk from '../../core';
-import { HealthCheck, HealthCheckType } from '../lib';
+import { HealthCheck, HealthCheckProps, HealthCheckType } from '../lib';
 
 describe('health check', () => {
   describe('properly sets health check properties', () => {
     test.each`
-      props                                                                 | expectedProps
-      ${{ fqdn: 'lb.cdk.test' }}                                            | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb.cdk.test', port: 8080 }}                                | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Port: 8080, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ ipAddress: '1.2.3.4' }}                                           | ${{ IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}           | ${{ IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ ipAddress: '1.2.3.4', fqdn: 'lb.cdk.test' }}                      | ${{ FullyQualifiedDomainName: 'lb.cdk.test', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb.cdk.test', resourcePath: 'health-check' }}              | ${{ FullyQualifiedDomainName: 'lb.cdk.test', ResourcePath: 'health-check', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ FullyQualifiedDomainName: 'lb.cdk.test', RequestInterval: 20, Port: 80, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb.cdk.test', failureThreshold: 5 }}                       | ${{ FullyQualifiedDomainName: 'lb.cdk.test', FailureThreshold: 5, Port: 80, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb.cdk.test', measureLatency: true }}                      | ${{ FullyQualifiedDomainName: 'lb.cdk.test', MeasureLatency: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
-      ${{ fqdn: 'lb.cdk.test', inverted: true }}                            | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Inverted: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
+      props                                                                        | expectedProps
+      ${{ fqdn: 'lb.cdk.test' }}                                                   | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb.cdk.test', port: 8080 }}                                       | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Port: 8080, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ ipAddress: '1.2.3.4' }}                                                  | ${{ IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}                  | ${{ IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ ipAddress: '1.2.3.4', fqdn: 'lb.cdk.test' }}                             | ${{ FullyQualifiedDomainName: 'lb.cdk.test', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb.cdk.test', resourcePath: 'health-check' }}                     | ${{ FullyQualifiedDomainName: 'lb.cdk.test', ResourcePath: 'health-check', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb.cdk.test', requestInterval: cdk.Duration.seconds(20) }}        | ${{ FullyQualifiedDomainName: 'lb.cdk.test', RequestInterval: 20, Port: 80, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb.cdk.test', failureThreshold: 5 }}                              | ${{ FullyQualifiedDomainName: 'lb.cdk.test', FailureThreshold: 5, Port: 80, RequestInterval: 30, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb.cdk.test', measureLatency: true }}                             | ${{ FullyQualifiedDomainName: 'lb.cdk.test', MeasureLatency: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb.cdk.test', inverted: true }}                                   | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Inverted: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb.cdk.test', regions: ['us-east-1', 'us-west-1', 'us-west-2'] }} | ${{ FullyQualifiedDomainName: 'lb.cdk.test', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2'] }}
     `('http health check', ({ props, expectedProps }) => {
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
@@ -38,19 +39,19 @@ describe('health check', () => {
     });
 
     test.each`
-      props                                                                     | expectedProps
-      ${{ fqdn: 'lb-ssl.cdk.test' }}                                            | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', port: 8443 }}                                | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 8443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ ipAddress: '1.2.3.4' }}                                               | ${{ IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}               | ${{ IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ ipAddress: '1.2.3.4', fqdn: 'lb-ssl.cdk.test' }}                      | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', resourcePath: 'health-check' }}              | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', ResourcePath: 'health-check', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', RequestInterval: 20, Port: 443, EnableSNI: true, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', failureThreshold: 5 }}                       | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', FailureThreshold: 5, Port: 443, EnableSNI: true, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', measureLatency: true }}                      | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', MeasureLatency: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', inverted: true }}                            | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Inverted: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', enableSNI: true }}                           | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: true, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ fqdn: 'lb-ssl.cdk.test', enableSNI: false }}                          | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: false, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      props                                                                                              | expectedProps
+      ${{ fqdn: 'lb-ssl.cdk.test' }}                                                                     | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', port: 8443 }}                                                         | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 8443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ ipAddress: '1.2.3.4' }}                                                                        | ${{ IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}                                        | ${{ IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ ipAddress: '1.2.3.4', fqdn: 'lb-ssl.cdk.test' }}                                               | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', resourcePath: 'health-check' }}                                       | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', ResourcePath: 'health-check', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', requestInterval: cdk.Duration.seconds(20) }}                          | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', RequestInterval: 20, Port: 443, EnableSNI: true, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', failureThreshold: 5 }}                                                | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', FailureThreshold: 5, Port: 443, EnableSNI: true, RequestInterval: 30, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', measureLatency: true }}                                               | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', MeasureLatency: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', inverted: true }}                                                     | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', Inverted: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', enableSNI: true }}                                                    | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: true, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ fqdn: 'lb-ssl.cdk.test', enableSNI: false, regions: ['us-east-1', 'us-west-1', 'us-west-2'] }} | ${{ FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: false, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2'] }}
     `('https health check', ({ props, expectedProps }) => {
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
@@ -70,17 +71,17 @@ describe('health check', () => {
     });
 
     test.each`
-      props                                                                                               | expectedProps
-      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test' }}                                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', port: 8080 }}                                | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Port: 8080, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', ipAddress: '1.2.3.4' }}                                           | ${{ SearchString: 'searchString', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}           | ${{ SearchString: 'searchString', IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', ipAddress: '1.2.3.4', fqdn: 'lb.cdk.test' }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', resourcePath: 'health-check' }}              | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', ResourcePath: 'health-check', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', RequestInterval: 20, Port: 80, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', failureThreshold: 5 }}                       | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', FailureThreshold: 5, Port: 80, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', measureLatency: true }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', MeasureLatency: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', inverted: true }}                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Inverted: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
+      props                                                                                                                                   | expectedProps
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test' }}                                                                                | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', port: 8080 }}                                                                    | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Port: 8080, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4' }}                                                                               | ${{ SearchString: 'searchString', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}                                               | ${{ SearchString: 'searchString', IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4', fqdn: 'lb.cdk.test' }}                                                          | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', IPAddress: '1.2.3.4', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', resourcePath: 'health-check' }}                                                  | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', ResourcePath: 'health-check', Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', requestInterval: cdk.Duration.seconds(20) }}                                     | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', RequestInterval: 20, Port: 80, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', failureThreshold: 5 }}                                                           | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', FailureThreshold: 5, Port: 80, RequestInterval: 30, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', measureLatency: true }}                                                          | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', MeasureLatency: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb.cdk.test', inverted: true, regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1'] }} | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb.cdk.test', Inverted: true, Port: 80, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1'] }}
     `('http_str_match health check', ({ props, expectedProps }) => {
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
@@ -100,19 +101,19 @@ describe('health check', () => {
     });
 
     test.each`
-      props                                                                                                   | expectedProps
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test' }}                                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', port: 8443 }}                                | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 8443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', ipAddress: '1.2.3.4' }}                                               | ${{ SearchString: 'searchString', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}               | ${{ SearchString: 'searchString', IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', ipAddress: '1.2.3.4', fqdn: 'lb-ssl.cdk.test' }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', resourcePath: 'health-check' }}              | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', ResourcePath: 'health-check', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', requestInterval: cdk.Duration.seconds(20) }} | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', RequestInterval: 20, Port: 443, EnableSNI: true, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', failureThreshold: 5 }}                       | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', FailureThreshold: 5, Port: 443, EnableSNI: true, RequestInterval: 30, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', measureLatency: true }}                      | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', MeasureLatency: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', inverted: true }}                            | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Inverted: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', enableSNI: true }}                           | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: true, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
-      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', enableSNI: false }}                          | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: false, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false }}
+      props                                                                                                                            | expectedProps
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test' }}                                                                     | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', port: 8443 }}                                                         | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Port: 8443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4' }}                                                                        | ${{ SearchString: 'searchString', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', ipAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345' }}                                        | ${{ SearchString: 'searchString', IPAddress: '2001:0db8:85a3:0000:0000:abcd:0001:2345', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', ipAddress: '1.2.3.4', fqdn: 'lb-ssl.cdk.test' }}                                               | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', IPAddress: '1.2.3.4', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', resourcePath: 'health-check' }}                                       | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', ResourcePath: 'health-check', Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', requestInterval: cdk.Duration.seconds(20) }}                          | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', RequestInterval: 20, Port: 443, EnableSNI: true, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', failureThreshold: 5 }}                                                | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', FailureThreshold: 5, Port: 443, EnableSNI: true, RequestInterval: 30, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', measureLatency: true }}                                               | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', MeasureLatency: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', inverted: true }}                                                     | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', Inverted: true, Port: 443, EnableSNI: true, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', enableSNI: true }}                                                    | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: true, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'] }}
+      ${{ searchString: 'searchString', fqdn: 'lb-ssl.cdk.test', enableSNI: false, regions: ['us-east-1', 'us-west-1', 'us-west-2'] }} | ${{ SearchString: 'searchString', FullyQualifiedDomainName: 'lb-ssl.cdk.test', EnableSNI: false, Port: 443, RequestInterval: 30, FailureThreshold: 3, MeasureLatency: false, Inverted: false, Regions: ['us-east-1', 'us-west-1', 'us-west-2'] }}
     `('https_str_match health check', ({ props, expectedProps }) => {
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
@@ -468,6 +469,57 @@ describe('health check', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
         HealthCheckConfig: {
           ResourcePath: '',
+        },
+      });
+    });
+
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP}            | ${{ fqdn: 'lb.cdk.test' }}
+      ${HealthCheckType.HTTPS}           | ${{ fqdn: 'lb-ssl.cdk.test' }}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ fqdn: 'lb.cdk.test', searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ fqdn: 'lb-ssl.cdk.test', searchString: 'search' }}
+      ${HealthCheckType.TCP}             | ${{ fqdn: 'lb-tcp.cdk.test' }}
+    `('regions defaults to all regions', () => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type: HealthCheckType.HTTP,
+        fqdn: 'lb.cdk.test',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Regions: ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'],
+        },
+      });
+    });
+
+    test.each`
+      type                                 | props
+      ${HealthCheckType.HTTP}              | ${{ fqdn: 'lb.cdk.test' }}
+      ${HealthCheckType.HTTPS}             | ${{ fqdn: 'lb-ssl.cdk.test' }}
+      ${HealthCheckType.HTTP_STR_MATCH}    | ${{ fqdn: 'lb.cdk.test', searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH}   | ${{ fqdn: 'lb-ssl.cdk.test', searchString: 'search' }}
+      ${HealthCheckType.TCP}               | ${{ fqdn: 'lb-tcp.cdk.test' }}
+      ${HealthCheckType.CALCULATED}        | ${{ childHealthChecks: ['child1', 'child2'] }}
+      ${HealthCheckType.CLOUDWATCH_METRIC} | ${{ alarmIdentifier: { name: 'alarm-name', region: 'us-east-1' } }}
+      ${HealthCheckType.RECOVERY_CONTROL}  | ${{ routingControl: 'arn:aws:route53resolver:us-east-1:123456789012:routing-control/routing-control-id' }}
+    `('inverted defaults to false', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new HealthCheck(stack, 'HealthCheck', {
+        type,
+        ...props,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+        HealthCheckConfig: {
+          Inverted: false,
         },
       });
     });
@@ -864,6 +916,67 @@ describe('health check', () => {
           ...props,
         });
       }).toThrow(/IpAddress must be a valid IPv4 or IPv6 address/);
+    });
+
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP}            | ${{}}
+      ${HealthCheckType.HTTPS}           | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ searchString: 'search' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ searchString: 'search' }}
+      ${HealthCheckType.TCP}             | ${{}}
+    `('regions is allowed for $type health check', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HealthCheck', {
+          type,
+          ...props,
+          fqdn: 'lb.cdk.test',
+          regions: ['us-east-1', 'us-west-1', 'us-west-2'],
+        });
+      }).not.toThrow();
+    });
+
+    test.each`
+      type                                 | props
+      ${HealthCheckType.CALCULATED}        | ${{ childHealthChecks: ['child1', 'child2'] }}
+      ${HealthCheckType.CLOUDWATCH_METRIC} | ${{ alarmIdentifier: { name: 'alarm-name', region: 'us-east-1' } }}
+      ${HealthCheckType.RECOVERY_CONTROL}  | ${{ routingControl: 'arn:aws:route53resolver:us-east-1:123456789012:routing-control/routing-control-id' }}
+    `('regions is not allowed for $type health check', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HealthCheck', {
+          type,
+          ...props,
+          regions: ['us-east-1'],
+        });
+      }).toThrow(/Regions is not supported for health check type:/);
+    });
+
+    test.each`
+      regions
+      ${['us-east-1', 'us-east-1', 'us-west-1']}
+      ${['us-east-1', 'us-west-1']}
+      ${['us-east-1']}
+      ${[]}
+    `('regions must be a list of at least three regions', ({ regions }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HealthCheck', {
+          type: HealthCheckType.HTTP,
+          fqdn: 'lb.cdk.test',
+          regions,
+        });
+      }).toThrow(/Regions must be a list of at least three regions/);
     });
   });
 });
