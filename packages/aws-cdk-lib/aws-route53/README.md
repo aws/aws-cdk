@@ -222,7 +222,12 @@ allowed to issue certificates for a domain to Amazon only.
 
 ### Health Checks
 
-You can associate health checks with records:
+Route 53 has the ability to monitor the health of your application and only return records for healthy endpoints.
+This is done using a `HealthCheck` construct.
+
+In the following example, the `ARecord` will be returned by Route 53in response to DNS queries only if the HTTP requests to the `example.com/health` endpoint return a 2XX or 3XX status code.
+
+In case, when the endpoint is not healthy, the `ARecord2` will be returned by Route 53 in response to DNS queries.
 
 ```ts
 declare const myZone: route53.HostedZone;
@@ -249,7 +254,7 @@ new route53.ARecord(this, 'ARecord2', {
 });
 ```
 
-Possible values for `type` are `HTTP`, `HTTPS`, `TCP`, `CLOUDWATCH_METRIC`, `CALCULATED` and `RECOVERY_CONTROL`.
+See the [Route 53 Health Checks documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-type) for possible types of health checks.
 
 ### Replacing existing record sets (dangerous!)
 
