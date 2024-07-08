@@ -316,7 +316,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Enable connection logging for this load balancer.
    *
    * A region must be specified on the stack containing the load balancer; you cannot enable logging on
-   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   * environment-agnostic stacks.
+   *
+   * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
     /**
