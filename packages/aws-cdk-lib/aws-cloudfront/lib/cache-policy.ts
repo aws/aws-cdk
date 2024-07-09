@@ -118,7 +118,6 @@ export class CachePolicy extends Resource implements ICachePolicy {
    */
   public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS = CachePolicy.fromManagedCachePolicy('4cc15a8a-d715-48a4-82b8-cc0b614638fe');
 
-
   /** Imports a Cache Policy from its id. */
   public static fromCachePolicyId(scope: Construct, id: string, cachePolicyId: string): ICachePolicy {
     return new class extends Resource implements ICachePolicy {
