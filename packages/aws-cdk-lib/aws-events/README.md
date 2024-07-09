@@ -159,7 +159,7 @@ const ecsTaskTarget = new targets.EcsTask({ cluster, taskDefinition, role, platf
 The `aws-cdk-lib/aws-events-targets` module includes classes that implement the `IRuleTarget`
 interface for various AWS services.
 
-See the README of the `aws-cdk-lib/aws-events-targets` module for more information on supported targets.
+See the README of the [`aws-cdk-lib/aws-events-targets`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-events-targets) module for more information on supported targets.
 
 ### Cross-account and cross-region targets
 
