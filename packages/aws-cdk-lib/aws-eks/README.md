@@ -1837,6 +1837,20 @@ declare const cluster: eks.Cluster;
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 ```
 
+## Add-ons
+
+[Add-ons](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html) is a software that provides supporting operational capabilities to Kubernetes applications. The EKS module supports adding add-ons to your cluster using the `eks.Addon` class.
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.Addon(this, 'Addon', {
+  cluster,
+  addonName: 'aws-guardduty-agent',
+  addonVersion: '3.0.0',
+});
+```
+
 ## Using existing clusters
 
 The Amazon EKS library allows defining Kubernetes resources such as [Kubernetes
