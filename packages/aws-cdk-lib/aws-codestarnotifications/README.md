@@ -46,7 +46,7 @@ const rule = new notifications.NotificationRule(this, 'NotificationRule', {
     'codebuild-project-build-state-failed',
   ],
   targets: [topic],
-  notificationRuleName: 'MyNotificationRule',
+  notificationRuleName: 'MyNotificationRuleName',
   enabled: true, // The default is true
   detailType: notifications.DetailType.FULL, // The default is FULL
   createdBy: 'Jone Doe',
