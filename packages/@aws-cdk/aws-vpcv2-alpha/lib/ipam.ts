@@ -13,7 +13,16 @@ import { CfnResource, Resource, Stack } from 'aws-cdk-lib';
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-addressfamily
  */
 export enum AddressFamily {
+  /**
+   * Represents the IPv4 address family.
+   * Allowed under public and private pool.
+   */
   IP_V4 = 'ipv4',
+
+  /**
+   * Represents the IPv6 address family.
+   * Only allowed under public pool.
+   */
   IP_V6 = 'ipv6',
 }
 
@@ -27,6 +36,9 @@ export enum AddressFamily {
  * @property {string} ipamScopeId - The ID of the IPAM scope.
  */
 export interface IpamPoolProps extends PoolOptions {
+  /**
+   * Scope id where pool needs to be created
+   */
   readonly ipamScopeId: string;
 }
 
@@ -56,16 +68,22 @@ export interface PoolOptions{
 
   /**
    * [provisionedCidrs] - Information about the CIDRs provisioned to the pool.
+   * @default - No CIDRs are provisioned
+   * @see CfnIPAMPool.ProvisionedCidrProperty
    */
   readonly provisionedCidrs?: CfnIPAMPool.ProvisionedCidrProperty[];
 
   /**
    * [locale] - The locale (AWS Region) of the pool.
+   * @default - The AWS Region of the stack
    */
   readonly locale?: string;
 
   /**
    * [publicIpSource] - The IP address source for pools in the public scope.
+   * Only used for IPv6 address
+   * byoip | amazon
+   * @default amazon
    */
   readonly publicIpSource?: IpamPoolPublicIpSource;
 
@@ -75,6 +93,8 @@ export interface PoolOptions{
   * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
   *
   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+  *
+  * @default - No service
   */
   readonly awsService?: AwsServiceName;
 }
@@ -91,6 +111,13 @@ export interface IpamScopeOptions {
   readonly ipamId: string;
 }
 
+/**
+ *
+ *//**
+ * Options for configuring an IP Address Manager (IPAM).
+ *
+ * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-ipam|AWS CDK Documentation on Configuring IPAM}.
+ */
 export interface IpamOptions {
 
   /**
@@ -101,14 +128,9 @@ export interface IpamOptions {
   readonly ipv4NetmaskLength?: number;
 
   /**
-   * ipv4 IPAM Pool Id
+   * Ipv4 IPAM pool
    *
    * @default - Only required when using AWS Ipam
-   */
-  readonly ipv4IpamPoolId?: string;
-
-  /**
-   * ipv4 IPAM pool
    */
   readonly ipv4IpamPool?: IpamPool;
 
@@ -134,7 +156,14 @@ export interface IpamOptions {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-publicipsource
  */
 export enum IpamPoolPublicIpSource {
+  /**
+   * BYOIP Ipv6 to be registered under IPAM
+   */
   BYOIP = 'byoip',
+
+  /**
+   * Amazon Provided Ipv6 range
+   */
   AMAZON = 'amazon',
 }
 
@@ -144,7 +173,16 @@ export enum IpamPoolPublicIpSource {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampoolcidr.html
  */
 export interface IpamPoolCidrProvisioningOptions {
+  /**
+   * Ipv6 Netmask length for the CIDR
+   * @default none
+   */
   readonly netmaskLength?: number;
+
+  /**
+   * Ipv6 CIDR block for the IPAM pool
+   * @default none
+   */
   readonly cidr?: string;
 }
 
@@ -158,6 +196,7 @@ export class IpamPool extends Resource {
 
   /**
    * Pool ID to be passed to the VPC construct
+   * @attribute IpamPoolId
    */
   public readonly ipamPoolId: string;
 
@@ -179,6 +218,12 @@ export class IpamPool extends Resource {
     this.ipamPoolId = cfnPool.attrIpamPoolId;
   }
 
+  /**
+   * A CIDR provisioned to an IPAM pool.
+   * @param id Name of Resource
+   * @param options Either a CIDR or netmask length must be provided
+   * @returns AWS::EC2::IPAMPoolCidr
+   */
   public provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): IpamPoolCidr {
     const cidr = new IpamPoolCidr(this, id, {
       ...options,
@@ -231,6 +276,11 @@ export class IpamPoolCidr extends Resource {
 export class IpamScope extends Resource {
 
   private readonly _ipamScope: CfnIPAMScope;
+
+  /**
+   * ID for Resource IpamScope
+   * @attribute IpamScopeId
+   */
   public readonly ipamScopeId: string;
   constructor(scope: Construct, id: string, props: IpamScopeOptions) {
     super(scope, id);
@@ -295,13 +345,20 @@ export class IpamPrivateScope extends IpamScopeBase {
  * @resource AWS::EC2::IPAM
  */
 export class Ipam extends Resource {
-  // Refers to default public scope
+  /**
+   * Refers to default public scope
+   */
   public readonly publicScope: IpamPublicScope;
-  // Refers to default private scope
+  /**
+   * Refers to default public scope
+   */
   public readonly privateScope: IpamPrivateScope;
   // Resource IPAM
   private readonly _ipam: CfnIPAM;
-  // Access to Ipam resource id that can be used later to add a custom private scope to this IPAM
+  /**
+   * Access to Ipam resource id that can be used later to add a custom private scope to this IPAM
+   * @attribute IpamId
+   */
   public readonly ipamId: string;
 
   constructor(scope: Construct, id: string) {

@@ -7,10 +7,33 @@ import { VpcV2Base } from './vpc-v2-base';
 /**
  * Ipam Options to add IPv4 CIDR range to the VPC
  */
-export interface IIpIpamOptions{
+export interface IIpIpamOptions {
+  /**
+   * The IPv4 IPAM pool to use for allocating IPv4 addresses.
+   *
+   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-ipv4-ipam}.
+   */
   readonly ipv4IpamPool?: IpamPool;
+
+  /**
+   * The IPv4 netmask length to use for allocating IPv4 addresses.
+   *
+   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-ipv4-netmask-length}.
+   */
   readonly ipv4NetmaskLength?: number;
+
+  /**
+   * The IPv6 IPAM pool to use for allocating IPv6 addresses.
+   *
+   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-ipv6-ipam}.
+   */
   readonly ipv6IpamPool?: IpamPool;
+
+  /**
+   * The IPv6 netmask length to use for allocating IPv6 addresses.
+   *
+   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-ipv6-netmask-length}.
+   */
   readonly ipv6NetmaskLength?: number;
 }
 
@@ -33,6 +56,9 @@ export class IpAddresses {
     return new IpamIpv4(ipv4IpamOptions);
   }
 
+  /**
+   * An Ipv6 Ipam Pool
+   */
   public static ipv6Ipam(ipv6IpamOptions: IIpIpamOptions): IIpAddresses {
     return new IpamIpv6(ipv6IpamOptions);
   }
@@ -52,6 +78,7 @@ export interface VpcCidrOptions {
 
   /**
    * IPv4 CIDR Block
+   * @default - '10.0.0.0/16'
    */
   readonly ipv4CidrBlock?: string;
 
@@ -71,6 +98,7 @@ export interface VpcCidrOptions {
 
   /**
    * Implementing Ipv6
+   * @default - No ipv6 address
    */
   readonly ipv6CidrBlock?: string;
 
@@ -81,48 +109,74 @@ export interface VpcCidrOptions {
    */
   readonly ipv6NetmaskLength?: number;
 
-  /*
-  */
+  /**
+   * Ipv6 IPAM pool id for VPC range, can only be defined
+   * under public scope
+   *
+   * @default - no pool id
+   */
   readonly ipv6IpamPool?: IpamPool;
 
   /**
-   * use amazon provided IP range
+   * Use amazon provided IP range
+   * @default false
    */
   readonly amazonProvided?: boolean;
 
+  /**
+   * Dependency to associate Ipv6 CIDR block
+   * @default - No dependency
+   */
   readonly dependencies?: CfnResource[];
 }
 
-export interface IIpv6AddressesOptions {
-  readonly ipv6CidrBlock?: string;
-  readonly ipv6PoolId?: string;
-}
-
+/**
+ * Implements ip address allocation according to the IPAdress type
+ */
 export interface IIpAddresses {
 
+  /**
+   * Method to define the implementation logic of
+   * IP address allocation
+   */
   allocateVpcCidr() : VpcCidrOptions;
 
 }
 
-export interface IpAddressesCidrConfig {
-  readonly cidrblock: string;
-}
-
+/**
+ * Properties to define VPC
+ */
 export interface VpcV2Props {
 
   /** A must IPv4 CIDR block for the VPC
    * https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html
+   * @default - Ipv4 CIDR Block ('10.0.0.0/16')
   */
   readonly primaryAddressBlock?: IIpAddresses;
 
-  /**Can be  IPv4 or IPv6 */
+  /**Can be  IPv4 or IPv6
+   * @default - No secondary IP address
+  */
   readonly secondaryAddressBlocks?: IIpAddresses[];
+
+  /**
+   * Indicates whether the instances launched in the VPC get DNS hostnames
+   * @default false
+   */
   readonly enableDnsHostnames?: boolean;
+
+  /**
+   * Indicates whether the DNS resolution is supported for the VPC.
+   * @default false
+   */
   readonly enableDnsSupport?: boolean;
 }
 
 /**
- * Creates new VPC with added functionalities
+ * This class provides a foundation for creating and configuring a VPC with advanced features such as IPAM (IP Address Management) and IPv6 support.
+ *
+ * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html|AWS CDK Documentation on VPCs}.
+ *
  * @resource AWS::EC2::VPC
  */
 export class VpcV2 extends VpcV2Base {
@@ -153,8 +207,9 @@ export class VpcV2 extends VpcV2Base {
    */
   public readonly ipAddresses: IIpAddresses;
 
-  //public readonly ipv6Addresses: IIpAddresses;
-
+  /**
+   * The AWS CloudFormation resource representing the VPC.
+   */
   public readonly resource: CfnVPC;
 
   /**
