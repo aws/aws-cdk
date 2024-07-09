@@ -16,6 +16,9 @@ interface ICidr {
  */
 export class Ipv4Cidr implements ICidr {
 
+  /**
+   * IPv4 CIDR range for the subnet
+   */
   public readonly cidr: string;
   constructor(props: string ) {
     this.cidr = props;
@@ -27,6 +30,10 @@ export class Ipv4Cidr implements ICidr {
  */
 export class Ipv6Cidr implements ICidr {
 
+  /**
+ * IPv6 CIDR range for the subnet
+ * Allowed only if IPv6 is enabled on VPc
+ */
   public readonly cidr: string;
   constructor(props: string ) {
     this.cidr = props;
@@ -50,6 +57,7 @@ export interface SubnetPropsV2 {
 
   /**
    * Ipv6 CIDR Range for subnet
+   * @default No Ipv6 address
    */
   readonly ipv6CidrBlock?: Ipv6Cidr;
 
@@ -60,6 +68,7 @@ export interface SubnetPropsV2 {
 
   /**
    * Custom Route for subnet
+   * @default No custom route
    */
   readonly routeTable?: IRouteTable;
 

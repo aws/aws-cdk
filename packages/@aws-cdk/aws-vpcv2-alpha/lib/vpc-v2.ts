@@ -52,6 +52,7 @@ export interface VpcCidrOptions {
 
   /**
    * IPv4 CIDR Block
+   * @default - '10.0.0.0/16'
    */
   readonly ipv4CidrBlock?: string;
 
@@ -71,6 +72,7 @@ export interface VpcCidrOptions {
 
   /**
    * Implementing Ipv6
+   * @default - No ipv6 address
    */
   readonly ipv6CidrBlock?: string;
 
@@ -81,15 +83,24 @@ export interface VpcCidrOptions {
    */
   readonly ipv6NetmaskLength?: number;
 
-  /*
-  */
+  /**
+   * Ipv6 IPAM pool id for VPC range, can only be defined
+   * under public scope
+   *
+   * @default - no pool id
+   */
   readonly ipv6IpamPool?: IpamPool;
 
   /**
-   * use amazon provided IP range
+   * Use amazon provided IP range
+   * @default false
    */
   readonly amazonProvided?: boolean;
 
+  /**
+   * Dependency to associate Ipv6 CIDR block
+   * @default - No dependency
+   */
   readonly dependencies?: CfnResource[];
 }
 
@@ -108,16 +119,32 @@ export interface IpAddressesCidrConfig {
   readonly cidrblock: string;
 }
 
+/**
+ * Properties to define VPC
+ */
 export interface VpcV2Props {
 
   /** A must IPv4 CIDR block for the VPC
    * https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html
+   * @default - Ipv4 CIDR Block ('10.0.0.0/16')
   */
   readonly primaryAddressBlock?: IIpAddresses;
 
-  /**Can be  IPv4 or IPv6 */
+  /**Can be  IPv4 or IPv6
+   * @default - No secondary IP address
+  */
   readonly secondaryAddressBlocks?: IIpAddresses[];
+
+  /**
+   * Indicates whether the instances launched in the VPC get DNS hostnames
+   * @default false
+   */
   readonly enableDnsHostnames?: boolean;
+
+  /**
+   * Indicates whether the DNS resolution is supported for the VPC.
+   * @default false
+   */
   readonly enableDnsSupport?: boolean;
 }
 
