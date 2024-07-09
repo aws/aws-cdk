@@ -297,6 +297,13 @@ class ipv4CidrAllocation implements IIpAddresses {
  * Supports Amazon Provided Ipv6 ranges
  */
 export class AmazonProvided implements IIpAddresses {
+  /**
+   * Represents an Amazon-provided IPv6 CIDR range for a VPC.
+   *
+   * This class implements the IIpAddresses interface and is used to allocate an Amazon-provided
+   * IPv6 CIDR range for a VPC. When an instance of this class is used to allocate the VPC CIDR,
+   * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
+   */
 
   //private readonly amazonProvided: boolean;
   constructor() {
@@ -322,6 +329,15 @@ interface IPaddressConfig {
  * @param cidr1 Secondary IPv4 Address
  * @param cidr2 Primary IPv4 Address
  * @returns true if valid
+ */
+/**
+ * Validates whether a secondary IPv4 address is within the same private IP address range as the primary IPv4 address.
+ *
+ * @param cidr1 The secondary IPv4 CIDR block to be validated.
+ * @param cidr2 The primary IPv4 CIDR block to validate against.
+ * @returns True if the secondary IPv4 CIDR block is within the same private IP address range as the primary IPv4 CIDR block, false otherwise.
+ *
+ * The private IP address ranges are defined by RFC 1918 as 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16.
  */
 function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
   if (!cidr1 || !cidr2) {

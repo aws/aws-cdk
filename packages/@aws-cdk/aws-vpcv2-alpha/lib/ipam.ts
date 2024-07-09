@@ -128,7 +128,7 @@ export interface IpamOptions {
 }
 
 /**
- * The IP address source for pools in the public scope. 
+ * The IP address source for pools in the public scope.
  * Only used for provisioning IP address CIDRs to pools in the public scope. Default is BYOIP.
  * @default BYOIP
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-publicipsource
@@ -224,7 +224,7 @@ export class IpamPoolCidr extends Resource {
 /**
  * Creates custom Ipam Scope, can only be private
  * (can be used for adding custom scopes to an existing IPAM)
- * 
+ *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @resource AWS::EC2::IPAMScope
  */
@@ -241,14 +241,13 @@ export class IpamScope extends Resource {
   }
 }
 
-
 /**
  * Base class for IPAM scopes.
  */
 abstract class IpamScopeBase {
   protected constructor(
     protected readonly scope: Construct,
-    protected readonly scopeId: string
+    protected readonly scopeId: string,
   ) {}
 
   /**
@@ -313,7 +312,6 @@ export class Ipam extends Resource {
     this.ipamId = this._ipam.attrIpamId;
   }
 }
-
 
 /**
  * Represents an IPv4 address range managed by AWS IP Address Manager (IPAM).

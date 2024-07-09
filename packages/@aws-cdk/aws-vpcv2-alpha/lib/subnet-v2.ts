@@ -1,15 +1,19 @@
-/* eslint-disable @typescript-eslint/member-ordering */
-// /* eslint-disable @typescript-eslint/member-ordering */
 import { Resource, Names } from 'aws-cdk-lib';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 
-export interface ICidr {
+/**
+ * Interface to define subnet CIDR
+ */
+interface ICidr {
   readonly cidr: string;
 }
 
+/**
+ * IPv4 CIDR range for the subnet
+ */
 export class Ipv4Cidr implements ICidr {
 
   public readonly cidr: string;
@@ -18,6 +22,9 @@ export class Ipv4Cidr implements ICidr {
   }
 }
 
+/**
+ * IPv6 CIDR range for the subnet
+ */
 export class Ipv6Cidr implements ICidr {
 
   public readonly cidr: string;
@@ -26,6 +33,9 @@ export class Ipv6Cidr implements ICidr {
   }
 }
 
+/**
+ * Properties to define subnet for VPC.
+ */
 export interface SubnetPropsV2 {
 /**
  * VPC Prop
@@ -66,8 +76,15 @@ export interface SubnetPropsV2 {
 }
 
 /**
- * Subnet to allow custom routes
+ * The SubnetV2 class represents a subnet within a VPC (Virtual Private Cloud) in AWS.
+ * It extends the Resource class and implements the ISubnet interface.
+ *
+ * Instances of this class can be used to create and manage subnets within a VpcV2 instance.
+ * Subnets can be configured with specific IP address ranges (IPv4 and IPv6), availability zones,
+ * and subnet types (e.g., public, private, isolated).
+ *
  * @resource AWS::EC2::Subnet
+ *
  */
 export class SubnetV2 extends Resource implements ISubnet {
 
@@ -115,14 +132,14 @@ export class SubnetV2 extends Resource implements ISubnet {
    */
   public readonly subnetType: SubnetType;
 
-  /**
-   *
-   * @param scope
-   * @param id
-   * @param props
-   */
   private _networkAcl: INetworkAcl;
 
+  /**
+   * Constructs a new SubnetV2 instance.
+   * @param scope The parent Construct that this resource will be part of.
+   * @param id The unique identifier for this resource.
+   * @param props The configuration properties for the subnet.
+   */
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
 
@@ -192,7 +209,9 @@ export class SubnetV2 extends Resource implements ISubnet {
   /**
    * Associate a Network ACL with this subnet
    *
-   * @param networkAcl The Network ACL to associate
+   * @param id The unique identifier for this association.
+   * @param networkAcl The Network ACL to associate with this subnet.
+   * This allows controlling inbound and outbound traffic for instances in this subnet.
    */
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
     this._networkAcl = networkAcl;
@@ -204,12 +223,22 @@ export class SubnetV2 extends Resource implements ISubnet {
       subnet: this,
     });
   }
+  /**
+   * Returns the Network ACL associated with this subnet.
+   */
 
   public get networkAcl(): INetworkAcl {
     return this._networkAcl;
   }
 }
 
+/**
+ * Stores the provided subnet in the VPC's collection of subnets based on the specified subnet type.
+ *
+ * @param vpc The VPC instance to which the subnet belongs.
+ * @param subnet The subnet instance to be stored.
+ * @param type The type of the subnet (e.g., public, private, isolated).
+ */
 function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
   const findFunctionType = subnetTypeMap[type];
   if (findFunctionType) {
@@ -237,9 +266,12 @@ const subnetTypeMap = {
 };
 
 /**
- * currently checking for amazon provided Ipv6 only which we plan to release
+ * Validates whether the provided VPC supports IPv6 addresses.
+ *
+ * @param vpc The VPC instance to be validated.
+ * @throws Error if the VPC does not support IPv6 addresses.
+ * @returns True if the VPC supports IPv6 addresses, false otherwise.
  */
-
 function validateSupportIpv6(vpc: IVpcV2) {
   if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
   secondaryAddress.ipv6IpamPoolId != undefined)) {
@@ -248,6 +280,14 @@ function validateSupportIpv6(vpc: IVpcV2) {
     throw new Error('To use IPv6, the VPC must enable IPv6 support.');
   }
 }
+
+/**
+ * Checks if the provided CIDR range falls within the IP address ranges of the given VPC.
+ *
+ * @param vpc The VPC instance to check against.
+ * @param cidrRange The CIDR range to be checked.
+ * @returns True if the CIDR range falls within the VPC's IP address ranges, false otherwise.
+ */
 
 function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
@@ -265,6 +305,14 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
   return cidrs.some(c => c.containsCidr(subnetCidrBlock));
 
 }
+
+/**
+ * Validates if the provided IPv4 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
+ *
+ * @param vpc The VPC instance to check against.
+ * @param ipv4CidrBlock The IPv4 CIDR block to be validated.
+ * @returns True if the IPv4 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
+ */
 
 function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {
 
@@ -289,6 +337,15 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
 
   return false;
 }
+
+/**
+ * Validates if the provided IPv6 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
+ *
+ * @param vpc The VPC instance to check against.
+ * @param ipv6CidrBlock The IPv6 CIDR block to be validated.
+ * @returns True if the IPv6 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
+ * @throws Error if no subnets are found in the VPC.
+ */
 
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
 

@@ -85,7 +85,7 @@ describe('Vpc V2 with full control', () => {
   test('VPC supports secondary Amazon Provided IPv6 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [ new vpc.AmazonProvided() ],
+      secondaryAddressBlocks: [new vpc.AmazonProvided()],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },
@@ -112,18 +112,18 @@ describe('Vpc V2 with full control', () => {
             },
           },
         },
-      }
+      },
     });
 
   });
 
   test('VPC Primary IP from Ipv4 Ipam', () => {
 
-    const ipam =  new Ipam(stack, 'TestIpam');
+    const ipam = new Ipam(stack, 'TestIpam');
 
-    const pool =  ipam.privateScope.addPool('PrivatePool0', {
+    const pool = ipam.privateScope.addPool('PrivatePool0', {
       addressFamily: AddressFamily.IP_V4,
-      provisionedCidrs: [ {cidr: '10.1.0.1/24'}],
+      provisionedCidrs: [{ cidr: '10.1.0.1/24' }],
       locale: 'us-west-1',
     });
 
@@ -139,7 +139,7 @@ describe('Vpc V2 with full control', () => {
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestIpamDBF92BA8: { Type: 'AWS::EC2::IPAM' },
-        TestIpamPrivatePool0E8589980: { 
+        TestIpamPrivatePool0E8589980: {
           Type: 'AWS::EC2::IPAMPool',
           Properties: {
             AddressFamily: 'ipv4',
@@ -164,7 +164,7 @@ describe('Vpc V2 with full control', () => {
               'Fn::GetAtt': [
                 'TestIpamPrivatePool0E8589980',
                 'IpamPoolId',
-              ]
+              ],
             },
             EnableDnsHostnames: true,
             EnableDnsSupport: true,
@@ -175,7 +175,7 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('VPC Secondary IP from Ipv6 Ipam', () => {
-    const ipam =  new Ipam(stack, 'TestIpam');
+    const ipam = new Ipam(stack, 'TestIpam');
 
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
@@ -183,7 +183,7 @@ describe('Vpc V2 with full control', () => {
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
     });
     pool.provisionCidr('PublicPoolCidr', {
-      netmaskLength: 60
+      netmaskLength: 60,
     });
 
     new vpc.VpcV2(stack, 'TestVpc', {
@@ -210,7 +210,7 @@ describe('Vpc V2 with full control', () => {
                 'PublicDefaultScopeId',
               ],
             },
-            PublicIpSource: 'amazon',          
+            PublicIpSource: 'amazon',
           },
         },
         // Test Amazon Provided IPAM IPv6
@@ -247,14 +247,13 @@ describe('Vpc V2 with full control', () => {
               'Fn::GetAtt': [
                 'TestIpamPublicPool0588A338B',
                 'IpamPoolId',
-              ]
+              ],
             },
             Ipv6NetmaskLength: 64,
-            },
           },
         },
-      });
+      },
     });
+  });
 });
-
 
