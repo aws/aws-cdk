@@ -160,7 +160,6 @@ async function parseCommandLineArguments(args: string[]) {
       })
       .option('hotswap-ecs-minimum-healthy-percent', {
         type: 'number',
-        default: 0,
         desc: 'When using hotswap for ECS, set the minimum healthy percent' +
           'for the updated task definition',
       })
@@ -609,8 +608,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
           hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
-          hotswapEcsMinimumHealthyPercent: args.hotswapMinimumHealthyPercent,
-          hotswapEcsMaximumHealthyPercent: args.hotswapMaximumHealthyPercent,
+          hotswapEcsMinimumHealthyPercent: args['hotswap-ecs-minimum-healthy-percent'],
+          hotswapEcsMaximumHealthyPercent: args['hotswap-ecs-maximum-healthy-percent'],
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,

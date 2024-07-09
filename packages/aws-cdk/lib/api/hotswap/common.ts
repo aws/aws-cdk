@@ -120,7 +120,17 @@ export class EcsHotswapProperties {
   readonly maximumHealthyPercent?: number;
 
   public constructor (minimumHealthyPercent?: number, maximumHealthyPercent?: number) {
-    this.minimumHealthyPercent = minimumHealthyPercent;
+    if (minimumHealthyPercent !== undefined && minimumHealthyPercent < 0 ) {
+      throw new Error('hotswap-ecs-minimum-healthy-percent can\'t be a negative number');
+    }
+    if (maximumHealthyPercent !== undefined && maximumHealthyPercent < 0 ) {
+      throw new Error('hotswap-ecs-maximum-healthy-percent can\'t be a negative number');
+    }
+    if (minimumHealthyPercent == undefined) {
+      this.minimumHealthyPercent = 0;
+    } else {
+      this.minimumHealthyPercent = minimumHealthyPercent;
+    }
     this.maximumHealthyPercent = maximumHealthyPercent;
   }
 
@@ -129,7 +139,7 @@ export class EcsHotswapProperties {
    * @returns true if all properties are undefined, false otherwise
   */
   public isEmpty(): boolean {
-    return this.minimumHealthyPercent === undefined && this.maximumHealthyPercent === undefined;
+    return this.minimumHealthyPercent === 0 && this.maximumHealthyPercent === undefined;
   }
 }
 

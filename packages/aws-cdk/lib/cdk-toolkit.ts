@@ -246,7 +246,7 @@ export class CdkToolkit {
     }
 
     let ecsHotswapProperties = new EcsHotswapProperties(options.hotswapEcsMinimumHealthyPercent, options.hotswapEcsMaximumHealthyPercent);
-    if (!ecsHotswapProperties.isEmpty() && options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
+    if (!ecsHotswapProperties.isEmpty() && options.hotswap == HotswapMode.FULL_DEPLOYMENT) {
       warning('⚠️ Hotswap properties defined while not in hotswap mode will be ignored.');
     }
     let hotswapProperties = new HotswapProperties();
@@ -1222,17 +1222,6 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
   readonly hotswap: HotswapMode;
 
   /**
-   * An override for the minimum healthy percent for an ECS service during hotswap deployments.
-   * @default 0
-   */
-  readonly hotswapEcsMinimumHealthyPercent?: number;
-
-  /**
-   *   An override for the maximum healthy percent for an ECS service during hotswap deployments.
-   */
-  readonly hotswapEcsMaximumHealthyPercent?: number;
-
-  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header
@@ -1308,6 +1297,16 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly watch?: boolean;
+
+  /**
+   * An override for the minimum healthy percent for an ECS service during hotswap deployments.
+   */
+  readonly hotswapEcsMinimumHealthyPercent?: number;
+
+  /**
+   *   An override for the maximum healthy percent for an ECS service during hotswap deployments.
+   */
+  readonly hotswapEcsMaximumHealthyPercent?: number;
 
   /**
    * Whether we should cache the Cloud Assembly after the first time it has been synthesized.
