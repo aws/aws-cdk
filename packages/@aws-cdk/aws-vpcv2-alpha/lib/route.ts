@@ -176,7 +176,10 @@ export class CarrierGateway extends Resource implements IRouteTarget {
    * The ID of the route target.
    */
   readonly routerId: string;
-
+  
+  /**
+   * The carrier gateway CFN resource.
+   */
   public readonly resource: CfnCarrierGateway;
 
   constructor(scope: Construct, id: string, props: CarrierGatewayProps) {
@@ -207,6 +210,9 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
    */
   readonly routerId: string;
 
+  /**
+   * The egress-only internet gateway CFN resource.
+   */
   public readonly resource: CfnEgressOnlyInternetGateway;
 
   constructor(scope: Construct, id: string, props: EgressOnlyInternetGatewayProps) {
@@ -242,6 +248,9 @@ export class InternetGateway extends Resource implements IRouteTarget {
    */
   public readonly vpcId: string;
 
+  /**
+   * The internet gateway CFN resource.
+   */
   public readonly resource: CfnInternetGateway;
 
   constructor(scope: Construct, id: string, props: InternetGatewayProps) {
@@ -276,6 +285,9 @@ export class VPNGateway extends Resource implements IRouteTarget {
    */
   public readonly vpcId: string;
 
+  /**
+   * The VPN gateway CFN resource.
+   */
   public readonly resource: CfnVPNGateway;
 
   constructor(scope: Construct, id: string, props: VPNGatewayProps) {
@@ -331,6 +343,9 @@ export class NatGateway extends Resource implements IRouteTarget {
    */
   public readonly maxDrainDurationSeconds?: number;
 
+  /**
+   * The NAT gateway CFN resource.
+   */
   public readonly resource: CfnNatGateway;
 
   constructor(scope: Construct, id: string, props: NatGatewayProps) {
@@ -381,6 +396,9 @@ export class NetworkInterface extends Resource implements IRouteTarget {
    */
   readonly routerId: string;
 
+  /**
+   * The network interface CFN resource.
+   */
   public readonly resource: CfnNetworkInterface;
 
   constructor(scope: Construct, id: string, props: NetworkInterfaceProps) {
@@ -411,6 +429,9 @@ export class TransitGateway extends Resource implements IRouteTarget {
    */
   readonly routerId: string;
 
+  /**
+   * The transit gateway CFN resource.
+   */
   public readonly resource: CfnTransitGateway;
 
   constructor(scope: Construct, id: string/*, props: TransitGatewayProps*/) {
@@ -440,6 +461,9 @@ export class VpcPeeringConnection extends Resource implements IRouteTarget {
    */
   readonly routerId: string;
 
+  /**
+   * The VPC peering connection CFN resource.
+   */
   public readonly resource: CfnVPCPeeringConnection;
 
   constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
@@ -520,6 +544,9 @@ export class Route extends Resource implements IRouteV2 {
    */
   public readonly targetRouterType: RouterType
 
+  /**
+   * The route CFN resource.
+   */
   public readonly resource?: CfnRoute;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
@@ -567,6 +594,9 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
    */
   public readonly routeTableId: string;
 
+  /**
+   * The route table CFN resource.
+   */
   public readonly resource: CfnRouteTable;
 
   constructor(scope: Construct, id: string, props: RouteTableProps) {
