@@ -387,6 +387,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EMR_WAL = new InterfaceVpcEndpointAwsService('emrwal.prod');
   public static readonly ENTITY_RESOLUTION = new InterfaceVpcEndpointAwsService('entityresolution');
   public static readonly EVENTBRIDGE = new InterfaceVpcEndpointAwsService('events');
+  public static readonly EVENTBRIDGE_SCHEMA_REGISTRY = new InterfaceVpcEndpointAwsService('schemas');
   public static readonly FAULT_INJECTION_SIMULATOR = new InterfaceVpcEndpointAwsService('fis');
   public static readonly FINSPACE = new InterfaceVpcEndpointAwsService('finspace');
   public static readonly FINSPACE_API = new InterfaceVpcEndpointAwsService('finspace-api');
@@ -477,7 +478,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   /** @deprecated - Use InterfaceVpcEndpointAwsService.PINPOINT_SMS_VOICE_V2 instead. */
   public static readonly PINPOINT = new InterfaceVpcEndpointAwsService('pinpoint-sms-voice-v2');
   public static readonly PINPOINT_SMS_VOICE_V2 = new InterfaceVpcEndpointAwsService('pinpoint-sms-voice-v2');
+  public static readonly PIPES = new InterfaceVpcEndpointAwsService('pipes');
   public static readonly PIPES_DATA = new InterfaceVpcEndpointAwsService('pipes-data');
+  public static readonly PIPES_FIPS = new InterfaceVpcEndpointAwsService('pipes-fips');
   public static readonly POLLY = new InterfaceVpcEndpointAwsService('polly');
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
