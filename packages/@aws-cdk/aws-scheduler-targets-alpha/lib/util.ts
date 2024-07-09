@@ -5,7 +5,12 @@ import { Token, TokenComparison } from 'aws-cdk-lib';
  *
  * Used to compare either accounts or regions, and also returns true if both
  * are unresolved (in which case both are expted to be "current region" or "current account").
+ *
+ * Also returns true if one is unresolved (in which case we expect the unresolved dimension to match
+ * the resolved dimension, but it is up to the user to ensure this). Returning true here makes sure
+ * that we are not overly aggressive in producing a synth-time error.
+ *
  */
 export function sameEnvDimension(dim1: string, dim2: string) {
-  return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));
+  return [TokenComparison.SAME, TokenComparison.ONE_UNRESOLVED, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));
 }
