@@ -77,6 +77,10 @@ export function flatten<A>(xs: A[][]): A[] {
 export class NetworkUtils {
 
   /**
+   * Validates an IPv4 address string.
+   *
+   * @param ipAddress The IPv4 address string to be validated.
+   * @returns True if the string is a valid IPv4 address, false otherwise.
    * Validates an IPv4 string
    *
    * returns true of the string contains 4 numbers between 0-255 delimited by
@@ -92,10 +96,12 @@ export class NetworkUtils {
   }
 
   /**
-   * Converts a string IPv4 to a number
+   * Converts a string representation of an IPv4 address to its corresponding numerical value.
    *
-   * takes an IP Address (e.g. 174.66.173.168) and converts to a number
-   * (e.g 2923605416); currently only supports IPv4
+   * @param ipAddress The IPv4 address string to be converted.
+   * @returns The numerical value of the IPv4 address.
+   * @throws Error if the provided IPv4 address string is invalid.
+   * Converts a string IPv4 to a number
    *
    * Uses the formula:
    * (first octet * 256³) + (second octet * 256²) + (third octet * 256) +
@@ -155,8 +161,15 @@ export class CidrBlock {
   /**
    * Calculates the netmask for a given CIDR mask
    *
+   * The netmask is a 32-bit binary value used to separate the network portion from the host portion of an IPv4 address.
+   * It is calculated based on the CIDR prefix length (the number of bits used to represent the network portion).
+   *
    * For example:
    * CidrBlock.calculateNetmask(24) returns '255.255.255.0'
+   *
+   * @param mask The CIDR prefix length (between 0 and 32) for which to calculate the netmask.
+    // Calculate the netmask by performing a bitwise NOT on the result of (2^32 - 2^(32 - mask))
+   * @returns The netmask string in IPv4 address format.
    */
   public static calculateNetmask(mask: number): string {
     return NetworkUtils.numToIp(2 ** 32 - 2 ** (32 - mask));
@@ -166,6 +179,9 @@ export class CidrBlock {
    * Calculates the number IP addresses in a CIDR Mask
    *
    * For example:
+   * CidrBlock.calculateNetsize(16) returns 65536
+   *
+   * @param mask The CIDR prefix length (between 0 and 32) for which to calculate the network size.
    * CidrBlock.calculateNetsize(24) returns 256
    */
   public static calculateNetsize(mask: number): number {
@@ -174,6 +190,16 @@ export class CidrBlock {
 
   /*
    * The CIDR Block represented as a string e.g. '10.0.0.0/21'
+   */
+  /**
+   * Creates a new CidrBlock instance representing an IPv4 CIDR block.
+   *
+   * @param cidrOrIpAddress The CIDR notation string (e.g., '10.0.0.0/16') or the IP address number to be used as the base address.
+   * @param mask The CIDR prefix length (between 0 and 32) if providing an IP address number as the first argument.
+   */
+  /**
+   * The total number of IP addresses in the CIDR block.
+   * This is calculated as 2^(32 - mask).
    */
   public readonly cidr: string;
 
@@ -234,6 +260,11 @@ export class CidrBlock {
   }
 
   /*
+   * Checks if this CIDR block fully contains the provided CIDR block.
+   *
+   * @param other The CIDR block to check for containment.
+   * @returns True if this CIDR block fully contains the provided CIDR block, false otherwise.
+   *
    * The minimum IP in the CIDR Block e.g. '10.0.0.0'
    */
   public minIp(): string {
@@ -252,11 +283,19 @@ export class CidrBlock {
    * Returns the number representation for the maximum IPv4 address
    */
   public maxAddress(): number {
+    /**
+     * The maximum IP address in the CIDR block is calculated as the minimum address + (2^(32-mask)) - 1.
+     * This is because the minimum address represents the network address, and the maximum address is the broadcast address.
+     */
     // min + (2^(32-mask)) - 1 [zero needs to count]
     return this.minAddress() + this.networkSize - 1;
   }
 
   /*
+   * Returns the next consecutive CIDR block of the same mask size following this CIDR block.
+   *
+   * For example, if this CIDR block is '10.0.0.0/24', the next block would be '10.0.1.0/24'.
+   *
    * Returns the next CIDR Block of the same mask size
    */
   public nextBlock(): CidrBlock {
@@ -271,6 +310,15 @@ export class CidrBlock {
       (this.minAddress() <= other.minAddress());
   }
 
+  /**
+   * Checks if two IP address ranges overlap.
+   *
+   * @param range1 The first IP address range represented as an array [start, end].
+   * @param range2 The second IP address range represented as an array [start, end].
+   * @returns True if the two IP address ranges overlap, false otherwise.
+   *
+   * Note: This method assumes that the start and end addresses are valid IPv4 addresses.
+   */
   public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
     const [start1, end1] = range1;
     const [start2, end2] = range2;
@@ -281,10 +329,12 @@ export class CidrBlock {
 
 }
 
-
 /**
  * Class with helper functions to support
  * Subnet Ipv6 Address Validation
+ *
+ * This class provides methods for working with IPv6 CIDR blocks, including calculating the minimum and maximum
+ * IP addresses in a CIDR block, and checking if two CIDR blocks overlap.
  */
 export class CidrBlockIpv6 {
 
@@ -292,6 +342,9 @@ export class CidrBlockIpv6 {
    * Ipv6 CIDR range
    */
   public cidr: string;
+  /**
+   * The CIDR prefix length (number of bits used for the network portion of the address).
+   */
   public cidrPrefix: number;
   private ipParts: bigint[];
   private networkBits: number;
@@ -335,7 +388,7 @@ export class CidrBlockIpv6 {
   private formatIPv6Part = (part: bigint) => part.toString(16).padStart(4, '0');
 
   /**
-   * 
+   *
    * @param range1 Ipv6 CIDR range to compare
    * @param range2 Ipv6 CIDR range to compare
    * @returns true if two ranges overlap, false otherwise
@@ -348,8 +401,8 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   * 
-   * @param cidr 
+   *
+   * @param cidr
    * @returns Range in the from of big int number [start, end]
    */
   private getIPv6Range(cidr: string): [bigint, bigint] {
@@ -364,8 +417,8 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   * 
-   * @param ipv6Address 
+   *
+   * @param ipv6Address
    * @returns Converts given ipv6 address range to big int number
    */
   private ipv6ToNumber(ipv6Address: string): bigint {
