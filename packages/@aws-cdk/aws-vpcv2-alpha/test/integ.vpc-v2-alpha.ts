@@ -13,9 +13,9 @@ import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { SubnetV2, Ipv4Cidr } from '../lib/subnet-v2';
-
-
+import { SubnetV2, Ipv4Cidr, Ipv6Cidr } from '../lib/subnet-v2';
+//import { rangesOverlap } from '../lib/util';
+//import { CidrBlockIpv6 } from '../lib/util';
 
 const app = new cdk.App();
 
@@ -62,7 +62,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
     ipv6NetmaskLength: 60,
   }),
   vpc_v2.IpAddresses.ipv4('10.2.0.0/16'),
-],
+  vpc_v2.IpAddresses.ipv4('10.3.0.0/16')],
 });
 
 new SubnetV2(stack, 'testsbubnet', {
@@ -76,8 +76,26 @@ new SubnetV2(stack, 'testsubnet', {
   vpc,
   availabilityZone: 'us-west-2a',
   cidrBlock: new Ipv4Cidr('10.2.0.0/24'),
+  ipv6CidrBlock: new Ipv6Cidr('2001:db8:1::/64'), //Test secondary ipv6 address
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
+
+// const cidr = new CidrBlockIpv6('2001:0db8:0000:0001::/60');
+// console.log(cidr.minIp(), cidr.maxIp());
+
+// const cidr2 = new CidrBlockIpv6('2001:db8:1234:0001:0000::/68');
+// console.log(cidr2.minIp(), cidr2.maxIp());
+
+
+//validate ipv6
+new SubnetV2(stack, 'validateIpv6', {
+  vpc,
+  cidrBlock: new Ipv4Cidr('10.3.0.0/24'),
+  availabilityZone: 'us-west-2a',
+  ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),
+  subnetType: SubnetType.PRIVATE_ISOLATED,
+});
+
 
 
 new IntegTest(app, 'integtest-model', {

@@ -578,7 +578,7 @@ export class Route extends Resource implements IRouteV2 {
         new CfnVPCGatewayAttachment(this, 'GWAttachment', {
           vpcId: this.target.vpcId,
           vpnGatewayId: this.target.routerId,
-        })
+        });
       }
     }
   }
