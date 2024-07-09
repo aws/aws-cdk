@@ -1,4 +1,5 @@
 import { HttpMethod, IVpcLink, ParameterMapping } from '../../../aws-apigatewayv2';
+import { Duration } from '../../../core';
 
 /**
  * Base options for private integration
@@ -31,4 +32,11 @@ export interface HttpPrivateIntegrationOptions {
   * @default undefined requests are sent to the backend unmodified
   */
   readonly parameterMapping?: ParameterMapping;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
 }
