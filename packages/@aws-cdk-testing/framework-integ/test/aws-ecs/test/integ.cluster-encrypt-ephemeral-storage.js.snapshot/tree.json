@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-ecs-integ": {
-        "id": "aws-ecs-integ",
-        "path": "aws-ecs-integ",
+      "aws-ecs-ephemmeral-integ": {
+        "id": "aws-ecs-ephemmeral-integ",
+        "path": "aws-ecs-ephemmeral-integ",
         "children": {
           "key": {
             "id": "key",
-            "path": "aws-ecs-integ/key",
+            "path": "aws-ecs-ephemmeral-integ/key",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ/key/Resource",
+                "path": "aws-ecs-ephemmeral-integ/key/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -42,6 +42,53 @@
                             }
                           },
                           "Resource": "*"
+                        },
+                        {
+                          "Action": "kms:GenerateDataKeyWithoutPlaintext",
+                          "Condition": {
+                            "StringEquals": {
+                              "kms:EncryptionContext:aws:ecs:clusterAccount": [
+                                {
+                                  "Ref": "AWS::AccountId"
+                                }
+                              ],
+                              "kms:EncryptionContext:aws:ecs:clusterName": [
+                                "cluster-name"
+                              ]
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "fargate.amazonaws.com"
+                          },
+                          "Resource": "*",
+                          "Sid": "Allow generate data key access for Fargate tasks."
+                        },
+                        {
+                          "Action": "kms:CreateGrant",
+                          "Condition": {
+                            "StringEquals": {
+                              "kms:EncryptionContext:aws:ecs:clusterAccount": [
+                                {
+                                  "Ref": "AWS::AccountId"
+                                }
+                              ],
+                              "kms:EncryptionContext:aws:ecs:clusterName": [
+                                "cluster-name"
+                              ]
+                            },
+                            "ForAllValues:StringEquals": {
+                              "kms:GrantOperations": [
+                                "Decrypt"
+                              ]
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "fargate.amazonaws.com"
+                          },
+                          "Resource": "*",
+                          "Sid": "Allow grant creation permission for Fargate tasks."
                         },
                         {
                           "Action": "kms:GenerateDataKeyWithoutPlaintext",
@@ -100,16 +147,17 @@
               "version": "0.0.0"
             }
           },
-          "Cluster": {
-            "id": "Cluster",
-            "path": "aws-ecs-integ/Cluster",
+          "NamedCluster": {
+            "id": "NamedCluster",
+            "path": "aws-ecs-ephemmeral-integ/NamedCluster",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ/Cluster/Resource",
+                "path": "aws-ecs-ephemmeral-integ/NamedCluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {
+                    "clusterName": "cluster-name",
                     "configuration": {
                       "managedStorageConfiguration": {
                         "fargateEphemeralStorageKmsKeyId": {
@@ -126,11 +174,11 @@
               },
               "Vpc": {
                 "id": "Vpc",
-                "path": "aws-ecs-integ/Cluster/Vpc",
+                "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ/Cluster/Vpc/Resource",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                       "aws:cdk:cloudformation:props": {
@@ -141,7 +189,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Cluster/Vpc"
+                            "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc"
                           }
                         ]
                       }
@@ -153,11 +201,11 @@
                   },
                   "PublicSubnet1": {
                     "id": "PublicSubnet1",
-                    "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1/Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -182,11 +230,11 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -197,7 +245,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1/Acl",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -205,18 +253,18 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1/RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -227,15 +275,15 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1/RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
                             "routeTableId": {
-                              "Ref": "ClusterVpcPublicSubnet1RouteTable5594A636"
+                              "Ref": "NamedClusterVpcPublicSubnet1RouteTable0BBDD7E6"
                             },
                             "subnetId": {
-                              "Ref": "ClusterVpcPublicSubnet1SubnetA9F7E0A5"
+                              "Ref": "NamedClusterVpcPublicSubnet1Subnet6A7AB380"
                             }
                           }
                         },
@@ -246,16 +294,16 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1/DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
-                              "Ref": "ClusterVpcIGW1E358A6E"
+                              "Ref": "NamedClusterVpcIGWDCEFADAD"
                             },
                             "routeTableId": {
-                              "Ref": "ClusterVpcPublicSubnet1RouteTable5594A636"
+                              "Ref": "NamedClusterVpcPublicSubnet1RouteTable0BBDD7E6"
                             }
                           }
                         },
@@ -266,7 +314,7 @@
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1/EIP",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -274,7 +322,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1"
                               }
                             ]
                           }
@@ -286,23 +334,23 @@
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1/NATGateway",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
                             "allocationId": {
                               "Fn::GetAtt": [
-                                "ClusterVpcPublicSubnet1EIP433C56EE",
+                                "NamedClusterVpcPublicSubnet1EIP0D22B2D8",
                                 "AllocationId"
                               ]
                             },
                             "subnetId": {
-                              "Ref": "ClusterVpcPublicSubnet1SubnetA9F7E0A5"
+                              "Ref": "NamedClusterVpcPublicSubnet1Subnet6A7AB380"
                             },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet1"
                               }
                             ]
                           }
@@ -320,11 +368,11 @@
                   },
                   "PublicSubnet2": {
                     "id": "PublicSubnet2",
-                    "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2/Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -349,11 +397,11 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -364,7 +412,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2/Acl",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -372,18 +420,18 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2/RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -394,15 +442,15 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2/RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
                             "routeTableId": {
-                              "Ref": "ClusterVpcPublicSubnet2RouteTable7B43F18C"
+                              "Ref": "NamedClusterVpcPublicSubnet2RouteTable547EEB87"
                             },
                             "subnetId": {
-                              "Ref": "ClusterVpcPublicSubnet2Subnet059113C4"
+                              "Ref": "NamedClusterVpcPublicSubnet2SubnetFFB33D07"
                             }
                           }
                         },
@@ -413,16 +461,16 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2/DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
-                              "Ref": "ClusterVpcIGW1E358A6E"
+                              "Ref": "NamedClusterVpcIGWDCEFADAD"
                             },
                             "routeTableId": {
-                              "Ref": "ClusterVpcPublicSubnet2RouteTable7B43F18C"
+                              "Ref": "NamedClusterVpcPublicSubnet2RouteTable547EEB87"
                             }
                           }
                         },
@@ -433,7 +481,7 @@
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2/EIP",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -441,7 +489,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2"
                               }
                             ]
                           }
@@ -453,23 +501,23 @@
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2/NATGateway",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
                             "allocationId": {
                               "Fn::GetAtt": [
-                                "ClusterVpcPublicSubnet2EIP203DF3E5",
+                                "NamedClusterVpcPublicSubnet2EIPADE9A227",
                                 "AllocationId"
                               ]
                             },
                             "subnetId": {
-                              "Ref": "ClusterVpcPublicSubnet2Subnet059113C4"
+                              "Ref": "NamedClusterVpcPublicSubnet2SubnetFFB33D07"
                             },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PublicSubnet2"
                               }
                             ]
                           }
@@ -487,11 +535,11 @@
                   },
                   "PrivateSubnet1": {
                     "id": "PrivateSubnet1",
-                    "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1/Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -516,11 +564,11 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -531,7 +579,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1/Acl",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -539,18 +587,18 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1/RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -561,15 +609,15 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1/RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
                             "routeTableId": {
-                              "Ref": "ClusterVpcPrivateSubnet1RouteTable5AAEDA3F"
+                              "Ref": "NamedClusterVpcPrivateSubnet1RouteTable3B1A8EB9"
                             },
                             "subnetId": {
-                              "Ref": "ClusterVpcPrivateSubnet1SubnetA4EB481A"
+                              "Ref": "NamedClusterVpcPrivateSubnet1Subnet7D8436CF"
                             }
                           }
                         },
@@ -580,16 +628,16 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet1/DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
-                              "Ref": "ClusterVpcPublicSubnet1NATGateway0693C346"
+                              "Ref": "NamedClusterVpcPublicSubnet1NATGatewayF6978C72"
                             },
                             "routeTableId": {
-                              "Ref": "ClusterVpcPrivateSubnet1RouteTable5AAEDA3F"
+                              "Ref": "NamedClusterVpcPrivateSubnet1RouteTable3B1A8EB9"
                             }
                           }
                         },
@@ -606,11 +654,11 @@
                   },
                   "PrivateSubnet2": {
                     "id": "PrivateSubnet2",
-                    "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2/Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -635,11 +683,11 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -650,7 +698,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2/Acl",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2/Acl",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -658,18 +706,18 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2/RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2"
+                                "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2"
                               }
                             ],
                             "vpcId": {
-                              "Ref": "ClusterVpcFAA3CEDF"
+                              "Ref": "NamedClusterVpc38CD97C1"
                             }
                           }
                         },
@@ -680,15 +728,15 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2/RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
                             "routeTableId": {
-                              "Ref": "ClusterVpcPrivateSubnet2RouteTable73064A66"
+                              "Ref": "NamedClusterVpcPrivateSubnet2RouteTable2338DB5E"
                             },
                             "subnetId": {
-                              "Ref": "ClusterVpcPrivateSubnet2SubnetBD1ECB6E"
+                              "Ref": "NamedClusterVpcPrivateSubnet2SubnetD709350A"
                             }
                           }
                         },
@@ -699,16 +747,16 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ/Cluster/Vpc/PrivateSubnet2/DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/PrivateSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
-                              "Ref": "ClusterVpcPublicSubnet2NATGateway00B24686"
+                              "Ref": "NamedClusterVpcPublicSubnet2NATGateway4758837E"
                             },
                             "routeTableId": {
-                              "Ref": "ClusterVpcPrivateSubnet2RouteTable73064A66"
+                              "Ref": "NamedClusterVpcPrivateSubnet2RouteTable2338DB5E"
                             }
                           }
                         },
@@ -725,14 +773,14 @@
                   },
                   "IGW": {
                     "id": "IGW",
-                    "path": "aws-ecs-integ/Cluster/Vpc/IGW",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/IGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ/Cluster/Vpc"
+                            "value": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc"
                           }
                         ]
                       }
@@ -744,15 +792,15 @@
                   },
                   "VPCGW": {
                     "id": "VPCGW",
-                    "path": "aws-ecs-integ/Cluster/Vpc/VPCGW",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/VPCGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                       "aws:cdk:cloudformation:props": {
                         "internetGatewayId": {
-                          "Ref": "ClusterVpcIGW1E358A6E"
+                          "Ref": "NamedClusterVpcIGWDCEFADAD"
                         },
                         "vpcId": {
-                          "Ref": "ClusterVpcFAA3CEDF"
+                          "Ref": "NamedClusterVpc38CD97C1"
                         }
                       }
                     },
@@ -763,11 +811,11 @@
                   },
                   "RestrictDefaultSecurityGroupCustomResource": {
                     "id": "RestrictDefaultSecurityGroupCustomResource",
-                    "path": "aws-ecs-integ/Cluster/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                    "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/RestrictDefaultSecurityGroupCustomResource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-ecs-integ/Cluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                        "path": "aws-ecs-ephemmeral-integ/NamedCluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -793,7 +841,7 @@
           },
           "LatestNodeRuntimeMap": {
             "id": "LatestNodeRuntimeMap",
-            "path": "aws-ecs-integ/LatestNodeRuntimeMap",
+            "path": "aws-ecs-ephemmeral-integ/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
@@ -801,11 +849,11 @@
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "aws-ecs-ephemmeral-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "aws-ecs-ephemmeral-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -813,7 +861,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "aws-ecs-ephemmeral-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -821,7 +869,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "aws-ecs-ephemmeral-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -833,9 +881,700 @@
               "version": "0.0.0"
             }
           },
+          "Cluster": {
+            "id": "Cluster",
+            "path": "aws-ecs-ephemmeral-integ/Cluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-ephemmeral-integ/Cluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "configuration": {
+                      "managedStorageConfiguration": {
+                        "fargateEphemeralStorageKmsKeyId": {
+                          "Ref": "keyFEDD6EC0"
+                        }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "Vpc": {
+                "id": "Vpc",
+                "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrBlock": "10.0.0.0/16",
+                        "enableDnsHostnames": true,
+                        "enableDnsSupport": true,
+                        "instanceTenancy": "default",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "PublicSubnet1": {
+                    "id": "PublicSubnet1",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1",
+                    "children": {
+                      "Subnet": {
+                        "id": "Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1/Subnet",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                          "aws:cdk:cloudformation:props": {
+                            "availabilityZone": {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::GetAZs": ""
+                                }
+                              ]
+                            },
+                            "cidrBlock": "10.0.0.0/18",
+                            "mapPublicIpOnLaunch": true,
+                            "tags": [
+                              {
+                                "key": "aws-cdk:subnet-name",
+                                "value": "Public"
+                              },
+                              {
+                                "key": "aws-cdk:subnet-type",
+                                "value": "Public"
+                              },
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Acl": {
+                        "id": "Acl",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1/Acl",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTable": {
+                        "id": "RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1/RouteTable",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                          "aws:cdk:cloudformation:props": {
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTableAssociation": {
+                        "id": "RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1/RouteTableAssociation",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                          "aws:cdk:cloudformation:props": {
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPublicSubnet1RouteTable5594A636"
+                            },
+                            "subnetId": {
+                              "Ref": "ClusterVpcPublicSubnet1SubnetA9F7E0A5"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultRoute": {
+                        "id": "DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1/DefaultRoute",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "destinationCidrBlock": "0.0.0.0/0",
+                            "gatewayId": {
+                              "Ref": "ClusterVpcIGW1E358A6E"
+                            },
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPublicSubnet1RouteTable5594A636"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "EIP": {
+                        "id": "EIP",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1/EIP",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                          "aws:cdk:cloudformation:props": {
+                            "domain": "vpc",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "NATGateway": {
+                        "id": "NATGateway",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1/NATGateway",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                          "aws:cdk:cloudformation:props": {
+                            "allocationId": {
+                              "Fn::GetAtt": [
+                                "ClusterVpcPublicSubnet1EIP433C56EE",
+                                "AllocationId"
+                              ]
+                            },
+                            "subnetId": {
+                              "Ref": "ClusterVpcPublicSubnet1SubnetA9F7E0A5"
+                            },
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "PublicSubnet2": {
+                    "id": "PublicSubnet2",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2",
+                    "children": {
+                      "Subnet": {
+                        "id": "Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2/Subnet",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                          "aws:cdk:cloudformation:props": {
+                            "availabilityZone": {
+                              "Fn::Select": [
+                                1,
+                                {
+                                  "Fn::GetAZs": ""
+                                }
+                              ]
+                            },
+                            "cidrBlock": "10.0.64.0/18",
+                            "mapPublicIpOnLaunch": true,
+                            "tags": [
+                              {
+                                "key": "aws-cdk:subnet-name",
+                                "value": "Public"
+                              },
+                              {
+                                "key": "aws-cdk:subnet-type",
+                                "value": "Public"
+                              },
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Acl": {
+                        "id": "Acl",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2/Acl",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTable": {
+                        "id": "RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2/RouteTable",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                          "aws:cdk:cloudformation:props": {
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTableAssociation": {
+                        "id": "RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2/RouteTableAssociation",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                          "aws:cdk:cloudformation:props": {
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPublicSubnet2RouteTable7B43F18C"
+                            },
+                            "subnetId": {
+                              "Ref": "ClusterVpcPublicSubnet2Subnet059113C4"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultRoute": {
+                        "id": "DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2/DefaultRoute",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "destinationCidrBlock": "0.0.0.0/0",
+                            "gatewayId": {
+                              "Ref": "ClusterVpcIGW1E358A6E"
+                            },
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPublicSubnet2RouteTable7B43F18C"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "EIP": {
+                        "id": "EIP",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2/EIP",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                          "aws:cdk:cloudformation:props": {
+                            "domain": "vpc",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "NATGateway": {
+                        "id": "NATGateway",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2/NATGateway",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                          "aws:cdk:cloudformation:props": {
+                            "allocationId": {
+                              "Fn::GetAtt": [
+                                "ClusterVpcPublicSubnet2EIP203DF3E5",
+                                "AllocationId"
+                              ]
+                            },
+                            "subnetId": {
+                              "Ref": "ClusterVpcPublicSubnet2Subnet059113C4"
+                            },
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PublicSubnet2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "PrivateSubnet1": {
+                    "id": "PrivateSubnet1",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1",
+                    "children": {
+                      "Subnet": {
+                        "id": "Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1/Subnet",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                          "aws:cdk:cloudformation:props": {
+                            "availabilityZone": {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::GetAZs": ""
+                                }
+                              ]
+                            },
+                            "cidrBlock": "10.0.128.0/18",
+                            "mapPublicIpOnLaunch": false,
+                            "tags": [
+                              {
+                                "key": "aws-cdk:subnet-name",
+                                "value": "Private"
+                              },
+                              {
+                                "key": "aws-cdk:subnet-type",
+                                "value": "Private"
+                              },
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Acl": {
+                        "id": "Acl",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1/Acl",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTable": {
+                        "id": "RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1/RouteTable",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                          "aws:cdk:cloudformation:props": {
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTableAssociation": {
+                        "id": "RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1/RouteTableAssociation",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                          "aws:cdk:cloudformation:props": {
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPrivateSubnet1RouteTable5AAEDA3F"
+                            },
+                            "subnetId": {
+                              "Ref": "ClusterVpcPrivateSubnet1SubnetA4EB481A"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultRoute": {
+                        "id": "DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet1/DefaultRoute",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "destinationCidrBlock": "0.0.0.0/0",
+                            "natGatewayId": {
+                              "Ref": "ClusterVpcPublicSubnet1NATGateway0693C346"
+                            },
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPrivateSubnet1RouteTable5AAEDA3F"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "PrivateSubnet2": {
+                    "id": "PrivateSubnet2",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2",
+                    "children": {
+                      "Subnet": {
+                        "id": "Subnet",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2/Subnet",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                          "aws:cdk:cloudformation:props": {
+                            "availabilityZone": {
+                              "Fn::Select": [
+                                1,
+                                {
+                                  "Fn::GetAZs": ""
+                                }
+                              ]
+                            },
+                            "cidrBlock": "10.0.192.0/18",
+                            "mapPublicIpOnLaunch": false,
+                            "tags": [
+                              {
+                                "key": "aws-cdk:subnet-name",
+                                "value": "Private"
+                              },
+                              {
+                                "key": "aws-cdk:subnet-type",
+                                "value": "Private"
+                              },
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Acl": {
+                        "id": "Acl",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2/Acl",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTable": {
+                        "id": "RouteTable",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2/RouteTable",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                          "aws:cdk:cloudformation:props": {
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "ClusterVpcFAA3CEDF"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "RouteTableAssociation": {
+                        "id": "RouteTableAssociation",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2/RouteTableAssociation",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                          "aws:cdk:cloudformation:props": {
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPrivateSubnet2RouteTable73064A66"
+                            },
+                            "subnetId": {
+                              "Ref": "ClusterVpcPrivateSubnet2SubnetBD1ECB6E"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultRoute": {
+                        "id": "DefaultRoute",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/PrivateSubnet2/DefaultRoute",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                          "aws:cdk:cloudformation:props": {
+                            "destinationCidrBlock": "0.0.0.0/0",
+                            "natGatewayId": {
+                              "Ref": "ClusterVpcPublicSubnet2NATGateway00B24686"
+                            },
+                            "routeTableId": {
+                              "Ref": "ClusterVpcPrivateSubnet2RouteTable73064A66"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "IGW": {
+                    "id": "IGW",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/IGW",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-ephemmeral-integ/Cluster/Vpc"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "VPCGW": {
+                    "id": "VPCGW",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/VPCGW",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                      "aws:cdk:cloudformation:props": {
+                        "internetGatewayId": {
+                          "Ref": "ClusterVpcIGW1E358A6E"
+                        },
+                        "vpcId": {
+                          "Ref": "ClusterVpcFAA3CEDF"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RestrictDefaultSecurityGroupCustomResource": {
+                    "id": "RestrictDefaultSecurityGroupCustomResource",
+                    "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-ecs-ephemmeral-integ/Cluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-ecs-integ/BootstrapVersion",
+            "path": "aws-ecs-ephemmeral-integ/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -843,7 +1582,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-ecs-integ/CheckBootstrapVersion",
+            "path": "aws-ecs-ephemmeral-integ/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
