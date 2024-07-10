@@ -812,6 +812,25 @@ describe('method', () => {
     }).not.toThrow(/Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
   });
 
+  test('No options authorization type set but expect auth scope set', () => {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.COGNITO,
+      },
+    });
+
+    api.root.resourceForPath('/user/profile').addMethod('GET', undefined, {
+      authorizationScopes: ['profile'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: ['profile'],
+    });
+  });
+
   test.each([
     [apigw.AuthorizationType.IAM, undefined],
     [apigw.AuthorizationType.NONE, undefined],
