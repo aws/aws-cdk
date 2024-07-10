@@ -602,8 +602,8 @@ cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
 ```
 
 The specific Bottlerocket AMI variant will be auto selected according to the k8s version for the `x86_64` architecture.
-For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI variant will be auto selected as
-`aws-k8s-1.17` behind the scene.
+For example, if the Amazon EKS cluster version is `1.30`, the Bottlerocket AMI variant will be auto selected as
+`aws-k8s-1.30` behind the scene.
 
 > See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
@@ -1009,6 +1009,12 @@ declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
 
+### Self-Mananaged AddOns
+
+Amazon EKS automatically installs self-managed add-ons such as the Amazon VPC CNI plugin for Kubernetes, kube-proxy, and CoreDNS for every cluster. You can change the default configuration of the add-ons and update them when desired. If you wish to create a cluster without the default add-ons, set `bootstrapSelfManagedAddons` as `false`. When this is set to false, make sure to install the necessary alternatives which provide functionality that enables pod and service operations for your EKS cluster.
+
+> Changing the value of `bootstrapSelfManagedAddons` after the EKS cluster creation will result in a replacement of the cluster.
+
 ## Permissions and Security
 
 Amazon EKS provides several mechanism of securing the cluster and granting permissions to specific IAM users and roles.
@@ -1016,6 +1022,8 @@ Amazon EKS provides several mechanism of securing the cluster and granting permi
 ### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html), you can map AWS IAM users and roles to [Kubernetes Role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac).
+
+> Important: The aws-auth ConfigMap is deprecated. The recommended method to manage access to Kubernetes APIs is Access Entries.
 
 The Amazon EKS construct manages the *aws-auth* `ConfigMap` Kubernetes resource on your behalf and exposes an API through the `cluster.awsAuth` for mapping
 users, roles and accounts.
