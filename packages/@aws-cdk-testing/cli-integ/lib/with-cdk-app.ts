@@ -4,13 +4,13 @@ import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws';
 import { TestContext } from './integ-test';
+import { findYarnPackages } from './package-sources/repo-source';
 import { IPackageSource } from './package-sources/source';
 import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
-import { findYarnPackages/*, getCache*/ } from './package-sources/repo-source';
 
 export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
