@@ -10,6 +10,7 @@ import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
+import { findYarnPackages/*, getCache*/ } from './package-sources/repo-source';
 
 export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
@@ -612,6 +613,17 @@ function defined<A>(x: A): x is NonNullable<A> {
  * for Node's dependency lookup mechanism).
  */
 export async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+  if (process.env.REPO_ROOT) {
+    const monoRepo = await findYarnPackages(process.env.REPO_ROOT ?? '');
+
+    // Replace the install target with the physical location of this package
+    for (const key of Object.keys(packages)) {
+      if (key in monoRepo) {
+        packages[key] = monoRepo[key];
+      }
+    }
+  }
+
   fs.writeFileSync(path.join(fixture.integTestDir, 'package.json'), JSON.stringify({
     name: 'cdk-integ-tests',
     private: true,

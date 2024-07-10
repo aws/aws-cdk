@@ -471,6 +471,7 @@ integTest('deploy with notification ARN as flag', withDefaultFixture(async (fixt
 
   const response = await fixture.aws.sns('createTopic', { Name: topicName });
   const topicArn = response.TopicArn!;
+
   try {
     await fixture.cdkDeploy('test-2', {
       options: ['--notification-arns', topicArn],
@@ -493,6 +494,7 @@ integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixt
 
   const response = await fixture.aws.sns('createTopic', { Name: topicName });
   const topicArn = response.TopicArn!;
+
   try {
     await fixture.cdkDeploy('notification-arn-prop');
 

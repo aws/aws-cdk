@@ -685,7 +685,7 @@ switch (stackSet) {
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
     new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
-      notificationArns: [`${stackPrefix}-test-topic-prop`],
+      notificationArns: [`arn:aws:sns:${defaultEnv.region}:${defaultEnv.account}:${stackPrefix}-test-topic-prop`],
     });
 
     // SSO stacks

@@ -313,6 +313,10 @@ export class CdkToolkit {
       notificationArns = notificationArns.concat(options.notificationArns ?? []);
       notificationArns = notificationArns.concat(stack.notificationArns);
 
+      if (notificationArns.length == 0) {
+        throw new Error(`we must hit this ${stack.notificationArns.length}`);
+      }
+
       notificationArns.map(arn => {
         if (!validateSnsTopicArn(arn)) {
           throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
