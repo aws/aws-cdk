@@ -190,4 +190,23 @@ describe('HttpStage with domain mapping', () => {
       },
     });
   });
+
+  test('specify description', () => {
+    const stack = new Stack();
+    // GIVEN
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    // WHEN
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      description: 'My Stage',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      Description: 'My Stage',
+    });
+  });
 });
