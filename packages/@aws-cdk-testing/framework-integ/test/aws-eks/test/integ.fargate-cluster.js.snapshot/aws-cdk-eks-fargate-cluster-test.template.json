@@ -823,7 +823,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "FargateClusterDefaultVpcIGWFD9278DA",
@@ -1028,7 +1028,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/2152f15979b07f9f62618ec815c2aeee6012c8efcfa248e8fdd33f7fd1b6750c.json"
+       "/8ee3cf38bac21e6e71a37b634dd0de805bee967fa7c31e6c663c78e3cef2ca44.json"
       ]
      ]
     }

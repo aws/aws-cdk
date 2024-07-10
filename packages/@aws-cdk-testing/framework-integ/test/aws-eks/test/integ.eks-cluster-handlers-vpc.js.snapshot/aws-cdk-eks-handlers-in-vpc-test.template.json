@@ -815,7 +815,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "EksAllHandlersInVpcStackDefaultVpcIGW916D42F1",
@@ -1018,7 +1018,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9c489aa801aae8c9aa5b66bead113bf772ae9b6fabb82871a84e50c00fa2ac6b.json"
+       "/2282d9a550872d29164d64c3df474dc3cbdbb0304cd8eacf20bac107ee0390d6.json"
       ]
      ]
     }
