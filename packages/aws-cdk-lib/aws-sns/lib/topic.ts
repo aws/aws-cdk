@@ -12,7 +12,7 @@ export interface TopicProps {
   /**
    * A developer-defined string that can be used to identify this SNS topic.
    *
-   * The display name to use for an Amazon SNS topic with SMS subscriptions. The display name must be maximum 100 characters long, including hyphens (-),
+   * The display name must be maximum 100 characters long, including hyphens (-),
    * underscores (_), spaces, and tabs.
    *
    * @default None
