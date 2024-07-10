@@ -176,7 +176,7 @@ export class CarrierGateway extends Resource implements IRouteTarget {
    * The ID of the route target.
    */
   readonly routerId: string;
-  
+
   /**
    * The carrier gateway CFN resource.
    */
