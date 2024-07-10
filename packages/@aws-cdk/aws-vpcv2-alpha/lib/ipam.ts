@@ -196,6 +196,7 @@ export class IpamPool extends Resource {
 
   /**
    * Pool ID to be passed to the VPC construct
+   * @attribute IpamPoolId
    */
   public readonly ipamPoolId: string;
 
@@ -217,6 +218,12 @@ export class IpamPool extends Resource {
     this.ipamPoolId = cfnPool.attrIpamPoolId;
   }
 
+  /**
+   * A CIDR provisioned to an IPAM pool.
+   * @param id Name of Resource
+   * @param options Either a CIDR or netmask length must be provided
+   * @returns AWS::EC2::IPAMPoolCidr
+   */
   public provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): IpamPoolCidr {
     const cidr = new IpamPoolCidr(this, id, {
       ...options,
@@ -269,6 +276,11 @@ export class IpamPoolCidr extends Resource {
 export class IpamScope extends Resource {
 
   private readonly _ipamScope: CfnIPAMScope;
+
+  /**
+   * ID for Resource IpamScope
+   * @attribute IpamScopeId
+   */
   public readonly ipamScopeId: string;
   constructor(scope: Construct, id: string, props: IpamScopeOptions) {
     super(scope, id);
@@ -333,13 +345,20 @@ export class IpamPrivateScope extends IpamScopeBase {
  * @resource AWS::EC2::IPAM
  */
 export class Ipam extends Resource {
-  // Refers to default public scope
+  /**
+   * Refers to default public scope
+   */
   public readonly publicScope: IpamPublicScope;
-  // Refers to default private scope
+  /**
+   * Refers to default public scope
+   */
   public readonly privateScope: IpamPrivateScope;
   // Resource IPAM
   private readonly _ipam: CfnIPAM;
-  // Access to Ipam resource id that can be used later to add a custom private scope to this IPAM
+  /**
+   * Access to Ipam resource id that can be used later to add a custom private scope to this IPAM
+   * @attribute IpamId
+   */
   public readonly ipamId: string;
 
   constructor(scope: Construct, id: string) {

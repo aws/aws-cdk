@@ -9,10 +9,26 @@ import { IDependable, Dependable, IConstruct } from 'constructs';
  * will be added to original IVPC
  */
 export interface IVpcV2 extends IVpc {
+  /**
+   * The secondary CIDR blocks associated with the VPC.
+   *
+   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-secondary-cidr-blocks}.
+   */
   readonly secondaryCidrBlock: CfnVPCCidrBlock[];
+
+  /**
+   * The primary IPv4 CIDR block associated with the VPC.
+   *
+   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-ipv4-cidr-block}.
+   */
   readonly ipv4CidrBlock: string;
 }
 
+/**
+ * Base class for creating a VPC (Virtual Private Cloud) in AWS.
+ *
+ * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html|AWS CDK Documentation on VPCs}.
+ */
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
   /**

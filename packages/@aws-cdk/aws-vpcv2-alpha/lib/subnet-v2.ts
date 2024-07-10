@@ -134,10 +134,8 @@ export class SubnetV2 extends Resource implements ISubnet {
   public readonly routeTable: IRouteTable;
 
   /**
-   * The type of Subnet to configure.
-   *
-   * The Subnet type will control the ability to route and connect to the
-   * Internet.
+   * The type of subnet (public or private) that this subnet represents.
+   * @attribute SubnetType
    */
   public readonly subnetType: SubnetType;
 
