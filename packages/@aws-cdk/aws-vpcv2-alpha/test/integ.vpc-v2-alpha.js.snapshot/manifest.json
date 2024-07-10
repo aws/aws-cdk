@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e2a2e3f4e53df928638ffedf4cd425409924fecdb66969491da8ddf35e931fe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/102802600c6342cc869f7cf9081cdac98fbaecf44047a1a4c27a81f6cd9cd70d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,16 +40,16 @@
             "data": "IpamTestIpam6C9298EF"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0IPAMPool": [
+        "/aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPrivatePool0PrivatePool0IPAMPool2805DF71"
+            "data": "IpamTestPrivatePool039C763DC"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0IPAMPool": [
+        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1"
+            "data": "IpamTestPublicPool0C44B7C49"
           }
         ],
         "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr/PoolCidr": [
@@ -175,19 +175,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "IpamTestPrivatePool039C763DC": [
+        "IpamTestPrivatePool0PrivatePool0IPAMPool2805DF71": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPrivatePool039C763DC",
+            "data": "IpamTestPrivatePool0PrivatePool0IPAMPool2805DF71",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "IpamTestPublicPool0C44B7C49": [
+        "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0C44B7C49",
+            "data": "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

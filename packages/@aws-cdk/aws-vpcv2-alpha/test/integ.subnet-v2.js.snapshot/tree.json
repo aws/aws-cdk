@@ -28,9 +28,9 @@
                 "id": "PublicPool0",
                 "path": "aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0",
                 "children": {
-                  "PublicPool0IPAMPool": {
-                    "id": "PublicPool0IPAMPool",
-                    "path": "aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0/PublicPool0IPAMPool",
+                  "PublicPool0": {
+                    "id": "PublicPool0",
+                    "path": "aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0/PublicPool0",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
                       "aws:cdk:cloudformation:props": {
@@ -63,7 +63,7 @@
                           "aws:cdk:cloudformation:props": {
                             "ipamPoolId": {
                               "Fn::GetAtt": [
-                                "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
+                                "IpamPublicPool050D6AA6C",
                                 "IpamPoolId"
                               ]
                             },
@@ -121,7 +121,7 @@
                   "aws:cdk:cloudformation:props": {
                     "ipv6IpamPoolId": {
                       "Fn::GetAtt": [
-                        "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
+                        "IpamPublicPool050D6AA6C",
                         "IpamPoolId"
                       ]
                     },

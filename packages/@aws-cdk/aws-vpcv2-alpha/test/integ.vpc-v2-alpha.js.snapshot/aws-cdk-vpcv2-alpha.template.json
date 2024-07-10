@@ -3,7 +3,7 @@
   "IpamTestIpam6C9298EF": {
    "Type": "AWS::EC2::IPAM"
   },
-  "IpamTestPrivatePool0PrivatePool0IPAMPool2805DF71": {
+  "IpamTestPrivatePool039C763DC": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv4",
@@ -21,7 +21,7 @@
     ]
    }
   },
-  "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1": {
+  "IpamTestPublicPool0C44B7C49": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv6",
@@ -41,7 +41,7 @@
    "Properties": {
     "IpamPoolId": {
      "Fn::GetAtt": [
-      "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1",
+      "IpamTestPublicPool0C44B7C49",
       "IpamPoolId"
      ]
     },
@@ -61,7 +61,7 @@
    "Properties": {
     "Ipv4IpamPoolId": {
      "Fn::GetAtt": [
-      "IpamTestPrivatePool0PrivatePool0IPAMPool2805DF71",
+      "IpamTestPrivatePool039C763DC",
       "IpamPoolId"
      ]
     },
@@ -99,7 +99,7 @@
    "Properties": {
     "Ipv6IpamPoolId": {
      "Fn::GetAtt": [
-      "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1",
+      "IpamTestPublicPool0C44B7C49",
       "IpamPoolId"
      ]
     },

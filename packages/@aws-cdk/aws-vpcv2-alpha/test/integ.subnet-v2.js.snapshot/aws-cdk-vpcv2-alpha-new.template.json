@@ -3,7 +3,7 @@
   "Ipam50346F82": {
    "Type": "AWS::EC2::IPAM"
   },
-  "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6": {
+  "IpamPublicPool050D6AA6C": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv6",
@@ -23,7 +23,7 @@
    "Properties": {
     "IpamPoolId": {
      "Fn::GetAtt": [
-      "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
+      "IpamPublicPool050D6AA6C",
       "IpamPoolId"
      ]
     },
@@ -43,7 +43,7 @@
    "Properties": {
     "Ipv6IpamPoolId": {
      "Fn::GetAtt": [
-      "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
+      "IpamPublicPool050D6AA6C",
       "IpamPoolId"
      ]
     },
