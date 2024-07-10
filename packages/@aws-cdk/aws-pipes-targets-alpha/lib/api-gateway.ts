@@ -73,6 +73,10 @@ export class ApiGatewayTarget implements ITarget {
     this.restApi = restApi;
     this.restApiParameters = parameters;
 
+    if (this.restApiParameters?.stage === undefined && this.restApi.deploymentStage === undefined) {
+      throw Error('The REST API must have a deployed stage.');
+    }
+
     this.restApiArn = this.restApi.arnForExecuteApi(
       this.restApiParameters?.method,
       this.restApiParameters?.path || '/',
