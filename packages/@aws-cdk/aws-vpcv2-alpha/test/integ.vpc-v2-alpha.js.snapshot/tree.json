@@ -28,9 +28,9 @@
                 "id": "PrivatePool0",
                 "path": "aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0",
                 "children": {
-                  "PrivatePool0": {
-                    "id": "PrivatePool0",
-                    "path": "aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0",
+                  "PrivatePool0IPAMPool": {
+                    "id": "PrivatePool0IPAMPool",
+                    "path": "aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0IPAMPool",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
                       "aws:cdk:cloudformation:props": {
@@ -64,9 +64,9 @@
                 "id": "PublicPool0",
                 "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0",
                 "children": {
-                  "PublicPool0": {
-                    "id": "PublicPool0",
-                    "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0",
+                  "PublicPool0IPAMPool": {
+                    "id": "PublicPool0IPAMPool",
+                    "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0IPAMPool",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
                       "aws:cdk:cloudformation:props": {
@@ -99,7 +99,7 @@
                           "aws:cdk:cloudformation:props": {
                             "ipamPoolId": {
                               "Fn::GetAtt": [
-                                "IpamTestPublicPool0C44B7C49",
+                                "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1",
                                 "IpamPoolId"
                               ]
                             },
@@ -157,7 +157,7 @@
                   "aws:cdk:cloudformation:props": {
                     "ipv4IpamPoolId": {
                       "Fn::GetAtt": [
-                        "IpamTestPrivatePool039C763DC",
+                        "IpamTestPrivatePool0PrivatePool0IPAMPool2805DF71",
                         "IpamPoolId"
                       ]
                     },
@@ -229,7 +229,7 @@
                   "aws:cdk:cloudformation:props": {
                     "ipv6IpamPoolId": {
                       "Fn::GetAtt": [
-                        "IpamTestPublicPool0C44B7C49",
+                        "IpamTestPublicPool0PublicPool0IPAMPoolC30583F1",
                         "IpamPoolId"
                       ]
                     },

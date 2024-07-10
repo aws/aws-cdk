@@ -148,4 +148,11 @@ describe('IPAM Test', () => {
     Template.fromStack(stack).templateMatches(expectedTemplate);
   });
 
+  test('Creates IPAM with default scopes', () => {
+    new Ipam(stack, 'TestIpam');
+    Template.fromStack(stack).hasResource(
+      'AWS::EC2::IPAM', {}
+    );
+  });
+
 });// End Test

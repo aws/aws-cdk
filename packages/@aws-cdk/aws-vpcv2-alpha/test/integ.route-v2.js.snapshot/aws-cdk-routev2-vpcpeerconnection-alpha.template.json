@@ -34,7 +34,7 @@
   "vpcpcSubnet1DD6CE35": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1a",
+    "AvailabilityZone": "us-west-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
      "Fn::Select": [
@@ -83,44 +83,6 @@
     "EnableDnsSupport": true
    }
   },
-  "routetableuser2RouteTable6163C8F3": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpcuser2935CC987",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "vpcpcSubnet2Subnet8BA063A9": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "us-east-1a",
-    "CidrBlock": "10.128.0.0/24",
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpcuser2935CC987",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "vpcpcSubnet2RouteTableAssociationC9082420": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "routetableuser2RouteTable6163C8F3",
-      "RouteTableId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "vpcpcSubnet2Subnet8BA063A9"
-    }
-   }
-  },
   "testVPCPCVPCPeerConnection9684B188": {
    "Type": "AWS::EC2::VPCPeeringConnection",
    "Properties": {
@@ -136,12 +98,7 @@
       "VpcId"
      ]
     }
-   },
-   "DependsOn": [
-    "vpcpcuser2935CC987",
-    "vpcpc6CAE1A04",
-    "vpcpcSecondaryIp1C735895D"
-   ]
+   }
   },
   "testPeerconRoute02E64C80": {
    "Type": "AWS::EC2::Route",

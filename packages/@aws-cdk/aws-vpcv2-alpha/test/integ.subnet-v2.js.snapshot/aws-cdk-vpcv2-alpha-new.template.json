@@ -1,49 +1,34 @@
 {
  "Resources": {
-  "Ipam2108E2ED": {
-   "Type": "AWS::EC2::IPAM",
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+  "Ipam50346F82": {
+   "Type": "AWS::EC2::IPAM"
   },
-  "IpamPrivatePool400DCA5C": {
+  "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
-    "AddressFamily": "ipv4",
+    "AddressFamily": "ipv6",
+    "AwsService": "ec2",
     "IpamScopeId": {
      "Fn::GetAtt": [
-      "Ipam2108E2ED",
-      "PrivateDefaultScopeId"
+      "Ipam50346F82",
+      "PublicDefaultScopeId"
      ]
     },
     "Locale": "us-east-1",
-    "ProvisionedCidrs": [
-     {
-      "Cidr": "10.2.0.0/16"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+    "PublicIpSource": "amazon"
+   }
   },
-  "IpamPrivatePool0628BCC19": {
-   "Type": "AWS::EC2::IPAMPool",
+  "IpamPublicPool0PublicPool0CidrPoolCidrC82F3C98": {
+   "Type": "AWS::EC2::IPAMPoolCidr",
    "Properties": {
-    "AddressFamily": "ipv4",
-    "IpamScopeId": {
+    "IpamPoolId": {
      "Fn::GetAtt": [
-      "Ipam2108E2ED",
-      "PrivateDefaultScopeId"
+      "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
+      "IpamPoolId"
      ]
     },
-    "Locale": "us-east-1",
-    "ProvisionedCidrs": [
-     {
-      "Cidr": "10.3.0.0/16"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+    "NetmaskLength": 52
+   }
   },
   "VPCTestFB735C86": {
    "Type": "AWS::EC2::VPC",
@@ -56,85 +41,13 @@
   "VPCTestSecondaryIp1BB4FC62E": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
-    "Ipv4IpamPoolId": {
+    "Ipv6IpamPoolId": {
      "Fn::GetAtt": [
-      "IpamPrivatePool400DCA5C",
+      "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
       "IpamPoolId"
      ]
     },
-    "Ipv4NetmaskLength": 20,
-    "VpcId": {
-     "Fn::GetAtt": [
-      "VPCTestFB735C86",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "VPCTestSecondaryIp24E984B36": {
-   "Type": "AWS::EC2::VPCCidrBlock",
-   "Properties": {
-    "AmazonProvidedIpv6CidrBlock": true,
-    "VpcId": {
-     "Fn::GetAtt": [
-      "VPCTestFB735C86",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "VPCTestVpnGateway51EEED38": {
-   "Type": "AWS::EC2::VPNGateway",
-   "Properties": {
-    "Type": "ipsec.1"
-   }
-  },
-  "VPCTestVPCVPNGW0A869280": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "VPCTestFB735C86",
-      "VpcId"
-     ]
-    },
-    "VpnGatewayId": {
-     "Ref": "VPCTestVpnGateway51EEED38"
-    }
-   }
-  },
-  "VPCTestRoutePropagationFEA3011A": {
-   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
-   "Properties": {
-    "RouteTableIds": [
-     {
-      "Ref": "testsbubnetRouteTableF40F025B"
-     }
-    ],
-    "VpnGatewayId": {
-     "Ref": "VPCTestVpnGateway51EEED38"
-    }
-   },
-   "DependsOn": [
-    "VPCTestVPCVPNGW0A869280"
-   ]
-  },
-  "testsbubnetSubnet77337845": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "us-east-1a",
-    "CidrBlock": "10.0.0.0/24",
-    "Ipv6CidrBlock": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAtt": [
-        "VPCTestFB735C86",
-        "Ipv6CidrBlocks"
-       ]
-      }
-     ]
-    },
+    "Ipv6NetmaskLength": 52,
     "VpcId": {
      "Fn::GetAtt": [
       "VPCTestFB735C86",
@@ -143,38 +56,7 @@
     }
    },
    "DependsOn": [
-    "VPCTestSecondaryIp1BB4FC62E",
-    "VPCTestSecondaryIp24E984B36"
-   ]
-  },
-  "testsbubnetRouteTableF40F025B": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "VPCTestFB735C86",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "VPCTestSecondaryIp1BB4FC62E",
-    "VPCTestSecondaryIp24E984B36"
-   ]
-  },
-  "testsbubnetRouteTableAssociationD6D083FA": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "testsbubnetRouteTableF40F025B"
-    },
-    "SubnetId": {
-     "Ref": "testsbubnetSubnet77337845"
-    }
-   },
-   "DependsOn": [
-    "VPCTestSecondaryIp1BB4FC62E",
-    "VPCTestSecondaryIp24E984B36"
+    "IpamPublicPool0PublicPool0CidrPoolCidrC82F3C98"
    ]
   }
  },

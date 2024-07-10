@@ -34,7 +34,7 @@
   "eigwSubnetCC28B9F9": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1a",
+    "AvailabilityZone": "us-west-1a",
     "CidrBlock": "10.0.0.0/24",
     "VpcId": {
      "Fn::GetAtt": [

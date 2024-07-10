@@ -12,9 +12,9 @@
             "id": "Ipam",
             "path": "aws-cdk-vpcv2-alpha-new/Ipam",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-vpcv2-alpha-new/Ipam/Resource",
+              "Ipam": {
+                "id": "Ipam",
+                "path": "aws-cdk-vpcv2-alpha-new/Ipam/Ipam",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::IPAM",
                   "aws:cdk:cloudformation:props": {}
@@ -24,69 +24,60 @@
                   "version": "0.0.0"
                 }
               },
-              "PrivatePool": {
-                "id": "PrivatePool",
-                "path": "aws-cdk-vpcv2-alpha-new/Ipam/PrivatePool",
+              "PublicPool0": {
+                "id": "PublicPool0",
+                "path": "aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0",
                 "children": {
-                  "PrivatePool": {
-                    "id": "PrivatePool",
-                    "path": "aws-cdk-vpcv2-alpha-new/Ipam/PrivatePool/PrivatePool",
+                  "PublicPool0IPAMPool": {
+                    "id": "PublicPool0IPAMPool",
+                    "path": "aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0/PublicPool0IPAMPool",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
                       "aws:cdk:cloudformation:props": {
-                        "addressFamily": "ipv4",
+                        "addressFamily": "ipv6",
+                        "awsService": "ec2",
                         "ipamScopeId": {
                           "Fn::GetAtt": [
-                            "Ipam2108E2ED",
-                            "PrivateDefaultScopeId"
+                            "Ipam50346F82",
+                            "PublicDefaultScopeId"
                           ]
                         },
                         "locale": "us-east-1",
-                        "provisionedCidrs": [
-                          {
-                            "cidr": "10.2.0.0/16"
-                          }
-                        ]
+                        "publicIpSource": "amazon"
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPool",
                       "version": "0.0.0"
                     }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-vpcv2-alpha.IpamPool",
-                  "version": "0.0.0"
-                }
-              },
-              "PrivatePool0": {
-                "id": "PrivatePool0",
-                "path": "aws-cdk-vpcv2-alpha-new/Ipam/PrivatePool0",
-                "children": {
-                  "PrivatePool0": {
-                    "id": "PrivatePool0",
-                    "path": "aws-cdk-vpcv2-alpha-new/Ipam/PrivatePool0/PrivatePool0",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
-                      "aws:cdk:cloudformation:props": {
-                        "addressFamily": "ipv4",
-                        "ipamScopeId": {
-                          "Fn::GetAtt": [
-                            "Ipam2108E2ED",
-                            "PrivateDefaultScopeId"
-                          ]
-                        },
-                        "locale": "us-east-1",
-                        "provisionedCidrs": [
-                          {
-                            "cidr": "10.3.0.0/16"
+                  },
+                  "PublicPool0Cidr": {
+                    "id": "PublicPool0Cidr",
+                    "path": "aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0/PublicPool0Cidr",
+                    "children": {
+                      "PoolCidr": {
+                        "id": "PoolCidr",
+                        "path": "aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0/PublicPool0Cidr/PoolCidr",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPoolCidr",
+                          "aws:cdk:cloudformation:props": {
+                            "ipamPoolId": {
+                              "Fn::GetAtt": [
+                                "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
+                                "IpamPoolId"
+                              ]
+                            },
+                            "netmaskLength": 52
                           }
-                        ]
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPoolCidr",
+                          "version": "0.0.0"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPool",
+                      "fqn": "@aws-cdk/aws-vpcv2-alpha.IpamPoolCidr",
                       "version": "0.0.0"
                     }
                   }
@@ -128,13 +119,13 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
-                    "ipv4IpamPoolId": {
+                    "ipv6IpamPoolId": {
                       "Fn::GetAtt": [
-                        "IpamPrivatePool400DCA5C",
+                        "IpamPublicPool0PublicPool0IPAMPoolF3DF5BF6",
                         "IpamPoolId"
                       ]
                     },
-                    "ipv4NetmaskLength": 20,
+                    "ipv6NetmaskLength": 52,
                     "vpcId": {
                       "Fn::GetAtt": [
                         "VPCTestFB735C86",
@@ -145,187 +136,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
-                  "version": "0.0.0"
-                }
-              },
-              "SecondaryIp2": {
-                "id": "SecondaryIp2",
-                "path": "aws-cdk-vpcv2-alpha-new/VPCTest/SecondaryIp2",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCTestFB735C86",
-                        "VpcId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
-                  "version": "0.0.0"
-                }
-              },
-              "VpnGateway": {
-                "id": "VpnGateway",
-                "path": "aws-cdk-vpcv2-alpha-new/VPCTest/VpnGateway",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "aws-cdk-vpcv2-alpha-new/VPCTest/VpnGateway/Default",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPNGateway",
-                      "aws:cdk:cloudformation:props": {
-                        "type": "ipsec.1"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGateway",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.VpnGateway",
-                  "version": "0.0.0"
-                }
-              },
-              "VPCVPNGW": {
-                "id": "VPCVPNGW",
-                "path": "aws-cdk-vpcv2-alpha-new/VPCTest/VPCVPNGW",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
-                  "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCTestFB735C86",
-                        "VpcId"
-                      ]
-                    },
-                    "vpnGatewayId": {
-                      "Ref": "VPCTestVpnGateway51EEED38"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                  "version": "0.0.0"
-                }
-              },
-              "RoutePropagation": {
-                "id": "RoutePropagation",
-                "path": "aws-cdk-vpcv2-alpha-new/VPCTest/RoutePropagation",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPNGatewayRoutePropagation",
-                  "aws:cdk:cloudformation:props": {
-                    "routeTableIds": [
-                      {
-                        "Ref": "testsbubnetRouteTableF40F025B"
-                      }
-                    ],
-                    "vpnGatewayId": {
-                      "Ref": "VPCTestVpnGateway51EEED38"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGatewayRoutePropagation",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
-              "version": "0.0.0"
-            }
-          },
-          "testsbubnet": {
-            "id": "testsbubnet",
-            "path": "aws-cdk-vpcv2-alpha-new/testsbubnet",
-            "children": {
-              "Subnet": {
-                "id": "Subnet",
-                "path": "aws-cdk-vpcv2-alpha-new/testsbubnet/Subnet",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
-                  "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-east-1a",
-                    "cidrBlock": "10.0.0.0/24",
-                    "ipv6CidrBlock": {
-                      "Fn::Select": [
-                        0,
-                        {
-                          "Fn::GetAtt": [
-                            "VPCTestFB735C86",
-                            "Ipv6CidrBlocks"
-                          ]
-                        }
-                      ]
-                    },
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCTestFB735C86",
-                        "VpcId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                  "version": "0.0.0"
-                }
-              },
-              "Acl": {
-                "id": "Acl",
-                "path": "aws-cdk-vpcv2-alpha-new/testsbubnet/Acl",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "RouteTable": {
-                "id": "RouteTable",
-                "path": "aws-cdk-vpcv2-alpha-new/testsbubnet/RouteTable",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                  "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCTestFB735C86",
-                        "VpcId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                  "version": "0.0.0"
-                }
-              },
-              "RouteTableAssociation": {
-                "id": "RouteTableAssociation",
-                "path": "aws-cdk-vpcv2-alpha-new/testsbubnet/RouteTableAssociation",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
-                  "aws:cdk:cloudformation:props": {
-                    "routeTableId": {
-                      "Ref": "testsbubnetRouteTableF40F025B"
-                    },
-                    "subnetId": {
-                      "Ref": "testsbubnetSubnet77337845"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

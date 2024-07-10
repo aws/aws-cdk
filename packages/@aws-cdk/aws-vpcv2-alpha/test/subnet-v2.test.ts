@@ -2,7 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { NetworkAcl, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
 import { createTestSubnet } from './util';
 
@@ -264,4 +264,27 @@ describe('Subnet V2 with custom IP and routing', () => {
     expect(testVPC.publicSubnets.length).toEqual(1);
     expect(testVPC.publicSubnets[0]).toEqual(testsubnet);
   });
+
+  test('should associate a NetworkAcl with the subnet', () => {
+        const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+            primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+        });
+    
+        const subnetConfig = {
+            vpcV2: testVpc,
+            availabilityZone: 'us-east-1a',
+            cidrBlock: new subnet.Ipv4Cidr('10.1.0.0/24'),
+            subnetType: SubnetType.PUBLIC,
+          };
+          const testsubnet = createTestSubnet(stack, subnetConfig);  
+    
+        const networkAcl = new NetworkAcl(stack, 'TestNetworkAcl', {
+          vpc: testVpc,
+        });
+    
+        testsubnet.associateNetworkAcl('TestAssociation', networkAcl);
+    
+        expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetNetworkAclAssociation', {}));
+      });
+
 });
