@@ -61,7 +61,7 @@ export interface LogOptions {
   /**
    * The log group where the execution history events will be logged.
    */
-  readonly destination: logs.ILogGroup;
+  readonly destination?: logs.ILogGroup;
 
   /**
    * Determines whether execution data is included in your log.
@@ -507,26 +507,32 @@ export class StateMachine extends StateMachineBase {
   }
 
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
-    // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-    this.addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        'logs:CreateLogDelivery',
-        'logs:GetLogDelivery',
-        'logs:UpdateLogDelivery',
-        'logs:DeleteLogDelivery',
-        'logs:ListLogDeliveries',
-        'logs:PutResourcePolicy',
-        'logs:DescribeResourcePolicies',
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
+    if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
+      throw new Error('Logs destination is required when level is not OFF.');
+    }
+
+    if (logOptions.destination) {
+      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+      this.addToRolePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
+    }
 
     return {
-      destinations: [{
+      destinations: logOptions.destination ? [{
         cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
-      }],
+      }] : undefined,
       includeExecutionData: logOptions.includeExecutionData,
       level: logOptions.level || 'ERROR',
     };
