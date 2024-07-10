@@ -1847,7 +1847,7 @@ declare const cluster: eks.Cluster;
 new eks.Addon(this, 'Addon', {
   cluster,
   addonName: 'aws-guardduty-agent',
-  addonVersion: '3.0.0',
+  addonVersion: 'v1.6.1',
 });
 ```
 
