@@ -55,6 +55,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       - [Manually importing k8s specs and CRD's](#manually-importing-k8s-specs-and-crds)
   - [Patching Kubernetes Resources](#patching-kubernetes-resources)
   - [Querying Kubernetes Resources](#querying-kubernetes-resources)
+  - [Add-ons](#add-ons)
   - [Using existing clusters](#using-existing-clusters)
   - [Logging](#logging)
   - [Known Issues and Limitations](#known-issues-and-limitations)
