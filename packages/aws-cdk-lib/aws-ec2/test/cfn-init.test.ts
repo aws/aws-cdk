@@ -136,6 +136,44 @@ test('empty configs are not rendered', () => {
   });
 });
 
+test('duplicate config arguments not deduplicated', () => {
+  //GIVEN
+  const config = new ec2.InitConfig([
+    ec2.InitCommand.argvCommand([
+      'useradd', '-u', '1001', '-g', '1001', 'eguser',
+    ]),
+    ec2.InitCommand.argvCommand([
+      'useradd', '-a', '-u', '1001', '-g', '1001', 'eguser',
+    ]),
+  ]);
+  
+  // WHEN
+  const init = ec2.CloudFormationInit.fromConfigSets({
+    configSets: {default: ['config']},
+    configs: {config},
+  });
+  init.attach(resource, linuxOptions());
+
+  // THEN
+  expectMetadataLike({
+    'AWS::CloudFormation::Init': {
+      configSets: {
+        default: ['config'],
+      },
+      config: {
+        commands: {
+          '000': {
+            command: ['useradd', '-u', '1001', '-g', '1001', 'eguser'],
+          },
+          '001': {
+            command: ['useradd', '-a', '-u', '1001', '-g', '1001', 'eguser'],
+          },
+        },
+      },
+    },
+  });
+});
+
 describe('userdata', () => {
   let simpleInit: ec2.CloudFormationInit;
   beforeEach(() => {
