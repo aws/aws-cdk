@@ -43,9 +43,9 @@ describe('API Gateway REST API', () => {
             ':',
             { Ref: 'AWS::AccountId' },
             ':',
-            { Ref: 'MyLambdaRestApiECB8AFAF' },
+            { Ref: 'MyLambdaRestApiDeployTrueD6F0338A' },
             '/',
-            { Ref: 'MyLambdaRestApiDeploymentStageprodA127C527' },
+            { Ref: 'MyLambdaRestApiDeployTrueDeploymentStageprodAA1DAA0D' },
             '/*/',
           ],
         ],
@@ -83,7 +83,7 @@ describe('API Gateway REST API', () => {
             ':',
             { Ref: 'AWS::AccountId' },
             ':',
-            { Ref: 'MyLambdaRestApiECB8AFAF' },
+            { Ref: 'MyLambdaRestApiDeployTrueD6F0338A' },
             '/prod/GET/books',
           ],
         ],
@@ -182,9 +182,9 @@ describe('API Gateway REST API', () => {
                   ':',
                   { Ref: 'AWS::AccountId' },
                   ':',
-                  { Ref: 'MyLambdaRestApiECB8AFAF' },
+                  { Ref: 'MyLambdaRestApiDeployTrueD6F0338A' },
                   '/',
-                  { Ref: 'MyLambdaRestApiDeploymentStageprodA127C527' },
+                  { Ref: 'MyLambdaRestApiDeployTrueDeploymentStageprodAA1DAA0D' },
                   '/*/',
                 ],
               ],
@@ -194,16 +194,28 @@ describe('API Gateway REST API', () => {
       },
     });
   });
+
+  it('should throw error when REST API does not have a deployed stage', () => {
+    // ARRANGE
+    const restApiNoDeploy = newTestRestApi(stack, false);
+
+    // ACT & ASSERT
+    expect(() => {
+      new ApiGatewayTarget(restApiNoDeploy);
+    }).toThrow('The REST API must have a deployed stage.');
+  });
 });
 
-function newTestRestApi(scope: Construct) {
-  const lambdaFunction = new lambda.Function(scope, 'MyLambda', {
+function newTestRestApi(scope: Construct, deploy: boolean = true) {
+  const deployStr = String(deploy)[0].toUpperCase() + String(deploy).slice(1);
+  const lambdaFunction = new lambda.Function(scope, `MyLambdaDeploy${deployStr}`, {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.NODEJS_LATEST,
   });
 
-  return new LambdaRestApi(scope, 'MyLambdaRestApi', {
+  return new LambdaRestApi(scope, `MyLambdaRestApiDeploy${deployStr}`, {
     handler: lambdaFunction,
+    deploy,
   });
 }
