@@ -869,7 +869,7 @@ describe('method', () => {
     });
   });
 
-  test('Override auth scope in the method over rest api', () => {
+  test('Expect auth scope to be none when auth type is not Cognito', () => {
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', {
       cloudWatchRole: false,
