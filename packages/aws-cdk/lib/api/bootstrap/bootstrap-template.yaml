@@ -377,6 +377,10 @@ Resources:
             Resource:
               - Fn::Sub: "${StagingBucket.Arn}"
               - Fn::Sub: "${StagingBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                aws:ResourceAccount:
+                  - Fn::Sub: ${AWS::AccountId}
             Effect: Allow
           - Action:
               - kms:Decrypt
