@@ -146,11 +146,11 @@ test('duplicate config arguments not deduplicated', () => {
       'useradd', '-a', '-u', '1001', '-g', '1001', 'eguser',
     ]),
   ]);
-  
+
   // WHEN
   const init = ec2.CloudFormationInit.fromConfigSets({
-    configSets: {default: ['config']},
-    configs: {config},
+    configSets: { default: ['config'] },
+    configs: { config },
   });
   init.attach(resource, linuxOptions());
 
