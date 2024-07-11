@@ -5,6 +5,7 @@ import { CfnFileSystem } from './fsx.generated';
 import { OntapMaintenanceTime } from './maintenance-time';
 import * as ec2 from '../../aws-ec2';
 import { Aws, Duration, Token } from '../../core';
+import * as deploy from 'aws-cdk-lib/aws-s3-deployment';
 
 /**
  * The different kinds of file system deployments used by NetApp ONTAP.
@@ -320,10 +321,13 @@ export class OntapFileSystem extends FileSystemBase {
     this.validateDiskIops(props.storageCapacityGiB, ontapConfiguration.diskIops, ontapConfiguration.haPairs);
     this.validateEndpointIpAddressRange(ontapConfiguration.endpointIpAddressRange);
     this.validateFsxAdminPassword(ontapConfiguration.fsxAdminPassword);
-
-
-
-
+    this.validateSubnet(deploymentType, props.vpcSubnet, ontapConfiguration.prefferredSubnet);
+    this.validateRouteTables(deploymentType, ontapConfiguration.routeTables);
+    this.validateThroughputCapacity(
+      ontapConfiguration.throughputCapacity,
+      ontapConfiguration.throughputCapacityPerHaPair,
+      ontapConfiguration.haPairs,
+    );
   }
 
   private validateAutomaticBackupRetention(automaticBackupRetention?: Duration): void {
@@ -392,5 +396,38 @@ export class OntapFileSystem extends FileSystemBase {
     }
   }
 
+  private validateSubnet(deploymentType: OntapDeploymentType, vpcSubnet: ec2.ISubnet, preferredSubnet?: ec2.ISubnet): void {
+    if ((deploymentType === OntapDeploymentType.MULTI_AZ_1 || deploymentType === OntapDeploymentType.MULTI_AZ_2) && !preferredSubnet) {
+      throw new Error('\'preferredSubnet\' must be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
+    }
+    if ((deploymentType === OntapDeploymentType.SINGLE_AZ_1 || deploymentType === OntapDeploymentType.SINGLE_AZ_2) && preferredSubnet) {
+      throw new Error('\'preferredSubnet\' must not be specified for deployment types SINGLE_AZ_1 and SINGLE_AZ_2');
+    }
+    if (preferredSubnet && preferredSubnet.subnetId === vpcSubnet.subnetId) {
+      throw new Error('\'preferredSubnet\' must be different from the \'vpcSubnet\'');
+    }
+  }
+
+  private validateRouteTables(deploymentType: OntapDeploymentType, routeTables?: ec2.IRouteTable[]): void {
+    if (routeTables == null) {
+      return;
+    }
+    if ((deploymentType !== OntapDeploymentType.MULTI_AZ_1 && deploymentType !== OntapDeploymentType.MULTI_AZ_2) && routeTables.length > 0) {
+      throw new Error('\'routeTables\' can be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
+    }
+  }
+
+  private validateThroughputCapacity(throughputCapacity?: number, throughputCapacityPerHaPair?: number, haPair: number = 1): void {
+    if (throughputCapacity == null && throughputCapacityPerHaPair == null) {
+      return;
+    }
+    if (throughputCapacity != null && throughputCapacityPerHaPair != null) {
+      throw new Error('\'throughputCapacity\' and \'throughputCapacityPerHaPair\' cannot be specified at the same time');
+    }
+    if (throughputCapacity != null && (throughputCapacity / haPair < 8 || throughputCapacity / haPair > 100000)) {
+      throw new Error('\'throughputCapacity\' must be between 8 and 100,000 MBps per HA pair');
+    }
+    // TODO throughputCapacityPerHaPairのバリデーションを頑張る
+  }
 
 }
