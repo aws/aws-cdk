@@ -6,8 +6,7 @@ import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
 import { ISamlProvider } from './saml-provider';
 import * as cdk from '../../core';
-import * as cxapi from '../../cx-api';
-import { Default, FactName, RegionInfo } from '../../region-info';
+import { RegionInfo } from '../../region-info';
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -942,11 +941,7 @@ class ServicePrincipalToken implements cdk.IResolvable {
   }
 
   public resolve(ctx: cdk.IResolveContext) {
-    return cdk.FeatureFlags.of(ctx.scope).isEnabled(cxapi.IAM_STANDARDIZED_SERVICE_PRINCIPALS)
-      ? this.newStandardizedBehavior(ctx)
-      : this.legacyBehavior(ctx);
-
-    // The correct behavior is to always use the global service principal
+    return this.newStandardizedBehavior(ctx);
   }
 
   /**
@@ -963,23 +958,6 @@ class ServicePrincipalToken implements cdk.IResolvable {
       return this.service.replace(/\.amazonaws\.com$/, `.${this.opts.region}.amazonaws.com`);
     }
     return this.service;
-  }
-
-  /**
-   * Do a single lookup
-   */
-  private legacyBehavior(ctx: cdk.IResolveContext) {
-    if (this.opts.region) {
-      // Special case, handle it separately to not break legacy behavior.
-      return RegionInfo.get(this.opts.region).servicePrincipal(this.service) ??
-        Default.servicePrincipal(this.service, this.opts.region, cdk.Aws.URL_SUFFIX);
-    }
-
-    const stack = cdk.Stack.of(ctx.scope);
-    return stack.regionalFact(
-      FactName.servicePrincipal(this.service),
-      Default.servicePrincipal(this.service, stack.region, cdk.Aws.URL_SUFFIX),
-    );
   }
 
   public toString() {

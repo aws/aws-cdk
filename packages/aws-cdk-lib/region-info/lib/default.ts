@@ -1,5 +1,6 @@
 /**
  * Provides default values for certain regional information points.
+ * @deprecated - Service principals are now globally `<SERVICE>.amazonaws.com`
  */
 export class Default {
 
@@ -7,6 +8,8 @@ export class Default {
    * The default value for a VPC Endpoint Service name prefix, useful if you do
    * not have a synthesize-time region literal available (all you have is
    * `{ "Ref": "AWS::Region" }`)
+   *
+   * @deprecated - Use VpceEndpointService.VPC_ENDPOINT_SERVICE_NAME_PREFIX instead
    */
   public static readonly VPC_ENDPOINT_SERVICE_NAME_PREFIX = 'com.amazonaws.vpce';
 
@@ -19,6 +22,8 @@ export class Default {
    * @param serviceFqn the name of the service (s3, s3.amazonaws.com, ...)
    * @param region    the region in which the service principal is needed.
    * @param urlSuffix deprecated and ignored.
+   *
+   * @deprecated - Service principals are now globally `<SERVICE>.amazonaws.com`
    */
   public static servicePrincipal(serviceFqn: string, region: string, urlSuffix: string): string {
     // NOTE: this whole method is deprecated, and should not be used or updated anymore. The global service
@@ -26,8 +31,6 @@ export class Default {
     // (As a note, regional principals (`<SERVICE>.<REGION>.amazonaws.com`) are required in
     // case of a cross-region reference to an opt-in region, but that's the only case, and that is not
     // controlled here).
-    //
-    // (It cannot be actually @deprecated since many of our tests use it :D)
 
     const serviceName = extractSimpleName(serviceFqn);
     if (!serviceName) {
