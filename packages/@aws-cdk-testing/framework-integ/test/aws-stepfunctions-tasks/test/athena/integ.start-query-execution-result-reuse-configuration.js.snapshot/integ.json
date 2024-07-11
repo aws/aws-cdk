@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AthenaResultReuseConfiguration/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-athena-start-query-execution-result-reuse-configuration-integ"
+      ],
+      "assertionStack": "AthenaResultReuseConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "AthenaResultReuseConfigurationDefaultTestDeployAssert59574A02"
+    }
+  }
+}
