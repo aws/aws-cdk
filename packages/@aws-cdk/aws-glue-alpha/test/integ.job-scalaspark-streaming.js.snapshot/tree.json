@@ -194,6 +194,7 @@
                     "defaultArguments": {
                       "--job-language": "scala",
                       "--class": "com.example.HelloWorld",
+                      "--enable-continuous-cloudwatch-log": "true",
                       "--enable-metrics": "",
                       "--enable-observability-metrics": "true"
                     },
@@ -247,6 +248,7 @@
                     "defaultArguments": {
                       "--job-language": "scala",
                       "--class": "com.example.HelloWorld",
+                      "--enable-continuous-cloudwatch-log": "true",
                       "--enable-metrics": "",
                       "--enable-observability-metrics": "true",
                       "arg1": "value1",

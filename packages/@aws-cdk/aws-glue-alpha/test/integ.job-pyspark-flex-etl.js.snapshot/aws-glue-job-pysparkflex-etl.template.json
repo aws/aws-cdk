@@ -109,6 +109,7 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
      "--enable-metrics": "",
      "--enable-observability-metrics": "true"
     },
@@ -145,6 +146,7 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
      "--enable-metrics": "",
      "--enable-observability-metrics": "true",
      "arg1": "value1",
