@@ -87,7 +87,8 @@ async function parseCommandLineArguments(args: string[]) {
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .option('ci', { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) => yargs
-      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
+      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' })
+      .option('show-dependencies', { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' }),
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
@@ -96,8 +97,8 @@ async function parseCommandLineArguments(args: string[]) {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
-      .option('example-permissions-boundary', { type: 'boolean', alias: ['epb', 'example-permissions-boundary'], desc: 'Use the example permissions boundary.', default: undefined, conflicts: 'custom-permissions-boundary' })
-      .option('custom-permissions-boundary', { type: 'string', alias: ['cpb', 'custom-permissions-boundary'], desc: 'Use the permissions boundary specified by name.', default: undefined, conflicts: 'example-permissions-boundary' })
+      .option('example-permissions-boundary', { type: 'boolean', alias: 'epb', desc: 'Use the example permissions boundary.', default: undefined, conflicts: 'custom-permissions-boundary' })
+      .option('custom-permissions-boundary', { type: 'string', alias: 'cpb', desc: 'Use the permissions boundary specified by name.', default: undefined, conflicts: 'example-permissions-boundary' })
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
@@ -264,7 +265,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
       .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false })
-      .option('change-set', { type: 'boolean', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
+      .option('change-set', { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -498,7 +499,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, { long: args.long, json: argv.json });
+        return cli.list(args.STACKS, { long: args.long, json: argv.json, showDeps: args.showDependencies });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);

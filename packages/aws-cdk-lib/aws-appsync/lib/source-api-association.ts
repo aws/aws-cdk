@@ -178,6 +178,9 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       description: props.description,
     });
 
+    // Add dependency because the schema must be created first to create the source api association.
+    this.sourceApi.addSchemaDependency(this.association);
+
     this.associationId = this.association.attrAssociationId;
     this.associationArn = this.association.attrAssociationArn;
 

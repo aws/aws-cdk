@@ -221,7 +221,7 @@ export class PullRequestLinter {
    */
   private async deletePRLinterComment(): Promise<void> {
     // Since previous versions of this pr linter didn't add comments, we need to do this check first.
-    const comment = await this.findExistingComment();
+    const comment = await this.findExistingPRLinterComment();
     if (comment) {
       await this.client.issues.deleteComment({
         ...this.issueParams,
@@ -266,7 +266,7 @@ export class PullRequestLinter {
     }
 
     const comments = await this.client.issues.listComments(this.issueParams);
-    if (comments.data.find(comment => comment.body?.includes("Exemption Request"))) {
+    if (comments.data.find(comment => comment.body?.toLowerCase().includes("exemption request"))) {
       body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
     }
     await this.client.issues.createComment({
@@ -302,7 +302,7 @@ export class PullRequestLinter {
    * Finds existing review, if present
    * @returns Existing review, if present
    */
-  private async findExistingReview(): Promise<Review | undefined> {
+  private async findExistingPRLinterReview(): Promise<Review | undefined> {
     const reviews = await this.client.pulls.listReviews(this.prParams);
     return reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
   }
@@ -311,7 +311,7 @@ export class PullRequestLinter {
    * Finds existing comment from previous review, if present
    * @returns Existing comment, if present
    */
-  private async findExistingComment(): Promise<Comment | undefined> {
+  private async findExistingPRLinterComment(): Promise<Comment | undefined> {
     const comments = await this.client.issues.listComments(this.issueParams);
     return comments.data.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
   }
@@ -321,7 +321,7 @@ export class PullRequestLinter {
    * @param result The result of the PR Linter run.
    */
   private async communicateResult(result: ValidationCollector): Promise<void> {
-    const existingReview = await this.findExistingReview();
+    const existingReview = await this.findExistingPRLinterReview();
     if (result.isValid()) {
       console.log('✅  Success');
       await this.dismissPRLinterReview(existingReview);
@@ -341,6 +341,8 @@ export class PullRequestLinter {
       repo: this.prParams.repo,
       ref: sha,
     });
+    let status = statuses.data.filter(status => status.context === CODE_BUILD_CONTEXT).map(status => status.state);
+    console.log("CodeBuild Commit Statuses: ", status);
     return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
   }
 
@@ -419,6 +421,7 @@ export class PullRequestLinter {
           [review.user!.login]: newest,
         };
       }, {} as Record<string, typeof reviews.data[0]>);
+    console.log('raw data: ', JSON.stringify(reviewsByTrustedCommunityMembers));
     const communityApproved = Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'APPROVED');
     const communityRequestedChanges = !communityApproved && Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'CHANGES_REQUESTED')
 
@@ -572,6 +575,7 @@ export class PullRequestLinter {
       ],
     });
 
+    console.log("Deleting PR Linter Comment now");
     await this.deletePRLinterComment();
     try {
       await this.communicateResult(validationCollector);
@@ -580,7 +584,9 @@ export class PullRequestLinter {
       // also assess whether the PR needs review or not
       try {
         const state = await this.codeBuildJobSucceeded(sha);
+        console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
         if (state) {
+          console.log('Assessing if the PR needs a review now');
           await this.assessNeedsReview(pr);
         }
       } catch (e) {

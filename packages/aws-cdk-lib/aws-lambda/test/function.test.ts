@@ -7,6 +7,7 @@ import { ProfilingGroup } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
+import { AccountPrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -15,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
@@ -221,6 +223,55 @@ describe('function', () => {
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
       fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
+    });
+
+    test('does not show warning if skipPermissions is set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+        skipPermissions: true,
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth()).length).toBe(0);
+    });
+
+    test('shows warning if skipPermissions is not set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          message: {
+            'Fn::Join': [
+              '',
+              [
+                'addPermission() has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ', account=',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions. [ack: UnclearLambdaEnvironment]',
+              ],
+            ],
+          },
+          path: '/Default/Imported',
+        },
+      ]);
     });
 
     test('applies source account/ARN conditions if the principal has conditions', () => {
@@ -1252,6 +1303,72 @@ describe('function', () => {
                 { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
                 { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
               ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('adds grantInvokeLatestVersion ', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeLatestVersion(role);
+
+      // THEN function should have allow on both unqualified arn and arn:$LATEST
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: [
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':$LATEST']] },
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('adds grantInvokeVersion ', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      const lv2 = new lambda.Version(stack, 'v2', {
+        lambda: fn,
+      });
+      // WHEN
+      fn.grantInvokeVersion(role, lv2);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':', { 'Fn::GetAtt': ['v248F3DDCC', 'Version'] }]] },
             },
           ],
         },
@@ -3448,7 +3565,7 @@ describe('function', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:2'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3470,14 +3587,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_21_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_24_0),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-24-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3494,7 +3611,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_21_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_24_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3923,6 +4040,237 @@ describe('VPC configuration', () => {
             { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
           ],
         },
+      },
+    });
+  });
+});
+
+describe('latest Lambda node runtime', () => {
+  test('with region agnostic stack', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {
+      'af-south-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-east-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-northeast-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-northeast-2': {
+        value: 'nodejs20.x',
+      },
+      'ap-northeast-3': {
+        value: 'nodejs20.x',
+      },
+      'ap-south-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-south-2': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-2': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-3': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-4': {
+        value: 'nodejs20.x',
+      },
+      'ca-central-1': {
+        value: 'nodejs20.x',
+      },
+      'cn-north-1': {
+        value: 'nodejs18.x',
+      },
+      'cn-northwest-1': {
+        value: 'nodejs18.x',
+      },
+      'eu-central-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-central-2': {
+        value: 'nodejs20.x',
+      },
+      'eu-north-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-south-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-south-2': {
+        value: 'nodejs20.x',
+      },
+      'eu-west-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-west-2': {
+        value: 'nodejs20.x',
+      },
+      'eu-west-3': {
+        value: 'nodejs20.x',
+      },
+      'il-central-1': {
+        value: 'nodejs20.x',
+      },
+      'me-central-1': {
+        value: 'nodejs20.x',
+      },
+      'me-south-1': {
+        value: 'nodejs20.x',
+      },
+      'sa-east-1': {
+        value: 'nodejs20.x',
+      },
+      'us-east-1': {
+        value: 'nodejs20.x',
+      },
+      'us-east-2': {
+        value: 'nodejs20.x',
+      },
+      'us-gov-east-1': {
+        value: 'nodejs18.x',
+      },
+      'us-gov-west-1': {
+        value: 'nodejs18.x',
+      },
+      'us-iso-east-1': {
+        value: 'nodejs18.x',
+      },
+      'us-iso-west-1': {
+        value: 'nodejs18.x',
+      },
+      'us-isob-east-1': {
+        value: 'nodejs18.x',
+      },
+      'us-west-1': {
+        value: 'nodejs20.x',
+      },
+      'us-west-2': {
+        value: 'nodejs20.x',
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: {
+          'Fn::FindInMap': [
+            'LatestNodeRuntimeMap',
+            {
+              Ref: 'AWS::Region',
+            },
+            'value',
+          ],
+        },
+      },
+    });
+  });
+
+  test('with stack in commercial region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs20.x',
+      },
+    });
+  });
+
+  test('with stack in china region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'cn-north-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in adc region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-iso-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in govcloud region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-gov-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in unsupported region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-fake-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
       },
     });
   });

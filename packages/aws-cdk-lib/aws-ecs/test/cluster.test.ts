@@ -8,6 +8,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import * as cdk from '../../core';
+import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
 
@@ -1527,6 +1528,26 @@ describe('cluster', () => {
     expect(cluster.connections.securityGroups).toEqual([]);
   });
 
+  test('Can import autoscaling groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoscalingGroup = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+      autoscalingGroup,
+    });
+
+    // THEN
+    expect(cluster.autoscalingGroup).toEqual(autoscalingGroup);
+  });
+
   test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -2032,6 +2053,7 @@ describe('cluster', () => {
             'AZRebalance',
             'AlarmNotification',
             'ScheduledActions',
+            'InstanceRefresh',
           ],
         },
         AutoScalingScheduledAction: {
@@ -2173,36 +2195,76 @@ describe('cluster', () => {
 
   });
 
-  test('creates ASG capacity providers with expected defaults', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'test');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
-      vpc,
-      instanceType: new ec2.InstanceType('bogus'),
-      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
-    });
+  describe('creates ASG capacity providers ', () => {
+    test('with expected defaults', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('bogus'),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+      });
 
-    // WHEN
-    new ecs.AsgCapacityProvider(stack, 'provider', {
-      autoScalingGroup,
-    });
+      // WHEN
+      new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+      });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
-      AutoScalingGroupProvider: {
-        AutoScalingGroupArn: {
-          Ref: 'asgASG4D014670',
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        AutoScalingGroupProvider: {
+          AutoScalingGroupArn: {
+            Ref: 'asgASG4D014670',
+          },
+          ManagedScaling: {
+            Status: 'ENABLED',
+            TargetCapacity: 100,
+          },
+          ManagedTerminationProtection: 'ENABLED',
         },
-        ManagedScaling: {
-          Status: 'ENABLED',
-          TargetCapacity: 100,
-        },
-        ManagedTerminationProtection: 'ENABLED',
-      },
+      });
     });
 
+    test('with IAutoScalingGroup should throw an error if Managed Termination Protection is enabled.', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
+
+      // THEN
+      expect(() => {
+        new ecs.AsgCapacityProvider(stack, 'provider', {
+          autoScalingGroup,
+        });
+      }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
+    });
+
+    test('with IAutoScalingGroup should not throw an error if Managed Termination Protection is disabled.', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
+
+      // WHEN
+      new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+        enableManagedTerminationProtection: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        AutoScalingGroupProvider: {
+          AutoScalingGroupArn: 'my-asg',
+          ManagedScaling: {
+            Status: 'ENABLED',
+            TargetCapacity: 100,
+          },
+          ManagedTerminationProtection: 'DISABLED',
+        },
+      });
+    });
   });
 
   test('can disable Managed Scaling and Managed Termination Protection for ASG capacity provider', () => {
@@ -2460,6 +2522,23 @@ describe('cluster', () => {
       DefaultCapacityProviderStrategy: [],
     });
 
+  });
+
+  test('throws when calling Cluster.addAsgCapacityProvider with an AsgCapacityProvider created with an imported ASG', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const importedAsg = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'ASG', 'my-asg');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup: importedAsg,
+      enableManagedTerminationProtection: false,
+    });
+    // THEN
+    expect(() => {
+      cluster.addAsgCapacityProvider(capacityProvider);
+    }).toThrow('Cannot configure the AutoScalingGroup because it is an imported resource.');
   });
 
   test('should throw an error if capacity provider with default strategy is not present in capacity providers', () => {
@@ -2908,7 +2987,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
 
 });
 
-test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or faragte', () => {
+test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or fargate', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'test');
@@ -2943,6 +3022,31 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+});
+
+test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'ecscp');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  expect(() => {
+    // WHEN Capacity Provider when stack name starts with ecs.
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+  }).not.toThrow();
 });
 
 test('throws when InstanceWarmupPeriod is less than 0', () => {
@@ -2996,11 +3100,17 @@ test('throws when InstanceWarmupPeriod is greater than 10000', () => {
 describe('Accessing container instance role', function () {
 
   const addUserDataMock = jest.fn();
-  const autoScalingGroup: autoscaling.AutoScalingGroup = {
-    addUserData: addUserDataMock,
-    addToRolePolicy: jest.fn(),
-    protectNewInstancesFromScaleIn: jest.fn(),
-  } as unknown as autoscaling.AutoScalingGroup;
+
+  function getAutoScalingGroup(stack: cdk.Stack): autoscaling.AutoScalingGroup {
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const asg = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+    asg.addUserData = addUserDataMock;
+    return asg;
+  }
 
   afterEach(() => {
     addUserDataMock.mockClear();
@@ -3011,11 +3121,12 @@ describe('Accessing container instance role', function () {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    const autoScalingGroup = getAutoScalingGroup(stack);
 
     // WHEN
 
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
-      autoScalingGroup: autoScalingGroup,
+      autoScalingGroup,
     });
 
     cluster.addAsgCapacityProvider(capacityProvider);
@@ -3031,10 +3142,11 @@ describe('Accessing container instance role', function () {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    const autoScalingGroup = getAutoScalingGroup(stack);
 
     // WHEN
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
-      autoScalingGroup: autoScalingGroup,
+      autoScalingGroup,
     });
 
     cluster.addAsgCapacityProvider(capacityProvider, {
@@ -3052,6 +3164,7 @@ describe('Accessing container instance role', function () {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    const autoScalingGroup = getAutoScalingGroup(stack);
 
     // WHEN
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
@@ -3072,6 +3185,7 @@ describe('Accessing container instance role', function () {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    const autoScalingGroup = getAutoScalingGroup(stack);
 
     // WHEN
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
@@ -3094,6 +3208,7 @@ describe('Accessing container instance role', function () {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    const autoScalingGroup = getAutoScalingGroup(stack);
 
     // WHEN
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {
@@ -3116,6 +3231,7 @@ describe('Accessing container instance role', function () {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    const autoScalingGroup = getAutoScalingGroup(stack);
 
     // WHEN
     const capacityProvider = new ecs.AsgCapacityProvider(stack, 'Provider', {

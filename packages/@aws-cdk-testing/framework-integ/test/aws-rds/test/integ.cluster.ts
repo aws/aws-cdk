@@ -27,6 +27,7 @@ class TestStack extends cdk.Stack {
     const instanceProps = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       isFromLegacyInstanceProps: true,
+      preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
     };
 
     const readers = featureFlag

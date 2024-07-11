@@ -803,12 +803,7 @@
                     },
                     "deploymentConfiguration": {
                       "maximumPercent": 200,
-                      "minimumHealthyPercent": 50,
-                      "alarms": {
-                        "alarmNames": [],
-                        "enable": false,
-                        "rollback": false
-                      }
+                      "minimumHealthyPercent": 50
                     },
                     "enableEcsManagedTags": false,
                     "launchType": "FARGATE",
@@ -896,12 +891,7 @@
                     },
                     "deploymentConfiguration": {
                       "maximumPercent": 200,
-                      "minimumHealthyPercent": 50,
-                      "alarms": {
-                        "alarmNames": [],
-                        "enable": false,
-                        "rollback": false
-                      }
+                      "minimumHealthyPercent": 50
                     },
                     "enableEcsManagedTags": false,
                     "launchType": "FARGATE",
@@ -1009,7 +999,7 @@
                 "path": "EcsCustomTaskRevision/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1055,7 +1045,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

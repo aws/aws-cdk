@@ -13,9 +13,14 @@ const stack = new cdk.Stack(
 // Create VPC and cluster
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'TestFargateCluster', { vpc });
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+  vpc,
+  allowAllOutbound: false,
+});
+securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
 
 // Create ALB service with Command and EntryPoint
-new ecsPatterns.ApplicationLoadBalancedFargateService(
+const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(
   stack,
   'ALBFargateServiceWithCommandAndEntryPoint',
   {
@@ -23,12 +28,13 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(
     memoryLimitMiB: 512,
     cpu: 256,
     taskImageOptions: {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      command: ['/usr/sbin/apache2', '-D', 'FOREGROUND'],
-      entryPoint: ['/bin/bash'],
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/docker/library/httpd:2.4'),
+      command: ['/bin/sh -c \"echo \'<html><h1>Amazon ECS Sample App</h1></html>\' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\"'],
+      entryPoint: ['sh', '-c'],
     },
   },
 );
+applicationLoadBalancedFargateService.loadBalancer.connections.addSecurityGroup(securityGroup);
 
 new integ.IntegTest(app, 'AlbFargateServiceWithCommandAndEntryPoint', {
   testCases: [stack],

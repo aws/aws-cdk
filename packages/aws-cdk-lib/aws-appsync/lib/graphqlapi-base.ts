@@ -13,11 +13,12 @@ import { Resolver, ExtendedResolverProps } from './resolver';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
 import { IEventBus } from '../../aws-events';
+import { Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IServerlessCluster } from '../../aws-rds';
+import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
-import { CfnResource, IResource, Resource } from '../../core';
+import { ArnFormat, CfnResource, IResource, Resource, Stack } from '../../core';
 
 /**
  * Optional configuration for data sources
@@ -51,6 +52,108 @@ export interface HttpDataSourceOptions extends DataSourceOptions {
 }
 
 /**
+ * A class used to generate resource arns for AppSync
+ */
+export class IamResource {
+  /**
+   * Generate the resource names given custom arns
+   *
+   * @param arns The custom arns that need to be permissioned
+   *
+   * Example: custom('/types/Query/fields/getExample')
+   */
+  public static custom(...arns: string[]): IamResource {
+    if (arns.length === 0) {
+      throw new Error('At least 1 custom ARN must be provided.');
+    }
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names given a type and fields
+   *
+   * @param type The type that needs to be allowed
+   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
+   *
+   * Example: ofType('Query', 'GetExample')
+   */
+  public static ofType(type: string, ...fields: string[]): IamResource {
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names that accepts all types: `*`
+   */
+  public static all(): IamResource {
+    return new IamResource(['*']);
+  }
+
+  private arns: string[];
+
+  private constructor(arns: string[]) {
+    this.arns = arns;
+  }
+
+  /**
+   * Return the Resource ARN
+   *
+   * @param api The GraphQL API to give permissions
+   */
+  public resourceArns(api: GraphqlApiBase): string[] {
+    return this.arns.map((arn) =>
+      Stack.of(api).formatArn({
+        service: 'appsync',
+        resource: `apis/${api.apiId}`,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        resourceName: `${arn}`,
+      }),
+    );
+  }
+}
+
+/**
+ * Visibility type for a GraphQL API
+ */
+export enum Visibility {
+
+  /**
+   * Public, open to the internet
+   */
+  GLOBAL = 'GLOBAL',
+  /**
+   * Only accessible through a VPC
+   */
+  PRIVATE = 'PRIVATE',
+}
+
+/**
+ * enum with all possible values for AppSync authorization type
+ */
+export enum AuthorizationType {
+  /**
+   * API Key authorization type
+   */
+  API_KEY = 'API_KEY',
+  /**
+   * AWS IAM authorization type. Can be used with Cognito Identity Pool federated credentials
+   */
+  IAM = 'AWS_IAM',
+  /**
+   * Cognito User Pool authorization type
+   */
+  USER_POOL = 'AMAZON_COGNITO_USER_POOLS',
+  /**
+   * OpenID Connect authorization type
+   */
+  OIDC = 'OPENID_CONNECT',
+  /**
+   * Lambda authorization type
+   */
+  LAMBDA = 'AWS_LAMBDA',
+}
+
+/**
  * Interface for GraphQL
  */
 export interface IGraphqlApi extends IResource {
@@ -69,6 +172,21 @@ export interface IGraphqlApi extends IResource {
    * @attribute
    */
   readonly arn: string;
+
+  /**
+   * The GraphQL endpoint ARN
+   */
+  readonly graphQLEndpointArn: string;
+
+  /**
+   * the visibility of the API
+   */
+  readonly visibility: Visibility;
+
+  /**
+   * The Authorization Types for this GraphQL Api
+   */
+  readonly modes: AuthorizationType[];
 
   /**
    * add a new dummy data source to this API. Useful for pipeline resolvers
@@ -132,6 +250,23 @@ export interface IGraphqlApi extends IResource {
   ): RdsDataSource;
 
   /**
+   * add a new Rds Serverless V2 data source to this API
+   *
+   * @param id The data source's id
+   * @param serverlessCluster The serverless V2 cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  addRdsDataSourceV2(
+    id: string,
+    serverlessCluster: IDatabaseCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: DataSourceOptions
+  ): RdsDataSource;
+
+  /**
    * add a new elasticsearch data source to this API
    *
    * @deprecated - use `addOpenSearchDataSource`
@@ -161,6 +296,43 @@ export interface IGraphqlApi extends IResource {
    * @param construct the dependee
    */
   addSchemaDependency(construct: CfnResource): boolean;
+
+  /**
+   * Adds an IAM policy statement associated with this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
+   * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
+   */
+  grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant;
+
+  /**
+   * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Mutations (leave blank for all)
+   */
+  grantMutation(grantee: IGrantable, ...fields: string[]): Grant;
+
+  /**
+   * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Queries (leave blank for all)
+   */
+  grantQuery(grantee: IGrantable, ...fields: string[]): Grant;
+
+  /**
+   * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
+   */
+  grantSubscription(grantee: IGrantable, ...fields: string[]): Grant;
 }
 
 /**
@@ -175,9 +347,24 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   public abstract readonly apiId: string;
 
   /**
+   * The GraphQL endpoint ARN
+   */
+  public abstract readonly graphQLEndpointArn: string;
+
+  /**
+   * The visibility of the API
+   */
+  public abstract readonly visibility: Visibility;
+
+  /**
    * the ARN of the API
    */
   public abstract readonly arn: string;
+
+  /**
+   * The Authorization Types for this GraphQL Api
+   */
+  public abstract readonly modes: AuthorizationType[];
 
   /**
    * add a new dummy data source to this API. Useful for pipeline resolvers
@@ -269,6 +456,31 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   }
 
   /**
+   * add a new Rds data source to this API
+   * @param id The data source's id
+   * @param serverlessCluster The serverless V2 cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  public addRdsDataSourceV2(
+    id: string,
+    serverlessCluster: IDatabaseCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: DataSourceOptions,
+  ): RdsDataSource {
+    return new RdsDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      serverlessCluster,
+      secretStore,
+      databaseName,
+    });
+  }
+
+  /**
    * add a new elasticsearch data source to this API
    *
    * @deprecated - use `addOpenSearchDataSource`
@@ -334,5 +546,55 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   public addSchemaDependency(construct: CfnResource): boolean {
     construct;
     return false;
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
+   * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
+   */
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: resources.resourceArns(this),
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Mutations (leave blank for all)
+   */
+  public grantMutation(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Queries (leave blank for all)
+   */
+  public grantQuery(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Query', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
+   */
+  public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
+    return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
   }
 }

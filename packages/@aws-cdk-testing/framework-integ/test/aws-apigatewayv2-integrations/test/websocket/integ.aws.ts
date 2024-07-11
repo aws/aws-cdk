@@ -1,7 +1,7 @@
-import { HttpMethod, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { ContentHandling, HttpMethod, PassthroughBehavior, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { WebSocketAwsIntegration, WebSocketMockIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -42,6 +42,9 @@ webSocketApi.addRoute('$connect', {
     integrationUri: `arn:aws:apigateway:${stack.region}:dynamodb:action/PutItem`,
     integrationMethod: HttpMethod.POST,
     credentialsRole: apiRole,
+    requestParameters: {
+      'integration.request.header.Content-Type': '\'application/x-www-form-urlencoded\'',
+    },
     requestTemplates: {
       'application/json': JSON.stringify({
         TableName: table.tableName,
@@ -52,6 +55,10 @@ webSocketApi.addRoute('$connect', {
         },
       }),
     },
+    templateSelectionExpression: '\\$default',
+    passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+    contentHandling: ContentHandling.CONVERT_TO_BINARY,
+    timeout: Duration.seconds(10),
   }),
 });
 

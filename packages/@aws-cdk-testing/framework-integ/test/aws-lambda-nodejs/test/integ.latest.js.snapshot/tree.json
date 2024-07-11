@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "5cea6a85ed0a0680ff29f4c65face159d9990204dd6cae4a489ad3dbd8e25c06.zip"
+                      "s3Key": "2729d9b4af60cbbbe3182f0002dec1747647eedd8de3761325aa38f7ddf73f24.zip"
                     },
                     "environment": {
                       "variables": {
@@ -287,6 +287,14 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "LambdaNodeJsLatestInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "BootstrapVersion": {

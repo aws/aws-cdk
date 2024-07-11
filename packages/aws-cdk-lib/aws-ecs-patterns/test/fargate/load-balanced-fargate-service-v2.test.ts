@@ -3,7 +3,7 @@ import { Certificate } from '../../../aws-certificatemanager';
 import { Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
-import { ApplicationProtocol, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
@@ -225,6 +225,7 @@ describe('Application Load Balancer', () => {
         cpu: 256,
         assignPublicIp: true,
         memoryLimitMiB: 512,
+        ephemeralStorageGiB: 50,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -349,6 +350,9 @@ describe('Application Load Balancer', () => {
           },
         ],
         Cpu: '256',
+        EphemeralStorage: {
+          SizeInGiB: 50,
+        },
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -736,6 +740,30 @@ describe('Network Load Balancer', () => {
         },
       });
     });
+
+    test('specify IPV6 address type for NLB', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC', { maxAzs: 2 });
+
+      // WHEN
+      new NetworkLoadBalancedFargateService(stack, 'NLBService', {
+        cluster: new ecs.Cluster(stack, 'Cluster', { vpc }),
+        memoryLimitMiB: 1024,
+        cpu: 512,
+        taskImageOptions: {
+          image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          containerPort: 80,
+        },
+        listenerPort: 80,
+        ipAddressType: IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        IpAddressType: 'dualstack',
+      });
+    });
   });
 
   describe('NetworkMultipleTargetGroupsFargateService', () => {
@@ -847,6 +875,7 @@ describe('Network Load Balancer', () => {
         cpu: 256,
         assignPublicIp: true,
         memoryLimitMiB: 512,
+        ephemeralStorageGiB: 80,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -955,6 +984,9 @@ describe('Network Load Balancer', () => {
           },
         ],
         Cpu: '256',
+        EphemeralStorage: {
+          SizeInGiB: 80,
+        },
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',

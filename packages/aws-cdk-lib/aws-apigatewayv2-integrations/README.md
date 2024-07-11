@@ -5,11 +5,15 @@
 - [HTTP APIs](#http-apis)
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
+  - [StepFunctions Integration](#stepfunctions-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
+- [Import Issues](#import-issues)
+  - [DotNet Namespace](#dotnet-namespace)
+  - [Java Package](#java-package)
 
 ## HTTP APIs
 
@@ -64,6 +68,58 @@ httpApi.addRoutes({
   integration: booksIntegration,
 });
 ```
+
+### StepFunctions Integration
+
+Step Functions integrations enable integrating an HTTP API route with AWS Step Functions.
+This allows the HTTP API to start state machine executions synchronously or asynchronously, or to stop executions.
+
+When a client invokes the route configured with a Step Functions integration, the API Gateway service interacts with the specified state machine according to the integration subtype (e.g., starts a new execution, synchronously starts an execution, or stops an execution) and returns the response to the client.
+
+The following code configures a Step Functions integrations:
+
+```ts
+import { HttpStepFunctionsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+
+declare const stateMachine: sfn.StateMachine;
+declare const httpApi: apigwv2.HttpApi;
+
+httpApi.addRoutes({
+  path: '/start',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StartExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION,
+  }),
+});
+
+httpApi.addRoutes({
+  path: '/start-sync',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StartSyncExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION,
+  }),
+});
+
+httpApi.addRoutes({
+  path: '/stop',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StopExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION,
+    // For the `STOP_EXECUTION` subtype, it is necessary to specify the `executionArn`.
+    parameterMapping: new apigwv2.ParameterMapping()
+      .custom('ExecutionArn', '$request.querystring.executionArn'),
+  }),
+});
+```
+
+**Note**:
+
+- The `executionArn` parameter is required for the `STOP_EXECUTION` subtype. It is necessary to specify the `executionArn` in the `parameterMapping` property of the `HttpStepFunctionsIntegration` object.
+- `START_SYNC_EXECUTION` subtype is only supported for EXPRESS type state machine.
 
 ### Private Integration
 
@@ -251,4 +307,30 @@ webSocketApi.addRoute('$connect', {
     },
   }),
 });
+```
+
+You can also set additional properties to change the behavior of your integration, such as `contentHandling`.
+See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html).
+
+## Import Issues
+
+`jsiirc.json` file is missing during the stablization process of this module, which caused import issues for DotNet and Java users who attempt to use this module. Unfortunately, to guarantee backward compatibility, we cannot simply correct the namespace for DotNet or package for Java. The following outlines the workaround.
+
+### DotNet Namespace
+
+Instead of the conventional namespace `Amazon.CDK.AWS.Apigatewayv2.Integrations`, you would need to use the following namespace:
+
+```cs
+using Amazon.CDK.AwsApigatewayv2Integrations;
+```
+
+### Java Package
+
+Instead of conventional package `import software.amazon.awscdk.services.apigatewayv2_integrations.*`, you would need to use the following package:
+
+```java
+import software.amazon.awscdk.aws_apigatewayv2_integrations.*;
+
+// If you want to import a specific construct
+import software.amazon.awscdk.aws_apigatewayv2_integrations.WebSocketAwsIntegration;
 ```

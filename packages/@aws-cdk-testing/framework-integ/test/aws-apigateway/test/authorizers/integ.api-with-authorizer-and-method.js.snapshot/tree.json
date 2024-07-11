@@ -1,0 +1,430 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integtest-restapi-with-authorizer-and-proxy": {
+        "id": "integtest-restapi-with-authorizer-and-proxy",
+        "path": "integtest-restapi-with-authorizer-and-proxy",
+        "children": {
+          "UserPool": {
+            "id": "UserPool",
+            "path": "integtest-restapi-with-authorizer-and-proxy/UserPool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integtest-restapi-with-authorizer-and-proxy/UserPool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "Authorizer": {
+            "id": "Authorizer",
+            "path": "integtest-restapi-with-authorizer-and-proxy/Authorizer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integtest-restapi-with-authorizer-and-proxy/Authorizer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
+                  "aws:cdk:cloudformation:props": {
+                    "identitySource": "method.request.header.Authorization",
+                    "name": "integtestrestapiwithauthorizerandproxyAuthorizer5142DDC8",
+                    "providerArns": [
+                      {
+                        "Fn::GetAtt": [
+                          "UserPool6BA7E5F2",
+                          "Arn"
+                        ]
+                      }
+                    ],
+                    "restApiId": {
+                      "Ref": "CdkTestStack0AE13CA5"
+                    },
+                    "type": "COGNITO_USER_POOLS"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnAuthorizer",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigateway.CognitoUserPoolsAuthorizer",
+              "version": "0.0.0"
+            }
+          },
+          "CdkTestStack": {
+            "id": "CdkTestStack",
+            "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "CdkTestStack"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "Automatically created by the RestApi construct",
+                        "restApiId": {
+                          "Ref": "CdkTestStack0AE13CA5"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentStage.prod": {
+                "id": "DeploymentStage.prod",
+                "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/DeploymentStage.prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/DeploymentStage.prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "deploymentId": {
+                          "Ref": "CdkTestStackDeployment201712E9c8d53ab4e4cdcaa7ab0f70bb7f6ce970"
+                        },
+                        "restApiId": {
+                          "Ref": "CdkTestStack0AE13CA5"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
+                  "version": "0.0.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Endpoint",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default",
+                "children": {
+                  "user": {
+                    "id": "user",
+                    "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "CdkTestStack0AE13CA5",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "user",
+                            "restApiId": {
+                              "Ref": "CdkTestStack0AE13CA5"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user/GET",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/user/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationScopes": [
+                                  "profile"
+                                ],
+                                "authorizationType": "COGNITO_USER_POOLS",
+                                "authorizerId": {
+                                  "Ref": "AuthorizerBD825682"
+                                },
+                                "httpMethod": "GET",
+                                "integration": {
+                                  "type": "MOCK"
+                                },
+                                "resourceId": {
+                                  "Ref": "CdkTestStackuser7876F2D4"
+                                },
+                                "restApiId": {
+                                  "Ref": "CdkTestStack0AE13CA5"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "other": {
+                    "id": "other",
+                    "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "CdkTestStack0AE13CA5",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "other",
+                            "restApiId": {
+                              "Ref": "CdkTestStack0AE13CA5"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "POST": {
+                        "id": "POST",
+                        "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other/POST",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integtest-restapi-with-authorizer-and-proxy/CdkTestStack/Default/other/POST/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationScopes": [
+                                  "openid"
+                                ],
+                                "authorizationType": "COGNITO_USER_POOLS",
+                                "authorizerId": {
+                                  "Ref": "AuthorizerBD825682"
+                                },
+                                "httpMethod": "POST",
+                                "integration": {
+                                  "type": "MOCK"
+                                },
+                                "resourceId": {
+                                  "Ref": "CdkTestStackother6044D106"
+                                },
+                                "restApiId": {
+                                  "Ref": "CdkTestStack0AE13CA5"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integtest-restapi-with-authorizer-and-proxy/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integtest-restapi-with-authorizer-and-proxy/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "apigateway-with-authorizer-and-proxy": {
+        "id": "apigateway-with-authorizer-and-proxy",
+        "path": "apigateway-with-authorizer-and-proxy",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "apigateway-with-authorizer-and-proxy/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "apigateway-with-authorizer-and-proxy/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

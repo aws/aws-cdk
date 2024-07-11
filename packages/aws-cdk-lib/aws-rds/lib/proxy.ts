@@ -104,7 +104,8 @@ export class ProxyTarget {
 
     const engineFamily = engine.engineFamily;
     if (!engineFamily) {
-      throw new Error(`Engine '${engineDescription(engine)}' does not support proxies`);
+      throw new Error('RDS proxies require an engine family to be specified on the database cluster or instance. ' +
+        `No family specified for engine '${engineDescription(engine)}'`);
     }
 
     // allow connecting to the Cluster/Instance from the Proxy

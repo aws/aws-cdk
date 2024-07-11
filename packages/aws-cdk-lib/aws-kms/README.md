@@ -6,6 +6,7 @@ Define a KMS key:
 ```ts
 new kms.Key(this, 'MyKey', {
   enableKeyRotation: true,
+  rotationPeriod: Duration.days(180), // Default is 365 days
 });
 ```
 
@@ -77,7 +78,7 @@ import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 const myKeyAlias = kms.Alias.fromAliasName(this, 'myKey', 'alias/aws/s3');
 const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
   sendToCloudWatchLogs: true,
-  kmsKey: myKeyAlias,
+  encryptionKey: myKeyAlias,
 });
 ```
 

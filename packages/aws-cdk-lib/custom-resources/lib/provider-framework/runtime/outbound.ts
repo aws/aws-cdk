@@ -15,12 +15,19 @@ const awsSdkConfig = {
   httpOptions: { timeout: FRAMEWORK_HANDLER_TIMEOUT },
 };
 
-async function defaultHttpRequest(options: https.RequestOptions, responseBody: string) {
-  return new Promise((resolve, reject) => {
+async function defaultHttpRequest(options: https.RequestOptions, requestBody: string) {
+  return new Promise<void>((resolve, reject) => {
     try {
-      const request = https.request(options, resolve);
+      const request = https.request(options, (response) => {
+        response.resume(); // Consume the response but don't care about it
+        if (!response.statusCode || response.statusCode >= 400) {
+          reject(new Error(`Unsuccessful HTTP response: ${response.statusCode}`));
+        } else {
+          resolve();
+        }
+      });
       request.on('error', reject);
-      request.write(responseBody);
+      request.write(requestBody);
       request.end();
     } catch (e) {
       reject(e);

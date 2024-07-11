@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/77ae39da2f5fc4617060d1d74d195d52543845b10917cabbb7efcea8a4dac6de.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9400e43c9085aa13615c9b9652552af47d5d345fd8883d45c653c1f8c940b0a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -256,6 +256,12 @@
             "data": "UserSetUserPasswordCustomResourcePolicy7B250C76"
           }
         ],
+        "/integ-cognito/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/integ-cognito/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -284,6 +290,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefSignin352C80E64BA58F71"
+          }
+        ],
+        "/integ-cognito/Exports/Output{\"Ref\":\"UserPool6BA7E5F2\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefUserPool6BA7E5F296FD7236"
           }
         ],
         "/integ-cognito/BootstrapVersion": [
@@ -318,7 +330,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/30bfdaf75d642bc3e886992cada86dcf033146f90371c9c66e5e696f36b123d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13487850ae614a516497efa0428c1c467db50ddf50b856c0956240b42f9f0b13.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -363,6 +375,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837"
+          }
+        ],
+        "/integ-test-cognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837"
           }
         ],
         "/integ-test-cognito/DefaultTest/DeployAssert/BootstrapVersion": [

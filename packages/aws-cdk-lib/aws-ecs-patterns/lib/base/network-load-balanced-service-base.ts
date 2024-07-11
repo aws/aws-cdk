@@ -4,7 +4,7 @@ import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '../../../aws-ecs';
-import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import { INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancer, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
@@ -66,8 +66,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
-   * if true, the default is 1 for all new services and uses the existing services desired count
+   * @default - The default is 1 for all new services and uses the existing service's desired count
    * when updating an existing service.
    */
   readonly desiredCount?: number;
@@ -197,6 +196,18 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The type of IP addresses to use
+   *
+   * If you want to add a UDP or TCP_UDP listener to the load balancer,
+   * you must choose IPv4.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-ip-address-type.html
+   *
+   * @default IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
@@ -350,9 +361,10 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
-    const lbProps = {
+    const lbProps: NetworkLoadBalancerProps = {
       vpc: this.cluster.vpc,
       internetFacing,
+      ipAddressType: props.ipAddressType,
     };
 
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);

@@ -182,6 +182,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-iot-opensearch-integ-stack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
             "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287",
@@ -279,7 +287,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
+                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -288,7 +296,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },

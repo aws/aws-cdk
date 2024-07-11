@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "SNSInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c917d5a2b2e16b9e3cd0679e1dee0539129223bcca595b66788045cc8fc23e20.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f73578a6268bf972ab72b4905cc09579fd59ece18de3cd0622ff9606ebdcf661.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -56,6 +56,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Policy23B91518"
+          }
+        ],
+        "/SNSInteg/MyTopicSignatureVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicSignatureVersionEDDB6A3B"
+          }
+        ],
+        "/SNSInteg/MyTopicTracingConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicTracingConfigE05AF123"
+          }
+        ],
+        "/SNSInteg/MyTopic2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic288CE2107"
+          }
+        ],
+        "/SNSInteg/PublishRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishRoleF42F66B6"
+          }
+        ],
+        "/SNSInteg/PublishRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishRoleDefaultPolicy9257B12D"
           }
         ],
         "/SNSInteg/BootstrapVersion": [

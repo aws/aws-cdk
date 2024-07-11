@@ -509,8 +509,8 @@ export class Metric implements IMetric {
     }
 
     var dimsArray = Object.keys(dims);
-    if (dimsArray?.length > 10) {
-      throw new Error(`The maximum number of dimensions is 10, received ${dimsArray.length}`);
+    if (dimsArray?.length > 30) {
+      throw new Error(`The maximum number of dimensions is 30, received ${dimsArray.length}`);
     }
 
     dimsArray.map(key => {

@@ -912,5 +912,27 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.us-west-2.application-autoscaling',
       });
     });
+
+    test('global vpc interface endpoints', () => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('Global S3 API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.S3_MULTI_REGION_ACCESS_POINTS,
+      });
+      vpc.addInterfaceEndpoint('Global CodeCatalyst API Endpoint', {
+        service: InterfaceVpcEndpointAwsService.CODECATALYST,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.s3-global.accesspoint',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'aws.api.global.codecatalyst',
+      });
+    });
   });
 });

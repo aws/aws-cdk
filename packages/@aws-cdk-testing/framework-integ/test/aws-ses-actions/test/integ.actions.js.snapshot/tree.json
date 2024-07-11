@@ -392,6 +392,14 @@
                         "rule": {
                           "actions": [
                             {
+                              "workmailAction": {
+                                "organizationArn": "arn:aws:workmail:us-east-1:339712719728:organization/m-5ea60ed9e37442c388898996f05c17ac",
+                                "topicArn": {
+                                  "Ref": "TopicBFC7AF6E"
+                                }
+                              }
+                            },
+                            {
                               "addHeaderAction": {
                                 "headerName": "X-My-Header",
                                 "headerValue": "value"
@@ -438,7 +446,7 @@
                             },
                             {
                               "bounceAction": {
-                                "sender": "cdk-ses-receipt-test@yopmail.com",
+                                "sender": "test@cdk-test-123.awsapps.com",
                                 "smtpReplyCode": "500",
                                 "message": "Message content rejected",
                                 "topicArn": {
@@ -451,7 +459,7 @@
                           "enabled": true,
                           "name": "FirstRule",
                           "recipients": [
-                            "cdk-ses-receipt-test@yopmail.com"
+                            "test@cdk-test-123.awsapps.com"
                           ],
                           "scanEnabled": true,
                           "tlsPolicy": "Require"
@@ -517,6 +525,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ses.ReceiptRuleSet",
+              "version": "0.0.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-ses-receipt/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -617,7 +633,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34.zip"
+                      "s3Key": "19044c50ec489a0413f51a8e60d6272e5746e9b5a0356ed15c12de97c3ca93ec.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -626,7 +642,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -664,6 +688,114 @@
               "version": "0.0.0"
             }
           },
+          "NotificationQueue": {
+            "id": "NotificationQueue",
+            "path": "aws-cdk-ses-receipt/NotificationQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ses-receipt/NotificationQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-ses-receipt/NotificationQueue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ses-receipt/NotificationQueue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Ref": "TopicBFC7AF6E"
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "NotificationQueue36610CC1",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "NotificationQueue36610CC1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "awscdksesreceiptTopicE9CA2388": {
+                "id": "awscdksesreceiptTopicE9CA2388",
+                "path": "aws-cdk-ses-receipt/NotificationQueue/awscdksesreceiptTopicE9CA2388",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ses-receipt/NotificationQueue/awscdksesreceiptTopicE9CA2388/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "NotificationQueue36610CC1",
+                            "Arn"
+                          ]
+                        },
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Ref": "TopicBFC7AF6E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-ses-receipt/BootstrapVersion",
@@ -691,7 +823,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

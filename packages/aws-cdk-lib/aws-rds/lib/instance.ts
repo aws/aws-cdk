@@ -326,11 +326,18 @@ export enum StorageType {
   GP3 = 'gp3',
 
   /**
-   * Provisioned IOPS (SSD).
+   * Provisioned IOPS SSD (io1).
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#USER_PIOPS
    */
   IO1 = 'io1',
+
+  /**
+   * Provisioned IOPS SSD (io2).
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#USER_PIOPS
+   */
+  IO2 = 'io2',
 }
 
 /**
@@ -1390,6 +1397,7 @@ function defaultIops(storageType: StorageType, iops?: number): number | undefine
     case StorageType.GP3:
       return iops;
     case StorageType.IO1:
+    case StorageType.IO2:
       return iops ?? 1000;
   }
 }

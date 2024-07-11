@@ -1,3 +1,4 @@
+import * as child_process from 'child_process';
 import * as path from 'path';
 import { Match, Template } from '../../assertions';
 import * as ecr from '../../aws-ecr';
@@ -15,7 +16,100 @@ describe('code', () => {
     });
   });
 
+  describe('lambda.Code.fromCustomCommand', () => {
+    let spawnSyncMock: jest.SpyInstance;
+    beforeEach(() => {
+      spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+        status: 0,
+        stderr: Buffer.from('stderr'),
+        stdout: Buffer.from('stdout'),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    test('fails if command is empty', () => {
+      // GIVEN
+      const command = [];
+
+      // THEN
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+    });
+    test('properly splices arguments', () => {
+      // GIVEN
+      const command = 'node is a great command, wow'.split(' ');
+      lambda.Code.fromCustomCommand('', command);
+
+      // THEN
+      expect(spawnSyncMock).toHaveBeenCalledWith(
+        'node',
+        ['is', 'a', 'great', 'command,', 'wow'],
+      );
+    });
+    test('command of length 1 does not cause crash', () => {
+      // WHEN
+      lambda.Code.fromCustomCommand('', ['node']);
+
+      // THEN
+      expect(spawnSyncMock).toHaveBeenCalledWith('node', []);
+    });
+    test('properly splices arguments when commandOptions are included', () => {
+      // GIVEN
+      const command = 'node is a great command, wow'.split(' ');
+      const commandOptions = { commandOptions: { cwd: '/tmp', env: { SOME_KEY: 'SOME_VALUE' } } };
+      lambda.Code.fromCustomCommand('', command, commandOptions);
+
+      // THEN
+      expect(spawnSyncMock).toHaveBeenCalledWith(
+        'node',
+        ['is', 'a', 'great', 'command,', 'wow'],
+        commandOptions.commandOptions,
+      );
+    });
+    test('throws custom error message when spawnSync errors', () => {
+      // GIVEN
+      jest.restoreAllMocks(); // use the real spawnSync, which doesn't work in unit tests.
+      const command = ['whatever'];
+
+      // THEN
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow(/Failed to execute custom command: .*/);
+    });
+    test('throws custom error message when spawnSync exits with non-zero status code', () => {
+      // GIVEN
+      const command = ['whatever'];
+      spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+        status: 1,
+        stderr: Buffer.from('stderr'),
+        stdout: Buffer.from('stdout'),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+
+      // THEN
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('whatever exited with status: 1\n\nstdout: stdout\n\nstderr: stderr');
+    });
+  });
+
   describe('lambda.Code.fromAsset', () => {
+    test('fails if path is empty', () => {
+      // GIVEN
+      const fileAsset = lambda.Code.fromAsset('');
+
+      // THEN
+      expect(() => defineFunction(fileAsset)).toThrow(/Asset path cannot be empty/);
+    });
+    test('fails if path does not exist', () => {
+      // GIVEN
+      const fileAsset = lambda.Code.fromAsset('/path/not/found/' + Math.random() * 999999);
+
+      // THEN
+      expect(() => defineFunction(fileAsset)).toThrow(/Cannot find asset/);
+    });
     test('fails if a non-zip asset is used', () => {
       // GIVEN
       const fileAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler', 'index.py'));

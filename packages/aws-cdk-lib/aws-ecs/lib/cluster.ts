@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -474,6 +474,9 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    if (!(autoScalingGroup instanceof autoscaling.AutoScalingGroup)) {
+      throw new Error('Cannot configure the AutoScalingGroup because it is an imported resource.');
+    }
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
     } else {
@@ -859,6 +862,11 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly hasEc2Capacity: boolean;
 
   /**
+   * The autoscaling group added to the cluster if capacity is associated to the cluster
+   */
+  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
    * Cloudmap namespace created in the cluster
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -878,6 +886,7 @@ class ImportedCluster extends Resource implements ICluster {
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
     this._executeCommandConfiguration = props.executeCommandConfiguration;
+    this.autoscalingGroup = props.autoscalingGroup;
 
     this.clusterArn = props.clusterArn ?? Stack.of(this).formatArn({
       service: 'ecs',
@@ -1162,6 +1171,8 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * The name of the capacity provider. If a name is specified,
    * it cannot start with `aws`, `ecs`, or `fargate`. If no name is specified,
    * a default name in the CFNStackName-CFNResourceName-RandomString format is used.
+   * If the stack name starts with `aws`, `ecs`, or `fargate`, a unique resource name
+   * is generated that starts with `cp-`.
    *
    * @default CloudFormation-generated name
    */
@@ -1169,6 +1180,10 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
 
   /**
    * The autoscaling group to add as a Capacity Provider.
+   *
+   * Warning: When passing an imported resource using `AutoScalingGroup.fromAutoScalingGroupName` along with `enableManagedTerminationProtection: true`,
+   * the `AsgCapacityProvider` construct will not be able to enforce the option `newInstancesProtectedFromScaleIn` of the `AutoScalingGroup`.
+   * In this case the constructor of `AsgCapacityProvider` will throw an exception.
    */
   readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
 
@@ -1282,6 +1297,7 @@ export class AsgCapacityProvider extends Construct {
 
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
+    let capacityProviderName = props.capacityProviderName;
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
     this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
@@ -1297,12 +1313,24 @@ export class AsgCapacityProvider extends Construct {
       throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
     }
     if (this.enableManagedTerminationProtection) {
-      this.autoScalingGroup.protectNewInstancesFromScaleIn();
+      if (this.autoScalingGroup instanceof autoscaling.AutoScalingGroup) {
+        this.autoScalingGroup.protectNewInstancesFromScaleIn();
+      } else {
+        throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
+      }
     }
 
-    if (props.capacityProviderName) {
-      if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
-        throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+    const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
+    if (capacityProviderName) {
+      if (!(capacityProviderNameRegex.test(capacityProviderName))) {
+        throw new Error(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+      }
+    } else {
+      if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
+        // name cannot start with 'aws|ecs|fargate', so append 'cp-'
+        // 255 is the max length, subtract 3 because of 'cp-'
+        // if the regex condition isn't met, CFN will name the capacity provider
+        capacityProviderName = 'cp-' + Names.uniqueResourceName(this, { maxLength: 252, allowedSpecialCharacters: '-_' });
       }
     }
 
@@ -1313,7 +1341,7 @@ export class AsgCapacityProvider extends Construct {
     }
 
     const capacityProvider = new CfnCapacityProvider(this, id, {
-      name: props.capacityProviderName,
+      name: capacityProviderName,
       autoScalingGroupProvider: {
         autoScalingGroupArn: this.autoScalingGroup.autoScalingGroupName,
         managedScaling: props.enableManagedScaling === false ? undefined : {

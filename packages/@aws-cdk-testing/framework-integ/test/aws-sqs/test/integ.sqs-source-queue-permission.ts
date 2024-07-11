@@ -7,8 +7,16 @@ const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-sqs');
 
-const sourceQueue1 = new Queue(stack, 'SourceQueue1');
-const sourceQueue2 = new Queue(stack, 'SourceQueue2');
+const sourceQueue1 = new Queue(stack, 'SourceQueue1', {
+  redriveAllowPolicy: {
+    redrivePermission: RedrivePermission.ALLOW_ALL,
+  },
+});
+const sourceQueue2 = new Queue(stack, 'SourceQueue2', {
+  redriveAllowPolicy: {
+    redrivePermission: RedrivePermission.DENY_ALL,
+  },
+});
 
 new Queue(stack, 'DeadLetterQueue', {
   redriveAllowPolicy: {

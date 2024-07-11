@@ -83,9 +83,25 @@ export interface CommonAutoScalingGroupProps {
    *
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
+   * You can either specify `keyPair` or `keyName`, not both.
+   *
    * @default - No SSH access will be possible.
+   * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
   readonly keyName?: string;
+
+  /**
+   * The SSH keypair to grant access to the instance.
+   *
+   * Feature flag `AUTOSCALING_GENERATE_LAUNCH_TEMPLATE` must be enabled to use this property.
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified.
+   *
+   * You can either specify `keyPair` or `keyName`, not both.
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyPair?: ec2.IKeyPair;
 
   /**
    * Where to place instances within the VPC
@@ -337,6 +353,17 @@ export interface CommonAutoScalingGroupProps {
    * @default - `TerminationPolicy.DEFAULT`
    */
   readonly terminationPolicies?: TerminationPolicy[];
+
+  /**
+   * A lambda function Arn that can be used as a custom termination policy to select the instances
+   * to terminate. This property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION
+   * is used.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/lambda-custom-termination-policy.html
+   *
+   * @default - No lambda function Arn will be supplied
+   */
+  readonly terminationPolicyCustomLambdaFunctionArn?: string;
 
   /**
    * The amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics.
@@ -1344,6 +1371,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new Error('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
       }
 
+      if (props.keyName && props.keyPair) {
+        throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      }
+
       Tags.of(this).add(NAME_TAG, this.node.path);
 
       this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
@@ -1370,7 +1401,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
         launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
-          keyName: props.keyName,
           instanceType: props.instanceType,
           detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
           securityGroup: this.securityGroup,
@@ -1379,6 +1409,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
           instanceProfile,
+          keyPair: props.keyPair,
+          ...(props.keyName ? { keyName: props.keyName } : {}),
         });
 
         this.osType = launchTemplateFromConfig.osType!;
@@ -1386,6 +1418,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
         this.securityGroups = [this.securityGroup];
+
+        if (props.keyPair) {
+          throw new Error('Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set');
+        }
 
         // use delayed evaluation
         const imageConfig = props.machineImage.getImage(this);
@@ -1471,6 +1507,26 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
+
+    const terminationPolicies: string[] = [];
+    if (props.terminationPolicies) {
+      props.terminationPolicies.forEach((terminationPolicy, index) => {
+        if (terminationPolicy === TerminationPolicy.CUSTOM_LAMBDA_FUNCTION) {
+          if (index !== 0) {
+            throw new Error('TerminationPolicy.CUSTOM_LAMBDA_FUNCTION must be specified first in the termination policies');
+          }
+
+          if (!props.terminationPolicyCustomLambdaFunctionArn) {
+            throw new Error('terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used');
+          }
+
+          terminationPolicies.push(props.terminationPolicyCustomLambdaFunctionArn);
+        } else {
+          terminationPolicies.push(terminationPolicy);
+        }
+      });
+    }
+
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
       cooldown: props.cooldown?.toSeconds().toString(),
@@ -1486,7 +1542,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
-      terminationPolicies: props.terminationPolicies,
+      terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
       instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
@@ -1686,6 +1742,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
     if (props.keyName) {
       throw new Error('Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.keyPair) {
+      throw new Error('Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
     if (props.instanceMonitoring) {
       throw new Error('Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
@@ -2135,12 +2194,13 @@ export enum ScalingProcess {
   ALARM_NOTIFICATION = 'AlarmNotification',
   SCHEDULED_ACTIONS = 'ScheduledActions',
   ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer',
+  INSTANCE_REFRESH = 'InstanceRefresh',
 }
 
 // Recommended list of processes to suspend from here:
 // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
 const DEFAULT_SUSPEND_PROCESSES = [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
-  ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS];
+  ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS, ScalingProcess.INSTANCE_REFRESH];
 
 /**
  * EC2 Heath check options

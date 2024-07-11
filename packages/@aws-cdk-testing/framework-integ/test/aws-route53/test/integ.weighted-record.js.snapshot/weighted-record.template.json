@@ -53,6 +53,22 @@
     "Type": "A",
     "Weight": 50
    }
+  },
+  "WeightedRecord328406D0A": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "4.5.6.7"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_weightedrecordWeightedRecord37AA25819",
+    "TTL": "10",
+    "Type": "A",
+    "Weight": 0
+   }
   }
  },
  "Parameters": {

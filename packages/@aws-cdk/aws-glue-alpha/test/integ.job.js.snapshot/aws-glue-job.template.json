@@ -149,12 +149,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJob20ServiceRoleD520CA20",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-continuous-cloudwatch-log": "true",
@@ -168,7 +162,8 @@
         "s3://",
         {
          "Ref": "EtlJob20SparkUIBucketFD07FBD8"
-        }
+        },
+        "/"
        ]
       ]
      },
@@ -187,6 +182,12 @@
      "NotifyDelayAfter": 1
     },
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob20ServiceRoleD520CA20",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -269,6 +270,43 @@
      "Statement": [
       {
        "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StreamingJob20SparkUIBucket92EF3706",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StreamingJob20SparkUIBucket92EF3706",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
         "s3:List*"
@@ -319,6 +357,11 @@
     ]
    }
   },
+  "StreamingJob20SparkUIBucket92EF3706": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "StreamingJob20355B58C7": {
    "Type": "AWS::Glue::Job",
    "Properties": {
@@ -338,20 +381,33 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "StreamingJob20ServiceRole491E0FFF",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "StreamingJob20SparkUIBucket92EF3706"
+        },
+        "/"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },
     "GlueVersion": "2.0",
     "Name": "StreamingJob2.0",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob20ServiceRole491E0FFF",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -507,12 +563,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJob30ServiceRole8E675579",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-continuous-cloudwatch-log": "true",
@@ -526,7 +576,8 @@
         "s3://",
         {
          "Ref": "EtlJob30SparkUIBucket9D789346"
-        }
+        },
+        "/"
        ]
       ]
      },
@@ -545,6 +596,12 @@
      "NotifyDelayAfter": 1
     },
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob30ServiceRole8E675579",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -627,6 +684,43 @@
      "Statement": [
       {
        "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StreamingJob30SparkUIBucketEFBF52D3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StreamingJob30SparkUIBucketEFBF52D3",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
         "s3:List*"
@@ -677,6 +771,11 @@
     ]
    }
   },
+  "StreamingJob30SparkUIBucketEFBF52D3": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "StreamingJob30E005FBEB": {
    "Type": "AWS::Glue::Job",
    "Properties": {
@@ -696,20 +795,33 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "StreamingJob30ServiceRole443B2FDE",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "StreamingJob30SparkUIBucketEFBF52D3"
+        },
+        "/"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },
     "GlueVersion": "3.0",
     "Name": "StreamingJob3.0",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob30ServiceRole443B2FDE",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -865,12 +977,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJob40ServiceRoleBDD9998A",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-continuous-cloudwatch-log": "true",
@@ -884,7 +990,8 @@
         "s3://",
         {
          "Ref": "EtlJob40SparkUIBucket02F50B0D"
-        }
+        },
+        "/"
        ]
       ]
      },
@@ -903,6 +1010,12 @@
      "NotifyDelayAfter": 1
     },
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob40ServiceRoleBDD9998A",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -985,6 +1098,43 @@
      "Statement": [
       {
        "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StreamingJob40SparkUIBucketA97E24C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StreamingJob40SparkUIBucketA97E24C6",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
         "s3:List*"
@@ -1035,6 +1185,11 @@
     ]
    }
   },
+  "StreamingJob40SparkUIBucketA97E24C6": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "StreamingJob40E284A782": {
    "Type": "AWS::Glue::Job",
    "Properties": {
@@ -1054,20 +1209,33 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "StreamingJob40ServiceRole034BDEBD",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "StreamingJob40SparkUIBucketA97E24C6"
+        },
+        "/"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },
     "GlueVersion": "4.0",
     "Name": "StreamingJob4.0",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob40ServiceRole034BDEBD",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -1181,12 +1349,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ShellJobServiceRoleCF97BC4B",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "arg1": "value1",
@@ -1194,6 +1356,12 @@
     },
     "GlueVersion": "1.0",
     "Name": "ShellJob",
+    "Role": {
+     "Fn::GetAtt": [
+      "ShellJobServiceRoleCF97BC4B",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     }
@@ -1306,12 +1474,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ShellJob39ServiceRole2F6F3768",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "arg1": "value1",
@@ -1319,6 +1481,12 @@
     },
     "GlueVersion": "1.0",
     "Name": "ShellJob39",
+    "Role": {
+     "Fn::GetAtt": [
+      "ShellJob39ServiceRole2F6F3768",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     }
@@ -1427,25 +1595,37 @@
         {
          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+        "/9120cd4aa376310a46a09d707c5e0c75c164b9014f1740e4c5a3637a34dfafe7.py"
        ]
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "RayJobServiceRole51433C3D",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
+     "--s3-py-modules": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/1c055910db2de9d0fcf53321842cab491bb6985900b80e05d634fceef328c5c4.zip"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },
     "GlueVersion": "4.0",
     "Name": "RayJob",
     "NumberOfWorkers": 2,
+    "Role": {
+     "Fn::GetAtt": [
+      "RayJobServiceRole51433C3D",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -1559,12 +1739,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJobWithFLEXServiceRoleBA7C99A5",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python"
     },
@@ -1572,6 +1746,12 @@
     "GlueVersion": "3.0",
     "Name": "EtlJobWithFLEX",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJobWithFLEXServiceRoleBA7C99A5",
+      "Arn"
+     ]
+    },
     "WorkerType": "G.1X"
    }
   }

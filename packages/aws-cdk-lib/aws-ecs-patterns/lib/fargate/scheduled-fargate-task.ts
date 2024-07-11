@@ -73,11 +73,13 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledFargateTaskImageOptions) {
       const taskImageOptions = props.scheduledFargateTaskImageOptions;
+      const containerName = taskImageOptions.containerName ?? 'ScheduledContainer';
       this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
         memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
         cpu: taskImageOptions.cpu || 256,
+        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
       });
-      this.taskDefinition.addContainer('ScheduledContainer', {
+      this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
@@ -96,6 +98,9 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     }
     if (props.memoryLimitMiB) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.');
+    }
+    if (props.ephemeralStorageGiB) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'ephemeralStorageGiB\' is ignored, use \'scheduledFargateTaskImageOptions.ephemeralStorageGiB\' instead.');
     }
     if (props.runtimePlatform) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'runtimePlatform\' is ignored.');

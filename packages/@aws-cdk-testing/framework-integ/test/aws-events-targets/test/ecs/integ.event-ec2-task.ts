@@ -23,7 +23,7 @@ const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
+  image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'image-simple')),
   memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
 });
@@ -48,8 +48,8 @@ rule.addTarget(new targets.EcsTask({
   propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
   tags: [
     {
-      key: 'my-tag',
-      value: 'my-tag-value',
+      key: 'my_tag',
+      value: 'my_tag_value',
     },
   ],
 }));

@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "OpenSearchColdStorageInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-coldstorage"
+      ],
+      "diffAssets": true,
+      "assertionStack": "OpenSearchColdStorageInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchColdStorageIntegDefaultTestDeployAssert73848187"
+    }
+  }
+}
