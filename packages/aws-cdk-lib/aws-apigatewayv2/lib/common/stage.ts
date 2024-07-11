@@ -69,7 +69,7 @@ export interface StageOptions {
 
   /**
    * The description for the api stage
-   * 
+   *
    * @default - none
    */
   readonly description?: string;

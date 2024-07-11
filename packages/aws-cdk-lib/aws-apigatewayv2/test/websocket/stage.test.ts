@@ -145,7 +145,7 @@ describe('WebSocketStage', () => {
       stageName: 'dev',
       description: 'My Stage',
     });
-    
+
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       Description: 'My Stage',
