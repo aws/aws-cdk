@@ -147,7 +147,7 @@ describe('Application', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: 'custom-principal.amazonaws.com',
+              Service: 'custom-principal',
             },
           },
         ],
