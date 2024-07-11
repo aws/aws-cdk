@@ -2,8 +2,6 @@ import { Construct } from 'constructs';
 import { CfnHealthCheck } from './route53.generated';
 import { Duration, IResource, Resource } from '../../core';
 
-const VALID_REGIONS = ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'];
-
 /**
  * Imported or created health check
  */
@@ -185,11 +183,12 @@ export interface HealthCheckProps {
   /**
    * An array of region identifiers that you want Amazon Route 53 health checkers to check the health of the endpoint from.
    *
-   * Valid values are: 'us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'
+   * Please refer to the CloudFormation documentation for the most up-to-date list of regions. @see https://docs.aws.amazon.com/Route53/latest/APIReference/API_HealthCheckConfig.html
+   *
    * @default - if the type is CALCULATED, CLOUDWATCH_METRIC, or RECOVERY_CONTROL, this property is not configured.
-   * - otherwise, the default value is all valid regions: 'us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'
+   * - otherwise, the default value will be set by CloudFormation itself and will include all valid regions. Please refer to the CloudFormation documentation for the most up-to-date list of regions.
    */
-  readonly regions?: ('us-east-1' | 'us-west-1' | 'us-west-2' | 'eu-west-1' | 'ap-southeast-1' | 'ap-southeast-2' | 'ap-northeast-1' | 'sa-east-1')[];
+  readonly regions?: string[];
 
   /**
    * The duration between the time that Amazon Route 53 gets a response from your endpoint and the time that it sends the next health check request. Each Route 53 health checker makes requests at this interval.
@@ -278,7 +277,7 @@ export class HealthCheck extends Resource implements IHealthCheck {
         ipAddress: props.ipAddress,
         measureLatency: props.measureLatency ?? getDefaultMeasureLatencyForType(props.type),
         port: props.port ?? getDefaultPortForType(props.type),
-        regions: props.regions ?? getDefaultRegionsForType(props.type),
+        regions: props.regions,
         requestInterval: props.requestInterval?.toSeconds() ?? getDefaultRequestIntervalForType(props.type)?.toSeconds(),
         resourcePath: props.resourcePath ?? getDefaultResourcePathForType(props.type),
         routingControlArn: props.routingControl,
@@ -461,17 +460,6 @@ function getDefaultEnableSNIForType(type: HealthCheckType): boolean | undefined 
       return true;
     default:
       return undefined;
-  }
-}
-
-function getDefaultRegionsForType(type: HealthCheckType): string[] | undefined {
-  switch (type) {
-    case HealthCheckType.CALCULATED:
-    case HealthCheckType.CLOUDWATCH_METRIC:
-    case HealthCheckType.RECOVERY_CONTROL:
-      return undefined;
-    default:
-      return VALID_REGIONS;
   }
 }
 

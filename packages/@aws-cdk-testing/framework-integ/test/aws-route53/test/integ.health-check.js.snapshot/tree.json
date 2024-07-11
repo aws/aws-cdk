@@ -49,16 +49,6 @@
                       "inverted": false,
                       "measureLatency": false,
                       "port": 80,
-                      "regions": [
-                        "us-east-1",
-                        "us-west-1",
-                        "us-west-2",
-                        "eu-west-1",
-                        "ap-southeast-1",
-                        "ap-southeast-2",
-                        "ap-northeast-1",
-                        "sa-east-1"
-                      ],
                       "requestInterval": 30,
                       "resourcePath": "/health"
                     }
@@ -164,16 +154,6 @@
                       "inverted": false,
                       "measureLatency": false,
                       "port": 443,
-                      "regions": [
-                        "us-east-1",
-                        "us-west-1",
-                        "us-west-2",
-                        "eu-west-1",
-                        "ap-southeast-1",
-                        "ap-southeast-2",
-                        "ap-northeast-1",
-                        "sa-east-1"
-                      ],
                       "requestInterval": 30,
                       "resourcePath": "/health"
                     }
@@ -278,16 +258,6 @@
                       "inverted": false,
                       "measureLatency": false,
                       "port": 443,
-                      "regions": [
-                        "us-east-1",
-                        "us-west-1",
-                        "us-west-2",
-                        "eu-west-1",
-                        "ap-southeast-1",
-                        "ap-southeast-2",
-                        "ap-northeast-1",
-                        "sa-east-1"
-                      ],
                       "requestInterval": 30
                     }
                   }

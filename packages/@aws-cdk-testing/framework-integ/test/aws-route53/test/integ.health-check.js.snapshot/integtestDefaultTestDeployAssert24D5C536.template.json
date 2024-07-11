@@ -11,7 +11,7 @@
     },
     "service": "Route53",
     "api": "GetHealthCheck",
-    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"HTTP\",\"FullyQualifiedDomainName\":\"lb.cdk.test\",\"ResourcePath\":\"/health\",\"RequestInterval\":30,\"Port\":80,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false,\"Regions\":{\"$ArrayWith\":[\"ap-northeast-1\",\"ap-southeast-1\",\"ap-southeast-2\",\"eu-west-1\",\"sa-east-1\",\"us-east-1\",\"us-west-1\",\"us-west-2\"]}}}}}",
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"HTTP\",\"FullyQualifiedDomainName\":\"lb.cdk.test\",\"ResourcePath\":\"/health\",\"RequestInterval\":30,\"Port\":80,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false}}}}",
     "parameters": {
      "HealthCheckId": {
       "Fn::Join": [
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720441521285"
+    "salt": "1720680926516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -148,7 +148,7 @@
     },
     "service": "Route53",
     "api": "GetHealthCheck",
-    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"HTTPS\",\"FullyQualifiedDomainName\":\"lb-ssl.cdk.test\",\"ResourcePath\":\"/health\",\"RequestInterval\":30,\"Port\":443,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false,\"Regions\":{\"$ArrayWith\":[\"ap-northeast-1\",\"ap-southeast-1\",\"ap-southeast-2\",\"eu-west-1\",\"sa-east-1\",\"us-east-1\",\"us-west-1\",\"us-west-2\"]}}}}}",
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"HTTPS\",\"FullyQualifiedDomainName\":\"lb-ssl.cdk.test\",\"ResourcePath\":\"/health\",\"RequestInterval\":30,\"Port\":443,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false}}}}",
     "parameters": {
      "HealthCheckId": {
       "Fn::Join": [
@@ -164,7 +164,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720441521285"
+    "salt": "1720680926517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -180,7 +180,7 @@
     },
     "service": "Route53",
     "api": "GetHealthCheck",
-    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"TCP\",\"FullyQualifiedDomainName\":\"lb-tcp.cdk.test\",\"RequestInterval\":30,\"Port\":443,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false,\"Regions\":{\"$ArrayWith\":[\"ap-northeast-1\",\"ap-southeast-1\",\"ap-southeast-2\",\"eu-west-1\",\"sa-east-1\",\"us-east-1\",\"us-west-1\",\"us-west-2\"]}}}}}",
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"TCP\",\"FullyQualifiedDomainName\":\"lb-tcp.cdk.test\",\"RequestInterval\":30,\"Port\":443,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false}}}}",
     "parameters": {
      "HealthCheckId": {
       "Fn::Join": [
@@ -196,7 +196,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720441521285"
+    "salt": "1720680926517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -243,7 +243,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720441521286"
+    "salt": "1720680926517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -294,7 +294,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720441521286"
+    "salt": "1720680926517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -377,7 +377,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -391,6 +400,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -417,6 +429,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {

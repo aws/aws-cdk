@@ -15,16 +15,6 @@
      "Inverted": false,
      "MeasureLatency": false,
      "Port": 80,
-     "Regions": [
-      "us-east-1",
-      "us-west-1",
-      "us-west-2",
-      "eu-west-1",
-      "ap-southeast-1",
-      "ap-southeast-2",
-      "ap-northeast-1",
-      "sa-east-1"
-     ],
      "RequestInterval": 30,
      "ResourcePath": "/health",
      "Type": "HTTP"
@@ -76,16 +66,6 @@
      "Inverted": false,
      "MeasureLatency": false,
      "Port": 443,
-     "Regions": [
-      "us-east-1",
-      "us-west-1",
-      "us-west-2",
-      "eu-west-1",
-      "ap-southeast-1",
-      "ap-southeast-2",
-      "ap-northeast-1",
-      "sa-east-1"
-     ],
      "RequestInterval": 30,
      "ResourcePath": "/health",
      "Type": "HTTPS"
@@ -136,16 +116,6 @@
      "Inverted": false,
      "MeasureLatency": false,
      "Port": 443,
-     "Regions": [
-      "us-east-1",
-      "us-west-1",
-      "us-west-2",
-      "eu-west-1",
-      "ap-southeast-1",
-      "ap-southeast-2",
-      "ap-northeast-1",
-      "sa-east-1"
-     ],
      "RequestInterval": 30,
      "Type": "TCP"
     }
