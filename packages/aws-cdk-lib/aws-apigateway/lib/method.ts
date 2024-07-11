@@ -202,11 +202,10 @@ export class Method extends Resource {
         `which is different from what is required by the authorizer [${authorizer.authorizationType}]`);
     }
 
-    // When AuthorizationType is None, there shouldn't be any AuthorizationScope since AuthorizationScope should only
-    // be applied to COGNITO_USER_POOLS AuthorizationType.
+    // AuthorizationScope should only be applied to COGNITO_USER_POOLS AuthorizationType.
     const defaultScopes = options.authorizationScopes ?? defaultMethodOptions.authorizationScopes;
-    const authorizationScopes = authorizationTypeOption === AuthorizationType.COGNITO ? defaultScopes : undefined;
-    if (authorizationTypeOption !== AuthorizationType.COGNITO && defaultScopes) {
+    const authorizationScopes = authorizationType === AuthorizationType.COGNITO ? defaultScopes : undefined;
+    if (authorizationType !== AuthorizationType.COGNITO && defaultScopes) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:invalidAuthScope', '\'AuthorizationScopes\' can only be set when \'AuthorizationType\' sets \'COGNITO_USER_POOLS\'. Default to ignore the values set in \'AuthorizationScopes\'.');
     }
 
