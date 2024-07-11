@@ -3,7 +3,8 @@
   "testCases": {
     "aws-ecs-cluster-encrypt-ephemeral-storage/DefaultTest": {
       "stacks": [
-        "aws-ecs-ephemmeral-integ"
+        "aws-ecs-ephemmeral-integ",
+        "aws-ecs-ephemmeral-integ-named-cluster"
       ],
       "assertionStack": "aws-ecs-cluster-encrypt-ephemeral-storage/DefaultTest/DeployAssert",
       "assertionStackName": "awsecsclusterencryptephemeralstorageDefaultTestDeployAssertCC6A879E"
