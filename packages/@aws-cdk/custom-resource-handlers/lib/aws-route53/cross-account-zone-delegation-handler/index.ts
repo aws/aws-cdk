@@ -15,6 +15,7 @@ interface ResourceProperties {
   DelegatedZoneName: string,
   DelegatedZoneNameServers: string[],
   TTL: number,
+  AssumeRoleRegion?: string,
 }
 
 export async function handler(event: CrossAccountZoneDelegationEvent) {
@@ -37,7 +38,7 @@ async function cfnUpdateEventHandler(props: ResourceProperties, oldProps: Resour
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
-  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL } = props;
+  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL, AssumeRoleRegion } = props;
 
   if (!ParentZoneId && !ParentZoneName) {
     throw Error('One of ParentZoneId or ParentZoneName must be specified');
@@ -47,7 +48,7 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
   const route53 = new Route53({
     credentials: fromTemporaryCredentials({
       clientConfig: {
-        region: route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? ''),
+        region: AssumeRoleRegion ?? route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? ''),
       },
       params: {
         RoleArn: AssumeRoleArn,
@@ -76,7 +77,12 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
 
 async function getHostedZoneIdByName(name: string, route53: Route53): Promise<string> {
   const zones = await route53.listHostedZonesByName({ DNSName: name });
-  const matchedZones = zones.HostedZones?.filter(zone => zone.Name === `${name}.`) ?? [];
+  const matchedZones = zones.HostedZones?.filter(zone => {
+    const matchZoneName = zone.Name === `${name}.`;
+    const isPublic = zone.Config?.PrivateZone !== true;
+
+    return matchZoneName && isPublic;
+  }) ?? [];
 
   if (matchedZones && matchedZones.length !== 1) {
     throw Error(`Expected one hosted zone to match the given name but found ${matchedZones.length}`);
@@ -111,6 +117,8 @@ function route53Region(region: string) {
     'us-gov': 'us-gov-west-1',
     'us-iso': 'us-iso-east-1',
     'us-isob': 'us-isob-east-1',
+    'eu-isoe': 'eu-isoe-west-1',
+    'us-isof': 'us-isof-south-1',
   };
 
   for (const [prefix, mainRegion] of Object.entries(partitions)) {

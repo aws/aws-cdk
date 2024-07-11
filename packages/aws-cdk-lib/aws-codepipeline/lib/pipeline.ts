@@ -109,6 +109,38 @@ export enum PipelineType {
   V2 = 'V2',
 }
 
+/**
+ * Execution mode.
+ */
+export enum ExecutionMode {
+  /**
+   * QUEUED mode.
+   *
+   * Executions are processed one by one in the order that they are queued.
+   *
+   * This requires pipeline type V2.
+   */
+  QUEUED = 'QUEUED',
+  /**
+   * SUPERSEDED mode.
+   *
+   * A more recent execution can overtake an older one.
+   *
+   * This is the default.
+   */
+  SUPERSEDED = 'SUPERSEDED',
+  /**
+   * PARALLEL mode.
+   *
+   * In PARALLEL mode, executions run simultaneously and independently of one
+   * another. Executions don't wait for other runs to complete before starting
+   * or finishing.
+   *
+   * This requires pipeline type V2.
+   */
+  PARALLEL = 'PARALLEL',
+}
+
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
@@ -195,7 +227,8 @@ export interface PipelineProps {
   /**
    * Type of the pipeline.
    *
-   * @default - PipelineType.V1
+   * @default - PipelineType.V2 if the feature flag `CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2`
+   * is true, PipelineType.V1 otherwise
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
    */
@@ -224,6 +257,13 @@ export interface PipelineProps {
    * @default - No triggers
    */
   readonly triggers?: TriggerProps[];
+
+  /**
+   * The method that the pipeline will use to handle multiple executions.
+   *
+   * @default - ExecutionMode.SUPERSEDED
+   */
+  readonly executionMode?: ExecutionMode;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -489,11 +529,19 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
-    // TODO: Change the default value of `pipelineType` to V2 under a feature flag.
-    if (props.pipelineType === undefined) {
+    const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
+    if (!isDefaultV2 && props.pipelineType === undefined) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
     }
-    this.pipelineType = props.pipelineType ?? PipelineType.V1;
+    this.pipelineType = props.pipelineType ?? (isDefaultV2 ? PipelineType.V2 : PipelineType.V1);
+
+    if (
+      props.executionMode
+      && [ExecutionMode.QUEUED, ExecutionMode.PARALLEL].includes(props.executionMode)
+      && this.pipelineType !== PipelineType.V2
+    ) {
+      throw new Error(`${props.executionMode} execution mode can only be used with V2 pipelines, \`PipelineType.V2\` must be specified for \`pipelineType\``);
+    }
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
@@ -502,9 +550,10 @@ export class Pipeline extends PipelineBase {
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      pipelineType: props.pipelineType,
+      pipelineType: props.pipelineType ?? (isDefaultV2 ? PipelineType.V2 : undefined),
       variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
       triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
+      executionMode: props.executionMode,
       name: this.physicalName,
     });
 

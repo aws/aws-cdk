@@ -58,8 +58,7 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
-   * if true, the minScalingCapacity is 1 for all new services and uses the existing services desired count
+   * @default - The minScalingCapacity is 1 for all new services and uses the existing services desired count
    * when updating an existing service.
    * @deprecated - Use `minScalingCapacity` or a literal object instead.
    */
@@ -128,14 +127,14 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * Maximum capacity to scale to.
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is (desiredTaskCount * 2); if true, the default is 2.
+   * @default 2
    */
   readonly maxScalingCapacity?: number;
 
   /**
    * Minimum capacity to scale to.
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is the desiredTaskCount; if true, the default is 1.
+   * @default 1
    */
   readonly minScalingCapacity?: number;
 

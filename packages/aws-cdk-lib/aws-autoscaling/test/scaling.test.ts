@@ -193,6 +193,28 @@ describe('scaling', () => {
     });
   });
 
+  test('setting cooldown on step scaling is ineffective', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      minCapacity: 1,
+      maxCapacity: 100,
+      instanceType: new ec2.InstanceType('t-1000.macro'),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+    new autoscaling.StepScalingAction(stack, 'Action', {
+      autoScalingGroup,
+      cooldown: cdk.Duration.days(1),
+    });
+
+    // THEN
+    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+      CoolDown: undefined,
+    })).toThrow(/Template has 1 resources with type AWS::AutoScaling::ScalingPolicy, but none match as expected/);
+  });
+
   test('step scaling', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -291,6 +313,28 @@ test('step scaling from percentile metric', () => {
     MetricName: 'Metric',
     Namespace: 'Test',
     Threshold: 100,
+  });
+});
+
+test('step scaling with adjustmentType by default', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // WHEN
+  fixture.asg.scaleOnMetric('Tracking', {
+    metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+    scalingSteps: [
+      { upper: 0, change: -1 },
+      { lower: 100, change: +1 },
+      { lower: 500, change: +5 },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+    PolicyType: 'StepScaling',
+    AdjustmentType: 'ChangeInCapacity',
   });
 });
 

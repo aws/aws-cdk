@@ -12,7 +12,7 @@ const stack = new cdk.Stack(app, 'cdk-stepfunctions-map-distributed-stack');
 
 const map = new sfn.Map(stack, 'Map', {
   stateName: 'My-Map-State',
-  maxConcurrency: 1,
+  maxConcurrencyPath: sfn.JsonPath.stringAt('$.maxConcurrency'),
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
   parameters: {
     foo: 'foo',

@@ -77,7 +77,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "definitionString": "{\"StartAt\":\"My-Map-State\",\"States\":{\"My-Map-State\":{\"Type\":\"Map\",\"End\":true,\"Parameters\":{\"foo\":\"foo\",\"bar.$\":\"$.bar\"},\"ItemsPath\":\"$.inputForMap\",\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass State\",\"States\":{\"Pass State\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrency\":1}},\"TimeoutSeconds\":30}",
+                    "definitionString": "{\"StartAt\":\"My-Map-State\",\"States\":{\"My-Map-State\":{\"Type\":\"Map\",\"End\":true,\"Parameters\":{\"foo\":\"foo\",\"bar.$\":\"$.bar\"},\"ItemsPath\":\"$.inputForMap\",\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass State\",\"States\":{\"Pass State\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrencyPath\":\"$.maxConcurrency\"}},\"TimeoutSeconds\":30}",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "StateMachineRoleB840431D",
@@ -140,7 +140,7 @@
                 "path": "cdk-stepfunctions-map-distributed-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -186,7 +186,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

@@ -6,7 +6,9 @@ import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
+import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -295,6 +297,68 @@ export interface InstanceProps {
    * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   * The unlimited CPU credit option is not supported for T3 instances with a dedicated host.
+   *
+   * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
+   */
+  readonly creditSpecification?: CpuCredits;
+
+  /**
+   * Indicates whether the instance is optimized for Amazon EBS I/O.
+   *
+   * This optimization provides dedicated throughput to Amazon EBS and an optimized configuration stack to provide optimal Amazon EBS I/O performance.
+   * This optimization isn't available with all instance types.
+   * Additional usage charges apply when using an EBS-optimized instance.
+   *
+   * @default false
+   */
+  readonly ebsOptimized?: boolean;
+
+  /**
+   * Indicates whether an instance stops or terminates when you initiate shutdown from the instance
+   * (using the operating system command for system shutdown).
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html#Using_ChangingInstanceInitiatedShutdownBehavior
+   *
+   * @default InstanceInitiatedShutdownBehavior.STOP
+   */
+  readonly instanceInitiatedShutdownBehavior?: InstanceInitiatedShutdownBehavior;
+
+  /**
+   * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be used for this instance.
+   */
+  readonly placementGroup?: IPlacementGroup;
+
+  /**
+   * Whether the instance is enabled for AWS Nitro Enclaves.
+   *
+   * Nitro Enclaves requires a Nitro-based virtualized parent instance with specific Intel/AMD with at least 4 vCPUs
+   * or Graviton with at least 2 vCPUs instance types and Linux/Windows host OS,
+   * while the enclave itself supports only Linux OS.
+   *
+   * You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance.
+   *
+   * @see https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs
+   *
+   * @default - false
+   */
+  readonly enclaveEnabled?: boolean;
+
+  /**
+   * Whether the instance is enabled for hibernation.
+   *
+   * You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-hibernationoptions.html
+   *
+   * @default - false
+   */
+  readonly hibernationEnabled?: boolean;
 }
 
 /**
@@ -370,6 +434,11 @@ export class Instance extends Resource implements IInstance {
       throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
     }
 
+    // if credit specification is set, then the instance type must be burstable
+    if (props.creditSpecification && !props.instanceType.isBurstable()) {
+      throw new Error(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`);
+    }
+
     if (props.securityGroup) {
       this.securityGroup = props.securityGroup;
     } else {
@@ -441,6 +510,10 @@ export class Instance extends Resource implements IInstance {
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
     }
 
+    if (props.enclaveEnabled && props.hibernationEnabled) {
+      throw new Error('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
+    }
+
     // if network interfaces array is configured then subnetId, securityGroupIds,
     // and privateIpAddress are configured on the network interface level and
     // there is no need to configure them on the instance level
@@ -459,6 +532,12 @@ export class Instance extends Resource implements IInstance {
       privateIpAddress: networkInterfaces ? undefined : props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
+      creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
+      ebsOptimized: props.ebsOptimized,
+      instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
+      placementGroupName: props.placementGroup?.placementGroupName,
+      enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
+      hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
     });
     this.instance.node.addDependency(this.role);
 

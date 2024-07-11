@@ -4,6 +4,7 @@ import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 
@@ -126,6 +127,94 @@ describe('node group', () => {
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
         },
       ],
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+    });
+  });
+
+  test('create a x86_64 AL2023 nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'AL2023_x86_64_STANDARD',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+    });
+  });
+
+  test('create a ARM64 AL2023 nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'AL2023_ARM_64_STANDARD',
       ForceUpdateEnabled: true,
       ScalingConfig: {
         DesiredSize: 2,
@@ -562,6 +651,50 @@ describe('node group', () => {
   });
 
   /**
+   * When LaunchTemplate is undefined, amiType is AL2023_X86_64_STANDARD and instanceTypes are not x86_64,
+   * we should throw an error.
+   */
+  test('throws when LaunchTemplate is undefined, amiType is AL2023_X86_64_STANDARD and instanceTypes are not x86_64', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
+      instanceTypes: [
+        new ec2.InstanceType('c6g.large'),
+        new ec2.InstanceType('t4g.large'),
+      ],
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_ARM_64, AL2023_ARM_64_STANDARD, BOTTLEROCKET_ARM_64 or don't specify any/);
+  });
+
+  /**
+   * When LaunchTemplate is undefined, amiType is AL2023_ARM_64_STANDARD and instanceTypes are not ARM_64,
+   * we should throw an error.
+   */
+  test('throws when LaunchTemplate is undefined, amiType is AL2023_ARM_64_STANDARD and instanceTypes are not ARM_64', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.AL2023_ARM_64_STANDARD,
+      instanceTypes: [
+        new ec2.InstanceType('m5.large'),
+        new ec2.InstanceType('c5.large'),
+      ],
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+  });
+
+  /**
    * When LaunchTemplate is undefined, amiType is AL2_ARM_64 and instanceTypes are not ARM_64,
    * we should throw an error.
    */
@@ -580,7 +713,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
   });
 
   test('throws when AmiType is Windows and forbidden instanceType is selected', () => {
@@ -619,7 +752,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
   });
 
   test('throws when LaunchTemplate is undefined, amiType is BOTTLEROCKET_ARM_64_NVIDIA and instanceTypes are not GPU', () => {
@@ -637,7 +770,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
   });
 
   test('throws when LaunchTemplate is undefined, amiType is BOTTLEROCKET_X86_64_NVIDIA and instanceTypes are not GPU', () => {
@@ -655,7 +788,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
   });
 
   /**
@@ -1507,6 +1640,27 @@ describe('node group', () => {
         MaxUnavailablePercentage: 33,
       },
     });
+  });
+
+  test('EKS_NODEGROUP_NAME feature flag should return correct nodegroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stackWithFlag = new cdk.Stack(app, 'StackWithFlag', {
+      env: { account: '1234', region: 'testregion' },
+    });
+
+    // WHEN
+    stackWithFlag.node.setContext(cxapi.EKS_NODEGROUP_NAME, true);
+    const cluster = new eks.Cluster(stackWithFlag, 'Cluster', {
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const ng = new eks.Nodegroup(stackWithFlag, 'Nodegroup', {
+      cluster,
+    });
+
+    // THEN
+    expect(ng.nodegroupName).not.toEqual((ng.node.defaultChild as eks.CfnNodegroup).ref);
   });
 
   test('throws when maxUnavailable and maxUnavailablePercentage are set', () => {

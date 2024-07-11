@@ -84,12 +84,8 @@ export class NotificationsResourceHandler extends Construct {
 
     const handlerSource = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3', 'notifications-resource-handler', 'index.py'), 'utf8');
 
-    // Removing lines that starts with '#' (comment lines) in order to fit the 4096 limit
+    // Removing lines that starts with '#' (comment lines)
     const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');
-
-    if (handlerSourceWithoutComments.length > 4096) {
-      throw new Error(`Source of Notifications Resource Handler is too large (${handlerSourceWithoutComments.length} > 4096)`);
-    }
 
     const resource = new InLineLambda(this, 'Resource', {
       type: resourceType,
@@ -98,7 +94,7 @@ export class NotificationsResourceHandler extends Construct {
         Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
         Role: this.role.roleArn,
-        Runtime: 'python3.9',
+        Runtime: 'python3.11',
         Timeout: 300,
       },
     });

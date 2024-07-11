@@ -198,7 +198,7 @@ export interface DeadLetterQueue {
   readonly queue: IQueue;
 
   /**
-   * The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+   * The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
    */
   readonly maxReceiveCount: number;
 }
@@ -411,7 +411,7 @@ export class Queue extends QueueBase {
       redrivePermission: props.redriveAllowPolicy.redrivePermission
       // When `sourceQueues` is provided in `redriveAllowPolicy`, `redrivePermission` defaults to allow specified queues (`BY_QUEUE`);
       // otherwise, it defaults to allow all queues (`ALLOW_ALL`).
-        ?? props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
+        ?? (props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL),
       sourceQueueArns: props.redriveAllowPolicy.sourceQueues?.map(q => q.queueArn),
     } : undefined;
 

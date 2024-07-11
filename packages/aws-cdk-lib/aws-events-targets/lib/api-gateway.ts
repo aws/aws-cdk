@@ -73,8 +73,31 @@ export interface ApiGatewayProps extends TargetBaseProps {
  * Use an API Gateway REST APIs as a target for Amazon EventBridge rules.
  */
 export class ApiGateway implements events.IRuleTarget {
+  private readonly _restApi: api.IRestApi;
 
-  constructor(public readonly restApi: api.RestApi, private readonly props?: ApiGatewayProps) {
+  /**
+   * @param restApi - IRestApi implementation to use as event target
+   * @param props - Properties to configure the APIGateway target
+   */
+  constructor(restApi: api.IRestApi, private readonly props?: ApiGatewayProps) {
+    this._restApi = restApi;
+  }
+
+  /**
+   * @deprecated Use the `iRestApi` getter instead
+   */
+  public get restApi(): api.RestApi {
+    if (!api.RestApi.isRestApi(this._restApi)) {
+      throw new Error('The iRestApi is not a RestApi construct, and cannot be retrieved this way.');
+    }
+    return this._restApi;
+  }
+
+  /**
+   * Returns the target IRestApi
+   */
+  public get iRestApi(): api.IRestApi {
+    return this._restApi;
   }
 
   /**
@@ -93,13 +116,13 @@ export class ApiGateway implements events.IRuleTarget {
       throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
     }
 
-    const restApiArn = this.restApi.arnForExecuteApi(
+    const restApiArn = this._restApi.arnForExecuteApi(
       this.props?.method,
       this.props?.path || '/',
-      this.props?.stage || this.restApi.deploymentStage.stageName,
+      this.props?.stage || this._restApi.deploymentStage.stageName,
     );
 
-    const role = this.props?.eventRole || singletonEventRole(this.restApi);
+    const role = this.props?.eventRole || singletonEventRole(this._restApi);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [restApiArn],
       actions: [
@@ -114,7 +137,7 @@ export class ApiGateway implements events.IRuleTarget {
       role,
       deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
       input: this.props?.postBody,
-      targetResource: this.restApi,
+      targetResource: this._restApi,
       httpParameters: {
         headerParameters: this.props?.headerParameters,
         queryStringParameters: this.props?.queryStringParameters,

@@ -225,6 +225,10 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
+Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
+permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+are not allowed in the bucket name.
+
 ```ts
 declare const myLambda: lambda.Function;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
@@ -378,6 +382,26 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+
+## Public Read Access
+
+Use `publicReadAccess` to allow public read access to the bucket.
+
+Note that to enable `publicReadAccess`, make sure both bucket-level and account-level block public access control is disabled.
+
+Bucket-level block public access control can be configured through `blockPublicAccess` property. Account-level block public
+access control can be configured on AWS Console -> S3 -> Block Public Access settings for this account (Navigation Panel).
+```ts
+const bucket = new s3.Bucket(this, 'Bucket', {
+  publicReadAccess: true,
+  blockPublicAccess: {
+    blockPublicPolicy: false,
+    blockPublicAcls: false,
+    ignorePublicAcls: false,
+    restrictPublicBuckets: false,
+  },
+});
+```
 
 ## Logging configuration
 
@@ -621,6 +645,8 @@ as it does not contain any objects.
 
 To override this and force all objects to get deleted during bucket deletion,
 enable the`autoDeleteObjects` option.
+
+When `autoDeleteObjects` is enabled, `s3:PutBucketPolicy` is added to the bucket policy. This is done to allow the custom resource this feature is built on to add a deny policy for `s3:PutObject` to the bucket policy when a delete stack event occurs. Adding this deny policy prevents new objects from being written to the bucket. Doing this prevents race conditions with external bucket writers during the deletion process.
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyTempFileBucket', {

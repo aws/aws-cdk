@@ -60,6 +60,7 @@ describe('fargate task definition', () => {
           cpuArchitecture: ecs.CpuArchitecture.X86_64,
           operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
         },
+        pidMode: ecs.PidMode.TASK,
       });
 
       taskDefinition.addVolume({
@@ -84,6 +85,7 @@ describe('fargate task definition', () => {
         Family: 'myApp',
         Memory: '1024',
         NetworkMode: 'awsvpc',
+        PidMode: 'task',
         RequiresCompatibilities: [
           ecs.LaunchType.FARGATE,
         ],
@@ -160,6 +162,59 @@ describe('fargate task definition', () => {
       }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
 
       // THEN
+    });
+
+    test('throws when pidMode is specified without an operating system family', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/Specifying 'pidMode' requires that operating system family also be provided./);
+    });
+
+    test('throws when pidMode is specified on Windows', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/'pidMode' is not supported for Windows containers./);
+    });
+
+    test('throws when pidMode is not task', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.HOST,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          },
+        });
+      }).toThrow(/'pidMode' can only be set to 'task' for Linux Fargate containers, got: 'host'./);
     });
   });
   describe('When configuredAtLaunch in the Volume', ()=> {

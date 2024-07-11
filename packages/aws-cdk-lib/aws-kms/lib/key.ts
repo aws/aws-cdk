@@ -262,6 +262,12 @@ abstract class KeyBase extends Resource implements IKey {
     }
     const bucketStack = Stack.of(this);
     const identityStack = Stack.of(grantee.grantPrincipal);
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
+      // if two compared stacks have the same region, this should return 'false' since it's from the
+      // same region; if two stacks have different region, then compare env.region
+      return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
+    }
     return bucketStack.region !== identityStack.region;
   }
 
@@ -271,6 +277,12 @@ abstract class KeyBase extends Resource implements IKey {
     }
     const bucketStack = Stack.of(this);
     const identityStack = Stack.of(grantee.grantPrincipal);
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
+      // if two compared stacks have the same region, this should return 'false' since it's from the
+      // same region; if two stacks have different region, then compare env.account
+      return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
+    }
     return bucketStack.account !== identityStack.account;
   }
 }
@@ -421,6 +433,13 @@ export interface KeyProps {
    * @default false
    */
   readonly enableKeyRotation?: boolean;
+
+  /**
+   * The period between each automatic rotation.
+   *
+   * @default - set by CFN to 365 days.
+   */
+  readonly rotationPeriod?: Duration;
 
   /**
    * Indicates whether the key is available for use.
@@ -662,6 +681,7 @@ export class Key extends KeyBase {
   public readonly keyId: string;
   protected readonly policy?: iam.PolicyDocument;
   protected readonly trustAccountIdentities: boolean;
+  private readonly enableKeyRotation?: boolean;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
@@ -710,6 +730,21 @@ export class Key extends KeyBase {
       throw new Error('key rotation cannot be enabled on asymmetric keys');
     }
 
+    this.enableKeyRotation = props.enableKeyRotation;
+
+    if (props.rotationPeriod) {
+      if (props.enableKeyRotation === false) {
+        throw new Error('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled');
+      }
+      if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
+        throw new Error(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`);
+      }
+      // If rotationPeriod is specified, enableKeyRotation is set to true by default
+      if (props.enableKeyRotation === undefined) {
+        this.enableKeyRotation = true;
+      }
+    }
+
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
     this.policy = props.policy ?? new iam.PolicyDocument();
@@ -742,7 +777,8 @@ export class Key extends KeyBase {
 
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
-      enableKeyRotation: props.enableKeyRotation,
+      enableKeyRotation: this.enableKeyRotation,
+      rotationPeriodInDays: props.rotationPeriod?.toDays(),
       enabled: props.enabled,
       keySpec: props.keySpec,
       keyUsage: props.keyUsage,

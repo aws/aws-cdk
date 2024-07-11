@@ -7,7 +7,11 @@ import * as cdk from 'aws-cdk-lib';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 /// !show
 const lambdaStack = new cdk.Stack(app, 'LambdaStack');

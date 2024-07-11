@@ -23,7 +23,7 @@ describe('Code', () => {
       bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
       script = glue.Code.fromBucket(bucket, key);
 
-      const job = new glue.PythonShellJob(stack, 'Job1', {
+      new glue.PythonShellJob(stack, 'Job1', {
         script,
         role: new Role(stack, 'Role', {
           assumedBy: new ServicePrincipal('glue.amazonaws.com'),
