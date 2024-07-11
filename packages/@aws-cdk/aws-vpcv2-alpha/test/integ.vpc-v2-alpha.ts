@@ -13,7 +13,8 @@ import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { SubnetV2, Ipv4Cidr, Ipv6Cidr } from '../lib/subnet-v2';
+import { SubnetV2, Ipv4Cidr } from '../lib/subnet-v2';
+//import { Ipv6Cidr } from '../lib/subnet-v2';
 //import { rangesOverlap } from '../lib/util';
 //import { CidrBlockIpv6 } from '../lib/util';
 
@@ -38,7 +39,6 @@ const pool2 = ipam.publicScope.addPool('PublicPool0', {
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
 pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );
-//TODO: Test Ipam Pool Ipv6
 
 /** Test Ipv4 Primary and Secondary address */
 new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
@@ -70,30 +70,26 @@ const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
 
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: 'eu-central-1a',
   cidrBlock: new Ipv4Cidr('10.1.0.0/24'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
 new SubnetV2(stack, 'testsubnet', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: 'eu-central-1b',
   cidrBlock: new Ipv4Cidr('10.2.0.0/24'),
-  ipv6CidrBlock: new Ipv6Cidr('2001:db8:1::/64'), //Test secondary ipv6 address
+  //Test secondary ipv6 address after IPAM pool creation
+  //ipv6CidrBlock: new Ipv6Cidr('2001:db8:1::/64'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
-
-// const cidr = new CidrBlockIpv6('2001:0db8:0000:0001::/60');
-// console.log(cidr.minIp(), cidr.maxIp());
-
-// const cidr2 = new CidrBlockIpv6('2001:db8:1234:0001:0000::/68');
-// console.log(cidr2.minIp(), cidr2.maxIp());
 
 //validate ipv6
 new SubnetV2(stack, 'validateIpv6', {
   vpc,
   cidrBlock: new Ipv4Cidr('10.3.0.0/24'),
-  availabilityZone: 'us-west-2a',
+  availabilityZone: 'eu-central-1b',
+  //Test secondary ipv6 address after IPAM pool creation
   //ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });

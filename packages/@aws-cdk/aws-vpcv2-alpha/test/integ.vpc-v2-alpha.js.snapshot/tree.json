@@ -303,7 +303,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-west-2a",
+                    "availabilityZone": "eu-central-1a",
                     "cidrBlock": "10.1.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
@@ -380,9 +380,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-west-2a",
+                    "availabilityZone": "eu-central-1b",
                     "cidrBlock": "10.2.0.0/24",
-                    "ipv6CidrBlock": "2001:db8:1::/64",
                     "vpcId": {
                       "Fn::GetAtt": [
                         "Vpcintegtest20DAD8F9D",
@@ -458,7 +457,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "availabilityZone": "us-west-2a",
+                    "availabilityZone": "eu-central-1b",
                     "cidrBlock": "10.3.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
