@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.148.1](https://github.com/aws/aws-cdk/compare/v2.148.0...v2.148.1) (2024-07-11)
+
+
+### Bug Fixes
+
+* **apigateway:** authorization scope is not added when not explicitly defining authorization type in method or root api ([#30822](https://github.com/aws/aws-cdk/issues/30822)) ([4bee768](https://github.com/aws/aws-cdk/commit/4bee768f07e73ab5fe466f9ad3d1845456a0513b)), closes [#30444](https://github.com/aws/aws-cdk/issues/30444)
+
 ## [2.148.0](https://github.com/aws/aws-cdk/compare/v2.147.3...v2.148.0) (2024-07-05)
 
 
