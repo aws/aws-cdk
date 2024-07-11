@@ -268,7 +268,7 @@ In order to mimic strong references, a Custom Resource is also created in the co
 stack which marks the SSM parameters as being "imported". When a parameter has been successfully
 imported, the producing stack cannot update the value.
 
-See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
+See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/adr/cross-region-stack-references.md)
 for more details on this feature.
 
 ### Removing automatic cross-stack references

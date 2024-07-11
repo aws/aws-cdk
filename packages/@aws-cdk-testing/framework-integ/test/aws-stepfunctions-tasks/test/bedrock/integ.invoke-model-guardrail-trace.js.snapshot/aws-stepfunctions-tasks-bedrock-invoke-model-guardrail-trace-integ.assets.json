@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "269be7f0a4effa5d89845f9d3573f5d6bff6e3b197c0be7ef013843754f73bde": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "269be7f0a4effa5d89845f9d3573f5d6bff6e3b197c0be7ef013843754f73bde.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

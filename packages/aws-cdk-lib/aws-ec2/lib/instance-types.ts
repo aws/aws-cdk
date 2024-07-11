@@ -377,6 +377,16 @@ export enum InstanceClass {
   R7A = 'r7a',
 
   /**
+   * Memory optimized instances with Graviton4 processors
+   */
+  MEMORY8_GRAVITON = 'memory8-graviton',
+
+  /**
+   * Memory optimized instances with Graviton4 processors
+   */
+  R8G = 'r8g',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -1466,6 +1476,8 @@ export class InstanceType {
       [InstanceClass.R7IZ]: 'r7iz',
       [InstanceClass.MEMORY7_AMD]: 'r7a',
       [InstanceClass.R7A]: 'r7a',
+      [InstanceClass.MEMORY8_GRAVITON]: 'r8g',
+      [InstanceClass.R8G]: 'r8g',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',

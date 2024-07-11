@@ -159,19 +159,7 @@ const ecsTaskTarget = new targets.EcsTask({ cluster, taskDefinition, role, platf
 The `aws-cdk-lib/aws-events-targets` module includes classes that implement the `IRuleTarget`
 interface for various AWS services.
 
-The following targets are supported:
-
-* `targets.CodeBuildProject`: Start an AWS CodeBuild build
-* `targets.CodePipeline`: Start an AWS CodePipeline pipeline execution
-* `targets.EcsTask`: Start a task on an Amazon ECS cluster
-* `targets.LambdaFunction`: Invoke an AWS Lambda function
-* `targets.SnsTopic`: Publish into an SNS topic
-* `targets.SqsQueue`: Send a message to an Amazon SQS Queue
-* `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
-* `targets.BatchJob`: Queue an AWS Batch Job
-* `targets.AwsApi`: Make an AWS API call
-* `targets.ApiGateway`: Invoke an AWS API Gateway
-* `targets.ApiDestination`: Make an call to an external destination
+See the README of the [`aws-cdk-lib/aws-events-targets`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-events-targets) module for more information on supported targets.
 
 ### Cross-account and cross-region targets
 
