@@ -580,36 +580,37 @@ describe('health check', () => {
       }).toThrow(/HealthThreshold is not supported for health check type:/);
     });
 
-    test.each([HealthCheckType.HTTP_STR_MATCH, HealthCheckType.HTTPS_STR_MATCH])(
-      'http_str_match and https_str_match require search string',
-      (type) => {
-        const stack = new cdk.Stack(undefined, 'TestStack', {
-          env: { account: '123456789012', region: 'us-east-1' },
+    test.each`
+      type                               | props
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{}}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{}}
+      ${HealthCheckType.HTTP_STR_MATCH}  | ${{ searchString: '' }}
+      ${HealthCheckType.HTTPS_STR_MATCH} | ${{ searchString: '' }}
+    `('http_str_match and https_str_match require search string', ({ type, props }) => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      expect(() => {
+        new HealthCheck(stack, 'HttpStrMatchHealthCheck', {
+          type,
+          ...props,
         });
+      }).toThrow(/SearchString is required for health check type:/);
+    });
 
-        expect(() => {
-          new HealthCheck(stack, 'HttpStrMatchHealthCheck', {
-            type,
-          });
-        }).toThrow(/SearchString is required for health check type:/);
-      },
-    );
+    test('http_str_match and https_str_match require search string length between 1 and 255 characters long', () => {
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
 
-    test.each(['', 'a'.repeat(256)])(
-      'http_str_match and https_str_match require search string length between 1 and 255 characters long',
-      (searchString) => {
-        const stack = new cdk.Stack(undefined, 'TestStack', {
-          env: { account: '123456789012', region: 'us-east-1' },
+      expect(() => {
+        new HealthCheck(stack, 'HttpStrMatchHealthCheck', {
+          type: HealthCheckType.HTTP_STR_MATCH,
+          searchString: 'a'.repeat(256),
         });
-
-        expect(() => {
-          new HealthCheck(stack, 'HttpStrMatchHealthCheck', {
-            type: HealthCheckType.HTTP_STR_MATCH,
-            searchString,
-          });
-        }).toThrow(/SearchString must be between 1 and 255 characters long/);
-      },
-    );
+      }).toThrow(/SearchString cannot be longer than 255 characters/);
+    });
 
     test.each`
       type                                 | props

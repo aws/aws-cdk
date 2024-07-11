@@ -495,12 +495,12 @@ function validateFqdn(props: HealthCheckProps) {
 }
 
 function validateSearchStringForStringMatch(props: HealthCheckProps) {
-  if (props.searchString === null || props.searchString === undefined) {
+  if (!props.searchString) {
     throw new Error(`SearchString is required for health check type: ${props.type}`);
   }
 
-  if (props.searchString.length === 0 || props.searchString.length > 255) {
-    throw new Error('SearchString must be between 1 and 255 characters long');
+  if (props.searchString.length > 255) {
+    throw new Error('SearchString cannot be longer than 255 characters');
   }
 }
 
