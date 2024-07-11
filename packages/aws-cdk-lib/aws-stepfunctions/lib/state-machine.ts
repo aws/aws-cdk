@@ -60,6 +60,8 @@ export enum LogLevel {
 export interface LogOptions {
   /**
    * The log group where the execution history events will be logged.
+   *
+   * @default No log group. Required if your log level is not set to OFF.
    */
   readonly destination?: logs.ILogGroup;
 
