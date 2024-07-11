@@ -108,6 +108,7 @@
      }
     },
     "DefaultArguments": {
+     "--enable-continuous-cloudwatch-log": "true",
      "--enable-metrics": "",
      "--enable-observability-metrics": "true"
     },
@@ -144,6 +145,7 @@
     "DefaultArguments": {
      "arg1": "value1",
      "arg2": "value2",
+     "--enable-continuous-cloudwatch-log": "true",
      "--enable-metrics": "",
      "--enable-observability-metrics": "true"
     },
