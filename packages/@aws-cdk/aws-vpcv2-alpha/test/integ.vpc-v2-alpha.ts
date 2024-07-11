@@ -55,6 +55,9 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   enableDnsSupport: true,
 });
 
+/**
+ * Integ test for VPC with IPAM pool to be run with --no-clean
+ */
 const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({

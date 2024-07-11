@@ -14,7 +14,7 @@
       "PublicDefaultScopeId"
      ]
     },
-    "Locale": "us-east-1",
+    "Locale": "eu-west-2",
     "PublicIpSource": "amazon"
    }
   },
@@ -47,7 +47,7 @@
       "IpamPoolId"
      ]
     },
-    "Ipv6NetmaskLength": 52,
+    "Ipv6NetmaskLength": 56,
     "VpcId": {
      "Fn::GetAtt": [
       "VPCTestFB735C86",
@@ -57,6 +57,86 @@
    },
    "DependsOn": [
     "IpamPublicPool0PublicPool0CidrPoolCidrC82F3C98"
+   ]
+  },
+  "VPCTestVpnGateway51EEED38": {
+   "Type": "AWS::EC2::VPNGateway",
+   "Properties": {
+    "Type": "ipsec.1"
+   }
+  },
+  "VPCTestVPCVPNGW0A869280": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    },
+    "VpnGatewayId": {
+     "Ref": "VPCTestVpnGateway51EEED38"
+    }
+   }
+  },
+  "VPCTestRoutePropagationFEA3011A": {
+   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "testsbubnetRouteTableF40F025B"
+     }
+    ],
+    "VpnGatewayId": {
+     "Ref": "VPCTestVpnGateway51EEED38"
+    }
+   },
+   "DependsOn": [
+    "VPCTestVPCVPNGW0A869280"
+   ]
+  },
+  "testsbubnetSubnet77337845": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "eu-west-2a",
+    "CidrBlock": "10.0.0.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCTestSecondaryIp1BB4FC62E"
+   ]
+  },
+  "testsbubnetRouteTableF40F025B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCTestSecondaryIp1BB4FC62E"
+   ]
+  },
+  "testsbubnetRouteTableAssociationD6D083FA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "testsbubnetRouteTableF40F025B"
+    },
+    "SubnetId": {
+     "Ref": "testsbubnetSubnet77337845"
+    }
+   },
+   "DependsOn": [
+    "VPCTestSecondaryIp1BB4FC62E"
    ]
   }
  },
