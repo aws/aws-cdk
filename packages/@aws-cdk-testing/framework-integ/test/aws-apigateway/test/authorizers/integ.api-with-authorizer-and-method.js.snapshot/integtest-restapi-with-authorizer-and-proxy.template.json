@@ -1,0 +1,224 @@
+{
+ "Resources": {
+  "UserPool6BA7E5F2": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AuthorizerBD825682": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "IdentitySource": "method.request.header.Authorization",
+    "Name": "integtestrestapiwithauthorizerandproxyAuthorizer5142DDC8",
+    "ProviderARNs": [
+     {
+      "Fn::GetAtt": [
+       "UserPool6BA7E5F2",
+       "Arn"
+      ]
+     }
+    ],
+    "RestApiId": {
+     "Ref": "CdkTestStack0AE13CA5"
+    },
+    "Type": "COGNITO_USER_POOLS"
+   }
+  },
+  "CdkTestStack0AE13CA5": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "CdkTestStack"
+   }
+  },
+  "CdkTestStackDeployment201712E9c8d53ab4e4cdcaa7ab0f70bb7f6ce970": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "CdkTestStack0AE13CA5"
+    }
+   },
+   "DependsOn": [
+    "AuthorizerBD825682",
+    "CdkTestStackotherPOST3BA23287",
+    "CdkTestStackother6044D106",
+    "CdkTestStackuserGET1317379E",
+    "CdkTestStackuser7876F2D4"
+   ]
+  },
+  "CdkTestStackDeploymentStageprod296E6472": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "CdkTestStackDeployment201712E9c8d53ab4e4cdcaa7ab0f70bb7f6ce970"
+    },
+    "RestApiId": {
+     "Ref": "CdkTestStack0AE13CA5"
+    },
+    "StageName": "prod"
+   }
+  },
+  "CdkTestStackuser7876F2D4": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "CdkTestStack0AE13CA5",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "user",
+    "RestApiId": {
+     "Ref": "CdkTestStack0AE13CA5"
+    }
+   }
+  },
+  "CdkTestStackuserGET1317379E": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationScopes": [
+     "profile"
+    ],
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "AuthorizerBD825682"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
+    "ResourceId": {
+     "Ref": "CdkTestStackuser7876F2D4"
+    },
+    "RestApiId": {
+     "Ref": "CdkTestStack0AE13CA5"
+    }
+   }
+  },
+  "CdkTestStackother6044D106": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "CdkTestStack0AE13CA5",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "other",
+    "RestApiId": {
+     "Ref": "CdkTestStack0AE13CA5"
+    }
+   }
+  },
+  "CdkTestStackotherPOST3BA23287": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationScopes": [
+     "openid"
+    ],
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "AuthorizerBD825682"
+    },
+    "HttpMethod": "POST",
+    "Integration": {
+     "Type": "MOCK"
+    },
+    "ResourceId": {
+     "Ref": "CdkTestStackother6044D106"
+    },
+    "RestApiId": {
+     "Ref": "CdkTestStack0AE13CA5"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "CdkTestStackEndpoint7DDDB759": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "CdkTestStack0AE13CA5"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "CdkTestStackDeploymentStageprod296E6472"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
