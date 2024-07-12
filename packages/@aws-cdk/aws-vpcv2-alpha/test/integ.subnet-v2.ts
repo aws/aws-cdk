@@ -15,7 +15,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
-
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-new');
@@ -45,7 +44,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
 });
 
 /**
- * Since source for IPAM IPv6 is set to amazonProvided, 
+ * Since source for IPAM IPv6 is set to amazonProvided,
  * can assign IPv6 address only after the allocation
  * uncomment ipv6CidrBlock and provide valid IPv6 range
  */
@@ -64,7 +63,6 @@ vpc.enableVpnGateway({
   }],
   type: 'ipsec.1',
 });
-
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
