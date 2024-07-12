@@ -358,7 +358,7 @@ pySparkEtlJobProps{
 }
 ```
 
-2. **Streaming Jobs**
+**Streaming Jobs**
 
 Streaming jobs are similar to ETL jobs, except that they perform ETL on data
 streams using the Apache Spark Structured Streaming framework. Some Spark
@@ -629,7 +629,7 @@ pySparkStreamingJobProps{
 }
 ```
 
-3. **Flex Jobs**
+**Flex Jobs**
 
 The flexible execution class is appropriate for non-urgent jobs such as
 pre-production jobs, testing, and one-time data loads. Flexible jobs default
