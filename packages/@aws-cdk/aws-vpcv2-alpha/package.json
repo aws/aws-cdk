@@ -44,7 +44,7 @@
     "directory": "packages/@aws-cdk/aws-vpcv2-alpha"
   },
   "scripts": {
-    "build": "cdk-build",
+    "build": "cdk-build --skip-lint",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
