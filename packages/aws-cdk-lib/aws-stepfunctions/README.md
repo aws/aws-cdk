@@ -602,7 +602,7 @@ const distributedMapWithStaticS3Source = new sfn.DistributedMap(this, 'Distribut
     prefix: 'my-prefix',
   })
 });
-distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
+distributedMapWithStaticS3Source.itemProcessor(new sfn.Pass(this, 'Pass State'));
 
 /**
  * State input shall include fields which are given to `S3ObjectItemReaderPath`:
@@ -614,7 +614,7 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
  * }
  */
 const distributedMapWithDynamicS3Source = new sfn.DistributedMap(this, 'Distributed Map State', {
-  itemReader: new sfn.S3ObjectsItemReaderPath({
+  itemReaderPath: new sfn.S3ObjectsItemReaderPath({
     bucketNamePath: '$.bucketName',
     prefixPath: '$.prefix',
   }),
@@ -623,7 +623,7 @@ const distributedMapWithDynamicS3Source = new sfn.DistributedMap(this, 'Distribu
     prefix: 'my-prefix',
   })
 });
-distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
+distributedMapWithDynamicS3Source.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
 
 If you want to specify the execution type for the ItemProcessor in the DistributedMap, you must set the `mapExecutionType` property in the `DistributedMap` class. When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
