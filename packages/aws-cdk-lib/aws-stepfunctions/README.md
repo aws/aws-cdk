@@ -616,7 +616,7 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 const distributedMapWithDynamicS3Source = new sfn.DistributedMap(this, 'Distributed Map State', {
   itemReader: new sfn.S3ObjectsItemReaderPath({
     bucketNamePath: '$.bucketName',
-    prefix: '$.prefix',
+    prefixPath: '$.prefix',
   }),
   resultWriter: new sfn.ResultWriter({
     bucket: bucket,
