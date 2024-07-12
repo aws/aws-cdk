@@ -96,7 +96,7 @@ const eigw = new EgressOnlyInternetGateway(stacks.eigw, 'testEOIGW', {
 new Route(stacks.eigw, 'testEIGWRoute', {
   routeTable: routeTables.eigw,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: eigw,
+  target: { gateway: eigw },
 });
 
 const igw = new InternetGateway(stacks.igw, 'testIGW', {
@@ -105,7 +105,7 @@ const igw = new InternetGateway(stacks.igw, 'testIGW', {
 new Route(stacks.igw, 'testIGWRoute', {
   routeTable: routeTables.igw,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: igw,
+  target: { gateway: igw },
 });
 
 const vpgw = new VPNGateway(stacks.vpgw, 'testVPGW', {
@@ -115,7 +115,7 @@ const vpgw = new VPNGateway(stacks.vpgw, 'testVPGW', {
 new Route(stacks.vpgw, 'testVPGWRoute', {
   routeTable: routeTables.vpgw,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: vpgw,
+  target: { gateway: vpgw },
 });
 
 const natGwIgw = new InternetGateway(stacks.natgw_pub, 'testNATgwIGW', {
@@ -124,7 +124,7 @@ const natGwIgw = new InternetGateway(stacks.natgw_pub, 'testNATgwIGW', {
 new Route(stacks.natgw_pub, 'testnatgwigwRoute', {
   routeTable: routeTables.natgw_pub,
   destination: vpc_v2.IpAddresses.ipv4('242.0.0.0/32'),
-  target: natGwIgw,
+  target: { gateway: natGwIgw },
 });
 const natGwPub = new NatGateway(stacks.natgw_pub, 'testNATgw', {
   subnet: subnets.natgw_pub,
@@ -133,7 +133,7 @@ const natGwPub = new NatGateway(stacks.natgw_pub, 'testNATgw', {
 new Route(stacks.natgw_pub, 'testNATGWRoute', {
   routeTable: routeTables.natgw_pub,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: natGwPub,
+  target: { gateway: natGwPub },
 });
 
 const natGwPriv = new NatGateway(stacks.natgw_priv, 'testNATgw', {
@@ -148,7 +148,7 @@ const natGwPriv = new NatGateway(stacks.natgw_priv, 'testNATgw', {
 new Route(stacks.natgw_priv, 'testNATGWRoute', {
   routeTable: routeTables.natgw_priv,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: natGwPriv,
+  target: { gateway: natGwPriv },
 });
 
 const networkInterface = new NetworkInterface(stacks.nif, 'testNWIF', {
@@ -157,7 +157,7 @@ const networkInterface = new NetworkInterface(stacks.nif, 'testNWIF', {
 new Route(stacks.nif, 'testNetIntRoute', {
   routeTable: routeTables.nif,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: networkInterface,
+  target: { gateway: networkInterface },
 });
 
 // const transitGw = new TransitGateway(stacks.tgw, 'testTGW');
@@ -174,7 +174,7 @@ const vpcPeerConn = new VpcPeeringConnection(stacks.vpcpc, 'testVPCPC', {
 new Route(stacks.vpcpc, 'testPeerconRoute', {
   routeTable: routeTables.vpcpc,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: vpcPeerConn,
+  target: { gateway: vpcPeerConn },
 });
 
 const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoint', {
@@ -185,7 +185,7 @@ const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoi
 new Route(stacks.dynamodb, 'testDynamoRoute', {
   routeTable: routeTables.dynamodb,
   destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: dynamoEndpoint,
+  target: { endpoint: dynamoEndpoint },
 });
 
 var i = 0;

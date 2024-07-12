@@ -44,7 +44,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: eigw,
+      target: { gateway: eigw },
     });
     // console.log(Template.fromStack(stack).toJSON().Resources);
     Template.fromStack(stack).templateMatches({
@@ -89,7 +89,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: vpngw,
+      target: { gateway: vpngw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -164,7 +164,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: igw,
+      target: { gateway: igw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -218,7 +218,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: natgw,
+      target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -272,7 +272,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: natgw,
+      target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -309,7 +309,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: natgw,
+      target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -358,7 +358,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: natgw,
+      target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -415,7 +415,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: natgw,
+      target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -470,12 +470,12 @@ describe('EC2 Routing', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
       subnet: mySubnet,
       connectivityType: 'public',
-      maxDrainDurationSeconds: 2001,
+      maxDrainDuration: cdk.Duration.seconds(2001),
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: natgw,
+      target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -545,7 +545,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: vpcPeerConnection,
+      target: { gateway: vpcPeerConnection },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -604,12 +604,12 @@ describe('EC2 Routing', () => {
       peerVpcId: myVpc2.vpcId,
       peerOwnerId: '12345678',
       peerRegion: 'us-east-3',
-      peerRoleArn: 'arn:aws:iam::account:root',
+      peerRole: 'arn:aws:iam::account:root',
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: vpcPeerConnection,
+      target: { gateway: vpcPeerConnection },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -664,7 +664,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: nif,
+      target: { gateway: nif },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -706,7 +706,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: dynamodb,
+      target: { endpoint: dynamodb },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -753,7 +753,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: dynamodb,
+      target: { endpoint: dynamodb },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -800,7 +800,7 @@ describe('EC2 Routing', () => {
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
       destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: dynamodb,
+      target: { endpoint: dynamodb },
     });
     Template.fromStack(stack).templateMatches({
       Resources: {
