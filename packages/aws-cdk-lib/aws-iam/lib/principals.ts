@@ -539,12 +539,14 @@ export class ServicePrincipal extends PrincipalBase {
    *
    * These days all service principal names are standardized, and they are all
    * of the form `<servicename>.amazonaws.com`.
-   *
-   * If the feature flag `@aws-cdk/aws-iam:standardizedServicePrincipals` is set, this
-   * method will always return its input. If this feature flag is not set, this
-   * method will perform the legacy behavior, which appends the region-specific
-   * domain suffix for some select services (for example, it would append `.cn`
-   * to some service principal names).
+   * 
+   * To avoid breaking changes, handling is provided for services added with the formats below,
+   * however, no additional handling will be added for new regions or partitions.
+   *   - s3
+   *   - s3.amazonaws.com
+   *   - s3.amazonaws.com.cn
+   *   - s3.c2s.ic.gov
+   *   - s3.sc2s.sgov.gov
    *
    * @example
    * const principalName = iam.ServicePrincipal.servicePrincipalName('ec2.amazonaws.com');
@@ -949,15 +951,20 @@ class ServicePrincipalToken implements cdk.IResolvable {
    */
   private newStandardizedBehavior(ctx: cdk.IResolveContext) {
     const stack = cdk.Stack.of(ctx.scope);
+
+    // If the user had previously set the feature flag to `false` we would allow them to provide only the service name instead of the
+    // entire service principal. We can't break them so now everyone gets to do it!
+    const match = this.service.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
+    const service = match ? `${match[1]}.amazonaws.com` : this.service;
     if (
       this.opts.region &&
       !cdk.Token.isUnresolved(this.opts.region) &&
       stack.region !== this.opts.region &&
       RegionInfo.get(this.opts.region).isOptInRegion
     ) {
-      return this.service.replace(/\.amazonaws\.com$/, `.${this.opts.region}.amazonaws.com`);
+      return service.replace(/\.amazonaws\.com$/, `.${this.opts.region}.amazonaws.com`);
     }
-    return this.service;
+    return service;
   }
 
   public toString() {
