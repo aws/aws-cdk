@@ -176,7 +176,7 @@ export interface OntapFileSystemProps extends FileSystemProps {
     * For MULTI_AZ_1 deployment types,
     * this subnet is for the standby file server and you have to specify a `prefferredSubnet` for the preffered file server.
     */
-  readonly vpcSubnet: ec2.ISubnet;
+  readonly vpcSubnets: ec2.ISubnet[];
 }
 
 /**
@@ -253,7 +253,7 @@ export class OntapFileSystem extends FileSystemBase {
 
     this.fileSystem = new CfnFileSystem(this, 'Resource', {
       fileSystemType: OntapFileSystem.DEFAULT_FILE_SYSTEM_TYPE,
-      subnetIds: [props.vpcSubnet.subnetId],
+      subnetIds: props.vpcSubnets.map((subnet) => subnet.subnetId),
       backupId: props.backupId,
       kmsKeyId: props.kmsKey?.keyId,
       ontapConfiguration: {
@@ -295,7 +295,7 @@ export class OntapFileSystem extends FileSystemBase {
     this.validateDiskIops(props.storageCapacityGiB, ontapConfiguration.diskIops, ontapConfiguration.haPairs);
     this.validateEndpointIpAddressRange(deploymentType, ontapConfiguration.endpointIpAddressRange);
     this.validateFsxAdminPassword(ontapConfiguration.fsxAdminPassword);
-    this.validateSubnet(deploymentType, props.vpcSubnet, ontapConfiguration.prefferredSubnet);
+    this.validateSubnets(deploymentType, props.vpcSubnets, ontapConfiguration.prefferredSubnet);
     this.validateRouteTables(deploymentType, ontapConfiguration.routeTables);
     this.validateThroughputCapacity(
       deploymentType,
@@ -378,15 +378,15 @@ export class OntapFileSystem extends FileSystemBase {
     }
   }
 
-  private validateSubnet(deploymentType: OntapDeploymentType, vpcSubnet: ec2.ISubnet, preferredSubnet?: ec2.ISubnet): void {
+  private validateSubnets(deploymentType: OntapDeploymentType, vpcSubnets: ec2.ISubnet[], preferredSubnet?: ec2.ISubnet): void {
     if ((deploymentType === OntapDeploymentType.MULTI_AZ_1 || deploymentType === OntapDeploymentType.MULTI_AZ_2) && !preferredSubnet) {
       throw new Error('\'preferredSubnet\' must be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
     }
     if ((deploymentType === OntapDeploymentType.SINGLE_AZ_1 || deploymentType === OntapDeploymentType.SINGLE_AZ_2) && preferredSubnet) {
       throw new Error('\'preferredSubnet\' must not be specified for deployment types SINGLE_AZ_1 and SINGLE_AZ_2');
     }
-    if (preferredSubnet && preferredSubnet.subnetId === vpcSubnet.subnetId) {
-      throw new Error('\'preferredSubnet\' must be different from the \'vpcSubnet\'');
+    if (preferredSubnet && !vpcSubnets.includes(preferredSubnet)) {
+      throw new Error('\'preferredSubnet\' must be one of the specified \'vpcSubnets\'');
     }
   }
 
