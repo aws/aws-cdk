@@ -63,6 +63,7 @@ describe('NotificationRule', () => {
       ],
       source: project,
       targets: [slack],
+      createdBy: 'Jone Doe',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
@@ -79,6 +80,7 @@ describe('NotificationRule', () => {
           TargetType: 'AWSChatbotSlack',
         },
       ],
+      CreatedBy: 'Jone Doe',
     });
   });
 

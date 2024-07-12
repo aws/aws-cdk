@@ -12,7 +12,7 @@ describe('schedule target', () => {
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
 
   beforeEach(() => {
-    app = new App();
+    app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     queue = new sqs.Queue(stack, 'MyQueue');
   });
@@ -41,7 +41,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -99,7 +99,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -144,7 +144,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -180,7 +180,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -218,7 +218,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -257,7 +257,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
