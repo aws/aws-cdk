@@ -21,6 +21,12 @@ function main(oldPackage: string, newPackage: string) {
   const disappearedFacts = oldFacts
     .filter((oldFact) => !newFacts.some((newFact) => factEq(oldFact, newFact)))
     .map((fact) => ({ fact, key: `${fact[0]}:${fact[1]}` }))
+    // These aren't accessed directly and we've just updated our handling of them,
+    // not removed this functionality. The mapping is unnecessary.
+    // While we could have just added these to the file tracking allowed breaking changes,
+    // that seemed like it would clutter that file excessively rather than adding this check.
+    // We can remove this after the next release, if we feel so inclined.
+    .filter(({ key }) => !key.includes('service-principal'))
     .filter(({ key }) => !allowedBreaks.has(key));
 
   if (disappearedFacts.length > 0) {
