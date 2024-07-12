@@ -451,6 +451,7 @@ export class NatGateway extends Resource implements IRouteTarget {
     this.resource = new CfnNatGateway(this, 'NATGateway', {
       subnetId: props.subnet.subnetId,
       allocationId: aId,
+      maxDrainDurationSeconds: props.maxDrainDuration?.toSeconds(),
       ...props,
     });
 
@@ -551,6 +552,7 @@ export class VpcPeeringConnection extends Resource implements IRouteTarget {
     this.routerType = RouterType.VPC_PEERING_CONNECTION;
 
     this.resource = new CfnVPCPeeringConnection(this, 'VPCPeerConnection', {
+      peerRoleArn: props.peerRole,
       ...props,
     });
 
@@ -713,15 +715,15 @@ export class Route extends Resource implements IRouteV2 {
     }
 
     if (this.targetRouterType == RouterType.GATEWAY) {
-      if (this.target instanceof InternetGateway) {
+      if (this.target.gateway instanceof InternetGateway) {
         new CfnVPCGatewayAttachment(this, 'GWAttachment', {
-          vpcId: this.target.vpcId,
-          internetGatewayId: this.target.routerId,
+          vpcId: this.target.gateway.vpcId,
+          internetGatewayId: this.target.gateway.routerId,
         });
-      } else if (this.target instanceof VPNGateway) {
+      } else if (this.target.gateway instanceof VPNGateway) {
         new CfnVPCGatewayAttachment(this, 'GWAttachment', {
-          vpcId: this.target.vpcId,
-          vpnGatewayId: this.target.routerId,
+          vpcId: this.target.gateway.vpcId,
+          vpnGatewayId: this.target.gateway.routerId,
         });
       }
     }
