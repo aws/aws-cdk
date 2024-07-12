@@ -776,7 +776,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ea1ae0dc2f7d2c6edf5f92864cc6b644cbdcb710b1551e48180b60e0b8871d1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e1c4b5a8eaccdb0c654c1397df740bd8a46564f92b620e25f4f743272ac6b7fb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -827,6 +827,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testDynamoEndpoint03D5BDE5"
+          }
+        ],
+        "/aws-cdk-routev2-dynamodbendpoint-alpha/testDynamoRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testDynamoRoute00B9A4E7"
           }
         ],
         "/aws-cdk-routev2-dynamodbendpoint-alpha/BootstrapVersion": [

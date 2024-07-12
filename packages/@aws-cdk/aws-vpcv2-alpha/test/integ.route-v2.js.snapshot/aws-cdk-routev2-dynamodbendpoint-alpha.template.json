@@ -106,6 +106,21 @@
      ]
     }
    }
+  },
+  "testDynamoRoute00B9A4E7": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    },
+    "VpcEndpointId": {
+     "Ref": "testDynamoEndpoint03D5BDE5"
+    }
+   }
   }
  },
  "Parameters": {

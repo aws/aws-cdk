@@ -2212,6 +2212,31 @@
           "testDynamoRoute": {
             "id": "testDynamoRoute",
             "path": "aws-cdk-routev2-dynamodbendpoint-alpha/testDynamoRoute",
+            "children": {
+              "Route": {
+                "id": "Route",
+                "path": "aws-cdk-routev2-dynamodbendpoint-alpha/testDynamoRoute/Route",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "TestRoottableRouteTableFA28AA38",
+                        "RouteTableId"
+                      ]
+                    },
+                    "vpcEndpointId": {
+                      "Ref": "testDynamoEndpoint03D5BDE5"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
               "version": "0.0.0"
