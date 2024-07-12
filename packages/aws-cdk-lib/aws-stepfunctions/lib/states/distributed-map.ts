@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
+import { IItemReaderPath } from './distributed-map/item-reader-path';
 import { ResultWriter } from './distributed-map/result-writer';
 import { MapBase, MapBaseProps } from './map-base';
 import { Annotations } from '../../../core';
@@ -34,6 +35,15 @@ export interface DistributedMapProps extends MapBaseProps {
    * @default - No itemReader
    */
   readonly itemReader?: IItemReader;
+
+  /**
+   * ItemReaderPath
+   *
+   * Configuration for where to read items dataset in S3 to iterate, as JsonPath
+   *
+   * @default - No itemReaderPath
+   */
+  readonly itemReaderPath?: IItemReaderPath;
 
   /**
    * ToleratedFailurePercentage
@@ -118,6 +128,7 @@ export class DistributedMap extends MapBase implements INextable {
 
   private readonly mapExecutionType?: StateMachineType;
   private readonly itemReader?: IItemReader;
+  private readonly itemReaderPath?: IItemReaderPath;
   private readonly toleratedFailurePercentage?: number;
   private readonly toleratedFailurePercentagePath?: string;
   private readonly toleratedFailureCount?: number;
@@ -130,6 +141,7 @@ export class DistributedMap extends MapBase implements INextable {
     super(scope, id, props);
     this.mapExecutionType = props.mapExecutionType ?? StateMachineType.STANDARD;
     this.itemReader = props.itemReader;
+    this.itemReaderPath = props.itemReaderPath;
     this.toleratedFailurePercentage = props.toleratedFailurePercentage;
     this.toleratedFailurePercentagePath = props.toleratedFailurePercentagePath;
     this.toleratedFailureCount = props.toleratedFailureCount;
@@ -152,6 +164,14 @@ export class DistributedMap extends MapBase implements INextable {
 
     if (this.itemsPath && this.itemReader) {
       errors.push('Provide either `itemsPath` or `itemReader`, but not both');
+    }
+
+    if (this.itemsPath && this.itemReaderPath) {
+      errors.push('Provide either `itemsPath` or `itemReaderPath`, but not both');
+    }
+
+    if (this.itemReader && this.itemReaderPath) {
+      errors.push('Provide either `itemReader` or `itemReaderPath`, but not both');
     }
 
     if (this.toleratedFailurePercentage && this.toleratedFailurePercentagePath) {
@@ -259,10 +279,17 @@ export class DistributedMap extends MapBase implements INextable {
    * Render the ItemReader as JSON object
    */
   private renderItemReader(): any {
-    if (!this.itemReader) { return undefined; }
+    let rendered: any = undefined;
+    if (this.itemReader) {
+      rendered = this.itemReader.render();
+    } else if (this.itemReaderPath) {
+      rendered = this.itemReaderPath.render();
+    }
+
+    if (!rendered) { return undefined; }
 
     return FieldUtils.renderObject({
-      ItemReader: this.itemReader.render(),
+      ItemReader: rendered,
     });
   }
 
