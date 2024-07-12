@@ -1543,34 +1543,6 @@
                   "version": "0.0.0"
                 }
               },
-              "chart-test-atomic-installation": {
-                "id": "chart-test-atomic-installation",
-                "path": "aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.HelmChart",
-                  "version": "0.0.0"
-                }
-              },
               "chart-test-non-ecr-oci-chart": {
                 "id": "chart-test-non-ecr-oci-chart",
                 "path": "aws-cdk-eks-helm-test/Cluster/chart-test-non-ecr-oci-chart",

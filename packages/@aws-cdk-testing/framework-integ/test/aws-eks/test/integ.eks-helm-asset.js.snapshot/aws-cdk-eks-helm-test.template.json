@@ -1157,38 +1157,6 @@
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
     "CreateNamespace": true,
-    "SkipCrds": true
-   },
-   "DependsOn": [
-    "ClusterKubectlReadyBarrier200052AF"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ClustercharttestatomicinstallationB879263E": {
-   "Type": "Custom::AWSCDK-EKS-HelmChart",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
-     ]
-    },
-    "ClusterName": {
-     "Ref": "Cluster9EE0221C"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
-      "Arn"
-     ]
-    },
-    "Release": "rds-chart-release",
-    "Chart": "rds-chart",
-    "Version": "v1.1.2",
-    "Namespace": "ack-system",
-    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
-    "CreateNamespace": true,
     "SkipCrds": true,
     "Atomic": true
    },
