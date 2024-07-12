@@ -4,7 +4,7 @@ import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem } fr
 import { CfnFileSystem } from './fsx.generated';
 import { MaintenanceTime } from './maintenance-time';
 import * as ec2 from '../../aws-ec2';
-import { Aws, Duration, Tag, Tags, Token } from '../../core';
+import { Aws, Duration } from '../../core';
 
 /**
  * The different kinds of file system deployments used by NetApp ONTAP.
@@ -15,36 +15,24 @@ export enum OntapDeploymentType {
    * This is a first-generation FSx for ONTAP file system.
    */
   MULTI_AZ_1 = 'MULTI_AZ_1',
+
   /**
    * A high availability file system configured for Multi-AZ redundancy to tolerate temporary AZ unavailability.
    * This is a second-generation FSx for ONTAP file system.
    */
   MULTI_AZ_2 = 'MULTI_AZ_2',
+
   /**
    * A file system configured for Single-AZ redundancy.
    * This is a first-generation FSx for ONTAP file system.
    */
   SINGLE_AZ_1 = 'SINGLE_AZ_1',
+
   /**
    * A file system configured with multiple high-availability (HA) pairs for Single-AZ redundancy.
    * This is a second-generation FSx for ONTAP file system.
    */
   SINGLE_AZ_2 = 'SINGLE_AZ_2',
-}
-
-/**
-  * The permitted Ontap data compression algorithms
-*/
-export enum OntapDataCompressionType {
-  /**
-  *
-  * `NONE` - (Default) Data compression is turned off when the file system is created.
-  */
-  NONE = 'NONE',
-  /**
-  * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
-  */
-  LZ4 = 'LZ4',
 }
 
 /**
@@ -91,7 +79,7 @@ export interface OntapConfiguration {
     *
     * You can have overlapping endpoint IP addresses for file systems deployed in the same VPC/route tables, as long as they don't overlap with any subnet.
     *
-    * @default - use unallocated IP address range from the VPC
+    * @default -
     */
   readonly endpointIpAddressRange?: string;
 
@@ -122,7 +110,7 @@ export interface OntapConfiguration {
     *
     * This value is required when DeploymentType is set to MULTI_AZ_1 or MULTI_AZ_2.
     *
-    * @default - automatically selected by CDK
+    * @default
     */
   readonly prefferredSubnet?: ec2.ISubnet;
 
@@ -218,21 +206,12 @@ export class OntapFileSystem extends FileSystemBase {
    */
   private static readonly DEFAULT_FILE_SYSTEM_TYPE: string = 'ONTAP';
 
-  // TODO
-  /**
-   * The default ports the file system listens on. Actual port list is: [988, 1021, 1022, 1023]
-   */
-  private static readonly DEFAULT_PORT_RANGE = { startPort: 988, endPort: 1023 };
-
   /**
    * Configures a Connections object with all the ports required by FSx for NetApp ONTAP.
    */
   private static configureConnections(securityGroup: ec2.ISecurityGroup): ec2.Connections {
     const connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcpRange(
-        OntapFileSystem.DEFAULT_PORT_RANGE.startPort,
-        OntapFileSystem.DEFAULT_PORT_RANGE.endPort),
     });
 
     return connections;
@@ -266,10 +245,9 @@ export class OntapFileSystem extends FileSystemBase {
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'FsxOntapSecurityGroup', {
       vpc: props.vpc,
     }));
-    securityGroup.addIngressRule(
-      securityGroup,
-      ec2.Port.tcpRange(OntapFileSystem.DEFAULT_PORT_RANGE.startPort, OntapFileSystem.DEFAULT_PORT_RANGE.endPort));
-    this.connections = OntapFileSystem.configureConnections(securityGroup);
+    this.connections = new ec2.Connections({
+      securityGroups: [securityGroup],
+    });
 
     const ontapConfiguration = props.ontapConfiguration;
 
@@ -280,7 +258,7 @@ export class OntapFileSystem extends FileSystemBase {
       kmsKeyId: props.kmsKey?.keyId,
       ontapConfiguration: {
         automaticBackupRetentionDays: ontapConfiguration.automaticBackupRetention?.toDays() ?? 0,
-        dailyAutomaticBackupStartTime: ontapConfiguration.dailyAutomaticBackupStartTime?.toString(),
+        dailyAutomaticBackupStartTime: ontapConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
         deploymentType: ontapConfiguration.deploymentType ?? OntapDeploymentType.MULTI_AZ_2,
         diskIopsConfiguration: {
           mode: ontapConfiguration.diskIops ? 'USER_PROVISIONED' : 'AUTOMATIC',
@@ -293,7 +271,7 @@ export class OntapFileSystem extends FileSystemBase {
         routeTableIds: ontapConfiguration.routeTables?.map((routeTable) => routeTable.routeTableId),
         throughputCapacity: ontapConfiguration.throughputCapacity,
         throughputCapacityPerHaPair: ontapConfiguration.throughputCapacityPerHaPair,
-        weeklyMaintenanceStartTime: ontapConfiguration.weeklyMaintenanceStartTime?.toString(),
+        weeklyMaintenanceStartTime: ontapConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
       },
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
@@ -315,7 +293,7 @@ export class OntapFileSystem extends FileSystemBase {
     this.validateAutomaticBackupRetention(ontapConfiguration.automaticBackupRetention);
     this.validateDailyAutomaticBackupStartTime(ontapConfiguration.automaticBackupRetention, ontapConfiguration.dailyAutomaticBackupStartTime);
     this.validateDiskIops(props.storageCapacityGiB, ontapConfiguration.diskIops, ontapConfiguration.haPairs);
-    this.validateEndpointIpAddressRange(ontapConfiguration.endpointIpAddressRange);
+    this.validateEndpointIpAddressRange(deploymentType, ontapConfiguration.endpointIpAddressRange);
     this.validateFsxAdminPassword(ontapConfiguration.fsxAdminPassword);
     this.validateSubnet(deploymentType, props.vpcSubnet, ontapConfiguration.prefferredSubnet);
     this.validateRouteTables(deploymentType, ontapConfiguration.routeTables);
@@ -325,6 +303,7 @@ export class OntapFileSystem extends FileSystemBase {
       ontapConfiguration.throughputCapacityPerHaPair,
       ontapConfiguration.haPairs,
     );
+    this.validateStorageCapacity(ontapConfiguration.haPairs, props.storageCapacityGiB);
   }
 
   private validateAutomaticBackupRetention(automaticBackupRetention?: Duration): void {
@@ -349,7 +328,6 @@ export class OntapFileSystem extends FileSystemBase {
     }
   }
 
-  // TODO 先にhaPairsをチェックする
   private validateDiskIops(storageCapacityGiB: number, diskIops?: number, haPairs: number = 1): void {
     if (diskIops == null) {
       return;
@@ -363,9 +341,12 @@ export class OntapFileSystem extends FileSystemBase {
     }
   }
 
-  private validateEndpointIpAddressRange(endpointIpAddressRange?: string): void {
+  private validateEndpointIpAddressRange(deploymentType: OntapDeploymentType, endpointIpAddressRange?: string): void {
     if (endpointIpAddressRange == null) {
       return;
+    }
+    if (deploymentType !== OntapDeploymentType.MULTI_AZ_1 && deploymentType !== OntapDeploymentType.MULTI_AZ_2) {
+      throw new Error('\'endpointIpAddressRange\' can only be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
     }
     if (!/^[^\u0000\u0085\u2028\u2029\r\n]{9,17}$/.test(endpointIpAddressRange)) {
       throw new Error('\'endpointIpAddressRange\' must be between 9 and 17 characters long and not contain any of the following characters: \\u0000, \\u0085, \\u2028, \\u2029, \\r, or \\n');
@@ -378,6 +359,10 @@ export class OntapFileSystem extends FileSystemBase {
     }
     if (!/^[^\u0000\u0085\u2028\u2029\r\n]{8,50}$/.test(fsxAdminPassword)) {
       throw new Error('\'fsxAdminPassword\' must be between 8 and 50 characters long and not contain any of the following characters: \\u0000, \\u0085, \\u2028, \\u2029, \\r, or \\n');
+    }
+    // must contain at least one English letter and one number, and must not contain the word 'admin'.
+    if (!/[a-zA-Z]/.test(fsxAdminPassword) || !/\d/.test(fsxAdminPassword) || /admin/i.test(fsxAdminPassword)) {
+      throw new Error('\'fsxAdminPassword\' must contain at least one English letter and one number, and must not contain the word \'admin\'');
     }
   }
 
@@ -406,10 +391,10 @@ export class OntapFileSystem extends FileSystemBase {
   }
 
   private validateRouteTables(deploymentType: OntapDeploymentType, routeTables?: ec2.IRouteTable[]): void {
-    if (routeTables == null) {
+    if (routeTables == null || routeTables.length === 0) {
       return;
     }
-    if ((deploymentType !== OntapDeploymentType.MULTI_AZ_1 && deploymentType !== OntapDeploymentType.MULTI_AZ_2) && routeTables.length > 0) {
+    if (deploymentType !== OntapDeploymentType.MULTI_AZ_1 && deploymentType !== OntapDeploymentType.MULTI_AZ_2) {
       throw new Error('\'routeTables\' can be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
     }
   }
@@ -426,24 +411,27 @@ export class OntapFileSystem extends FileSystemBase {
     if (throughputCapacity != null && throughputCapacityPerHaPair != null) {
       throw new Error('\'throughputCapacity\' and \'throughputCapacityPerHaPair\' cannot be specified at the same time');
     }
-    if (throughputCapacity != null) {
-      const throughputPerHaPair = throughputCapacity / haPair;
-      if (throughputPerHaPair < 8 || throughputPerHaPair > 100000) {
-        throw new Error(`\'throughputCapacity\' must be between 8 and 100,000 MBps per HA pair, got throughputCapacity: ${throughputCapacity}, haPair: ${haPair}`);
-      }
-    }
-    if (throughputCapacityPerHaPair != null) {
-      const validValues: { [key in OntapDeploymentType]: number[] } = {
-        SINGLE_AZ_1: [128, 256, 512, 1024, 2048, 4096],
-        MULTI_AZ_1: [128, 256, 512, 1024, 2048, 4096],
-        SINGLE_AZ_2: [1536, 3072, 6144],
-        MULTI_AZ_2: [384, 768, 1536, 3072, 6144],
-      };
 
-      const validRange = validValues[deploymentType];
-      if (!validRange.includes(throughputCapacityPerHaPair)) {
-        throw new Error(`'throughputCapacityPerHaPair' must be one of the following values for ${deploymentType}: ${validRange.join(', ')}`);
-      }
+    // Calculate the throughput per HaPair and use it for validation,
+    // regardless of whether `throughputCapacity` or `throughputCapacityPerHaPair` is defined.
+    const throughputPerHaPair = throughputCapacityPerHaPair ?? (throughputCapacity! / haPair);
+
+    const validValues: { [key in OntapDeploymentType]: number[] } = {
+      SINGLE_AZ_1: [128, 256, 512, 1024, 2048, 4096],
+      MULTI_AZ_1: [128, 256, 512, 1024, 2048, 4096],
+      SINGLE_AZ_2: [1536, 3072, 6144],
+      MULTI_AZ_2: [384, 768, 1536, 3072, 6144],
+    };
+
+    const validRange = validValues[deploymentType];
+    if (!validRange.includes(throughputPerHaPair)) {
+      throw new Error(`'throughputCapacityPerHaPair' and 'throughputCapacity' must be one of the following values for ${deploymentType}: ${validRange.join(', ')}`);
+    }
+  }
+
+  private validateStorageCapacity(haPairs: number = 1, storageCapacityGiB: number): void {
+    if (!Number.isInteger(storageCapacityGiB) || storageCapacityGiB < 1024 * haPairs || storageCapacityGiB > Math.min(1_048_576, 524_288 * haPairs)) {
+      throw new Error(`storageCapacityGiB must be an integer between ${1024 * haPairs} and ${Math.min(1_048_576, 524_288 * haPairs)}, got ${storageCapacityGiB}`);
     }
   }
 }
