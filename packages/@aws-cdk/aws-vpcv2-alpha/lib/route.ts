@@ -27,6 +27,11 @@ export interface EgressOnlyInternetGatewayProps {
    * The ID of the VPC for which to create the egress-only internet gateway.
    */
   readonly vpcId: string;
+
+  /**
+   * 
+   */
+  readonly EgressOnlyInternetGatewayName: string;
 }
 
 export interface InternetGatewayProps {

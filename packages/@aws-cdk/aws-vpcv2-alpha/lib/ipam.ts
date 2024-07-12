@@ -2,7 +2,7 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, VpcCidrOptions } from './vpc-v2';
 import { Construct } from 'constructs';
-import { CfnResource, Resource, Stack } from 'aws-cdk-lib';
+import { CfnResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -40,6 +40,12 @@ export interface IpamPoolProps extends PoolOptions {
    * Scope id where pool needs to be created
    */
   readonly ipamScopeId: string;
+
+  /**
+   * IPAM resource name
+   */
+  readonly ipamPoolName?: string;
+
 }
 
 /**
@@ -104,7 +110,7 @@ export interface PoolOptions{
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  * @property {ipamId}
  */
-export interface IpamScopeOptions {
+export interface IpamScopeProps {
   /**
    * IPAM id to which scope needs to be added
    */
@@ -206,7 +212,11 @@ export class IpamPool extends Resource {
   public readonly ipamCidrs: IpamPoolCidr[] = []
 
   constructor(scope: Construct, id: string, props: IpamPoolProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.ipamPoolName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+      }),
+    });
     const cfnPool = new CfnIPAMPool(this, id, {
       addressFamily: props.addressFamily,
       provisionedCidrs: props.provisionedCidrs,
@@ -226,6 +236,7 @@ export class IpamPool extends Resource {
    */
   public provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): IpamPoolCidr {
     const cidr = new IpamPoolCidr(this, id, {
+      ipamPoolCidrName: id,
       ...options,
       ipamPoolId: this.ipamPoolId,
     });
@@ -246,6 +257,11 @@ export interface IpamPoolCidrProps extends IpamPoolCidrProvisioningOptions {
    * Ipam Pool ID to add provisioned CIDR
    */
   readonly ipamPoolId: string;
+
+  /**
+   * IPAM pool id resource Physical name
+   */
+  readonly ipamPoolCidrName: string;
 }
 
 /**
@@ -257,7 +273,11 @@ export interface IpamPoolCidrProps extends IpamPoolCidrProvisioningOptions {
 export class IpamPoolCidr extends Resource {
 
   constructor(scope: Construct, id: string, props: IpamPoolCidrProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.ipamPoolCidrName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+      }),
+    });
     this.node.defaultChild = new CfnIPAMPoolCidr(this, 'PoolCidr', {
       netmaskLength: props.netmaskLength,
       ipamPoolId: props.ipamPoolId,
@@ -282,7 +302,7 @@ export class IpamScope extends Resource {
    * @attribute IpamScopeId
    */
   public readonly ipamScopeId: string;
-  constructor(scope: Construct, id: string, props: IpamScopeOptions) {
+  constructor(scope: Construct, id: string, props: IpamScopeProps) {
     super(scope, id);
     this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
       ipamId: props.ipamId,
@@ -305,6 +325,7 @@ abstract class IpamScopeBase {
    */
   addPool(id: string, options: PoolOptions): IpamPool {
     const pool = new IpamPool(this.scope, id, {
+      ipamPoolName: id,
       addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.scopeId,

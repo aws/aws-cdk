@@ -43,7 +43,7 @@ export class Ipv6Cidr implements ICidr {
 /**
  * Properties to define subnet for VPC.
  */
-export interface SubnetPropsV2 {
+export interface SubnetV2Props {
 /**
  * VPC Prop
  */
@@ -147,7 +147,7 @@ export class SubnetV2 extends Resource implements ISubnet {
    * @param id The unique identifier for this resource.
    * @param props The configuration properties for the subnet.
    */
-  constructor(scope: Construct, id: string, props: SubnetPropsV2) {
+  constructor(scope: Construct, id: string, props: SubnetV2Props) {
     super(scope, id);
 
     const ipv4CidrBlock = props.cidrBlock.cidr;
