@@ -49,16 +49,16 @@ export interface HttpLambdaAuthorizerProps {
   readonly resultsCacheTtl?: Duration;
 
   /**
-   * The types of responses the lambda can return
+   * The type of response the lambda can return
    *
-   * If HttpLambdaResponseType.SIMPLE is included then
+   * If set to HttpLambdaResponseType.SIMPLE then
    * response format 2.0 will be used.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.payload-format-response
    *
-   * @default [HttpLambdaResponseType.IAM]
+   * @default HttpLambdaResponseType.IAM
    */
-  readonly responseTypes?: HttpLambdaResponseType[];
+  readonly responseType?: HttpLambdaResponseType;
 }
 
 /**
@@ -86,8 +86,8 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
     }
 
     if (!this.authorizer) {
-      const responseTypes = this.props.responseTypes ?? [HttpLambdaResponseType.IAM];
-      const enableSimpleResponses = responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
+      const responseType = this.props.responseType ?? HttpLambdaResponseType.IAM;
+      const enableSimpleResponses = responseType === HttpLambdaResponseType.SIMPLE || undefined;
 
       this.httpApi = options.route.httpApi;
       this.authorizer = new HttpAuthorizer(options.scope, this.id, {

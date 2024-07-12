@@ -56,7 +56,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
-      responseTypes: [HttpLambdaResponseType.SIMPLE],
+      responseType: HttpLambdaResponseType.SIMPLE,
     });
 
     // WHEN
@@ -85,7 +85,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
-      responseTypes: [HttpLambdaResponseType.IAM],
+      responseType: HttpLambdaResponseType.IAM,
     });
 
     // WHEN
@@ -99,35 +99,6 @@ describe('HttpLambdaAuthorizer', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerPayloadFormatVersion: '1.0',
       EnableSimpleResponses: Match.absent(),
-    });
-  });
-
-  test('should use format 2.0 and simple responses when both response types are requested', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'HttpApi');
-
-    const handler = new Function(stack, 'auth-function', {
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      code: Code.fromInline('exports.handler = () => {return true}'),
-      handler: 'index.handler',
-    });
-
-    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
-      responseTypes: [HttpLambdaResponseType.IAM, HttpLambdaResponseType.SIMPLE],
-    });
-
-    // WHEN
-    api.addRoutes({
-      integration: new DummyRouteIntegration(),
-      path: '/books',
-      authorizer,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
-      AuthorizerPayloadFormatVersion: '2.0',
-      EnableSimpleResponses: true,
     });
   });
 
