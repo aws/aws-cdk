@@ -88,16 +88,7 @@ describe('state machine', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'states.',
-                    stack.resolve(stack.region),
-                    '.amazonaws.com',
-                  ],
-                ],
-              },
+              Service: 'states.amazonaws.com',
             },
           },
         ],
