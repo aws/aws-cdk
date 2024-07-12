@@ -1,0 +1,82 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const integ_tests_alpha_1 = require("@aws-cdk/integ-tests-alpha");
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const aws_cloudwatch_1 = require("aws-cdk-lib/aws-cloudwatch");
+const aws_iam_1 = require("aws-cdk-lib/aws-iam");
+const lib_1 = require("../lib");
+const app = new aws_cdk_lib_1.App();
+const stack = new aws_cdk_lib_1.Stack(app, 'aws-appconfig-environment');
+// create resources needed for environment
+const appForEnv = new lib_1.Application(stack, 'MyApplicationForEnv', {
+    applicationName: 'AppForEnvTest',
+});
+const alarm = new aws_cloudwatch_1.Alarm(stack, 'StartDeploymentCallCountAlarm', {
+    alarmName: 'AppConfigStartDeploymentCallCountAlarm',
+    metric: new aws_cloudwatch_1.Metric({
+        namespace: 'AWS/AppConfig',
+        metricName: 'CallCount',
+        dimensionsMap: {
+            Type: 'API',
+            Resource: 'StartDeployment',
+            Service: 'AWS AppConfig',
+        },
+        statistic: 'SUM',
+        period: aws_cdk_lib_1.Duration.minutes(5),
+    }),
+    threshold: 300,
+    comparisonOperator: aws_cloudwatch_1.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+    evaluationPeriods: 3,
+    treatMissingData: aws_cloudwatch_1.TreatMissingData.NOT_BREACHING,
+    actionsEnabled: false,
+});
+const policy = new aws_iam_1.PolicyStatement({
+    effect: aws_iam_1.Effect.ALLOW,
+    actions: ['cloudwatch:DescribeAlarms'],
+    resources: ['*'],
+});
+const document = new aws_iam_1.PolicyDocument({
+    statements: [policy],
+});
+const role = new aws_iam_1.Role(stack, 'MyRole', {
+    roleName: aws_cdk_lib_1.PhysicalName.GENERATE_IF_NEEDED,
+    assumedBy: new aws_iam_1.ServicePrincipal('appconfig.amazonaws.com'),
+    inlinePolicies: {
+        ['AllowAppConfigMonitorAlarmPolicy']: document,
+    },
+});
+const compositeAlarm = new aws_cloudwatch_1.CompositeAlarm(stack, 'MyCompositeAlarm', {
+    alarmRule: alarm,
+});
+// create environment with all props defined
+const env = new lib_1.Environment(stack, 'MyEnvironment', {
+    application: appForEnv,
+    description: 'This is the environment for integ testing',
+    monitors: [
+        lib_1.Monitor.fromCloudWatchAlarm(alarm),
+        lib_1.Monitor.fromCfnMonitorsProperty({
+            alarmArn: alarm.alarmArn,
+            alarmRoleArn: role.roleArn,
+        }),
+        lib_1.Monitor.fromCloudWatchAlarm(compositeAlarm),
+    ],
+});
+// ensure the service can track the monitors in the environment
+new lib_1.HostedConfiguration(stack, 'MyConfig', {
+    application: appForEnv,
+    content: lib_1.ConfigurationContent.fromInline('config content'),
+    deploymentStrategy: new lib_1.DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: lib_1.RolloutStrategy.linear({
+            deploymentDuration: aws_cdk_lib_1.Duration.minutes(1),
+            growthFactor: 50,
+        }),
+    }),
+    deployTo: [env],
+});
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
+new integ_tests_alpha_1.IntegTest(app, 'appconfig-environment', {
+    testCases: [stack],
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZW52aXJvbm1lbnQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5lbnZpcm9ubWVudC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLGtFQUF1RDtBQUN2RCw2Q0FBaUU7QUFDakUsK0RBQWlIO0FBQ2pILGlEQUFzRztBQUN0RyxnQ0FBMkk7QUFFM0ksTUFBTSxHQUFHLEdBQUcsSUFBSSxpQkFBRyxFQUFFLENBQUM7QUFFdEIsTUFBTSxLQUFLLEdBQUcsSUFBSSxtQkFBSyxDQUFDLEdBQUcsRUFBRSwyQkFBMkIsQ0FBQyxDQUFDO0FBRTFELDBDQUEwQztBQUMxQyxNQUFNLFNBQVMsR0FBRyxJQUFJLGlCQUFXLENBQUMsS0FBSyxFQUFFLHFCQUFxQixFQUFFO0lBQzlELGVBQWUsRUFBRSxlQUFlO0NBQ2pDLENBQUMsQ0FBQztBQUNILE1BQU0sS0FBSyxHQUFHLElBQUksc0JBQUssQ0FBQyxLQUFLLEVBQUUsK0JBQStCLEVBQUU7SUFDOUQsU0FBUyxFQUFFLHdDQUF3QztJQUNuRCxNQUFNLEVBQUUsSUFBSSx1QkFBTSxDQUFDO1FBQ2pCLFNBQVMsRUFBRSxlQUFlO1FBQzFCLFVBQVUsRUFBRSxXQUFXO1FBQ3ZCLGFBQWEsRUFBRTtZQUNiLElBQUksRUFBRSxLQUFLO1lBQ1gsUUFBUSxFQUFFLGlCQUFpQjtZQUMzQixPQUFPLEVBQUUsZUFBZTtTQUN6QjtRQUNELFNBQVMsRUFBRSxLQUFLO1FBQ2hCLE1BQU0sRUFBRSxzQkFBUSxDQUFDLE9BQU8sQ0FBQyxDQUFDLENBQUM7S0FDNUIsQ0FBQztJQUNGLFNBQVMsRUFBRSxHQUFHO0lBQ2Qsa0JBQWtCLEVBQUUsbUNBQWtCLENBQUMsa0NBQWtDO0lBQ3pFLGlCQUFpQixFQUFFLENBQUM7SUFDcEIsZ0JBQWdCLEVBQUUsaUNBQWdCLENBQUMsYUFBYTtJQUNoRCxjQUFjLEVBQUUsS0FBSztDQUN0QixDQUFDLENBQUM7QUFDSCxNQUFNLE1BQU0sR0FBRyxJQUFJLHlCQUFlLENBQUM7SUFDakMsTUFBTSxFQUFFLGdCQUFNLENBQUMsS0FBSztJQUNwQixPQUFPLEVBQUUsQ0FBQywyQkFBMkIsQ0FBQztJQUN0QyxTQUFTLEVBQUUsQ0FBQyxHQUFHLENBQUM7Q0FDakIsQ0FBQyxDQUFDO0FBQ0gsTUFBTSxRQUFRLEdBQUcsSUFBSSx3QkFBYyxDQUFDO0lBQ2xDLFVBQVUsRUFBRSxDQUFDLE1BQU0sQ0FBQztDQUNyQixDQUFDLENBQUM7QUFDSCxNQUFNLElBQUksR0FBRyxJQUFJLGNBQUksQ0FBQyxLQUFLLEVBQUUsUUFBUSxFQUFFO0lBQ3JDLFFBQVEsRUFBRSwwQkFBWSxDQUFDLGtCQUFrQjtJQUN6QyxTQUFTLEVBQUUsSUFBSSwwQkFBZ0IsQ0FBQyx5QkFBeUIsQ0FBQztJQUMxRCxjQUFjLEVBQUU7UUFDZCxDQUFDLGtDQUFrQyxDQUFDLEVBQUUsUUFBUTtLQUMvQztDQUNGLENBQUMsQ0FBQztBQUNILE1BQU0sY0FBYyxHQUFHLElBQUksK0JBQWMsQ0FBQyxLQUFLLEVBQUUsa0JBQWtCLEVBQUU7SUFDbkUsU0FBUyxFQUFFLEtBQUs7Q0FDakIsQ0FBQyxDQUFDO0FBRUgsNENBQTRDO0FBQzVDLE1BQU0sR0FBRyxHQUFHLElBQUksaUJBQVcsQ0FBQyxLQUFLLEVBQUUsZUFBZSxFQUFFO0lBQ2xELFdBQVcsRUFBRSxTQUFTO0lBQ3RCLFdBQVcsRUFBRSwyQ0FBMkM7SUFDeEQsUUFBUSxFQUFFO1FBQ1IsYUFBTyxDQUFDLG1CQUFtQixDQUFDLEtBQUssQ0FBQztRQUNsQyxhQUFPLENBQUMsdUJBQXVCLENBQUM7WUFDOUIsUUFBUSxFQUFFLEtBQUssQ0FBQyxRQUFRO1lBQ3hCLFlBQVksRUFBRSxJQUFJLENBQUMsT0FBTztTQUMzQixDQUFDO1FBQ0YsYUFBTyxDQUFDLG1CQUFtQixDQUFDLGNBQWMsQ0FBQztLQUM1QztDQUNGLENBQUMsQ0FBQztBQUVILCtEQUErRDtBQUMvRCxJQUFJLHlCQUFtQixDQUFDLEtBQUssRUFBRSxVQUFVLEVBQUU7SUFDekMsV0FBVyxFQUFFLFNBQVM7SUFDdEIsT0FBTyxFQUFFLDBCQUFvQixDQUFDLFVBQVUsQ0FBQyxnQkFBZ0IsQ0FBQztJQUMxRCxrQkFBa0IsRUFBRSxJQUFJLHdCQUFrQixDQUFDLEtBQUssRUFBRSxzQkFBc0IsRUFBRTtRQUN4RSxlQUFlLEVBQUUscUJBQWUsQ0FBQyxNQUFNLENBQUM7WUFDdEMsa0JBQWtCLEVBQUUsc0JBQVEsQ0FBQyxPQUFPLENBQUMsQ0FBQyxDQUFDO1lBQ3ZDLFlBQVksRUFBRSxFQUFFO1NBQ2pCLENBQUM7S0FDSCxDQUFDO0lBQ0YsUUFBUSxFQUFFLENBQUMsR0FBRyxDQUFDO0NBQ2hCLENBQUMsQ0FBQztBQUVIOzt3QkFFd0I7QUFFeEIsSUFBSSw2QkFBUyxDQUFDLEdBQUcsRUFBRSx1QkFBdUIsRUFBRTtJQUMxQyxTQUFTLEVBQUUsQ0FBQyxLQUFLLENBQUM7Q0FDbkIsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgSW50ZWdUZXN0IH0gZnJvbSAnQGF3cy1jZGsvaW50ZWctdGVzdHMtYWxwaGEnO1xuaW1wb3J0IHsgQXBwLCBEdXJhdGlvbiwgUGh5c2ljYWxOYW1lLCBTdGFjayB9IGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IEFsYXJtLCBDb21wYXJpc29uT3BlcmF0b3IsIENvbXBvc2l0ZUFsYXJtLCBNZXRyaWMsIFRyZWF0TWlzc2luZ0RhdGEgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtY2xvdWR3YXRjaCc7XG5pbXBvcnQgeyBSb2xlLCBTZXJ2aWNlUHJpbmNpcGFsLCBFZmZlY3QsIFBvbGljeVN0YXRlbWVudCwgUG9saWN5RG9jdW1lbnQgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtaWFtJztcbmltcG9ydCB7IEFwcGxpY2F0aW9uLCBDb25maWd1cmF0aW9uQ29udGVudCwgRGVwbG95bWVudFN0cmF0ZWd5LCBFbnZpcm9ubWVudCwgSG9zdGVkQ29uZmlndXJhdGlvbiwgTW9uaXRvciwgUm9sbG91dFN0cmF0ZWd5IH0gZnJvbSAnLi4vbGliJztcblxuY29uc3QgYXBwID0gbmV3IEFwcCgpO1xuXG5jb25zdCBzdGFjayA9IG5ldyBTdGFjayhhcHAsICdhd3MtYXBwY29uZmlnLWVudmlyb25tZW50Jyk7XG5cbi8vIGNyZWF0ZSByZXNvdXJjZXMgbmVlZGVkIGZvciBlbnZpcm9ubWVudFxuY29uc3QgYXBwRm9yRW52ID0gbmV3IEFwcGxpY2F0aW9uKHN0YWNrLCAnTXlBcHBsaWNhdGlvbkZvckVudicsIHtcbiAgYXBwbGljYXRpb25OYW1lOiAnQXBwRm9yRW52VGVzdCcsXG59KTtcbmNvbnN0IGFsYXJtID0gbmV3IEFsYXJtKHN0YWNrLCAnU3RhcnREZXBsb3ltZW50Q2FsbENvdW50QWxhcm0nLCB7XG4gIGFsYXJtTmFtZTogJ0FwcENvbmZpZ1N0YXJ0RGVwbG95bWVudENhbGxDb3VudEFsYXJtJyxcbiAgbWV0cmljOiBuZXcgTWV0cmljKHtcbiAgICBuYW1lc3BhY2U6ICdBV1MvQXBwQ29uZmlnJyxcbiAgICBtZXRyaWNOYW1lOiAnQ2FsbENvdW50JyxcbiAgICBkaW1lbnNpb25zTWFwOiB7XG4gICAgICBUeXBlOiAnQVBJJyxcbiAgICAgIFJlc291cmNlOiAnU3RhcnREZXBsb3ltZW50JyxcbiAgICAgIFNlcnZpY2U6ICdBV1MgQXBwQ29uZmlnJyxcbiAgICB9LFxuICAgIHN0YXRpc3RpYzogJ1NVTScsXG4gICAgcGVyaW9kOiBEdXJhdGlvbi5taW51dGVzKDUpLFxuICB9KSxcbiAgdGhyZXNob2xkOiAzMDAsXG4gIGNvbXBhcmlzb25PcGVyYXRvcjogQ29tcGFyaXNvbk9wZXJhdG9yLkdSRUFURVJfVEhBTl9PUl9FUVVBTF9UT19USFJFU0hPTEQsXG4gIGV2YWx1YXRpb25QZXJpb2RzOiAzLFxuICB0cmVhdE1pc3NpbmdEYXRhOiBUcmVhdE1pc3NpbmdEYXRhLk5PVF9CUkVBQ0hJTkcsXG4gIGFjdGlvbnNFbmFibGVkOiBmYWxzZSxcbn0pO1xuY29uc3QgcG9saWN5ID0gbmV3IFBvbGljeVN0YXRlbWVudCh7XG4gIGVmZmVjdDogRWZmZWN0LkFMTE9XLFxuICBhY3Rpb25zOiBbJ2Nsb3Vkd2F0Y2g6RGVzY3JpYmVBbGFybXMnXSxcbiAgcmVzb3VyY2VzOiBbJyonXSxcbn0pO1xuY29uc3QgZG9jdW1lbnQgPSBuZXcgUG9saWN5RG9jdW1lbnQoe1xuICBzdGF0ZW1lbnRzOiBbcG9saWN5XSxcbn0pO1xuY29uc3Qgcm9sZSA9IG5ldyBSb2xlKHN0YWNrLCAnTXlSb2xlJywge1xuICByb2xlTmFtZTogUGh5c2ljYWxOYW1lLkdFTkVSQVRFX0lGX05FRURFRCxcbiAgYXNzdW1lZEJ5OiBuZXcgU2VydmljZVByaW5jaXBhbCgnYXBwY29uZmlnLmFtYXpvbmF3cy5jb20nKSxcbiAgaW5saW5lUG9saWNpZXM6IHtcbiAgICBbJ0FsbG93QXBwQ29uZmlnTW9uaXRvckFsYXJtUG9saWN5J106IGRvY3VtZW50LFxuICB9LFxufSk7XG5jb25zdCBjb21wb3NpdGVBbGFybSA9IG5ldyBDb21wb3NpdGVBbGFybShzdGFjaywgJ015Q29tcG9zaXRlQWxhcm0nLCB7XG4gIGFsYXJtUnVsZTogYWxhcm0sXG59KTtcblxuLy8gY3JlYXRlIGVudmlyb25tZW50IHdpdGggYWxsIHByb3BzIGRlZmluZWRcbmNvbnN0IGVudiA9IG5ldyBFbnZpcm9ubWVudChzdGFjaywgJ015RW52aXJvbm1lbnQnLCB7XG4gIGFwcGxpY2F0aW9uOiBhcHBGb3JFbnYsXG4gIGRlc2NyaXB0aW9uOiAnVGhpcyBpcyB0aGUgZW52aXJvbm1lbnQgZm9yIGludGVnIHRlc3RpbmcnLFxuICBtb25pdG9yczogW1xuICAgIE1vbml0b3IuZnJvbUNsb3VkV2F0Y2hBbGFybShhbGFybSksXG4gICAgTW9uaXRvci5mcm9tQ2ZuTW9uaXRvcnNQcm9wZXJ0eSh7XG4gICAgICBhbGFybUFybjogYWxhcm0uYWxhcm1Bcm4sXG4gICAgICBhbGFybVJvbGVBcm46IHJvbGUucm9sZUFybixcbiAgICB9KSxcbiAgICBNb25pdG9yLmZyb21DbG91ZFdhdGNoQWxhcm0oY29tcG9zaXRlQWxhcm0pLFxuICBdLFxufSk7XG5cbi8vIGVuc3VyZSB0aGUgc2VydmljZSBjYW4gdHJhY2sgdGhlIG1vbml0b3JzIGluIHRoZSBlbnZpcm9ubWVudFxubmV3IEhvc3RlZENvbmZpZ3VyYXRpb24oc3RhY2ssICdNeUNvbmZpZycsIHtcbiAgYXBwbGljYXRpb246IGFwcEZvckVudixcbiAgY29udGVudDogQ29uZmlndXJhdGlvbkNvbnRlbnQuZnJvbUlubGluZSgnY29uZmlnIGNvbnRlbnQnKSxcbiAgZGVwbG95bWVudFN0cmF0ZWd5OiBuZXcgRGVwbG95bWVudFN0cmF0ZWd5KHN0YWNrLCAnTXlEZXBsb3ltZW50U3RyYXRlZ3knLCB7XG4gICAgcm9sbG91dFN0cmF0ZWd5OiBSb2xsb3V0U3RyYXRlZ3kubGluZWFyKHtcbiAgICAgIGRlcGxveW1lbnREdXJhdGlvbjogRHVyYXRpb24ubWludXRlcygxKSxcbiAgICAgIGdyb3d0aEZhY3RvcjogNTAsXG4gICAgfSksXG4gIH0pLFxuICBkZXBsb3lUbzogW2Vudl0sXG59KTtcblxuLyogcmVzb3VyY2UgZGVwbG95bWVudCBhbG9uZSBpcyBzdWZmaWNpZW50IGJlY2F1c2Ugd2UgYWxyZWFkeSBoYXZlIHRoZVxuICAgY29ycmVzcG9uZGluZyByZXNvdXJjZSBoYW5kbGVyIHRlc3RzIHRvIGFzc2VydCB0aGF0IHJlc291cmNlcyBjYW4gYmVcbiAgIHVzZWQgYWZ0ZXIgY3JlYXRlZCAqL1xuXG5uZXcgSW50ZWdUZXN0KGFwcCwgJ2FwcGNvbmZpZy1lbnZpcm9ubWVudCcsIHtcbiAgdGVzdENhc2VzOiBbc3RhY2tdLFxufSk7XG4iXX0=
