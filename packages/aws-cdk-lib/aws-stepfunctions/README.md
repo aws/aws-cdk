@@ -582,7 +582,7 @@ Map states in Distributed mode support multiple sources for an array to iterate:
 * CSV file stored in S3
 * S3 inventory manifest stored in S3
 
-There are multiple classes that implement `IItemReader` that can be used to configure the iterator source.  These can be provided via the optional `itemReader` property.  The default behavior if `itemReader` is omitted is to use the input payload.
+There are multiple classes that implement `IItemReader` that can be used to configure the iterator source.  These can be provided via the optional `itemReader` property. If S3 source needs to be configured dynamically at runtime using state input, then class implementations of `IItemReaderPath` can be utilised instead of `IItemReader`. These can be provided via the optional `itemReaderPath` property. Both `itemReader` and `itemReaderPath` are mutually exclusive. The default behavior, if both `itemReader` and `itemReaderPath` are omitted, is to use the input payload.
 
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
@@ -592,10 +592,31 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 // create a bucket
 const bucket = new s3.Bucket(this, 'Bucket');
 
-const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
+const distributedMapWithStaticS3Source = new sfn.DistributedMap(this, 'Distributed Map State', {
   itemReader: new sfn.S3JsonItemReader({
     bucket: bucket,
     key: 'my-key.json',
+  }),
+  resultWriter: new sfn.ResultWriter({
+    bucket: bucket,
+    prefix: 'my-prefix',
+  })
+});
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
+
+/**
+ * State input shall include fields which are given to `S3ObjectItemReaderPath`:
+ * {
+ *    ...
+ *    bucketName: 'my-bucket',
+ *    prefix: 'objectNamePrefix',
+ *    ...
+ * }
+ */
+const distributedMapWithDynamicS3Source = new sfn.DistributedMap(this, 'Distributed Map State', {
+  itemReader: new sfn.S3ObjectsItemReaderPath({
+    bucketNamePath: '$.bucketName',
+    prefix: '$.prefix',
   }),
   resultWriter: new sfn.ResultWriter({
     bucket: bucket,
