@@ -317,7 +317,10 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
           ...value,
         ]));
       } else {
-        target[key] = value;
+        target[key] = new Array(
+          ...target[key] ?? [],
+          ...value,
+        );
       }
       continue;
     }
