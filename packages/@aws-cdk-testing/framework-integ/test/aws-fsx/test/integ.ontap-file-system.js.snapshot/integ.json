@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "FsxForOntapTest/DefaultTest": {
+      "stacks": [
+        "FsxForOntapTestStack"
+      ],
+      "assertionStack": "FsxForOntapTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxForOntapTestDefaultTestDeployAssert20A933DE"
+    }
+  }
+}
