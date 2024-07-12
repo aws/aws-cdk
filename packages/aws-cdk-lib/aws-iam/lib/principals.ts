@@ -539,7 +539,7 @@ export class ServicePrincipal extends PrincipalBase {
    *
    * These days all service principal names are standardized, and they are all
    * of the form `<servicename>.amazonaws.com`.
-   * 
+   *
    * To avoid breaking changes, handling is provided for services added with the formats below,
    * however, no additional handling will be added for new regions or partitions.
    *   - s3
