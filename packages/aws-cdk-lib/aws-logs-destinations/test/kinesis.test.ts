@@ -32,14 +32,7 @@ test('stream can be subscription destination', () => {
         Action: 'sts:AssumeRole',
         Effect: 'Allow',
         Principal: {
-          Service: {
-            'Fn::Join': ['', [
-              'logs.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-            ]],
-          },
+          Service: 'logs.amazonaws.com',
         },
       }],
     },
@@ -102,14 +95,7 @@ test('stream can be subscription destination twice, without duplicating permissi
         Action: 'sts:AssumeRole',
         Effect: 'Allow',
         Principal: {
-          Service: {
-            'Fn::Join': ['', [
-              'logs.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-            ]],
-          },
+          Service: 'logs.amazonaws.com',
         },
       }],
     },

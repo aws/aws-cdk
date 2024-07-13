@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.149.0](https://github.com/aws/aws-cdk/compare/v2.148.1...v2.149.0) (2024-07-12)
+
+
+### Features
+
+* **codedeploy:** zonal configuration for `ServerDeploymentConfig` ([#30429](https://github.com/aws/aws-cdk/issues/30429)) ([da0dc57](https://github.com/aws/aws-cdk/commit/da0dc576bd85ba6710ec0b29cf53ff56a74fad1e)), closes [#30430](https://github.com/aws/aws-cdk/issues/30430)
+* **codestarnotifications:** add `createdBy` property for notification rule ([#30780](https://github.com/aws/aws-cdk/issues/30780)) ([a68b418](https://github.com/aws/aws-cdk/commit/a68b418311bf582c62a541abaffb89ebaf1526f3))
+* **stepfunctions-tasks:** add guardrailConfiguration and trace property to the BedrockInvokeModel ([#30426](https://github.com/aws/aws-cdk/issues/30426)) ([772b1d1](https://github.com/aws/aws-cdk/commit/772b1d154a16f9360052c25bbc9e017198ac39d2)), closes [#30425](https://github.com/aws/aws-cdk/issues/30425)
+* **stepfunctions-tasks:** enable resultReuseConfiguration in AthenaStartQueryExecution ([#30447](https://github.com/aws/aws-cdk/issues/30447)) ([046bf56](https://github.com/aws/aws-cdk/commit/046bf56cedd5add4549cc6a9ef2ab23369ef3cee)), closes [#30446](https://github.com/aws/aws-cdk/issues/30446)
+* update L1 CloudFormation resource definitions ([#30786](https://github.com/aws/aws-cdk/issues/30786)) ([6d0a09f](https://github.com/aws/aws-cdk/commit/6d0a09f2c566b0ddf2bbd4e4d338c06f7c7aaf65))
+
+
+### Bug Fixes
+
+* **apigateway:** authorization scope is not added when not explicitly defining authorization type in method or root api ([#30822](https://github.com/aws/aws-cdk/issues/30822)) ([e4367a0](https://github.com/aws/aws-cdk/commit/e4367a0835ecc2dae0a920e5afbfd131b458b7be)), closes [#30444](https://github.com/aws/aws-cdk/issues/30444)
+* **scheduler-targetes-alpha:** multiple schedules cause resolution error during synth ([#30634](https://github.com/aws/aws-cdk/issues/30634)) ([727e886](https://github.com/aws/aws-cdk/commit/727e886805da021c2373e74754fd2d7492a8aac6)), closes [#28713](https://github.com/aws/aws-cdk/issues/28713)
+
 ## [2.148.1](https://github.com/aws/aws-cdk/compare/v2.148.0...v2.148.1) (2024-07-11)
 
 
