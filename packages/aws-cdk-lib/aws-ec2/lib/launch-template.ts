@@ -223,10 +223,12 @@ export interface LaunchTemplateProps {
 
   /**
    * A description for the first version of the launch template.
-   * The version descrioption must be maximum 255 characters long, including hyphens (-),
-   * underscores (_), spaces, and tabs.
+   *
+   * The version descrioption must be maximum 255 characters long.
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#cfn-ec2-launchtemplate-versiondescription
+   *
+   * @default - The version description is not set if not specified.
    */
   readonly versionDescription?: string;
 
