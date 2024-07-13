@@ -68,9 +68,9 @@ export interface StageOptions {
   readonly throttle?: ThrottleSettings;
 
   /**
-   * The description for the api stage
+   * The description for the API stage
    *
-   * @default - none
+   * @default - no description
    */
   readonly description?: string;
 }
