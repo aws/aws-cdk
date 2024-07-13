@@ -223,9 +223,14 @@ export class OntapFileSystem extends FileSystemBase {
   public readonly connections: ec2.Connections;
 
   /**
-   * The DNS name assigned to this file system.
+   * The management endpoint DNS name assigned to this file system.
    */
   public readonly dnsName: string;
+
+  /**
+   * The inter cluster endpoint DNS name assigned to this file system.
+   */
+  public readonly interClusterDnsName: string;
 
   /**
    * The ID that AWS assigns to the file system.
@@ -279,7 +284,10 @@ export class OntapFileSystem extends FileSystemBase {
     this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = this.fileSystem.ref;
-    this.dnsName = `${this.fileSystemId}.fsx.${this.env.region}.${Aws.URL_SUFFIX}`;
+
+    const baseDnsName = `${this.fileSystemId}.fsx.${this.env.region}.${Aws.URL_SUFFIX}`;
+    this.dnsName = `management.${baseDnsName}`;
+    this.interClusterDnsName = `intercluster.${baseDnsName}`;
   }
 
   /**

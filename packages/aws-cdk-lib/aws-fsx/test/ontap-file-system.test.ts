@@ -1,0 +1,49 @@
+import { strictEqual } from 'assert';
+import { Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
+import { Key } from '../../aws-kms';
+import { Aws, Duration, Stack, Token } from '../../core';
+import * as fsx from '../lib';
+
+
+describe('FSx for Lustre File System', () => {
+  let ontapConfiguration: fsx.OntapConfiguration;
+  let stack: Stack;
+  let vpc: ec2.Vpc;
+
+  beforeEach(() => {
+    stack = new Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+  });
+
+  test('default file system', () => {
+    ontapConfiguration = {
+      deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+    };
+
+    const fileSystem = new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+      ontapConfiguration,
+      storageCapacityGiB: 1200,
+      vpc,
+      vpcSubnets: vpc.privateSubnets,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+      FileSystemType: 'ONTAP',
+      subnetIds: Token.asList(vpc.privateSubnets.map(s => s.subnetId)),
+      OntapConfiguration: {
+        DeploymentType: 'MULTI_AZ_2',
+        AutomaticBackupRetentionInDays: 0,
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::EC2::SecurityGroup', {});
+    strictEqual(
+      fileSystem.dnsName,
+      `management.${fileSystem.fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`,
+    );
+    strictEqual(
+      fileSystem.interClusterDnsName,
+      `intercluster.${fileSystem.fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`,
+    );
+  });
+});
