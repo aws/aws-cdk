@@ -192,14 +192,14 @@ describe('HttpStage with domain mapping', () => {
   });
 
   test('specify description', () => {
-    const stack = new Stack();
     // GIVEN
+    const stack = new Stack();
     const api = new HttpApi(stack, 'Api', {
       createDefaultStage: false,
     });
 
     // WHEN
-    const stage = new HttpStage(stack, 'DefaultStage', {
+    new HttpStage(stack, 'DefaultStage', {
       httpApi: api,
       description: 'My Stage',
     });

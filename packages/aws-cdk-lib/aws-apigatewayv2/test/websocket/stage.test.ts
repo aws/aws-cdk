@@ -135,12 +135,12 @@ describe('WebSocketStage', () => {
   });
 
   test('specify description', () => {
-    const stack = new Stack();
     // GIVEN
+    const stack = new Stack();
     const api = new WebSocketApi(stack, 'Api');
 
     // WHEN
-    const stage = new WebSocketStage(stack, 'DefaultStage', {
+    new WebSocketStage(stack, 'DefaultStage', {
       webSocketApi: api,
       stageName: 'dev',
       description: 'My Stage',
