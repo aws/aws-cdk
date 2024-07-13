@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "AuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1392f7df97b60ac420a8ba97f1d6ac2f6e984a168d85bb763108846d396c6553.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3adf2fd10d9f095f07279bf2be77e43815cfc3ddfba61693755647d8fc94298a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,48 +44,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "authfunction96361832"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApi8AEAAC21"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/DefaultStage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiDefaultStageDCB9BC49"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegration/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiGETRootIntegration5068C5B0"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegration-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiGETRootIntegrationPermission81613491"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiGETE0EFC6F8"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/LambdaAuthorizer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiLambdaAuthorizerB8A0E2A4"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/AuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331"
           }
         ],
         "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/Resource": [
@@ -142,16 +100,394 @@
             "data": "RouteA67450D2"
           }
         ],
-        "/AuthorizerInteg/URL": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "URL"
-          }
-        ],
         "/AuthorizerInteg/URLWithDefaultAuthorizer": [
           {
             "type": "aws:cdk:logicalId",
             "data": "URLWithDefaultAuthorizer"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi0D09FAD11"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi0/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi0DefaultStage948DD768"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi0/GET--/RootIntegration0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi0GETRootIntegration0C4A7CE34"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi0/GET--/RootIntegration0-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi0GETRootIntegration0PermissionE7344DC5"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi0/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi0GET67800AEE"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi0/LambdaAuthorizer0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi0LambdaAuthorizer08E9DC1D0"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi0/AuthorizerIntegMyHttpApi0LambdaAuthorizer0A044074A-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi0AuthorizerIntegMyHttpApi0LambdaAuthorizer0A044074APermission6E1193B7"
+          }
+        ],
+        "/AuthorizerInteg/URL0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL0"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi1C04FAC4F"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi1/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi1DefaultStage9F9F4CA7"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi1/GET--/RootIntegration1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi1GETRootIntegration1E8CC6FF7"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi1/GET--/RootIntegration1-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi1GETRootIntegration1PermissionE7B13BB7"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi1/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi1GETD9B8E617"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi1/LambdaAuthorizer1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi1LambdaAuthorizer1332A2516"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi1/AuthorizerIntegMyHttpApi1LambdaAuthorizer103E77337-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi1AuthorizerIntegMyHttpApi1LambdaAuthorizer103E77337PermissionED37DBB0"
+          }
+        ],
+        "/AuthorizerInteg/URL1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL1"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi267446531"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi2/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi2DefaultStageDBA2472A"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi2/GET--/RootIntegration2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi2GETRootIntegration261BAE04C"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi2/GET--/RootIntegration2-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi2GETRootIntegration2Permission1AEA694C"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi2/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi2GETDB9256B1"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi2/LambdaAuthorizer2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi2LambdaAuthorizer2B546ED5B"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi2/AuthorizerIntegMyHttpApi2LambdaAuthorizer2DAB5A5AF-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi2AuthorizerIntegMyHttpApi2LambdaAuthorizer2DAB5A5AFPermission7E8FAAA0"
+          }
+        ],
+        "/AuthorizerInteg/URL2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL2"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi350ADB087"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi3/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi3DefaultStageCE3EFC98"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi3/GET--/RootIntegration3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi3GETRootIntegration31E57120C"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi3/GET--/RootIntegration3-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi3GETRootIntegration3Permission196EFDB7"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi3/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi3GET49C484F2"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi3/LambdaAuthorizer3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi3LambdaAuthorizer3EB82A5F8"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi3/AuthorizerIntegMyHttpApi3LambdaAuthorizer3DF44B3D3-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi3AuthorizerIntegMyHttpApi3LambdaAuthorizer3DF44B3D3Permission24B3F931"
+          }
+        ],
+        "/AuthorizerInteg/URL3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL3"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi4DD12A662"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi4/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi4DefaultStageCEA8E812"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi4/GET--/RootIntegration4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi4GETRootIntegration49BE39F05"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi4/GET--/RootIntegration4-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi4GETRootIntegration4Permission3782DB16"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi4/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi4GET551C3092"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi4/LambdaAuthorizer4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi4LambdaAuthorizer4B1BA194E"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi4/AuthorizerIntegMyHttpApi4LambdaAuthorizer4E57900D7-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi4AuthorizerIntegMyHttpApi4LambdaAuthorizer4E57900D7Permission4033896C"
+          }
+        ],
+        "/AuthorizerInteg/URL4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL4"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi5142D3E2E"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi5/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi5DefaultStage1D6F5BEA"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi5/GET--/RootIntegration5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi5GETRootIntegration5C3B9517B"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi5/GET--/RootIntegration5-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi5GETRootIntegration5PermissionA41AF205"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi5/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi5GET74078A3E"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi5/LambdaAuthorizer5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi5LambdaAuthorizer56A62F872"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi5/AuthorizerIntegMyHttpApi5LambdaAuthorizer50E64DE65-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi5AuthorizerIntegMyHttpApi5LambdaAuthorizer50E64DE65Permission854A5529"
+          }
+        ],
+        "/AuthorizerInteg/URL5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL5"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi65E475639"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi6/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi6DefaultStageA25AA11D"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi6/GET--/RootIntegration6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi6GETRootIntegration6B423AC9F"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi6/GET--/RootIntegration6-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi6GETRootIntegration6PermissionAA88CD37"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi6/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi6GETF95D3134"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi6/LambdaAuthorizer6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi6LambdaAuthorizer666A9A3F2"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi6/AuthorizerIntegMyHttpApi6LambdaAuthorizer6288C4E69-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi6AuthorizerIntegMyHttpApi6LambdaAuthorizer6288C4E69Permission49349055"
+          }
+        ],
+        "/AuthorizerInteg/URL6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL6"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi7C025375D"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi7/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi7DefaultStageDA2E62F7"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi7/GET--/RootIntegration7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi7GETRootIntegration7C3AF9A0E"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi7/GET--/RootIntegration7-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi7GETRootIntegration7Permission3FC14BA8"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi7/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi7GET0C19AA2F"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi7/LambdaAuthorizer7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi7LambdaAuthorizer77BFACABF"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi7/AuthorizerIntegMyHttpApi7LambdaAuthorizer76AD1EB2C-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi7AuthorizerIntegMyHttpApi7LambdaAuthorizer76AD1EB2CPermission0615077A"
+          }
+        ],
+        "/AuthorizerInteg/URL7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL7"
           }
         ],
         "/AuthorizerInteg/BootstrapVersion": [
@@ -164,6 +500,69 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyHttpApi8AEAAC21": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi8AEAAC21",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyHttpApiDefaultStageDCB9BC49": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiDefaultStageDCB9BC49",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyHttpApiGETRootIntegration5068C5B0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiGETRootIntegration5068C5B0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyHttpApiGETRootIntegrationPermission81613491": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiGETRootIntegrationPermission81613491",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyHttpApiGETE0EFC6F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiGETE0EFC6F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyHttpApiLambdaAuthorizerB8A0E2A4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiLambdaAuthorizerB8A0E2A4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

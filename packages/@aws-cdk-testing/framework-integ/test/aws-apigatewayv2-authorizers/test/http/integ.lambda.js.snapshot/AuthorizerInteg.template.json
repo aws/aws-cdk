@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d7d3785243d748927f2a8d6edcecf909f96191df27a815e305aaeba98bcd2c64.zip"
+     "S3Key": "9b3143f6d2fe3103f2f3162c221163ad6a5a0ba2219cc1e5af2e300325588714.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -52,179 +52,6 @@
    "DependsOn": [
     "authfunctionServiceRoleFCB72198"
    ]
-  },
-  "MyHttpApi8AEAAC21": {
-   "Type": "AWS::ApiGatewayV2::Api",
-   "Properties": {
-    "Name": "MyHttpApi",
-    "ProtocolType": "HTTP"
-   }
-  },
-  "MyHttpApiDefaultStageDCB9BC49": {
-   "Type": "AWS::ApiGatewayV2::Stage",
-   "Properties": {
-    "ApiId": {
-     "Ref": "MyHttpApi8AEAAC21"
-    },
-    "AutoDeploy": true,
-    "StageName": "$default"
-   }
-  },
-  "MyHttpApiGETRootIntegration5068C5B0": {
-   "Type": "AWS::ApiGatewayV2::Integration",
-   "Properties": {
-    "ApiId": {
-     "Ref": "MyHttpApi8AEAAC21"
-    },
-    "IntegrationType": "AWS_PROXY",
-    "IntegrationUri": {
-     "Fn::GetAtt": [
-      "lambda8B5974B5",
-      "Arn"
-     ]
-    },
-    "PayloadFormatVersion": "2.0"
-   }
-  },
-  "MyHttpApiGETRootIntegrationPermission81613491": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "lambda8B5974B5",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "MyHttpApi8AEAAC21"
-       },
-       "/*/*/"
-      ]
-     ]
-    }
-   }
-  },
-  "MyHttpApiGETE0EFC6F8": {
-   "Type": "AWS::ApiGatewayV2::Route",
-   "Properties": {
-    "ApiId": {
-     "Ref": "MyHttpApi8AEAAC21"
-    },
-    "AuthorizationType": "CUSTOM",
-    "AuthorizerId": {
-     "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
-    },
-    "RouteKey": "GET /",
-    "Target": {
-     "Fn::Join": [
-      "",
-      [
-       "integrations/",
-       {
-        "Ref": "MyHttpApiGETRootIntegration5068C5B0"
-       }
-      ]
-     ]
-    }
-   }
-  },
-  "MyHttpApiLambdaAuthorizerB8A0E2A4": {
-   "Type": "AWS::ApiGatewayV2::Authorizer",
-   "Properties": {
-    "ApiId": {
-     "Ref": "MyHttpApi8AEAAC21"
-    },
-    "AuthorizerPayloadFormatVersion": "2.0",
-    "AuthorizerResultTtlInSeconds": 300,
-    "AuthorizerType": "REQUEST",
-    "AuthorizerUri": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":apigateway:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":lambda:path/2015-03-31/functions/",
-       {
-        "Fn::GetAtt": [
-         "authfunction96361832",
-         "Arn"
-        ]
-       },
-       "/invocations"
-      ]
-     ]
-    },
-    "EnableSimpleResponses": true,
-    "IdentitySource": [
-     "$request.header.X-API-Key"
-    ],
-    "Name": "my-simple-authorizer"
-   }
-  },
-  "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "authfunction96361832",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "MyHttpApi8AEAAC21"
-       },
-       "/authorizers/",
-       {
-        "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
-       }
-      ]
-     ]
-    }
-   }
   },
   "MyHttpApiWithDefaultAuthorizerE08800A1": {
    "Type": "AWS::ApiGatewayV2::Api",
@@ -360,7 +187,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "54deaef2af5b9afbfc9cbcbb9261b1c0d4cce6560831d7ae1959f3da899011c8.zip"
+     "S3Key": "0793b3c94d0be9d628975dbbcd1dc523196de50a41fb1920880248ae3c24259b.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -451,17 +278,1401 @@
      ]
     }
    }
+  },
+  "MyHttpApi0D09FAD11": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi0",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi0DefaultStage948DD768": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi0D09FAD11"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi0GETRootIntegration0C4A7CE34": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi0D09FAD11"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi0GETRootIntegration0PermissionE7344DC5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi0D09FAD11"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi0GET67800AEE": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi0D09FAD11"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi0LambdaAuthorizer08E9DC1D0"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi0GETRootIntegration0C4A7CE34"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi0LambdaAuthorizer08E9DC1D0": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi0D09FAD11"
+    },
+    "AuthorizerPayloadFormatVersion": "1.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": false,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer0"
+   }
+  },
+  "MyHttpApi0AuthorizerIntegMyHttpApi0LambdaAuthorizer0A044074APermission6E1193B7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi0D09FAD11"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi0LambdaAuthorizer08E9DC1D0"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi1C04FAC4F": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi1",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi1DefaultStage9F9F4CA7": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi1C04FAC4F"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi1GETRootIntegration1E8CC6FF7": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi1C04FAC4F"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi1GETRootIntegration1PermissionE7B13BB7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi1C04FAC4F"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi1GETD9B8E617": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi1C04FAC4F"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi1LambdaAuthorizer1332A2516"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi1GETRootIntegration1E8CC6FF7"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi1LambdaAuthorizer1332A2516": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi1C04FAC4F"
+    },
+    "AuthorizerPayloadFormatVersion": "2.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": true,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer1"
+   }
+  },
+  "MyHttpApi1AuthorizerIntegMyHttpApi1LambdaAuthorizer103E77337PermissionED37DBB0": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi1C04FAC4F"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi1LambdaAuthorizer1332A2516"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi267446531": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi2",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi2DefaultStageDBA2472A": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi267446531"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi2GETRootIntegration261BAE04C": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi267446531"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi2GETRootIntegration2Permission1AEA694C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi267446531"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi2GETDB9256B1": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi267446531"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi2LambdaAuthorizer2B546ED5B"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi2GETRootIntegration261BAE04C"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi2LambdaAuthorizer2B546ED5B": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi267446531"
+    },
+    "AuthorizerPayloadFormatVersion": "1.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": false,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer2"
+   }
+  },
+  "MyHttpApi2AuthorizerIntegMyHttpApi2LambdaAuthorizer2DAB5A5AFPermission7E8FAAA0": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi267446531"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi2LambdaAuthorizer2B546ED5B"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi350ADB087": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi3",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi3DefaultStageCE3EFC98": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi350ADB087"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi3GETRootIntegration31E57120C": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi350ADB087"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi3GETRootIntegration3Permission196EFDB7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi350ADB087"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi3GET49C484F2": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi350ADB087"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi3LambdaAuthorizer3EB82A5F8"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi3GETRootIntegration31E57120C"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi3LambdaAuthorizer3EB82A5F8": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi350ADB087"
+    },
+    "AuthorizerPayloadFormatVersion": "1.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": false,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer3"
+   }
+  },
+  "MyHttpApi3AuthorizerIntegMyHttpApi3LambdaAuthorizer3DF44B3D3Permission24B3F931": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi350ADB087"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi3LambdaAuthorizer3EB82A5F8"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi4DD12A662": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi4",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi4DefaultStageCEA8E812": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi4DD12A662"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi4GETRootIntegration49BE39F05": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi4DD12A662"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi4GETRootIntegration4Permission3782DB16": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi4DD12A662"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi4GET551C3092": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi4DD12A662"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi4LambdaAuthorizer4B1BA194E"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi4GETRootIntegration49BE39F05"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi4LambdaAuthorizer4B1BA194E": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi4DD12A662"
+    },
+    "AuthorizerPayloadFormatVersion": "1.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": false,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer4"
+   }
+  },
+  "MyHttpApi4AuthorizerIntegMyHttpApi4LambdaAuthorizer4E57900D7Permission4033896C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi4DD12A662"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi4LambdaAuthorizer4B1BA194E"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi5142D3E2E": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi5",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi5DefaultStage1D6F5BEA": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi5142D3E2E"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi5GETRootIntegration5C3B9517B": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi5142D3E2E"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi5GETRootIntegration5PermissionA41AF205": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi5142D3E2E"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi5GET74078A3E": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi5142D3E2E"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi5LambdaAuthorizer56A62F872"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi5GETRootIntegration5C3B9517B"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi5LambdaAuthorizer56A62F872": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi5142D3E2E"
+    },
+    "AuthorizerPayloadFormatVersion": "2.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": true,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer5"
+   }
+  },
+  "MyHttpApi5AuthorizerIntegMyHttpApi5LambdaAuthorizer50E64DE65Permission854A5529": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi5142D3E2E"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi5LambdaAuthorizer56A62F872"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi65E475639": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi6",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi6DefaultStageA25AA11D": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi65E475639"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi6GETRootIntegration6B423AC9F": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi65E475639"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi6GETRootIntegration6PermissionAA88CD37": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi65E475639"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi6GETF95D3134": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi65E475639"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi6LambdaAuthorizer666A9A3F2"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi6GETRootIntegration6B423AC9F"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi6LambdaAuthorizer666A9A3F2": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi65E475639"
+    },
+    "AuthorizerPayloadFormatVersion": "2.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": true,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer6"
+   }
+  },
+  "MyHttpApi6AuthorizerIntegMyHttpApi6LambdaAuthorizer6288C4E69Permission49349055": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi65E475639"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi6LambdaAuthorizer666A9A3F2"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi7C025375D": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "MyHttpApi7",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "MyHttpApi7DefaultStageDA2E62F7": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi7C025375D"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApi7GETRootIntegration7C3AF9A0E": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi7C025375D"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "MyHttpApi7GETRootIntegration7Permission3FC14BA8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi7C025375D"
+       },
+       "/*/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi7GET0C19AA2F": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi7C025375D"
+    },
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "MyHttpApi7LambdaAuthorizer77BFACABF"
+    },
+    "RouteKey": "GET /",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MyHttpApi7GETRootIntegration7C3AF9A0E"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyHttpApi7LambdaAuthorizer77BFACABF": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApi7C025375D"
+    },
+    "AuthorizerPayloadFormatVersion": "2.0",
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerType": "REQUEST",
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "authfunction96361832",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "EnableSimpleResponses": false,
+    "IdentitySource": [
+     "$request.header.X-API-Key"
+    ],
+    "Name": "my-simple-authorizer7"
+   }
+  },
+  "MyHttpApi7AuthorizerIntegMyHttpApi7LambdaAuthorizer76AD1EB2CPermission0615077A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "authfunction96361832",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApi7C025375D"
+       },
+       "/authorizers/",
+       {
+        "Ref": "MyHttpApi7LambdaAuthorizer77BFACABF"
+       }
+      ]
+     ]
+    }
+   }
   }
  },
  "Outputs": {
-  "URL": {
+  "URLWithDefaultAuthorizer": {
    "Value": {
     "Fn::Join": [
      "",
      [
       "https://",
       {
-       "Ref": "MyHttpApi8AEAAC21"
+       "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
       },
       ".execute-api.",
       {
@@ -476,14 +1687,168 @@
     ]
    }
   },
-  "URLWithDefaultAuthorizer": {
+  "URL0": {
    "Value": {
     "Fn::Join": [
      "",
      [
       "https://",
       {
-       "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+       "Ref": "MyHttpApi0D09FAD11"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "URL1": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyHttpApi1C04FAC4F"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "URL2": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyHttpApi267446531"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "URL3": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyHttpApi350ADB087"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "URL4": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyHttpApi4DD12A662"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "URL5": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyHttpApi5142D3E2E"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "URL6": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyHttpApi65E475639"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "URL7": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "MyHttpApi7C025375D"
       },
       ".execute-api.",
       {
