@@ -56,7 +56,7 @@ export interface HttpLambdaAuthorizerProps {
    * Note: if `responseType` is set to simple, then
    * setting this property to version 1.0 is not allowed.
    *
-   * @default - If `responseType` is not set or is set to IAM,
+   * @default - if `responseType` is not set or is set to IAM,
    * then payload format version is set to 1.0. If `responseType`
    * is set to simple, then payload format version is set to 2.0.
    */
@@ -70,8 +70,8 @@ export interface HttpLambdaAuthorizerProps {
    * Note: if `payloadFormatVersion` is set to version 1.0, then
    * setting this property to simple is not allowed.
    *
-   * @default - if `payloadFormatVersion` is not set or is set
-   * to 1.0, then response type is set to IAM. If `payloadFormatVersion`
+   * @default - if `payloadFormatVersion` is not set or is set to 1.0,
+   * then response type is set to IAM. If `payloadFormatVersion`
    * is set to 2.0, then response type is set to simple.
    */
   readonly responseType?: HttpLambdaResponseType;
