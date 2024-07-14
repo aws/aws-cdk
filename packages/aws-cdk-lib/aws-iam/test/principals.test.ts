@@ -307,6 +307,7 @@ test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ',
 });
 
 test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
+<<<<<<< HEAD
   expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
 });
 
@@ -316,6 +317,17 @@ test('Passing string with invalid pattern in AccountPrincipal constructor should
 
 test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
   expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
+=======
+    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+});
+
+  test('Passing string with invalid pattern in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be composed of 12 digits');
+});
+
+  test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
+>>>>>>> a3875db62f (Update principals.test.ts)
 });
 
 test('AccountPrincipal can specify an organization', () => {
@@ -380,6 +392,18 @@ describe('deprecated ServicePrincipal behavior', () => {
     expect(afSouthStack.resolve(principalName)).toEqual('states.amazonaws.com');
   });
 
+  test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+  });
+
+  test('Passing string with invalid pattern in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be composed of 12 digits');
+  });
+
+  test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
+  });
+  
 });
 
 describe('standardized Service Principal behavior', () => {
