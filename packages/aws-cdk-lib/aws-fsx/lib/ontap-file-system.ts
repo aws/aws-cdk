@@ -167,7 +167,7 @@ export interface OntapFileSystemProps extends FileSystemProps {
   /**
    * Additional configuration for FSx specific to NetApp ONTAP.
    */
-  ontapConfiguration: OntapConfiguration;
+  readonly ontapConfiguration: OntapConfiguration;
 
   /**
     * The subnet that the file system will be accessible from.
