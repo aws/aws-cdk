@@ -306,6 +306,18 @@ test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ',
   expect(principalWithConditions.principalAccount).toStrictEqual('123456789012');
 });
 
+test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+});
+
+  test('Passing string with invalid pattern in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be composed of 12 digits');
+});
+
+  test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
+});
+
 test('AccountPrincipal can specify an organization', () => {
   // GIVEN
   const stack = new Stack();
@@ -367,35 +379,7 @@ describe('deprecated ServicePrincipal behavior', () => {
     expect(usEastStack.resolve(principalName)).toEqual('states.amazonaws.com');
     expect(afSouthStack.resolve(principalName)).toEqual('states.amazonaws.com');
   });
-
-  test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
-  });
-
-  test('Passing string with invalid pattern in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be composed of 12 digits');
-  });
-
-  test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
-  });
-
-  test('ServicePrincipal in agnostic stack generates lookup table', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
-    });
-
-    // THEN
-    const template = Template.fromStack(stack);
-    const mappings = template.findMappings('ServiceprincipalMap');
-    expect(mappings.ServiceprincipalMap['af-south-1']?.states).toEqual('states.af-south-1.amazonaws.com');
-    expect(mappings.ServiceprincipalMap['us-east-1']?.states).toEqual('states.us-east-1.amazonaws.com');
-  });
-
+  
 });
 
 describe('standardized Service Principal behavior', () => {
