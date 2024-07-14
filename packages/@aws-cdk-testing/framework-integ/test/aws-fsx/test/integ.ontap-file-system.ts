@@ -24,7 +24,7 @@ new fsx.OntapFileSystem(stack, 'OntapMultiAzFileSystem', {
     endpointIpAddressRange: '192.168.39.0/24',
     fsxAdminPassword: 'fsxPassword1',
     haPairs: 1,
-    prefferredSubnet: vpc.privateSubnets[0],
+    preferredSubnet: vpc.privateSubnets[0],
     routeTables: [vpc.privateSubnets[0].routeTable, vpc.privateSubnets[1].routeTable],
     throughputCapacity: 384,
     weeklyMaintenanceStartTime: new fsx.MaintenanceTime({

@@ -111,7 +111,7 @@ export interface OntapConfiguration {
     *
     * @default
     */
-  readonly prefferredSubnet?: ec2.ISubnet;
+  readonly preferredSubnet?: ec2.ISubnet;
 
   /**
     * The route tables in which Amazon FSx creates the rules for routing traffic to the correct file server.
@@ -271,7 +271,7 @@ export class OntapFileSystem extends FileSystemBase {
         endpointIpAddressRange: ontapConfiguration.endpointIpAddressRange,
         fsxAdminPassword: ontapConfiguration.fsxAdminPassword,
         haPairs: ontapConfiguration.haPairs,
-        preferredSubnetId: ontapConfiguration.prefferredSubnet?.subnetId,
+        preferredSubnetId: ontapConfiguration.preferredSubnet?.subnetId,
         routeTableIds: ontapConfiguration.routeTables?.map((routeTable) => routeTable.routeTableId),
         throughputCapacity: ontapConfiguration.throughputCapacity,
         throughputCapacityPerHaPair: ontapConfiguration.throughputCapacityPerHaPair,
@@ -302,7 +302,7 @@ export class OntapFileSystem extends FileSystemBase {
     this.validateDiskIops(props.storageCapacityGiB, ontapConfiguration.diskIops, ontapConfiguration.haPairs);
     this.validateEndpointIpAddressRange(deploymentType, ontapConfiguration.endpointIpAddressRange);
     this.validateFsxAdminPassword(ontapConfiguration.fsxAdminPassword);
-    this.validateSubnets(deploymentType, props.vpcSubnets, ontapConfiguration.prefferredSubnet);
+    this.validateSubnets(deploymentType, props.vpcSubnets, ontapConfiguration.preferredSubnet);
     this.validateRouteTables(deploymentType, ontapConfiguration.routeTables);
     this.validateThroughputCapacity(
       deploymentType,
@@ -404,7 +404,7 @@ export class OntapFileSystem extends FileSystemBase {
       return;
     }
     if (deploymentType !== OntapDeploymentType.MULTI_AZ_1 && deploymentType !== OntapDeploymentType.MULTI_AZ_2) {
-      throw new Error('\'routeTables\' can be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
+      throw new Error('\'routeTables\' can only be specified for multi-AZ file systems');
     }
   }
 
@@ -434,7 +434,7 @@ export class OntapFileSystem extends FileSystemBase {
 
     const validRange = validValues[deploymentType];
     if (!validRange.includes(throughputPerHaPair)) {
-      throw new Error(`'throughputCapacityPerHaPair' and 'throughputCapacity' must be one of the following values for ${deploymentType}: ${validRange.join(', ')}`);
+      throw new Error(`'throughputCapacityPerHaPair' and 'throughputCapacity' / haPairs must be one of the following values for ${deploymentType}: ${validRange.join(', ')}`);
     }
   }
 

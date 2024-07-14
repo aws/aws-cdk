@@ -18,7 +18,7 @@ describe('FSx for NetApp ONTAP File System', () => {
   test('default multi az file system', () => {
     ontapConfiguration = {
       deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
-      prefferredSubnet: vpc.privateSubnets[0],
+      preferredSubnet: vpc.privateSubnets[0],
     };
 
     const fileSystem = new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
@@ -75,7 +75,7 @@ describe('FSx for NetApp ONTAP File System', () => {
       endpointIpAddressRange: '192.168.12.0/24',
       fsxAdminPassword: 'fsxPassword2',
       haPairs: 1,
-      prefferredSubnet: vpc.privateSubnets[0],
+      preferredSubnet: vpc.privateSubnets[0],
       routeTables: vpc.privateSubnets.map((subnet) => subnet.routeTable),
       throughputCapacity: 384,
       weeklyMaintenanceStartTime: new fsx.MaintenanceTime({
@@ -450,7 +450,7 @@ describe('FSx for NetApp ONTAP File System', () => {
       ontapConfiguration = {
         deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
         endpointIpAddressRange: ipAddressRange,
-        prefferredSubnet: vpc.privateSubnets[0],
+        preferredSubnet: vpc.privateSubnets[0],
       };
 
       expect(() => {
@@ -479,7 +479,7 @@ describe('FSx for NetApp ONTAP File System', () => {
       ontapConfiguration = {
         deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
         fsxAdminPassword,
-        prefferredSubnet: vpc.privateSubnets[0],
+        preferredSubnet: vpc.privateSubnets[0],
       };
 
       expect(() => {
@@ -500,7 +500,7 @@ describe('FSx for NetApp ONTAP File System', () => {
       ontapConfiguration = {
         deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
         fsxAdminPassword,
-        prefferredSubnet: vpc.privateSubnets[0],
+        preferredSubnet: vpc.privateSubnets[0],
       };
 
       expect(() => {
@@ -521,7 +521,7 @@ describe('FSx for NetApp ONTAP File System', () => {
     ])('throw error for specifying preferred subnet for %s file system', (deploymentType) => {
       ontapConfiguration = {
         deploymentType,
-        prefferredSubnet: vpc.privateSubnets[0],
+        preferredSubnet: vpc.privateSubnets[0],
       };
 
       expect(() => {
@@ -555,7 +555,7 @@ describe('FSx for NetApp ONTAP File System', () => {
     test('throw error for specifying preferred subnet that is not in the VPC subnets', () => {
       ontapConfiguration = {
         deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
-        prefferredSubnet: vpc.publicSubnets[0],
+        preferredSubnet: vpc.publicSubnets[0],
         endpointIpAddressRange: '192.168.39.0/24',
       };
 
@@ -570,5 +570,265 @@ describe('FSx for NetApp ONTAP File System', () => {
     });
   });
 
+  test.each([
+    fsx.OntapDeploymentType.SINGLE_AZ_2,
+    fsx.OntapDeploymentType.SINGLE_AZ_1,
+  ])('throw error for specifying route tables for %s file system', (deploymentType) => {
+    ontapConfiguration = {
+      deploymentType,
+      routeTables: vpc.privateSubnets.map((subnet) => subnet.routeTable),
+    };
 
+    expect(() => {
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB: 1200,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+    }).toThrow('\'routeTables\' can only be specified for multi-AZ file systems');
+  });
+
+  test.each([
+    {
+      storageCapacityGiB: 1023,
+      haPairs: 1,
+    },
+    {
+      storageCapacityGiB: 524_289,
+      haPairs: 1,
+    },
+    {
+      storageCapacityGiB: 1200.1,
+      haPairs: 1,
+    },
+    {
+      storageCapacityGiB: 5119,
+      haPairs: 5,
+    },
+    {
+      storageCapacityGiB: 1_048_577,
+      haPairs: 5,
+    },
+  ])('throw error for invalid storage capacity %s', (config) => {
+    ontapConfiguration = {
+      deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+      haPairs: config.haPairs,
+    };
+
+    expect(() => {
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB: config.storageCapacityGiB,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+    }).toThrow(`storageCapacityGiB must be an integer between ${1024 * config.haPairs} and ${Math.min(1_048_576, 524_288 * config.haPairs)}, got ${config.storageCapacityGiB}`);
+  });
+
+  describe('throughput capacity', () => {
+    test('throw error for specifying both throughputCapacity and throughputCapacityPerHaPair', () => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+        throughputCapacity: 1536,
+        throughputCapacityPerHaPair: 1536,
+        haPairs: 2,
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'throughputCapacity\' and \'throughputCapacityPerHaPair\' cannot be specified at the same time');
+    });
+
+    const validValues: { [key in fsx.OntapDeploymentType]: number[] } = {
+      SINGLE_AZ_1: [128, 256, 512, 1024, 2048, 4096],
+      MULTI_AZ_1: [128, 256, 512, 1024, 2048, 4096],
+      SINGLE_AZ_2: [1536, 3072, 6144],
+      MULTI_AZ_2: [384, 768, 1536, 3072, 6144],
+    };
+
+    const testCases = Object
+      .entries(validValues)
+      .flatMap(([deploymentType, throughputs]) => throughputs.map(throughput => (
+        { deploymentType: deploymentType as fsx.OntapDeploymentType, throughput }
+      )));
+
+    test.each(testCases)('valid throughput capacity for %s', (config) => {
+      ontapConfiguration = {
+        deploymentType: config.deploymentType,
+        throughputCapacity: config.throughput,
+        haPairs: 1,
+      };
+
+      if (
+        config.deploymentType === fsx.OntapDeploymentType.MULTI_AZ_2 ||
+        config.deploymentType === fsx.OntapDeploymentType.MULTI_AZ_1
+      ) {
+        ontapConfiguration = {
+          ...ontapConfiguration,
+          preferredSubnet: vpc.privateSubnets[0],
+          endpointIpAddressRange: '192.168.12.0/24',
+        };
+      }
+
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB: 1200,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+        OntapConfiguration: {
+          DeploymentType: config.deploymentType,
+          ThroughputCapacity: config.throughput,
+          HAPairs: 1,
+        },
+      });
+    });
+
+    test.each(testCases)('valid throughput capacity per HA pair for %s', (config) => {
+      ontapConfiguration = {
+        deploymentType: config.deploymentType,
+        throughputCapacityPerHaPair: config.throughput,
+        haPairs: 1,
+      };
+
+      if ([fsx.OntapDeploymentType.MULTI_AZ_1, fsx.OntapDeploymentType.MULTI_AZ_2].includes(config.deploymentType)) {
+        ontapConfiguration = {
+          ...ontapConfiguration,
+          preferredSubnet: vpc.privateSubnets[0],
+          endpointIpAddressRange: '192.168.39.0/24',
+        };
+      };
+
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB: 1200,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+        OntapConfiguration: {
+          DeploymentType: config.deploymentType,
+          ThroughputCapacityPerHAPair: config.throughput,
+          HAPairs: 1,
+        },
+      });
+    });
+
+    test.each([
+      {
+        throughput: 3072,
+        haPairs: 2,
+      },
+      {
+        throughput: 6144,
+        haPairs: 2,
+      },
+      {
+        throughput: 6144,
+        haPairs: 4,
+      },
+    ])('valid throughput capacity with multiple HA pairs for %s', (config) => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+        throughputCapacity: config.throughput,
+        haPairs: config.haPairs,
+      };
+
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB: 5120,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+        OntapConfiguration: {
+          DeploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+          ThroughputCapacity: config.throughput,
+          HAPairs: config.haPairs,
+        },
+      });
+    });
+
+    test.each([
+      {
+        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
+        throughput: 384,
+      },
+      {
+        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+        throughput: 128,
+      },
+      {
+        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_1,
+        throughput: 384,
+      },
+      {
+        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+        throughput: 128,
+      },
+    ])('throw error for specifying invalid throughput capacity %s', (config) => {
+      ontapConfiguration = {
+        deploymentType: config.deploymentType,
+        throughputCapacity: config.throughput,
+        haPairs: 1,
+      };
+
+      if ([fsx.OntapDeploymentType.MULTI_AZ_1, fsx.OntapDeploymentType.MULTI_AZ_2].includes(config.deploymentType)) {
+        ontapConfiguration = {
+          ...ontapConfiguration,
+          preferredSubnet: vpc.privateSubnets[0],
+          endpointIpAddressRange: '192.168.39.0/24',
+        };
+      }
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow(`'throughputCapacityPerHaPair' and 'throughputCapacity' / haPairs must be one of the following values for ${config.deploymentType}: ${validValues[config.deploymentType].join(', ')}`);
+    });
+
+    test.each([
+      {
+        throughput: 1536,
+        haPairs: 2,
+      },
+      {
+        throughput: 3072,
+        haPairs: 3,
+      },
+      {
+        throughput: 6144,
+        haPairs: 5,
+      },
+    ])('throw error for specifying invalid throughput capacity with multiple HA pairs %s', (config) => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+        throughputCapacity: config.throughput,
+        haPairs: config.haPairs,
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 5120,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow(`'throughputCapacityPerHaPair' and 'throughputCapacity' / haPairs must be one of the following values for SINGLE_AZ_2: ${validValues[fsx.OntapDeploymentType.SINGLE_AZ_2].join(', ')}`);
+    });
+  });
 });
