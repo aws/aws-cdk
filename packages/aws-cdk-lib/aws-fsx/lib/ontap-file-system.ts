@@ -355,7 +355,7 @@ export class OntapFileSystem extends FileSystemBase {
       return;
     }
     if (deploymentType !== OntapDeploymentType.MULTI_AZ_1 && deploymentType !== OntapDeploymentType.MULTI_AZ_2) {
-      throw new Error('\'endpointIpAddressRange\' can only be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
+      throw new Error('\'endpointIpAddressRange\' can only be specified for multi-AZ file systems');
     }
     if (!/^[^\u0000\u0085\u2028\u2029\r\n]{9,17}$/.test(endpointIpAddressRange)) {
       throw new Error('\'endpointIpAddressRange\' must be between 9 and 17 characters long and not contain any of the following characters: \\u0000, \\u0085, \\u2028, \\u2029, \\r, or \\n');
@@ -389,10 +389,10 @@ export class OntapFileSystem extends FileSystemBase {
 
   private validateSubnets(deploymentType: OntapDeploymentType, vpcSubnets: ec2.ISubnet[], preferredSubnet?: ec2.ISubnet): void {
     if ((deploymentType === OntapDeploymentType.MULTI_AZ_1 || deploymentType === OntapDeploymentType.MULTI_AZ_2) && !preferredSubnet) {
-      throw new Error('\'preferredSubnet\' must be specified for deployment types MULTI_AZ_1 and MULTI_AZ_2');
+      throw new Error('\'preferredSubnet\' must be specified for multi-AZ file systems');
     }
     if ((deploymentType === OntapDeploymentType.SINGLE_AZ_1 || deploymentType === OntapDeploymentType.SINGLE_AZ_2) && preferredSubnet) {
-      throw new Error('\'preferredSubnet\' must not be specified for deployment types SINGLE_AZ_1 and SINGLE_AZ_2');
+      throw new Error('\'preferredSubnet\' can only be specified for multi-AZ file systems');
     }
     if (preferredSubnet && !vpcSubnets.includes(preferredSubnet)) {
       throw new Error('\'preferredSubnet\' must be one of the specified \'vpcSubnets\'');

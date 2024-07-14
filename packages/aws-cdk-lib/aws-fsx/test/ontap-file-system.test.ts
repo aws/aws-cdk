@@ -255,7 +255,7 @@ describe('FSx for NetApp ONTAP File System', () => {
   });
 
   describe('HA pairs', () => {
-    test.each([0.1, -1, 0, 13])('throw error for invalid HA pairs', (haPairs) => {
+    test.each([0.1, -1, 0, 13])('throw error for invalid HA pairs %s', (haPairs) => {
       ontapConfiguration = {
         deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
         haPairs,
@@ -272,26 +272,21 @@ describe('FSx for NetApp ONTAP File System', () => {
     });
 
     test.each([
-      {
-        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
-        haPairs: 2,
-      },
-      {
-        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_1,
-        haPairs: 2,
-      },
-      {
-        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
-        haPairs: 2,
-      },
-    ])('throw error for specification of multiple HA pairs except for SINGLE_AZ_1 deployment type', (config) => {
+      fsx.OntapDeploymentType.MULTI_AZ_2,
+      fsx.OntapDeploymentType.MULTI_AZ_1,
+      fsx.OntapDeploymentType.SINGLE_AZ_1,
+    ])('throw error for specification of multiple HA pairs except for SINGLE_AZ_1 deployment type %s', (deploymentType) => {
       const multiAzConfig = {
         preferredSubnet: vpc.privateSubnets[0],
         endpointIpAddressRange: '192.168.12.0/24',
       };
 
-      ontapConfiguration = config;
-      if ([fsx.OntapDeploymentType.MULTI_AZ_1, fsx.OntapDeploymentType.MULTI_AZ_2].includes(config.deploymentType)) {
+      ontapConfiguration = {
+        deploymentType,
+        haPairs: 2,
+      };
+
+      if ([fsx.OntapDeploymentType.MULTI_AZ_1, fsx.OntapDeploymentType.MULTI_AZ_2].includes(deploymentType)) {
         ontapConfiguration = {
           ...ontapConfiguration,
           ...multiAzConfig,
@@ -305,7 +300,7 @@ describe('FSx for NetApp ONTAP File System', () => {
           vpc,
           vpcSubnets: vpc.privateSubnets,
         });
-      }).toThrow(`\'haPairs\' must be 1 for deployment type ${config.deploymentType}`);
+      }).toThrow(`\'haPairs\' must be 1 for deployment type ${deploymentType}`);
     });
   });
 
@@ -336,7 +331,7 @@ describe('FSx for NetApp ONTAP File System', () => {
       Duration.minutes(1),
       Duration.hours(23),
       Duration.days(91),
-    ])('throw error for invalid automatic backup retention days', (duration) => {
+    ])('throw error for invalid automatic backup retention days %s', (duration) => {
       ontapConfiguration = {
         deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
         automaticBackupRetention: duration,
@@ -398,7 +393,7 @@ describe('FSx for NetApp ONTAP File System', () => {
   }, {
     deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
     diskIops: 200_001,
-  }])('throw error for invalid disk IOPS configuration', (config) => {
+  }])('throw error for invalid disk IOPS configuration %s', (config) => {
     ontapConfiguration = {
       deploymentType: config.deploymentType,
       diskIops: config.diskIops,
@@ -420,4 +415,160 @@ describe('FSx for NetApp ONTAP File System', () => {
       });
     }).toThrow(`\'diskIops\' must be an integer between ${minDiskIops} and ${maxDiskIops}, got ${config.diskIops}`);
   });
+
+  describe('endpoint IP address range', () => {
+    test.each([
+      fsx.OntapDeploymentType.SINGLE_AZ_2,
+      fsx.OntapDeploymentType.SINGLE_AZ_1,
+    ])('throw error for specifying endpointIpAddressRange for %s file system', (deploymentType) => {
+      ontapConfiguration = {
+        deploymentType: deploymentType,
+        endpointIpAddressRange: '192.168.1.0/24',
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'endpointIpAddressRange\' can only be specified for multi-AZ file systems');
+    });
+
+    test.each([
+      '',
+      'a'.repeat(8),
+      'a'.repeat(18),
+      '192.168.0.1\u0000',
+      '10.0.0.1\u0085',
+      '172.16.0.1\u2028',
+      '172.16.0.1\u2029',
+      '172.16.0.1\r',
+      '172.16.0.1\n',
+    ])('throw error for invalid endpoint IP address range \'%s\'', (ipAddressRange) => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+        endpointIpAddressRange: ipAddressRange,
+        prefferredSubnet: vpc.privateSubnets[0],
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'endpointIpAddressRange\' must be between 9 and 17 characters long and not contain any of the following characters: \\u0000, \\u0085, \\u2028, \\u2029, \\r, or \\n');
+    });
+  });
+
+  describe('fsx admin password', () => {
+    test.each([
+      '',
+      'a'.repeat(7),
+      'a'.repeat(51),
+      '\u0000',
+      '\u0085',
+      '\u2028',
+      '\u2029',
+      '\r',
+      '\n',
+    ])('throw error for invalid fsx admin password \'%s\'', (fsxAdminPassword) => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+        fsxAdminPassword,
+        prefferredSubnet: vpc.privateSubnets[0],
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'fsxAdminPassword\' must be between 8 and 50 characters long and not contain any of the following characters: \\u0000, \\u0085, \\u2028, \\u2029, \\r, or \\n');
+    });
+
+    test.each([
+      '1'.repeat(8),
+      'a'.repeat(8),
+      'adminadmin',
+    ])('throw error for invalid fsx admin password \'%s\'', (fsxAdminPassword) => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+        fsxAdminPassword,
+        prefferredSubnet: vpc.privateSubnets[0],
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'fsxAdminPassword\' must contain at least one English letter and one number, and must not contain the word \'admin\'');
+    });
+  });
+
+  describe('subnet settings', () => {
+    test.each([
+      fsx.OntapDeploymentType.SINGLE_AZ_2,
+      fsx.OntapDeploymentType.SINGLE_AZ_1,
+    ])('throw error for specifying preferred subnet for %s file system', (deploymentType) => {
+      ontapConfiguration = {
+        deploymentType,
+        prefferredSubnet: vpc.privateSubnets[0],
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'preferredSubnet\' can only be specified for multi-AZ file systems');
+    });
+
+    test.each([
+      fsx.OntapDeploymentType.MULTI_AZ_2,
+      fsx.OntapDeploymentType.MULTI_AZ_1,
+    ])('throw error for not specifying preferred subnet for %s file systems', (deploymentType) => {
+      ontapConfiguration = {
+        deploymentType,
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'preferredSubnet\' must be specified for multi-AZ file systems');
+    });
+
+    test('throw error for specifying preferred subnet that is not in the VPC subnets', () => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+        prefferredSubnet: vpc.publicSubnets[0],
+        endpointIpAddressRange: '192.168.39.0/24',
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('\'preferredSubnet\' must be one of the specified \'vpcSubnets\'');
+    });
+  });
+
+
 });
