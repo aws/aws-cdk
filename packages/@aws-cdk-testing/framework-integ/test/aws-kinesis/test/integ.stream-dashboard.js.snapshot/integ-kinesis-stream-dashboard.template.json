@@ -17,7 +17,9 @@
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "StreamDashboardAAF4FCF8": {
    "Type": "AWS::CloudWatch::Dashboard",

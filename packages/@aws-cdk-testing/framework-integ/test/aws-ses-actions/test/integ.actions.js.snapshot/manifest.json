@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-ses-receipt.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-ses-receipt.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea7e677fcdb536a575f56f02244366de338d8c370dbf941f7020229798da8db7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ada6a32408b2b7c5d822f30894337173a17a021a5482d4dca8423119c9b81522.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -99,6 +100,12 @@
             "data": "RuleSetSecondRule03178AD4"
           }
         ],
+        "/aws-cdk-ses-receipt/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -115,6 +122,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16AllowSesB42DF904"
+          }
+        ],
+        "/aws-cdk-ses-receipt/NotificationQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NotificationQueue36610CC1"
+          }
+        ],
+        "/aws-cdk-ses-receipt/NotificationQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NotificationQueuePolicyCC060EA6"
+          }
+        ],
+        "/aws-cdk-ses-receipt/NotificationQueue/awscdksesreceiptTopicE9CA2388/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NotificationQueueawscdksesreceiptTopicE9CA2388E8E96C33"
           }
         ],
         "/aws-cdk-ses-receipt/BootstrapVersion": [

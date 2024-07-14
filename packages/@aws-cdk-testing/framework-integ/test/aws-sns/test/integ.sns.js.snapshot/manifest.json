@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4f97c865d996fdcf59e005e5e95d931ee98935ca1098865663866fd1ee7b71d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f73578a6268bf972ab72b4905cc09579fd59ece18de3cd0622ff9606ebdcf661.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -62,6 +62,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTopicSignatureVersionEDDB6A3B"
+          }
+        ],
+        "/SNSInteg/MyTopicTracingConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicTracingConfigE05AF123"
           }
         ],
         "/SNSInteg/MyTopic2/Resource": [

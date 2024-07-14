@@ -123,7 +123,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: new ec2.InstanceType('t2.xlarge'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux(),
   // Or use Amazon ECS-Optimized Amazon Linux 2 AMI
-  // machineImage: EcsOptimizedImage.amazonLinux2(),
+  // machineImage: EcsOptimizedImage.amazonLinux2Kernel510(),
   desiredCapacity: 3,
   // ... other options here ...
 });
@@ -162,7 +162,7 @@ To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `us
 declare const vpc: ec2.Vpc;
 const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
   instanceType: new ec2.InstanceType('t3.medium'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(),
   userData: ec2.UserData.forLinux(),
 });
 
@@ -261,7 +261,7 @@ declare const cluster: ecs.Cluster;
 cluster.addCapacity('graviton-cluster', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c6g.large'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(ecs.AmiHardwareType.ARM),
 });
 ```
 
@@ -287,7 +287,7 @@ declare const cluster: ecs.Cluster;
 cluster.addCapacity('neuron-cluster', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('inf1.xlarge'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(ecs.AmiHardwareType.NEURON),
 });
 ```
 
@@ -361,6 +361,24 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   ephemeralStorageGiB: 100,
 });
 ```
+
+To specify the process namespace to use for the containers in the task, use the `pidMode` property:
+
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+  },
+  memoryLimitMiB: 512,
+  cpu: 256,
+  pidMode: ecs.PidMode.TASK,
+});
+```
+
+**Note:** `pidMode` is only supported for tasks that are hosted on AWS Fargate if the tasks are using platform version 1.4.0
+or later (Linux). Only the `task` option is supported for Linux containers. `pidMode` isn't supported for Windows containers on Fargate.
+If `pidMode` is specified for a Fargate task, then `runtimePlatform.operatingSystemFamily` must also be specified.
 
 To add containers to a task definition, call `addContainer()`:
 
@@ -599,6 +617,24 @@ taskDefinition.addContainer('container', {
     },
   ],
 });
+```
+
+## Docker labels
+
+You can add labels to the container with the `dockerLabels` property or with the `addDockerLabel` method:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+const container = taskDefinition.addContainer('cont', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  dockerLabels: {
+    foo: 'bar',
+  },
+});
+
+container.addDockerLabel('label', 'value');
 ```
 
 ### Using Windows containers on Fargate
@@ -1446,7 +1482,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(),
   minCapacity: 0,
   maxCapacity: 100,
 });

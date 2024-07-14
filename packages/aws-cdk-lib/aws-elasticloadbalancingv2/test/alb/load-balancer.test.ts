@@ -84,7 +84,6 @@ describe('tests', () => {
       idleTimeout: cdk.Duration.seconds(1000),
       dropInvalidHeaderFields: true,
       clientKeepAlive: cdk.Duration.seconds(200),
-      denyAllIgwTraffic: true,
       preserveHostHeader: true,
       xAmznTlsVersionAndCipherSuiteHeaders: true,
       preserveXffClientPort: true,
@@ -97,10 +96,6 @@ describe('tests', () => {
       LoadBalancerAttributes: [
         {
           Key: 'deletion_protection.enabled',
-          Value: 'true',
-        },
-        {
-          Key: 'ipv6.deny_all_igw_traffic',
           Value: 'true',
         },
         {
@@ -169,6 +164,26 @@ describe('tests', () => {
         clientKeepAlive: cdk.Duration.millis(100),
       });
     }).toThrow('\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: 100 milliseconds');
+  });
+
+  test.each([
+    [false, undefined],
+    [true, undefined],
+    [false, elbv2.IpAddressType.IPV4],
+    [true, elbv2.IpAddressType.IPV4],
+  ])('throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.', (denyAllIgwTraffic, ipAddressType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: denyAllIgwTraffic,
+        ipAddressType: ipAddressType,
+      });
+    }).toThrow(`'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`);
   });
 
   describe('Desync mitigation mode', () => {
@@ -802,6 +817,72 @@ describe('tests', () => {
     });
   });
 
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test('crossZoneEnabled can be true', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+        vpc,
+        crossZoneEnabled: true,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: 'true',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled can be undefined', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+        vpc,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled cannot be false', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // expect the error
+      expect(() => {
+        new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+          vpc,
+          crossZoneEnabled: false,
+        });
+      }).toThrow('crossZoneEnabled cannot be false with Application Load Balancers.');
+
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up an ApplicationLoadBalancer', () => {
       // GIVEN
@@ -905,6 +986,27 @@ describe('tests', () => {
       });
     });
 
+    test('Can create internet-facing dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: false,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+
     test('Can create internal dualstack ApplicationLoadBalancer', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -913,6 +1015,27 @@ describe('tests', () => {
       // WHEN
       new elbv2.ApplicationLoadBalancer(stack, 'LB', {
         vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test.each([undefined, false])('Can create internal dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to true', (internetFacing) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: true,
+        internetFacing: internetFacing,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
       });
 

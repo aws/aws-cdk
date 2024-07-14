@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/505f196f83077373374ac53b939ff25a730cded95851575146cde70e155d18f2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d94a7db543843e4dcf0ffa0a6c3db0368d6a7e59d9ade266a53c5dc8187687f7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -272,6 +272,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "GroupPeerCustomResourceCustomResourcePolicy42EF8263"
+          }
+        ],
+        "/integ-globalaccelerator/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [

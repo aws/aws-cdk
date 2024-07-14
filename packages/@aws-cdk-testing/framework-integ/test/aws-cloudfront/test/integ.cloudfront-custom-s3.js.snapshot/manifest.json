@@ -1,33 +1,28 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
-    "cloudfront-custom-s3-integ.assets": {
+    "cloudfront-custom-s3-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cloudfront-custom-s3-integ.assets.json",
+        "file": "cloudfront-custom-s3-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cloudfront-custom-s3-integ": {
+    "cloudfront-custom-s3-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cloudfront-custom-s3-integ.template.json",
+        "templateFile": "cloudfront-custom-s3-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/014ba2fd8a586de5727af6ec8eedf78f338eae1b685dbbd1724e30010e1dea96.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5b660b9764fa165a21fc38b0182b62bbb6a5e8c6afbb4a804e8cdcb99be28b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cloudfront-custom-s3-integ.assets"
+          "cloudfront-custom-s3-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -36,41 +31,95 @@
         }
       },
       "dependencies": [
-        "cloudfront-custom-s3-integ.assets"
+        "cloudfront-custom-s3-stack.assets"
       ],
       "metadata": {
-        "/cloudfront-custom-s3-integ/Bucket/Resource": [
+        "/cloudfront-custom-s3-stack/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
           }
         ],
-        "/cloudfront-custom-s3-integ/Bucket/Policy/Resource": [
+        "/cloudfront-custom-s3-stack/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketPolicyE9A3008A"
           }
         ],
-        "/cloudfront-custom-s3-integ/Distribution/CFDistribution": [
+        "/cloudfront-custom-s3-stack/Distribution/CFDistribution": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DistributionCFDistribution882A7313"
           }
         ],
-        "/cloudfront-custom-s3-integ/BootstrapVersion": [
+        "/cloudfront-custom-s3-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cloudfront-custom-s3-integ/CheckBootstrapVersion": [
+        "/cloudfront-custom-s3-stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cloudfront-custom-s3-integ"
+      "displayName": "cloudfront-custom-s3-stack"
+    },
+    "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets"
+      ],
+      "metadata": {
+        "/integ-cloudfront-custom-s3/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-cloudfront-custom-s3/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-cloudfront-custom-s3/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

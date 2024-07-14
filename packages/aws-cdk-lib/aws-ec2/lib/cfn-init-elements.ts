@@ -835,6 +835,10 @@ export class InitService extends InitElement {
       throw new Error(`SystemD executables must use an absolute path, got '${options.command}'`);
     }
 
+    if (options.environmentFiles?.some(file => !file.startsWith('/'))) {
+      throw new Error('SystemD environment files must use absolute paths');
+    }
+
     const lines = [
       '[Unit]',
       ...(options.description ? [`Description=${options.description}`] : []),
@@ -845,6 +849,17 @@ export class InitService extends InitElement {
       ...(options.user ? [`User=${options.user}`] : []),
       ...(options.group ? [`Group=${options.user}`] : []),
       ...(options.keepRunning ?? true ? ['Restart=always'] : []),
+      ...(
+        options.environmentFiles
+          ? options.environmentFiles.map(file => `EnvironmentFile=${file}`)
+          : []
+      ),
+      ...(
+        options.environmentVariables
+          ? Object.entries(options.environmentVariables)
+            .map(([key, value]) => `Environment="${key}=${value}"`)
+          : []
+      ),
       '[Install]',
       'WantedBy=multi-user.target',
     ];
@@ -1108,4 +1123,19 @@ export interface SystemdConfigFileOptions {
    * @default true
    */
   readonly afterNetwork?: boolean;
+
+  /**
+   * Environment variables to load when the process is running.
+   *
+   * @default - No environment variables set
+   */
+  readonly environmentVariables?: Record<string, string>;
+
+  /**
+   * Loads environment variables from files when the process is running.
+   * Must use absolute paths.
+   *
+   * @default - No environment files
+   */
+  readonly environmentFiles?: string[];
 }

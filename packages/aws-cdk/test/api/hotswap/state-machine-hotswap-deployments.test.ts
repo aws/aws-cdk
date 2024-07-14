@@ -677,6 +677,69 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
+  test('knows how to handle attributes of the AWS::KMS::Key resource', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        Key: {
+          Type: 'AWS::KMS::Key',
+          Properties: {
+            Description: 'magic-key',
+          },
+        },
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: '{}',
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf('Key', 'AWS::KMS::Key', 'a-key'),
+    );
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Key: {
+            Type: 'AWS::KMS::Key',
+            Properties: {
+              Description: 'magic-key',
+            },
+          },
+          Machine: {
+            Type: 'AWS::StepFunctions::StateMachine',
+            Properties: {
+              DefinitionString: {
+                'Fn::Join': ['', [
+                  '{"KeyId":"',
+                  { Ref: 'Key' },
+                  '","KeyArn":"',
+                  { 'Fn::GetAtt': ['Key', 'Arn'] },
+                  '"}',
+                ]],
+              },
+              StateMachineName: 'my-machine',
+            },
+          },
+        },
+      },
+    });
+
+    // THEN
+    const result = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    expect(result).not.toBeUndefined();
+    expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+      stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
+      definition: JSON.stringify({
+        KeyId: 'a-key',
+        KeyArn: 'arn:aws:kms:here:123456789012:key/a-key',
+      }),
+    });
+  });
+
   test('does not explode if the DependsOn changes', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({

@@ -83,7 +83,7 @@ class Snapshoter extends Construct {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
-    const code = lambda.Code.fromAsset(path.join(__dirname, 'snapshot-handler'));
+    const code = lambda.Code.fromAsset(path.join(__dirname, 'snapshot-handler'), { exclude: ['*.ts'] });
     const onEventHandler = new lambda.Function(this, 'OnEventHandler', {
       code,
       runtime: STANDARD_NODEJS_RUNTIME,

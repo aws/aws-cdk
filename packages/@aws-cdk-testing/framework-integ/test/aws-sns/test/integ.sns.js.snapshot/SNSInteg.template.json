@@ -120,6 +120,14 @@
     "TopicName": "fooTopicSignatureVersion"
    }
   },
+  "MyTopicTracingConfigE05AF123": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "fooDisplayNameTracingConfig",
+    "TopicName": "fooTopicTracingConfig",
+    "TracingConfig": "Active"
+   }
+  },
   "MyTopic288CE2107": {
    "Type": "AWS::SNS::Topic",
    "Properties": {

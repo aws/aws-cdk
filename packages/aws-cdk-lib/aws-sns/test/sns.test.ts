@@ -276,6 +276,31 @@ describe('Topic', () => {
 
   });
 
+  test('give subscribing permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    topic.grantSubscribe(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Subscribe',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn),
+          },
+        ],
+      },
+    });
+
+  });
+
   test('TopicPolicy passed document', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -799,6 +824,24 @@ describe('Topic', () => {
           messageRetentionPeriodInDays: 12,
         }),
       ).toThrow('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics');
+    });
+  });
+
+  describe('tracingConfig', () => {
+    test('specify tracingConfig', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      new sns.Topic(stack, 'MyTopic', {
+        tracingConfig: sns.TracingConfig.ACTIVE,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        'TracingConfig': 'Active',
+      });
     });
   });
 });

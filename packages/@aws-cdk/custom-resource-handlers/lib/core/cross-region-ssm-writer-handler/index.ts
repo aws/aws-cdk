@@ -102,8 +102,8 @@ async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promis
   }));
 
   if (tagResults.size > 0) {
-    const message: string = Object.entries(tagResults)
-      .map((result: [string, string[]]) => `${result[0]} is in use by stack(s) ${result[1].join(' ')}`)
+    const message: string = Array.from(tagResults.entries())
+      .map((result) => `${result[0]} is in use by stack(s) ${Array.from(result[1]).join(' ')}`)
       .join('\n');
     throw new Error(`Exports cannot be updated: \n${message}`);
   }

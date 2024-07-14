@@ -28,13 +28,13 @@ describe('amis', () => {
 
   describe('Amazon Linux 2', () => {
 
-    test('Amazon Linux 2 with kernel', () => {
+    test('Amazon Linux 2 with kernel 5.10', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app);
 
       // WHEN
-      ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD, { kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10 }).getImage(stack);
+      ecs.EcsOptimizedImage.amazonLinux2Kernel510(ecs.AmiHardwareType.STANDARD).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -50,7 +50,7 @@ describe('amis', () => {
       )).toEqual(true);
     });
 
-    test('Amazon Linux 2 without kernel', () => {
+    test('Amazon Linux 2 with deprecated kernel', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app);

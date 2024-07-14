@@ -1,11 +1,12 @@
 import { App, Stack } from 'aws-cdk-lib';
 import {
+  ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM,
   IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME,
 } from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
-const app = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+const app = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true, [ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: false } });
 
 const roleStack = new Stack(app, 'integ-iam-imported-role-role-stack');
 

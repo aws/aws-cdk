@@ -814,7 +814,8 @@
       ],
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -822,7 +823,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "FargateClusterDefaultVpcIGWFD9278DA",
@@ -1027,7 +1028,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/686f2b94fbd1db9d4826996b12257a9876a32c7ab0cf34d04ad4ad30e88504a7.json"
+       "/2152f15979b07f9f62618ec815c2aeee6012c8efcfa248e8fdd33f7fd1b6750c.json"
       ]
      ]
     }
@@ -1077,7 +1078,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cc88ab128f699c958e20d9baa9381908f3bd8ef78f3ac98e97bdf465a49f652d.json"
+       "/3cc05ae8af92947d3a4439c3338de42db96802138ede2ba75ae11541df53dbe1.json"
       ]
      ]
     }
