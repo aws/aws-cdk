@@ -66,9 +66,8 @@ export interface OntapConfiguration {
     * The total number of SSD IOPS provisioned for the file system.
     *
     * The minimum and maximum values for this property depend on the value of HAPairs and StorageCapacity.
-    * The minimum value is calculated as StorageCapacity * 3 * HAPairs (3 IOPS per GB of StorageCapacity). The maximum value is calculated as 200,000 * HAPairs.
-    *
-    * Amazon FSx responds with an HTTP status code 400 (Bad Request) if the value of Iops is outside of the minimum or maximum values.
+    * The minimum value is calculated as StorageCapacity * 3 * HAPairs (3 IOPS per GB of StorageCapacity).
+    * The maximum value is calculated as 200,000 * HAPairs.
     *
     * @default - 3 IOPS per GB of storage capacity
     */
