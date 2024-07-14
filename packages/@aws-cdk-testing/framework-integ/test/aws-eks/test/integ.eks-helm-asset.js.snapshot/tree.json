@@ -1770,7 +1770,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
+                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1910,7 +1910,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
+                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -2949,7 +2949,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/8a174d62abb3f5c053e4d4599cca831a2bdb06a321101e13c367260534fab140.json"
+                          "/9ac823c72b7ac430b79431d67249d01a4ebab3aafcd306c2b69c528a119a8867.json"
                         ]
                       ]
                     }
@@ -3013,6 +3013,11 @@
                           "s3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
+                        "environment": {
+                          "variables": {
+                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
+                          }
+                        },
                         "handler": "index.handler",
                         "layers": [
                           {
@@ -3476,7 +3481,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/eadfa4a7fdc8e49a4bbdd3db11996e47d869756ff1bd2f2ffcd8b53e2924ef40.json"
+                          "/e23ed13a7821108db50050a225f7b03107502f583d2faa3a1f82a71756081a75.json"
                         ]
                       ]
                     }

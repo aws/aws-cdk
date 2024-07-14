@@ -13,7 +13,7 @@ describe('stepfunction start execution', () => {
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
 
   beforeEach(() => {
-    app = new App();
+    app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     stepFunction = new sfn.StateMachine(stack, 'MyStateMachine', {
       definition: new sfn.Pass(stack, 'MyPass'),
