@@ -307,15 +307,15 @@ test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ',
 });
 
 test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+  expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
 });
 
-  test('Passing string with invalid pattern in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be composed of 12 digits');
+test('Passing string with invalid pattern in AccountPrincipal constructor should throw error', () => {
+  expect(() => new iam.AccountPrincipal('123456')).toThrowError('accountId should be composed of 12 digits');
 });
 
-  test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
+test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
+  expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
 });
 
 test('AccountPrincipal can specify an organization', () => {
@@ -379,7 +379,7 @@ describe('deprecated ServicePrincipal behavior', () => {
     expect(usEastStack.resolve(principalName)).toEqual('states.amazonaws.com');
     expect(afSouthStack.resolve(principalName)).toEqual('states.amazonaws.com');
   });
-  
+
 });
 
 describe('standardized Service Principal behavior', () => {
