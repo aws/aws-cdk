@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.149.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.1-alpha.0...v2.149.0-alpha.0) (2024-07-12)
+
+## [2.148.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.0-alpha.0...v2.148.1-alpha.0) (2024-07-11)
+
+## [2.148.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.3-alpha.0...v2.148.0-alpha.0) (2024-07-05)
+
+
+### Features
+
+* **apprunner:** add AutoScalingConfiguration for AppRunner Service ([#30358](https://github.com/aws/aws-cdk/issues/30358)) ([a598508](https://github.com/aws/aws-cdk/commit/a598508e2a86c5932cbbbc4249cdc228bf2cbf39)), closes [#30353](https://github.com/aws/aws-cdk/issues/30353)
+* **apprunner:** add ObservabilityConfiguration for AppRunner Service ([#30359](https://github.com/aws/aws-cdk/issues/30359)) ([9e9cc27](https://github.com/aws/aws-cdk/commit/9e9cc277d55774b0b2e8887676ddb328eb662d74)), closes [#22985](https://github.com/aws/aws-cdk/issues/22985)
+* **pipes-enrichments:** add Step Functions enrichment eventbridge pipes ([#30495](https://github.com/aws/aws-cdk/issues/30495)) ([8b495f9](https://github.com/aws/aws-cdk/commit/8b495f9ec157c0b00674715f62b1bbcabf2096ac)), closes [#29385](https://github.com/aws/aws-cdk/issues/29385)
+* **pipes-targets:** add lambda function ([#30271](https://github.com/aws/aws-cdk/issues/30271)) ([f594fae](https://github.com/aws/aws-cdk/commit/f594fae922ea19c087c56405046098e5683d2c70)), closes [#30270](https://github.com/aws/aws-cdk/issues/30270)
+
+
+### Bug Fixes
+
+* **apprunner:** auto deployment fails after new container image  pushed due to lack of a permission ([#30630](https://github.com/aws/aws-cdk/issues/30630)) ([cce10b1](https://github.com/aws/aws-cdk/commit/cce10b1c1f0f764e39e734ad7d6c288b7ffb9da3)), closes [#26640](https://github.com/aws/aws-cdk/issues/26640) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ecr/lib/repository.ts#L385](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ecr/lib/repository.ts/issues/L385) [40aws-cdk/aws-apprunner-alpha/lib/service.ts#L1303](https://github.com/40aws-cdk/aws-apprunner-alpha/lib/service.ts/issues/L1303) [40aws-cdk/aws-apprunner-alpha/lib/service.ts#L1368](https://github.com/40aws-cdk/aws-apprunner-alpha/lib/service.ts/issues/L1368)
+
 ## [2.147.3-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.2-alpha.0...v2.147.3-alpha.0) (2024-07-01)
 
 ## [2.147.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.1-alpha.0...v2.147.2-alpha.0) (2024-06-27)

@@ -248,7 +248,7 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
 ### Cross-region AWS API call
 
 You can call AWS API in a different region from your state machine by using the `CallAwsServiceCrossRegion` construct. In addition to the properties for `CallAwsService` construct, you have to set `region` property to call the API.
- 
+
 ```ts
 declare const myBucket: s3.Bucket;
 const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
@@ -289,6 +289,28 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
     },
   },
   executionParameters: ['param1', 'param2'],
+});
+```
+
+You can reuse the query results by setting the `resultReuseConfigurationMaxAge` property.
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start Athena Query', {
+  queryString: sfn.JsonPath.stringAt('$.queryString'),
+  queryExecutionContext: {
+    databaseName: 'mydatabase',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'query-results-bucket',
+      objectKey: 'folder',
+    },
+  },
+  executionParameters: ['param1', 'param2'],
+  resultReuseConfigurationMaxAge: Duration.minutes(100),
 });
 ```
 
@@ -372,6 +394,35 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
       },
     },
   ),
+  resultSelector: {
+    names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+});
+```
+
+You can apply a guardrail to the invocation by setting `guardrail`.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'Generate a list of five first names.',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  guardrail: tasks.Guardrail.enable('guardrailId', 1),
   resultSelector: {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },
