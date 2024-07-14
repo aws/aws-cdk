@@ -322,13 +322,15 @@ export class OntapFileSystem extends FileSystemBase {
     }
   }
 
-  private validateDailyAutomaticBackupStartTime(automaticBackupRetention?: Duration,
-    dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime): void {
+  private validateDailyAutomaticBackupStartTime(
+    automaticBackupRetention?: Duration,
+    dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime,
+  ): void {
     if (!dailyAutomaticBackupStartTime) {
       return;
     }
 
-    const automaticBackupDisabled = !automaticBackupRetention || automaticBackupRetention?.toDays() === Duration.days(0).toDays();
+    const automaticBackupDisabled = !automaticBackupRetention || automaticBackupRetention?.toDays() === 0;
 
     if (dailyAutomaticBackupStartTime && automaticBackupDisabled) {
       throw new Error('\'automaticBackupRetention\' period must be set a non-zero day when \'dailyAutomaticBackupStartTime\' is set');
@@ -343,8 +345,8 @@ export class OntapFileSystem extends FileSystemBase {
     const minDiskIops = storageCapacityGiB * 3 * haPairs;
     const maxDiskIops = 200_000 * haPairs;
 
-    if (diskIops < minDiskIops || diskIops > maxDiskIops) {
-      throw new Error(`diskIops must be between ${minDiskIops} and ${maxDiskIops}, got ${diskIops}`);
+    if (!Number.isInteger(diskIops) || diskIops < minDiskIops || diskIops > maxDiskIops) {
+      throw new Error(`\'diskIops\' must be an integer between ${minDiskIops} and ${maxDiskIops}, got ${diskIops}`);
     }
   }
 

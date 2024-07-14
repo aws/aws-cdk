@@ -308,4 +308,116 @@ describe('FSx for NetApp ONTAP File System', () => {
       }).toThrow(`\'haPairs\' must be 1 for deployment type ${config.deploymentType}`);
     });
   });
+
+  describe('Automatic backup retention', () => {
+    test('disable automatic backup retention', () => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+        automaticBackupRetention: Duration.days(0),
+      };
+
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB: 1200,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+        OntapConfiguration: {
+          DeploymentType: 'SINGLE_AZ_2',
+          AutomaticBackupRetentionDays: 0,
+        },
+      });
+    });
+
+    test.each([
+      Duration.millis(1),
+      Duration.minutes(1),
+      Duration.hours(23),
+      Duration.days(91),
+    ])('throw error for invalid automatic backup retention days', (duration) => {
+      ontapConfiguration = {
+        deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+        automaticBackupRetention: duration,
+      };
+
+      expect(() => {
+        new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+          ontapConfiguration,
+          storageCapacityGiB: 1200,
+          vpc,
+          vpcSubnets: vpc.privateSubnets,
+        });
+      }).toThrow('automaticBackupRetention must be between 1 and 90 days or be equal to 0');
+    });
+  });
+
+  test('throw error for spcifying `dailyAutomaticBackupStartTime` when automatic backup is disabled', () => {
+    ontapConfiguration = {
+      deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+      dailyAutomaticBackupStartTime: new fsx.DailyAutomaticBackupStartTime({
+        hour: 1,
+        minute: 0,
+      }),
+      automaticBackupRetention: Duration.days(0),
+    };
+
+    expect(() => {
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB: 1200,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+    }).toThrow('\'automaticBackupRetention\' period must be set a non-zero day when \'dailyAutomaticBackupStartTime\' is set');
+  });
+
+  test.each([{
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+    diskIops: 0,
+    haPairs: 2,
+  }, {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+    diskIops: 7199,
+    haPairs: 2,
+  }, {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+    diskIops: 7200.1,
+    haPairs: 2,
+  }, {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+    diskIops: 400_001,
+    haPairs: 2,
+  }, {
+    deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+    diskIops: 0,
+  }, {
+    deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+    diskIops: 3599,
+  }, {
+    deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+    diskIops: 200_001,
+  }])('throw error for invalid disk IOPS configuration', (config) => {
+    ontapConfiguration = {
+      deploymentType: config.deploymentType,
+      diskIops: config.diskIops,
+      haPairs: config.haPairs,
+    };
+
+    const storageCapacityGiB = 1200;
+    const haPairs = config.haPairs ?? 1;
+
+    const minDiskIops = storageCapacityGiB * 3 * haPairs;
+    const maxDiskIops = 200_000 * haPairs;
+
+    expect(() => {
+      new fsx.OntapFileSystem(stack, 'FsxFileSystem', {
+        ontapConfiguration,
+        storageCapacityGiB,
+        vpc,
+        vpcSubnets: vpc.privateSubnets,
+      });
+    }).toThrow(`\'diskIops\' must be an integer between ${minDiskIops} and ${maxDiskIops}, got ${config.diskIops}`);
+  });
 });
