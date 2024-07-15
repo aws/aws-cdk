@@ -260,7 +260,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "bc858f6622f6a8456a53b485e5d29a384ea2528da6c1b46357a96a4571f8bdc1.zip"
+                          "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                         },
                         "description": "AWS CDK resource provider framework - onEvent (integ-provider-no-echo/my-provider)",
                         "environment": {
