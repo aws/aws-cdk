@@ -245,7 +245,6 @@ export interface CodePipelineProps {
    */
   readonly artifactBucket?: s3.IBucket;
 
-
   /**
    * If all "prepare" step should be placed all together as the first actions within a stage/wave
    * @default - False
@@ -1195,7 +1194,6 @@ export class CodePipeline extends PipelineBase {
 
     const stack = Stack.of(this);
 
-
     const removeRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE);
 
     const assumePrincipal = removeRootPrincipal ? new iam.CompositePrincipal(
@@ -1211,7 +1209,6 @@ export class CodePipeline extends PipelineBase {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: assumePrincipal,
     });
-
 
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
