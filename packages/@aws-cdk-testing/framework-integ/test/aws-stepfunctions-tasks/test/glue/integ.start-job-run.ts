@@ -24,7 +24,7 @@ const codeAsset = new assets.Asset(stack, 'Glue Job Script', {
 });
 
 const jobRole = new iam.Role(stack, 'Glue Job Role', {
-  assumedBy: new iam.ServicePrincipal('glue'),
+  assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole'),
   ],
