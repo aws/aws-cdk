@@ -7,9 +7,10 @@ import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 /**
  * Ray Jobs class
  *
- * Glue ray only supports worker type Z.2X and Glue version 4.0.
- * Runtime will default to Ray2.4 and min workers will default to 3.
- *
+ * Glue Ray jobs use worker type Z.2X and Glue version 4.0.
+ * These are not overrideable since these are the only configuration that
+ * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
+ * workers defaults to 3.
  */
 
 /**
@@ -48,10 +49,7 @@ export class RayJob extends Job {
       physicalName: props.jobName,
     });
 
-    // List of supported Glue versions by Ray
-    const supportedGlueVersions = [
-      GlueVersion.V4_0,
-    ];
+    this.jobName = props.jobName ?? '';
 
     // Set up role and permissions for principal
     this.role = props.role, {
@@ -77,9 +75,9 @@ export class RayJob extends Job {
       throw new Error('Ray jobs only support Z.2X worker type');
     };
 
-    if (props.glueVersion && !(supportedGlueVersions.includes(props.glueVersion))) {
-      throw new Error('You must set GlueVersion to 4.0 or greater');
-    };
+    if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
+      throw new Error('Both workerType and numberOFWorkers must be set');
+    }
 
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -90,7 +88,7 @@ export class RayJob extends Job {
         scriptLocation: this.codeS3ObjectUrl(props.script),
         runtime: props.runtime ? props.runtime : Runtime.RAY_TWO_FOUR,
       },
-      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
+      glueVersion: GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.Z_2X,
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers: 3,
       maxRetries: props.maxRetries,
@@ -105,7 +103,6 @@ export class RayJob extends Job {
     const resourceName = this.getResourceNameAttribute(jobResource.ref);
     this.jobArn = this.buildJobArn(this, resourceName);
     this.jobName = resourceName;
-
   }
 
 }
