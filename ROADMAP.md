@@ -71,7 +71,7 @@ The CDK team is committed to supporting our existing library of AWS L2 abstracti
 Thank you to our community members that have contributed to the project. Below are some of the great contributions from the community! We'll continue to update this list as contributions come in, and please feel free to reach out on the cdk.dev slack workspace if you have any questions or feedback.
 
 - 🚀 [EventBridge Pipes Alpha Construct](https://github.com/aws/aws-cdk/pull/28388) - [Raphael Manke](https://github.com/RaphaelManke)
-- 🚀 [CodePipeline support for Git branch and file path based triggers](https://github.com/aws/aws-cdk/issues/29124) - [Kenta Goto](https://github.com/go-to-k)
+- 🚀 [CodePipeline support for pipeline type V2 with pipeline-level variables and triggers](https://github.com/aws/aws-cdk/pull/28538) - [Kenta Goto](https://github.com/go-to-k)
 - 🚀 [Cloudwatch Synthetics: Update to canary runtime support for NodeJS and Python](https://github.com/aws/aws-cdk/pull/29132) - [Henry Wilson](https://github.com/wilhen01)
 - 🚀 [EFS File System Replication](https://github.com/aws/aws-cdk/pull/29347) - [
   kazuho cryer-shinozuka](https://github.com/badmintoncryer)
