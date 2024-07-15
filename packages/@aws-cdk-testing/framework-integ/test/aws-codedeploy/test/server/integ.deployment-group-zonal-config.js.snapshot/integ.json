@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ServerDeploymentGroupZonalConfig/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert",
+      "assertionStackName": "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72"
+    }
+  }
+}
