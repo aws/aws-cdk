@@ -86,15 +86,7 @@ describe('Create Schedule', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::FindInMap': [
-                  'ServiceprincipalMap',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  'states',
-                ],
-              },
+              Service: 'scheduler.amazonaws.com',
             },
           },
         ],
@@ -271,15 +263,7 @@ describe('Create Schedule', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::FindInMap': [
-                  'ServiceprincipalMap',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  'states',
-                ],
-              },
+              Service: 'scheduler.amazonaws.com',
             },
           },
         ],
