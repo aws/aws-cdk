@@ -114,10 +114,6 @@ export class PySparkEtlJob extends Job {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new Error('Both workerType and numberOFWorkers must be set');
-    }
-
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,

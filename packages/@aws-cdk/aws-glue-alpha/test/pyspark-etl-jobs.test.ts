@@ -67,6 +67,16 @@ describe('Job', () => {
         WorkerType: 'G.1X',
       });
     });
+
+    test('Default Python version should be 3', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Command: {
+          Name: glue.JobType.ETL,
+          ScriptLocation: 's3://bucketname/script',
+          PythonVersion: glue.PythonVersion.THREE,
+        },
+      });
+    });
   });
 
   describe('Create new PySpark ETL Job with log override parameters', () => {
@@ -358,27 +368,6 @@ describe('Job', () => {
       }).toThrow('Invalid prefix format (value: prefix)');
     });
 
-    test('Create PySpark ETL Job overriding only workerType to cause an Error', () => {
-      expect(() => {
-        job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
-          role,
-          script,
-          jobName: 'PySparkETLJob',
-          workerType: glue.WorkerType.G_2X,
-        });
-      }).toThrow(new Error('Both workerType and numberOFWorkers must be set'));
-    });
-
-    test('Create PySpark ETL Job overriding only numberOfWorkers to cause an Error', () => {
-      expect(() => {
-        job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
-          role,
-          script,
-          jobName: 'PySparkETLJob',
-          numberOfWorkers: 5,
-        });
-      }).toThrow(new Error('Both workerType and numberOFWorkers must be set'));
-    });
   });
 
   describe('Create PySpark ETL Job with extraPythonFiles and extraFiles', () => {

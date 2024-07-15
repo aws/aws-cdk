@@ -2,7 +2,7 @@ import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
-import { JobType, GlueVersion, PythonVersion, MaxCapacity } from '../constants';
+import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 
 /**
  * Python Shell Jobs class
@@ -109,6 +109,7 @@ export class PythonShellJob extends Job {
   */
   private executableArguments(props: PythonShellJobProps) {
     const args: { [key: string]: string } = {};
+    args['--job-language'] = JobLanguage.PYTHON;
 
     //If no Python version set (default 3.9) or the version is set to 3.9 then set library-set argument
     if (!props.pythonVersion || props.pythonVersion == PythonVersion.THREE_NINE) {
