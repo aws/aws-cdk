@@ -956,7 +956,7 @@ describe('bucket', () => {
 
     expect(() => new s3.Bucket(stack, 'Bucket', {
       publicReadAccess: true,
-    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
   });
 
   test('bucket with enabled block public access setting to throw error msg', () => {

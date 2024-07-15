@@ -812,6 +812,84 @@ describe('method', () => {
     }).not.toThrow(/Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
   });
 
+  test('No options authorization type set but expect auth scope set', () => {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.COGNITO,
+      },
+    });
+
+    api.root.resourceForPath('/user/profile').addMethod('GET', undefined, {
+      authorizationScopes: ['profile'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: ['profile'],
+    });
+  });
+
+  test('Set auth scope in the rest api and expect scope is in method', () => {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.COGNITO,
+        authorizationScopes: ['profile'],
+      },
+    });
+
+    api.root.resourceForPath('/user/profile').addMethod('GET', undefined);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: ['profile'],
+    });
+  });
+
+  test('Override auth scope in the method over rest api', () => {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.COGNITO,
+        authorizationScopes: ['profile'],
+      },
+    });
+
+    api.root.resourceForPath('/user/profile').addMethod('GET', undefined, {
+      authorizationScopes: ['hello'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: ['hello'],
+    });
+  });
+
+  test('Expect auth scope to be none when auth type is not Cognito', () => {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.COGNITO,
+        authorizationScopes: ['profile'],
+      },
+    });
+
+    api.root.resourceForPath('/user/profile').addMethod('GET', undefined, {
+      authorizationScopes: ['hello'],
+      authorizationType: apigw.AuthorizationType.IAM,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: Match.absent(),
+    });
+  });
+
   test.each([
     [apigw.AuthorizationType.IAM, undefined],
     [apigw.AuthorizationType.NONE, undefined],

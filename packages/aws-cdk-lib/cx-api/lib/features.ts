@@ -72,7 +72,6 @@ export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscri
 export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
-export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
@@ -559,20 +558,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
-      `,
-    introducedIn: { v2: '2.51.0' },
-    recommendedValue: true,
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [IAM_STANDARDIZED_SERVICE_PRINCIPALS]: {
-    type: FlagType.BugFix,
-    summary: 'Use standardized (global) service principals everywhere',
-    detailsMd: `
-      We used to maintain a database of exceptions to Service Principal names in various regions. This database
-      is no longer necessary: all service principals names have been standardized to their global form (\`SERVICE.amazonaws.com\`).
-
-      This flag disables use of that exceptions database and always uses the global service principal.
       `,
     introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
@@ -1118,7 +1103,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
       for more details.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.148.0' },
     recommendedValue: true,
   },
 };
