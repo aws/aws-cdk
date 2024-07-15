@@ -1,9 +1,11 @@
 import { Construct } from 'constructs';
+import { EncryptionConfiguration } from './encryption-configuration';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+export * from './encryption-configuration';
 
 /**
  * Properties for defining a new Step Functions Activity
@@ -15,6 +17,12 @@ export interface ActivityProps {
    * @default - If not supplied, a name is generated
    */
   readonly activityName?: string;
+  /**
+   * The EncryptionConfiguration for this activity.
+   *
+   * @default - no EncryptionConfiguration
+   */
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
 
 /**
@@ -57,14 +65,20 @@ export class Activity extends Resource implements IActivity {
    */
   public readonly activityName: string;
 
+  /**
+   * @attribute
+   */
+  public readonly encryptionConfiguration?: EncryptionConfiguration;
+
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
       physicalName: props.activityName ||
-                Lazy.string({ produce: () => this.generateName() }),
+        Lazy.string({ produce: () => this.generateName() }),
     });
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
+      encryptionConfiguration: props.encryptionConfiguration ?? undefined,
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
@@ -222,4 +236,11 @@ export interface IActivity extends IResource {
    * @attribute
    */
   readonly activityName: string;
+
+  /**
+   * The EncryptioConfiguration of the activity
+   *
+   * @attribute
+   */
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }

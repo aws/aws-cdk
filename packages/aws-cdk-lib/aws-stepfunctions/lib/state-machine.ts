@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { EncryptionConfiguration } from './encryption-configuration';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
@@ -8,6 +9,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
+export * from './encryption-configuration';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -153,6 +155,12 @@ export interface StateMachineProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * EncryptionConfiguration for this state machine
+   * @default No EncryptionConfiguration
+   */
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
 
 /**
@@ -164,6 +172,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    */
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
+      public encryptionConfiguration?: EncryptionConfiguration | undefined;
       public readonly stateMachineArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
@@ -187,10 +196,32 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   public abstract readonly stateMachineArn: string;
 
+  public abstract readonly encryptionConfiguration?: EncryptionConfiguration;
+
   /**
    * The principal this state machine is running as
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  private isEncryptionConfigurationSet() {
+    return this.encryptionConfiguration !== undefined;
+  }
+
+  private getKmsGenerateDataKeyAndDecryptActions() {
+    if (this.isEncryptionConfigurationSet()) {
+      return ['kms:GenerateDataKey', 'kms:Decrypt'];
+    } else {
+      return [];
+    }
+  }
+
+  private getKmsDecryptAction() {
+    if (this.isEncryptionConfigurationSet()) {
+      return ['kms:Decrypt'];
+    } else {
+      return [];
+    }
+  }
 
   /**
    * Grant the given identity permissions to start an execution of this state
@@ -199,7 +230,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: ['states:StartExecution'],
+      actions: ['states:StartExecution', ... this.getKmsGenerateDataKeyAndDecryptActions()],
       resourceArns: [this.stateMachineArn],
     });
   }
@@ -211,7 +242,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: ['states:StartSyncExecution'],
+      actions: ['states:StartSyncExecution', ...this.getKmsDecryptAction()],
       resourceArns: [this.stateMachineArn],
     });
   }
@@ -235,6 +266,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:DescribeExecution',
         'states:DescribeStateMachineForExecution',
         'states:GetExecutionHistory',
+        ...this.getKmsDecryptAction(),
       ],
       resourceArns: [`${this.executionArn()}:*`],
     });
@@ -244,6 +276,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:ListActivities',
         'states:DescribeStateMachine',
         'states:DescribeActivity',
+        ...this.getKmsDecryptAction(),
       ],
       resourceArns: ['*'],
     });
@@ -259,6 +292,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:SendTaskSuccess',
         'states:SendTaskFailure',
         'states:SendTaskHeartbeat',
+        ...this.getKmsDecryptAction(),
       ],
       resourceArns: [this.stateMachineArn],
     });
@@ -414,6 +448,12 @@ export class StateMachine extends StateMachineBase {
   public readonly stateMachineType: StateMachineType;
 
   /**
+   * Type of the EncryptionConfiguration
+   * @attribute
+   */
+  public readonly encryptionConfiguration?: EncryptionConfiguration;
+
+  /**
    * Identifier for the state machine revision, which is an immutable, read-only snapshot of a state machine’s definition and configuration.
    * @attribute
    */
@@ -460,11 +500,12 @@ export class StateMachine extends StateMachineBase {
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
+      encryptionConfiguration: props.encryptionConfiguration,
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
-
+    this.encryptionConfiguration = props.encryptionConfiguration;
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
@@ -560,6 +601,13 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    * @attribute
    */
   readonly stateMachineArn: string;
+
+  /**
+   * The EncryptioConfiguration of the activity
+   *
+   * @attribute
+   */
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 
   /**
    * Grant the given identity permissions to start an execution of this state

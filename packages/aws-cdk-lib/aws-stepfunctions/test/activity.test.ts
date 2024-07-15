@@ -1,7 +1,9 @@
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
+import { EncryptionType } from '../lib/encryption-configuration';
 
 describe('Activity', () => {
   test('instantiate Activity', () => {
@@ -69,5 +71,52 @@ describe('Activity', () => {
       },
     });
 
+  });
+
+  test('instantiate Activity with EncryptionConfiguration using Customer Managed Key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new stepfunctions.Activity(stack, 'Activity', {
+      encryptionConfiguration: {
+        kmsKeyId: kmsKey.keyId,
+        kmsDataKeyReusePeriodSeconds: 75,
+        type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
+      Name: 'Activity',
+      EncryptionConfiguration: Match.objectLike({
+        KmsKeyId: {
+          Ref: 'Key961B73FD',
+        },
+        KmsDataKeyReusePeriodSeconds: 75,
+        Type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
+      }),
+    });
+  });
+
+  test('instantiate Activity with EncryptionConfiguration using AWS Owned Key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new stepfunctions.Activity(stack, 'Activity', {
+      encryptionConfiguration: {
+        type: EncryptionType.AWS_OWNED_KEY,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
+      Name: 'Activity',
+      EncryptionConfiguration: Match.objectLike({
+        Type: EncryptionType.AWS_OWNED_KEY,
+      }),
+    });
   });
 });
