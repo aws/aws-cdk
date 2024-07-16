@@ -28,7 +28,7 @@ construct library directly.
 > engines other than CodePipeline.
 >
 > The README for the original API, as well as a migration guide, can be found in
-> [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
