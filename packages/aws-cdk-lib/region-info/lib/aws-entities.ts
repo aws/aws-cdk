@@ -79,26 +79,6 @@ export const AWS_REGIONS = AWS_REGIONS_AND_RULES
   .sort() as readonly string[];
 
 /**
- * Possibly non-exhaustive list of all service names, used to locate service principals.
- *
- * Not in the list ==> default service principal mappings.
- */
-export const AWS_SERVICES: readonly string[] = [
-  'application-autoscaling',
-  'autoscaling',
-  'codedeploy',
-  'ec2',
-  'events',
-  'lambda',
-  'logs',
-  's3',
-  'ssm',
-  'sns',
-  'sqs',
-  'states',
-].sort();
-
-/**
  * Whether or not a region predates a given rule (or region).
  *
  * Unknown region => we have to assume no.
