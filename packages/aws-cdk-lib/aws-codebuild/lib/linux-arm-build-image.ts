@@ -102,22 +102,6 @@ export class LinuxArmBuildImage implements IBuildImage {
     this.repository = props.repository;
   }
 
-  /**
-   * Validates by checking the BuildEnvironment computeType as aarch64 images only support ComputeType.SMALL and
-   * ComputeType.LARGE
-   * @param buildEnvironment BuildEnvironment
-   */
-  public validate(buildEnvironment: BuildEnvironment): string[] {
-    const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.SMALL &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`ARM images only support ComputeTypes '${ComputeType.SMALL}' and '${ComputeType.LARGE}' - ` +
-               `'${buildEnvironment.computeType}' was given`);
-    }
-    return ret;
-  }
-
   public runScriptBuildspec(entrypoint: string): BuildSpec {
     return runScriptLinuxBuildSpec(entrypoint);
   }
