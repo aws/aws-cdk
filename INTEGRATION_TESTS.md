@@ -119,8 +119,7 @@ This will:
 Now when you run `npm test` it will synth the integ app and compare the result with the snapshot.
 If the snapshot has changed the same process must be followed to update the snapshot.
 
-*Note - When running integration tests, refrain from defining the `env.account` property for stacks. This ensures that the synthesized
-CloudFormation template from the snapshots does not contain your current AWS account information, promoting better security and portability.*
+*Note - When running integration tests, `env.account` is generally not required unless some special cases like cross-account tests.*
 
 ### New L2 Constructs
 
