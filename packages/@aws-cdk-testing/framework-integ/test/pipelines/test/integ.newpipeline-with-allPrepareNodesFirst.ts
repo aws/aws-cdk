@@ -18,7 +18,6 @@ class PipelineStack extends Stack {
       allPrepareNodesFirst: true,
     });
 
-
     pipeline.addStage(new AppStage(this, 'Beta'), {
     });
 
