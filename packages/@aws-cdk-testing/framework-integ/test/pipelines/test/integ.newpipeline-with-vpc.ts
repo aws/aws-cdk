@@ -10,7 +10,6 @@ import { Construct } from 'constructs';
 import * as path from 'path';
 import { PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE } from 'aws-cdk-lib/cx-api';
 
-
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
