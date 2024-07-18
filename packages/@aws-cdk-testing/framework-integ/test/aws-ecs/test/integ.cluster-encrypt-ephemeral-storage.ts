@@ -29,7 +29,7 @@ new ecs.Cluster(stackNamed, 'named-cluster', {
 });
 
 new integ.IntegTest(app, 'aws-ecs-cluster-encrypt-ephemeral-storage', {
-  testCases: [stackUnnamed],
+  testCases: [stackUnnamed, stackNamed],
 });
 
 app.synth();
