@@ -7,15 +7,19 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 interface AwsCdkSdkJsStackProps {
   readonly runtime?: lambda.Runtime;
 }
 
 class AwsCdkSdkJsStack extends cdk.Stack {
+  public readonly topicArn: string;
+
   constructor(scope: Construct, id: string, props?: AwsCdkSdkJsStackProps) {
     super(scope, id);
     const topic = new sns.Topic(this, 'Topic');
+    this.topicArn = topic.topicArn;
 
     const snsPublish = new AwsCustomResource(this, 'Publish', {
       resourceType: 'Custom::SNSPublisher',
@@ -24,7 +28,7 @@ class AwsCdkSdkJsStack extends cdk.Stack {
         action: 'publish',
         parameters: {
           Message: 'hello',
-          TopicArn: topic.topicArn,
+          TopicArn: this.topicArn,
         },
         physicalResourceId: PhysicalResourceId.of(topic.topicArn),
       },
@@ -112,15 +116,16 @@ class AwsCdkSdkJsStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-
-new integ.IntegTest(app, 'AwsCustomResourceTest', {
-  testCases: [
-    new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js'),
-    new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-    }),
-  ],
+const testStack = new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+});
+const integTest = new integ.IntegTest(app, 'AwsCustomResourceTest', {
+  testCases: [testStack],
   diffAssets: true,
 });
 
-app.synth();
+integTest.assertions.awsApiCall('SNS', 'listTopics').expect(ExpectedResult.objectLike({
+  Topics: integ.Match.arrayWith([
+    { TopicArn: testStack.topicArn },
+  ]),
+}));

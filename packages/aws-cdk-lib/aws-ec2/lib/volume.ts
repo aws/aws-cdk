@@ -3,8 +3,9 @@ import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '../../core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import * as cxapi from '../../cx-api';
 
 /**
  * Block device
@@ -65,7 +66,8 @@ export interface EbsDeviceOptionsBase {
    * The EBS volume type
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    *
-   * @default `EbsDeviceVolumeType.GP2`
+   * @default `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` or `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3` if
+   * `@aws-cdk/aws-ec2:ebsDefaultGp3Volume` is enabled.
    */
   readonly volumeType?: EbsDeviceVolumeType;
 }
@@ -621,7 +623,9 @@ export class Volume extends VolumeBase {
       size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
       throughput: props.throughput,
-      volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      volumeType: props.volumeType ??
+        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
+          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 

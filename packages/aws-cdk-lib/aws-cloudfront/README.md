@@ -537,6 +537,16 @@ It will auto-generate the name of the function and deploy it to the `live` stage
 
 Additionally, you can load the function's code from a file using the `FunctionCode.fromFile()` method.
 
+If you set `autoPublish` to false, the function will not be automatically published to the LIVE stage when it’s created.
+
+```ts
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
+  autoPublish: false
+});
+```
+
 ### Key Value Store
 
 A CloudFront Key Value Store can be created and optionally have data imported from a JSON file

@@ -13,7 +13,8 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
     case 'Create':
       break;
     case 'Update':
-      return onUpdate(event);
+      const response = await onUpdate(event);
+      return { PhysicalResourceId: response.PhysicalResourceId };
     case 'Delete':
       return onDelete(event.ResourceProperties?.RepositoryName);
   }
@@ -22,16 +23,14 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
   const oldRepositoryName = updateEvent.OldResourceProperties?.RepositoryName;
-  const newRepositoryName = updateEvent.ResourceProperties?.RepositoryName;
-  const repositoryNameHasChanged = (newRepositoryName && oldRepositoryName)
-    && (newRepositoryName !== oldRepositoryName);
+  const newRepositoryName = updateEvent.ResourceProperties?.RepositoryName ?? oldRepositoryName;
 
-  /* If the name of the repository has changed, CloudFormation will try to delete the repository
-     and create a new one with the new name. So we have to delete the images in the
-     repository so that this operation does not fail. */
-  if (repositoryNameHasChanged) {
-    return onDelete(oldRepositoryName);
-  }
+  /* If the name of the repository has changed, CloudFormation will try to delete the repo
+  and create a new one with the new name. Returning a PhysicalResourceId that differs
+  from the event's PhysicalResourceId will trigger a `Delete` event for the custom
+  resource. The `Delete` event will trigger `onDelete` function which will
+  empty the content of the repository and then proceed to delete the repository. */
+  return { PhysicalResourceId: newRepositoryName };
 }
 
 /**

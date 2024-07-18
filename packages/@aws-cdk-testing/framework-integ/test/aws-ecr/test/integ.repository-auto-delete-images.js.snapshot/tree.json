@@ -56,6 +56,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-ecr-integ-stack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
             "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
             "path": "aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider",

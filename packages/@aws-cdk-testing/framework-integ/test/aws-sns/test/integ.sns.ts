@@ -1,6 +1,6 @@
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { App, Stack, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
-import { LoggingProtocol, Topic } from 'aws-cdk-lib/aws-sns';
+import { LoggingProtocol, Topic, TracingConfig } from 'aws-cdk-lib/aws-sns';
 import { ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 class SNSInteg extends Stack {
@@ -49,6 +49,13 @@ class SNSInteg extends Stack {
       topicName: 'fooTopicSignatureVersion',
       displayName: 'fooDisplayNameSignatureVersion',
       signatureVersion: '2',
+    });
+
+    // Topic with tracingConfig
+    new Topic(this, 'MyTopicTracingConfig', {
+      topicName: 'fooTopicTracingConfig',
+      displayName: 'fooDisplayNameTracingConfig',
+      tracingConfig: TracingConfig.ACTIVE,
     });
 
     // Can import topic

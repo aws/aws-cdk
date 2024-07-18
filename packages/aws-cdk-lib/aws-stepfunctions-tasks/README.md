@@ -23,7 +23,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [API Gateway](#api-gateway)
     - [Call REST API Endpoint](#call-rest-api-endpoint)
     - [Call HTTP API Endpoint](#call-http-api-endpoint)
-    - [AWS SDK](#aws-sdk)
+  - [AWS SDK](#aws-sdk)
+    - [Cross-region AWS API call](#cross-region-aws-api-call)
   - [Athena](#athena)
     - [StartQueryExecution](#startqueryexecution)
     - [GetQueryExecution](#getqueryexecution)
@@ -67,6 +68,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Start Job Run](#start-job-run-1)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
+  - [MediaConvert](#mediaconvert)
+    - [Create Job](#create-job)
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
@@ -186,7 +189,7 @@ const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API'
 });
 ```
 
-### AWS SDK
+## AWS SDK
 
 Step Functions supports calling [AWS service's API actions](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html)
 through the service integration pattern.
@@ -242,6 +245,26 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
 });
 ```
 
+### Cross-region AWS API call
+
+You can call AWS API in a different region from your state machine by using the `CallAwsServiceCrossRegion` construct. In addition to the properties for `CallAwsService` construct, you have to set `region` property to call the API.
+
+```ts
+declare const myBucket: s3.Bucket;
+const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
+  region: 'ap-northeast-1',
+  service: 's3',
+  action: 'getObject',
+  parameters: {
+    Bucket: myBucket.bucketName,
+    Key: sfn.JsonPath.stringAt('$.key')
+  },
+  iamResources: [myBucket.arnForObjects('*')],
+});
+```
+
+Other properties such as `additionalIamStatements` can be used in the same way as the `CallAwsService` task.
+
 ## Athena
 
 Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
@@ -266,6 +289,28 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
     },
   },
   executionParameters: ['param1', 'param2'],
+});
+```
+
+You can reuse the query results by setting the `resultReuseConfigurationMaxAge` property.
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start Athena Query', {
+  queryString: sfn.JsonPath.stringAt('$.queryString'),
+  queryExecutionContext: {
+    databaseName: 'mydatabase',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'query-results-bucket',
+      objectKey: 'folder',
+    },
+  },
+  executionParameters: ['param1', 'param2'],
+  resultReuseConfigurationMaxAge: Duration.minutes(100),
 });
 ```
 
@@ -349,6 +394,35 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
       },
     },
   ),
+  resultSelector: {
+    names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+});
+```
+
+You can apply a guardrail to the invocation by setting `guardrail`.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'Generate a list of five first names.',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  guardrail: tasks.Guardrail.enable('guardrailId', 1),
   resultSelector: {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },
@@ -771,7 +845,7 @@ new tasks.EmrAddStep(this, 'Task', {
 
 To specify a custom runtime role use the `executionRoleArn` property.
 
-**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
@@ -784,7 +858,7 @@ const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecu
       "AuthorizationConfiguration": {
           "IAMConfiguration": {
               "EnableApplicationScopedIAMRole": true,
-              "ApplicationScopedIAMRoleConfiguration": 
+              "ApplicationScopedIAMRoleConfiguration":
                   {
                       "PropagateSourceIdentity": true
                   }
@@ -1128,6 +1202,26 @@ new tasks.GlueStartJobRun(this, 'Task', {
   notifyDelayAfter: Duration.minutes(5),
 });
 ```
+You can configure workers by setting the `workerType` and `numberOfWorkers` properties.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  workerConfiguration: {
+    workerType: tasks.WorkerType.G_1X, // Worker type
+    numberOfWorkers: 2, // Number of Workers
+  },
+});
+```
+
+You can choose the execution class by setting the `executionClass` property.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  executionClass: tasks.ExecutionClass.FLEX,
+});
+```
 
 ### StartCrawlerRun
 
@@ -1160,6 +1254,31 @@ You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/
 ```ts
 new tasks.GlueDataBrewStartJobRun(this, 'Task', {
   name: 'databrew-job',
+});
+```
+
+## Invoke HTTP API
+
+Step Functions supports [calling third-party APIs](https://docs.aws.amazon.com/step-functions/latest/dg/connect-third-party-apis.html) with credentials managed by Amazon EventBridge [Connections](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_Connection.html).
+
+The following snippet creates a new API destination connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
+});
+
+new tasks.HttpInvoke(this, 'Invoke HTTP API', {
+  apiRoot: 'https://api.example.com',
+  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  body: sfn.TaskInput.fromObject({ foo: 'bar' }),
+  connection,
+  headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),
+  method: sfn.TaskInput.fromText('POST'),
+  queryStringParameters: sfn.TaskInput.fromObject({ id: '123' }),
+  urlEncodingFormat: tasks.URLEncodingFormat.BRACKETS,
 });
 ```
 
@@ -1264,6 +1383,81 @@ results in a 500 error, such as `ClientExecutionTimeoutException`, `ServiceExcep
 As a best practice, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
 a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
 disable this behavior.
+
+## MediaConvert
+
+Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-functions/latest/dg/connect-mediaconvert.html) through the Optimized integration pattern.
+
+### CreateJob
+
+The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
+For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
+
+You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
+
+Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) &
+[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer
+[CreateJobRequest](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-model-createjobrequest) for all other optional parameters.
+
+```ts
+new tasks.MediaConvertCreateJob(this, 'CreateJob', {
+  createJobRequest: {
+    "Role": "arn:aws:iam::123456789012:role/MediaConvertRole",
+    "Settings": {
+      "OutputGroups": [
+        {
+          "Outputs": [
+            {
+              "ContainerSettings": {
+                "Container": "MP4"
+              },
+              "VideoDescription": {
+                "CodecSettings": {
+                  "Codec": "H_264",
+                  "H264Settings": {
+                    "MaxBitrate": 1000,
+                    "RateControlMode": "QVBR",
+                    "SceneChangeDetect": "TRANSITION_DETECTION"
+                  }
+                }
+              },
+              "AudioDescriptions": [
+                {
+                  "CodecSettings": {
+                    "Codec": "AAC",
+                    "AacSettings": {
+                      "Bitrate": 96000,
+                      "CodingMode": "CODING_MODE_2_0",
+                      "SampleRate": 48000
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "OutputGroupSettings": {
+            "Type": "FILE_GROUP_SETTINGS",
+            "FileGroupSettings": {
+              "Destination": "s3://EXAMPLE-DESTINATION-BUCKET/"
+            }
+          }
+        }
+      ],
+      "Inputs": [
+        {
+          "AudioSelectors": {
+            "Audio Selector 1": {
+              "DefaultSelection": "DEFAULT"
+            }
+          },
+          "FileInput": "s3://EXAMPLE-SOURCE-BUCKET/EXAMPLE-SOURCE_FILE"
+        }
+      ]
+    }
+  },
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
 
 ## SageMaker
 

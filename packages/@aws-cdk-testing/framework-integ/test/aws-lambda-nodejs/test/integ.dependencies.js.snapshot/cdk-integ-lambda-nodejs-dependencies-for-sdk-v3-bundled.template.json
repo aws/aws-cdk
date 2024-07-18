@@ -1,5 +1,33 @@
 {
  "Resources": {
+  "SdkCallee1DA14178": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "call",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "call",
+      "KeyType": "HASH"
+     }
+    ],
+    "Replicas": [
+     {
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "TableName": "bundle-sdk-table"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "bundlesdkServiceRoleAD25F2C9": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -31,6 +59,45 @@
     ]
    }
   },
+  "bundlesdkServiceRoleDefaultPolicy309683EE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SdkCallee1DA14178",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "bundlesdkServiceRoleDefaultPolicy309683EE",
+    "Roles": [
+     {
+      "Ref": "bundlesdkServiceRoleAD25F2C9"
+     }
+    ]
+   }
+  },
   "bundlesdk386047BD": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -38,11 +105,13 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f18e0ca318e68187e84c6f675953eae3b2bde151a45dc8d579b13c372355d928.zip"
+     "S3Key": "1562fec408cadc998a2adcbb8efdf9dddb242d81216ce22bd3696b36c3a7e68f.zip"
     },
     "Environment": {
      "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+      "TABLE_NAME": {
+       "Ref": "SdkCallee1DA14178"
+      }
      }
     },
     "Handler": "index.handler",
@@ -55,6 +124,7 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
+    "bundlesdkServiceRoleDefaultPolicy309683EE",
     "bundlesdkServiceRoleAD25F2C9"
    ]
   }

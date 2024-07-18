@@ -6,6 +6,7 @@ Define a KMS key:
 ```ts
 new kms.Key(this, 'MyKey', {
   enableKeyRotation: true,
+  rotationPeriod: Duration.days(180), // Default is 365 days
 });
 ```
 

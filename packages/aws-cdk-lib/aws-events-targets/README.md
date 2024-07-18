@@ -1,6 +1,5 @@
 # Event Targets for Amazon EventBridge
 
-
 This library contains integration classes to send Amazon EventBridge to any
 number of supported AWS Services. Instances of these classes should be passed
 to the `rule.addTarget()` method.
@@ -17,6 +16,7 @@ Currently supported are:
   - [Queue a Batch job](#queue-a-batch-job)
   - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
   - [Invoke an API Destination](#invoke-an-api-destination)
+  - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
@@ -341,6 +341,89 @@ const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(Duration.minutes(1)),
   targets: [new targets.ApiDestination(destination)],
 });
+```
+
+You can also import an existing connection and destination
+to create additional rules:
+
+```ts
+const connection = events.Connection.fromEventBusArn(
+  this,
+  'Connection',
+  'arn:aws:events:us-east-1:123456789012:event-bus/EventBusName',
+  'arn:aws:secretsmanager:us-east-1:123456789012:secret:SecretName-f3gDy9',
+);
+
+const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName';
+const destination = events.ApiDestination.fromApiDestinationAttributes(
+  this,
+  'Destination',
+  { apiDestinationArn, connection },
+);
+
+const rule = new events.Rule(this, 'OtherRule', {
+  schedule: events.Schedule.rate(Duration.minutes(10)),
+  targets: [new targets.ApiDestination(destination)],
+});
+```
+
+## Invoke an AppSync GraphQL API
+
+Use the `AppSync` target to trigger an AppSync GraphQL API. You need to
+create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
+
+The code snippet below creates an AppSync GraphQL API target that is invoked every hour, calling the `publish` mutation.
+
+```ts
+import * as appsync from 'aws-cdk-lib/aws-appsync';
+
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'api',
+  definition: appsync.Definition.fromFile('schema.graphql'),
+  authorizationConfig: {
+    defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM }
+  },
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.AppSync(api, {
+  graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+}));
+```
+
+You can pass an existing role with the proper permissions to be used for the target when the rule is triggered. The code snippet below uses an existing role and grants permissions to use the publish Mutation on the GraphQL API.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as appsync from 'aws-cdk-lib/aws-appsync';
+
+const api = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'ImportedAPI', {
+  graphqlApiId: '<api-id>',
+  graphqlApiArn: '<api-arn>',
+  graphQLEndpointArn: '<api-endpoint-arn>',
+  visibility: appsync.Visibility.GLOBAL,
+  modes: [appsync.AuthorizationType.IAM],
+});
+
+const rule = new events.Rule(this, 'Rule', { schedule: events.Schedule.rate(cdk.Duration.minutes(1)), });
+const role = new iam.Role(this, 'Role', { assumedBy: new iam.ServicePrincipal('events.amazonaws.com') });
+
+// allow EventBridge to use the `publish` mutation
+api.grantMutation(role, 'publish');
+
+rule.addTarget(new targets.AppSync(api, {
+  graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+  eventRole: role
+}));
 ```
 
 ## Put an event on an EventBridge bus

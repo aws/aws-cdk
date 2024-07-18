@@ -440,7 +440,7 @@ describe('role mappings', () => {
     const providerUrl = Fn.importValue('ProviderUrl');
     expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
       roleMappings: [{
-        providerUrl: IdentityPoolProviderUrl.userPool(providerUrl),
+        providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
         useToken: true,
       }],
     })).toThrowError('mappingKey must be provided when providerUrl.value is a token');
@@ -452,7 +452,7 @@ describe('role mappings', () => {
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
       roleMappings: [{
         mappingKey: 'theKey',
-        providerUrl: IdentityPoolProviderUrl.userPool(providerUrl),
+        providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
         useToken: true,
       }],
     });
@@ -532,6 +532,8 @@ describe('role mappings', () => {
 
   test('role mapping with rules configuration', () => {
     const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const client = pool.addClient('Client');
     const adminRole = new Role(stack, 'adminRole', {
       assumedBy: new ServicePrincipal('admin.amazonaws.com'),
     });
@@ -557,6 +559,11 @@ describe('role mappings', () => {
     });
     const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
       roleMappings: [{
+        mappingKey: 'cognito',
+        providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
+        useToken: true,
+      },
+      {
         providerUrl: IdentityPoolProviderUrl.AMAZON,
         resolveAmbiguousRoles: true,
         rules: [
@@ -601,6 +608,16 @@ describe('role mappings', () => {
         Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
       },
       RoleMappings: {
+        'cognito': {
+          IdentityProvider: {
+            'Fn::Join': ['', [
+              { 'Fn::GetAtt': ['PoolD3F588B8', 'ProviderName'] },
+              ':',
+              { Ref: 'PoolClient8A3E5EB7' },
+            ]],
+          },
+          Type: 'Token',
+        },
         'www.amazon.com': {
           AmbiguousRoleResolution: 'AuthenticatedRole',
           IdentityProvider: 'www.amazon.com',

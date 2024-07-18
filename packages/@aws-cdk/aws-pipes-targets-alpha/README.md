@@ -27,6 +27,12 @@ For more details see the service documentation:
 
 Pipe targets are the end point of a EventBridge Pipe.
 
+The following targets are supported:
+
+1. `targets.SqsTarget`: [Send event source to a Queue](#amazon-sqs)
+2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
+3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
+
 ### Amazon SQS
 
 A SQS message queue can be used as a target for a pipe. Messages will be pushed to the queue.
@@ -43,7 +49,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
-The target configuration can be transformed:
+The target input can be transformed:
 
 ```ts
 declare const sourceQueue: sqs.Queue;
@@ -57,6 +63,108 @@ const pipeTarget = new targets.SqsTarget(targetQueue,
         })
     }
 );
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+### AWS Step Functions State Machine
+
+A State Machine can be used as a target for a pipe. The State Machine will be invoked with the (enriched) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStateMachine: sfn.IStateMachine;
+
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine,{});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+Specifying the Invocation Type when the target State Machine is invoked:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStateMachine: sfn.IStateMachine;
+
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
+    {
+      invocationType: targets.StateMachineInvocationType.FIRE_AND_FORGET,
+    }
+);
+
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+The input to the target State Machine can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStateMachine: sfn.IStateMachine;
+
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
+    {
+      inputTransformation: pipes.InputTransformation.fromObject({ body: '<$.body>' }),
+      invocationType: targets.StateMachineInvocationType.FIRE_AND_FORGET,
+    }
+);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+### AWS Lambda Function
+
+A Lambda Function can be used as a target for a pipe. The Lambda Function will be invoked with the (enriched) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetFunction: lambda.IFunction;
+
+const pipeTarget = new targets.LambdaFunction(targetFunction,{});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+The target Lambda Function is invoked synchronously by default. You can also choose to invoke the Lambda Function asynchronously by setting `invocationType` property to `FIRE_AND_FORGET`.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetFunction: lambda.IFunction;
+
+const pipeTarget = new targets.LambdaFunction(targetFunction, {
+  invocationType: targets.LambdaFunctionInvocationType.FIRE_AND_FORGET,
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+The input to the target Lambda Function can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetFunction: lambda.IFunction;
+
+const pipeTarget = new targets.LambdaFunction(targetFunction, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
