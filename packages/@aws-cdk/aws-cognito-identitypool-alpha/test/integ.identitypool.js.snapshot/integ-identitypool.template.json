@@ -28,15 +28,12 @@
      "SmsMessage": "The verification code to your new account is {####}"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PooltestClientFE8D4935": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "PoolD3F588B8"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -57,17 +54,15 @@
       "Ref": "PoolProviderGoogle76A1E8D0"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
+    }
    }
   },
   "PoolProviderGoogle76A1E8D0": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "Google",
-    "ProviderType": "Google",
-    "UserPoolId": {
-     "Ref": "PoolD3F588B8"
-    },
     "AttributeMapping": {
      "given_name": "given_name",
      "family_name": "family_name",
@@ -79,6 +74,11 @@
      "client_id": "google-client-id",
      "client_secret": "google-client-secret",
      "authorize_scopes": "profile"
+    },
+    "ProviderName": "Google",
+    "ProviderType": "Google",
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
     }
    }
   },
@@ -110,15 +110,12 @@
      "SmsMessage": "The verification code to your new account is {####}"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "OtherPoolUserPoolAuthenticationProviderClient08F670F8": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "OtherPool7DA7F2F7"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -139,17 +136,15 @@
       "Ref": "OtherPoolProviderAmazon4EB0592F"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "OtherPool7DA7F2F7"
+    }
    }
   },
   "OtherPoolProviderAmazon4EB0592F": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "LoginWithAmazon",
-    "ProviderType": "LoginWithAmazon",
-    "UserPoolId": {
-     "Ref": "OtherPool7DA7F2F7"
-    },
     "AttributeMapping": {
      "given_name": "name",
      "email": "email",
@@ -159,14 +154,19 @@
      "client_id": "amzn-client-id",
      "client_secret": "amzn-client-secret",
      "authorize_scopes": "profile"
+    },
+    "ProviderName": "LoginWithAmazon",
+    "ProviderType": "LoginWithAmazon",
+    "UserPoolId": {
+     "Ref": "OtherPool7DA7F2F7"
     }
    }
   },
   "identitypoolE2A6D099": {
    "Type": "AWS::Cognito::IdentityPool",
    "Properties": {
-    "AllowUnauthenticatedIdentities": false,
     "AllowClassicFlow": true,
+    "AllowUnauthenticatedIdentities": true,
     "CognitoIdentityProviders": [
      {
       "ClientId": {
@@ -427,6 +427,108 @@
    "DependsOn": [
     "OtherPool7DA7F2F7",
     "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
+    "PoolD3F588B8",
+    "PooltestClientFE8D4935"
+   ]
+  },
+  "identitypoolwounauth11D2BE08": {
+   "Type": "AWS::Cognito::IdentityPool",
+   "Properties": {
+    "AllowUnauthenticatedIdentities": false,
+    "CognitoIdentityProviders": [
+     {
+      "ClientId": {
+       "Ref": "PooltestClientFE8D4935"
+      },
+      "ProviderName": {
+       "Fn::Join": [
+        "",
+        [
+         "cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "PoolD3F588B8"
+         }
+        ]
+       ]
+      },
+      "ServerSideTokenCheck": true
+     }
+    ]
+   },
+   "DependsOn": [
+    "PoolD3F588B8",
+    "PooltestClientFE8D4935"
+   ]
+  },
+  "identitypoolwounauthAuthenticatedRole9485BF4A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "cognito-identity.amazonaws.com:aud": {
+          "Ref": "identitypoolwounauth11D2BE08"
+         }
+        },
+        "ForAnyValue:StringLike": {
+         "cognito-identity.amazonaws.com:amr": "authenticated"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": "cognito-identity.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Default Authenticated Role for Identity Pool ",
+       {
+        "Fn::GetAtt": [
+         "identitypoolwounauth11D2BE08",
+         "Name"
+        ]
+       }
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "PoolD3F588B8",
+    "PooltestClientFE8D4935"
+   ]
+  },
+  "identitypoolwounauthDefaultRoleAttachment598167C7": {
+   "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+   "Properties": {
+    "IdentityPoolId": {
+     "Ref": "identitypoolwounauth11D2BE08"
+    },
+    "Roles": {
+     "authenticated": {
+      "Fn::GetAtt": [
+       "identitypoolwounauthAuthenticatedRole9485BF4A",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
     "PoolD3F588B8",
     "PooltestClientFE8D4935"
    ]
