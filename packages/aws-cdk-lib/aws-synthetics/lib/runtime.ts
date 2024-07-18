@@ -208,6 +208,20 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_7_0 = new Runtime('syn-nodejs-puppeteer-7.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-8.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 22.10.0
+   * - Chromium version 125.0.6422.112
+   *
+   * New Features:
+   * - **Support for two-factor authentication**
+   * - **Bug fixes** for situations where some service clients were losing data in Node.js SDK V3 responses.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-8.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_8_0 = new Runtime('syn-nodejs-puppeteer-8.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
