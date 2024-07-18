@@ -4,6 +4,9 @@ on:
     types: [closed]
   pull_request_target:
     types: [closed]
+permissions:
+  pull-requests: write
+  issues: write
 jobs:
   auto_comment:
     permissions:
