@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Guardrail } from './guardrail';
 import * as bedrock from '../../../aws-bedrock';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
@@ -18,7 +19,7 @@ export interface BedrockInvokeModelInputProps {
    *
    * If the S3 location is not set, then the Body must be set.
    *
-   * @default Input data is retrieved from the `body` field
+   * @default - Input data is retrieved from the `body` field
    */
   readonly s3Location?: s3.Location;
 }
@@ -36,7 +37,7 @@ export interface BedrockInvokeModelOutputProps {
    * If you specify this field, the API response body is replaced with
    * a reference to the Amazon S3 location of the original output.
    *
-   * @default Response body is returned in the task result
+   * @default - Response body is returned in the task result
    */
   readonly s3Location?: s3.Location;
 }
@@ -69,7 +70,7 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters.html
    *
-   * @default Input data is retrieved from the location specified in the `input` field
+   * @default - Input data is retrieved from the location specified in the `input` field
    */
   readonly body?: sfn.TaskInput;
 
@@ -86,13 +87,14 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModel.html
    * @default 'application/json'
+   * @deprecated This property does not require configuration because the only acceptable value is 'application/json'.
    */
   readonly contentType?: string;
 
   /**
    * The source location to retrieve the input data from.
    *
-   * @default Input data is retrieved from the `body` field
+   * @default - Input data is retrieved from the `body` field
    */
   readonly input?: BedrockInvokeModelInputProps;
 
@@ -102,9 +104,23 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    * If you specify this field, the API response body is replaced with a reference to the
    * output location.
    *
-   * @default The API response body is returned in the result.
+   * @default - The API response body is returned in the result.
    */
   readonly output?: BedrockInvokeModelOutputProps;
+
+  /**
+   * The guardrail is applied to the invocation
+   *
+   * @default - No guardrail is applied to the invocation.
+   */
+  readonly guardrail?: Guardrail;
+
+  /**
+   * Specifies whether to enable or disable the Bedrock trace.
+   *
+   * @default - Trace is not enabled for the invocation.
+   */
+  readonly traceEnabled?: boolean;
 }
 
 /**
@@ -189,6 +205,24 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
+    if (this.props.guardrail) {
+      const isArn = this.props.guardrail.guardrailIdentifier.startsWith('arn:');
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['bedrock:ApplyGuardrail'],
+          resources: [
+            isArn
+              ? this.props.guardrail.guardrailIdentifier
+              : Stack.of(this).formatArn({
+                service: 'bedrock',
+                resource: 'guardrail',
+                resourceName: this.props.guardrail.guardrailIdentifier,
+              }),
+          ],
+        }),
+      );
+    }
+
     return policyStatements;
   }
 
@@ -211,6 +245,13 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
         } : undefined,
+        GuardrailIdentifier: this.props.guardrail?.guardrailIdentifier,
+        GuardrailVersion: this.props.guardrail?.guardrailVersion,
+        Trace: this.props.traceEnabled === undefined
+          ? undefined
+          : this.props.traceEnabled
+            ? 'ENABLED'
+            : 'DISABLED',
       }),
     };
   }
