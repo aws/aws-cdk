@@ -7,6 +7,7 @@ on:
 jobs:
   auto_comment:
     permissions:
+      pull-requests: write
       issues: write
     runs-on: ubuntu-latest
     steps:
