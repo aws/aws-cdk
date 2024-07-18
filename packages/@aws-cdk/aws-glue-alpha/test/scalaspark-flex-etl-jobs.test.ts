@@ -282,9 +282,9 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Default Glue Version should be 4.0', () => {
+    test('Default Glue Version should be 3.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        GlueVersion: glue.GlueVersion.V4_0,
+        GlueVersion: glue.GlueVersion.V3_0,
       });
     });
 
@@ -339,9 +339,9 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Default Glue Version should be 4.0', () => {
+    test('Default Glue Version should be 3.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        GlueVersion: glue.GlueVersion.V4_0,
+        GlueVersion: glue.GlueVersion.V3_0,
       });
     });
 

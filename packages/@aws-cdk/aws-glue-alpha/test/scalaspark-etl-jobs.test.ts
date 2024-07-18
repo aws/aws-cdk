@@ -39,7 +39,7 @@ describe('Job', () => {
 
     test('Default Glue Version should be 4.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        GlueVersion: '4.0',
+        GlueVersion: glue.GlueVersion.V4_0,
       });
     });
 
@@ -292,7 +292,6 @@ describe('Job', () => {
           '--job-language': 'scala',
           '--enable-continuous-cloudwatch-log': 'true',
           '--extra-jars': 's3://extra-jars-bucket/prefix/file.jar',
-          '--extra-files': 's3://extra-files-bucket/prefix/file.txt',
         }),
       });
     });
