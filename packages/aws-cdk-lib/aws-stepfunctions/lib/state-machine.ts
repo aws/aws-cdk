@@ -436,6 +436,9 @@ export class StateMachine extends StateMachineBase {
     if (props.stateMachineName !== undefined) {
       this.validateStateMachineName(props.stateMachineName);
     }
+    if (props.logs) {
+      this.validateLogOptions(props.logs);
+    }
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
@@ -508,10 +511,14 @@ export class StateMachine extends StateMachineBase {
     }
   }
 
-  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
+  private validateLogOptions(logOptions: LogOptions) {
     if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
       throw new Error('Logs destination is required when level is not OFF.');
     }
+  }
+
+  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
+    let destinations;
 
     if (logOptions.destination) {
       // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
@@ -529,12 +536,13 @@ export class StateMachine extends StateMachineBase {
         ],
         resources: ['*'],
       }));
+      destinations = [{
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+      }];
     }
 
     return {
-      destinations: logOptions.destination ? [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
-      }] : undefined,
+      destinations,
       includeExecutionData: logOptions.includeExecutionData,
       level: logOptions.level || 'ERROR',
     };
