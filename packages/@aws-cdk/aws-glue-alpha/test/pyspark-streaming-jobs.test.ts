@@ -73,7 +73,7 @@ describe('Job', () => {
     test('Default Python version should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
-          Name: glue.JobType.ETL,
+          Name: glue.JobType.STREAMING,
           ScriptLocation: 's3://bucketname/script',
           PythonVersion: glue.PythonVersion.THREE,
         },
@@ -81,7 +81,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Create new PySpark ETL Job with log override parameters', () => {
+  describe('Create new PySpark Streaming Job with log override parameters', () => {
 
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
@@ -144,7 +144,7 @@ describe('Job', () => {
 
   });
 
-  describe('Create PySpark ETL Job with G2 worker type with 2 workers', () => {
+  describe('Create PySpark Streaming Job with G2 worker type with 2 workers', () => {
 
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
@@ -197,7 +197,7 @@ describe('Job', () => {
     test('Default Python version should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
-          Name: glue.JobType.ETL,
+          Name: glue.JobType.STREAMING,
           ScriptLocation: 's3://bucketname/script',
           PythonVersion: glue.PythonVersion.THREE,
         },
@@ -205,7 +205,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Create PySpark ETL Job with G4 worker type with 4 workers', () => {
+  describe('Create PySpark Streaming Job with G4 worker type with 4 workers', () => {
 
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
@@ -256,7 +256,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Create PySpark ETL Job with G8 worker type and 8 workers', () => {
+  describe('Create PySpark Streaming Job with G8 worker type and 8 workers', () => {
 
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
@@ -307,7 +307,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Override SparkUI properties for PySpark ETL Job', () => {
+  describe('Override SparkUI properties for PySpark Streaming Job', () => {
 
     beforeEach(() => {
       sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
@@ -382,7 +382,7 @@ describe('Job', () => {
 
   });
 
-  describe('Create PySpark ETL Job with extraPythonFiles and extraFiles', () => {
+  describe('Create PySpark Streaming Job with extraPythonFiles and extraFiles', () => {
 
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
@@ -443,7 +443,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Create PySpark ETL Job with optional properties', () => {
+  describe('Create PySpark Streaming Job with optional properties', () => {
 
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
@@ -559,7 +559,7 @@ describe('Job', () => {
     test('Default Python version should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
-          Name: glue.JobType.ETL,
+          Name: glue.JobType.STREAMING,
           ScriptLocation: 's3://bucketname/script',
           PythonVersion: glue.PythonVersion.THREE,
         },

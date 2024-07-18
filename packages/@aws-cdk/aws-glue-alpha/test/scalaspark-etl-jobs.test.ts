@@ -253,7 +253,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Create ScalaSpark ETL Job with extraJars and extraFiles', () => {
+  describe('Create ScalaSpark ETL Job with extraJars', () => {
 
     beforeEach(() => {
       job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkEtlJob', {
@@ -292,7 +292,6 @@ describe('Job', () => {
           '--job-language': 'scala',
           '--enable-continuous-cloudwatch-log': 'true',
           '--extra-jars': 's3://extra-jars-bucket/prefix/file.jar',
-          '--extra-files': 's3://extra-files-bucket/prefix/file.txt',
         }),
       });
     });
