@@ -520,13 +520,9 @@ export class LogGroup extends LogGroupBase {
     let logGroupClass = props.logGroupClass;
     const stack = Stack.of(scope);
     const logGroupClassUnsupportedRegions = [
-      'cn-north-1', // BJS
-      'cn-northwest-1', // ZHY
       'us-iso-west-1', // APA
       'us-iso-east-1', // DCA
       'us-isob-east-1', // LCK
-      'us-gov-west-1', // PDT
-      'us-gov-east-1', // OSU
     ];
     if (logGroupClass !== undefined && !Token.isUnresolved(stack.region) && logGroupClassUnsupportedRegions.includes(stack.region)) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
