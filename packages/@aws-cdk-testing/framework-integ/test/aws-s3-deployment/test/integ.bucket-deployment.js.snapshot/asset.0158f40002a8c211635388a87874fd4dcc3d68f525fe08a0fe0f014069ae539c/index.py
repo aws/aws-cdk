@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import urllib.parse
 from urllib.request import Request, urlopen
 from uuid import uuid4
 from zipfile import ZipFile
@@ -100,8 +101,8 @@ def handler(event, context):
         if old_s3_dest == "s3:///":
             old_s3_dest = None
 
-        logger.info("| s3_dest: %s" % s3_dest)
-        logger.info("| old_s3_dest: %s" % old_s3_dest)
+        logger.info("| s3_dest: %s" % sanitize_message(s3_dest))
+        logger.info("| old_s3_dest: %s" % sanitize_message(old_s3_dest))
 
         # if we are creating a new resource, allocate a physical id for it
         # otherwise, we expect physical id to be relayed by cloudformation
@@ -141,6 +142,20 @@ def handler(event, context):
     except Exception as e:
         logger.exception(e)
         cfn_error(str(e))
+
+#---------------------------------------------------------------------------------------------------
+# Sanitize the message to mitigate CWE-117 and CWE-93 vulnerabilities
+def sanitize_message(message):
+    if not message:
+        return message
+
+    # Sanitize the message to prevent log injection and HTTP response splitting
+    sanitized_message = message.replace('\n', '').replace('\r', '')
+
+    # Encode the message to handle special characters
+    encoded_message = urllib.parse.quote(sanitized_message)
+
+    return encoded_message
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
