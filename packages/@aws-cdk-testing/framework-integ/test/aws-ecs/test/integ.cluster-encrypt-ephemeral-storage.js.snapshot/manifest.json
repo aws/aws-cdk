@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db67f6287c53ef6ea267db90b54edc41d438f17645d2ea66fc5183dc2d1eef25.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4e0ee172359e872070c97b7cd6b9213a041c1b54e66a63510c79e0f48622fd6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,148 @@
         "aws-ecs-ephemmeral-integ.assets"
       ],
       "metadata": {
-        "/aws-ecs-ephemmeral-integ/key/Resource": [
+        "/aws-ecs-ephemmeral-integ/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "keyFEDD6EC0"
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-ephemmeral-integ/key-for-unnamed/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "keyforunnamed8EC121F9"
           }
         ],
         "/aws-ecs-ephemmeral-integ/cluster/Resource": [
@@ -46,166 +184,16 @@
             "data": "cluster611F8AFF"
           }
         ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/Resource": [
+        "/aws-ecs-ephemmeral-integ/key-for-named/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "clusterVpc91107A71"
+            "data": "keyfornamedA9032E67"
           }
         ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet1/Subnet": [
+        "/aws-ecs-ephemmeral-integ/named-cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet1Subnet3948EFCA"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet1RouteTable85A91E8C"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet1RouteTableAssociationABF3C3B6"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet1DefaultRouteF41D2737"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet1EIP0E24289A"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet1NATGateway278CA43C"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet2SubnetEFB8E71C"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet2RouteTable21948248"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet2RouteTableAssociation21B4DF05"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet2DefaultRouteC71B8373"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet2EIP6FF291E5"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPublicSubnet2NATGatewayD971ED50"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet1Subnet4D445D11"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet1RouteTable6B7B6A77"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet1RouteTableAssociationDE66313E"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet1DefaultRoute6A776454"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet2Subnet6DFF6572"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet2RouteTable0D967850"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet2RouteTableAssociation0E224256"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcPrivateSubnet2DefaultRouteF3B52CD2"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcIGW64BABB17"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcVPCGW9E9B1FA8"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/cluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "clusterVpcRestrictDefaultSecurityGroupCustomResource8BCD2E4F"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+            "data": "namedcluster68273CF6"
           }
         ],
         "/aws-ecs-ephemmeral-integ/BootstrapVersion": [
@@ -222,228 +210,6 @@
         ]
       },
       "displayName": "aws-ecs-ephemmeral-integ"
-    },
-    "aws-ecs-ephemmeral-integ-named-cluster.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "aws-ecs-ephemmeral-integ-named-cluster.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "aws-ecs-ephemmeral-integ-named-cluster": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "aws-ecs-ephemmeral-integ-named-cluster.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23504e2cc2291f035e9a1c12d802f0e8f1576cecf5f635b9c376dacef10d9640.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "aws-ecs-ephemmeral-integ-named-cluster.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "aws-ecs-ephemmeral-integ-named-cluster.assets"
-      ],
-      "metadata": {
-        "/aws-ecs-ephemmeral-integ-named-cluster/key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "keyFEDD6EC0"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedcluster68273CF6"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcD1F57A76"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet1Subnet3AEC3A22"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet1RouteTableD2A1FC02"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet1RouteTableAssociation7BE8EAEF"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet1DefaultRoute51CC99B6"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet1EIP95F63F07"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet1NATGateway9EBFD7E2"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet2SubnetA99BCB0E"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet2RouteTable5DBB2ECC"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet2RouteTableAssociation87683149"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet2DefaultRoute4FF8EBAD"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet2EIPC34EAD70"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPublicSubnet2NATGatewayD707BE84"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet1Subnet4DFC9D6D"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet1RouteTableCDEF471B"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet1RouteTableAssociationD551F1F8"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet1DefaultRoute3E6A85ED"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet2SubnetB3513EE5"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet2RouteTable8F3683FF"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet2RouteTableAssociation64860F9F"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcPrivateSubnet2DefaultRoute10D3DBD3"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcIGW4A94BF4E"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcVPCGWEB3E1BFB"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/named-cluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "namedclusterVpcRestrictDefaultSecurityGroupCustomResource2EB73C1B"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-ecs-ephemmeral-integ-named-cluster/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "aws-ecs-ephemmeral-integ-named-cluster"
     },
     "awsecsclusterencryptephemeralstorageDefaultTestDeployAssertCC6A879E.assets": {
       "type": "cdk:asset-manifest",

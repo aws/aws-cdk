@@ -1,35 +1,34 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App({
-  context: {
-    '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup': false,
-  },
-});
+const app = new cdk.App();
 
-const stackUnnamed = new cdk.Stack(app, 'aws-ecs-ephemmeral-integ');
-const stackNamed = new cdk.Stack(app, 'aws-ecs-ephemmeral-integ-named-cluster');
+const stack = new cdk.Stack(app, 'aws-ecs-ephemmeral-integ');
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
-const keyForUnnamed = new kms.Key(stackUnnamed, 'key', {
+const keyForUnnamed = new kms.Key(stack, 'key-for-unnamed', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-new ecs.Cluster(stackUnnamed, 'cluster', {
+new ecs.Cluster(stack, 'cluster', {
+  vpc,
   managedStorageConfiguration: { fargateEphemeralStorageKmsKey: keyForUnnamed },
 });
 
-const keyForNamed = new kms.Key(stackNamed, 'key', {
+const keyForNamed = new kms.Key(stack, 'key-for-named', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-new ecs.Cluster(stackNamed, 'named-cluster', {
+new ecs.Cluster(stack, 'named-cluster', {
+  vpc,
   clusterName: 'cluster-name',
   managedStorageConfiguration: { fargateEphemeralStorageKmsKey: keyForNamed },
 });
 
 new integ.IntegTest(app, 'aws-ecs-cluster-encrypt-ephemeral-storage', {
-  testCases: [stackUnnamed, stackNamed],
+  testCases: [stack],
 });
 
 app.synth();
