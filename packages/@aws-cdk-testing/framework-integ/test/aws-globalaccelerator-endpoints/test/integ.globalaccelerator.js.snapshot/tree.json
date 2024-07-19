@@ -1192,8 +1192,20 @@
                       },
                       {
                         "endpointId": {
+                          "Ref": "ALBAEE750D2"
+                        },
+                        "clientIpPreservationEnabled": true
+                      },
+                      {
+                        "endpointId": {
                           "Ref": "NLB55158F82"
                         }
+                      },
+                      {
+                        "endpointId": {
+                          "Ref": "NLB55158F82"
+                        },
+                        "clientIpPreservationEnabled": true
                       },
                       {
                         "endpointId": {
@@ -1311,6 +1323,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "integ-globalaccelerator/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
             "path": "integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287",
@@ -1417,7 +1437,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },

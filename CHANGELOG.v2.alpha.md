@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.149.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.1-alpha.0...v2.149.0-alpha.0) (2024-07-12)
+
+## [2.148.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.0-alpha.0...v2.148.1-alpha.0) (2024-07-11)
+
+## [2.148.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.3-alpha.0...v2.148.0-alpha.0) (2024-07-05)
+
+
+### Features
+
+* **apprunner:** add AutoScalingConfiguration for AppRunner Service ([#30358](https://github.com/aws/aws-cdk/issues/30358)) ([a598508](https://github.com/aws/aws-cdk/commit/a598508e2a86c5932cbbbc4249cdc228bf2cbf39)), closes [#30353](https://github.com/aws/aws-cdk/issues/30353)
+* **apprunner:** add ObservabilityConfiguration for AppRunner Service ([#30359](https://github.com/aws/aws-cdk/issues/30359)) ([9e9cc27](https://github.com/aws/aws-cdk/commit/9e9cc277d55774b0b2e8887676ddb328eb662d74)), closes [#22985](https://github.com/aws/aws-cdk/issues/22985)
+* **pipes-enrichments:** add Step Functions enrichment eventbridge pipes ([#30495](https://github.com/aws/aws-cdk/issues/30495)) ([8b495f9](https://github.com/aws/aws-cdk/commit/8b495f9ec157c0b00674715f62b1bbcabf2096ac)), closes [#29385](https://github.com/aws/aws-cdk/issues/29385)
+* **pipes-targets:** add lambda function ([#30271](https://github.com/aws/aws-cdk/issues/30271)) ([f594fae](https://github.com/aws/aws-cdk/commit/f594fae922ea19c087c56405046098e5683d2c70)), closes [#30270](https://github.com/aws/aws-cdk/issues/30270)
+
+
+### Bug Fixes
+
+* **apprunner:** auto deployment fails after new container image  pushed due to lack of a permission ([#30630](https://github.com/aws/aws-cdk/issues/30630)) ([cce10b1](https://github.com/aws/aws-cdk/commit/cce10b1c1f0f764e39e734ad7d6c288b7ffb9da3)), closes [#26640](https://github.com/aws/aws-cdk/issues/26640) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ecr/lib/repository.ts#L385](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-ecr/lib/repository.ts/issues/L385) [40aws-cdk/aws-apprunner-alpha/lib/service.ts#L1303](https://github.com/40aws-cdk/aws-apprunner-alpha/lib/service.ts/issues/L1303) [40aws-cdk/aws-apprunner-alpha/lib/service.ts#L1368](https://github.com/40aws-cdk/aws-apprunner-alpha/lib/service.ts/issues/L1368)
+
+## [2.147.3-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.2-alpha.0...v2.147.3-alpha.0) (2024-07-01)
+
+## [2.147.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.1-alpha.0...v2.147.2-alpha.0) (2024-06-27)
+
+## [2.147.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.0-alpha.0...v2.147.1-alpha.0) (2024-06-21)
+
+## [2.147.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.146.0-alpha.0...v2.147.0-alpha.0) (2024-06-20)
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** don't recursively process s3 bucket objects ([#30209](https://github.com/aws/aws-cdk/issues/30209)) ([25835e4](https://github.com/aws/aws-cdk/commit/25835e415bcaa7900c78914b0993605b6d6d4b68)), closes [#30573](https://github.com/aws/aws-cdk/issues/30573) [/github.com/aws/aws-cdk/pull/30209#issuecomment-2118991218](https://github.com/aws//github.com/aws/aws-cdk/pull/30209/issues/issuecomment-2118991218)
+
+## [2.146.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.145.0-alpha.0...v2.146.0-alpha.0) (2024-06-13)
+
+
+### Features
+
+* **apprunner:** add ipAddressType property to the Service class ([#30351](https://github.com/aws/aws-cdk/issues/30351)) ([665396f](https://github.com/aws/aws-cdk/commit/665396fa8485ab642c27acf30df85f2b023acde4))
+
+## [2.145.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.144.0-alpha.0...v2.145.0-alpha.0) (2024-06-07)
+
+## [2.144.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.1-alpha.0...v2.144.0-alpha.0) (2024-05-31)
+
+
+### Features
+
+* **apprunner:** add kmsKey property for the AppRunner Service class ([#30352](https://github.com/aws/aws-cdk/issues/30352)) ([0c1aeb6](https://github.com/aws/aws-cdk/commit/0c1aeb6d6d9b9d72624a394fff45e65dfb94b733)), closes [#30365](https://github.com/aws/aws-cdk/issues/30365)
+* **ivs-alpha:** support advanced channel type ([#30086](https://github.com/aws/aws-cdk/issues/30086)) ([544e54a](https://github.com/aws/aws-cdk/commit/544e54abb0985e69bb615fd3c9c47e4067bb17d8)), closes [#30075](https://github.com/aws/aws-cdk/issues/30075)
+* **neptune:** add copyTagsToSnapshot property to the DatabaseCluster Construct ([#30092](https://github.com/aws/aws-cdk/issues/30092)) ([ba8edb3](https://github.com/aws/aws-cdk/commit/ba8edb3e16e3b7c72bb2a38bb3318969e0e9f054)), closes [#30087](https://github.com/aws/aws-cdk/issues/30087)
+
+## [2.143.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.0-alpha.0...v2.143.1-alpha.0) (2024-05-30)
+
+## [2.143.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.1-alpha.0...v2.143.0-alpha.0) (2024-05-23)
+
+## [2.142.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.0-alpha.0...v2.142.1-alpha.0) (2024-05-17)
+
+## [2.142.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.141.0-alpha.0...v2.142.0-alpha.0) (2024-05-15)
+
+
+### Features
+
+* **pipes-targets:** add step function target ([#29987](https://github.com/aws/aws-cdk/issues/29987)) ([b0975e4](https://github.com/aws/aws-cdk/commit/b0975e410a404d07952e01303af01224ccfad864)), closes [#29665](https://github.com/aws/aws-cdk/issues/29665) [#29665](https://github.com/aws/aws-cdk/issues/29665)
+* **redshift:** multi AZ cluster ([#29976](https://github.com/aws/aws-cdk/issues/29976)) ([a53517c](https://github.com/aws/aws-cdk/commit/a53517c6772332cc2a15c9b38e964a933e9c8355))
+
 ## [2.141.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.140.0-alpha.0...v2.141.0-alpha.0) (2024-05-08)
 
 ## [2.140.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.139.1-alpha.0...v2.140.0-alpha.0) (2024-05-02)

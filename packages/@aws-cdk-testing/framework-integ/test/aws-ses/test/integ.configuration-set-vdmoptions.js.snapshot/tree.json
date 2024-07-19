@@ -1,0 +1,502 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-ses-configuration-set-vdmoptions-integ": {
+        "id": "cdk-ses-configuration-set-vdmoptions-integ",
+        "path": "cdk-ses-configuration-set-vdmoptions-integ",
+        "children": {
+          "VdmOptionsEnabled": {
+            "id": "VdmOptionsEnabled",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsEnabled",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsEnabled/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "vdmoptions-enabled",
+                    "vdmOptions": {
+                      "dashboardOptions": {
+                        "engagementMetrics": "ENABLED"
+                      },
+                      "guardianOptions": {
+                        "optimizedSharedDelivery": "ENABLED"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "VdmOptionsDisabled": {
+            "id": "VdmOptionsDisabled",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsDisabled",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsDisabled/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "vdmoptions-disabled",
+                    "vdmOptions": {
+                      "dashboardOptions": {
+                        "engagementMetrics": "DISABLED"
+                      },
+                      "guardianOptions": {
+                        "optimizedSharedDelivery": "DISABLED"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "VdmOptionsNotConfigured": {
+            "id": "VdmOptionsNotConfigured",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsNotConfigured",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsNotConfigured/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "vdmoptions-not-configured"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "VdmAccountLevelSettings": {
+            "id": "VdmAccountLevelSettings",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmAccountLevelSettings",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmAccountLevelSettings/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::VdmAttributes",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardAttributes": {
+                      "engagementMetrics": "ENABLED"
+                    },
+                    "guardianAttributes": {
+                      "optimizedSharedDelivery": "ENABLED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnVdmAttributes",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.VdmAttributes",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/Exports",
+            "children": {
+              "Output{\"Ref\":\"VdmOptionsEnabled69EBE7CE\"}": {
+                "id": "Output{\"Ref\":\"VdmOptionsEnabled69EBE7CE\"}",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsEnabled69EBE7CE\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VdmOptionsDisabledE1F2258E\"}": {
+                "id": "Output{\"Ref\":\"VdmOptionsDisabledE1F2258E\"}",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsDisabledE1F2258E\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VdmOptionsNotConfigured273D3326\"}": {
+                "id": "Output{\"Ref\":\"VdmOptionsNotConfigured273D3326\"}",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsNotConfigured273D3326\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ConfigurationSetVdmOptionsInteg": {
+        "id": "ConfigurationSetVdmOptionsInteg",
+        "path": "ConfigurationSetVdmOptionsInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallSESV2GetAccount": {
+                    "id": "AwsApiCallSESV2GetAccount",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09": {
+                    "id": "AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416": {
+                    "id": "AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9": {
+                    "id": "AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -225,6 +225,10 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
+Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
+permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+are not allowed in the bucket name.
+
 ```ts
 declare const myLambda: lambda.Function;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
@@ -378,6 +382,26 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+
+## Public Read Access
+
+Use `publicReadAccess` to allow public read access to the bucket.
+
+Note that to enable `publicReadAccess`, make sure both bucket-level and account-level block public access control is disabled.
+
+Bucket-level block public access control can be configured through `blockPublicAccess` property. Account-level block public
+access control can be configured on AWS Console -> S3 -> Block Public Access settings for this account (Navigation Panel).
+```ts
+const bucket = new s3.Bucket(this, 'Bucket', {
+  publicReadAccess: true,
+  blockPublicAccess: {
+    blockPublicPolicy: false,
+    blockPublicAcls: false,
+    ignorePublicAcls: false,
+    restrictPublicBuckets: false,
+  },
+});
+```
 
 ## Logging configuration
 
