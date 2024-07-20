@@ -265,7 +265,7 @@ export class AwsCustomResourcePolicy {
    * @param statements statements for explicit policy.
    * @param resources resources for auto-generated from SDK calls.
    */
-  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources?: string[]) {}
+  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources?: string[]) { }
 }
 
 /**
@@ -417,6 +417,13 @@ export interface AwsCustomResourceProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The maximum time, in seconds, that can elapse before a custom resource operation times out.
+   *
+   * @default Duration.seconds(3600)
+   */
+  readonly serviceTimeout?: cdk.Duration;
 }
 
 /**
@@ -520,6 +527,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
       serviceToken: provider.functionArn,
+      serviceTimeout: props.serviceTimeout,
       pascalCaseProperties: true,
       removalPolicy: props.removalPolicy,
       properties: {
