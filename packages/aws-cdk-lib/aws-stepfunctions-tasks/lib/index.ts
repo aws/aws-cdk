@@ -59,3 +59,4 @@ export * from './bedrock/invoke-model';
 export * from './bedrock/guardrail';
 export * from './http/invoke';
 export * from './mediaconvert/create-job';
+export * from './schedule';
