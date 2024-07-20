@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-lambda-1.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aeb38ab17304d1f5dafe1758949dbde748ba823d4a2a513c5135e2b99c0ce4bd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5186e951f469ea8e615892ba5e275c8d10861c611945ad7f91447b00da5ad60.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -105,6 +106,24 @@
             "data": "MySnapStartLambda8F562E6E"
           }
         ],
+        "/aws-cdk-lambda-1/MySnapStartLambdaArm": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySnapStartLambdaArmServiceRole731A8472"
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambdaArm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySnapStartLambdaArmEDD3F420"
+          }
+        ],
         "/aws-cdk-lambda-1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -115,15 +134,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "MyLambdaCurrentVersionE7A382CC1bbf26fffae216f511ef7223d3cba742": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC1bbf26fffae216f511ef7223d3cba742",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
