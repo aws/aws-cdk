@@ -469,7 +469,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
       }
     }
 
-    if (props.timezone !== undefined && !Token.isUnresolved(props.timezone) && (props.timezone.length > 50 || props.timezone.length < 1)) {
+    if (props.timezone !== undefined && !Token.isUnresolved(props.timezone) && (props.timezone.length < 1) || props.timezone.length > 50) {
       throw new Error(`Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`);
     }
   }
