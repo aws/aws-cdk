@@ -206,7 +206,7 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
   readonly kmsKey?: kms.IKey;
 
   /**
-   * The scehdule that defines when the schedule will trigger.
+   * The schedule that defines when the schedule will trigger.
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html
    */
