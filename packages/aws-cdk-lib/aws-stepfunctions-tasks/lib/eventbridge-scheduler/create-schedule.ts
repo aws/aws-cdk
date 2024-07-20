@@ -461,7 +461,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
     }
 
     if (props.groupName !== undefined && !Token.isUnresolved(props.groupName)) {
-      if (props.groupName.length > 64 || props.groupName.length < 1) {
+      if (props.groupName.length < 1 || props.groupName.length > 64) {
         throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
       }
       if (!/^[a-zA-Z0-9-_.]+$/.test(props.groupName)) {
