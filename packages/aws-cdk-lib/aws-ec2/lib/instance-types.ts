@@ -891,6 +891,16 @@ export enum InstanceClass {
   G5G = 'g5g',
 
   /**
+   * Graphics-optimized instances, 6th generation
+   */
+  GRAPHICS6 = 'graphics6',
+
+  /**
+   * Graphics-optimized instances, 6th generation
+   */
+  G6 = 'g6',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'parallel2',
@@ -1578,6 +1588,8 @@ export class InstanceType {
       [InstanceClass.G5]: 'g5',
       [InstanceClass.GRAPHICS5_GRAVITON2]: 'g5g',
       [InstanceClass.G5G]: 'g5g',
+      [InstanceClass.GRAPHICS6]: 'g6',
+      [InstanceClass.G6]: 'g6',
       [InstanceClass.PARALLEL2]: 'p2',
       [InstanceClass.P2]: 'p2',
       [InstanceClass.PARALLEL3]: 'p3',
