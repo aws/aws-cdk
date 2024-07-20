@@ -343,7 +343,7 @@ export class EventBridgeSchedulerTarget {
         props.retryPolicy.maximumRetryAttempts < 0 ||
         props.retryPolicy.maximumRetryAttempts > 185
       ) {
-        throw new Error('MaximumRetryAttempts must be an integer between 0 and 185');
+        throw new Error(`MaximumRetryAttempts must be an integer between 0 and 185, got ${props.retryPolicy.maximumRetryAttempts}`);
       }
       if (props.retryPolicy.maximumEventAge.toMilliseconds() < 60000 || props.retryPolicy.maximumEventAge.toSeconds() > 86400) {
         throw new Error('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
