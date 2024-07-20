@@ -2807,49 +2807,155 @@ describe('imports', () => {
   });
 });
 
-test('Resource policy test', () => {
-  // GIVEN
-  const stack = new Stack(undefined, 'Stack');
+describe('resource policy', () => {
+  test('resource policy property provided', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
 
-  const doc = new PolicyDocument({
-    statements: [
-      new PolicyStatement({
-        actions: ['dynamodb:GetItem'],
-        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
-        resources: ['*'],
-      }),
-    ],
-  });
+    const doc = new PolicyDocument({
+      statements: [
+        new PolicyStatement({
+          actions: ['dynamodb:GetItem'],
+          principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+          resources: ['*'],
+        }),
+      ],
+    });
 
-  // WHEN
-  const table = new TableV2(stack, 'Table', {
-    partitionKey: { name: 'metric', type: AttributeType.STRING },
-    resourcePolicy: doc,
-  });
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'metric', type: AttributeType.STRING },
+      resourcePolicy: doc,
+    });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    Replicas: [
-      {
-        Region: {
-          Ref: 'AWS::Region',
-        },
-        ResourcePolicy: {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: 'dynamodb:GetItem',
-                Effect: 'Allow',
-                Principal: {
-                  AWS: 'arn:aws:iam::111122223333:user/foobar',
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetItem',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
                 },
-                Resource: '*',
-              },
-            ],
-            Version: '2012-10-17',
+              ],
+              Version: '2012-10-17',
+            },
           },
         },
-      },
-    ],
+      ],
+    });
+  });
+
+  test('resource policy with addToResourcePolicy', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    const statement = new PolicyStatement({
+      actions: ['dynamodb:GetItem'],
+      principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+      resources: ['*'],
+    });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'metric', type: AttributeType.STRING },
+    });
+
+    table.addToResourcePolicy(statement);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetItem',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('resource policy property provided and with addToResourcePolicy', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    const statement1 = new PolicyStatement({
+      actions: ['dynamodb:GetItem'],
+      principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/user1')],
+      resources: ['*'],
+    });
+
+    const statement2 = new PolicyStatement({
+      actions: ['dynamodb:GetItem'],
+      principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/user2')],
+      resources: ['*'],
+    });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'metric', type: AttributeType.STRING },
+      resourcePolicy: new PolicyDocument({ statements: [statement1] }),
+    });
+
+    table.addToResourcePolicy(statement2);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetItem',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/user1',
+                  },
+                  Resource: '*',
+                },
+                {
+                  Action: 'dynamodb:GetItem',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/user2',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      ],
+    });
   });
 });
+

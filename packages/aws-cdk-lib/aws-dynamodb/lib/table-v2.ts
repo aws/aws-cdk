@@ -492,6 +492,8 @@ export class TableV2 extends TableBaseV2 {
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
 
+    this.resourcePolicy = props.resourcePolicy;
+
     const resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -615,7 +617,6 @@ export class TableV2 extends TableBaseV2 {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
-    const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
 
     return {
       region: props.region,
@@ -636,8 +637,8 @@ export class TableV2 extends TableBaseV2 {
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
       tags: props.tags,
-      resourcePolicy: resourcePolicy
-        ? { policyDocument: resourcePolicy }
+      resourcePolicy: this.resourcePolicy
+        ? { policyDocument: this.resourcePolicy }
         : undefined,
     };
   }
