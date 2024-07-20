@@ -241,15 +241,7 @@ describe('create model customization job', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::FindInMap': [
-                  'ServiceprincipalMap',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  'states',
-                ],
-              },
+              Service: 'states.amazonaws.com',
             },
           },
         ],
