@@ -89,4 +89,21 @@ export interface FargateServiceBaseProps {
    * @default - If the property is undefined, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
    */
   readonly runtimePlatform?: RuntimePlatform;
+
+  /**
+   * The minimum number of CPU units to reserve for the container.
+   *
+   * @default - No minimum CPU units reserved.
+   */
+  readonly containerCpu?: number;
+
+  /**
+   * The amount (in MiB) of memory to present to the container.
+   *
+   * If your container attempts to exceed the allocated memory, the container
+   * is terminated.
+   *
+   * @default - No memory limit.
+   */
+  readonly containerMemoryLimitMiB?: number;
 }
