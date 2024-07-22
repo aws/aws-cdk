@@ -140,7 +140,7 @@ export class BucketNotifications extends Construct {
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
-          SkipDestinationValidation: this.skipDestinationValidation ?? false,
+          SkipDestinationValidation: this.skipDestinationValidation,
         },
       });
 
