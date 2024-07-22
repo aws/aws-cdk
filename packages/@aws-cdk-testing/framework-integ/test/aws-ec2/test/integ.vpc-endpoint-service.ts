@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
       acceptanceRequired: true,
       contributorInsights: true,
     });
-    service.setAcceptanceRequired(false);
+    service.enableAcceptanceRequired(false);
   }
 
 }

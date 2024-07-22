@@ -141,7 +141,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   /**
    * Sets the acceptance required for the VPC Endpoint Service.
    */
-  public setAcceptanceRequired(acceptanceRequired: boolean) {
+  public enableAcceptanceRequired(acceptanceRequired: boolean) {
     this.endpointService.acceptanceRequired = acceptanceRequired;
   }
 }

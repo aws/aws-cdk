@@ -140,7 +140,7 @@ describe('vpc endpoint service', () => {
         allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
         acceptanceRequired: true,
       });
-      service.setAcceptanceRequired(false);
+      service.enableAcceptanceRequired(false);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
