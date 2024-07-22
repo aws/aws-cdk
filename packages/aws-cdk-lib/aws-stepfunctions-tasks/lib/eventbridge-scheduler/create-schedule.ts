@@ -82,7 +82,7 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/encryption-rest.html
    *
-   * @default - use automatically generated KMS key
+   * @default - Use automatically generated KMS key
    */
   readonly kmsKey?: kms.IKey;
 
