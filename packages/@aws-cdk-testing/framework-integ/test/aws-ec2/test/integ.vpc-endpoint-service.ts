@@ -13,11 +13,12 @@ class TestStack extends cdk.Stack {
 
     const loadBalancer = new elbv2.NetworkLoadBalancer(this, 'NLB', { vpc });
 
-    new ec2.VpcEndpointService(this, 'vpcEndpointService', {
+    const service = new ec2.VpcEndpointService(this, 'vpcEndpointService', {
       vpcEndpointServiceLoadBalancers: [loadBalancer],
-      acceptanceRequired: true,
+      acceptanceRequired: false,
       contributorInsights: true,
     });
+    service.setAcceptanceRequired(true);
   }
 
 }
