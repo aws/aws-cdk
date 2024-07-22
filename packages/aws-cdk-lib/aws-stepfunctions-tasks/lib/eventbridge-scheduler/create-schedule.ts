@@ -322,7 +322,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
   }
 
   private validateProps(props: EventBridgeSchedulerCreateScheduleTaskProps) {
-    if (props.startDate && props.endDate && props.startDate > props.endDate) {
+    if (props.startDate && props.endDate && props.startDate >= props.endDate) {
       throw new Error('\'startDate\' must be before \'endDate\'');
     }
 
