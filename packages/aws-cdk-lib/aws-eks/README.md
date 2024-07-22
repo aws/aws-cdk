@@ -35,9 +35,12 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [Encryption](#encryption)
   - [Permissions and Security](#permissions-and-security)
     - [AWS IAM Mapping](#aws-iam-mapping)
+    - [Access Config](#access-config)
+    - [Access Entry](#access-mapping)
     - [Cluster Security Group](#cluster-security-group)
     - [Node SSH Access](#node-ssh-access)
     - [Service Accounts](#service-accounts)
+    - [Pod Identities](#pod-identities)
   - [Applying Kubernetes Resources](#applying-kubernetes-resources)
     - [Kubernetes Manifests](#kubernetes-manifests)
       - [ALB Controller Integration](#alb-controller-integration)
@@ -52,6 +55,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       - [Manually importing k8s specs and CRD's](#manually-importing-k8s-specs-and-crds)
   - [Patching Kubernetes Resources](#patching-kubernetes-resources)
   - [Querying Kubernetes Resources](#querying-kubernetes-resources)
+  - [Add-ons](#add-ons)
   - [Using existing clusters](#using-existing-clusters)
   - [Logging](#logging)
   - [Known Issues and Limitations](#known-issues-and-limitations)
@@ -1062,6 +1066,7 @@ your_current_role.addToPolicy(new iam.PolicyStatement({
 import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
 declare const vpc: ec2.Vpc;
 
+
 const mastersRole = new iam.Role(this, 'MastersRole', {
   assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
 });
@@ -1102,6 +1107,129 @@ consoleReadOnlyRole.addToPolicy(new iam.PolicyStatement({
 // Add this role to system:masters RBAC group
 cluster.awsAuth.addMastersRole(consoleReadOnlyRole)
 ```
+
+### Access Config
+
+Amazon EKS supports three modes of authentication: `CONFIG_MAP`, `API_AND_CONFIG_MAP`, and `API`. You can enable cluster
+to use access entry APIs by using authenticationMode `API` or `API_AND_CONFIG_MAP`. Use authenticationMode `CONFIG_MAP`
+to continue using aws-auth configMap exclusively. When `API_AND_CONFIG_MAP` is enabled, the cluster will source authenticated
+AWS IAM principals from both Amazon EKS access entry APIs and the aws-auth configMap, with priority given to the access entry API.
+
+To specify the `authenticationMode`:
+
+```ts
+import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
+declare const vpc: ec2.Vpc;
+
+new eks.Cluster(this, 'Cluster', {
+  vpc,
+  version: eks.KubernetesVersion.V1_30,
+  kubectlLayer: new KubectlV30Layer(this, 'KubectlLayer'),
+  authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
+});
+```
+
+> **Note** - Switching authentication modes on an existing cluster is a one-way operation. You can switch from
+> `CONFIG_MAP` to `API_AND_CONFIG_MAP`. You can then switch from `API_AND_CONFIG_MAP` to `API`.
+> You cannot revert these operations in the opposite direction. Meaning you cannot switch back to
+> `CONFIG_MAP` or `API_AND_CONFIG_MAP` from `API`. And you cannot switch back to `CONFIG_MAP` from `API_AND_CONFIG_MAP`.
+
+Read [A deep dive into simplified Amazon EKS access management controls
+](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for more details.
+
+You can disable granting the cluster admin permissions to the cluster creator role on bootstrapping by setting 
+`bootstrapClusterCreatorAdminPermissions` to false. 
+
+> **Note** - Switching `bootstrapClusterCreatorAdminPermissions` on an existing cluster would cause cluster replacement and should be avoided in production.
+
+
+### Access Entry
+
+An access entry is a cluster identity—directly linked to an AWS IAM principal user or role that is used to authenticate to
+an Amazon EKS cluster. An Amazon EKS access policy authorizes an access entry to perform specific cluster actions.
+
+Access policies are Amazon EKS-specific policies that assign Kubernetes permissions to access entries. Amazon EKS supports
+only predefined and AWS managed policies. Access policies are not AWS IAM entities and are defined and managed by Amazon EKS.
+Amazon EKS access policies include permission sets that support common use cases of administration, editing, or read-only access
+to Kubernetes resources. See [Access Policy Permissions](https://docs.aws.amazon.com/eks/latest/userguide/access-policies.html#access-policy-permissions) for more details.
+
+Use `AccessPolicy` to include predefined AWS managed policies:
+
+```ts
+// AmazonEKSClusterAdminPolicy with `cluster` scope
+eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+  accessScopeType: eks.AccessScopeType.CLUSTER,
+});
+// AmazonEKSAdminPolicy with `namespace` scope
+eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
+  accessScopeType: eks.AccessScopeType.NAMESPACE,
+  namespaces: ['foo', 'bar'] } );
+```
+
+Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
+
+```ts
+import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
+declare const vpc: ec2.Vpc;
+
+const clusterAdminRole = new iam.Role(this, 'ClusterAdminRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+
+const eksAdminRole = new iam.Role(this, 'EKSAdminRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+
+const eksAdminViewRole = new iam.Role(this, 'EKSAdminViewRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+
+const cluster = new eks.Cluster(this, 'Cluster', {
+  vpc,
+  mastersRole: clusterAdminRole,
+  version: eks.KubernetesVersion.V1_30,
+  kubectlLayer: new KubectlV30Layer(this, 'KubectlLayer'),
+  authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
+});
+
+// Cluster Admin role for this cluster
+cluster.grantAccess('clusterAdminAccess', clusterAdminRole.roleArn, [
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+    accessScopeType: eks.AccessScopeType.CLUSTER,
+  }),
+]);
+
+// EKS Admin role for specified namespaces of this cluster
+cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { 
+    accessScopeType: eks.AccessScopeType.NAMESPACE,
+    namespaces: ['foo', 'bar'],
+  }),
+]);
+
+// EKS Admin Viewer role for specified namespaces of this cluster
+cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', {
+    accessScopeType: eks.AccessScopeType.NAMESPACE,
+    namespaces: ['foo', 'bar'],
+  }),
+]);
+```
+
+### Migrating from ConfigMap to Access Entry
+
+If the cluster is created with the `authenticationMode` property left undefined,
+it will default to `CONFIG_MAP`. 
+
+The update path is: 
+
+`undefined`(`CONFIG_MAP`) -> `API_AND_CONFIG_MAP` -> `API`
+
+If you have explicitly declared `AwsAuth` resources and then try to switch to the `API` mode, which no longer supports the
+`ConfigMap`, AWS CDK will throw an error as a protective measure to prevent you from losing all the access entries in the `ConfigMap`. In this case, you will need to remove all the declared `AwsAuth` resources explicitly and define the access entries before you are allowed to transition to the `API` mode.
+
+> **Note** - This is a one-way transition. Once you switch to the `API` mode,
+you will not be able to switch back. Therefore, it is crucial to ensure that you have defined all the necessary access entries before making the switch to the `API` mode.
 
 ### Cluster Security Group
 
@@ -1208,6 +1336,46 @@ bucket.grantReadWrite(serviceAccount);
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
 See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#using-existing-clusters).
+
+### Pod Identities
+
+[Amazon EKS Pod Identities](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html) is a feature that simplifies how
+Kubernetes applications running on Amazon EKS can obtain AWS IAM credentials. It provides a way to associate an IAM role with a
+Kubernetes service account, allowing pods to retrieve temporary AWS credentials without the need
+to manage IAM roles and policies directly.
+
+By default, `ServiceAccount` creates an `OpenIdConnectProvider` for 
+[IRSA(IAM roles for service accounts)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) if
+`identityType` is `undefined` or `IdentityType.IRSA`.
+
+You may opt in Amaozn EKS Pod Identities as below:
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.ServiceAccount(this, 'ServiceAccount', {
+  cluster,
+  name: 'test-sa',
+  namespace: 'default',
+  identityType: eks.IdentityType.POD_IDENTITY,
+});
+```
+
+When you create the ServiceAccount with the `identityType` set to `POD_IDENTITY`,
+`ServiceAccount` contruct will perform the following actions behind the scenes:
+
+1. It will create an IAM role with the necessary trust policy to allow the "pods.eks.amazonaws.com" principal to assume the role.
+This trust policy grants the EKS service the permission to retrieve temporary AWS credentials on behalf of the pods using this service account.
+
+2. It will enable the "Amazon EKS Pod Identity Agent" add-on on the EKS cluster. This add-on is responsible for managing the temporary
+AWS credentials and making them available to the pods.
+
+3. It will create an association between the IAM role and the Kubernetes service account. This association allows the pods using this
+service account to obtain the temporary AWS credentials from the associated IAM role.
+
+This simplifies the process of configuring IAM permissions for your Kubernetes applications running on Amazon EKS. It handles the creation of the IAM role,
+the installation of the Pod Identity Agent add-on, and the association between the role and the service account, making it easier to manage AWS credentials
+for your applications.
 
 ## Applying Kubernetes Resources
 
@@ -1668,6 +1836,20 @@ Specifically, since the above use-case is quite common, there is an easier way t
 ```ts
 declare const cluster: eks.Cluster;
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
+```
+
+## Add-ons
+
+[Add-ons](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html) is a software that provides supporting operational capabilities to Kubernetes applications. The EKS module supports adding add-ons to your cluster using the `eks.Addon` class.
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.Addon(this, 'Addon', {
+  cluster,
+  addonName: 'aws-guardduty-agent',
+  addonVersion: 'v1.6.1',
+});
 ```
 
 ## Using existing clusters
