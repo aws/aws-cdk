@@ -253,5 +253,5 @@ new events.EventBus(this, 'Bus', {
 
 **Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
 To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
-For more information, see [Data encryption for EventBridge event buses](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-event-bus.html).
+For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
 

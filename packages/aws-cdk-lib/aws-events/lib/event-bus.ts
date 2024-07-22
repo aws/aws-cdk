@@ -338,7 +338,7 @@ export class EventBus extends EventBusBase {
     });
 
     // Allow EventBridge to use customer managed key
-    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-event-bus-cmkey.html#eb-encryption-event-bus-key-policy
+    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-event-bus-key-policy.html
     if (props?.kmsKey) {
       props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
