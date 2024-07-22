@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.7
+FROM public.ecr.aws/lambda/python:3.11
 
 ADD . /opt/lambda
 WORKDIR /opt/lambda

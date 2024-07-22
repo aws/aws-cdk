@@ -67,7 +67,8 @@
     "NotificationConfiguration": {
      "EventBridgeConfiguration": {}
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "MyEventBridgeBucketPolicy8F5346E3"

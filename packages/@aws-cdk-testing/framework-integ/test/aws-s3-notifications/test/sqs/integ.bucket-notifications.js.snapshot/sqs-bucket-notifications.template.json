@@ -43,7 +43,8 @@
       }
      ]
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "EncryptedQueueKey6F4FD304",
@@ -322,7 +323,8 @@
       }
      ]
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "Bucket2Policy945B22E3",

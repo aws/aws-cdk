@@ -87,7 +87,8 @@
       }
      ]
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "YourBucketAllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39EAF10051"

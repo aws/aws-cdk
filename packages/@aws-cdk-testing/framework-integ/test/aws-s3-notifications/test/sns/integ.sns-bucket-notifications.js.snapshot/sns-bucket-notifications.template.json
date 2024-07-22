@@ -129,7 +129,8 @@
       }
      ]
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "ObjectCreatedTopicPolicyA938ECFC",

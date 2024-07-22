@@ -47,7 +47,8 @@
       }
      ]
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "TopicPolicyA1747468",
@@ -305,7 +306,8 @@
       }
      ]
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "Topic3Policy49BDDFBD",

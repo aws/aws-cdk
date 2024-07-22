@@ -171,7 +171,8 @@
       }
      ]
     },
-    "Managed": true
+    "Managed": true,
+    "SkipDestinationValidation": false
    },
    "DependsOn": [
     "BAllowBucketNotificationsTolambdaeventsources3F741608059EF9F709",
