@@ -92,7 +92,7 @@ export class NetworkUtils {
       return false;
     }
     return octets.map((octet: string) => parseInt(octet, 10)).
-      filter((octet: number) => octet >= 0 && octet <= 255).length === 4;
+      every((octet: number) => octet >= 0 && octet <= 255;
   }
 
   /**
