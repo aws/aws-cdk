@@ -268,9 +268,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
     this.validateProps(props);
 
-    if (props.kmsKey) {
-      props.kmsKey.grantDecrypt(props.target.role);
-    }
+    props.kmsKey?.grantDecrypt(props.target.role);
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
     this.taskPolicies = [
