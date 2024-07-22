@@ -129,6 +129,33 @@ describe('vpc endpoint service', () => {
 
     });
 
+    test('with acceptance required set by `setAcceptanceRequired`', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      const service = new VpcEndpointService(stack, 'EndpointService', {
+        vpcEndpointServiceLoadBalancers: [lb],
+        allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
+        acceptanceRequired: true,
+      });
+      service.setAcceptanceRequired(false);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
+        ServiceId: {
+          Ref: 'EndpointServiceED36BE1F',
+        },
+        AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
+      });
+    });
+
     test('with contributor insights enabled', () => {
       // GIVEN
       const stack = new Stack();

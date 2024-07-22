@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
-import { Aws, Fn, IResource, Resource, Stack, Token } from '../../core';
+import { Aws, Fn, IResource, Lazy, Resource, Stack, Token } from '../../core';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -118,7 +118,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     this.endpointService = new CfnVPCEndpointService(this, id, {
       networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
-      acceptanceRequired: this.acceptanceRequired,
+      acceptanceRequired: Lazy.any({ produce: () => this.acceptanceRequired }),
       contributorInsightsEnabled: this.contributorInsightsEnabled,
     });
 
@@ -136,6 +136,13 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
         allowedPrincipals: this.allowedPrincipals.map(x => x.arn),
       });
     }
+  }
+
+  /**
+   * Sets the acceptance required for the VPC Endpoint Service.
+   */
+  public setAcceptanceRequired(acceptanceRequired: boolean) {
+    this.endpointService.acceptanceRequired = acceptanceRequired;
   }
 }
 
