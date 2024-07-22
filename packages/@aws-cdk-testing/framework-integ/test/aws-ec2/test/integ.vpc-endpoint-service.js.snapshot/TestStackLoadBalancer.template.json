@@ -503,7 +503,7 @@
   "vpcEndpointService08751094": {
    "Type": "AWS::EC2::VPCEndpointService",
    "Properties": {
-    "AcceptanceRequired": true,
+    "AcceptanceRequired": false,
     "ContributorInsightsEnabled": true,
     "NetworkLoadBalancerArns": [
      {

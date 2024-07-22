@@ -15,10 +15,10 @@ class TestStack extends cdk.Stack {
 
     const service = new ec2.VpcEndpointService(this, 'vpcEndpointService', {
       vpcEndpointServiceLoadBalancers: [loadBalancer],
-      acceptanceRequired: false,
+      acceptanceRequired: true,
       contributorInsights: true,
     });
-    service.setAcceptanceRequired(true);
+    service.setAcceptanceRequired(false);
   }
 
 }

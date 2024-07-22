@@ -1121,6 +1121,17 @@ Note: The domain name must be owned (registered through Route53) by the account 
 The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
 [here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
 
+You can set `acceptanceRequired` not only `acceptanceRequired` prop but also `setAcceptanceRequired()` method.
+
+```ts
+const endpointService = new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
+});
+
+// update acceptanceRequired
+endpointService.setAcceptanceRequired(false);
+```
+
 ### Client VPN endpoint
 
 AWS Client VPN is a managed client-based VPN service that enables you to securely access your AWS
