@@ -2003,7 +2003,7 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       if (props.blockPublicAccess === undefined) {
-        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
       }
 
       this.grantPublicAccess();

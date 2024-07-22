@@ -36,6 +36,12 @@ class TestHandler(unittest.TestCase):
                 "Test": "random%0D%0A%5BINFO%5D%20hacking"
             }, expected_status="FAILED")
             error_logger_mock.assert_called_once_with('| cfn_error: b"missing request resource property \'SourceBucketNames\'. props: {\'Test\': \'random%0D%0A%5BINFO%5D%20hacking\'}"')
+            
+    def test_sanitize_message(self):
+        sanitized = index.sanitize_message("twenty-one\r\n%0a%0aINFO:+User+logged+out%3dbadguy")
+        
+        # Expect the output sanitized string to remove newline characters and enforce double URL encoding
+        self.assertEqual(sanitized, 'twenty-one%250a%250aINFO%3A%2BUser%2Blogged%2Bout%253dbadguy')
 
     def test_create_update(self):
         invoke_handler("Create", {

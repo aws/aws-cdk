@@ -1554,7 +1554,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-    // SnapStart does not support arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart does not support Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
     // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
     // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
@@ -1563,10 +1563,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (!props.runtime.supportsSnapStart) {
       throw new Error(`SnapStart currently not supported by runtime ${props.runtime.name}`);
-    }
-
-    if (props.architecture == Architecture.ARM_64) {
-      throw new Error('SnapStart is currently not supported on Arm_64');
     }
 
     if (props.filesystem) {
