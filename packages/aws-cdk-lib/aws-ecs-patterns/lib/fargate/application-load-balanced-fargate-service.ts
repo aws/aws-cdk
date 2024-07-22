@@ -36,6 +36,23 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    * @default - Health check configuration from container.
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The minimum number of CPU units to reserve for the container.
+   *
+   * @default - No minimum CPU units reserved.
+   */
+  readonly containerCpu?: number;
+
+  /**
+   * The amount (in MiB) of memory to present to the container.
+   *
+   * If your container attempts to exceed the allocated memory, the container
+   * is terminated.
+   *
+   * @default - No memory limit.
+   */
+  readonly containerMemoryLimitMiB?: number;
 }
 
 /**
