@@ -819,7 +819,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
 
     new ManagedEc2EcsComputeEnvironment(stack, 'Al2A1InstanceClass', {
       ...defaultEcsProps,
-      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE2)],
+      instanceClasses: [ec2.InstanceClass.A1],
       vpc,
       images: [
         {
