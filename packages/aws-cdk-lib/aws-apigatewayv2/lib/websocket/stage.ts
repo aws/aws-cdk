@@ -95,6 +95,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
         throttlingBurstLimit: props.throttle?.burstLimit,
         throttlingRateLimit: props.throttle?.rateLimit,
       },
+      description: props.description,
     });
 
     if (props.domainMapping) {
