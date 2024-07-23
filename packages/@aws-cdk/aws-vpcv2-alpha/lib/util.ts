@@ -44,17 +44,6 @@ export function subnetId(name: string, i: number) {
 }
 
 /**
- * Generate the list of numbers of [0..n)
- */
-export function range(n: number): number[] {
-  const ret: number[] = [];
-  for (let i = 0; i < n; i++) {
-    ret.push(i);
-  }
-  return ret;
-}
-
-/**
  * Return the union of table IDs from all selected subnets
  */
 export function allRouteTableIds(subnets: ISubnet[]): string[] {
@@ -92,7 +81,7 @@ export class NetworkUtils {
       return false;
     }
     return octets.map((octet: string) => parseInt(octet, 10)).
-      every((octet: number) => octet >= 0 && octet <= 255;
+      every((octet: number) => octet >= 0 && octet <= 255);
   }
 
   /**
