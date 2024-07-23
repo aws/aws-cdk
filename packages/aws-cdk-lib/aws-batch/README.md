@@ -122,7 +122,7 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   vpc,
   images: [
     {
-      imageType: EcsMachineImageType.ECS_AL2023,
+      imageType: batch.EcsMachineImageType.ECS_AL2023,
     },
   ],
 });
