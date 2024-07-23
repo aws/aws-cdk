@@ -19,6 +19,8 @@ import {
   ArnFormat,
   FeatureFlags,
   Token,
+  Arn,
+  Fn,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
@@ -516,16 +518,20 @@ export abstract class BaseService extends Resource
   public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
     const stack = Stack.of(scope);
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
-    const resourceName = arn.resourceName;
-    if (!resourceName) {
-      throw new Error(`Missing resource Name from service ARN: ${serviceArn}`);
+    const resourceName = Arn.extractResourceName(serviceArn, 'service');
+    let clusterName: string;
+    let serviceName: string;
+    if (Token.isUnresolved(resourceName)) {
+      clusterName = Fn.select(0, Fn.split('/', resourceName));
+      serviceName = Fn.select(1, Fn.split('/', resourceName));
+    } else {
+      const resourceNameParts = resourceName.split('/');
+      if (resourceNameParts.length !== 2) {
+        throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+      }
+      clusterName = resourceNameParts[0];
+      serviceName = resourceNameParts[1];
     }
-    const resourceNameParts = resourceName.split('/');
-    if (resourceNameParts.length !== 2) {
-      throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
-    }
-    const clusterName = resourceNameParts[0];
-    const serviceName = resourceNameParts[1];
 
     const clusterArn = Stack.of(scope).formatArn({
       partition: arn.partition,
