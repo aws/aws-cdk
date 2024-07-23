@@ -275,14 +275,14 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
         } : this.props.outputPath ? { S3Uri: this.props.outputPath }: undefined,
+        GuardrailIdentifier: this.props.guardrail?.guardrailIdentifier,
+        GuardrailVersion: this.props.guardrail?.guardrailVersion,
+        Trace: this.props.traceEnabled === undefined
+          ? undefined
+          : this.props.traceEnabled
+            ? 'ENABLED'
+            : 'DISABLED',
       }),
-      GuardrailIdentifier: this.props.guardrail?.guardrailIdentifier,
-      GuardrailVersion: this.props.guardrail?.guardrailVersion,
-      Trace: this.props.traceEnabled === undefined
-        ? undefined
-        : this.props.traceEnabled
-          ? 'ENABLED'
-          : 'DISABLED',
     };
   };
 }
