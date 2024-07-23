@@ -2639,7 +2639,7 @@ describe('function', () => {
         ],
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack, { skipClean: true }).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
             AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
@@ -2651,6 +2651,7 @@ describe('function', () => {
       });
 
       Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'));
+      Template.clean(stack);
     });
 
     test('default function with client provided Profiling Group and client provided env vars', () => {

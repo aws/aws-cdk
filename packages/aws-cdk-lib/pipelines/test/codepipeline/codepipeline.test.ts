@@ -133,7 +133,7 @@ test('Policy sizes do not exceed the maximum size', () => {
   }
 
   // THEN
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
 
   // Collect policies by role
   const rolePolicies: Record<string, any[]> = {};
@@ -183,7 +183,7 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
@@ -204,7 +204,7 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
   expect(statementLength).toStrictEqual(
@@ -226,7 +226,7 @@ test('CodeBuild asset role has the right Principal with the feature disabled', (
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
   expect(statementLength).toStrictEqual(
@@ -299,7 +299,7 @@ test('CodePipeline enables key rotation on cross account keys', ()=>{
     }),
   });
 
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
 
   template.hasResourceProperties('AWS::KMS::Key', {
     EnableKeyRotation: true,
@@ -331,7 +331,7 @@ test('CodePipeline supports use of existing role', () => {
     }),
   });
 
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
@@ -360,7 +360,7 @@ describe('deployment of stack', () => {
     pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
 
     // THEN
-    const template = Template.fromStack(pipelineStack);
+    const template = Template.fromStack(pipelineStack, { skipClean: true });
 
     // There should be Prepare step in piepline
     template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -393,7 +393,7 @@ describe('deployment of stack', () => {
     pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
 
     // THEN
-    const template = Template.fromStack(pipelineStack);
+    const template = Template.fromStack(pipelineStack, { skipClean: true });
 
     // There should be Prepare step in piepline
     template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -435,7 +435,7 @@ test('action name is calculated properly if it has cross-stack dependencies', ()
   });
 
   // THEN
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
   template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
     Stages: Match.arrayWith([{
       Name: 'TheApp',
@@ -466,7 +466,7 @@ test('synths with change set approvers', () => {
   });
 
   // THEN
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
   template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
     Stages: Match.arrayWith([{
       Name: 'TheApp',
@@ -517,7 +517,7 @@ test('artifactBucket can be overridden', () => {
     }),
   });
   // THEN
-  const template = Template.fromStack(pipelineStack);
+  const template = Template.fromStack(pipelineStack, { skipClean: true });
   template.hasResourceProperties('AWS::S3::Bucket', {
     BucketName: 'my-custom-artifact-bucket',
   });

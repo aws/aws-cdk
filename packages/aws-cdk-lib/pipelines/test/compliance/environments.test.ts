@@ -20,7 +20,7 @@ behavior('action has right settings for same-env deployment', (suite) => {
     const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new OneStackApp(app, 'Same'));
 
-    THEN_codePipelineExpection(agnosticRole);
+    THEN_codePipelineExpectation(agnosticRole);
   });
 
   suite.additional('legacy: even if env is specified but the same as the pipeline', () => {
@@ -29,14 +29,14 @@ behavior('action has right settings for same-env deployment', (suite) => {
       env: PIPELINE_ENV,
     }));
 
-    THEN_codePipelineExpection(pipelineEnvRole);
+    THEN_codePipelineExpectation(pipelineEnvRole);
   });
 
   suite.modern(() => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addStage(new OneStackApp(app, 'Same'));
 
-    THEN_codePipelineExpection(agnosticRole);
+    THEN_codePipelineExpectation(agnosticRole);
   });
 
   suite.additional('modern: even if env is specified but the same as the pipeline', () => {
@@ -45,12 +45,12 @@ behavior('action has right settings for same-env deployment', (suite) => {
       env: PIPELINE_ENV,
     }));
 
-    THEN_codePipelineExpection(pipelineEnvRole);
+    THEN_codePipelineExpectation(pipelineEnvRole);
   });
 
-  function THEN_codePipelineExpection(roleArn: (x: string) => any) {
+  function THEN_codePipelineExpectation(roleArn: (x: string) => any) {
     // THEN: pipeline structure is correct
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Same',
         Actions: [
@@ -74,7 +74,7 @@ behavior('action has right settings for same-env deployment', (suite) => {
     });
 
     // THEN: artifact bucket can be read by deploy role
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
@@ -107,8 +107,8 @@ behavior('action has right settings for cross-account deployment', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    // THEN: Pipelien structure is correct
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    // THEN: Pipeline structure is correct
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'CrossAccount',
         Actions: [
@@ -153,7 +153,7 @@ behavior('action has right settings for cross-account deployment', (suite) => {
     });
 
     // THEN: Artifact bucket can be read by deploy role
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
@@ -193,7 +193,7 @@ behavior('action has right settings for cross-region deployment', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'CrossRegion',
         Actions: [
@@ -283,7 +283,7 @@ behavior('action has right settings for cross-account/cross-region deployment', 
     // THEN: pipeline structure must be correct
     const stack = app.stackArtifact(pipelineStack);
     expect(stack).toBeDefined();
-    Template.fromStack(stack!).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack!, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'CrossBoth',
         Actions: [
@@ -329,7 +329,7 @@ behavior('action has right settings for cross-account/cross-region deployment', 
     // THEN: artifact bucket can be read by deploy role
     const supportStack = app.stackArtifact('PipelineStack-support-elsewhere');
     expect(supportStack).toBeDefined();
-    Template.fromStack(supportStack!).hasResourceProperties('AWS::S3::BucketPolicy', {
+    Template.fromStack(supportStack!, { skipClean: true }).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
           Action: Match.arrayWith(['s3:GetObject*', 's3:GetBucket*', 's3:List*']),
@@ -347,7 +347,7 @@ behavior('action has right settings for cross-account/cross-region deployment', 
     });
 
     // And the key to go along with it
-    Template.fromStack(supportStack!).hasResourceProperties('AWS::KMS::Key', {
+    Template.fromStack(supportStack!, { skipClean: true }).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: Match.arrayWith([Match.objectLike({
           Action: Match.arrayWith(['kms:Decrypt', 'kms:DescribeKey']),
