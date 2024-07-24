@@ -283,7 +283,7 @@ describe('event bus', () => {
     }).toThrow(/'eventSourceName' must satisfy: /);
   });
 
-  test('throw error when versionDescription is too long', () => {
+  test('throw error when description is too long', () => {
     // GIVEN
     const stack = new Stack();
     const tooLongDescription = 'a'.repeat(513);
