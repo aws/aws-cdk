@@ -186,6 +186,7 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         cmnd.append('--atomic')    
     cmnd.extend(['--kubeconfig', kubeconfig])
 
+    print(cmnd)
     maxAttempts = 3
     retry = maxAttempts
     while retry > 0:
