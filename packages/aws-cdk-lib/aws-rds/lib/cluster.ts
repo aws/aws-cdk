@@ -253,7 +253,7 @@ interface DatabaseClusterBaseProps {
    * This feature is only supported by the Aurora database engine.
    *
    * This property must not be used if `s3ImportBuckets` is used.
-   *
+   * To use this property with Aurora PostgreSQL, it must be configured with the S3 import feature enabled when creating the DatabaseClusterEngine
    * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
    *
@@ -284,7 +284,7 @@ interface DatabaseClusterBaseProps {
    * This feature is only supported by the Aurora database engine.
    *
    * This property must not be used if `s3ExportBuckets` is used.
-   *
+   * To use this property with Aurora PostgreSQL, it must be configured with the S3 export feature enabled when creating the DatabaseClusterEngine
    * For MySQL:
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
    *
