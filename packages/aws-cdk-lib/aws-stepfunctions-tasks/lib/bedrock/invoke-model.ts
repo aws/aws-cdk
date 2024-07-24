@@ -140,12 +140,14 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
 
   constructor(scope: Construct, id: string, private readonly props: BedrockInvokeModelProps) {
     super(scope, id, props);
+
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, BedrockInvokeModel.SUPPORTED_INTEGRATION_PATTERNS);
 
     const isBodySpecified = props.body !== undefined;
-    const isInputSpecified = props.input !== undefined && props.input.s3Location !== undefined;
+    //Either specific props.input with bucket name and object key or input s3 path
+    const isInputSpecified = (props.input !== undefined && props.input.s3Location !== undefined) || (props.inputPath !== undefined);
 
     if (isBodySpecified && isInputSpecified) {
       throw new Error('Either `body` or `input` must be specified, but not both.');
@@ -171,7 +173,21 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       }),
     ];
 
-    if (this.props.input !== undefined && this.props.input.s3Location !== undefined) {
+    if (this.props.inputPath !== undefined) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['s3:GetObject'],
+          resources: [
+            Stack.of(this).formatArn({
+              region: '',
+              account: '',
+              service: 's3',
+              resource: '*',
+            }),
+          ],
+        }),
+      );
+    } else if (this.props.input !== undefined && this.props.input.s3Location !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:GetObject'],
@@ -188,7 +204,21 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    if (this.props.output !== undefined && this.props.output.s3Location !== undefined) {
+    if (this.props.outputPath !== undefined) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['s3:PutObject'],
+          resources: [
+            Stack.of(this).formatArn({
+              region: '',
+              account: '',
+              service: 's3',
+              resource: '*',
+            }),
+          ],
+        }),
+      );
+    } else if (this.props.output !== undefined && this.props.output.s3Location !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:PutObject'],
@@ -241,10 +271,10 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Body: this.props.body?.value,
         Input: this.props.input?.s3Location ? {
           S3Uri: `s3://${this.props.input.s3Location.bucketName}/${this.props.input.s3Location.objectKey}`,
-        } : undefined,
+        } : this.props.inputPath ? { S3Uri: this.props.inputPath } : undefined,
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
-        } : undefined,
+        } : this.props.outputPath ? { S3Uri: this.props.outputPath }: undefined,
         GuardrailIdentifier: this.props.guardrail?.guardrailIdentifier,
         GuardrailVersion: this.props.guardrail?.guardrailVersion,
         Trace: this.props.traceEnabled === undefined
@@ -254,5 +284,6 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
             : 'DISABLED',
       }),
     };
-  }
+  };
 }
+
