@@ -265,6 +265,16 @@ export interface BucketDeploymentProps {
    * @default - `x-amz-content-sha256` will not be computed
    */
   readonly signContent?: boolean;
+
+  /**
+   * If set to false, the custom resource will not send back the SourceObjectKeys.
+   * This is useful when you are facing the error `Response object is too long`
+   *
+   * See https://github.com/aws/aws-cdk/issues/28579
+   *
+   * @default true
+   */
+  readonly outputObjectKeys?: boolean;
 }
 
 /**
@@ -422,6 +432,7 @@ export class BucketDeployment extends Construct {
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
+        OutputObjectKeys: props.outputObjectKeys,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },
@@ -519,7 +530,7 @@ export class BucketDeployment extends Construct {
    * first source file in your bucket deployment.
    */
   public get objectKeys(): string[] {
-    const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
+    const objectKeys = cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) });
     return objectKeys;
   }
 
