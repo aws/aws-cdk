@@ -171,7 +171,8 @@ describe('AwsApiCall', () => {
     });
 
     // THEN
-    Template.fromStack(deplossert.scope).hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
+    const template = Template.fromStack(deplossert.scope);
+    template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
       service: 'MyService',
       api: 'MyApi',
       parameters: {
@@ -180,7 +181,7 @@ describe('AwsApiCall', () => {
       },
       expected: JSON.stringify({ $ObjectLike: { Key: 'Value' } }),
     });
-    Template.fromStack(deplossert.scope).findResources('AWS::IAM::Role', {
+    template.findResources('AWS::IAM::Role', {
       SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73: {
         Properties: {
           Policies: [
