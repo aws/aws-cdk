@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d0b3bb5f6b668af449daa5f044ad9c6a696f2bbaca5c7db4c26c1a2e096c0102.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe56b318a569321b0c90041be5100241784438cb8d584b66f84eef4a5b66937b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -460,6 +460,36 @@
             "data": "DeployMe5CustomResource44BEE629"
           }
         ],
+        "/test-bucket-deployments-2/Destination6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination6420F2C8E"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination6/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination6Policy3AED73FF"
+          }
+        ],
+        "/test-bucket-deployments-2/Destination6/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Destination6AutoDeleteObjectsCustomResourceA2DE46BF"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMe6/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMe6AwsCliLayerD729F63F"
+          }
+        ],
+        "/test-bucket-deployments-2/DeployMe6/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployMe6CustomResource947F78DE"
+          }
+        ],
         "/test-bucket-deployments-2/Exports/Output{\"Ref\":\"Destination52A57FAA3\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -498,7 +528,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fdce69567a2620a7ea44970862f580cffafe072c874b91dfd039e48d1f287f83.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9bafe0dc5e256230899b5aa56f7b7b7f9c3c25aa81fa591c4e8e0e29384278ed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

@@ -99,6 +99,19 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
     deploy5.addSource(s3deploy.Source.data('some-key', 'helloworld'));
+
+    const bucket6 = new s3.Bucket(this, 'Destination6', {
+      publicReadAccess: false,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    });
+
+    new s3deploy.BucketDeployment(this, 'DeployMe6', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website-second'))],
+      destinationBucket: bucket6,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      outputObjectKeys: false,
+    });
   }
 }
 
