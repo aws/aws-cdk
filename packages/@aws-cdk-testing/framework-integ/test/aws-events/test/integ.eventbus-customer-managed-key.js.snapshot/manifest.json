@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets": {
+    "eventbue-customer-managed-key.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets.json",
+        "file": "eventbue-customer-managed-key.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-stepfunctions-tasks-bedrock-invoke-model-integ": {
+    "eventbue-customer-managed-key": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
+        "templateFile": "eventbue-customer-managed-key.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9d946bbac52fb88d3fc7c9ea4f26da0e6a6965417c8ae9fb5464e5342269444.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/603e01b8a28b3701dc4a16dcc90ff1b0dd7de76f7c1e20e07b3458a72955b7b0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets"
+          "eventbue-customer-managed-key.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,55 +31,49 @@
         }
       },
       "dependencies": [
-        "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets"
+        "eventbue-customer-managed-key.assets"
       ],
       "metadata": {
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/Resource": [
+        "/eventbue-customer-managed-key/KmsKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleB840431D"
+            "data": "KmsKey46693ADD"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/DefaultPolicy/Resource": [
+        "/eventbue-customer-managed-key/Bus/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+            "data": "BusEA82B648"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachine2E01A3A5"
-          }
-        ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/BootstrapVersion": [
+        "/eventbue-customer-managed-key/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CheckBootstrapVersion": [
+        "/eventbue-customer-managed-key/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ"
+      "displayName": "eventbue-customer-managed-key"
     },
-    "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets": {
+    "eventbuecustomermanagedkeytestDefaultTestDeployAssertBCCA03C5.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets.json",
+        "file": "eventbuecustomermanagedkeytestDefaultTestDeployAssertBCCA03C5.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "InvokeModelDefaultTestDeployAssert9C0D2DFC": {
+    "eventbuecustomermanagedkeytestDefaultTestDeployAssertBCCA03C5": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "InvokeModelDefaultTestDeployAssert9C0D2DFC.template.json",
+        "templateFile": "eventbuecustomermanagedkeytestDefaultTestDeployAssertBCCA03C5.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -88,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets"
+          "eventbuecustomermanagedkeytestDefaultTestDeployAssertBCCA03C5.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -97,23 +91,23 @@
         }
       },
       "dependencies": [
-        "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets"
+        "eventbuecustomermanagedkeytestDefaultTestDeployAssertBCCA03C5.assets"
       ],
       "metadata": {
-        "/InvokeModel/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/eventbue-customer-managed-key-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/InvokeModel/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/eventbue-customer-managed-key-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "InvokeModel/DefaultTest/DeployAssert"
+      "displayName": "eventbue-customer-managed-key-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
