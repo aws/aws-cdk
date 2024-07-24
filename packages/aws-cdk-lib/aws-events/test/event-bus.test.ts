@@ -40,11 +40,13 @@ describe('event bus', () => {
     // WHEN
     new EventBus(stack, 'Bus', {
       eventBusName: 'myEventBus',
+      description: 'myEventBus',
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'myEventBus',
+      Description: 'myEventBus',
     });
   });
 
@@ -279,6 +281,19 @@ describe('event bus', () => {
     expect(() => {
       createInvalidBus();
     }).toThrow(/'eventSourceName' must satisfy: /);
+  });
+
+  test('throw error when versionDescription is too long', () => {
+    // GIVEN
+    const stack = new Stack();
+    const tooLongDescription = 'a'.repeat(513);
+
+    // WHEN / THEN
+    expect(() => {
+      new EventBus(stack, 'EventBusWithTooLongDescription', {
+        description: tooLongDescription,
+      });
+    }).toThrow('description must be less than or equal to 512 characters, got 513');
   });
 
   testDeprecated('can grant PutEvents', () => {
