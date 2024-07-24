@@ -959,17 +959,17 @@
           "version": "0.0.0"
         }
       },
-      "issue-24805": {
-        "id": "issue-24805",
-        "path": "issue-24805",
+      "alb-weight-rando-algorithm-test-integ": {
+        "id": "alb-weight-rando-algorithm-test-integ",
+        "path": "alb-weight-rando-algorithm-test-integ",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "issue-24805/DefaultTest",
+            "path": "alb-weight-rando-algorithm-test-integ/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "issue-24805/DefaultTest/Default",
+                "path": "alb-weight-rando-algorithm-test-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -977,11 +977,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "issue-24805/DefaultTest/DeployAssert",
+                "path": "alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "issue-24805/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -989,7 +989,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "issue-24805/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

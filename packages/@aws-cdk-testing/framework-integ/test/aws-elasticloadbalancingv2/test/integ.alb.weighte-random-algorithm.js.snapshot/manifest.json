@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/37a1425543102d0990932ab0e4323e9cacb5942fb1ba4a2fc329a83f2ab07df0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aef03e0d699e253e350d7760acff4b8589febc9426e399a234003cd0be4c2c9c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -253,19 +253,19 @@
       },
       "displayName": "alb-weight-rando-algorithm-test-stack"
     },
-    "issue24805DefaultTestDeployAssert4F284C49.assets": {
+    "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "issue24805DefaultTestDeployAssert4F284C49.assets.json",
+        "file": "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "issue24805DefaultTestDeployAssert4F284C49": {
+    "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "issue24805DefaultTestDeployAssert4F284C49.template.json",
+        "templateFile": "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -274,7 +274,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "issue24805DefaultTestDeployAssert4F284C49.assets"
+          "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -283,23 +283,23 @@
         }
       },
       "dependencies": [
-        "issue24805DefaultTestDeployAssert4F284C49.assets"
+        "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525.assets"
       ],
       "metadata": {
-        "/issue-24805/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/issue-24805/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "issue-24805/DefaultTest/DeployAssert"
+      "displayName": "alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
