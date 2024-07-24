@@ -1,6 +1,59 @@
 {
  "Resources": {
-  "IAMServiceRole61C662C4": {
+  "Workflow193EF7C1": {
+   "Type": "AWS::Glue::Workflow",
+   "Properties": {
+    "Description": "MyWorkflow"
+   }
+  },
+  "WorkflowOnDemandTriggerEE8E75A1": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": {
+       "Ref": "InboundJobEDA3CBF4"
+      }
+     }
+    ],
+    "Type": "ON_DEMAND",
+    "WorkflowName": {
+     "Ref": "Workflow193EF7C1"
+    }
+   }
+  },
+  "WorkflowConditionalTrigger133C0CA8": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": {
+       "Ref": "OutboundJobB5826414"
+      }
+     }
+    ],
+    "EventBatchingCondition": {
+     "BatchSize": 1,
+     "BatchWindow": 900
+    },
+    "Predicate": {
+     "Conditions": [
+      {
+       "JobName": {
+        "Ref": "InboundJobEDA3CBF4"
+       },
+       "LogicalOperator": "EQUALS",
+       "State": "SUCCEEDED"
+      }
+     ]
+    },
+    "Type": "CONDITIONAL",
+    "WorkflowName": {
+     "Ref": "Workflow193EF7C1"
+    }
+   }
+  },
+  "JobRole014917C6": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -14,24 +67,10 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSGlueServiceRole"
-       ]
-      ]
-     }
-    ]
+    }
    }
   },
-  "IAMServiceRoleDefaultPolicy379D1A0E": {
+  "JobRoleDefaultPolicy5DE0D8F9": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -80,56 +119,19 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "IAMServiceRoleDefaultPolicy379D1A0E",
+    "PolicyName": "JobRoleDefaultPolicy5DE0D8F9",
     "Roles": [
      {
-      "Ref": "IAMServiceRole61C662C4"
+      "Ref": "JobRole014917C6"
      }
     ]
    }
   },
-  "BasicShellJob39F2E7D12A": {
+  "OutboundJobB5826414": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3.9",
-     "ScriptLocation": {
-      "Fn::Join": [
-       "",
-       [
-        "s3://",
-        {
-         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-        },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
-       ]
-      ]
-     }
-    },
-    "DefaultArguments": {
-     "--job-language": "python",
-     "library-set": "analytics",
-     "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true"
-    },
-    "GlueVersion": "3.0",
-    "MaxCapacity": 0.0625,
-    "MaxRetries": 0,
-    "Role": {
-     "Fn::GetAtt": [
-      "IAMServiceRole61C662C4",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "BasicShellJobC7D0761E": {
-   "Type": "AWS::Glue::Job",
-   "Properties": {
-    "Command": {
-     "Name": "pythonshell",
+     "Name": "glueetl",
      "PythonVersion": "3",
      "ScriptLocation": {
       "Fn::Join": [
@@ -150,23 +152,23 @@
      "--enable-metrics": "",
      "--enable-observability-metrics": "true"
     },
-    "GlueVersion": "1.0",
-    "MaxCapacity": 0.0625,
-    "MaxRetries": 0,
+    "GlueVersion": "4.0",
+    "NumberOfWorkers": 2,
     "Role": {
      "Fn::GetAtt": [
-      "IAMServiceRole61C662C4",
+      "JobRole014917C6",
       "Arn"
      ]
-    }
+    },
+    "WorkerType": "G.2X"
    }
   },
-  "DetailedShellJob39CB370B41": {
+  "InboundJobEDA3CBF4": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3.9",
+     "Name": "glueetl",
+     "PythonVersion": "3",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -182,27 +184,26 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
-     "library-set": "analytics",
      "--enable-continuous-cloudwatch-log": "true",
      "--enable-metrics": "",
-     "--enable-observability-metrics": "true",
-     "arg1": "value1",
-     "arg2": "value2"
+     "--enable-observability-metrics": "true"
     },
-    "Description": "My detailed Python 3.9 Shell Job",
-    "GlueVersion": "3.0",
-    "MaxCapacity": 1,
-    "MaxRetries": 0,
-    "Name": "My Python 3.9 Shell Job",
+    "GlueVersion": "4.0",
+    "NumberOfWorkers": 2,
     "Role": {
      "Fn::GetAtt": [
-      "IAMServiceRole61C662C4",
+      "JobRole014917C6",
       "Arn"
      ]
     },
-    "Tags": {
-     "key": "value"
-    }
+    "WorkerType": "G.2X"
+   }
+  }
+ },
+ "Outputs": {
+  "WorkflowName": {
+   "Value": {
+    "Ref": "Workflow193EF7C1"
    }
   }
  },
