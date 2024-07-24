@@ -222,6 +222,17 @@ export interface LaunchTemplateProps {
   readonly launchTemplateName?: string;
 
   /**
+   * A description for the first version of the launch template.
+   *
+   * The version description must be maximum 255 characters long.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#cfn-ec2-launchtemplate-versiondescription
+   *
+   * @default - No description
+   */
+  readonly versionDescription?: string;
+
+  /**
    * Type of instance to launch.
    *
    * @default - This Launch Template does not specify a default Instance Type.
@@ -735,8 +746,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       ? [{ deviceIndex: 0, associatePublicIpAddress: props.associatePublicIpAddress, groups: securityGroupsToken }]
       : undefined;
 
+    if (props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
+      throw new Error(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`);
+    }
+
     const resource = new CfnLaunchTemplate(this, 'Resource', {
       launchTemplateName: props?.launchTemplateName,
+      versionDescription: props?.versionDescription,
       launchTemplateData: {
         blockDeviceMappings: props?.blockDevices !== undefined ? launchTemplateBlockDeviceMappings(this, props.blockDevices) : undefined,
         creditSpecification: props?.cpuCredits !== undefined ? {
