@@ -1,6 +1,7 @@
 export * from './lambda/invoke-function';
 export * from './lambda/run-lambda-task';
 export * from './lambda/invoke';
+export * from './lambda/call-aws-service-cross-region';
 export * from './invoke-activity';
 export * from './ecs/run-ecs-task-base'; // Remove this once we can
 export * from './ecs/run-ecs-task-base-types';
@@ -54,5 +55,6 @@ export * from './apigateway';
 export * from './eventbridge/put-events';
 export * from './aws-sdk/call-aws-service';
 export * from './bedrock/invoke-model';
+export * from './bedrock/guardrail';
 export * from './http/invoke';
 export * from './mediaconvert/create-job';
