@@ -47,7 +47,7 @@ export class HttpApiCall extends ApiCallBase {
 
             new CfnOutput(node, 'AssertionResults', {
               value: result,
-              key: `AssertionResults${id.replace(/[\W_]+/g, '')}`
+              key: `AssertionResults${id.replace(/[\W_]+/g, '')}`,
             });
           }
         }
