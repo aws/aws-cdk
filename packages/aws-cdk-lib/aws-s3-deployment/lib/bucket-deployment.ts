@@ -530,7 +530,7 @@ export class BucketDeployment extends Construct {
    * first source file in your bucket deployment.
    */
   public get objectKeys(): string[] {
-    const objectKeys = cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) });
+    const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
     return objectKeys;
   }
 

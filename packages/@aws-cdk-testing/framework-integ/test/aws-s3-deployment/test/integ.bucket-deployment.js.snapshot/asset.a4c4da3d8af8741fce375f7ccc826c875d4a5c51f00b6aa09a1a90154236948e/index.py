@@ -64,6 +64,7 @@ def handler(event, context):
             exclude             = props.get('Exclude', [])
             include             = props.get('Include', [])
             sign_content        = props.get('SignContent', 'false').lower() == 'true'
+            output_object_keys  = props.get('OutputObjectKeys', 'true') == 'true'
 
             # backwards compatibility - if "SourceMarkers" is not specified,
             # assume all sources have an empty market map
@@ -135,7 +136,7 @@ def handler(event, context):
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
             # Passing through the ARN sequences dependencees on the deployment
             'DestinationBucketArn': props.get('DestinationBucketArn'),
-            'SourceObjectKeys': props.get('SourceObjectKeys'),
+            **({'SourceObjectKeys': props.get('SourceObjectKeys')} if output_object_keys else {})
         })
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
