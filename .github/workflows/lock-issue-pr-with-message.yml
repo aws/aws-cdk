@@ -19,13 +19,12 @@ jobs:
           message: |
             Comments on closed issues and PRs are hard for our team to see. 
             If you need help, please open a new issue that references this one.
-            If you wish to keep having a conversation with other community members under this issue feel free to do so.
   lock:
     permissions:
       pull-requests: write
       issues: write
     runs-on: ubuntu-latest
-    needs: auto_comment
+    needs: auto_comment # only run after comment is complete
     steps:
       - name: Lock closed issue or PR
         run: |
