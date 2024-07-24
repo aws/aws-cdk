@@ -41,6 +41,25 @@
          ]
         ]
        }
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -72,7 +91,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"Generate a list of five first names.\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt2\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"names.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"Generate a list of five first names.\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt2\":{\"Next\":\"Prompt3\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"names.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -84,7 +103,19 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:\\n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}}},\"TimeoutSeconds\":30}"
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:\\n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt3\":{\"End\":true,\"Type\":\"Task\",\"InputPath\":\"$.names\",\"OutputPath\":\"$.names\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/amazon.titan-text-express-v1\",\"Input\":{\"S3Uri.$\":\"$.names\"},\"Output\":{\"S3Uri.$\":\"$.names\"}}}},\"TimeoutSeconds\":30}"
       ]
      ]
     },

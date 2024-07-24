@@ -84,7 +84,6 @@ describe('tests', () => {
       idleTimeout: cdk.Duration.seconds(1000),
       dropInvalidHeaderFields: true,
       clientKeepAlive: cdk.Duration.seconds(200),
-      denyAllIgwTraffic: true,
       preserveHostHeader: true,
       xAmznTlsVersionAndCipherSuiteHeaders: true,
       preserveXffClientPort: true,
@@ -97,10 +96,6 @@ describe('tests', () => {
       LoadBalancerAttributes: [
         {
           Key: 'deletion_protection.enabled',
-          Value: 'true',
-        },
-        {
-          Key: 'ipv6.deny_all_igw_traffic',
           Value: 'true',
         },
         {
@@ -169,6 +164,26 @@ describe('tests', () => {
         clientKeepAlive: cdk.Duration.millis(100),
       });
     }).toThrow('\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: 100 milliseconds');
+  });
+
+  test.each([
+    [false, undefined],
+    [true, undefined],
+    [false, elbv2.IpAddressType.IPV4],
+    [true, elbv2.IpAddressType.IPV4],
+  ])('throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.', (denyAllIgwTraffic, ipAddressType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: denyAllIgwTraffic,
+        ipAddressType: ipAddressType,
+      });
+    }).toThrow(`'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`);
   });
 
   describe('Desync mitigation mode', () => {
@@ -669,6 +684,29 @@ describe('tests', () => {
     }
   });
 
+  test.each([
+    elbv2.HttpCodeElb.ELB_500_COUNT,
+    elbv2.HttpCodeElb.ELB_502_COUNT,
+    elbv2.HttpCodeElb.ELB_503_COUNT,
+    elbv2.HttpCodeElb.ELB_504_COUNT,
+  ])('use specific load balancer generated 5XX metrics', (metricName) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const metric = lb.metrics.httpCodeElb(metricName);
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/ApplicationELB');
+    expect(metric.statistic).toEqual('Sum');
+    expect(metric.metricName).toEqual(metricName);
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] },
+    });
+  });
+
   test('loadBalancerName', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -971,6 +1009,27 @@ describe('tests', () => {
       });
     });
 
+    test('Can create internet-facing dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: false,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+
     test('Can create internal dualstack ApplicationLoadBalancer', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -979,6 +1038,27 @@ describe('tests', () => {
       // WHEN
       new elbv2.ApplicationLoadBalancer(stack, 'LB', {
         vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test.each([undefined, false])('Can create internal dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to true', (internetFacing) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: true,
+        internetFacing: internetFacing,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
       });
 
