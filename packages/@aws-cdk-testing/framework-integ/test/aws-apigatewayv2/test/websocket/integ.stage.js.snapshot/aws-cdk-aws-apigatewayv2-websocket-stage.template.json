@@ -14,11 +14,12 @@
     "ApiId": {
      "Ref": "WebSocketApi34BCF99B"
     },
-    "StageName": "dev",
     "DefaultRouteSettings": {
      "ThrottlingBurstLimit": 1000,
      "ThrottlingRateLimit": 1000
-    }
+    },
+    "Description": "My Stage",
+    "StageName": "dev"
    }
   }
  },
