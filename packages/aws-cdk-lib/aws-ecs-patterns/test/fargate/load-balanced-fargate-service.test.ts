@@ -1433,6 +1433,34 @@ describe('ApplicationLoadBalancedFargateService', () => {
       },
     });
   });
+
+  test('specify containerCpu and containerMemoryLimitMiB', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      loadBalancerName: 'alb-test-load-balancer',
+      containerCpu: 128,
+      containerMemoryLimitMiB: 256,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Cpu: 128,
+          Memory: 256,
+        }),
+      ],
+    });
+  });
 });
 
 describe('NetworkLoadBalancedFargateService', () => {
@@ -2064,34 +2092,6 @@ describe('NetworkLoadBalancedFargateService', () => {
       VpcId: {
         Ref: 'Vpc8378EB38',
       },
-    });
-  });
-
-  test('specify containerCpu And containerMemoryLimitMiB', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-    // WHEN
-    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-      loadBalancerName: 'alb-test-load-balancer',
-      containerCpu: 128,
-      containerMemoryLimitMiB: 256,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        Match.objectLike({
-          Cpu: 128,
-          Memory: 256,
-        }),
-      ],
     });
   });
 });
