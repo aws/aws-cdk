@@ -6,7 +6,7 @@ import { hashcode } from './private/util';
 
 // The only supported extension for local asset model data
 // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-model-containerdefinition.html#cfn-sagemaker-model-containerdefinition-modeldataurl
-const COMPRESSED_ARTIFACT_EXTENSION = 'tar.gz';
+const COMPRESSED_ARTIFACT_EXTENSION = '.tar.gz';
 
 /**
  * Specifies how the ML model data is prepared.
