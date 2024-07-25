@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc60e6498e01ff2afc7280330547559fc0e8c9c15f5ff05fc560ea731f76277e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f3c7c62924a5ad7e781abc71a57fb0540e3c9a334acad335dfe1da25e271f381.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -238,6 +238,36 @@
             "data": "MyBucketF68F3FF0"
           }
         ],
+        "/aws-appconfig-configuration/MyBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketPolicyE7FBAC7B"
+          }
+        ],
+        "/aws-appconfig-configuration/MyBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketAutoDeleteObjectsCustomResource2C28D565"
+          }
+        ],
+        "/aws-appconfig-configuration/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-appconfig-configuration/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-appconfig-configuration/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
         "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -284,6 +314,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyConfigFromBucket064B5420"
+          }
+        ],
+        "/aws-appconfig-configuration/DummyRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DummyRoleA4B7EAF1"
+          }
+        ],
+        "/aws-appconfig-configuration/DummyRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DummyRoleDefaultPolicy68837380"
+          }
+        ],
+        "/aws-appconfig-configuration/MyConfigFromBucketWithRole/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromBucketWithRoleDeploymentStrategy109EA62F"
+          }
+        ],
+        "/aws-appconfig-configuration/MyConfigFromBucketWithRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFromBucketWithRole625F4717"
           }
         ],
         "/aws-appconfig-configuration/MySecret/Resource": [
@@ -434,24 +488,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "MyAppConfigEnvDeployLater26FA1032": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigEnvDeployLater26FA1032",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyHostedConfigFromJsonDeploymentFA00BC528601D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonDeploymentFA00BC528601D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
