@@ -45,7 +45,7 @@ export class KinesisStream implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
-    this.stream.grantWrite(role)
+    this.stream.grantWrite(role);
 
     return {
       arn: this.stream.streamArn,
