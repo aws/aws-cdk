@@ -40,13 +40,26 @@ describe('event bus', () => {
     // WHEN
     new EventBus(stack, 'Bus', {
       eventBusName: 'myEventBus',
-      description: 'myEventBus',
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'myEventBus',
-      Description: 'myEventBus',
+    });
+  });
+
+  test('event bus with description', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new EventBus(stack, 'myEventBus', {
+      description: 'myEventBusDescription',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Description: 'myEventBusDescription',
     });
   });
 
@@ -283,7 +296,7 @@ describe('event bus', () => {
     }).toThrow(/'eventSourceName' must satisfy: /);
   });
 
-  test('throw error when description is too long', () => {
+  test('event bus description cannot be too long', () => {
     // GIVEN
     const stack = new Stack();
     const tooLongDescription = 'a'.repeat(513);
