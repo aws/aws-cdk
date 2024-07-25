@@ -1,7 +1,7 @@
 // Fixture with packages imported, but nothing else
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { ContainerImage, Endpoint, EndpointConfig,Model, ModelData } from '@aws-cdk/aws-sagemaker-alpha';
+import { CompressionType, ContainerImage, Endpoint, EndpointConfig, Model, ModelData, S3DataType } from '@aws-cdk/aws-sagemaker-alpha';
 
 class Fixture extends cdk.Stack {
   constructor(scope: Construct, id: string) {
