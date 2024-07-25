@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "31f8e9075d8feba06c277f36abd194ec9372fb7253f0b1e3cbe4f4779bc0a868": {
+      "source": {
+        "path": "AwsCdkFsxLustreAutomaticBackup.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "31f8e9075d8feba06c277f36abd194ec9372fb7253f0b1e3cbe4f4779bc0a868.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
