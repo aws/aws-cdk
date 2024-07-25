@@ -104,13 +104,12 @@ const definition = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
 }));
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+  definition,
   timeout: cdk.Duration.seconds(30),
 });
 
 const testCase = new IntegTest(app, 'HttpInvokeTest', {
   testCases: [stack],
-  allowDestroy: ['AWS::ApiGateway::Deployment'],
 });
 
 // Start an execution
