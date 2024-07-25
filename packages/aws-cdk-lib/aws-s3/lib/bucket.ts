@@ -4,7 +4,7 @@ import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule } from './rule';
+import { LifecycleRule, StorageClass } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
@@ -30,6 +30,7 @@ import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
+import { stat } from 'fs';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -1400,6 +1401,33 @@ export abstract class TargetObjectKeyFormat {
   public abstract _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'];
 }
 
+export interface ReplicationRule {
+  readonly destination: ReplicationDestination;
+  readonly replicationTimeControl?: boolean;
+  readonly replicationTimeControlMetrics?: boolean;
+  readonly kmskey?: kms.IKey;
+  readonly storageClass?: StorageClass;
+  readonly sseKmsEncryptedObjects?: boolean;
+  readonly replicaModifications?: boolean;
+  readonly priority?: number;
+  readonly deleteMarkerReplication?: boolean;
+  readonly id?: string;
+  readonly prefixFilter?: string;
+  readonly tagFilter?: Tag[];
+}
+
+export class ReplicationDestination {
+  public static sameAccount(bucket: IBucket): ReplicationDestination {
+    return new ReplicationDestination(bucket);
+  }
+
+  public static crossAccount(bucket: IBucket, account: string, accessControlTransition?: boolean): ReplicationDestination {
+    return new ReplicationDestination(bucket, account, accessControlTransition);
+  }
+
+  private constructor(public readonly bucket: IBucket, public readonly account?: string, public readonly accessControlTransition?: boolean) {}
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1671,6 +1699,8 @@ export interface BucketProps {
   * @default No minimum TLS version is enforced.
   */
   readonly minimumTLSVersion?: number;
+
+  readonly replicationRules?: ReplicationRule[];
 }
 
 /**
@@ -1696,6 +1726,7 @@ export interface Tag {
  *
  * @example
  * import { RemovalPolicy } from 'aws-cdk-lib';
+import { render } from '../../aws-stepfunctions/test/private/render-util';
  *
  * new s3.Bucket(scope, 'Bucket', {
  *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -1920,6 +1951,8 @@ export class Bucket extends BucketBase {
     this.isWebsite = (websiteConfiguration !== undefined);
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
+
+    const replicationConfiguration = this.renderReplicationConfiguration(props);
 
     this.objectOwnership = props.objectOwnership;
     const resource = new CfnBucket(this, 'Resource', {
@@ -2457,6 +2490,63 @@ export class Bucket extends BucketBase {
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
       routingRules,
+    };
+  }
+
+  private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
+    if (!props.replicationRules || props.replicationRules.length === 0) {
+      return undefined;
+    }
+
+    const role = new iam.Role(this, 'ReplicationRole', {
+      assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+    });
+
+    return {
+      role: role.roleArn,
+      rules: props.replicationRules.map((rule) => {
+        const sourceSelectionCriteria = (rule.replicaModifications != null || rule.sseKmsEncryptedObjects != null) ? {
+          replicaModifications: rule.replicaModifications != null ? {
+            status: rule.replicaModifications ? 'Enabled' : 'Disabled',
+          } : undefined,
+          sseKmsEncryptedObjects: rule.sseKmsEncryptedObjects != null ? {
+            status: rule.sseKmsEncryptedObjects ? 'Enabled' : 'Disabled',
+          } : undefined,
+        } : undefined;
+
+        return {
+          id: rule.id,
+          priority: rule.priority,
+          status: 'Enabled',
+          destination: {
+            bucket: rule.destination.bucket.bucketArn,
+            account: rule.destination.account,
+            storageClass: rule.storageClass?.toString(),
+            accessControlTranslation: rule.destination.accessControlTransition ? {
+              owner: 'Destination',
+            } : undefined,
+            encryptionConfiguration: rule.kmskey ? {
+              replicaKmsKeyId: rule.kmskey.keyArn,
+            } : undefined,
+            replicationTime: rule.replicationTimeControl != null ? {
+              status: rule.replicationTimeControl ? 'Enabled' : 'Disabled',
+              time: {
+                minutes: 15,
+              },
+            } : undefined,
+            metrics: rule.replicationTimeControlMetrics != null ? {
+              status: rule.replicationTimeControlMetrics ? 'Enabled' : 'Disabled',
+              eventThreshold: {
+                minutes: 15,
+              },
+            } : undefined,
+          },
+          deleteMarkerReplication: rule.deleteMarkerReplication != null ? {
+            status: rule.deleteMarkerReplication ? 'Enabled' : 'Disabled',
+          } : undefined,
+          sourceSelectionCriteria,
+        };
+      }),
     };
   }
 
