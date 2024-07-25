@@ -47,7 +47,7 @@ testResource.addMethod(
     ],
     passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
     requestTemplates: {
-      'application/json': '{ "statusCode": 200 }',
+      'application/json': JSON.stringify({ statusCode: 200 }),
     },
   }),
   {
@@ -67,13 +67,15 @@ testResource.addResource('{id}').addMethod(
       {
         statusCode: '200',
         responseTemplates: {
-          'application/json': JSON.stringify({ message: 'Hello, tester!' }),
+          'application/json': JSON.stringify({
+            path: '$context.path',
+          }),
         },
       },
     ],
     passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
     requestTemplates: {
-      'application/json': '{ "statusCode": 200 }',
+      'application/json': JSON.stringify({ statusCode: 200 }),
     },
   }),
   {
@@ -128,6 +130,12 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 
 // assert the results
 describe.expect(ExpectedResult.objectLike({
+  output: ExpectedResult.objectLike({
+    ResponseBody: {
+      path: '/test/abc-123',
+    },
+    StatusCode: 200,
+  }),
   status: 'SUCCEEDED',
 }));
 
