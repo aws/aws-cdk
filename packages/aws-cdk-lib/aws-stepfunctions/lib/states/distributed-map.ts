@@ -37,8 +37,6 @@ export interface DistributedMapProps extends MapBaseProps {
   readonly itemReader?: IItemReader;
 
   /**
-   * ItemReaderPath
-   *
    * Configuration for where to read items dataset in S3 to iterate, as JsonPath
    *
    * @default - No itemReaderPath
