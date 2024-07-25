@@ -340,7 +340,7 @@ describe('configuration', () => {
     });
 
     // THEN
-    // should have a new role provisioned with AllowAppConfigReadFromSourcePolicy
+    // should NOT have a new role provisioned with AllowAppConfigReadFromSourcePolicy
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
       AssumeRolePolicyDocument: {
         Statement: [
