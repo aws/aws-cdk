@@ -1,0 +1,1 @@
+This file exists for test purposes only and is not a real SageMaker Model artifact

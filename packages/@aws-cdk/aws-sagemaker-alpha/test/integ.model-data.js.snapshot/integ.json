@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-model-data/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sagemaker-model-data"
+      ],
+      "assertionStack": "integtest-model-data/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestmodeldataDefaultTestDeployAssertF97A9492"
+    }
+  }
+}
