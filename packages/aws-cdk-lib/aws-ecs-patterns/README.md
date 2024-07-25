@@ -70,9 +70,9 @@ By setting `redirectHTTP` to true, CDK will automatically create a listener on p
 
 If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
 
-If you specify the option `containerCpu` allows you to set the minimum number of CPU units to reserve for the container.
+To set the minimum number of CPU units to reserve for the container, you can use the `containerCpu` property.
 
-If you specify the option `containerMemoryLimitMiB` allows you to set the amount of memory (in MiB) to provide to the container.
+To set the amount of memory (in MiB) to provide to the container, you can use the `containerMemoryLimitMiB` property.
 
 If you need to encrypt the traffic between the load balancer and the ECS tasks, you can set the `targetProtocol` to `HTTPS`.
 
