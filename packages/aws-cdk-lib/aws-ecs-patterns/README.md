@@ -46,6 +46,8 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
     command: ['command'],
     entryPoint: ['entry', 'point'],
   },
+  containerCpu: 256,
+  containerMemoryLimitMiB: 512,
 });
 
 loadBalancedFargateService.targetGroup.configureHealthCheck({
