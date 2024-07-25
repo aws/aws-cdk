@@ -1826,15 +1826,13 @@ integTest('hotswap deployment for ecs service detects failed deployment and erro
 integTest('hotswap ECS deployment respects properties override', withDefaultFixture(async (fixture) => {
   // GIVEN
   const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
-    captureStderr: false,
+    captureStderr: true,
   });
 
   // WHEN
   await fixture.cdkDeploy('ecs-hotswap', {
     options: [
       '--hotswap',
-      '--hotswap-ecs-minimum-healthy-percent', '100',
-      '--hotswap-ecs-maximum-healthy-percent', '200',
     ],
     modEnv: {
       DYNAMIC_ECS_PROPERTY_VALUE: 'new value',

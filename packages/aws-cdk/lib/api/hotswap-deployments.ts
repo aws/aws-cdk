@@ -6,7 +6,7 @@ import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, HotswapProperties, ClassifiedResourceChanges, reportNonHotswappableChange, reportNonHotswappableResource } from './hotswap/common';
+import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange, reportNonHotswappableResource } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { skipChangeForS3DeployCustomResourcePolicy, isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
@@ -16,7 +16,7 @@ import { CloudFormationStack } from './util/cloudformation';
 import { print } from '../logging';
 
 type HotswapDetector = (
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hostswapProperties: HotswapProperties,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate
 ) => Promise<ChangeHotswapResult>;
 
 const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
@@ -59,7 +59,7 @@ const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
 export async function tryHotswapDeployment(
   sdkProvider: SdkProvider, assetParams: { [key: string]: string },
   cloudFormationStack: CloudFormationStack, stackArtifact: cxapi.CloudFormationStackArtifact,
-  hotswapMode: HotswapMode, hotswapProperties: HotswapProperties,
+  hotswapMode: HotswapMode,
 ): Promise<DeployStackResult | undefined> {
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
@@ -83,7 +83,7 @@ export async function tryHotswapDeployment(
 
   const stackChanges = cfn_diff.fullDiff(currentTemplate.deployedRootTemplate, stackArtifact.template);
   const { hotswappableChanges, nonHotswappableChanges } = await classifyResourceChanges(
-    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStacks, hotswapProperties,
+    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStacks,
   );
 
   logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
@@ -110,7 +110,6 @@ async function classifyResourceChanges(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackTemplates },
-  hotswapProperties: HotswapProperties,
 ): Promise<ClassifiedResourceChanges> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
@@ -135,7 +134,6 @@ async function classifyResourceChanges(
         nestedStackNames,
         evaluateCfnTemplate,
         sdk,
-        hotswapProperties,
       );
       hotswappableResources.push(...nestedHotswappableResources.hotswappableChanges);
       nonHotswappableResources.push(...nestedHotswappableResources.nonHotswappableChanges);
@@ -156,7 +154,7 @@ async function classifyResourceChanges(
     const resourceType: string = hotswappableChangeCandidate.newValue.Type;
     if (resourceType in RESOURCE_DETECTORS) {
       // run detector functions lazily to prevent unhandled promise rejections
-      promises.push(() => RESOURCE_DETECTORS[resourceType](logicalId, hotswappableChangeCandidate, evaluateCfnTemplate, hotswapProperties));
+      promises.push(() => RESOURCE_DETECTORS[resourceType](logicalId, hotswappableChangeCandidate, evaluateCfnTemplate));
     } else {
       reportNonHotswappableChange(nonHotswappableResources, hotswappableChangeCandidate, undefined, 'This resource type is not supported for hotswap deployments');
     }
@@ -236,7 +234,6 @@ async function findNestedHotswappableChanges(
   nestedStackTemplates: { [nestedStackName: string]: NestedStackTemplates },
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
-  hotswapProperties: HotswapProperties,
 ): Promise<ClassifiedResourceChanges> {
   const nestedStack = nestedStackTemplates[logicalId];
   if (!nestedStack.physicalName) {
@@ -260,7 +257,7 @@ async function findNestedHotswappableChanges(
     nestedStackTemplates[logicalId].deployedTemplate, nestedStackTemplates[logicalId].generatedTemplate,
   );
 
-  return classifyResourceChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackTemplates[logicalId].nestedStackTemplates, hotswapProperties);
+  return classifyResourceChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackTemplates[logicalId].nestedStackTemplates);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */
