@@ -51,6 +51,7 @@ class EksClusterStack extends Stack {
       chartAsset: chartAsset,
     });
 
+    // https://gallery.ecr.aws/aws-controllers-k8s/s3-chart
     this.cluster.addHelmChart('test-oci-chart', {
       chart: 's3-chart',
       release: 's3-chart',
@@ -73,6 +74,7 @@ class EksClusterStack extends Stack {
     // 5. Change `repository` in above test to oci://YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/helm-charts-test
     // 6. Run integration tests as usual
 
+    // https://gallery.ecr.aws/aws-controllers-k8s/lambda-chart
     this.cluster.addHelmChart('test-oci-chart-different-release-name', {
       chart: 'lambda-chart',
       release: 'lambda-chart-release',
@@ -88,11 +90,12 @@ class EksClusterStack extends Stack {
     });
 
     // testing the disable mechanism of the installation of CRDs
+    // https://gallery.ecr.aws/aws-controllers-k8s/rds-chart
     this.cluster.addHelmChart('test-skip-crd-installation', {
       chart: 'rds-chart',
       release: 'rds-chart-release',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/rds-chart',
-      version: 'v1.1.2',
+      version: '1.4.1',
       namespace: 'ack-system',
       createNamespace: true,
       skipCrds: true,
@@ -103,7 +106,8 @@ class EksClusterStack extends Stack {
       },
     });
 
-    //testing installation with atomic flag set to true
+    // testing installation with atomic flag set to true
+    // https://gallery.ecr.aws/aws-controllers-k8s/sns-chart
     this.cluster.addHelmChart('test-atomic-installation', {
       chart: 'iam-chart',
       release: 'iam-chart-release',
@@ -120,6 +124,7 @@ class EksClusterStack extends Stack {
       },
     });
 
+    // https://github.com/orgs/grafana-operator/packages/container/package/helm-charts%2Fgrafana-operator
     this.cluster.addHelmChart('test-non-ecr-oci-chart', {
       chart: 'grafana-operator',
       release: 'grafana-operator-release',

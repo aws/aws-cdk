@@ -1177,7 +1177,11 @@
     },
     "Release": "rds-chart-release",
     "Chart": "rds-chart",
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-helm-chart.js.snapshot/aws-cdk-eks-helm-test.template.json
     "Version": "v1.1.2",
+=======
+    "Version": "1.4.1",
+>>>>>>> main:packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-helm-asset.js.snapshot/aws-cdk-eks-helm-test.template.json
     "Values": {
      "Fn::Join": [
       "",
@@ -1219,9 +1223,15 @@
       "Arn"
      ]
     },
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-helm-chart.js.snapshot/aws-cdk-eks-helm-test.template.json
     "Release": "iam-chart-release",
     "Chart": "iam-chart",
     "Version": "1.3.8",
+=======
+    "Release": "ec2-chart-release",
+    "Chart": "ec2-chart",
+    "Version": "1.2.13",
+>>>>>>> main:packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-helm-asset.js.snapshot/aws-cdk-eks-helm-test.template.json
     "Values": {
      "Fn::Join": [
       "",
@@ -1235,7 +1245,11 @@
      ]
     },
     "Namespace": "ack-system",
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-helm-chart.js.snapshot/aws-cdk-eks-helm-test.template.json
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/iam-chart",
+=======
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/ec2-chart",
+>>>>>>> main:packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-helm-asset.js.snapshot/aws-cdk-eks-helm-test.template.json
     "CreateNamespace": true,
     "SkipCrds": true,
     "Atomic": true
@@ -1346,7 +1360,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e23ed13a7821108db50050a225f7b03107502f583d2faa3a1f82a71756081a75.json"
+       "/103a1c2a2539a9843f062d1d618f1fbd8483ea496405f34f6aca5ae90f507af8.json"
       ]
      ]
     }
