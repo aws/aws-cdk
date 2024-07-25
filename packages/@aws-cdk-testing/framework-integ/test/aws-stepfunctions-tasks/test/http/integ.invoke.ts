@@ -32,9 +32,36 @@ const authorizer = new apigateway.TokenAuthorizer(stack, 'Authorizer', {
 });
 
 const api = new apigateway.RestApi(stack, 'IntegRestApi');
+const testResource = api.root.addResource('test');
 
-api.root.addResource('test').addMethod(
+testResource.addMethod(
   'GET',
+  new apigateway.MockIntegration({
+    integrationResponses: [
+      {
+        statusCode: '200',
+        responseTemplates: {
+          'application/json': JSON.stringify({ message: 'Hello, tester!' }),
+        },
+      },
+    ],
+    passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+    requestTemplates: {
+      'application/json': '{ "statusCode": 200 }',
+    },
+  }),
+  {
+    authorizer,
+    methodResponses: [
+      {
+        statusCode: '200',
+      },
+    ],
+  },
+);
+
+testResource.addResource('{id}').addMethod(
+  'POST',
   new apigateway.MockIntegration({
     integrationResponses: [
       {
@@ -63,15 +90,21 @@ const connection = new events.Connection(stack, 'Connection', {
   authorization: events.Authorization.basic(username, cdk.SecretValue.unsafePlainText(password)),
 });
 
-const httpInvokeTask = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
+const definition = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
   apiRoot: api.urlForPath('/'),
   apiEndpoint: sfn.TaskInput.fromText('/test'),
   connection,
   method: sfn.TaskInput.fromText('GET'),
-});
+  resultPath: sfn.JsonPath.DISCARD,
+}).next(new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint with Path Parameter', {
+  apiRoot: api.urlForPath('/'),
+  apiEndpoint: sfn.TaskInput.fromText(sfn.JsonPath.format('/test/{}', sfn.JsonPath.stringAt('$.id'))),
+  connection,
+  method: sfn.TaskInput.fromText('POST'),
+}));
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: httpInvokeTask,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   timeout: cdk.Duration.seconds(30),
 });
 
@@ -82,6 +115,9 @@ const testCase = new IntegTest(app, 'HttpInvokeTest', {
 // Start an execution
 const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: sm.stateMachineArn,
+  input: JSON.stringify({
+    id: 'abc-123',
+  }),
 });
 
 // describe the results of the execution
