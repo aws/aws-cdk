@@ -443,6 +443,13 @@ Hotswapping is currently supported for the following changes
 - VTL mapping template changes for AppSync Resolvers and Functions.
 - Schema changes for AppSync GraphQL Apis.
 
+You can optionally pass additional parameters to configure the behavior of your hotswap deployments. A list of the currently available configuration options can be found below.
+
+| Service | Parameter |
+| ------- | --------- |
+| ECS | hotswap-ecs-minimum-healthy-percent |
+| ECS | hotswap-ecs-maximum-healthy-percent |
+
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
 **Never use this flag for your production deployments**!
