@@ -109,6 +109,7 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 });
 
 const testCase = new IntegTest(app, 'HttpInvokeTest', {
+  allowDestroy: ['AWS::ApiGateway::Deployment'],
   testCases: [stack],
 });
 
