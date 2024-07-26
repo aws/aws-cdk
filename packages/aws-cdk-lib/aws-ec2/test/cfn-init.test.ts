@@ -183,10 +183,9 @@ test('deepMerge properly deduplicates non-command arguments', () => {
   ]);
 
   // THEN
-  console.log(config._bind(stack, linuxOptions()).config);
   expect(config._bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
     sources: {
-      "/tmp/foo": "https://amazon.com/foo.zip",
+      '/tmp/foo': 'https://amazon.com/foo.zip',
     },
   }));
 });
