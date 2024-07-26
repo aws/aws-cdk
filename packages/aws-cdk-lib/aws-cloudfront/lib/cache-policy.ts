@@ -108,6 +108,16 @@ export class CachePolicy extends Resource implements ICachePolicy {
   /** Designed for use with an origin that is an AWS Elemental MediaPackage endpoint. */
   public static readonly ELEMENTAL_MEDIA_PACKAGE = CachePolicy.fromManagedCachePolicy('08627262-05a9-4f76-9ded-b50ca2e3a84f');
 
+  /**
+   * Designed for use with an origin that returns Cache-Control HTTP response headers and does not serve different content based on values present in the query string.
+   */
+  public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS = CachePolicy.fromManagedCachePolicy('83da9c7e-98b4-4e11-a168-04f0df8e2c65');
+
+  /**
+   * Designed for use with an origin that returns Cache-Control HTTP response headers and serves different content based on values present in the query string.
+   */
+  public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS = CachePolicy.fromManagedCachePolicy('4cc15a8a-d715-48a4-82b8-cc0b614638fe');
+
   /** Imports a Cache Policy from its id. */
   public static fromCachePolicyId(scope: Construct, id: string, cachePolicyId: string): ICachePolicy {
     return new class extends Resource implements ICachePolicy {
