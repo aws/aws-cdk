@@ -106,7 +106,7 @@ const definition = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
 }));
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   timeout: cdk.Duration.seconds(30),
 });
 
@@ -132,11 +132,11 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 describe.expect(ExpectedResult.objectLike({
   output: ExpectedResult.objectLike({
     ResponseBody: {
-      path: '/test/abc-123',
+      path: '/test/abc-123x',
     },
     StatusCode: 200,
   }),
-  status: 'SUCCEEDED',
+  status: 'BANANAS',
 }));
 
 app.synth();
