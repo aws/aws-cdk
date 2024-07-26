@@ -174,6 +174,23 @@ test('duplicate config arguments not deduplicated', () => {
   });
 });
 
+test('deepMerge properly deduplicates non-command arguments', () => {
+  // WHEN
+  const config = new ec2.InitConfig([
+    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip'),
+    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip'),
+    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip'),
+  ]);
+
+  // THEN
+  console.log(config._bind(stack, linuxOptions()).config);
+  expect(config._bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
+    sources: {
+      "/tmp/foo": "https://amazon.com/foo.zip",
+    },
+  }));
+});
+
 describe('userdata', () => {
   let simpleInit: ec2.CloudFormationInit;
   beforeEach(() => {
