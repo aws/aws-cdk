@@ -30,7 +30,6 @@ import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
-import { stat } from 'fs';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -1726,7 +1725,7 @@ export interface Tag {
  *
  * @example
  * import { RemovalPolicy } from 'aws-cdk-lib';
-import { render } from '../../aws-stepfunctions/test/private/render-util';
+ * import { render } from '../../aws-stepfunctions/test/private/render-util';
  *
  * new s3.Bucket(scope, 'Bucket', {
  *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -1972,6 +1971,7 @@ export class Bucket extends BucketBase {
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
+      replicationConfiguration,
     });
     this._resource = resource;
 
