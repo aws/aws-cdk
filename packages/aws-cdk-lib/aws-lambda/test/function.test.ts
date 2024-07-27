@@ -3489,16 +3489,29 @@ describe('function', () => {
       })).toThrowError('SnapStart currently not supported by runtime nodejs18.x');
     });
 
-    test('arm64 validation for snapStart', () => {
+    test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
-
-      expect(() => new lambda.Function(stack, 'MyLambda', {
+      //WHEN
+      new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
         architecture: lambda.Architecture.ARM_64,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently not supported on Arm_64');
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+            {
+              Handler: 'example.Handler::handleRequest',
+              Runtime: 'java11',
+              Architectures: ['arm64'],
+              SnapStart: {
+                ApplyOn: 'PublishedVersions',
+              },
+            },
+      });
     });
 
     test('EFS validation for snapStart', () => {
@@ -3523,7 +3536,7 @@ describe('function', () => {
       })).toThrowError('SnapStart is currently not supported using EFS');
     });
 
-    test('arm64 validation for snapStart', () => {
+    test('ephemeral storage limit validation for snapStart', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
