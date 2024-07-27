@@ -1121,7 +1121,7 @@ Note: The domain name must be owned (registered through Route53) by the account 
 The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
 [here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
 
-You can set `acceptanceRequired` not only `acceptanceRequired` prop but also `enableAcceptanceRequired()` method.
+To update the `acceptanceRequired` property after initialization use the `enableAcceptanceRequired()` method:
 
 ```ts
 declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
