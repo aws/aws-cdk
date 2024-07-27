@@ -1128,9 +1128,9 @@ declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
 
 const endpointService = new ec2.VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  acceptanceRequired: true,
 });
 
-// update acceptanceRequired
 endpointService.enableAcceptanceRequired(false);
 ```
 
