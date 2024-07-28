@@ -2615,36 +2615,38 @@ export class Bucket extends BucketBase {
       }
     });
 
-    const desticationBuckets = props.replicationRules.map(rule => rule.destination.bucket);
+    const destinationBuckets = props.replicationRules.map(rule => rule.destination.bucket);
     const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
     const role = new iam.Role(this, 'ReplicationRole', {
       assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
-      inlinePolicies: {
-        ReplicationPolicy: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-              resources: [this.bucketArn],
-              effect: iam.Effect.ALLOW,
-            }),
-            new iam.PolicyStatement({
-              actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-              resources: [this.arnForObjects('*')],
-              effect: iam.Effect.ALLOW,
-            }),
-            new iam.PolicyStatement({
-              actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-              resources: desticationBuckets.map(bucket => bucket.arnForObjects('*')),
-              effect: iam.Effect.ALLOW,
-            }),
-          ],
-        }),
-      },
     });
+
+    // add permissions to the role
+    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+      resources: [Lazy.string({ produce: () => this.bucketArn })],
+      effect: iam.Effect.ALLOW,
+    }));
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+      resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+      effect: iam.Effect.ALLOW,
+    }));
+    if (destinationBuckets.length > 0) {
+      role.addToPolicy(new iam.PolicyStatement({
+        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+        resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+        effect: iam.Effect.ALLOW,
+      }));
+    }
+
     kmsKeys.forEach(kmsKey => {
-      kmsKey.grantEncryptDecrypt(role);
+      kmsKey.grantEncrypt(role);
     });
+
+    // TODO FIlterの実装
 
     return {
       role: role.roleArn,
