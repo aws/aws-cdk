@@ -3852,5 +3852,38 @@ describe('bucket', () => {
       },
     });
   });
+
+  describe('replication', () => {
+    test('default setting', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket');
+      new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        replicationRules: [
+          { destination: s3.ReplicationDestination.sameAccount(dstBucket) },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        VersioningConfiguration: { Status: 'Enabled' },
+        ReplicationConfiguration: {
+          Role: {
+            'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+          },
+          Rules: [
+            {
+              Destination: {
+                Bucket: {
+                  'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                },
+              },
+              Status: 'Enabled',
+            },
+          ],
+        },
+      });
+    });
+  });
 });
 

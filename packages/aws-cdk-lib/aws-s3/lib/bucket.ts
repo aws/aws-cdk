@@ -1434,7 +1434,7 @@ export interface ReplicationRule {
    *
    * @default - Amazon S3 uses the AWS managed KMS key for encryption
    */
-  readonly kmskey?: kms.IKey;
+  readonly kmsKey?: kms.IKey;
 
   /**
    * The storage class to use when replicating objects, such as S3 Standard or reduced redundancy.
@@ -2609,24 +2609,39 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
+    props.replicationRules.forEach(rule => {
+      if (rule.replicationTimeControl && !rule.replicationTimeControlMetrics) {
+        throw new Error('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.');
+      }
+    });
+
     const desticationBuckets = props.replicationRules.map(rule => rule.destination.bucket);
-    const kmsKeys = props.replicationRules.map(rule => rule.kmskey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
+    const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
     const role = new iam.Role(this, 'ReplicationRole', {
       assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      inlinePolicies: {
+        ReplicationPolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+              resources: [this.bucketArn],
+              effect: iam.Effect.ALLOW,
+            }),
+            new iam.PolicyStatement({
+              actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+              resources: [this.arnForObjects('*')],
+              effect: iam.Effect.ALLOW,
+            }),
+            new iam.PolicyStatement({
+              actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+              resources: desticationBuckets.map(bucket => bucket.arnForObjects('*')),
+              effect: iam.Effect.ALLOW,
+            }),
+          ],
+        }),
+      },
     });
-    role.addToPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-      resources: [this.bucketArn],
-    }));
-    role.addToPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      resources: [`${this.bucketArn}/*`],
-    }));
-    role.addToPolicy(new iam.PolicyStatement({
-      actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-      resources: desticationBuckets.map(bucket => `${bucket.bucketArn}/*`),
-    }));
     kmsKeys.forEach(kmsKey => {
       kmsKey.grantEncryptDecrypt(role);
     });
@@ -2654,8 +2669,8 @@ export class Bucket extends BucketBase {
             accessControlTranslation: rule.destination.accessControlTransition ? {
               owner: 'Destination',
             } : undefined,
-            encryptionConfiguration: rule.kmskey ? {
-              replicaKmsKeyId: rule.kmskey.keyArn,
+            encryptionConfiguration: rule.kmsKey ? {
+              replicaKmsKeyId: rule.kmsKey.keyArn,
             } : undefined,
             replicationTime: rule.replicationTimeControl !== undefined ? {
               status: rule.replicationTimeControl ? 'Enabled' : 'Disabled',
