@@ -56,7 +56,7 @@ Route calculator resources allow you to find routes and estimate travel time bas
 
 For more information, see [Routes](https://docs.aws.amazon.com/location/latest/developerguide/route-concepts.html).
 
-To create a place index, define a `RouteCalculator`:
+To create a route calculator, define a `RouteCalculator`:
 
 ```ts
 new location.RouteCalculator(this, 'RouteCalculator', {
