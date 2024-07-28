@@ -3,6 +3,133 @@ import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-ex
 import { toCloudFormation } from '../util';
 
 describe('export writer provider', () => {
+  const latestNodeRuntimeMap = {
+    Mappings: {
+      LatestNodeRuntimeMap: {
+        'af-south-1': {
+          value: 'nodejs20.x',
+        },
+        'ap-east-1': {
+          value: 'nodejs20.x',
+        },
+        'ap-northeast-1': {
+          value: 'nodejs20.x',
+        },
+        'ap-northeast-2': {
+          value: 'nodejs20.x',
+        },
+        'ap-northeast-3': {
+          value: 'nodejs20.x',
+        },
+        'ap-south-1': {
+          value: 'nodejs20.x',
+        },
+        'ap-south-2': {
+          value: 'nodejs20.x',
+        },
+        'ap-southeast-1': {
+          value: 'nodejs20.x',
+        },
+        'ap-southeast-2': {
+          value: 'nodejs20.x',
+        },
+        'ap-southeast-3': {
+          value: 'nodejs20.x',
+        },
+        'ap-southeast-4': {
+          value: 'nodejs20.x',
+        },
+        'ap-southeast-5': {
+          value: 'nodejs20.x',
+        },
+        'ap-southeast-7': {
+          value: 'nodejs20.x',
+        },
+        'ca-central-1': {
+          value: 'nodejs20.x',
+        },
+        'ca-west-1': {
+          value: 'nodejs20.x',
+        },
+        'cn-north-1': {
+          value: 'nodejs18.x',
+        },
+        'cn-northwest-1': {
+          value: 'nodejs18.x',
+        },
+        'eu-central-1': {
+          value: 'nodejs20.x',
+        },
+        'eu-central-2': {
+          value: 'nodejs20.x',
+        },
+        'eu-isoe-west-1': {
+          value: 'nodejs18.x',
+        },
+        'eu-north-1': {
+          value: 'nodejs20.x',
+        },
+        'eu-south-1': {
+          value: 'nodejs20.x',
+        },
+        'eu-south-2': {
+          value: 'nodejs20.x',
+        },
+        'eu-west-1': {
+          value: 'nodejs20.x',
+        },
+        'eu-west-2': {
+          value: 'nodejs20.x',
+        },
+        'eu-west-3': {
+          value: 'nodejs20.x',
+        },
+        'il-central-1': {
+          value: 'nodejs20.x',
+        },
+        'me-central-1': {
+          value: 'nodejs20.x',
+        },
+        'me-south-1': {
+          value: 'nodejs20.x',
+        },
+        'mx-central-1': {
+          value: 'nodejs20.x',
+        },
+        'sa-east-1': {
+          value: 'nodejs20.x',
+        },
+        'us-east-1': {
+          value: 'nodejs20.x',
+        },
+        'us-east-2': {
+          value: 'nodejs20.x',
+        },
+        'us-gov-east-1': {
+          value: 'nodejs18.x',
+        },
+        'us-gov-west-1': {
+          value: 'nodejs18.x',
+        },
+        'us-iso-east-1': {
+          value: 'nodejs18.x',
+        },
+        'us-iso-west-1': {
+          value: 'nodejs18.x',
+        },
+        'us-isob-east-1': {
+          value: 'nodejs18.x',
+        },
+        'us-west-1': {
+          value: 'nodejs20.x',
+        },
+        'us-west-2': {
+          value: 'nodejs20.x',
+        },
+      },
+    },
+  };
+
   test('basic configuration', () => {
     // GIVEN
     const app = new App();
@@ -31,6 +158,7 @@ describe('export writer provider', () => {
       ],
     });
     expect(cfn).toEqual({
+      Mappings: latestNodeRuntimeMap.Mappings,
       Resources: {
         MyResource: {
           Type: 'Custom::MyResource',
@@ -134,7 +262,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs18.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -143,6 +279,7 @@ describe('export writer provider', () => {
       },
     });
     expect(stack2Cfn).toEqual({
+      Mappings: latestNodeRuntimeMap.Mappings,
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
           DependsOn: [
@@ -163,7 +300,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs18.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',
@@ -391,6 +536,7 @@ describe('export writer provider', () => {
       'Fn::GetAtt': ['ExportsReader8B249524', '/cdk/exports/MyResourceName'],
     });
     expect(cfn).toEqual({
+      Mappings: latestNodeRuntimeMap.Mappings,
       Resources: {
         MyResource: {
           Type: 'Custom::MyResource',
@@ -495,7 +641,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs18.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -504,6 +658,7 @@ describe('export writer provider', () => {
       },
     });
     expect(stack2Cfn).toEqual({
+      Mappings: latestNodeRuntimeMap.Mappings,
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
           DependsOn: [
@@ -524,7 +679,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs18.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',

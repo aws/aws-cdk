@@ -346,15 +346,10 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   private makePolicyStatements(): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(this);
 
-    // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
-    const taskDefinitionFamilyArn = this.getTaskDefinitionFamilyArn();
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [
-          taskDefinitionFamilyArn,
-          `${taskDefinitionFamilyArn}:*`,
-        ],
+        resources: [`${this.getTaskDefinitionFamilyArn()}:*`],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
