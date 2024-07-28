@@ -66,7 +66,7 @@ new location.RouteCalculator(this, 'RouteCalculator', {
 ```
 
 Use the `grant()` or `grantRead()` method to grant the given identity permissions to perform actions
-on the place index:
+on the route calculator:
 
 ```ts
 declare const role: iam.Role;
