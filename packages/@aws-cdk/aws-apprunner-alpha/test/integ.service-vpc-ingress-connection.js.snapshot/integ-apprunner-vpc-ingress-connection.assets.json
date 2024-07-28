@@ -14,7 +14,7 @@
         }
       }
     },
-    "32ddea1bb1ef2f6177b0cd87d15dadbfa2fd25d74ba24bf14ee8ab4405325d00": {
+    "43965ffec710ae6789c5e1ad5e52596a338bf2b5546f91517504a2d40063546d": {
       "source": {
         "path": "integ-apprunner-vpc-ingress-connection.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "32ddea1bb1ef2f6177b0cd87d15dadbfa2fd25d74ba24bf14ee8ab4405325d00.json",
+          "objectKey": "43965ffec710ae6789c5e1ad5e52596a338bf2b5546f91517504a2d40063546d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
