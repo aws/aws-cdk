@@ -1834,6 +1834,7 @@ export interface Tag {
  * @example
  * import { RemovalPolicy } from 'aws-cdk-lib';
  * import { render } from '../../aws-stepfunctions/test/private/render-util';
+import { CfnFilterProps, CfnFilter } from '../../aws-inspectorv2/lib/inspectorv2.generated';
  *
  * new s3.Bucket(scope, 'Bucket', {
  *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -2646,8 +2647,6 @@ export class Bucket extends BucketBase {
       kmsKey.grantEncrypt(role);
     });
 
-    // TODO FIlterの実装
-
     return {
       role: role.roleArn,
       rules: props.replicationRules.map((rule) => {
@@ -2658,6 +2657,15 @@ export class Bucket extends BucketBase {
           sseKmsEncryptedObjects: rule.sseKmsEncryptedObjects !== undefined ? {
             status: rule.sseKmsEncryptedObjects ? 'Enabled' : 'Disabled',
           } : undefined,
+        } : undefined;
+
+        const isPrefixFilterEnabled = rule.prefixFilter !== undefined && rule.prefixFilter !== '';
+        const isTagFilterEnabled = rule.tagFilter !== undefined && rule.tagFilter.length > 0;
+        const isAnd = (isPrefixFilterEnabled && isTagFilterEnabled) || (rule.tagFilter !== undefined && rule.tagFilter?.length >= 2);
+
+        const filter = (isPrefixFilterEnabled || isTagFilterEnabled) ? {
+          ...(isAnd && { and: { prefix: rule.prefixFilter, tagFilters: rule.tagFilter } }),
+          ...(!isAnd && { prefix: rule.prefixFilter, tagFilter: rule.tagFilter?.[0] }),
         } : undefined;
 
         return {
@@ -2687,6 +2695,7 @@ export class Bucket extends BucketBase {
               },
             } : undefined,
           },
+          filter,
           deleteMarkerReplication: rule.deleteMarkerReplication !== undefined ? {
             status: rule.deleteMarkerReplication ? 'Enabled' : 'Disabled',
           } : undefined,

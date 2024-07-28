@@ -4037,6 +4037,15 @@ describe('bucket', () => {
                   Status: 'Enabled',
                 },
               },
+              Filter: {
+                And: {
+                  Prefix: 'filterWord',
+                  TagFilters: [{
+                    Key: 'filterKey',
+                    Value: 'filterValue',
+                  }],
+                },
+              },
             },
           ],
         },
@@ -4205,6 +4214,175 @@ describe('bucket', () => {
             'Ref': 'SrcBucketReplicationRole5B31865A',
           },
         ],
+      });
+    });
+
+    describe('filter', () => {
+      test('specify only prefix filter', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              prefixFilter: 'filterWord',
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Role: {
+              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+            },
+            Rules: [
+              {
+                Status: 'Enabled',
+                Destination: {
+                  Bucket: {
+                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                  },
+                },
+                Filter: {
+                  Prefix: 'filterWord',
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('specify only tag filter', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Role: {
+              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+            },
+            Rules: [
+              {
+                Status: 'Enabled',
+                Destination: {
+                  Bucket: {
+                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                  },
+                },
+                Filter: {
+                  TagFilter: {
+                    Key: 'filterKey',
+                    Value: 'filterValue',
+                  },
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('specify multiple tag filters', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              tagFilter: [
+                { key: 'filterKey1', value: 'filterValue1' },
+                { key: 'filterKey2', value: 'filterValue2' },
+              ],
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Role: {
+              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+            },
+            Rules: [
+              {
+                Status: 'Enabled',
+                Destination: {
+                  Bucket: {
+                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                  },
+                },
+                Filter: {
+                  And: {
+                    TagFilters: [
+                      { Key: 'filterKey1', Value: 'filterValue1' },
+                      { Key: 'filterKey2', Value: 'filterValue2' },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('specify both prefix and tag filters', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              prefixFilter: 'filterWord',
+              tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Role: {
+              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+            },
+            Rules: [
+              {
+                Status: 'Enabled',
+                Destination: {
+                  Bucket: {
+                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                  },
+                },
+                Filter: {
+                  And: {
+                    Prefix: 'filterWord',
+                    TagFilters: [{ Key: 'filterKey', Value: 'filterValue' }],
+                  },
+                },
+              },
+            ],
+          },
+        });
       });
     });
   });
