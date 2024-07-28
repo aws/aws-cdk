@@ -1,4 +1,3 @@
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { Lazy, Stack, Token } from '../../core';
 import {
@@ -464,21 +463,7 @@ describe('IAM policy document', () => {
       expect(stack.resolve(s.toStatementJson())).toEqual({
         Effect: 'Allow',
         Action: 'test:Action',
-        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' },
-      });
-    });
-
-    // Deprecated: 'region' parameter to ServicePrincipal shouldn't be used.
-    testDeprecated('regional service principals resolve appropriately (with user-set region)', () => {
-      const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
-      const s = new PolicyStatement();
-      s.addActions('test:Action');
-      s.addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
-
-      expect(stack.resolve(s.toStatementJson())).toEqual({
-        Effect: 'Allow',
-        Action: 'test:Action',
-        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' },
+        Principal: { Service: 'codedeploy.amazonaws.com' },
       });
     });
 

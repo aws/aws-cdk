@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03bc95cbc8ef38ccb88d5825fcd559bc6059f53ddfcc94f4e1839782100e0b89.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8324608ef0537409fe3fe296266576f4b13f5eb34a2ccbd6b9d30fad2c575d02.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,7 +49,10 @@
         "/ChatbotLogRetentionInteg/MySlackChannel/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MySlackChannelA8E0B56C"
+            "data": "MySlackChannelA8E0B56C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/ChatbotLogRetentionInteg/MySlackChannel/LogRetention/Resource": [

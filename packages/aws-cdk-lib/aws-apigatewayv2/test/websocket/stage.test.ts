@@ -133,4 +133,22 @@ describe('WebSocketStage', () => {
       },
     });
   });
+
+  test('specify description', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'Api');
+
+    // WHEN
+    new WebSocketStage(stack, 'DefaultStage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      description: 'My Stage',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      Description: 'My Stage',
+    });
+  });
 });

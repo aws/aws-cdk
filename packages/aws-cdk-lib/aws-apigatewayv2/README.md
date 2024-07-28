@@ -137,6 +137,7 @@ declare const api: apigwv2.HttpApi;
 new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
   stageName: 'beta',
+  description: 'My Stage',
 });
 ```
 
@@ -373,6 +374,7 @@ const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi', {
 new apigwv2.WebSocketStage(this, 'mystage', {
   webSocketApi,
   stageName: 'dev',
+  description: 'My Stage',
   autoDeploy: true,
 });
 ```

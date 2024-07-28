@@ -236,3 +236,34 @@ test('Invoke glue job with WorkerType and NumberOfWorkers', () => {
     },
   });
 });
+
+test('Invoke glue job with ExecutionCLass', () => {
+  const task = new GlueStartJobRun(stack, 'Task', {
+    glueJobName,
+    executionClass: tasks.ExecutionClass.FLEX,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::glue:startJobRun',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      JobName: glueJobName,
+      ExecutionClass: 'FLEX',
+    },
+  });
+});

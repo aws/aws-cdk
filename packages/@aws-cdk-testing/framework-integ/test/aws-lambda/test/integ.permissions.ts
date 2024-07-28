@@ -27,3 +27,13 @@ fn.grantInvokeCompositePrincipal(new iam.CompositePrincipal(
   new iam.OrganizationPrincipal('o-mmmmmmmmmm'),
   new iam.ServicePrincipal('apigateway.amazonaws.com'),
 ));
+
+fn.grantInvokeLatestVersion(role);
+
+fn.grantInvokeLatestVersion(new iam.OrganizationPrincipal('o-xxxxxxxxxx2'));
+
+const version1 = new lambda.Version(stack, 'v1', {
+  lambda: fn,
+});
+
+fn.grantInvokeVersion(role, version1);

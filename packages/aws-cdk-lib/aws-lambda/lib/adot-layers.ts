@@ -189,6 +189,11 @@ export enum AdotLambdaExecWrapper {
    * Wrapping python lambda handlers see https://aws-otel.github.io/docs/getting-started/lambda/lambda-python
    */
   INSTRUMENT_HANDLER = '/opt/otel-instrument',
+
+  /**
+   * Wrapping SQS-triggered function handlers (implementing RequestHandler)
+   */
+  SQS_HANDLER = '/opt/otel-sqs-handler',
 }
 
 abstract class AdotLambdaLayerVersion {
@@ -290,6 +295,11 @@ export class AdotLambdaLayerJavaAutoInstrumentationVersion extends AdotLambdaLay
  */
 export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
   /**
+   * Version 1.25.0
+   */
+  public static readonly V1_25_0 = new AdotLambdaLayerPythonSdkVersion('1.25.0');
+
+  /**
    * Version 1.24.0
    */
   public static readonly V1_24_0 = new AdotLambdaLayerPythonSdkVersion('1.24.0');
@@ -348,7 +358,7 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = this.V1_24_0;
+  public static readonly LATEST = this.V1_25_0;
 
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.PYTHON_SDK, layerVersion);
@@ -400,6 +410,11 @@ export class AdotLambdaLayerJavaScriptSdkVersion extends AdotLambdaLayerVersion 
  */
 export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
   /**
+   * Version 0.102.1
+   */
+  public static readonly V0_102_1 = new AdotLambdaLayerGenericVersion('0.102.1');
+
+  /**
    * Version 0.98.0
    */
   public static readonly V0_98_0 = new AdotLambdaLayerGenericVersion('0.98.0');
@@ -433,7 +448,7 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
    * The latest layer version available in this CDK version. New versions could
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
-  public static readonly LATEST = this.V0_98_0;
+  public static readonly LATEST = this.V0_102_1;
 
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.GENERIC, layerVersion);

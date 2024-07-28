@@ -196,6 +196,35 @@
      }
     ]
    }
+  },
+  "Schedule2750DFBB1": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "at(2000-01-01T00:00:00)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "MyLambdaCCE802FB",
+       "Arn"
+      ]
+     },
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 86400,
+      "MaximumRetryAttempts": 0
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "SchedulerRoleForTarget1441a743A31888",
+       "Arn"
+      ]
+     }
+    }
+   }
   }
  },
  "Outputs": {

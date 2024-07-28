@@ -1192,8 +1192,20 @@
                       },
                       {
                         "endpointId": {
+                          "Ref": "ALBAEE750D2"
+                        },
+                        "clientIpPreservationEnabled": true
+                      },
+                      {
+                        "endpointId": {
                           "Ref": "NLB55158F82"
                         }
+                      },
+                      {
+                        "endpointId": {
+                          "Ref": "NLB55158F82"
+                        },
+                        "clientIpPreservationEnabled": true
                       },
                       {
                         "endpointId": {

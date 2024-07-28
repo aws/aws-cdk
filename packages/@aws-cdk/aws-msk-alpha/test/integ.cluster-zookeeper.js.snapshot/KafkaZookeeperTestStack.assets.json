@@ -14,7 +14,7 @@
         }
       }
     },
-    "223814715d3fc2df2bfa0cf453bb85ab106fd6d2173b8e4b46c50b71c64ffd76": {
+    "e24c6ab79fd625621dacde0a154a47b4037598752512707e5964a9a155f7801f": {
       "source": {
         "path": "KafkaZookeeperTestStack.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "223814715d3fc2df2bfa0cf453bb85ab106fd6d2173b8e4b46c50b71c64ffd76.json",
+          "objectKey": "e24c6ab79fd625621dacde0a154a47b4037598752512707e5964a9a155f7801f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

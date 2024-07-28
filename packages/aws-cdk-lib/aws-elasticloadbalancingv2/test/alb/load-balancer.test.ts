@@ -684,6 +684,29 @@ describe('tests', () => {
     }
   });
 
+  test.each([
+    elbv2.HttpCodeElb.ELB_500_COUNT,
+    elbv2.HttpCodeElb.ELB_502_COUNT,
+    elbv2.HttpCodeElb.ELB_503_COUNT,
+    elbv2.HttpCodeElb.ELB_504_COUNT,
+  ])('use specific load balancer generated 5XX metrics', (metricName) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const metric = lb.metrics.httpCodeElb(metricName);
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/ApplicationELB');
+    expect(metric.statistic).toEqual('Sum');
+    expect(metric.metricName).toEqual(metricName);
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] },
+    });
+  });
+
   test('loadBalancerName', () => {
     // GIVEN
     const stack = new cdk.Stack();

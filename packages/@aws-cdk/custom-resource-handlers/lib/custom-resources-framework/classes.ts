@@ -274,59 +274,6 @@ export abstract class HandlerFrameworkClass extends ClassType {
           stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken')),
         );
 
-        const idStatement = stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`'));
-        const stackFromScopeStatement = stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)'));
-        const logContextKeyStatement = stmt.constVar(expr.ident('key'), expr.directCode('`${uniqueid}CustomResourceLogGroup`'));
-        const getProviderMethod = this.addMethod({
-          name: 'getProvider',
-          static: true,
-          returnType: this.type,
-          docs: {
-            summary: 'Returns the stack-level singleton provider or undefined',
-          },
-        });
-        getProviderMethod.addParameter({
-          name: 'scope',
-          type: CONSTRUCTS_MODULE.Construct,
-        });
-        getProviderMethod.addParameter({
-          name: 'uniqueid',
-          type: Type.STRING,
-        });
-        getProviderMethod.addBody(
-          idStatement,
-          stackFromScopeStatement,
-          stmt.ret(expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
-        );
-
-        const useLogGroupMethod = this.addMethod({
-          name: 'useLogGroup',
-          static: true,
-          docs: {
-            summary: 'Set the log group to be used by the singleton provider',
-          },
-        });
-        useLogGroupMethod.addParameter({
-          name: 'scope',
-          type: CONSTRUCTS_MODULE.Construct,
-        });
-        useLogGroupMethod.addParameter({
-          name: 'uniqueid',
-          type: Type.STRING,
-        });
-        useLogGroupMethod.addParameter({
-          name: 'logGroupName',
-          type: Type.STRING,
-        });
-        useLogGroupMethod.addBody(
-          stackFromScopeStatement,
-          logContextKeyStatement,
-          expr.directCode('stack.node.addMetadata(key, logGroupName)'),
-          stmt.constVar(expr.ident('existing'), expr.directCode('this.getProvider(scope, uniqueid)')),
-          stmt.if_(expr.directCode('existing'))
-            .then(expr.directCode('existing.configureLambdaLogGroup(logGroupName)')),
-        );
-
         const getOrCreateProviderMethod = this.addMethod({
           name: 'getOrCreateProvider',
           static: true,
@@ -335,7 +282,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             summary: 'Returns a stack-level singleton for the custom resource provider.',
           },
         });
-        getOrCreateProviderMethod.addParameter({
+        const _scope = getOrCreateProviderMethod.addParameter({
           name: 'scope',
           type: CONSTRUCTS_MODULE.Construct,
         });
@@ -349,15 +296,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
           optional: true,
         });
         getOrCreateProviderMethod.addBody(
-          idStatement,
-          stackFromScopeStatement,
-          stmt.constVar(expr.ident('provider'), expr.directCode(`this.getProvider(scope, uniqueid) ?? new ${this.name}(stack, id, props)`)),
-          logContextKeyStatement,
-          stmt.constVar(expr.ident('logGroupMetadata'),
-            expr.directCode('stack.node.metadata.find(m => m.type === key)')),
-          stmt.if_(expr.directCode('logGroupMetadata?.data'))
-            .then(expr.directCode('provider.configureLambdaLogGroup(logGroupMetadata.data)')),
-          stmt.ret(expr.directCode('provider')),
+          stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
+          stmt.constVar(expr.ident('stack'), $T(CORE_MODULE.Stack).of(expr.directCode(_scope.spec.name))),
+          stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
+          stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
 
         const superProps = new ObjectLiteral([

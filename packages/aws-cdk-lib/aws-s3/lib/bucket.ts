@@ -10,7 +10,6 @@ import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
 import {
   CustomResource,
   Duration,
@@ -1467,9 +1466,6 @@ export interface BucketProps {
    *
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
-   * A custom resource along with a provider lambda will be created for
-   * emptying the bucket.
-   *
    * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
    * all objects in the bucket being deleted. Be sure to update your bucket resources
@@ -1737,7 +1733,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
-    Bucket.validateBucketName(bucketName);
+    Bucket.validateBucketName(bucketName, true);
 
     const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
@@ -1844,8 +1840,9 @@ export class Bucket extends BucketBase {
    * Thrown an exception if the given bucket name is not valid.
    *
    * @param physicalName name of the bucket.
+   * @param allowLegacyBucketNaming allow legacy bucket naming style, default is false.
    */
-  public static validateBucketName(physicalName: string): void {
+  public static validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
@@ -1859,9 +1856,10 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    const charsetRegex = allowLegacyBucketNaming ? /[^a-z0-9._-]/ : /[^a-z0-9.-]/;
+    const charsetMatch = bucketName.match(charsetRegex);
     if (charsetMatch) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+      errors.push(`Bucket name must only contain lowercase characters and the symbols, period (.)${allowLegacyBucketNaming ? ', underscore (_), ' : ' '}and dash (-) `
         + `(offset: ${charsetMatch.index})`);
     }
     if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
@@ -1884,16 +1882,6 @@ export class Bucket extends BucketBase {
     if (errors.length > 0) {
       throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
     }
-  }
-
-  /**
-   * Set the log group on the stack wide singleton AutoDeleteObjects provider lambda.
-   *
-   * @param stack the stack with the singleton AutoDeleteObjects provider lambda.
-   * @param logGroup the log group to use on the lambda.
-   */
-  public static setAutoDeleteObjectsLogGroup(stack: Stack, logGroup: logs.ILogGroup): void {
-    AutoDeleteObjectsProvider.useLogGroup(stack, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, logGroup.logGroupName);
   }
 
   public readonly bucketArn: string;
@@ -2015,7 +2003,7 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       if (props.blockPublicAccess === undefined) {
-        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
       }
 
       this.grantPublicAccess();

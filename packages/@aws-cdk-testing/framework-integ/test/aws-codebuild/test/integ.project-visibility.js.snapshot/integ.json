@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Visibility/DefaultTest": {
+      "stacks": [
+        "codebuild-visibility"
+      ],
+      "stackUpdateWorkflow": true,
+      "assertionStack": "Visibility/DefaultTest/DeployAssert",
+      "assertionStackName": "VisibilityDefaultTestDeployAssert1C40A7EB"
+    }
+  }
+}

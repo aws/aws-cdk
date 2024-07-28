@@ -98,6 +98,7 @@ export class Runtime {
 
   /**
    * The NodeJS 16.x runtime (nodejs16.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 

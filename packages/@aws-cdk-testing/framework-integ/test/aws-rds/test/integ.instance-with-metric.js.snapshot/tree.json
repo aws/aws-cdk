@@ -869,9 +869,9 @@
                   "version": "0.0.0"
                 }
               },
-              "LogGroup${Token[TOKEN.166]}postgresql": {
-                "id": "LogGroup${Token[TOKEN.166]}postgresql",
-                "path": "aws-cdk-rds-instance-with-metric/Instance/LogGroup${Token[TOKEN.166]}postgresql",
+              "LogGroup${Token[TOKEN.162]}postgresql": {
+                "id": "LogGroup${Token[TOKEN.162]}postgresql",
+                "path": "aws-cdk-rds-instance-with-metric/Instance/LogGroup${Token[TOKEN.162]}postgresql",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"

@@ -19,7 +19,7 @@
      "Name": "\"MyParameter\""
     },
     "flattenResponse": "false",
-    "salt": "1718075514776"
+    "salt": "1720196473439"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -207,7 +207,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "65c9f57ca55e2d458059a930e997f2bc96560b3a3654cc442616d12089449d39.zip"
+     "S3Key": "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -276,7 +276,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "65c9f57ca55e2d458059a930e997f2bc96560b3a3654cc442616d12089449d39.zip"
+     "S3Key": "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -326,7 +326,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "65c9f57ca55e2d458059a930e997f2bc96560b3a3654cc442616d12089449d39.zip"
+     "S3Key": "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -384,7 +384,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -398,6 +407,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -424,6 +436,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {

@@ -226,9 +226,11 @@ export class FactName {
    * @param service the service name, either simple (e.g: `s3`, `codedeploy`) or qualified (e.g: `s3.amazonaws.com`).
    *                The `.amazonaws.com` and `.amazonaws.com.cn` domains are stripped from service names, so they are
    *                canonicalized in that respect.
+   *
+   * @deprecated - Use `iam.ServicePrincipal.servicePrincipalName()` instead.
    */
   public static servicePrincipal(service: string): string {
-    return `service-principal:${service.replace(/\.amazonaws\.com(\.cn)?$/, '')}`;
+    return `${service.replace(/\.amazonaws\.com(\.cn)?$/, '')}.amazonaws.com`;
   }
 
   /**

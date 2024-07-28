@@ -1,20 +1,20 @@
 {
   "version": "36.0.0",
   "files": {
-    "65c9f57ca55e2d458059a930e997f2bc96560b3a3654cc442616d12089449d39": {
+    "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a": {
       "source": {
-        "path": "asset.65c9f57ca55e2d458059a930e997f2bc96560b3a3654cc442616d12089449d39.bundle",
+        "path": "asset.eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.bundle",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "65c9f57ca55e2d458059a930e997f2bc96560b3a3654cc442616d12089449d39.zip",
+          "objectKey": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "34959c000552d2077ded90a3d71fa968435ddcb4837838cf3bcdf2030f43fdcc": {
+    "9667cf6c697447a2e535a3a82545971c9e1d5da35e75582936cefe34889046f0": {
       "source": {
         "path": "AwsCdkVpcEndpointDnsIntegTestDefaultTestDeployAssertFB27EF1F.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "34959c000552d2077ded90a3d71fa968435ddcb4837838cf3bcdf2030f43fdcc.json",
+          "objectKey": "9667cf6c697447a2e535a3a82545971c9e1d5da35e75582936cefe34889046f0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

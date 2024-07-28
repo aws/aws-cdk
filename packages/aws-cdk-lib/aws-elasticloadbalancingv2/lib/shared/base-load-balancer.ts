@@ -54,7 +54,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - false for Network Load Balancers and true for Application Load Balancers.
    * This can not be `false` for Application Load Balancers.
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattribute.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattribute.html
    */
   readonly crossZoneEnabled?: boolean;
 

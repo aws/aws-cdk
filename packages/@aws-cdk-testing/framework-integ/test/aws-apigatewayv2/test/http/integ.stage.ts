@@ -12,6 +12,7 @@ new apigw.HttpStage(stack, 'HttpStageWithProperties', {
     rateLimit: 1000,
     burstLimit: 1000,
   },
+  description: 'My Stage',
 });
 
 app.synth();

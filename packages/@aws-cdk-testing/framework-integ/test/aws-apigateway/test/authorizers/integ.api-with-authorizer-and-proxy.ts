@@ -47,7 +47,6 @@ sendResource.addProxy({
   anyMethod: true,
   defaultMethodOptions: {
     authorizer: authorizer,
-    authorizationType: agw.AuthorizationType.COGNITO,
     authorizationScopes: ['scope'],
   },
   defaultCorsPreflightOptions: {

@@ -117,6 +117,20 @@
     "Principal": "apigateway.amazonaws.com"
    }
   },
+  "MyLambdaInvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPIBE1EB3A4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-xxxxxxxxxx2"
+   }
+  },
   "MyRoleF48FFE04": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -148,6 +162,52 @@
          "Arn"
         ]
        }
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyLambdaCCE802FB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyLambdaCCE802FB",
+             "Arn"
+            ]
+           },
+           ":",
+           {
+            "Fn::GetAtt": [
+             "v192FF9954",
+             "Version"
+            ]
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyLambdaCCE802FB",
+             "Arn"
+            ]
+           },
+           ":$LATEST"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -158,6 +218,14 @@
       "Ref": "MyRoleF48FFE04"
      }
     ]
+   }
+  },
+  "v192FF9954": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "MyLambdaCCE802FB"
+    }
    }
   }
  },

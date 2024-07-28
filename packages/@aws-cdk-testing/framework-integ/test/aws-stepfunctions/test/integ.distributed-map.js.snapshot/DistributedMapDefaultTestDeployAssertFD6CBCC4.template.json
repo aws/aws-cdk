@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1717875309316"
+    "salt": "1720059223459"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -254,7 +254,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -332,7 +332,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -382,7 +382,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -422,7 +422,7 @@
      "Body": "\"a,b,c\\n1,2,3\\n4,5,6\""
     },
     "flattenResponse": "false",
-    "salt": "1717875309319"
+    "salt": "1720059223461"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -456,7 +456,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1717875309319"
+    "salt": "1720059223461"
    },
    "DependsOn": [
     "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee"
@@ -497,7 +497,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1717875309320"
+    "salt": "1720059223462"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
@@ -686,7 +686,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -700,6 +709,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -726,6 +738,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {

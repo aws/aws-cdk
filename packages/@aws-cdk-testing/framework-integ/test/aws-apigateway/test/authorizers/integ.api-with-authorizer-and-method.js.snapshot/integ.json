@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "apigateway-with-authorizer-and-proxy/DefaultTest": {
+      "stacks": [
+        "integtest-restapi-with-authorizer-and-proxy"
+      ],
+      "assertionStack": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774"
+    }
+  }
+}

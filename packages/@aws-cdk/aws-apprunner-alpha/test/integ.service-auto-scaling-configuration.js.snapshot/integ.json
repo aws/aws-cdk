@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AppRunnerAutoScalingConfiguration/DefaultTest": {
+      "stacks": [
+        "integ-apprunner-auto-scaling-configuration"
+      ],
+      "assertionStack": "AppRunnerAutoScalingConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "AppRunnerAutoScalingConfigurationDefaultTestDeployAssert4AFB3BF1"
+    }
+  }
+}
