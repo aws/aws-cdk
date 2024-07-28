@@ -20,6 +20,7 @@ export * as aws_appmesh from './aws-appmesh';
 export * as aws_apprunner from './aws-apprunner';
 export * as aws_appstream from './aws-appstream';
 export * as aws_appsync from './aws-appsync';
+export * as aws_apptest from './aws-apptest';
 export * as aws_aps from './aws-aps';
 export * as aws_arczonalshift from './aws-arczonalshift';
 export * as aws_athena from './aws-athena';
