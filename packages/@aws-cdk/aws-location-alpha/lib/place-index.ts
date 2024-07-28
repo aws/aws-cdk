@@ -162,7 +162,7 @@ export class PlaceIndex extends PlaceIndexBase {
   public readonly placeIndexArn: string;
 
   /**
-   * The timestamp for when the place index resource was created in ISO 8601 forma
+   * The timestamp for when the place index resource was created in ISO 8601 format
    *
    * @attribute
    */

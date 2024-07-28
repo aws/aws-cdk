@@ -285,7 +285,7 @@ export class Map extends MapBase {
   public readonly mapArn: string;
 
   /**
-   * The timestamp for when the map resource was created in ISO 8601 forma
+   * The timestamp for when the map resource was created in ISO 8601 format
    *
    * @attribute
    */
