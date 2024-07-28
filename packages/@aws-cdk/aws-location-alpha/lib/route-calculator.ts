@@ -122,7 +122,7 @@ export class RouteCalculator extends RouteCalculatorBase {
   public readonly routeCalculatorArn: string;
 
   /**
-   * The timestamp for when the route calculator resource was created in ISO 8601 forma
+   * The timestamp for when the route calculator resource was created in ISO 8601 format
    *
    * @attribute
    */
