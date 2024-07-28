@@ -70,21 +70,6 @@ def make_empty_notification_configuration():
 def make_empty_notification_configuration_with_eventbridge():
     return {**make_empty_notification_configuration(), **make_eventbridge_configuration()}
 
-def make_event_s3_notification_delete_feature_enabled(request_type: str,
-                                                      managed: bool,
-                                                      applyNameTransformations: bool):
-    return {
-        "StackId": "StackId",
-        "RequestType": request_type,
-        "ResourceProperties": {
-            "Managed": str(managed),
-            "BucketName": "BucketName",
-            "NotificationConfiguration": make_notification_configuration(),
-            "ApplyNameTransformations": str(applyNameTransformations)
-
-        },
-    }
-
 def merge_notification_configurations(conf1: Dict, conf2: Dict):
     notifications = {}
     for t in CONFIGURATION_TYPES:
@@ -193,7 +178,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
     @patch("index.submit_response")
     def test_delete_existing_s3_notifications(self, _, mock_s3: MagicMock):
 
-        event = make_event_s3_notification_delete_feature_enabled("Update", False, True)
+        event = make_event("Update", False)
 
         # simulate a previous create operation
         current_notifications = make_notification_configuration(f"{event['StackId']}-")
