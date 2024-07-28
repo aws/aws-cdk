@@ -252,3 +252,22 @@ const eventBus = events.EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:
 // now you can just call methods on the eventbus
 eventBus.grantPutEventsTo(lambdaFunction);
 ```
+
+## Use a customer managed key
+
+To use a customer managed key for events on the event bus, use the `kmsKey` attribute.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const kmsKey: kms.IKey;
+
+new events.EventBus(this, 'Bus', {
+  kmsKey,
+});
+```
+
+**Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
+To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
+For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
+
