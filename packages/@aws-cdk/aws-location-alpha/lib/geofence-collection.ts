@@ -124,7 +124,7 @@ export class GeofenceCollection extends GeofenceCollectionBase {
   public readonly geofenceCollectionArn: string;
 
   /**
-   * The timestamp for when the geofence collection resource was created in ISO 8601 forma
+   * The timestamp for when the geofence collection resource was created in ISO 8601 format
    *
    * @attribute
    */
@@ -138,6 +138,11 @@ export class GeofenceCollection extends GeofenceCollectionBase {
   public readonly geofenceCollectionUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: GeofenceCollectionProps = {}) {
+
+    if (props.description && !Token.isUnresolved(props.geofenceCollectionName) && props.description.length > 1000) {
+      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters` );
+    }
+
     if (props.geofenceCollectionName && !Token.isUnresolved(props.geofenceCollectionName) && !/^[-.\w]{1,100}$/.test(props.geofenceCollectionName)) {
       throw new Error(`Invalid geofence collection name. The geofence collection name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.geofenceCollectionName}`);
     }

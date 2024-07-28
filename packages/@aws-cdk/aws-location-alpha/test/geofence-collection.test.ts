@@ -18,6 +18,12 @@ test('create a geofence collecction', () => {
   });
 });
 
+test('throws with invalid description', () => {
+  expect(() => new GeofenceCollection(stack, 'GeofenceCollection', {
+    description: 'a'.repeat(1001),
+  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+});
+
 test('throws with invalid name', () => {
   expect(() => new GeofenceCollection(stack, 'GeofenceCollection', {
     geofenceCollectionName: 'inv@lid',
