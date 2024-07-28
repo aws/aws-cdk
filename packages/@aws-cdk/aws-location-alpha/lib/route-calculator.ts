@@ -68,7 +68,7 @@ abstract class RouteCalculatorBase extends Resource implements IRouteCalculator 
   /**
    * Grant the given identity permissions to access to a route calculator resource to calculate a route.
    *
-   * https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
