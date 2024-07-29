@@ -69,7 +69,7 @@ abstract class GeofenceCollectionBase extends Resource implements IGeofenceColle
   /**
    * Grant the given identity permissions to read this geofence collection
    *
-   * See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
