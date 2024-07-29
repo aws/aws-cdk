@@ -472,7 +472,7 @@ describe('task definition', () => {
       }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
     });
 
-    test('succesfull when valid CPU and memory combination is provided with Fargate compatibilities', () => {
+    test('successful when valid CPU and memory combination is provided with Fargate compatibilities', () => {
       const stack = new cdk.Stack();
       new ecs.TaskDefinition(stack, 'TaskDef', {
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,

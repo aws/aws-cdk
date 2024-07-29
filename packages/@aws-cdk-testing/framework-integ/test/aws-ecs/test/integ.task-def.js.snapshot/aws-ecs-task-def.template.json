@@ -35,10 +35,11 @@
      }
     ],
     "Cpu": "256",
-    "Family": "awsecsfargatetaskdefTaskDef69F258AC",
+    "Family": "awsecstaskdefTaskDefDBCEF036",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
+     "EC2",
      "FARGATE"
     ],
     "TaskRoleArn": {

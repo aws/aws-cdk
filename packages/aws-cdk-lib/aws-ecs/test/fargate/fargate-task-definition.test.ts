@@ -228,7 +228,7 @@ describe('fargate task definition', () => {
       }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
     });
 
-    test('succesfull when valid CPU and memory combination is provided', () => {
+    test('successful when valid CPU and memory combination is provided', () => {
       const stack = new cdk.Stack();
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
         cpu: 256,

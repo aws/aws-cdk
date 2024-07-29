@@ -3,11 +3,12 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-fargate-task-def');
+const stack = new cdk.Stack(app, 'aws-ecs-task-def');
 
-const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
-  cpu: 256,
-  memoryLimitMiB: 512,
+const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+  cpu: '256',
+  memoryMiB: '512',
 });
 
 taskDefinition.addContainer('SampleContainer', {
@@ -18,7 +19,7 @@ taskDefinition.addContainer('SampleContainer', {
   ],
 });
 
-new IntegTest(app, 'FargateTaskDefinition', {
+new IntegTest(app, 'TaskDefinition', {
   testCases: [stack],
 });
 
