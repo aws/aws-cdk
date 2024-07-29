@@ -486,6 +486,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PROMETHEUS_WORKSPACES = new InterfaceVpcEndpointAwsService('aps-workspaces');
   public static readonly PROTON = new InterfaceVpcEndpointAwsService('proton');
   public static readonly QLDB = new InterfaceVpcEndpointAwsService('qldb.session');
+  public static readonly RAM = new InterfaceVpcEndpointAwsService('ram');
+  public static readonly RAM_FIPS = new InterfaceVpcEndpointAwsService('ram-fips');
   public static readonly RDS = new InterfaceVpcEndpointAwsService('rds');
   public static readonly RDS_DATA = new InterfaceVpcEndpointAwsService('rds-data');
   public static readonly REDSHIFT = new InterfaceVpcEndpointAwsService('redshift');
