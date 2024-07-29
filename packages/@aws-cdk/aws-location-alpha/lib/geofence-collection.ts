@@ -139,8 +139,8 @@ export class GeofenceCollection extends GeofenceCollectionBase {
 
   constructor(scope: Construct, id: string, props: GeofenceCollectionProps = {}) {
 
-    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length < 0 && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters` );
+    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
 
     if (props.geofenceCollectionName && !Token.isUnresolved(props.geofenceCollectionName) && !/^[-.\w]{1,100}$/.test(props.geofenceCollectionName)) {

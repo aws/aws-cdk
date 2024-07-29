@@ -9,12 +9,20 @@ beforeEach(() => {
   stack = new Stack();
 });
 
-test('create a geofence collecction', () => {
+test('create a geofence collection', () => {
   new GeofenceCollection(stack, 'GeofenceCollection', { description: 'test' });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::GeofenceCollection', {
     CollectionName: 'GeofenceCollection',
     Description: 'test',
+  });
+});
+
+test('creates geofence collection with empty description', () => {
+  new GeofenceCollection(stack, 'GeofenceCollection', { description: '' });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::GeofenceCollection', {
+    Description: '',
   });
 });
 
