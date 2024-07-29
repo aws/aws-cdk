@@ -17,7 +17,7 @@ test('create a route calculator', () => {
   });
 });
 
-test('creates geofence collection with empty description', () => {
+test('creates a route calculator with empty description', () => {
   new RouteCalculator(stack, 'RouteCalculator', { description: '' });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::RouteCalculator', {
