@@ -17,6 +17,20 @@ test('create a route calculator', () => {
   });
 });
 
+test('creates geofence collection with empty description', () => {
+  new RouteCalculator(stack, 'RouteCalculator', { description: '' });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::RouteCalculator', {
+    Description: '',
+  });
+});
+
+test('throws with invalid description', () => {
+  expect(() => new RouteCalculator(stack, 'RouteCalculator', {
+    description: 'a'.repeat(1001),
+  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+});
+
 test('throws with invalid name', () => {
   expect(() => new RouteCalculator(stack, 'RouteCalculator', {
     routeCalculatorName: 'inv@lid',

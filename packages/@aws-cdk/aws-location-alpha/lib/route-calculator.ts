@@ -136,6 +136,11 @@ export class RouteCalculator extends RouteCalculatorBase {
   public readonly routeCalculatorUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: RouteCalculatorProps = {}) {
+
+    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+    }
+
     if (props.routeCalculatorName && !Token.isUnresolved(props.routeCalculatorName) && !/^[-.\w]{1,100}$/.test(props.routeCalculatorName)) {
       throw new Error(`Invalid route calculator name. The route calculator name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.routeCalculatorName}`);
     }
