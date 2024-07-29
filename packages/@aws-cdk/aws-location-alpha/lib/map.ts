@@ -228,7 +228,7 @@ abstract class MapBase extends Resource implements IMap {
 
   /**
    * Grant the given identity permissions to rendering a map resource
-   * See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
+   * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
    */
   public grantRendering(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
@@ -299,6 +299,10 @@ export class Map extends MapBase {
   public readonly mapUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: MapProps) {
+    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+    }
+
     if (props.mapName && !Token.isUnresolved(props.mapName) && !/^[-.\w]{1,100}$/.test(props.mapName)) {
       throw new Error(`Invalid map name. The map index name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.mapName}`);
     }

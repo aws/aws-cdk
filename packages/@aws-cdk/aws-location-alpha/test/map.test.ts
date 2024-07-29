@@ -28,6 +28,24 @@ test('create a map', () => {
   });
 });
 
+test('creates geofence collection with empty description', () => {
+  new Map(stack, 'Map', {
+    description: '',
+    style: Style.VECTOR_ESRI_NAVIGATION,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::Map', {
+    Description: '',
+  });
+});
+
+test('throws with invalid description', () => {
+  expect(() => new Map(stack, 'Map', {
+    description: 'a'.repeat(1001),
+    style: Style.VECTOR_ESRI_NAVIGATION,
+  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+});
+
 test('throws with invalid name', () => {
   expect(() => new Map(stack, 'Map', {
     mapName: 'inv@lid',
