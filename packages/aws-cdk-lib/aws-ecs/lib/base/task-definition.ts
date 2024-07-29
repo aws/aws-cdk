@@ -910,6 +910,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private validateFargateTaskDefinitionMemoryCpu(cpu: string, memory: string): string[] {
     const ret = new Array<string>();
+    const resolvedCpu = this.stack.resolve(cpu) as string;
+    const resolvedMemoryMiB = this.stack.resolve(memory) as string;
     const validCpuMemoryCombinations = [
       { cpu: '256', memory: ['512', '1024', '2048'] },
       { cpu: '512', memory: this.range(1024, 4096, 1024) },
@@ -921,7 +923,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     ];
 
     const isValidCombination = validCpuMemoryCombinations.some((combo) => {
-      return combo.cpu === cpu && combo.memory.includes(memory);
+      return combo.cpu === resolvedCpu && combo.memory.includes(resolvedMemoryMiB);
     });
 
     if (!isValidCombination) {

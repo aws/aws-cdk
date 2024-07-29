@@ -26,13 +26,15 @@ describe('fargate task definition', () => {
       const stack = new cdk.Stack();
 
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: cdk.Lazy.number({ produce: () => 256 }),
+        cpu: cdk.Lazy.number({ produce: () => 512 }),
         memoryLimitMiB: cdk.Lazy.number({ produce: () => 1024 }),
       });
 
-      expect(() => {
-        Template.fromStack(stack);
-      }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Cpu: '512',
+        Memory: '1024',
+      });
 
     });
 
