@@ -198,18 +198,18 @@ export class Method extends Resource {
      *
      * REST API Resource
      * └── defaultMethodOptions: Method options to use as a default for all methods created within this API unless custom options are specified.
-     *    ├── authorizationType: Specifies the default authorization type unless custom options are specified.
+     *    ├── authorizationType: Specifies the default authorization type unless custom options are specified, recommended to not be specified.
      *    └── authorizer: Specifies the default authorizer for all methods created within this API unless custom options are specified.
      *        └── authorizerType: The default authorization type of this authorizer.
      *
      * REST API Method
      * └── options: Method options.
-     *    ├── authorizationType: Specifies the authorization type.
+     *    ├── authorizationType: Specifies the authorization type, recommended to not be specified.
      *    └── authorizer: Specifies an authorizer to use for this method.
      *        └── authorizerType: The authorization type of this authorizer.
      *
-     * "authorizationType" is recommended to not be specified. We should prioritize using "authorizer's authorizerType",
-     * falling back to "method's authorizationType", falling back to API "resource's authorizationType", and lastly "Authorizer.None".
+     * Authorization type is first set to "authorizer.authorizerType", falling back to method's "authorizationType",
+     * falling back to API resource's default "authorizationType", and lastly "Authorizer.NONE".
      */
     const authorizationType = this.getMethodAuthorizationType(options, defaultMethodOptions, authorizer?.authorizationType);
 
