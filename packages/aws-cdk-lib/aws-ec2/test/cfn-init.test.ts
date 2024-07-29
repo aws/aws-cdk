@@ -177,15 +177,23 @@ test('duplicate config arguments not deduplicated', () => {
 test('deepMerge properly deduplicates non-command arguments', () => {
   // WHEN
   const config = new ec2.InitConfig([
-    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip'),
-    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip'),
-    ec2.InitSource.fromUrl('/tmp/foo', 'https://amazon.com/foo.zip'),
+    ec2.InitSource.fromUrl('/tmp/blinky', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/blinky', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/pinky', 'https://amazon.com/pinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/pinky', 'https://amazon.com/pinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/inky', 'https://amazon.com/inky.zip'),
+    ec2.InitSource.fromUrl('/tmp/clyde', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/clyde', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/clyde', 'https://amazon.com/blinky.zip'),
   ]);
 
   // THEN
   expect(config._bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
     sources: {
-      '/tmp/foo': 'https://amazon.com/foo.zip',
+      '/tmp/blinky': 'https://amazon.com/blinky.zip',
+      '/tmp/pinky': 'https://amazon.com/pinky.zip',
+      '/tmp/inky': 'https://amazon.com/inky.zip',
+      '/tmp/clyde': 'https://amazon.com/blinky.zip',
     },
   }));
 });
