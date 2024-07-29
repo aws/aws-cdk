@@ -28,7 +28,7 @@ test('create a map', () => {
   });
 });
 
-test('creates geofence collection with empty description', () => {
+test('creates a map with empty description', () => {
   new Map(stack, 'Map', {
     description: '',
     style: Style.VECTOR_ESRI_NAVIGATION,
