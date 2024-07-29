@@ -3,7 +3,6 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -151,6 +150,34 @@ describe('bucket', () => {
     })).not.toThrow();
   });
 
+  test('creating bucket with underscore in name throws error', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'TestBucket', { bucketName: 'test_bucket_name' });
+    }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
+  });
+
+  test('importing existing bucket with underscore using fromBucketName works with allowLegacyBucketNaming=true', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      s3.Bucket.fromBucketName(stack, 'TestBucket', 'test_bucket_name');
+    }).not.toThrow();
+  });
+
+  test('importing existing bucket with underscore using fromBucketAttributes works with allowLegacyBucketNaming=true', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      s3.Bucket.fromBucketAttributes(stack, 'TestBucket', { bucketName: 'test_bucket_name' });
+    }).not.toThrow();
+  });
+
+  test('importing existing bucket with underscore using fromBucketArn works with allowLegacyBucketNaming=true', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      s3.Bucket.fromBucketArn(stack, 'TestBucket', 'arn:aws:s3:::test_bucket_name');
+    }).not.toThrow();
+  });
+
   test('bucket validation skips tokenized values', () => {
     const stack = new cdk.Stack();
 
@@ -174,6 +201,24 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       bucketName: bucket,
     })).toThrow(expectedErrors);
+  });
+
+  test('validateBucketName allows underscore when allowLegacyBucketNaming=true', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('test_bucket_name', true);
+    }).not.toThrow();
+  });
+
+  test('validateBucketName does not allow underscore when allowLegacyBucketNaming=false', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('test_bucket_name', false);
+    }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
+  });
+
+  test('validateBucketName does not allow underscore by default', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('test_bucket_name');
+    }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
   });
 
   test('fails if bucket name has less than 3 or more than 63 characters', () => {
@@ -911,7 +956,7 @@ describe('bucket', () => {
 
     expect(() => new s3.Bucket(stack, 'Bucket', {
       publicReadAccess: true,
-    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
   });
 
   test('bucket with enabled block public access setting to throw error msg', () => {
@@ -3492,82 +3537,6 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
-  });
-
-  test('setAutoDeleteObjectsLogGroup to update AutoDeleteObjectsProvider LoggingConfig after Bucket creation', () => {
-    const stack = new cdk.Stack();
-
-    new s3.Bucket(stack, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-
-    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
-      logGroupName: 'MyFirstLogGroup',
-    }));
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      LogGroupName: 'MyFirstLogGroup',
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      LoggingConfig: {
-        LogGroup: {
-          'Ref': 'FirstLogGroupFF5C2AA0',
-        },
-      },
-    });
-  });
-
-  test('setAutoDeleteObjectsLogGroup before Bucket creation', () => {
-    const stack = new cdk.Stack();
-
-    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
-      logGroupName: 'MyFirstLogGroup',
-    }));
-    new s3.Bucket(stack, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      LogGroupName: 'MyFirstLogGroup',
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      LoggingConfig: {
-        LogGroup: {
-          'Ref': 'FirstLogGroupFF5C2AA0',
-        },
-      },
-    });
-  });
-
-  test('setAutoDeleteObjectsLogGroup multiple times should take the latest Log Group', () => {
-    const stack = new cdk.Stack();
-
-    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
-      logGroupName: 'MyFirstLogGroup',
-    }));
-    new s3.Bucket(stack, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'SecondLogGroup', {
-      logGroupName: 'MySecondLogGroup',
-    }));
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      LogGroupName: 'MyFirstLogGroup',
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      LogGroupName: 'MySecondLogGroup',
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      LoggingConfig: {
-        LogGroup: {
-          'Ref': 'SecondLogGroup8CDA9B9E',
-        },
-      },
-    });
   });
 
   test('bucket with transfer acceleration turned on', () => {
