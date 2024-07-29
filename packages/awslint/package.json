@@ -1,6 +1,6 @@
 {
   "name": "awslint",
-  "version": "2.148.0-alpha.0",
+  "version": "0.0.0",
   "description": "Enforces the AWS Construct Library guidelines",
   "scripts": {
     "build": "tsc -b && eslint . --ext=.ts && pkglint && chmod +x bin/awslint",
@@ -26,8 +26,8 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@aws-cdk/eslint-plugin": "2.148.0-alpha.0",
-    "@aws-cdk/pkglint": "2.148.0-alpha.0",
+    "@aws-cdk/eslint-plugin": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.12",
     "@types/yargs": "^15.0.19",

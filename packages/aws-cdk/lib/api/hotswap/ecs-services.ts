@@ -1,18 +1,16 @@
 import * as AWS from 'aws-sdk';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
-import { Configuration } from '../../settings';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, HotswapProperties, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableEcsServiceChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hostswapProperties: HotswapProperties,
 ): Promise<ChangeHotswapResult> {
   // the only resource change we can evaluate here is an ECS TaskDefinition
   if (change.newValue.Type !== 'AWS::ECS::TaskDefinition') {
     return [];
   }
 
-  const config = new Configuration;
   const ret: ChangeHotswapResult = [];
 
   // We only allow a change in the ContainerDefinitions of the TaskDefinition for now -
@@ -85,8 +83,7 @@ export async function isHotswappableEcsServiceChange(
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
-        let ecsHotswapProperties = config.settings.get(['hotswapProperties']).ecs;
-
+        let ecsHotswapProperties = hostswapProperties.ecsHotswapProperties;
         let minimumHealthyPercent = ecsHotswapProperties?.minimumHealthyPercent;
         let maximumHealthyPercent = ecsHotswapProperties?.maximumHealthyPercent;
 

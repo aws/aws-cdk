@@ -1,8 +1,7 @@
 /* eslint-disable import/order */
 import * as AWS from 'aws-sdk';
-import { Configuration } from '../../../lib/settings';
 import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { HotswapMode, HotswapProperties, EcsHotswapProperties } from '../../../lib/api/hotswap/common';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockRegisterTaskDef: jest.Mock<AWS.ECS.RegisterTaskDefinitionResponse, AWS.ECS.RegisterTaskDefinitionRequest[]>;
@@ -10,6 +9,7 @@ let mockUpdateService: (params: AWS.ECS.UpdateServiceRequest) => AWS.ECS.UpdateS
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
+
   mockRegisterTaskDef = jest.fn();
   mockUpdateService = jest.fn();
   hotswapMockSdkProvider.stubEcs({
@@ -639,10 +639,10 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 });
 
 describe.each([
-  new Configuration().settings.set(['hotswapProperties'], { minimumHealthyPercent: 10 }),
-  new Configuration().settings.set(['hotswapProperties'], { minimumHealthyPercent: undefined, maximumHealthyPercent: 100 }),
-  new Configuration().settings.set(['hotswapProperties'], { minimumHealthyPercent: 10, maximumHealthyPercent: 100 }),
-])('hotswap properties', (settings) => {
+  new HotswapProperties(new EcsHotswapProperties(10)),
+  new HotswapProperties(new EcsHotswapProperties(undefined, 100)),
+  new HotswapProperties(new EcsHotswapProperties(10, 100)),
+])('hotswap properties', (hotswapProperties) => {
   test('should handle all possible hotswap properties', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -696,7 +696,7 @@ describe.each([
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(HotswapMode.HOTSWAP_ONLY, cdkStackArtifact, settings.get(['hotswapProperties']).ecs);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(HotswapMode.HOTSWAP_ONLY, cdkStackArtifact, {}, hotswapProperties);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -711,9 +711,9 @@ describe.each([
       cluster: 'my-cluster',
       taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
       deploymentConfiguration: {
-        minimumHealthyPercent: settings.get(['hotswapProperties']).ecs?.minimumHealthyPercent == undefined ?
-          0 : settings.get(['hotswapProperties']).ecs?.minimumHealthyPercent,
-        maximumPercent: settings.get(['hotswapProperties']).ecs?.maximumHealthyPercent,
+        minimumHealthyPercent: hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent == undefined ?
+          0 : hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent,
+        maximumPercent: hotswapProperties.ecsHotswapProperties?.maximumHealthyPercent,
       },
       forceNewDeployment: true,
     });
