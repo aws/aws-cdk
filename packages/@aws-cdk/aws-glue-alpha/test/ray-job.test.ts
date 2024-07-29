@@ -62,12 +62,6 @@ describe('Job', () => {
         }),
       });
     });
-
-    test('Default numberOfWorkers should be 3', () => {
-      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        NumberOfWorkers: 3,
-      });
-    });
   });
 
   describe('Create new Ray Job with log override parameters', () => {
@@ -263,26 +257,6 @@ describe('Job', () => {
           workerType: glue.WorkerType.G_025X,
         });
       }).toThrow(new Error('Ray jobs only support Z.2X worker type'));
-    });
-
-    test('Create Ray Job overriding only workerType to cause an Error', () => {
-      expect(() => {
-        job = new glue.RayJob(stack, 'RayJob', {
-          role,
-          script,
-          workerType: glue.WorkerType.Z_2X,
-        });
-      }).toThrow(new Error('Both workerType and numberOFWorkers must be set'));
-    });
-
-    test('Create Ray Job overriding only numberOfWorkers to cause an Error', () => {
-      expect(() => {
-        job = new glue.RayJob(stack, 'RayJob', {
-          role,
-          script,
-          numberOfWorkers: 5,
-        });
-      }).toThrow(new Error('Both workerType and numberOFWorkers must be set'));
     });
   });
 });

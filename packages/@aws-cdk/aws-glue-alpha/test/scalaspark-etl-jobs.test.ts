@@ -39,7 +39,7 @@ describe('Job', () => {
 
     test('Default Glue Version should be 4.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        GlueVersion: '4.0',
+        GlueVersion: glue.GlueVersion.V4_0,
       });
     });
 
