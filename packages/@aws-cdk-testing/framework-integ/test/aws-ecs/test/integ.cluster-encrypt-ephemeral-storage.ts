@@ -6,7 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-ecs-ephemmeral-integ');
+const stack = new cdk.Stack(app, 'aws-ecs-ephemeral-integ');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const keyForUnnamed = new kms.Key(stack, 'key-for-unnamed', {
