@@ -419,7 +419,9 @@ export interface AwsCustomResourceProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * The maximum time, in seconds, that can elapse before a custom resource operation times out.
+   * The maximum time that can elapse before a custom resource operation times out.
+   *
+   * The value must be between 1 second and 3600 seconds.
    *
    * @default Duration.seconds(3600)
    */
