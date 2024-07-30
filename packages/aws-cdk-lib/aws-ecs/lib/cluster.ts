@@ -249,9 +249,7 @@ export class Cluster extends Resource implements ICluster {
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
 
-    if (props.managedStorageConfiguration) {
-      this._managedStorageConfiguration = props.managedStorageConfiguration;
-    }
+    this._managedStorageConfiguration = props.managedStorageConfiguration;
 
     this._cfnCluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
