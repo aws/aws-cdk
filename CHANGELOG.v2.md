@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.150.0](https://github.com/aws/aws-cdk/compare/v2.149.0...v2.150.0) (2024-07-22)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#30921](https://github.com/aws/aws-cdk/issues/30921)) ([153a698](https://github.com/aws/aws-cdk/commit/153a698f9fff7c244d4ca6f5e97d15b63840ab7a))
+* **ec2:** add g6 instance ([#30693](https://github.com/aws/aws-cdk/issues/30693)) ([90a41d5](https://github.com/aws/aws-cdk/commit/90a41d5622857a0bc2ae6e0be19b72b00a609a7d)), closes [#30683](https://github.com/aws/aws-cdk/issues/30683)
+* **lambda:** add SnapStart support for arm64 functions ([#30898](https://github.com/aws/aws-cdk/issues/30898)) ([b4377a5](https://github.com/aws/aws-cdk/commit/b4377a5a3ad6d30730a084de6bc29c909a5c0e9d)), closes [#30899](https://github.com/aws/aws-cdk/issues/30899)
+* **logs:** enabling IA log group creation in CN and GovCloud regions ([#30904](https://github.com/aws/aws-cdk/issues/30904)) ([230b56b](https://github.com/aws/aws-cdk/commit/230b56bb6b39d25655df26411d4e3c5a05b04231))
+* update L1 CloudFormation resource definitions ([#30860](https://github.com/aws/aws-cdk/issues/30860)) ([ce7a8d5](https://github.com/aws/aws-cdk/commit/ce7a8d59b9c0351818a26c3dac299d53ca63e8ca))
+
+
+### Bug Fixes
+
+* **custom-resources:** provider framework will always log all data including confidential data ([#30689](https://github.com/aws/aws-cdk/issues/30689)) ([9bd92da](https://github.com/aws/aws-cdk/commit/9bd92da62d8c4594a11f4ab078f07b8c20762329)), closes [#30275](https://github.com/aws/aws-cdk/issues/30275)
+* **stepfunctions-tasks:** allow camelCase for parameters of CallAwsServiceCrossRegion ([#30795](https://github.com/aws/aws-cdk/issues/30795)) ([5d6ace8](https://github.com/aws/aws-cdk/commit/5d6ace8c69a16fbfb7b8109bfa35fc70f6fadeab)), closes [#30799](https://github.com/aws/aws-cdk/issues/30799)
+
+## [2.149.0](https://github.com/aws/aws-cdk/compare/v2.148.1...v2.149.0) (2024-07-12)
+
+
+### Features
+
+* **codedeploy:** zonal configuration for `ServerDeploymentConfig` ([#30429](https://github.com/aws/aws-cdk/issues/30429)) ([da0dc57](https://github.com/aws/aws-cdk/commit/da0dc576bd85ba6710ec0b29cf53ff56a74fad1e)), closes [#30430](https://github.com/aws/aws-cdk/issues/30430)
+* **codestarnotifications:** add `createdBy` property for notification rule ([#30780](https://github.com/aws/aws-cdk/issues/30780)) ([a68b418](https://github.com/aws/aws-cdk/commit/a68b418311bf582c62a541abaffb89ebaf1526f3))
+* **stepfunctions-tasks:** add guardrailConfiguration and trace property to the BedrockInvokeModel ([#30426](https://github.com/aws/aws-cdk/issues/30426)) ([772b1d1](https://github.com/aws/aws-cdk/commit/772b1d154a16f9360052c25bbc9e017198ac39d2)), closes [#30425](https://github.com/aws/aws-cdk/issues/30425)
+* **stepfunctions-tasks:** enable resultReuseConfiguration in AthenaStartQueryExecution ([#30447](https://github.com/aws/aws-cdk/issues/30447)) ([046bf56](https://github.com/aws/aws-cdk/commit/046bf56cedd5add4549cc6a9ef2ab23369ef3cee)), closes [#30446](https://github.com/aws/aws-cdk/issues/30446)
+* update L1 CloudFormation resource definitions ([#30786](https://github.com/aws/aws-cdk/issues/30786)) ([6d0a09f](https://github.com/aws/aws-cdk/commit/6d0a09f2c566b0ddf2bbd4e4d338c06f7c7aaf65))
+
+
+### Bug Fixes
+
+* **apigateway:** authorization scope is not added when not explicitly defining authorization type in method or root api ([#30822](https://github.com/aws/aws-cdk/issues/30822)) ([e4367a0](https://github.com/aws/aws-cdk/commit/e4367a0835ecc2dae0a920e5afbfd131b458b7be)), closes [#30444](https://github.com/aws/aws-cdk/issues/30444)
+* **scheduler-targetes-alpha:** multiple schedules cause resolution error during synth ([#30634](https://github.com/aws/aws-cdk/issues/30634)) ([727e886](https://github.com/aws/aws-cdk/commit/727e886805da021c2373e74754fd2d7492a8aac6)), closes [#28713](https://github.com/aws/aws-cdk/issues/28713)
+
+## [2.148.1](https://github.com/aws/aws-cdk/compare/v2.148.0...v2.148.1) (2024-07-11)
+
+
+### Bug Fixes
+
+* **apigateway:** authorization scope is not added when not explicitly defining authorization type in method or root api ([#30822](https://github.com/aws/aws-cdk/issues/30822)) ([4bee768](https://github.com/aws/aws-cdk/commit/4bee768f07e73ab5fe466f9ad3d1845456a0513b)), closes [#30444](https://github.com/aws/aws-cdk/issues/30444)
+
 ## [2.148.0](https://github.com/aws/aws-cdk/compare/v2.147.3...v2.148.0) (2024-07-05)
 
 
