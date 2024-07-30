@@ -94,17 +94,22 @@ You can find more details about version, worker type and other features in
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
+const stack = new cdk.Stack();
+const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
 const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
+const script = glue.Code.fromBucket(codeBucket, 'script');
 
 new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
+    script: glue.Code.fromBucket(codeBucket, 'script'),
     className: 'com.example.HelloWorld',
     role: iam.IRole,
 });
 
 new glue.PySparkEtlJob(this, 'PySparkEtlJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
+    script: glue.Code.fromBucket(codeBucket, 'script'),
     role: iam.IRole,
 });
 ```
@@ -112,21 +117,15 @@ new glue.PySparkEtlJob(this, 'PySparkEtlJob', {
 Optional override examples:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
    glueVersion: glue.GlueVersion.V3_0,
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    className: 'com.example.HelloWorld',
    extraJars: [
     glue.Code.fromBucket(
         s3.Bucket.fromBucketName(stack, 'extraJarsBucket', 'extra-jars-bucket'),
         'prefix/file.jar'),
-   ]
+   ],
    numberOfWorkers: 20,
    workerType: glue.WorkerType.G_8X,
    timeout: cdk.Duration.minutes(15),
@@ -136,11 +135,11 @@ new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
 new glue.PySparkEtlJob(this, 'PySparkEtlJob', {
    jobType: glue.JobType.ETL,
    glueVersion: glue.GlueVersion.V3_0,
-   pythonVersion: glue.PythonVersion.3_9,
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   pythonVersion: glue.PythonVersion.THREE_NINE,
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    description: 'an example pySpark ETL job',
    numberOfWorkers: 20,
-   workerType: glue.WorkerType.G8X,
+   workerType: glue.WorkerType.G_8X,
    timeout: cdk.Duration.minutes(15),
    role: iam.IRole,
 });
@@ -158,18 +157,14 @@ The following best practice features are enabled by default:
 `—enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log`.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.pySparkStreamingJob(this, 'pySparkStreamingJob', {
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    role: iam.IRole,
 });
 
 
 new glue.ScalaSparkStreamingJob(this, 'ScalaSparkStreamingJob', {
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    className: 'com.example.HelloWorld',
    role: iam.IRole,
 });
@@ -179,19 +174,13 @@ new glue.ScalaSparkStreamingJob(this, 'ScalaSparkStreamingJob', {
 Optional override examples:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.pySparkStreamingJob(this, 'pySparkStreamingJob', {
    glueVersion: glue.GlueVersion.V3_0,
    pythonVersion: glue.PythonVersion.THREE_NINE,
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    description: 'an example Python Streaming job',
    numberOfWorkers: 20,
-   workerType: glue.WorkerType.G8X,
+   workerType: glue.WorkerType.G_8X,
    timeout: cdk.Duration.minutes(15),
    role: iam.IRole,
 });
@@ -199,16 +188,16 @@ new glue.pySparkStreamingJob(this, 'pySparkStreamingJob', {
 new glue.ScalaSparkStreamingJob(this, 'ScalaSparkStreamingJob', {
    glueVersion: glue.GlueVersion.V3_0,
    pythonVersion: glue.PythonVersion.THREE_NINE,
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    extraJars: [
     glue.Code.fromBucket(
         s3.Bucket.fromBucketName(stack, 'extraJarsBucket', 'extra-jars-bucket'),
         'prefix/file.jar'),
-   ]
+   ],
    className: 'com.example.HelloWorld',
    description: 'an example Python Streaming job',
    numberOfWorkers: 20,
-   workerType: glue.WorkerType.G8X,
+   workerType: glue.WorkerType.G_8X,
    timeout: cdk.Duration.minutes(15),
    role: iam.IRole,
 });
@@ -223,19 +212,14 @@ features are enabled by default:
 `—enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log`
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.ScalaSparkFlexEtlJob(this, 'ScalaSparkFlexEtlJob', {
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    className: 'com.example.HelloWorld',
    role: iam.IRole,
 });
 
 new glue.pySparkFlexEtlJob(this, 'pySparkFlexEtlJob', {
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    role: iam.IRole,
 });
 ```
@@ -243,23 +227,18 @@ new glue.pySparkFlexEtlJob(this, 'pySparkFlexEtlJob', {
 Optional override examples:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.ScalaSparkFlexEtlJob(this, 'ScalaSparkFlexEtlJob', {
    glueVersion: glue.GlueVersion.V3_0,
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    className: 'com.example.HelloWorld',
    extraJars: [
     glue.Code.fromBucket(
         s3.Bucket.fromBucketName(stack, 'extraJarsBucket', 'extra-jars-bucket'),
         'prefix/file.jar'),
-   ]
+   ],
    description: 'an example pySpark ETL job',
    numberOfWorkers: 20,
-   workerType: glue.WorkerType.G8X,
+   workerType: glue.WorkerType.G_8X,
    timeout: cdk.Duration.minutes(15),
    role: iam.IRole,
 });
@@ -267,10 +246,10 @@ new glue.ScalaSparkFlexEtlJob(this, 'ScalaSparkFlexEtlJob', {
 new glue.pySparkFlexEtlJob(this, 'pySparkFlexEtlJob', {
    glueVersion: glue.GlueVersion.V3_0,
    pythonVersion: glue.PythonVersion.THREE_NINE,
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    description: 'an example Flex job',
    numberOfWorkers: 20,
-   workerType: glue.WorkerType.G8X,
+   workerType: glue.WorkerType.G_8X,
    timeout: cdk.Duration.minutes(15),
    role: iam.IRole,
 });
@@ -286,13 +265,8 @@ analytics libraries using the `library-set=analytics` flag, which is
 enabled by default.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.PythonShellJob(this, 'PythonShellJob', {
-   script: glue.Code.fromBucket(codeBucket, 'script');
+   script: glue.Code.fromBucket(codeBucket, 'script'),
    role: iam.IRole,
 });
 ```
@@ -300,16 +274,10 @@ new glue.PythonShellJob(this, 'PythonShellJob', {
 Optional override examples:
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.PythonShellJob(this, 'PythonShellJob', {
     glueVersion: glue.GlueVersion.V1_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
-    script: glue.Code.fromBucket(codeBucket, 'script');
+    script: glue.Code.fromBucket(codeBucket, 'script'),
     description: 'an example Python Shell job',
     numberOfWorkers: 20,
     workerType: glue.WorkerType.G_8X,
@@ -325,13 +293,8 @@ overrideable since these are the only configuration that Glue Ray jobs
 currently support. The runtime defaults to Ray2.4 and min workers defaults to 3.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.GlueRayJob(this, 'GlueRayJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
+    script: glue.Code.fromBucket(codeBucket, 'script'),
     role: iam.IRole,
 });
 ```
@@ -339,11 +302,6 @@ new glue.GlueRayJob(this, 'GlueRayJob', {
 Optional override example:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.GlueRayJob(this, 'GlueRayJob', {
   script: glue.Code.fromBucket('bucket-name', 's3prefix/path-to-python-script'),
   numberOfWorkers: 50,
@@ -360,12 +318,8 @@ in the local file structure. You provide the existing S3 bucket and
 path to which you'd like the script to be uploaded.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
+    script: glue.Code.fromBucket(codeBucket, 'script'),
     className: 'com.example.HelloWorld',
 });
 ```
@@ -392,18 +346,14 @@ takes an optional description parameter, but abstracts the requirement of an
 actions list using the job or crawler objects using conditional types.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
-const myWorkflow = new glue.Workflow(this, "GlueWorkflow", {
+const workflow = new glue.Workflow(this, "GlueWorkflow", {
     name: "MyWorkflow";
     description: "New Workflow";
     properties: {'key', 'value'};
 });
 
 const job = new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
+    script: glue.Code.fromBucket(codeBucket, 'script'),
     className: 'com.example.HelloWorld',
 });
 
@@ -423,20 +373,11 @@ the expression that Glue requires from the Schedule object. The constructor
 takes an optional description and a list of jobs or crawlers as actions.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 // Create Daily Schedule at 00 UTC
-const myWorkflow = new glue.Workflow(this, "GlueWorkflow", {
-    name: "MyWorkflow";
-    description: "New Workflow";
-    properties: {'key', 'value'};
-});
-
-const job = new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
-    className: 'com.example.HelloWorld',
+workflow = new glue.Workflow(this, "GlueWorkflow", {
+    name: "MyWorkflow",
+    description: "New Workflow",
+    properties: {'key': 'value'},
 });
 
 workflow.addDailyScheduledTrigger('DailyScheduledTrigger', {
@@ -473,21 +414,10 @@ defaults to 900 seconds, but you can override the window to align with
 your workload's requirements.
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
-const myWorkflow = new glue.Workflow(this, "GlueWorkflow", {
-    name: "MyWorkflow";
-    description: "New Workflow";
-    properties: {'key', 'value'};
-});
-
-const job = new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
-    className: 'com.example.HelloWorld',
+workflow = new glue.Workflow(this, "GlueWorkflow", {
+    name: "MyWorkflow",
+    description: "New Workflow",
+    properties: {'key': 'value'},
 });
 
 workflow.addNotifyEventTrigger('NotifyEventTrigger', {
@@ -505,20 +435,11 @@ Conditional triggers have a predicate and actions associated with them.
 The trigger actions are executed when the predicateCondition is true.
 
 ```ts
-import * as s3 from 'aws-cdk-lib/aws-s3';
-
-const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-
 // Triggers on Job and Crawler status
-const myWorkflow = new glue.Workflow(this, "GlueWorkflow", {
-    name: "MyWorkflow";
-    description: "New Workflow";
-    properties: {'key', 'value'};
-});
-
-const job = new glue.ScalaSparkEtlJob(this, 'ScalaSparkEtlJob', {
-    script: glue.Code.fromBucket(codeBucket, 'script');
-    className: 'com.example.HelloWorld',
+workflow = new glue.Workflow(this, "GlueWorkflow", {
+    name: "MyWorkflow",
+    description: "New Workflow",
+    properties: {'key': 'value'},
 });
 
 workflow.addconditionalTrigger('ConditionalTrigger', {
