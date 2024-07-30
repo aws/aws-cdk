@@ -291,14 +291,12 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private updateKeyPolicyForEphemeralStorageConfiguration(key: IKey, clusterName?: string) {
-    const clusterConditions: PolicyStatementProps['conditions'] = {
+    const clusterConditions = {
       StringEquals: {
         'kms:EncryptionContext:aws:ecs:clusterAccount': [Aws.ACCOUNT_ID],
+        ...(clusterName && { 'kms:EncryptionContext:aws:ecs:clusterName': [clusterName] }),
       },
     };
-    if (clusterName) {
-      clusterConditions.StringEquals['kms:EncryptionContext:aws:ecs:clusterName'] = [clusterName];
-    }
 
     key.addToResourcePolicy(new PolicyStatement({
       sid: 'Allow generate data key access for Fargate tasks.',
