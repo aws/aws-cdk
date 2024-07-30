@@ -1328,7 +1328,7 @@ export interface ManagedStorageConfiguration {
    * KMS Key used to encrypt ECS Fargate ephemeral Storage.
    * The configured KMS Key's policy will be modified to allow ECS to use the Key to encrypt the ephemeral Storage for this cluster.
    *
-   * For more information, see [Customer managed keys for AWS Fargate ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-storage-encryption.html) in the ECS Developer Guide.
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-storage-encryption.html
    *
    * @default No encryption will be applied
    */
