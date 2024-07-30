@@ -780,6 +780,7 @@ then you will need to enable the `removeRuleSuffixFromLogicalId: true` property 
 Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.
 
 ## Configuring Mutual authentication with TLS in Application Load Balancer
+
 You can configure Mutual authentication with TLS (mTLS) for Application Load Balancer.
 
 To set mTLS, you must create an instance of `TrustStore` and set it to `ApplicationListener`.
