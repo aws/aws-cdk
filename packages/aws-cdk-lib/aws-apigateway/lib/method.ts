@@ -210,8 +210,10 @@ export class Method extends Resource {
      *
      * Authorization type is first set to "authorizer.authorizerType", falling back to method's "authorizationType",
      * falling back to API resource's default "authorizationType", and lastly "Authorizer.NONE".
+     *
+     * Note that "authorizer.authorizerType" should match method or resource's "authorizationType" if exists.
      */
-    const authorizationType = this.getMethodAuthorizationType(options, defaultMethodOptions, authorizer?.authorizationType);
+    const authorizationType = this.getMethodAuthorizationType(options, defaultMethodOptions, authorizer);
 
     // AuthorizationScope should only be applied to COGNITO_USER_POOLS AuthorizationType.
     const defaultScopes = options.authorizationScopes ?? defaultMethodOptions.authorizationScopes;
@@ -314,14 +316,22 @@ export class Method extends Resource {
     this.methodResponses.push(methodResponse);
   }
 
-  private getMethodAuthorizationType(options: MethodOptions, defaultMethodOptions: MethodOptions, authorizerType?: AuthorizationType): string {
-    const authTypeFromOptions = options.authorizationType || defaultMethodOptions.authorizationType;
-    const finalAuthType = authorizerType || authTypeFromOptions || AuthorizationType.NONE;
+  /**
+   * Get API Gateway Method's authorization type
+   * @param options API Gateway Method's options to use
+   * @param defaultMethodOptions API Gateway resource's default Method's options to use
+   * @param authorizer Authorizer used for API Gateway Method
+   * @returns API Gateway Method's authorizer type
+   */
+  private getMethodAuthorizationType(options: MethodOptions, defaultMethodOptions: MethodOptions, authorizer?: IAuthorizer): string {
+    const authorizerAuthType = authorizer?.authorizationType;
+    const optionsAuthType = options.authorizationType || defaultMethodOptions.authorizationType;
+    const finalAuthType = authorizerAuthType || optionsAuthType || AuthorizationType.NONE;
 
     // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
-    if (authorizerType && authTypeFromOptions && authorizerType !== authTypeFromOptions) {
-      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${authTypeFromOptions} ` +
-        `which is different from what is required by the authorizer [${authorizerType}]`);
+    if (authorizerAuthType && optionsAuthType && authorizerAuthType !== optionsAuthType) {
+      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
+        `which is different from what is required by the authorizer [${authorizerAuthType}]`);
     }
 
     return finalAuthType;
