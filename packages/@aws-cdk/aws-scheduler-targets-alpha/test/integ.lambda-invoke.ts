@@ -48,6 +48,11 @@ new scheduler.Schedule(stack, 'Schedule', {
     input: scheduler.ScheduleTargetInput.fromText(payload),
   }),
 });
+// test multiple schedules with same target ARN are created correctly
+new scheduler.Schedule(stack, 'Schedule2', {
+  schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
+  target: new LambdaInvoke(func, { retryAttempts: 0 }),
+});
 
 const integ = new IntegTest(app, 'integtest-lambda-invoke', {
   testCases: [stack],

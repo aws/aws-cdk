@@ -932,6 +932,16 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    */
   readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
 
+  /**
+   * Indicates whether anomaly mitigation is enabled.
+   *
+   * Only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`
+   *
+   * @default false
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
+   */
+  readonly enableAnomalyMitigation?: boolean;
 }
 
 /**
