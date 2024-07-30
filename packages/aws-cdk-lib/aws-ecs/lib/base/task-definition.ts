@@ -462,11 +462,6 @@ export class TaskDefinition extends TaskDefinitionBase {
         throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
       }
 
-      // Validate the CPU and memory size for the Windows operation system family.
-      if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
-        this.checkFargateWindowsBasedTasksSize(props.cpu, props.memoryMiB, props.runtimePlatform);
-      }
-
       // Check the combination as per doc https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
       this.node.addValidation({
         validate: () => this.validateFargateTaskDefinitionMemoryCpu(props.cpu!, props.memoryMiB!),
@@ -485,6 +480,13 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
     this.pidMode = props.pidMode;
+
+    // validate the cpu and memory size for the Windows operation system family.
+    if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
+      // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
+      // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
+      this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
+    }
 
     this.runtimePlatform = props.runtimePlatform;
     this._cpu = props.cpu;
