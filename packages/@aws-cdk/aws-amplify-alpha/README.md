@@ -138,7 +138,7 @@ domain.mapSubDomain(main, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```
 
-If you want to use your custom domain, set your custom certificate to `customCertificate`:
+To specify a custom certificate for your custom domain use the `customCertificate` property:
 
 ```ts
 declare const customCertificate: acm.Certificate;
