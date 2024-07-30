@@ -21,7 +21,7 @@ export interface ITrustStore extends IResource {
 }
 
 /**
- * properties used for the Trust Store
+ * Properties used for the Trust Store
  */
 export interface TrustStoreProps {
 
