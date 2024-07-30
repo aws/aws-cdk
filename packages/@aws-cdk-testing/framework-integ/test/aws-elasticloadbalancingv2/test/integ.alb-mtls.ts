@@ -122,7 +122,7 @@ class MutualTls extends Stack {
       certificates: [certificate],
       mutualAuthentication: {
         ignoreClientCertificateExpiry: false,
-        mode: elbv2.Mode.VERIFY,
+        mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
         trustStore,
       },
       defaultAction: elbv2.ListenerAction.fixedResponse(200,

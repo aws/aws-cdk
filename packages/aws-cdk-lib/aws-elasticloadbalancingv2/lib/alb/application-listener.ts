@@ -123,9 +123,9 @@ export interface MutualAuthentication {
   /**
    * The client certificate handling method
    *
-   * @default Mode.OFF
+   * @default MutualAuthenticationMode.OFF
    */
-  readonly mode?: Mode;
+  readonly mutualAuthenticationMode?: MutualAuthenticationMode;
 
   /**
    * The trust store
@@ -138,7 +138,7 @@ export interface MutualAuthentication {
 /**
  * The client certificate handling method
  */
-export enum Mode {
+export enum MutualAuthenticationMode {
   /**
    * Off
    */
@@ -245,17 +245,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error('At least one of \'port\' or \'protocol\' is required');
     }
 
-    if (props.mutualAuthentication?.mode === Mode.VERIFY && !props.mutualAuthentication.trustStore) {
-      throw new Error(`You must set 'trustStore' when 'mode' is '${Mode.VERIFY}'`);
+    if (props.mutualAuthentication?.mutualAuthenticationMode === MutualAuthenticationMode.VERIFY && !props.mutualAuthentication.trustStore) {
+      throw new Error(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`);
     }
 
-    if ((props.mutualAuthentication?.mode === Mode.OFF || props.mutualAuthentication?.mode === Mode.PASS_THROUGH)) {
+    if ((props.mutualAuthentication?.mutualAuthenticationMode === MutualAuthenticationMode.OFF ||
+      props.mutualAuthentication?.mutualAuthenticationMode === MutualAuthenticationMode.PASS_THROUGH)) {
       if (props.mutualAuthentication.trustStore) {
-        throw new Error(`You cannot set 'trustStore' when 'mode' is '${Mode.OFF}' or '${Mode.PASS_THROUGH}'`);
+        throw new Error(`You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
       }
 
       if (props.mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
-        throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${Mode.OFF}' or '${Mode.PASS_THROUGH}'`);
+        throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
       }
     }
 
@@ -267,7 +268,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       sslPolicy: props.sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
-        mode: props.mutualAuthentication?.mode,
+        mode: props.mutualAuthentication?.mutualAuthenticationMode,
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
       } : undefined,
     });

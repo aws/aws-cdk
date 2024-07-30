@@ -47,3 +47,17 @@ test('Trust Store with required properties', () => {
     Name: 'TrustStore',
   });
 });
+
+test.each(['', '-test', 'test-', '$test', 'a'.repeat(33)])('Throw an error when trutStoreName is %s', (trustStoreName) => {
+  // GIVEN
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  // WHEN
+  expect(() => {
+    new elbv2.TrustStore(stack, 'TrustStore', {
+      bucket,
+      key: 'dummy.pem',
+      trustStoreName,
+    });
+  }).toThrow(`Invalid trustStoreName: '${trustStoreName}'. It must be 1-32 characters long, contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
+});

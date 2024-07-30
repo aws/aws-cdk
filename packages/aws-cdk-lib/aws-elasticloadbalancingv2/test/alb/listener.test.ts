@@ -1845,7 +1845,7 @@ describe('tests', () => {
         certificates: [importedCertificate(stack)],
         mutualAuthentication: {
           ignoreClientCertificateExpiry: true,
-          mode: elbv2.Mode.VERIFY,
+          mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
           trustStore,
         },
         defaultAction: elbv2.ListenerAction.fixedResponse(200,
@@ -1901,15 +1901,15 @@ describe('tests', () => {
           certificates: [importedCertificate(stack)],
           mutualAuthentication: {
             ignoreClientCertificateExpiry: true,
-            mode: elbv2.Mode.VERIFY,
+            mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
           },
           defaultAction: elbv2.ListenerAction.fixedResponse(200,
             { contentType: 'text/plain', messageBody: 'Success mTLS' }),
         });
-      }).toThrow('You must set \'trustStore\' when \'mode\' is \'Mode.VERIFY\'');
+      }).toThrow('You must set \'trustStore\' when \'mode\' is \'verify\'');
     });
 
-    test.each([elbv2.Mode.OFF, elbv2.Mode.PASS_THROUGH])('Throw an error when mode is %s with trustStore', (mode) => {
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Throw an error when mode is %s with trustStore', (mutualAuthenticationMode) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1927,26 +1927,20 @@ describe('tests', () => {
           protocol: elbv2.ApplicationProtocol.HTTPS,
           certificates: [importedCertificate(stack)],
           mutualAuthentication: {
-            mode,
+            mutualAuthenticationMode,
             trustStore,
           },
           defaultAction: elbv2.ListenerAction.fixedResponse(200,
             { contentType: 'text/plain', messageBody: 'Success mTLS' }),
         });
-      }).toThrow('You cannot set \'trustStore\' when \'mode\' is \'OFF\' or \'PASS_THROUGH\'');
+      }).toThrow('You cannot set \'trustStore\' when \'mode\' is \'off\' or \'passthrough\'');
     });
 
-    test.each([elbv2.Mode.OFF, elbv2.Mode.PASS_THROUGH])('Throw an error when mode is %s with ignoreClientCertificateExpiry', (mode) => {
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Throw an error when mode is %s with ignoreClientCertificateExpiry', (mutualAuthenticationMode) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
-      const bucket = new s3.Bucket(stack, 'Bucket');
-
-      const trustStore = new elbv2.TrustStore(stack, 'TrustStore', {
-        bucket,
-        key: 'dummy.pem',
-      });
 
       // WHEN
       expect(() => {
@@ -1954,13 +1948,13 @@ describe('tests', () => {
           protocol: elbv2.ApplicationProtocol.HTTPS,
           certificates: [importedCertificate(stack)],
           mutualAuthentication: {
-            mode,
+            mutualAuthenticationMode,
             ignoreClientCertificateExpiry: true,
           },
           defaultAction: elbv2.ListenerAction.fixedResponse(200,
             { contentType: 'text/plain', messageBody: 'Success mTLS' }),
         });
-      }).toThrow('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'OFF\' or \'PASS_THROUGH\'');
+      }).toThrow('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'off\' or \'passthrough\'');
     });
 
   });
