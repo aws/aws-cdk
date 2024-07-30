@@ -668,7 +668,7 @@ export class LogFormat {
 
   /**
    * Docker runtime ID of the container if the traffic is from a running ECS task.
-   * If there are one or more containers in the ECS task, this will be the docker runtime ID of the first container.
+   * If there is one container or more in the ECS task, this will be the docker runtime ID of the first container.
    */
   public static readonly ECS_CONTAINER_ID = LogFormat.field('ecs-container-id');
 
