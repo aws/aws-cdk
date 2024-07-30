@@ -249,14 +249,14 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error(`You must set 'trustStore' when 'mode' is '${Mode.VERIFY}'`);
     }
 
-    if ((props.mutualAuthentication?.mode === Mode.OFF || props.mutualAuthentication?.mode === Mode.PASS_THROUGH)
-      && !Token.isUnresolved(props.mutualAuthentication.trustStore) && props.mutualAuthentication.trustStore) {
-      throw new Error('You cannot set \'trustStore\' when \'mode\' is \'OFF\' or \'PASS_THROUGH\'');
-    }
+    if ((props.mutualAuthentication?.mode === Mode.OFF || props.mutualAuthentication?.mode === Mode.PASS_THROUGH)) {
+      if (props.mutualAuthentication.trustStore) {
+        throw new Error(`You cannot set 'trustStore' when 'mode' is '${Mode.OFF}' or '${Mode.PASS_THROUGH}'`);
+      }
 
-    if ((props.mutualAuthentication?.mode === Mode.OFF || props.mutualAuthentication?.mode === Mode.PASS_THROUGH)
-      && props.mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
-      throw new Error('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'OFF\' or \'PASS_THROUGH\'');
+      if (props.mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
+        throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${Mode.OFF}' or '${Mode.PASS_THROUGH}'`);
+      }
     }
 
     super(scope, id, {
