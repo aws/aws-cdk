@@ -82,7 +82,7 @@ export class TrustStore extends Resource implements ITrustStore {
    *
    * @attribute
    */
-  public readonly numberOfCacertificates: number;
+  public readonly numberOfCaCertificates: number;
 
   /**
    * The status of the trust store
@@ -120,7 +120,7 @@ export class TrustStore extends Resource implements ITrustStore {
     });
 
     this.trustStoreName = resource.ref;
-    this.numberOfCacertificates = resource.attrNumberOfCaCertificates;
+    this.numberOfCaCertificates = resource.attrNumberOfCaCertificates;
     this.status = resource.attrStatus;
     this.trustStoreArn = resource.attrTrustStoreArn;
   }
