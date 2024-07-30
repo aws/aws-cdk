@@ -815,6 +815,26 @@ export enum HttpCodeElb {
    * The number of HTTP 5XX server error codes that originate from the load balancer.
    */
   ELB_5XX_COUNT = 'HTTPCode_ELB_5XX_Count',
+
+  /**
+   * The number of HTTP 500 server error codes that originate from the load balancer.
+   */
+  ELB_500_COUNT = 'HTTPCode_ELB_500_Count',
+
+  /**
+   * The number of HTTP 502 server error codes that originate from the load balancer.
+   */
+  ELB_502_COUNT = 'HTTPCode_ELB_502_Count',
+
+  /**
+   * The number of HTTP 503 server error codes that originate from the load balancer.
+   */
+  ELB_503_COUNT = 'HTTPCode_ELB_503_Count',
+
+  /**
+   * The number of HTTP 504 server error codes that originate from the load balancer.
+   */
+  ELB_504_COUNT = 'HTTPCode_ELB_504_Count',
 }
 
 /**
