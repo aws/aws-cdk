@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import { Artifact, Pipeline } from '../../aws-codepipeline';
 import { S3DeployAction, S3SourceAction } from '../../aws-codepipeline-actions';
 import * as iam from '../../aws-iam';
@@ -281,6 +281,153 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::ConfigurationProfile', 2);
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Environment', 2);
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 2);
+  });
+
+  test('configuration with retrievalRole undefined from bucket source should create a new role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig', {
+      applicationName: 'MyApplication',
+    });
+    const bucket = new Bucket(stack, 'MyBucket');
+
+    // WHEN
+    new SourcedConfiguration(stack, 'MySourcedConfig', {
+      versionNumber: '1',
+      location: ConfigurationSource.fromBucket(bucket, 'path/to/object'),
+      application: app,
+    });
+
+    // THEN
+    // should have a new role provisioned with AllowAppConfigReadFromSourcePolicy
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'appconfig.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Policies: [
+        {
+          PolicyName: 'AllowAppConfigReadFromSourcePolicy',
+        },
+      ],
+    });
+  });
+
+  test('configuration with retrievalRole defined should NOT create a new role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig', {
+      applicationName: 'MyApplication',
+    });
+    const bucket = new Bucket(stack, 'MyBucket');
+
+    // WHEN
+    new SourcedConfiguration(stack, 'MySourcedConfig', {
+      versionNumber: '1',
+      location: ConfigurationSource.fromBucket(bucket, 'path/to/object'),
+      application: app,
+      retrievalRole: new iam.Role(stack, 'MyRole', {
+        assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+      }),
+    });
+
+    // THEN
+    // should NOT have a new role provisioned with AllowAppConfigReadFromSourcePolicy
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'appconfig.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Policies: [
+        {
+          PolicyName: 'AllowAppConfigReadFromSourcePolicy',
+        },
+      ],
+    }));
+    // and should use the passed role for the retrievalRoleArn
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'MySourcedConfig',
+      RetrievalRoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
+    });
+
+  });
+
+  test('configuration with retrievalRole undefined from CodePipeline source should NOT create a new role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig', {
+      applicationName: 'MyApplication',
+    });
+    const bucket = new Bucket(stack, 'MyBucket');
+    const sourceAction = new S3SourceAction({
+      actionName: 'Source',
+      bucket: bucket,
+      bucketKey: 'hello/world/codepipeline.txt',
+      output: new Artifact('SourceOutput'),
+    });
+    const deployAction = new S3DeployAction({
+      actionName: 'Deploy',
+      input: Artifact.artifact('SourceOutput'),
+      bucket: bucket,
+      extract: true,
+    });
+    const pipeline = new Pipeline(stack, 'MyPipeline', {
+      stages: [
+        {
+          stageName: 'beta',
+          actions: [sourceAction],
+        },
+        {
+          stageName: 'prod',
+          actions: [deployAction],
+        },
+      ],
+    });
+
+    // WHEN
+    new SourcedConfiguration(stack, 'MySourcedConfig', {
+      versionNumber: '1',
+      location: ConfigurationSource.fromPipeline(pipeline),
+      application: app,
+    });
+
+    // THEN
+    // should NOT have a new role provisioned with AllowAppConfigReadFromSourcePolicy
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'appconfig.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Policies: [
+        {
+          PolicyName: 'AllowAppConfigReadFromSourcePolicy',
+        },
+      ],
+    }));
   });
 
   test('configuration with two configurations and no deployment strategy specified', () => {

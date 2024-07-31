@@ -203,6 +203,11 @@ export class Runtime {
   public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
 
   /**
+   * NodeJS 18
+   */
+  public static readonly NODEJS_18 = Runtime.of('NODEJS_18')
+
+  /**
    * PHP 8.1
    */
   public static readonly PHP_81 = Runtime.of('PHP_81')
@@ -211,6 +216,11 @@ export class Runtime {
    * Python 3
    */
   public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
+
+  /**
+   * Python 3.11
+   */
+  public static readonly PYTHON_311 = Runtime.of('PYTHON_311')
 
   /**
    * Ruby 3.1

@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.150.0](https://github.com/aws/aws-cdk/compare/v2.149.0...v2.150.0) (2024-07-22)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#30921](https://github.com/aws/aws-cdk/issues/30921)) ([153a698](https://github.com/aws/aws-cdk/commit/153a698f9fff7c244d4ca6f5e97d15b63840ab7a))
+* **ec2:** add g6 instance ([#30693](https://github.com/aws/aws-cdk/issues/30693)) ([90a41d5](https://github.com/aws/aws-cdk/commit/90a41d5622857a0bc2ae6e0be19b72b00a609a7d)), closes [#30683](https://github.com/aws/aws-cdk/issues/30683)
+* **lambda:** add SnapStart support for arm64 functions ([#30898](https://github.com/aws/aws-cdk/issues/30898)) ([b4377a5](https://github.com/aws/aws-cdk/commit/b4377a5a3ad6d30730a084de6bc29c909a5c0e9d)), closes [#30899](https://github.com/aws/aws-cdk/issues/30899)
+* **logs:** enabling IA log group creation in CN and GovCloud regions ([#30904](https://github.com/aws/aws-cdk/issues/30904)) ([230b56b](https://github.com/aws/aws-cdk/commit/230b56bb6b39d25655df26411d4e3c5a05b04231))
+* update L1 CloudFormation resource definitions ([#30860](https://github.com/aws/aws-cdk/issues/30860)) ([ce7a8d5](https://github.com/aws/aws-cdk/commit/ce7a8d59b9c0351818a26c3dac299d53ca63e8ca))
+
+
+### Bug Fixes
+
+* **custom-resources:** provider framework will always log all data including confidential data ([#30689](https://github.com/aws/aws-cdk/issues/30689)) ([9bd92da](https://github.com/aws/aws-cdk/commit/9bd92da62d8c4594a11f4ab078f07b8c20762329)), closes [#30275](https://github.com/aws/aws-cdk/issues/30275)
+* **stepfunctions-tasks:** allow camelCase for parameters of CallAwsServiceCrossRegion ([#30795](https://github.com/aws/aws-cdk/issues/30795)) ([5d6ace8](https://github.com/aws/aws-cdk/commit/5d6ace8c69a16fbfb7b8109bfa35fc70f6fadeab)), closes [#30799](https://github.com/aws/aws-cdk/issues/30799)
+
 ## [2.149.0](https://github.com/aws/aws-cdk/compare/v2.148.1...v2.149.0) (2024-07-12)
 
 

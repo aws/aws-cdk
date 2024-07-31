@@ -184,8 +184,6 @@ describe('custom resource provider', () => {
     const keyParam = paramNames[1];
     const hashParam = paramNames[2];
 
-    expect(fs.existsSync(path.join(sourcePath, '__entrypoint__.js'))).toEqual(true);
-
     expect(cfn).toEqual({
       Resources: {
         CustomMyResourceTypeCustomResourceProviderRoleBD5E655F: {

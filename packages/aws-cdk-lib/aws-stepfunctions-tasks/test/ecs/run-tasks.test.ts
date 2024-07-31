@@ -4,7 +4,6 @@ import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
-import { ECS_REDUCE_RUN_TASK_PERMISSIONS } from '../../../cx-api';
 import * as tasks from '../../lib';
 
 let stack: Stack;
@@ -16,7 +15,6 @@ let cluster: ecs.Cluster;
 beforeEach(() => {
   // GIVEN
   stack = new Stack();
-  stack.node.setContext(ECS_REDUCE_RUN_TASK_PERMISSIONS, true);
   vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Capacity', {

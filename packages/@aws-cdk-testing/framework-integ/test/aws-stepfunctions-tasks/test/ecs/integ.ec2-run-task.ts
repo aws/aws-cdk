@@ -4,7 +4,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, ECS_REDUCE_RUN_TASK_PERMISSIONS } from 'aws-cdk-lib/cx-api';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
@@ -20,7 +20,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-run-task');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
-stack.node.setContext(ECS_REDUCE_RUN_TASK_PERMISSIONS, true);
 
 const cluster = new ecs.Cluster(stack, 'Ec2Cluster');
 cluster.addCapacity('DefaultAutoScalingGroup', {

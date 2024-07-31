@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "files": {
-    "5626e75fff43d2eed0d63a5a925cb78eb1fd3d7fded40fe3b4036e0ce26a1ea9": {
+    "d0e21994eba50227669b2052acb6e237940781e64fc7baad9c2946a2c56d4b8d": {
       "source": {
         "path": "aws-cdk-aws-apigatewayv2-http-stage.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5626e75fff43d2eed0d63a5a925cb78eb1fd3d7fded40fe3b4036e0ce26a1ea9.json",
+          "objectKey": "d0e21994eba50227669b2052acb6e237940781e64fc7baad9c2946a2c56d4b8d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
