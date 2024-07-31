@@ -4,11 +4,12 @@ import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 
 const ESBUILD_MAJOR_VERSION = '0';
+const ESBUILD_DEFAULT_VERSION = '0.21';
 
 /**
  * Bundling properties
@@ -133,7 +134,14 @@ export class Bundling implements cdk.BundlingOptions {
     // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
     // include in the bundle asset
     const defaultExternals = props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
+
     const externals = props.externalModules ?? defaultExternals;
+
+    // warn users if they are using a runtime that does not support sdk v2
+    // and the sdk is not explicitly bundled
+    if (externals.length && isV2Runtime) {
+      cdk.Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage', 'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.');
+    }
 
     // Warn users if they are trying to rely on global versions of the SDK that aren't available in
     // their environment.
@@ -162,7 +170,7 @@ export class Bundling implements cdk.BundlingOptions {
           ...props.buildArgs ?? {},
           // If runtime isn't passed use regional default, lowest common denominator is node18
           IMAGE: props.runtime.bundlingImage.image,
-          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_MAJOR_VERSION,
+          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_DEFAULT_VERSION,
         },
         platform: props.architecture.dockerPlatform,
       })
@@ -433,24 +441,6 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   }
 
   return args.join(' ');
-}
-
-/**
- * Detect if a given Node.js runtime uses SDKv2
- */
-function isSdkV2Runtime(runtime: Runtime): boolean {
-  const sdkV2RuntimeList = [
-    Runtime.NODEJS,
-    Runtime.NODEJS_4_3,
-    Runtime.NODEJS_6_10,
-    Runtime.NODEJS_8_10,
-    Runtime.NODEJS_10_X,
-    Runtime.NODEJS_12_X,
-    Runtime.NODEJS_14_X,
-    Runtime.NODEJS_16_X,
-  ];
-
-  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }
 
 /**

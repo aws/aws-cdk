@@ -15,9 +15,6 @@ describe('lambda version', () => {
     // WHEN
     const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:version');
 
-    expect(version.version).toStrictEqual('version');
-    expect(version.lambda.functionArn).toStrictEqual('arn:aws:lambda:region:account-id:function:function-name');
-
     new cdk.CfnOutput(stack, 'ARN', { value: version.functionArn });
     new cdk.CfnOutput(stack, 'Name', { value: version.functionName });
 

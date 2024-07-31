@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvoke5050b1f640cc49956b59f2a71febe95c": {
+  "LambdaInvoke7d0602e4b9f40ae057f935d874b5f971": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputRefexternal068F12D12C72A375"
+         "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
         },
         "\""
        ]
@@ -27,17 +27,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1709678419684"
+    "salt": "1719863788262"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke5050b1f640cc49956b59f2a71febe95cInvokeB4FBC029": {
+  "LambdaInvoke7d0602e4b9f40ae057f935d874b5f971Invoke970717DE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputRefexternal068F12D12C72A375"
+     "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -73,46 +73,6 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
-        {
-         "Action": [
-          "lambda:Invoke"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "lambda:InvokeFunction"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":lambda:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":function:",
-             {
-              "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputRefexternal068F12D12C72A375"
-             }
-            ]
-           ]
-          }
-         ]
-        },
         {
          "Action": [
           "lambda:Invoke"
@@ -202,63 +162,24 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "556f7b960c212183e2f73e1410a097107af3ccf13c8880a717edbcadd89611a4.zip"
+     "S3Key": "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
     "Role": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "LambdaInvoke7d0602e4b9f40ae057f935d874b5f971": {
-   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Lambda",
-    "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\",\"Payload\":\"null\"}}",
-    "parameters": {
-     "FunctionName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1709678419687"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "LambdaInvoke7d0602e4b9f40ae057f935d874b5f971Invoke970717DE": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
-    },
-    "Principal": {
      "Fn::GetAtt": [
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
@@ -293,7 +214,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1709678419688"
+    "salt": "1719863788263"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -315,14 +236,6 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke5050b1f640cc49956b59f2a71febe95c": {
-   "Value": {
-    "Fn::GetAtt": [
-     "LambdaInvoke5050b1f640cc49956b59f2a71febe95c",
-     "assertion"
-    ]
-   }
-  },
   "AssertionResultsLambdaInvoke7d0602e4b9f40ae057f935d874b5f971": {
    "Value": {
     "Fn::GetAtt": [
@@ -337,6 +250,115 @@
      "LambdaInvokee35a5227846e334cb95a90bacfbfb877",
      "assertion"
     ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
    }
   }
  },

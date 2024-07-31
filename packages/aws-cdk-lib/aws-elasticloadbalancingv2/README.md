@@ -254,11 +254,11 @@ For more information, see [Load balancer attributes](https://docs.aws.amazon.com
 The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
 Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
 
-```ts 
+```ts
 
 declare const vpc: ec2.Vpc;
 
-const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{ 
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{
   encryption: s3.BucketEncryption.S3_MANAGED,
   });
 
@@ -301,7 +301,7 @@ listener.addTargets('AppFleet', {
 
 ### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
 
-You can indicate whether to evaluate inbound security group rules for traffic 
+You can indicate whether to evaluate inbound security group rules for traffic
 sent to a Network Load Balancer through AWS PrivateLink.
 The evaluation is enabled by default.
 
@@ -455,6 +455,26 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
     healthyGrpcCodes: '0-99',
   },
   vpc,
+});
+```
+
+### Weighted random routing algorithms and automatic target weights for your Application Load Balancer
+
+You can use the `weighted_random` routing algorithms by setting the `loadBalancingAlgorithmType` property.
+
+When using this algorithm, Automatic Target Weights (ATW) anomaly mitigation can be used by setting `enableAnomalyMitigation` to `true`.
+
+Also you can't use this algorithm with slow start mode.
+
+For more information, see [Routing algorithms](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#modify-routing-algorithm) and [Automatic Target Weights (ATW)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+  enableAnomalyMitigation: true,
 });
 ```
 
@@ -765,3 +785,16 @@ const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this,
 
 const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics; // throws an Error()
 ```
+
+## logicalIds on ExternalApplicationListener.addTargetGroups() and .addAction()
+
+By default, the `addTargetGroups()` method does not follow the standard behavior
+of adding a `Rule` suffix to the logicalId of the `ListenerRule` it creates.
+If you are deploying new `ListenerRule`s using `addTargetGroups()` the recommendation
+is to set the `removeRuleSuffixFromLogicalId: false` property.
+If you have `ListenerRule`s deployed using the legacy behavior of `addTargetGroups()`,
+which you need to switch over to being managed by the `addAction()` method,
+then you will need to enable the `removeRuleSuffixFromLogicalId: true` property in the `addAction()` method.
+
+`ListenerRule`s have a unique `priority` for a given `Listener`.
+Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.

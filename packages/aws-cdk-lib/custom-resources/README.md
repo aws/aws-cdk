@@ -156,7 +156,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 | -------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PhysicalResourceId` | String  | No       | The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur. |
 | `Data`               | JSON    | No       | Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.                                                                                                                                                                                                                                                                                                                                                 |
-| `NoEcho`             | Boolean | No       | Whether to mask the output of the custom resource when retrieved by using the `Fn::GetAtt` function.                                                                                                                                                                                                                                                                                                                                                  |
+| `NoEcho`             | Boolean | No       | Whether to mask the output of the custom resource when retrieved by using the `Fn::GetAtt` function and to mask the `Data` values.                                                                                                                                                                                                                                                                                                                                                 |
 | *any*                | *any*   | No       | Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.                                                                                                                                                                                                                                                                                                     |
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
@@ -214,6 +214,48 @@ As a rule of thumb, if your custom resource supports configuring a physical name
 must return this name in `PhysicalResourceId` and make sure to handle
 replacement properly. The `S3File` example demonstrates this
 through the `objectKey` property.
+
+### Masking the output of log statements
+
+When using the Provider framework to create a custom resource, the request and response
+objects are logged by the provider function.If secret values are returned in the custom
+resource's Data object, it would be logged and exposed which possesses security threats.
+
+To mask the output of log statements, you can utilize the `NoEcho` field in the custom
+resource handler's response.
+
+```ts
+// Create custom resource handler entrypoint
+const handler = new lambda.Function(this , 'my-handler', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+  exports.handler = async (event, context) => {
+    return {
+      PhysicalResourceId: '1234',
+      NoEcho: true,
+      Data: {
+        mySecret: 'secret-value',
+        hello: 'world',
+        ghToken: 'gho_xxxxxxx',
+      },
+    };
+  };`),
+});
+
+// Provision a custom resource provider framework
+const provider = new cr.Provider(this , 'my-provider', {
+  onEventHandler: handler,
+});
+
+new CustomResource(this , 'my-cr', {
+  serviceToken: provider.serviceToken,
+});
+```
+
+When `NoEcho` field is set to `true` in the response of custom resource handler,
+it will automatically mask all values in the `Data` object in the log statements
+to asterisks (*****).
 
 ### When there are errors
 
@@ -542,7 +584,7 @@ In both the cases, you will get a synth time error if you attempt to use it in c
 
 ### Customizing the Lambda function implementing the custom resource
 
-Use the `role`, `timeout`, `logGroup`, `functionName` and `removalPolicy` properties to customize
+Use the `role`, `timeout`, `memorySize`, `logGroup`, `functionName` and `removalPolicy` properties to customize
 the Lambda function implementing the custom resource:
 
 ```ts
@@ -550,6 +592,7 @@ declare const myRole: iam.Role;
 new cr.AwsCustomResource(this, 'Customized', {
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
   timeout: Duration.minutes(10), // defaults to 2 minutes
+  memorySize: 1025, // defaults to 512 if installLatestAwsSdk is true
   logGroup: new logs.LogGroup(this, 'AwsCustomResourceLogs', {
     retention: logs.RetentionDays.ONE_DAY,
   }),

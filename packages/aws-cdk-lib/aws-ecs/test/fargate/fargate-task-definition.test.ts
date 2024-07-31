@@ -26,13 +26,13 @@ describe('fargate task definition', () => {
       const stack = new cdk.Stack();
 
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: cdk.Lazy.number({ produce: () => 128 }),
+        cpu: cdk.Lazy.number({ produce: () => 512 }),
         memoryLimitMiB: cdk.Lazy.number({ produce: () => 1024 }),
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '128',
+        Cpu: '512',
         Memory: '1024',
       });
 
@@ -42,7 +42,7 @@ describe('fargate task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 128,
+        cpu: 256,
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
@@ -60,6 +60,7 @@ describe('fargate task definition', () => {
           cpuArchitecture: ecs.CpuArchitecture.X86_64,
           operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
         },
+        pidMode: ecs.PidMode.TASK,
       });
 
       taskDefinition.addVolume({
@@ -71,7 +72,7 @@ describe('fargate task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '128',
+        Cpu: '256',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -84,6 +85,7 @@ describe('fargate task definition', () => {
         Family: 'myApp',
         Memory: '1024',
         NetworkMode: 'awsvpc',
+        PidMode: 'task',
         RequiresCompatibilities: [
           ecs.LaunchType.FARGATE,
         ],
@@ -160,6 +162,85 @@ describe('fargate task definition', () => {
       }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
 
       // THEN
+    });
+
+    test('throws when pidMode is specified without an operating system family', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/Specifying 'pidMode' requires that operating system family also be provided./);
+    });
+
+    test('throws when pidMode is specified on Windows', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/'pidMode' is not supported for Windows containers./);
+    });
+
+    test('throws when pidMode is not task', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.HOST,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          },
+        });
+      }).toThrow(/'pidMode' can only be set to 'task' for Linux Fargate containers, got: 'host'./);
+    });
+
+    test('throws error when invalid CPU and memory combination is provided', () => {
+      const stack = new cdk.Stack();
+
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 256,
+        memoryLimitMiB: 125,
+      });
+
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
+    });
+
+    test('successful when valid CPU and memory combination is provided', () => {
+      const stack = new cdk.Stack();
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 256,
+        memoryLimitMiB: 512,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Cpu: '256',
+        Memory: '512',
+      });
     });
   });
   describe('When configuredAtLaunch in the Volume', ()=> {

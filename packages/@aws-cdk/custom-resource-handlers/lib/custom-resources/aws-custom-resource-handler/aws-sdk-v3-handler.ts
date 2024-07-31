@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ApiCall } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { ApiCall } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh
@@ -93,8 +93,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         break;
     }
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
-    // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
-    // wasn't configured so just default to existing behavior
+    // in the event of no call, logging wasn't configured so just default to existing behavior
     const logApiResponseData = call?.logApiResponseData ?? true;
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);

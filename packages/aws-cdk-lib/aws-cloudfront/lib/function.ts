@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
-import { IResource, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource, Stack } from '../../core';
 
 /**
  * Represents the function's source code
@@ -146,6 +146,13 @@ export interface FunctionProps {
    * @default - no key value store is associated
    */
   readonly keyValueStore?: IKeyValueStore;
+
+  /**
+   * A flag that determines whether to automatically publish the function to the LIVE stage when it’s created.
+   *
+   * @default - true
+   */
+  readonly autoPublish?: boolean;
 }
 
 /**
@@ -200,7 +207,7 @@ export class Function extends Resource implements IFunction {
     }
 
     const resource = new CfnFunction(this, 'Resource', {
-      autoPublish: true,
+      autoPublish: props.autoPublish ?? true,
       functionCode: props.code.render(),
       functionConfig: {
         comment: props.comment ?? this.functionName,
@@ -215,11 +222,17 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
-    const name = Stack.of(this).region + Names.uniqueId(this);
-    if (name.length > 64) {
-      return name.substring(0, 32) + name.substring(name.length - 32);
+    /**
+     * Since token string can be single- or double-digit region name, it may
+     * lead to non-deterministic behaviour.
+     */
+    const idLength = 64 - '${Token[AWS.Region.00]}'.length;
+    if (Names.uniqueId(this).length <= idLength) {
+      return Stack.of(this).region + Names.uniqueId(this);
     }
-    return name;
+    return Stack.of(this).region + Lazy.string({
+      produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
+    });
   }
 }
 

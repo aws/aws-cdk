@@ -49,7 +49,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The process namespace to use for the containers in the task.
    *
-   * Not supported in Fargate and Windows containers.
+   * Not supported in Windows containers.
    *
    * @default - PidMode used by the task is not specified
    */

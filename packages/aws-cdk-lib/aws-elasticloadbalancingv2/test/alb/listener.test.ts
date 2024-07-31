@@ -1698,6 +1698,47 @@ describe('tests', () => {
     }).toThrow(/Specify at most one/);
   });
 
+  describe('Rule suffix for logicalId', () => {
+    const identifierToken = 'SuperMagicToken';
+    interface TestCase {
+      readonly removeSuffix?: boolean;
+      readonly expectedLogicalId: string;
+    };
+    const nonDefaultTestCases: TestCase[] = [
+      { removeSuffix: true, expectedLogicalId: identifierToken },
+      { removeSuffix: false, expectedLogicalId: identifierToken + 'Rule' },
+    ];
+    test.each<TestCase>([
+      // Default is consistent, which means it has the `Rule` suffix. This means no change from legacy behavior
+      { removeSuffix: undefined, expectedLogicalId: identifierToken + 'Rule' },
+      ...nonDefaultTestCases,
+    ])('addAction %s', ({ removeSuffix, expectedLogicalId }) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      listener.addAction(identifierToken, {
+        action: elbv2.ListenerAction.weightedForward([{ targetGroup, weight: 1 }]),
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
+        priority: 42,
+        removeSuffix,
+      });
+
+      // THEN
+      const applicationListenerRule = listener.node.children.find((v) => v.hasOwnProperty('conditions'));
+      expect(applicationListenerRule).toBeDefined();
+      expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up an ApplicationListener', () => {
       // GIVEN
@@ -1782,6 +1823,115 @@ describe('tests', () => {
         ],
       });
     });
+  });
+
+  describe('weighted_random algorithm test', () => {
+    test('Can add targets with weight_random algorithm and anomaly mitigation enabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        enableAnomalyMitigation: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.algorithm.type',
+            Value: 'weighted_random',
+          },
+          {
+            Key: 'load_balancing.algorithm.anomaly_mitigation',
+            Value: 'on',
+          },
+        ],
+      });
+    });
+
+    test('Can add targets with weight_random algorithm and anomaly mitigation disabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        enableAnomalyMitigation: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.algorithm.type',
+            Value: 'weighted_random',
+          },
+          {
+            Key: 'load_balancing.algorithm.anomaly_mitigation',
+            Value: 'off',
+          },
+        ],
+      });
+    });
+
+    test('Throws an error when adding targets with weight_random algorithm and slow start setting enabled.', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      expect(() => listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        slowStart: cdk.Duration.seconds(60),
+      }),
+      ).toThrow('The weighted random routing algorithm can not be used with slow start mode.');
+    });
+
+    test('Throws an error when adding targets with anomaly mitigation enabled and an algorithm other than weight_random.', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      expect(() => listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN,
+        enableAnomalyMitigation: true,
+      }),
+      ).toThrow('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+    });
+
   });
 });
 

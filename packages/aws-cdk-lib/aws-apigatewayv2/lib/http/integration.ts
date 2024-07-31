@@ -3,7 +3,7 @@ import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
-import { Aws, Resource } from '../../../core';
+import { Aws, Duration, Resource } from '../../../core';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 
@@ -219,6 +219,14 @@ export interface HttpIntegrationProps {
   readonly secureServerName?: string;
 
   /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   *  @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
    * Specifies how to transform HTTP requests before sending them to the backend
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @default undefined requests are sent to the backend unmodified
@@ -249,6 +257,10 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       throw new Error('Either `integrationSubtype` or `integrationUri` must be specified.');
     }
 
+    if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    }
+
     const integ = new CfnIntegration(this, 'Resource', {
       apiId: props.httpApi.apiId,
       integrationType: props.integrationType,
@@ -260,6 +272,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       payloadFormatVersion: props.payloadFormatVersion?.version,
       requestParameters: props.parameterMapping?.mappings,
       credentialsArn: props.credentials?.credentialsArn,
+      timeoutInMillis: props.timeout?.toMilliseconds(),
     });
 
     if (props.secureServerName) {
@@ -326,6 +339,7 @@ export abstract class HttpRouteIntegration {
         secureServerName: config.secureServerName,
         parameterMapping: config.parameterMapping,
         credentials: config.credentials,
+        timeout: config.timeout,
       });
     }
     this.completeBind(options);
@@ -407,6 +421,14 @@ export interface HttpRouteIntegrationConfig {
    * @default undefined private integration traffic will use HTTP protocol
    */
   readonly secureServerName?: string;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
 
   /**
   * Specifies how to transform HTTP requests before sending them to the backend

@@ -661,8 +661,9 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBParameterGroup",
                   "aws:cdk:cloudformation:props": {
+                    "dbParameterGroupName": "name",
                     "description": "desc",
-                    "family": "postgres15",
+                    "family": "postgres16",
                     "parameters": {}
                   }
                 },
@@ -834,7 +835,7 @@
                     },
                     "enableIamDatabaseAuthentication": true,
                     "engine": "postgres",
-                    "engineVersion": "15.2",
+                    "EngineVersion": "16.3",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
