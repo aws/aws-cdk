@@ -226,8 +226,9 @@ export interface MathExpressionProps extends MathExpressionOptions {
    * The key is the identifier that represents the given metric in the
    * expression, and the value is the actual Metric object.
    *
-   * The `period` of each Metric object is ignored and instead overridden
-   * by the `period` of this MathExpression object.
+   * The `period` of each Metric object is ignored and instead overridden by
+   * the `period` of this math expression object. Even if the `period` of the
+   * math expression is not specified, it is overridden by its default value.
    *
    * @default - Empty map.
    */
