@@ -264,7 +264,6 @@ export class NestedStack extends Stack {
   }
 
   public get bundlingRequired() {
-
     return this._parentStack.bundlingRequired;
   }
 }
