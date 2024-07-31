@@ -31,6 +31,9 @@ export interface GeofenceCollectionProps {
   /**
    * A name for the geofence collection
    *
+   * Must be between 1 and 100 characters and contain only alphanumeric characters,
+   * hyphens, periods and underscores.
+   *
    * @default - A name is automatically generated
    */
   readonly geofenceCollectionName?: string;
