@@ -203,9 +203,9 @@ new apprunner.Service(this, 'Service', {
 
 ## VPC Ingress Connection
 
-You need to create a VPC Ingress Connection to make your App Runner service private and only accessible from within a VPC.
+To make your App Runner service private and only accessible from within a VPC use the `isPubliclyAccessible` property and associate it to a `VpcIngressConnection` resource.
 
-To set up a VPC Ingress Connection, you need to associate a VPC, a VPC Interface Endpoint, and an App Runner Service.
+To set up a `VpcIngressConnection`, specify a VPC, a VPC Interface Endpoint, and the App Runner service.
 
 For more information, see [Enabling Private endpoint for incoming traffic](https://docs.aws.amazon.com/apprunner/latest/dg/network-pl.html).
 
