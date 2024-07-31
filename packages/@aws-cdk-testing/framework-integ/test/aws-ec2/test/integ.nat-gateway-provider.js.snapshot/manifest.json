@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fe8a0a7f07ddba9fe09eaa5d8aa34560b6726b1fbeeb7109bdda7c87403f4fd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94c2b6c60774c5d51f35a97b2fc04169cc8dd5b72b3fbf0c81cd4923558bbf98.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -164,6 +164,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62"
+          }
+        ],
+        "/aws-cdk-vpc-nat-gateway-provider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-vpc-nat-gateway-provider/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
