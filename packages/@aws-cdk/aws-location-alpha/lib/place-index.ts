@@ -29,6 +29,9 @@ export interface PlaceIndexProps {
   /**
    * A name for the place index
    *
+   * Must be between 1 and 100 characters and contain only alphanumeric characters,
+   * hyphens, periods and underscores.
+   *
    * @default - A name is automatically generated
    */
   readonly placeIndexName?: string;
