@@ -83,7 +83,7 @@ export interface EventBusProps {
   /**
    * The event bus description.
    *
-   * The description must be maximum 512 characters long.
+   * The description can be up to 512 characters long.
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-description
    *
