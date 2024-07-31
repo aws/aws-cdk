@@ -215,6 +215,9 @@ export class FoundationModelIdentifier {
   /** Base model "mistral.mistral-small-2402-v1:0". */
   public static readonly MISTRAL_SMALL_V0_1 = new FoundationModelIdentifier('mistral.mistral-small-2402-v1:0');
 
+  /** Base model "mistral.mistral-large-2407-v1:0". */
+  public static readonly MISTRAL_LARGE_2_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2407-v1:0');
+
   /**
    * Base model "stability.stable-diffusion-xl".
    * @deprecated use latest version of the model
