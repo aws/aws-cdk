@@ -208,7 +208,8 @@ It is possible to archive all or some events sent to an event bus. It is then po
 
 ```ts
 const bus = new events.EventBus(this, 'bus', {
-  eventBusName: 'MyCustomEventBus'
+  eventBusName: 'MyCustomEventBus',
+  description: 'MyCustomEventBus',
 });
 
 bus.archive('MyArchive', {
