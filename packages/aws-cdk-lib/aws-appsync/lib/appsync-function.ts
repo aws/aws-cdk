@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnFunctionConfiguration } from './appsync.generated';
 import { Code } from './code';
-import { BaseDataSource } from './data-source';
+import { BaseDataSource, LambdaDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
@@ -15,36 +15,51 @@ export interface BaseAppsyncFunctionProps {
    * the name of the AppSync Function
    */
   readonly name: string;
+
   /**
    * the description for this AppSync Function
    *
    * @default - no description
    */
   readonly description?: string;
+
   /**
    * the request mapping template for the AppSync Function
    *
    * @default - no request mapping template
    */
   readonly requestMappingTemplate?: MappingTemplate;
+
   /**
    * the response mapping template for the AppSync Function
    *
    * @default - no response mapping template
    */
   readonly responseMappingTemplate?: MappingTemplate;
+
   /**
    * The functions runtime
    *
    * @default - no function runtime, VTL mapping templates used
    */
   readonly runtime?: FunctionRuntime;
+
   /**
    * The function code
    *
    * @default - no code is used
    */
   readonly code?: Code;
+
+  /**
+   * The maximum number of resolver request inputs that will be sent to a single AWS Lambda function
+   * in a BatchInvoke operation.
+   *
+   * Can only be set when using LambdaDataSource.
+   *
+   * @default - No max batch size
+   */
+  readonly maxBatchSize?: number;
 }
 
 /**
@@ -106,7 +121,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
         produce: () => Fn.select(3, Fn.split('/', attrs.functionArn)),
       });
       public readonly functionArn = attrs.functionArn;
-      constructor (s: Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -152,6 +167,10 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       throw new Error('Mapping templates cannot be used alongside code');
     }
 
+    if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
+      throw new Error('maxBatchSize can only be set for the data source of type \LambdaDataSource\'');
+    }
+
     const code = props.code?.bind(this);
     this.function = new CfnFunctionConfiguration(this, 'Resource', {
       name: props.name,
@@ -164,6 +183,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       functionVersion: '2018-05-29',
       requestMappingTemplate: props.requestMappingTemplate?.renderTemplate(),
       responseMappingTemplate: props.responseMappingTemplate?.renderTemplate(),
+      maxBatchSize: props.maxBatchSize,
     });
     this.functionName = this.function.attrName;
     this.functionArn = this.function.attrFunctionArn;

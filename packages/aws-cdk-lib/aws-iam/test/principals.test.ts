@@ -364,28 +364,12 @@ describe('deprecated ServicePrincipal behavior', () => {
     const afSouthStack = new Stack(undefined, undefined, { env: { region: 'af-south-1' } });
     const principalName = iam.ServicePrincipal.servicePrincipalName('states.amazonaws.com');
 
-    expect(usEastStack.resolve(principalName)).toEqual('states.us-east-1.amazonaws.com');
-    expect(afSouthStack.resolve(principalName)).toEqual('states.af-south-1.amazonaws.com');
+    expect(usEastStack.resolve(principalName)).toEqual('states.amazonaws.com');
+    expect(afSouthStack.resolve(principalName)).toEqual('states.amazonaws.com');
   });
 
   test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
     expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
-  });
-
-  test('ServicePrincipal in agnostic stack generates lookup table', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
-    });
-
-    // THEN
-    const template = Template.fromStack(stack);
-    const mappings = template.findMappings('ServiceprincipalMap');
-    expect(mappings.ServiceprincipalMap['af-south-1']?.states).toEqual('states.af-south-1.amazonaws.com');
-    expect(mappings.ServiceprincipalMap['us-east-1']?.states).toEqual('states.us-east-1.amazonaws.com');
   });
 });
 
@@ -396,9 +380,7 @@ describe('standardized Service Principal behavior', () => {
 
   let app: App;
   beforeEach(() => {
-    app = new App({
-      postCliContext: { [cxapi.IAM_STANDARDIZED_SERVICE_PRINCIPALS]: true },
-    });
+    app = new App();
   });
 
   test('no more regional service principals by default', () => {

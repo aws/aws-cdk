@@ -644,6 +644,36 @@ If you intend to use the `tableStreamArn` (including indirectly, for example by 
 
 To grant permissions to indexes for a referenced table you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
 
+## Resource Policy
+
+Using `resourcePolicy` you can add a [resource policy](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/access-control-resource-based.html) to a table in the form of a `PolicyDocument`:
+
+```
+    // resource policy document
+    const policy = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['dynamodb:GetItem'],
+          principals: [new iam.AccountRootPrincipal()],
+          resources: ['*'],
+        }),
+      ],
+    });
+
+    // table with resource policy
+    new dynamodb.TableV2(this, 'TableTestV2-1', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+      resourcePolicy: policy,
+    });
+```
+
+TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update.
+To incorporate a resource-based policy into a replica, you'll need to initially deploy the replica without the policy, followed by a subsequent update to include the desired policy.
+
 ## Grants
 
 Using any of the `grant*` methods on an instance of the `TableV2` construct will only apply to the primary table, its indexes, and any associated `encryptionKey`. As an example, `grantReadData` used below will only apply the table in `us-west-2`:

@@ -1,6 +1,7 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Runtime } from '../../aws-lambda';
 
 export interface CallSite {
   getThis(): any;
@@ -208,4 +209,22 @@ function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<
     );
   }
   return updatedCompilerOptions;
+}
+
+/**
+ * Detect if a given Node.js runtime uses SDKv2
+ */
+export function isSdkV2Runtime(runtime: Runtime): boolean {
+  const sdkV2RuntimeList = [
+    Runtime.NODEJS,
+    Runtime.NODEJS_4_3,
+    Runtime.NODEJS_6_10,
+    Runtime.NODEJS_8_10,
+    Runtime.NODEJS_10_X,
+    Runtime.NODEJS_12_X,
+    Runtime.NODEJS_14_X,
+    Runtime.NODEJS_16_X,
+  ];
+
+  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }

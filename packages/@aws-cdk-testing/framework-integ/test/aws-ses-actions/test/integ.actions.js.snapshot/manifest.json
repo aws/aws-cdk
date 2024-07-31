@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6588125503215c64027666d36868f7ca8e305ebf39630158558d6379dcc5fcb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ada6a32408b2b7c5d822f30894337173a17a021a5482d4dca8423119c9b81522.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,19 +91,19 @@
         "/aws-cdk-ses-receipt/RuleSet/FirstRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RuleSetFirstRule0A27C8CC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "RuleSetFirstRule0A27C8CC"
           }
         ],
         "/aws-cdk-ses-receipt/RuleSet/SecondRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RuleSetSecondRule03178AD4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "RuleSetSecondRule03178AD4"
+          }
+        ],
+        "/aws-cdk-ses-receipt/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource": [

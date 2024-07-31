@@ -13,16 +13,15 @@ import {
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
   APPCONFIG_LAMBDA_LAYER_ARNS,
   PARTITION_SAML_SIGN_ON_URL,
+  LATEST_NODE_RUNTIME_MAP,
 } from './fact-tables';
 import { AWS_CDK_METADATA } from './metadata';
 import {
   AWS_REGIONS,
-  AWS_SERVICES,
   before,
   RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN,
   RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
 } from '../lib/aws-entities';
-import { Default } from '../lib/default';
 
 export async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
@@ -85,7 +84,9 @@ export async function main(): Promise<void> {
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
 
-    registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition]);
+    registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition] || '');
+
+    registerFact(region, 'LATEST_NODE_RUNTIME', LATEST_NODE_RUNTIME_MAP[partition]);
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {
@@ -94,10 +95,6 @@ export async function main(): Promise<void> {
 
     const vpcEndpointServiceNamePrefix = `${domainSuffix.split('.').reverse().join('.')}.vpce`;
     registerFact(region, 'VPC_ENDPOINT_SERVICE_NAME_PREFIX', vpcEndpointServiceNamePrefix);
-
-    for (const service of AWS_SERVICES) {
-      registerFact(region, ['servicePrincipal', service], Default.servicePrincipal(service, region, domainSuffix));
-    }
 
     for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
       for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
