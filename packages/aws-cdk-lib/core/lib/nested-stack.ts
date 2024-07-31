@@ -262,6 +262,11 @@ export class NestedStack extends Stack {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.templateFile;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
+
+  public get bundlingRequired() {
+
+    return this._parentStack.bundlingRequired;
+  }
 }
 
 /**
