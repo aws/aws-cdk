@@ -979,6 +979,7 @@ describe('tests', () => {
         },
         UpdateReplacePolicy: 'Retain',
         DeletionPolicy: 'Retain',
+        DependsOn: Match.absent(),
       });
     });
   });

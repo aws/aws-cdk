@@ -349,7 +349,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
         resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
