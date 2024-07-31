@@ -205,6 +205,27 @@ You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 
+**Important**: 
+> By default `fn.grantInvoke()` grants permission to the principal to invoke any version of the function, including all past ones. If you only want the principal to be granted permission to invoke the latest version or the unqualified Lambda ARN, use `grantInvokeLatestVersion(grantee)`.
+
+```ts
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+// Grant invoke only to latest version and unqualified lambda arn
+fn.grantInvokeLatestVersion(principal);
+
+```
+
+If you want to grant access for invoking a specific version of Lambda function, you can use `fn.grantInvokeVersion(grantee, version)`
+
+```ts
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+declare const version: lambda.IVersion;
+// Grant invoke only to the specific version
+fn.grantInvokeVersion(principal, version);
+```
+
 For more information, see
 [Granting function access to AWS services](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html#permissions-resource-serviceinvoke)
 in the AWS Lambda Developer Guide.
@@ -946,7 +967,7 @@ managing concurrency.
 
 ## Lambda with SnapStart
 
-SnapStart is currently supported only on Java 11/Java 17 runtime. SnapStart does not support provisioned concurrency, the arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+SnapStart is currently supported only on Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
 
