@@ -1,7 +1,6 @@
 import { Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
-// eslint-disable-next-line no-duplicate-imports
-import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from '../lib/util';
+import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct } from 'constructs';
 
 /**
@@ -12,14 +11,15 @@ export interface IVpcV2 extends IVpc {
   /**
    * The secondary CIDR blocks associated with the VPC.
    *
-   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-secondary-cidr-blocks}.
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-resize}.
    */
   readonly secondaryCidrBlock: CfnVPCCidrBlock[];
 
   /**
    * The primary IPv4 CIDR block associated with the VPC.
-   *
-   * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#configuring-ipv4-cidr-block}.
+   * Needed in order to validate the vpc range of subnet
+   * current prop vpcCidrBlock refers to the token value
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
    */
   readonly ipv4CidrBlock: string;
 }
@@ -32,60 +32,62 @@ export interface IVpcV2 extends IVpc {
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
   /**
-     * Identifier for this VPC
-     */
+  * Identifier for this VPC
+  */
   public abstract readonly vpcId: string;
 
   /**
-     * Arn of this VPC
-     */
+  * Arn of this VPC
+  */
   public abstract readonly vpcArn: string;
 
   /**
-     * CIDR range for this VPC
-     */
+  * CIDR range for this VPC
+  */
   public abstract readonly vpcCidrBlock: string;
 
   /**
-     * List of public subnets in this VPC
-     */
+  * List of public subnets in this VPC
+  */
   public readonly publicSubnets: ISubnet[] = [];
 
   /**
-     * List of private subnets in this VPC
-     */
+  * List of private subnets in this VPC
+  */
   public readonly privateSubnets: ISubnet[] = [];
 
   /**
-     * List of isolated subnets in this VPC
-     */
+  * List of isolated subnets in this VPC
+  */
   public abstract readonly isolatedSubnets: ISubnet[];
 
   /**
-     * AZs for this VPC
-     */
+  * AZs for this VPC
+  */
   public readonly availabilityZones: string[] = [];
 
   /**
-     * Identifier for the VPN gateway
-     */
-  //public readonly vpnGatewayId?: string;
-
-  /**
-     * Dependable that can be depended upon to force internet connectivity established on the VPC
-     */
+  * Dependable that can be depended upon to force internet connectivity established on the VPC
+  */
   public abstract readonly internetConnectivityEstablished: IDependable;
 
   /**
-   * Newly added property for secondary CIDR blocks
+   * Secondary IPs for the VPC, can be multiple Ipv4 or Ipv6
+   * Ipv4 should be within RFC#1918 range
    */
   public abstract readonly secondaryCidrBlock: CfnVPCCidrBlock[];
 
+  /**
+   * The primary IPv4 CIDR block associated with the VPC.
+   * Needed in order to validate the vpc range of subnet
+   * current prop vpcCidrBlock refers to the token value
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
+   */
   public abstract readonly ipv4CidrBlock: string;
 
   /**
-     * If this is set to true, don't error out on trying to select subnets
-     */
+  * If this is set to true, don't error out on trying to select subnets
+  */
   protected incompleteSubnetDefinition: boolean = false;
 
   /**
@@ -96,14 +98,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   protected _vpnGatewayId?: string;
 
   /**
-     * Return information on the subnets appropriate for the given selection strategy
-     *
-     * Requires that at least one subnet is matched, throws a descriptive
-     * error message otherwise.
-     */
-  /**
-     * Returns IDs of selected subnets
-     */
+  * Return information on the subnets appropriate for the given selection strategy
+  *
+  * Requires that at least one subnet is matched, throws a descriptive
+  * error message otherwise.
+  */
   public selectSubnets(selection: SubnetSelection = {}): SelectedSubnets {
     const subnets = this.selectSubnetObjects(selection);
     const pubs = new Set(this.publicSubnets);
@@ -119,8 +118,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Adds a VPN Gateway to this VPC
-     */
+  * Adds a VPN Gateway to this VPC
+  */
   public enableVpnGateway(options: EnableVpnGatewayOptions): void {
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
@@ -157,8 +156,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Adds a new VPN connection to this VPC
-     */
+  * Adds a new VPN connection to this VPC
+  */
   public addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection {
     return new VpnConnection(this, id, {
       vpc: this,
@@ -167,8 +166,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Adds a new client VPN endpoint to this VPC
-     */
+  * Adds a new client VPN endpoint to this VPC
+  */
   public addClientVpnEndpoint(id: string, options: ClientVpnEndpointOptions): ClientVpnEndpoint {
     return new ClientVpnEndpoint(this, id, {
       ...options,
@@ -177,8 +176,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Adds a new interface endpoint to this VPC
-     */
+  * Adds a new interface endpoint to this VPC
+  */
   public addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint {
     return new InterfaceVpcEndpoint(this, id, {
       vpc: this,
@@ -187,8 +186,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Adds a new gateway endpoint to this VPC
-     */
+  * Adds a new gateway endpoint to this VPC
+  */
   public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       vpc: this,
@@ -197,8 +196,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Adds a new flow log to this VPC
-     */
+  * Adds a new flow log to this VPC
+  */
   public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
     return new FlowLog(this, id, {
       resourceType: FlowLogResourceType.fromVpc(this),
@@ -207,15 +206,15 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Returns the id of the VPN Gateway (if enabled)
-     */
+  * Returns the id of the VPN Gateway (if enabled)
+  */
   public get vpnGatewayId(): string | undefined {
     return this._vpnGatewayId;
   }
 
   /**
-     * Return the subnets appropriate for the placement strategy
-     */
+  * Return the subnets appropriate for the placement strategy
+  */
   protected selectSubnetObjects(selection: SubnetSelection = {}): ISubnet[] {
     selection = this.reifySelectionDefaults(selection);
 
@@ -284,11 +283,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-     * Validate the fields in a SubnetSelection object, and reify defaults if necessary
-     *
-     * In case of default selection, select the first type of PRIVATE, ISOLATED,
-     * PUBLIC (in that order) that has any subnets.
-     */
+  * Validate the fields in a SubnetSelection object, and reify defaults if necessary
+  *
+  * In case of default selection, select the first type of PRIVATE, ISOLATED,
+  * PUBLIC (in that order) that has any subnets.
+  */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
 
     // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
@@ -351,16 +350,16 @@ class CompositeDependable implements IDependable {
   }
 
   /**
-     * Add a construct to the dependency roots
-     */
+  * Add a construct to the dependency roots
+  */
   public add(dep: IDependable) {
     this.dependables.push(dep);
   }
 }
 
 /**
-   * Invoke a function on a value (for its side effect) and return the value
-   */
+* Invoke a function on a value (for its side effect) and return the value
+*/
 function tap<T>(x: T, fn: (x: T) => void): T {
   fn(x);
   return x;

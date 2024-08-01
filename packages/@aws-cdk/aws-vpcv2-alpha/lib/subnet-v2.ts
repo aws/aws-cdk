@@ -12,25 +12,11 @@ interface ICidr {
 }
 
 /**
- * IPv4 CIDR range for the subnet
+ * IPv4 or IPv6 CIDR range for the subnet
  */
-export class Ipv4Cidr implements ICidr {
-
-  /**
-   * IPv4 CIDR range for the subnet
-   */
-  public readonly cidr: string;
-  constructor(props: string ) {
-    this.cidr = props;
-  }
-}
+export class IpCidr implements ICidr {
 
 /**
- * IPv6 CIDR range for the subnet
- */
-export class Ipv6Cidr implements ICidr {
-
-  /**
  * IPv6 CIDR range for the subnet
  * Allowed only if IPv6 is enabled on VPc
  */
@@ -53,22 +39,22 @@ export interface SubnetV2Props {
    * ipv4 cidr to assign to this subnet.
    * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-cidrblock
    */
-  readonly cidrBlock: Ipv4Cidr;
+  readonly cidrBlock: IpCidr;
 
   /**
    * Ipv6 CIDR Range for subnet
    * @default No Ipv6 address
    */
-  readonly ipv6CidrBlock?: Ipv6Cidr;
+  readonly ipv6CidrBlock?: IpCidr;
 
   /**
-   * Custom AZ
+   * Custom AZ for the subnet
    */
   readonly availabilityZone: string;
 
   /**
    * Custom Route for subnet
-   * @default No custom route
+   * @default Custom route table
    */
   readonly routeTable?: IRouteTable;
 
@@ -81,6 +67,12 @@ export interface SubnetV2Props {
    * TODO: Add validation check `subnetType` when adding resources (e.g. cannot add NatGateway to private)
    */
   readonly subnetType: SubnetType;
+
+  /**
+   * Subnet name
+   * @default none
+   */
+  readonly subnetName?: string;
 
 }
 
@@ -109,13 +101,19 @@ export class SubnetV2 extends Resource implements ISubnet {
   public readonly subnetId: string;
 
   /**
+   *  Dependencies for internet connectivity
+   * This Property exposes the RouteTable-Subnet association so that other resources can depend on it.
+   */
+  public readonly internetConnectivityEstablished: IDependable;
+
+
+
+  /**
    * The variable name `internetConnectivityEstablished` does not reflect what it actually is.
    * The naming is enforced by ISubnet. We need to keep it to maintain compatibility.
    * It exposes the RouteTable-Subnet association so that other resources can depend on it.
    * E.g. Resources in a subnet, when being deleted, may need the RouteTable to exist in order to delete properly
    */
-  public readonly internetConnectivityEstablished: IDependable;
-
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   /**
@@ -239,6 +237,16 @@ export class SubnetV2 extends Resource implements ISubnet {
   }
 }
 
+
+const subnetTypeMap = {
+  [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
+  [SubnetType.PUBLIC]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.publicSubnets.push(subnet),
+  [SubnetType.PRIVATE_WITH_EGRESS]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+  [SubnetType.ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
+  [SubnetType.PRIVATE]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+  [SubnetType.PRIVATE_WITH_NAT]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+};
+
 /**
  * Stores the provided subnet in the VPC's collection of subnets based on the specified subnet type.
  *
@@ -262,15 +270,6 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
     subnet.node.addDependency(cidr);
   }
 }
-
-const subnetTypeMap = {
-  [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
-  [SubnetType.PUBLIC]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.publicSubnets.push(subnet),
-  [SubnetType.PRIVATE_WITH_EGRESS]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
-  [SubnetType.ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
-  [SubnetType.PRIVATE]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
-  [SubnetType.PRIVATE_WITH_NAT]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
-};
 
 /**
  * Validates whether the provided VPC supports IPv6 addresses.
