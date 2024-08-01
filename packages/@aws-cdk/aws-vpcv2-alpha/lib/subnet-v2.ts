@@ -16,7 +16,7 @@ interface ICidr {
  */
 export class IpCidr implements ICidr {
 
-/**
+  /**
  * IPv6 CIDR range for the subnet
  * Allowed only if IPv6 is enabled on VPc
  */
@@ -54,7 +54,7 @@ export interface SubnetV2Props {
 
   /**
    * Custom Route for subnet
-   * @default Default route table 
+   * @default Default route table
    */
   readonly routeTable?: IRouteTable;
 
@@ -105,8 +105,6 @@ export class SubnetV2 extends Resource implements ISubnet {
    * This Property exposes the RouteTable-Subnet association so that other resources can depend on it.
    */
   public readonly internetConnectivityEstablished: IDependable;
-
-
 
   /**
    * The variable name `internetConnectivityEstablished` does not reflect what it actually is.
@@ -236,7 +234,6 @@ export class SubnetV2 extends Resource implements ISubnet {
     return this._networkAcl;
   }
 }
-
 
 const subnetTypeMap = {
   [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),

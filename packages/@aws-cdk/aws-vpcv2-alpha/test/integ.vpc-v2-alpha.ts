@@ -21,7 +21,6 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
 const ipam = new Ipam(stack, 'IpamTest', {});
 
-
 /**Test Ipam Pool Ipv4 */
 
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {

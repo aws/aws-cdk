@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
-import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
 import { Template } from 'aws-cdk-lib/assertions';
 
@@ -25,13 +25,13 @@ describe('EC2 Routing', () => {
       enableDnsSupport: true,
     });
     routeTable = new route.RouteTable(stack, 'TestRouteTable', {
-      vpcId: myVpc.vpcId,
+      vpc: myVpc,
     });
     mySubnet = new subnet.SubnetV2(stack, 'TestSubnet', {
       vpc: myVpc,
       availabilityZone: 'us-east-1a',
-      cidrBlock: new subnet.Ipv4Cidr('10.0.0.0/24'),
-      ipv6CidrBlock: new subnet.Ipv6Cidr(cdk.Fn.select(0, myVpc.ipv6CidrBlocks)),
+      cidrBlock: new subnet.IpCidr('10.0.0.0/24'),
+      ipv6CidrBlock: new subnet.IpCidr(cdk.Fn.select(0, myVpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
       routeTable: routeTable,
     });
@@ -39,11 +39,11 @@ describe('EC2 Routing', () => {
 
   test('Route to EIGW', () => {
     const eigw = new route.EgressOnlyInternetGateway(stack, 'TestEIGW', {
-      vpcId: myVpc.vpcId,
+      vpc: myVpc,
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: eigw },
     });
     // console.log(Template.fromStack(stack).toJSON().Resources);
@@ -83,12 +83,12 @@ describe('EC2 Routing', () => {
 
   test('Route to VPN Gateway', () => {
     const vpngw = new route.VPNGateway(stack, 'TestVpnGw', {
-      type: 'ipsec.1',
-      vpcId: myVpc.vpcId,
+      type: VpnConnectionType.IPSEC_1,
+      vpc: myVpc,
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: vpngw },
     });
     Template.fromStack(stack).templateMatches({
@@ -139,8 +139,8 @@ describe('EC2 Routing', () => {
 
   test('Route to VPN Gateway with optional properties', () => {
     new route.VPNGateway(stack, 'TestVpnGw', {
-      type: 'ipsec.1',
-      vpcId: myVpc.vpcId,
+      type: VpnConnectionType.IPSEC_1,
+      vpc: myVpc,
       amazonSideAsn: 12345678,
     });
     Template.fromStack(stack).templateMatches({
@@ -159,11 +159,11 @@ describe('EC2 Routing', () => {
 
   test('Route to Internet Gateway', () => {
     const igw = new route.InternetGateway(stack, 'TestIGW', {
-      vpcId: myVpc.vpcId,
+      vpc: myVpc,
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: igw },
     });
     Template.fromStack(stack).templateMatches({
@@ -212,12 +212,12 @@ describe('EC2 Routing', () => {
   test('Route to private NAT Gateway', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
       subnet: mySubnet,
-      connectivityType: 'private',
+      connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
@@ -262,7 +262,7 @@ describe('EC2 Routing', () => {
   test('Route to private NAT Gateway with secondary IP addresses', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
       subnet: mySubnet,
-      connectivityType: 'private',
+      connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
       secondaryPrivateIpAddresses: [
         '10.0.1.0/28',
@@ -271,7 +271,7 @@ describe('EC2 Routing', () => {
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
@@ -302,13 +302,13 @@ describe('EC2 Routing', () => {
   test('Route to private NAT Gateway with secondary IP count', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
       subnet: mySubnet,
-      connectivityType: 'private',
+      connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
       secondaryPrivateIpAddressCount: 2,
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
@@ -357,7 +357,7 @@ describe('EC2 Routing', () => {
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
@@ -414,7 +414,7 @@ describe('EC2 Routing', () => {
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
@@ -469,12 +469,12 @@ describe('EC2 Routing', () => {
   test('Route to public NAT Gateway with many parameters', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
       subnet: mySubnet,
-      connectivityType: 'public',
+      connectivityType: route.NatConnectivityType.PUBLIC,
       maxDrainDuration: cdk.Duration.seconds(2001),
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { gateway: natgw },
     });
     Template.fromStack(stack).templateMatches({
@@ -529,175 +529,6 @@ describe('EC2 Routing', () => {
     });
   });
 
-  test('VPC Peer Connection route', () => {
-    // Set up second VPC
-    const myVpc2 = new vpc.VpcV2(stack, 'TestVpc2', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.128.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6()],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    // Create VPC Peer Connection
-    const vpcPeerConnection = new route.VpcPeeringConnection(stack, 'TestVPCPeerConn', {
-      vpcId: myVpc.vpcId,
-      peerVpcId: myVpc2.vpcId,
-    });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: { gateway: vpcPeerConnection },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // VPC Peer Connection should be in stack
-        TestVPCPeerConnVPCPeerConnectionFF2845D4: {
-          Type: 'AWS::EC2::VPCPeeringConnection',
-          Properties: {
-            PeerVpcId: {
-              'Fn::GetAtt': [
-                'TestVpc275152919',
-                'VpcId',
-              ],
-            },
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
-            },
-          },
-        },
-        // Route linking the two VPCs should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C',
-                'RouteTableId',
-              ],
-            },
-            VpcPeeringConnectionId: {
-              'Fn::GetAtt': [
-                'TestVPCPeerConnVPCPeerConnectionFF2845D4',
-                'Id',
-              ],
-            },
-          },
-        },
-      },
-    });
-  });
-
-  test('VPC Peer Connection route many attributes', () => {
-    // Set up second VPC
-    const myVpc2 = new vpc.VpcV2(stack, 'TestVpc2', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.128.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6()],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    // Create VPC Peer Connection
-    const vpcPeerConnection = new route.VpcPeeringConnection(stack, 'TestVPCPeerConn', {
-      vpcId: myVpc.vpcId,
-      peerVpcId: myVpc2.vpcId,
-      peerOwnerId: '12345678',
-      peerRegion: 'us-east-3',
-      peerRole: 'arn:aws:iam::account:root',
-    });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: { gateway: vpcPeerConnection },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // VPC Peer Connection should be in stack
-        TestVPCPeerConnVPCPeerConnectionFF2845D4: {
-          Type: 'AWS::EC2::VPCPeeringConnection',
-          Properties: {
-            PeerOwnerId: '12345678',
-            PeerRegion: 'us-east-3',
-            PeerRoleArn: 'arn:aws:iam::account:root',
-            PeerVpcId: {
-              'Fn::GetAtt': [
-                'TestVpc275152919',
-                'VpcId',
-              ],
-            },
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
-            },
-          },
-        },
-        // Route linking the two VPCs should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C',
-                'RouteTableId',
-              ],
-            },
-            VpcPeeringConnectionId: {
-              'Fn::GetAtt': [
-                'TestVPCPeerConnVPCPeerConnectionFF2845D4',
-                'Id',
-              ],
-            },
-          },
-        },
-      },
-    });
-  });
-
-  test('Route to network interface', () => {
-    const nif = new route.NetworkInterface(stack, 'TestNIF', {
-      subnet: mySubnet,
-    });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
-      target: { gateway: nif },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // Network interface should be in stack
-        TestNIFNetworkInterface7A9E3A76: {
-          Type: 'AWS::EC2::NetworkInterface',
-          Properties: {
-            SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA',
-            },
-          },
-        },
-        // Route linking IP to IGW should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            NetworkInterfaceId: {
-              'Fn::GetAtt': [
-                'TestNIFNetworkInterface7A9E3A76', 'Id',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C', 'RouteTableId',
-              ],
-            },
-          },
-        },
-      },
-    });
-  });
-
   test('Route to DynamoDB Endpoint', () => {
     const dynamodb = new GatewayVpcEndpoint(stack, 'TestDB', {
       vpc: myVpc,
@@ -705,7 +536,7 @@ describe('EC2 Routing', () => {
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { endpoint: dynamodb },
     });
     Template.fromStack(stack).templateMatches({
@@ -752,7 +583,7 @@ describe('EC2 Routing', () => {
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { endpoint: dynamodb },
     });
     Template.fromStack(stack).templateMatches({
@@ -799,7 +630,7 @@ describe('EC2 Routing', () => {
     });
     new route.Route(stack, 'TestRoute', {
       routeTable: routeTable,
-      destination: vpc.IpAddresses.ipv4('0.0.0.0/0'),
+      destination: '0.0.0.0/0',
       target: { endpoint: dynamodb },
     });
     Template.fromStack(stack).templateMatches({

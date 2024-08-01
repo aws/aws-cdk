@@ -9,10 +9,10 @@ export function createTestSubnet(
   config: {
     vpcV2: vpc.VpcV2;
     availabilityZone: string;
-    cidrBlock: subnet.Ipv4Cidr;
+    cidrBlock: subnet.IpCidr;
     subnetType: SubnetType;
     addressFamily?: AddressFamily;
-    ipv6Cidr?: subnet.Ipv6Cidr;
+    ipv6Cidr?: subnet.IpCidr;
   },
 ): subnet.SubnetV2 {
   const { vpcV2, availabilityZone, cidrBlock, subnetType, ipv6Cidr } = config;

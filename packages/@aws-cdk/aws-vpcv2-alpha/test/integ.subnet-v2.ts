@@ -24,7 +24,6 @@ const ipam = new Ipam(stack, 'Ipam', {
   operatingRegion: ['eu-west-2'], //set to the region stack is being deployed to
 });
 
-
 /**
  * Integ test for VPC with IPAM pool to be run with --no-clean
  */

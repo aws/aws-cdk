@@ -258,7 +258,7 @@ export class VpcV2 extends VpcV2Base {
       }),
     });
 
-    if(props.primaryAddressBlock  !instanceof IpamIpv4 || props.primaryAddressBlock !instanceof ipv4CidrAllocation) {
+    if (props.primaryAddressBlock !instanceof IpamIpv4 || props.primaryAddressBlock !instanceof ipv4CidrAllocation) {
       throw new Error('Primary IP address block must be of type Ipv4');
     }
 
@@ -274,7 +274,7 @@ export class VpcV2 extends VpcV2Base {
       enableDnsSupport: this.dnsSupportEnabled,
       ipv4IpamPoolId: vpcOptions.ipv4IpamPool?.ipamPoolId, // for Ipv4 ipam option
       ipv4NetmaskLength: vpcOptions.ipv4NetmaskLength, // for Ipv4 ipam option
-      instanceTenancy: instanceTenancy
+      instanceTenancy: instanceTenancy,
     });
 
     this.vpcCidrBlock = this.resource.attrCidrBlock;
