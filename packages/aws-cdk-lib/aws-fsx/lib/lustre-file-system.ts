@@ -334,7 +334,7 @@ export class LustreFileSystem extends FileSystemBase {
    * Validates if the storage type corresponds to the appropriate deployment type.
    */
   private validateStorageType(deploymentType: LustreDeploymentType, storageType?: StorageType): void {
-    if (storageType === undefined) { return; }
+    if (!storageType) return;
 
     if (storageType === StorageType.HDD && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
       throw new Error(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
