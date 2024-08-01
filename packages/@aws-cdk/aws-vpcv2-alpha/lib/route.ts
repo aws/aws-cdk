@@ -1,7 +1,15 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPCPeeringConnection, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
-import { IIpAddresses } from './vpc-v2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
 import { Duration, Resource } from 'aws-cdk-lib/core';
+import { IVpcV2 } from './vpc-v2-base';
+
+/**
+ * Options to configure NAT GW Connectivity Type
+ */
+export enum NatConnectivityType {
+  PUBLIC = 'public',
+  PRIVATE = 'private'
+}
 
 /**
  * Interface to define a routing target, such as an
@@ -16,18 +24,9 @@ export interface IRouteTarget {
   /**
    * The ID of the route target.
    */
-  readonly routerId: string;
+  readonly routerTargetId: string;
 }
 
-/**
- * Properties to define a carrier gateway.
- */
-// export interface CarrierGatewayProps {
-//   /**
-//    * The ID of the VPC associated with the carrier gateway.
-//    */
-//   readonly vpcId: string;
-// }
 
 /**
  * Properties to define an egress-only internet gateway.
@@ -36,7 +35,7 @@ export interface EgressOnlyInternetGatewayProps {
   /**
    * The ID of the VPC for which to create the egress-only internet gateway.
    */
-  readonly vpcId: string;
+  readonly vpc: IVpcV2;
 
   /**
    * The resource name of the egress-only internet gateway.
@@ -52,7 +51,7 @@ export interface InternetGatewayProps {
   /**
    * The ID of the VPC for which to create the internet gateway.
    */
-  readonly vpcId: string;
+  readonly vpc: IVpcV2;
 
   /**
    * The resource name of the internet gateway.
@@ -70,12 +69,12 @@ export interface VPNGatewayProps {
    * The type of VPN connection the virtual private gateway supports.
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
    */
-  readonly type: string;
+  readonly type: VpnConnectionType;
 
   /**
    * The ID of the VPC for which to create the VPN gateway.
    */
-  readonly vpcId: string;
+  readonly vpc: IVpcV2;
 
   /**
    * The private Autonomous System Number (ASN) for the Amazon side of a BGP session.
@@ -103,21 +102,20 @@ export interface NatGatewayProps {
    * The ID of the VPC in which the NAT gateway is located.
    * @default none
    */
-  readonly vpcId?: string;
+  readonly vpc?: IVpcV2;
 
   /**
-   * [Public NAT gateway only] The allocation ID of the Elastic IP address that's
-   * associated with the NAT gateway. This property is required for a public NAT
+   * Elastic IP address that's associated with the NAT gateway. This property is required for a public NAT
    * gateway and cannot be specified with a private NAT gateway.
-   * @default none
+   * @default a new Elastic IP is created
    */
-  readonly allocationId?: string;
+  readonly elasticIP?: CfnEIP;
 
   /**
    * Indicates whether the NAT gateway supports public or private connectivity.
    * @default public
    */
-  readonly connectivityType?: string;
+  readonly connectivityType?: NatConnectivityType;
 
   /**
    * The maximum amount of time to wait before forcibly releasing the
@@ -138,10 +136,10 @@ export interface NatGatewayProps {
    * @default none
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
    */
-  readonly secondaryAllocationIds?: string[];
+  readonly secondaryAllocationIds?: CfnEIP[];
 
   /**
-   * [Private NAT gateway only] The number of secondary private IPv4 addresses you
+   * The number of secondary private IPv4 addresses you
    * want to assign to the NAT gateway.
    *
    * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be
@@ -188,12 +186,6 @@ export interface NetworkInterfaceProps {
 
 }
 
-/**
- * Properties to define a transit gateway.
- */
-// export interface TransitGatewayProps {
-
-// }
 
 /**
  * Properties to define a VPC peering connection.
@@ -240,38 +232,6 @@ export interface VpcPeeringConnectionProps {
 
 }
 
-/**
- * Creates a carrier gateway
- * @resource AWS::EC2::CarrierGateway
- */
-// export class CarrierGateway extends Resource implements IRouteTarget {
-//   /**
-//    * The type of router used in the route.
-//    */
-//   readonly routerType: RouterType;
-
-//   /**
-//    * The ID of the route target.
-//    */
-//   readonly routerId: string;
-
-//   /**
-//    * The carrier gateway CFN resource.
-//    */
-//   public readonly resource: CfnCarrierGateway;
-
-//   constructor(scope: Construct, id: string, props: CarrierGatewayProps) {
-//     super(scope, id);
-
-//     this.routerType = RouterType.CARRIER_GATEWAY;
-
-//     this.resource = new CfnCarrierGateway(this, 'CarrierGateway', {
-//       vpcId: props.vpcId,
-//     });
-
-//     this.routerId = this.resource.attrCarrierGatewayId;
-//   }
-// }
 
 /**
  * Creates an egress-only internet gateway
@@ -286,7 +246,7 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
   /**
    * The ID of the route target.
    */
-  readonly routerId: string;
+  readonly routerTargetId: string;
 
   /**
    * The egress-only internet gateway CFN resource.
@@ -299,10 +259,10 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
     this.routerType = RouterType.EGRESS_ONLY_INTERNET_GATEWAY;
 
     this.resource = new CfnEgressOnlyInternetGateway(this, 'EIGW', {
-      vpcId: props.vpcId,
+      vpcId: props.vpc.vpcId,
     });
 
-    this.routerId = this.resource.attrId;
+    this.routerTargetId = this.resource.attrId;
   }
 }
 
@@ -319,7 +279,7 @@ export class InternetGateway extends Resource implements IRouteTarget {
   /**
    * The ID of the route target.
    */
-  readonly routerId: string;
+  readonly routerTargetId: string;
 
   /**
    * The ID of the VPC for which to create the internet gateway.
@@ -338,8 +298,8 @@ export class InternetGateway extends Resource implements IRouteTarget {
 
     this.resource = new CfnInternetGateway(this, 'IGW', {});
 
-    this.routerId = this.resource.attrInternetGatewayId;
-    this.vpcId = props.vpcId;
+    this.routerTargetId = this.resource.attrInternetGatewayId;
+    this.vpcId = props.vpc.vpcId;
   }
 }
 
@@ -356,7 +316,7 @@ export class VPNGateway extends Resource implements IRouteTarget {
   /**
    * The ID of the route target.
    */
-  readonly routerId: string;
+  readonly routerTargetId: string;
 
   /**
    * The ID of the VPC for which to create the VPN gateway.
@@ -375,14 +335,11 @@ export class VPNGateway extends Resource implements IRouteTarget {
 
     this.resource = new CfnVPNGateway(this, 'IGW', {
       type: props.type,
+      amazonSideAsn: props.amazonSideAsn
     });
 
-    if (props.amazonSideAsn) {
-      this.resource.addPropertyOverride('AmazonSideAsn', props.amazonSideAsn);
-    }
-
-    this.routerId = this.resource.attrVpnGatewayId;
-    this.vpcId = props.vpcId;
+    this.routerTargetId = this.resource.attrVpnGatewayId;
+    this.vpcId = props.vpc.vpcId;
   }
 }
 
@@ -399,15 +356,7 @@ export class NatGateway extends Resource implements IRouteTarget {
   /**
    * The ID of the route target.
    */
-  readonly routerId: string;
-
-  /**
-   * [Public NAT gateway only] The allocation ID of the Elastic IP address that's
-   * associated with the NAT gateway. This property is required for a public NAT
-   * gateway and cannot be specified with a private NAT gateway.
-   * @default none
-   */
-  public readonly allocationId?: string;
+  readonly routerTargetId: string; 
 
   /**
    * Indicates whether the NAT gateway supports public or private connectivity.
@@ -427,143 +376,51 @@ export class NatGateway extends Resource implements IRouteTarget {
    */
   public readonly resource: CfnNatGateway;
 
+  /**
+   * Secondary Allocation ids
+   */
+  public readonly secondaryAllocationIds?: string[];
+
   constructor(scope: Construct, id: string, props: NatGatewayProps) {
     super(scope, id);
 
     this.routerType = RouterType.NAT_GATEWAY;
 
-    this.connectivityType = props.connectivityType || 'public';
+    this.connectivityType = props.connectivityType || NatConnectivityType.PUBLIC;
     this.maxDrainDuration = props.maxDrainDuration || Duration.seconds(350);
 
     // If user does not provide EIP, generate one for them
     var aId: string | undefined;
     if (this.connectivityType == 'public') {
-      if (!props.allocationId) {
+      if (!props.elasticIP) {
         let eip = new CfnEIP(this, 'EIP', {
-          domain: props.vpcId,
+          domain: props.vpc?.vpcId,
         });
         aId = eip.attrAllocationId;
       } else {
-        aId = props.allocationId;
+        aId = props.elasticIP.attrAllocationId;
       }
     }
 
+    this.secondaryAllocationIds = props.secondaryAllocationIds ? props.secondaryAllocationIds.map(eip => eip.attrAllocationId) : undefined;
     this.resource = new CfnNatGateway(this, 'NATGateway', {
       subnetId: props.subnet.subnetId,
       allocationId: aId,
       maxDrainDurationSeconds: props.maxDrainDuration?.toSeconds(),
+      secondaryAllocationIds: this.secondaryAllocationIds,
       ...props,
     });
 
-    this.routerId = this.resource.attrNatGatewayId;
+    this.routerTargetId = this.resource.attrNatGatewayId;
 
     this.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
 }
 
 /**
- * Creates a network interface
- * @resource AWS::EC2::NetworkInterface
- */
-export class NetworkInterface extends Resource implements IRouteTarget {
-  /**
-   * The type of router used in the route.
-   */
-  readonly routerType: RouterType;
-
-  /**
-   * The ID of the route target.
-   */
-  readonly routerId: string;
-
-  /**
-   * The network interface CFN resource.
-   */
-  public readonly resource: CfnNetworkInterface;
-
-  constructor(scope: Construct, id: string, props: NetworkInterfaceProps) {
-    super(scope, id);
-
-    this.routerType = RouterType.NETWORK_INTERFACE;
-
-    this.resource = new CfnNetworkInterface(this, 'NetworkInterface', {
-      subnetId: props.subnet.subnetId,
-    });
-
-    this.routerId = this.resource.attrId;
-  }
-}
-
-/**
- * Creates a transit gateway
- * @resource AWS::EC2::TransitGateway
- */
-// export class TransitGateway extends Resource implements IRouteTarget {
-//   /**
-//    * The type of router used in the route.
-//    */
-//   readonly routerType: RouterType;
-
-//   /**
-//    * The ID of the route target.
-//    */
-//   readonly routerId: string;
-
-//   /**
-//    * The transit gateway CFN resource.
-//    */
-//   public readonly resource: CfnTransitGateway;
-
-//   constructor(scope: Construct, id: string/*, props: TransitGatewayProps*/) {
-//     super(scope, id);
-
-//     this.routerType = RouterType.TRANSIT_GATEWAY;
-
-//     this.resource = new CfnTransitGateway(this, 'TGW', {});
-
-//     this.routerId = this.resource.attrId;
-//   }
-// }
-
-/**
- * Creates a request for a VPC peering connection between two VPCs: a requester VPC that
- * you own and an accepter VPC with which to create the connection.
- * @resource AWS::EC2::VPCPeeringConnection
- */
-export class VpcPeeringConnection extends Resource implements IRouteTarget {
-  /**
-   * The type of router used in the route.
-   */
-  readonly routerType: RouterType;
-
-  /**
-   * The ID of the route target.
-   */
-  readonly routerId: string;
-
-  /**
-   * The VPC peering connection CFN resource.
-   */
-  public readonly resource: CfnVPCPeeringConnection;
-
-  constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
-    super(scope, id);
-
-    this.routerType = RouterType.VPC_PEERING_CONNECTION;
-
-    this.resource = new CfnVPCPeeringConnection(this, 'VPCPeerConnection', {
-      peerRoleArn: props.peerRole,
-      ...props,
-    });
-
-    this.routerId = this.resource.attrId;
-  }
-}
-
-/**
  * The type of endpoint or gateway being targeted by the route.
  */
-export interface IRouteTargetType {
+export interface RouteTargetProps {
   /**
    * The gateway route target. This is used for targets such as
    * egress-only internet gateway or VPC peering connection.
@@ -597,13 +454,12 @@ export class RouteTargetType {
    */
   readonly endpoint?: IVpcEndpoint;
 
-  constructor(props: IRouteTargetType) {
+  constructor(props: RouteTargetProps) {
     if (props.gateway && props.endpoint) {
       throw new Error('Cannot specify both gateway and endpoint');
-    };
-    if (props.gateway) {
+    }
+    else {
       this.gateway = props.gateway;
-    } else if (props.endpoint) {
       this.endpoint = props.endpoint;
     }
   }
@@ -623,8 +479,9 @@ export interface IRouteV2 {
    * The IPv4 or IPv6 CIDR block used for the destination match.
    *
    * Routing decisions are based on the most specific match.
+   * TODO: Look for strong IP type implementation here.
    */
-  readonly destination: IIpAddresses;
+  readonly destination: string;
 
   /**
    * The gateway or endpoint targeted by the route.
@@ -647,7 +504,7 @@ export interface RouteProps {
    *
    * Routing decisions are based on the most specific match.
    */
-  readonly destination: IIpAddresses;
+  readonly destination: string;
 
   /**
    * The gateway or endpoint targeted by the route.
@@ -671,7 +528,7 @@ export class Route extends Resource implements IRouteV2 {
    *
    * Routing decisions are based on the most specific match.
    */
-  public readonly destination: IIpAddresses;
+  public readonly destination: string;
 
   /**
    * The gateway or endpoint targeted by the route.
@@ -704,12 +561,12 @@ export class Route extends Resource implements IRouteV2 {
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
 
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
-    if (!(this.target instanceof GatewayVpcEndpoint)) {
+    if (!(this.target.endpoint instanceof GatewayVpcEndpoint)) {
       this.resource = new CfnRoute(this, 'Route', {
         routeTableId: this.routeTable.routeTableId,
-        destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
-        destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
-        [routerTypeToPropName(this.targetRouterType)]: this.target.gateway ? this.target.gateway.routerId :
+        destinationCidrBlock: this.destination,
+        destinationIpv6CidrBlock: this.destination,
+        [routerTypeToPropName(this.targetRouterType)]: this.target.gateway ? this.target.gateway.routerTargetId :
           this.target.endpoint ? this.target.endpoint.vpcEndpointId : null,
       });
     }
@@ -718,17 +575,34 @@ export class Route extends Resource implements IRouteV2 {
       if (this.target.gateway instanceof InternetGateway) {
         new CfnVPCGatewayAttachment(this, 'GWAttachment', {
           vpcId: this.target.gateway.vpcId,
-          internetGatewayId: this.target.gateway.routerId,
+          internetGatewayId: this.target.gateway.routerTargetId,
         });
       } else if (this.target.gateway instanceof VPNGateway) {
         new CfnVPCGatewayAttachment(this, 'GWAttachment', {
           vpcId: this.target.gateway.vpcId,
-          vpnGatewayId: this.target.gateway.routerId,
+          vpnGatewayId: this.target.gateway.routerTargetId,
         });
       }
     }
   }
 }
+
+/**
+ * Properties to define a route table.
+ */
+export interface RouteTableProps {
+  /**
+   * The ID of the VPC.
+   */
+  readonly vpc: IVpcV2;
+
+  /**
+   * The resource name of the route table.
+   * @default none
+   */
+  readonly routeTableName?: string;
+}
+
 
 /**
  * Creates a route table for the specified VPC
@@ -749,28 +623,13 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
     super(scope, id);
 
     this.resource = new CfnRouteTable(this, 'RouteTable', {
-      vpcId: props.vpcId,
+      vpcId: props.vpc.vpcId,
     });
 
     this.routeTableId = this.resource.attrRouteTableId;
   }
 }
 
-/**
- * Properties to define a route table.
- */
-export interface RouteTableProps {
-  /**
-   * The ID of the VPC.
-   */
-  readonly vpcId: string;
-
-  /**
-   * The resource name of the route table.
-   * @default none
-   */
-  readonly routeTableName?: string;
-}
 
 function routerTypeToPropName(routerType: RouterType) {
   return ({
