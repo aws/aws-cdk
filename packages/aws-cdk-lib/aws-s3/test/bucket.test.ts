@@ -5,8 +5,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
-import { hasResourceProperties } from '../../assertions/lib/private/resources';
-import { SourceSelectionCriteriaProperty, SseKmsEncryptedObjectsProperty, AccessControlTranslationProperty } from '../lib/s3.generated';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
@@ -3881,6 +3879,12 @@ describe('bucket', () => {
                 },
               },
               Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
             },
           ],
         },
@@ -3985,7 +3989,7 @@ describe('bucket', () => {
             replicaModifications: true,
             id: 'rule1',
             priority: 1,
-            deleteMarkerReplication: true,
+            deleteMarkerReplication: false,
             prefixFilter: 'filterWord',
             tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
           },
@@ -4027,7 +4031,7 @@ describe('bucket', () => {
                 },
               },
               DeleteMarkerReplication: {
-                Status: 'Enabled',
+                Status: 'Disabled',
               },
               SourceSelectionCriteria: {
                 ReplicaModifications: {
@@ -4159,6 +4163,12 @@ describe('bucket', () => {
                 },
               },
               Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
             },
           ],
         },
@@ -4250,6 +4260,9 @@ describe('bucket', () => {
                 Filter: {
                   Prefix: 'filterWord',
                 },
+                DeleteMarkerReplication: {
+                  Status: 'Disabled',
+                },
               },
             ],
           },
@@ -4286,10 +4299,13 @@ describe('bucket', () => {
                   },
                 },
                 Filter: {
-                  TagFilter: {
-                    Key: 'filterKey',
-                    Value: 'filterValue',
+                  And: {
+                    TagFilters: [{ Key: 'filterKey', Value: 'filterValue' }],
+                    Prefix: '',
                   },
+                },
+                DeleteMarkerReplication: {
+                  Status: 'Disabled',
                 },
               },
             ],
@@ -4335,7 +4351,11 @@ describe('bucket', () => {
                       { Key: 'filterKey1', Value: 'filterValue1' },
                       { Key: 'filterKey2', Value: 'filterValue2' },
                     ],
+                    Prefix: '',
                   },
+                },
+                DeleteMarkerReplication: {
+                  Status: 'Disabled',
                 },
               },
             ],
@@ -4379,10 +4399,32 @@ describe('bucket', () => {
                     TagFilters: [{ Key: 'filterKey', Value: 'filterValue' }],
                   },
                 },
+                DeleteMarkerReplication: {
+                  Status: 'Disabled',
+                },
               },
             ],
           },
         });
+      });
+
+      test('throw error for specifying tag filter when delete markter replication is enabled', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'stack');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        expect(() => {
+          new s3.Bucket(stack, 'SrcBucket', {
+            versioned: true,
+            replicationRules: [
+              {
+                destination: s3.ReplicationDestination.sameAccount(dstBucket),
+                deleteMarkerReplication: true,
+                tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
+              },
+            ],
+          });
+        }).toThrow('\'tagFilter\' cannot be specified when \'deleteMarkerReplication\' is enabled.');
       });
     });
   });

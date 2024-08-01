@@ -1,5 +1,5 @@
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
@@ -26,6 +26,7 @@ const sourceBucket = new s3.Bucket(stack, 'SourceBucket', {
   replicationRules: [
     {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket1),
+      priority: 2,
     },
     {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
@@ -39,30 +40,61 @@ const sourceBucket = new s3.Bucket(stack, 'SourceBucket', {
       deleteMarkerReplication: true,
       id: 'full-settings-rule',
       prefixFilter: 'prefix',
-      tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
     },
   ],
 });
 
-const testCase = new IntegTest(app, 'ReplicationInteg', {
+const integ = new IntegTest(app, 'ReplicationInteg', {
   testCases: [stack],
 });
 
-testCase.assertions.awsApiCall('S3', 'putObject', {
-  Bucket: sourceBucket.bucketName,
-  Key: 'test-object',
-  Body: 'test-object-body',
-  ContentType: 'text/plain',
-}).waitForAssertions();
-testCase.assertions.awsApiCall('S3', 'putObject', {
-  Bucket: sourceBucket.bucketName,
-  Key: 'prefix-test-object',
-  Body: 'test-object-body',
-  ContentType: 'text/plain',
-}).waitForAssertions();
-testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
-  Bucket: destinationBucket1.bucketName,
-}).expect(ExpectedResult.objectLike({ KeyCount: 2 })).waitForAssertions();
-testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
-  Bucket: destinationBucket2.bucketName,
-}).expect(ExpectedResult.objectLike({ KeyCount: 1 })).waitForAssertions();
+const firstAssertion = integ.assertions
+  .awsApiCall('S3', 'putObject', {
+    Bucket: sourceBucket.bucketName,
+    Key: 'test-object',
+    Body: 'test-object-body',
+    ContentType: 'text/plain',
+  })
+  .waitForAssertions({
+    totalTimeout: Duration.minutes(5),
+  });
+
+const secondAssertion = integ.assertions
+  .awsApiCall('S3', 'putObject', {
+    Bucket: sourceBucket.bucketName,
+    Key: 'prefix-test-object',
+    Body: 'test-object-body',
+    ContentType: 'text/plain',
+  })
+  .waitForAssertions({
+    totalTimeout: Duration.minutes(5),
+  });
+
+const thirdAssertion = integ.assertions
+  .awsApiCall('S3', 'getObject', {
+    Bucket: destinationBucket1.bucketName,
+    Key: 'test-object',
+  })
+  .waitForAssertions({
+    totalTimeout: Duration.minutes(5),
+  });
+
+const fourthAssertion = integ.assertions
+  .awsApiCall('S3', 'getObject', {
+    Bucket: destinationBucket2.bucketName,
+    Key: 'prefix-test-object',
+  })
+  .waitForAssertions({
+    totalTimeout: Duration.minutes(5),
+  });
+
+const fifthAssertion = integ.assertions
+  .awsApiCall('S3', 'getObject', {
+    Bucket: destinationBucket2.bucketName,
+    Key: 'prefix-test-object',
+  })
+  .waitForAssertions({
+    totalTimeout: Duration.minutes(5),
+  });
+
+firstAssertion.next(secondAssertion).next(thirdAssertion).next(fourthAssertion).next(fifthAssertion);

@@ -1466,7 +1466,9 @@ export interface ReplicationRule {
    *
    * The higher the number, the higher the priority.
    *
-   * @default
+   * It is essential to specify priority explicitly when the replication configuration has multiple rules.
+   *
+   * @default 0
    */
   readonly priority?: number;
 
@@ -2060,9 +2062,6 @@ export class Bucket extends BucketBase {
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
 
-    if (props.replicationRules && props.replicationRules.length > 1 && !props.versioned) {
-      throw new Error('Replication rules require versioning to be enabled on the bucket');
-    }
     const replicationConfiguration = this.renderReplicationConfiguration(props);
 
     this.objectOwnership = props.objectOwnership;
@@ -2610,9 +2609,18 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
+    if (!props.versioned) {
+      throw new Error('Replication rules require versioning to be enabled on the bucket');
+    }
+    if (props.replicationRules.length > 1 && props.replicationRules.some(rule => rule.priority === undefined)) {
+      throw new Error('\'priority\' must be specified for all replication rules when there are multiple rules');
+    }
     props.replicationRules.forEach(rule => {
       if (rule.replicationTimeControl && !rule.replicationTimeControlMetrics) {
         throw new Error('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.');
+      }
+      if (rule.deleteMarkerReplication && rule.tagFilter) {
+        throw new Error('\'tagFilter\' cannot be specified when \'deleteMarkerReplication\' is enabled.');
       }
     });
 
@@ -2659,14 +2667,19 @@ export class Bucket extends BucketBase {
           } : undefined,
         } : undefined;
 
-        const isPrefixFilterEnabled = rule.prefixFilter !== undefined && rule.prefixFilter !== '';
-        const isTagFilterEnabled = rule.tagFilter !== undefined && rule.tagFilter.length > 0;
-        const isAnd = (isPrefixFilterEnabled && isTagFilterEnabled) || (rule.tagFilter !== undefined && rule.tagFilter?.length >= 2);
-
-        const filter = (isPrefixFilterEnabled || isTagFilterEnabled) ? {
-          ...(isAnd && { and: { prefix: rule.prefixFilter, tagFilters: rule.tagFilter } }),
-          ...(!isAnd && { prefix: rule.prefixFilter, tagFilter: rule.tagFilter?.[0] }),
-        } : undefined;
+        // Whether to configure filter settings by And property.
+        const isAndFilter = rule.tagFilter && rule.tagFilter.length > 0;
+        // To avoid deploy error when there are multiple replication rules with undefined prefix,
+        // CDK set the prefix to an empty string if it is undefined.
+        const prefix = rule.prefixFilter ?? '';
+        const filter = isAndFilter ? {
+          and: {
+            prefix,
+            tagFilters: rule.tagFilter,
+          },
+        } : {
+          prefix,
+        };
 
         return {
           id: rule.id,
@@ -2696,9 +2709,11 @@ export class Bucket extends BucketBase {
             } : undefined,
           },
           filter,
-          deleteMarkerReplication: rule.deleteMarkerReplication !== undefined ? {
+          // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,
+          // CDK explicitly set the deleteMarkerReplication if it is undefined.
+          deleteMarkerReplication: {
             status: rule.deleteMarkerReplication ? 'Enabled' : 'Disabled',
-          } : undefined,
+          },
           sourceSelectionCriteria,
         };
       }),
