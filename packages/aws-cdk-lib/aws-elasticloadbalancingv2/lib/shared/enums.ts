@@ -298,6 +298,11 @@ export enum TargetGroupLoadBalancingAlgorithmType {
    * least_outstanding_requests
    */
   LEAST_OUTSTANDING_REQUESTS = 'least_outstanding_requests',
+
+  /**
+   * weighted_random
+   */
+  WEIGHTED_RANDOM = 'weighted_random',
 }
 
 /**

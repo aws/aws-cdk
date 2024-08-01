@@ -171,6 +171,7 @@ export class HttpStage extends HttpStageBase {
         throttlingBurstLimit: props.throttle?.burstLimit,
         throttlingRateLimit: props.throttle?.rateLimit,
       },
+      description: props.description,
     });
 
     this.stageName = this.physicalName;

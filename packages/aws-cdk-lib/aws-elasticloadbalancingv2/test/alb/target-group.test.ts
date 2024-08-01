@@ -708,4 +708,101 @@ describe('tests', () => {
 
     expect(() => targetGroup.metrics.custom('MetricName')).toThrow();
   });
+
+  describe('weighted_random algorithm test', () => {
+    test('weight_random algorithm and anomaly mitigation is enabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        vpc,
+        enableAnomalyMitigation: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.algorithm.type',
+            Value: 'weighted_random',
+          },
+          {
+            Key: 'load_balancing.algorithm.anomaly_mitigation',
+            Value: 'on',
+          },
+        ],
+      });
+    });
+
+    test('weight_random algorithm and anomaly mitigation is disabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        vpc,
+        enableAnomalyMitigation: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.algorithm.type',
+            Value: 'weighted_random',
+          },
+          {
+            Key: 'load_balancing.algorithm.anomaly_mitigation',
+            Value: 'off',
+          },
+        ],
+      });
+    });
+
+    test('Throws an error when weight_random algorithm is set with slow start setting', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        slowStart: cdk.Duration.seconds(60),
+        vpc,
+      }),
+      ).toThrow('The weighted random routing algorithm can not be used with slow start mode.');
+    });
+
+    test('Throws an error when anomaly mitigation is enabled with an algorithm other than weight_random', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN,
+        enableAnomalyMitigation: true,
+        vpc,
+      }),
+      ).toThrow('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+    });
+  });
+
 });

@@ -194,6 +194,15 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-70b-instruct-v1:0". */
   public static readonly META_LLAMA_3_70_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-70b-instruct-v1:0');
 
+  /** Base model "meta.llama3-1-8b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_1_8B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-8b-instruct-v1:0');
+
+  /** Base model "meta.llama3-1-70b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_1_70_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-70b-instruct-v1:0');
+
+  /** Base model "meta.llama3-1-405b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_1_405_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-405b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -205,6 +214,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "mistral.mistral-small-2402-v1:0". */
   public static readonly MISTRAL_SMALL_V0_1 = new FoundationModelIdentifier('mistral.mistral-small-2402-v1:0');
+
+  /** Base model "mistral.mistral-large-2407-v1:0". */
+  public static readonly MISTRAL_LARGE_2_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2407-v1:0');
 
   /**
    * Base model "stability.stable-diffusion-xl".

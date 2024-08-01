@@ -17,6 +17,34 @@ test('create a place index', () => {
   });
 });
 
+test('create a place index with description', () => {
+  new PlaceIndex(stack, 'PlaceIndex', {
+    description: 'my-description',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::PlaceIndex', {
+    DataSource: 'Esri',
+    IndexName: 'PlaceIndex',
+    Description: 'my-description',
+  });
+});
+
+test('creates a place index with empty description', () => {
+  new PlaceIndex(stack, 'PlaceIndex', {
+    description: '',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::PlaceIndex', {
+    Description: '',
+  });
+});
+
+test('throws with invalid description', () => {
+  expect(() => new PlaceIndex(stack, 'PlaceIndex', {
+    description: 'a'.repeat(1001),
+  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+});
+
 test('throws with invalid name', () => {
   expect(() => new PlaceIndex(stack, 'PlaceIndex', {
     placeIndexName: 'inv@lid',

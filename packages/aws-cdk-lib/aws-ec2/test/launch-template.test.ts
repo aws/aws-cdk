@@ -147,6 +147,28 @@ describe('LaunchTemplate', () => {
     });
   });
 
+  test('Given versionDescription', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      versionDescription: 'test template',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      VersionDescription: 'test template',
+    });
+  });
+
+  test('throw error when versionDescription is too long', () => {
+    const tooLongDescription = 'a'.repeat(256);
+    // WHEN / THEN
+    expect(() => {
+      new LaunchTemplate(stack, 'TemplateWithTooLongDescription', {
+        versionDescription: tooLongDescription,
+      });
+    }).toThrow('versionDescription must be less than or equal to 255 characters, got 256');
+  });
+
   test('Given instanceType', () => {
     // WHEN
     new LaunchTemplate(stack, 'Template', {
