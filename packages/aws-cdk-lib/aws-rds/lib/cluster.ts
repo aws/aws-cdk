@@ -1274,6 +1274,20 @@ export class DatabaseCluster extends DatabaseClusterNew {
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
 
+    if (
+      props.manageMasterUserPassword &&
+      (
+        props.credentials?.excludeCharacters ||
+        props.credentials?.password ||
+        props.credentials?.replicaRegions ||
+        props.credentials?.secret ||
+        props.credentials?.secretName ||
+        props.credentials?.usernameAsString
+      )
+    ) {
+      throw new Error('Only the `username` and `encryptionKey` credentials properties may be used when `manageMasterUserPassword` is true');
+    }
+
     let cluster: CfnDBCluster;
     if (!props.manageMasterUserPassword) {
       const credentials = renderCredentials(this, props.engine, props.credentials);
