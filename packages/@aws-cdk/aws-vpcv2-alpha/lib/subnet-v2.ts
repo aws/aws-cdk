@@ -319,7 +319,8 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
   try {
     allSubnets = vpc.selectSubnets().subnets;
   } catch (e) {
-    throw new Error('No subnets in VPC');
+    'No subnets in VPC';
+    return false;
   }
 
   const ipMap: [string, string][] = new Array();
@@ -357,7 +358,8 @@ function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): 
   try {
     allSubnets = vpc.selectSubnets().subnets;
   } catch (e) {
-    throw new Error('No subnets in VPC');
+    'No subnets in VPC';
+    return false;
   }
 
   const ipv6Map: string[]= [];
