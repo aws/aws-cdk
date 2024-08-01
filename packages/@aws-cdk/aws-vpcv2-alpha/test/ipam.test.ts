@@ -17,14 +17,14 @@ describe('IPAM Test', () => {
     stack = new cdk.Stack(app, 'IPAMTestStack', {
       env: envUSA,
     });
-    ipam = new Ipam(stack, 'Ipam');
+    ipam = new Ipam(stack, 'Ipam', {});
   });
 
   test('Creates IP Pool under Public Scope', () => {
 
     const pool = ipam.publicScope.addPool('Public', {
       addressFamily: AddressFamily.IP_V6,
-      awsService: 'ec2',
+      awsService: vpc.AwsServiceName.EC2,
       locale: 'us-east-1',
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
     });
@@ -32,8 +32,8 @@ describe('IPAM Test', () => {
     new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
-        ipv6IpamPool: pool,
-        ipv6NetmaskLength: 52,
+        ipamPool: pool,
+        netmaskLength: 52,
       })],
     });
     Template.fromStack(stack).hasResourceProperties(
@@ -55,15 +55,15 @@ describe('IPAM Test', () => {
 
     const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
-      provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
+      provisionedCidrs: ['10.2.0.0/16'],
       locale: 'us-east-1',
     });
 
     new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4Ipam({
-        ipv4IpamPool: pool,
-        ipv4NetmaskLength: 20,
+        ipamPool: pool,
+        netmaskLength: 20,
       })],
     });
     Template.fromStack(stack).hasResourceProperties(
@@ -83,10 +83,10 @@ describe('IPAM Test', () => {
 
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
     // Create IPAM resources
-    const ipamIpv6 = new Ipam(stack, 'TestIpam');
+    const ipamIpv6 = new Ipam(stack, 'TestIpam', {});
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
-      awsService: 'ec2',
+      awsService: vpc.AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
       locale: 'us-east-1',
     };
@@ -117,10 +117,10 @@ describe('IPAM Test', () => {
 
   test('Get region from stack env', () => {
     // Create IPAM resources
-    const ipamRegion = new Ipam(stack, 'TestIpam');
+    const ipamRegion = new Ipam(stack, 'TestIpam', {});
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
-      awsService: 'ec2',
+      awsService: vpc.AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
     };
     ipamRegion.publicScope.addPool('TestPool', poolOptions);
@@ -149,7 +149,7 @@ describe('IPAM Test', () => {
   });
 
   test('Creates IPAM with default scopes', () => {
-    new Ipam(stack, 'TestIpam');
+    new Ipam(stack, 'TestIpam', {});
     Template.fromStack(stack).hasResource(
       'AWS::EC2::IPAM', {},
     );

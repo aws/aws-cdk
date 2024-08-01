@@ -9,32 +9,30 @@
 //  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
+import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, Ipv4Cidr } from '../lib/subnet-v2';
-//import { Ipv6Cidr } from '../lib/subnet-v2';
-//import { rangesOverlap } from '../lib/util';
-//import { CidrBlockIpv6 } from '../lib/util';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
-const ipam = new Ipam(stack, 'IpamTest');
+const ipam = new Ipam(stack, 'IpamTest', {});
+
 
 /**Test Ipam Pool Ipv4 */
 
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
-  provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
+  provisionedCidrs: ['10.2.0.0/16'],
   locale: 'eu-central-1',
 });
 
 const pool2 = ipam.publicScope.addPool('PublicPool0', {
   addressFamily: AddressFamily.IP_V6,
-  awsService: 'ec2',
+  awsService: AwsServiceName.EC2,
   locale: 'eu-central-1',
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
@@ -45,8 +43,8 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.ipv4Ipam({
-      ipv4IpamPool: pool1,
-      ipv4NetmaskLength: 20,
+      ipamPool: pool1,
+      netmaskLength: 20,
     }),
     //Test secondary ipv6 address
     vpc_v2.IpAddresses.amazonProvidedIpv6(),
@@ -61,8 +59,8 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
 const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
-    ipv6IpamPool: pool2,
-    ipv6NetmaskLength: 60,
+    ipamPool: pool2,
+    netmaskLength: 60,
   }),
   vpc_v2.IpAddresses.ipv4('10.2.0.0/16'),
   vpc_v2.IpAddresses.ipv4('10.3.0.0/16')],

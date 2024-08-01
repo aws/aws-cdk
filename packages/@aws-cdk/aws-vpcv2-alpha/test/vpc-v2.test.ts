@@ -1,7 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
-import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
+import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib';
 
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;
@@ -85,7 +85,7 @@ describe('Vpc V2 with full control', () => {
   test('VPC supports secondary Amazon Provided IPv6 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [new vpc.AmazonProvided()],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6()],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },
@@ -119,18 +119,18 @@ describe('Vpc V2 with full control', () => {
 
   test('VPC Primary IP from Ipv4 Ipam', () => {
 
-    const ipam = new Ipam(stack, 'TestIpam');
+    const ipam = new Ipam(stack, 'TestIpam', {});
 
     const pool = ipam.privateScope.addPool('PrivatePool0', {
       addressFamily: AddressFamily.IP_V4,
-      provisionedCidrs: [{ cidr: '10.1.0.1/24' }],
+      provisionedCidrs: ['10.1.0.1/24'],
       locale: 'us-west-1',
     });
 
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4Ipam({
-        ipv4IpamPool: pool,
-        ipv4NetmaskLength: 28,
+        ipamPool: pool,
+        netmaskLength: 28,
       }),
       enableDnsHostnames: true,
       enableDnsSupport: true,
@@ -175,11 +175,11 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('VPC Secondary IP from Ipv6 Ipam', () => {
-    const ipam = new Ipam(stack, 'TestIpam');
+    const ipam = new Ipam(stack, 'TestIpam', {});
 
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
-      awsService: 'ec2',
+      awsService: AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
     });
     pool.provisionCidr('PublicPoolCidr', {
@@ -189,8 +189,8 @@ describe('Vpc V2 with full control', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
-        ipv6IpamPool: pool,
-        ipv6NetmaskLength: 64,
+        ipamPool: pool,
+        netmaskLength: 64,
       })],
       enableDnsHostnames: true,
       enableDnsSupport: true,

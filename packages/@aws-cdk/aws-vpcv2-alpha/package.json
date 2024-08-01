@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-vpcv2-alpha",
   "private": true,
   "version": "0.0.0",
-  "description": "An example CDK Construct Library that can serve as a template for creating new libraries",
+  "description": "The CDK construct library for VPC V2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -27,6 +27,10 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkpipesalpha"
       }
     },
     "projectReferences": true,
@@ -44,7 +48,7 @@
     "directory": "packages/@aws-cdk/aws-vpcv2-alpha"
   },
   "scripts": {
-    "build": "cdk-build --skip-lint",
+    "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",

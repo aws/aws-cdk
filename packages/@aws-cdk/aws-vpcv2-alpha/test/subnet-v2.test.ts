@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
 import { NetworkAcl, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
+import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
 import { createTestSubnet } from './util';
 
 /**
@@ -158,18 +158,18 @@ describe('Subnet V2 with custom IP and routing', () => {
   });
 
   test('Create Subnet with IPv6 if it is Ipam Ipv6 is enabled on VPC', () => {
-    const ipam = new Ipam(stack, 'TestIpam');
+    const ipam = new Ipam(stack, 'TestIpam', {});
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
-      awsService: 'ec2',
+      awsService: AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
 
     });
     const TestVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
-        ipv6IpamPool: pool,
-        ipv6NetmaskLength: 60,
+        ipamPool: pool,
+        netmaskLength: 60,
       })],
     });
 
@@ -210,18 +210,18 @@ describe('Subnet V2 with custom IP and routing', () => {
   });
 
   test('Should throw error if overlapping CIDR block(IPv6) for the subnet', () => {
-    const ipam = new Ipam(stack, 'TestIpam');
+    const ipam = new Ipam(stack, 'TestIpam', {});
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
-      awsService: 'ec2',
+      awsService: AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
 
     });
     const testVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
-        ipv6IpamPool: pool,
-        ipv6NetmaskLength: 60,
+        ipamPool: pool,
+        netmaskLength: 60,
       })],
     });
 
