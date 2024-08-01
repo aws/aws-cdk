@@ -365,7 +365,6 @@ class IpamScope extends Resource implements IIpamScopeBase {
     this.scopeId = this._ipamScope.attrIpamScopeId;
     this.scope = scope;
     this.props = props;
-    this.n;
   }
 
   /**
@@ -433,7 +432,7 @@ export class Ipam extends Resource {
   /**
    * List of custom scopes created under this IPAM
    */
-  public readonly customScopes: IIpamScopeBase[] = [];
+  public readonly scopes: IIpamScopeBase[] = [];
 
   constructor(scope: Construct, id: string, props?: IpamProps) {
     super(scope, id);
@@ -455,10 +454,9 @@ export class Ipam extends Resource {
       ipamScopeId: this._ipam.attrPrivateDefaultScopeId,
     });
 
-    this.node.defaultChild = this.publicScope.scope;
-    this.node.defaultChild = this.privateScope.scope;
-    this.customScopes.forEach(customScope => {
-      this.node.defaultChild = customScope.scope;
+    this.scopes.push(this.publicScope, this.privateScope);
+    this.scopes.forEach(node => {
+      this.node.defaultChild = node.scope;
     });
   }
 
@@ -472,7 +470,7 @@ export class Ipam extends Resource {
       ipamId: this.ipamId,
       ipamOperatingRegions: this.operatingRegions,
     });
-    this.customScopes.push(ipamScope);
+    this.scopes.push(ipamScope);
     return ipamScope;
   }
 }
