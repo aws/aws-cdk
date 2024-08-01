@@ -10,7 +10,7 @@
 
 import * as vpc_v2 from '../lib/vpc-v2';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource, Ipv4Cidr, SubnetV2 } from '../lib';
+import { AddressFamily, AwsServiceName, IpCidr, Ipam, IpamPoolPublicIpSource, SubnetV2 } from '../lib';
 //import {  Ipv6Cidr } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
@@ -23,22 +23,6 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-new');
 const ipam = new Ipam(stack, 'Ipam', {
   operatingRegion: ['eu-west-2'], //set to the region stack is being deployed to
 });
-
-
-// const ipamScope = new IpamScope(stack, 'IpamScopeTest', {
-//   ipamId: ipam.ipamId,
-//   ipamRegion: ['eu-west-2'],
-// });
-
-/**
- * A customer created scope
- */
-// ipamScope.addPool('PublicPool1', {
-//   addressFamily: AddressFamily.IP_V6,
-//   awsService: AwsServiceName.EC2,
-//   locale: 'eu-west-2', //set to the region stack is being deployed to
-//   publicIpSource: IpamPoolPublicIpSource.AMAZON,
-// });
 
 
 /**
@@ -71,7 +55,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'eu-west-2a',
-  cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
+  cidrBlock: new IpCidr('10.0.0.0/24'),
   //defined on the basis of allocation done in IPAM console
   //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
