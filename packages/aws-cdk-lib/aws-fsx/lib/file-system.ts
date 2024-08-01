@@ -3,7 +3,7 @@ import { IKey } from '../../aws-kms';
 import { RemovalPolicy, Resource } from '../../core';
 
 /**
- * the storage type for the file system.
+ * The storage type for the file system.
  */
 export enum StorageType {
   /**
