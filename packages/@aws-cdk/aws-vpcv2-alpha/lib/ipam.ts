@@ -482,7 +482,6 @@ export class Ipam extends Resource {
  * Function to create IpamPool under scope
  * @internal
  */
-
 function createIpamPool(
   scope: Construct,
   id: string,

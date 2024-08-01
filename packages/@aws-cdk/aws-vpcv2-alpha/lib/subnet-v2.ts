@@ -285,8 +285,8 @@ function validateSupportIpv6(vpc: IVpcV2) {
  * @param vpc The VPC instance to check against.
  * @param cidrRange The CIDR range to be checked.
  * @returns True if the CIDR range falls within the VPC's IP address ranges, false otherwise.
+ * @internal
  */
-
 function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
@@ -351,7 +351,6 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
  * @throws Error if no subnets are found in the VPC.
  * @internal
  */
-
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
 
   let allSubnets: ISubnet[];

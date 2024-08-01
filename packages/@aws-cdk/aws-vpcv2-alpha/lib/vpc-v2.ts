@@ -258,10 +258,6 @@ export class VpcV2 extends VpcV2Base {
       }),
     });
 
-    if (props.primaryAddressBlock !instanceof IpamIpv4 || props.primaryAddressBlock !instanceof ipv4CidrAllocation) {
-      throw new Error('Primary IP address block must be of type Ipv4');
-    }
-
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
 

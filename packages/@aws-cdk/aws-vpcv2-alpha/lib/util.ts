@@ -1,31 +1,6 @@
 /*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
-import { ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
-
-/**
- * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
- *
- * (At the moment, no efforts are taken to prevent collisions, but we can add that later when it becomes necessary).
- */
-export function slugify(x: string): string {
-  return x.replace(/[^a-zA-Z0-9]/g, '');
-}
-
-/**
- * The default names for every subnet type
- */
-export function defaultSubnetName(type: SubnetType) {
-  switch (type) {
-    case SubnetType.PUBLIC: return 'Public';
-    case SubnetType.PRIVATE_WITH_NAT:
-    case SubnetType.PRIVATE_WITH_EGRESS:
-    case SubnetType.PRIVATE:
-      return 'Private';
-    case SubnetType.PRIVATE_ISOLATED:
-    case SubnetType.ISOLATED:
-      return 'Isolated';
-  }
-}
+import { ISubnet } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * Return a subnet name from its construct ID
