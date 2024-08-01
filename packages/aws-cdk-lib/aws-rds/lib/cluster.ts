@@ -894,9 +894,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       storageType: props.storageType?.toString(),
       enableLocalWriteForwarding: props.enableLocalWriteForwarding,
       clusterScalabilityType: props.clusterScailabilityType,
-      ...(this.manageMasterUserPassword && {
-        manageMasterUserPassword: props.manageMasterUserPassword,
-      }),
+      manageMasterUserPassword: props.manageMasterUserPassword,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
