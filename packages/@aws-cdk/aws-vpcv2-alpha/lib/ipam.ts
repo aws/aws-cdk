@@ -71,6 +71,21 @@ export interface IpamProps{
 }
 
 /**
+ * Refers to two possible scope types under IPAM
+ */
+export enum IpamScopeType {
+  /**
+   * Default scopes created by IPAM
+   */
+  DEFAULT = 'default',
+
+  /**
+   * Custom scope created using method
+   */
+  CUSTOM = 'custom',
+}
+
+/**
  * Options for configuring an IPAM pool.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html
@@ -259,6 +274,11 @@ export interface IIpamScopeBase{
   readonly props?: IpamScopeProps;
 
   /**
+   * Defines scope type can be either default or custom
+   */
+  readonly scopeType?: IpamScopeType;
+
+  /**
    * Function to add a new pool to an IPAM scope
    */
   addPool(id: string, options: PoolOptions): IIpamPool;
@@ -357,12 +377,18 @@ class IpamScope extends Resource implements IIpamScopeBase {
    */
   public readonly scope: Construct;
 
+  /**
+   * Defines scope type can be either default or custom
+   */
+  public readonly scopeType: IpamScopeType;
+
   constructor(scope: Construct, id: string, props: IpamScopeProps) {
     super(scope, id);
     this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
       ipamId: props.ipamId,
     });
     this.scopeId = this._ipamScope.attrIpamScopeId;
+    this.scopeType = IpamScopeType.CUSTOM;
     this.scope = scope;
     this.props = props;
   }
@@ -385,7 +411,10 @@ class IpamScopeBase implements IIpamScopeBase {
     readonly scope: Construct,
     readonly scopeId: string,
     readonly props: IpamScopeProps,
-  ) {}
+    readonly scopeType?: IpamScopeType,
+  ) {
+    this.scopeType = IpamScopeType.DEFAULT;
+  }
 
   /**
    * Adds a pool to the IPAM scope.
@@ -430,7 +459,7 @@ export class Ipam extends Resource {
   public readonly operatingRegions: string[];
 
   /**
-   * List of custom scopes created under this IPAM
+   * List of scopes created under this IPAM
    */
   public readonly scopes: IIpamScopeBase[] = [];
 
