@@ -162,6 +162,40 @@ test('with custom IAM action', () => {
   });
 });
 
+test('parameters with camelCase', () => {
+  // WHEN
+  const task = new tasks.CallAwsServiceCrossRegion(stack, 'GetRestApi', {
+    service: 'api-gateway',
+    action: 'getRestApi',
+    parameters: {
+      restApiId: 'id',
+    },
+    region: 'us-east-1',
+    iamResources: ['*'],
+    retryOnServiceExceptions: false,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::GetAtt': [
+        'CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F',
+        'Arn',
+      ],
+    },
+    End: true,
+    Parameters: {
+      action: 'getRestApi',
+      region: 'us-east-1',
+      service: 'api-gateway',
+      parameters: {
+        restApiId: 'id',
+      },
+    },
+  });
+});
+
 test('throws with invalid integration pattern', () => {
   expect(() => new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
@@ -187,19 +221,6 @@ test('throws if action is not camelCase', () => {
     region: 'us-east-1',
     iamResources: ['*'],
   })).toThrow(/action must be camelCase, got: GetObject/);
-});
-
-test('throws if parameters has keys as not PascalCase', () => {
-  expect(() => new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
-    service: 's3',
-    action: 'getObject',
-    parameters: {
-      bucket: 'my-bucket',
-      key: sfn.JsonPath.stringAt('$.key'),
-    },
-    region: 'us-east-1',
-    iamResources: ['*'],
-  })).toThrow(/parameter names must be PascalCase, got: bucket, key/);
 });
 
 test('can pass additional IAM statements', () => {
