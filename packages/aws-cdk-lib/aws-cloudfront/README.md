@@ -79,7 +79,7 @@ be retrieved from `distribution.distributionDomainName`. CloudFront distribution
 default. If you want to use your own domain name, such as `www.example.com`, you must associate a certificate with your distribution that contains
 your domain name, and provide one (or more) domain names from the certificate for the distribution.
 
-When you want to move a domain name between distributions, you can associate a certificate and specify no domain names.
+When you want to move a domain name between distributions, you can associate a certificate without specifying any domain names.
 See [Moving an alternate domain name to a different distribution](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html#alternate-domain-names-move) for details.
 
 The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate

@@ -131,6 +131,9 @@ export interface DistributionProps {
    * you can add an alternate domain name to your distribution. If you attach a certificate to the distribution,
    * you should add (at least one of) the domain names of the certificate to this list.
    *
+   * When you want to move a domain name between distributions, you can associate a certificate without specifying any domain names.
+   * See [Moving an alternate domain name to a different distribution](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html#alternate-domain-names-move) for details.
+   *
    * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
    */
   readonly domainNames?: string[];
