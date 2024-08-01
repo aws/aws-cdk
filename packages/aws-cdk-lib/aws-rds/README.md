@@ -76,9 +76,11 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-The manageMasterUserPassword prop supports a custom username OR custom username with customer supplied AWS KMS key.
-These values are passed in using the existing `credentials` property with only the `username` and `encryptionKey` props supported.
-Note: `encryptionKey` cannot be set without `username` being set as well.
+The `manageMasterUserPassword` property supports a custom username or a custom username with a customer supplied AWS KMS key.
+
+You can specify the `username` and the `encryptionKey` via the `credentials` property.
+
+**Note:** `username` must be specified if `encryptionKey` is set.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -91,6 +93,8 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   vpc,
 });
 ```
+
+> Visit [Password management with Amazon RDS and AWS Secrets Manager](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html) or [Password management with Amazon Aurora and AWS Secrets Manager](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-secrets-manager.html) for more details.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
