@@ -129,8 +129,8 @@ export interface LustreConfiguration {
   readonly dataCompressionType?: LustreDataCompressionType;
 
   /**
-   * Required with PERSISTENT_1 and PERSISTENT_2 deployment types,
-   * provisions the amount of read and write throughput for each 1 tebibyte (TiB) of file system storage capacity, in MB/s/TiB.
+   * Provisions the amount of read and write throughput for each 1 tebibyte (TiB) of file system storage capacity, in MB/s/TiB.
+   * Required with PERSISTENT_1 and PERSISTENT_2 deployment types.
    *
    * Valid values:
    * - For PERSISTENT_1 SSD storage: 50, 100, 200 MB/s/TiB.
