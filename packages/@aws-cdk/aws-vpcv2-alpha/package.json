@@ -30,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkpipesalpha"
+        "packageName": "awsvpcv2alpha"
       }
     },
     "projectReferences": true,
