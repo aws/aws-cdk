@@ -406,6 +406,8 @@ export class LustreFileSystem extends FileSystemBase {
 
   /**
    * Validates the perUnitStorageThroughput is defined correctly for the given deploymentType.
+   *
+   * @see https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-throughput-capacity.html
    */
   private validatePerUnitStorageThroughput(
     deploymentType: LustreDeploymentType,
