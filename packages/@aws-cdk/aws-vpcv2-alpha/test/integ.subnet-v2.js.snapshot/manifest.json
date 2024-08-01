@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4768b0d3ce9da6a037c12fe289f59bbb2130d0d2bc25a2eeb7d70ea275b4a68f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7b57a1ba52913e3221870f73b16ba6d54dc93a68d4ec569ab3be79b2db3581b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,10 +43,7 @@
         "/aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamPublicPool050D6AA6C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "IpamPublicPool050D6AA6C"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/Ipam/PublicPool0/PublicPool0Cidr": [
@@ -58,19 +55,13 @@
         "/aws-cdk-vpcv2-alpha-new/VPCTest/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCTestFB735C86",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "VPCTestFB735C86"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/VPCTest/SecondaryIp1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCTestSecondaryIp1BB4FC62E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VPCTestSecondaryIp1BB4FC62E"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/VPCTest/VpnGateway/Default": [
@@ -149,15 +140,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "IpamPublicPool0PublicPool0CidrPoolCidrC82F3C98": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPublicPool0PublicPool0CidrPoolCidrC82F3C98",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

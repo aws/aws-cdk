@@ -74,6 +74,15 @@ export interface SubnetV2Props {
    */
   readonly subnetName?: string;
 
+  /**
+   * Indicates whether a network interface created in this subnet receives an IPv6 address.
+   *
+   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock.
+   *
+   * @default false
+   */
+  readonly assignIpv6AddressOnCreation?: boolean;
+
 }
 
 /**
@@ -168,11 +177,16 @@ export class SubnetV2 extends Resource implements ISubnet {
       throw new Error('CIDR block should not overlap with existing subnet blocks');
     }
 
+    if (props.assignIpv6AddressOnCreation && !props.ipv6CidrBlock) {
+      throw new Error('IPv6 CIDR block is required when assigning IPv6 address on creation');
+    }
+
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
       cidrBlock: ipv4CidrBlock,
       ipv6CidrBlock: ipv6CidrBlock,
       availabilityZone: props.availabilityZone,
+      assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation ?? false,
     });
 
     this.ipv4CidrBlock = props.cidrBlock.cidr;

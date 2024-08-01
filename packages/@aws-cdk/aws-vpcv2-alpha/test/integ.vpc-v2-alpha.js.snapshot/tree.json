@@ -291,6 +291,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "eu-central-1a",
                     "cidrBlock": "10.1.0.0/24",
                     "vpcId": {
@@ -368,6 +369,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "eu-central-1b",
                     "cidrBlock": "10.2.0.0/24",
                     "vpcId": {
@@ -445,6 +447,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "eu-central-1b",
                     "cidrBlock": "10.3.0.0/24",
                     "vpcId": {

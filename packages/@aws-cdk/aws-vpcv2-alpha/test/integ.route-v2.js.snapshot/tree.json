@@ -94,6 +94,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
@@ -268,6 +269,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "vpcId": {
@@ -497,6 +499,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
@@ -755,6 +758,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
@@ -1015,6 +1019,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
@@ -1361,6 +1366,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
@@ -1605,6 +1611,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
@@ -1779,6 +1786,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
@@ -1953,6 +1961,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {

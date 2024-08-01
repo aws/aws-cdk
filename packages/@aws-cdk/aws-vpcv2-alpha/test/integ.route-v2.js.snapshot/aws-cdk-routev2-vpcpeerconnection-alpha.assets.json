@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "d62fca254e7273e0207d11b73b48a6ab8162d05bbd8979d225c55b62e7b87416": {
+    "c8bf6eb5edca9a28cacd7f9e904d65cd28fd6631494080179772a938ef994b9e": {
       "source": {
         "path": "aws-cdk-routev2-vpcpeerconnection-alpha.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d62fca254e7273e0207d11b73b48a6ab8162d05bbd8979d225c55b62e7b87416.json",
+          "objectKey": "c8bf6eb5edca9a28cacd7f9e904d65cd28fd6631494080179772a938ef994b9e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

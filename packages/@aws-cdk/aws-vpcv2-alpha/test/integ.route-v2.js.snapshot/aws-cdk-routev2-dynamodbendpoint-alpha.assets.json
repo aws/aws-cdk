@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "0c54291932313cceec002f2a76b9b7997cf15d0cc3907d5735dee52496db5a1e": {
+    "e6029968edd6129f28502fa71fa48c54ed0dcf5d3359a8bf3047027801de7581": {
       "source": {
         "path": "aws-cdk-routev2-dynamodbendpoint-alpha.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0c54291932313cceec002f2a76b9b7997cf15d0cc3907d5735dee52496db5a1e.json",
+          "objectKey": "e6029968edd6129f28502fa71fa48c54ed0dcf5d3359a8bf3047027801de7581.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -141,6 +141,7 @@
   "testsbubnetSubnet77337845": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "eu-central-1a",
     "CidrBlock": "10.1.0.0/24",
     "VpcId": {
@@ -191,6 +192,7 @@
   "testsubnetSubnetDD417829": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "eu-central-1b",
     "CidrBlock": "10.2.0.0/24",
     "VpcId": {
@@ -241,6 +243,7 @@
   "validateIpv6Subnet07BD40AE": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "eu-central-1b",
     "CidrBlock": "10.3.0.0/24",
     "VpcId": {

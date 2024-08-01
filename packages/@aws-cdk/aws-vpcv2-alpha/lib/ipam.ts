@@ -209,23 +209,23 @@ export interface IpamScopeProps {
   readonly ipamOperatingRegions: string[];
 
   /**
-   * IPAM scope name
+   * Custom ipam scope id to add a pool in order to support default scopes
    * @default none
    */
-  readonly ipamScopeName?: string;
+  readonly ipamScopeId?: string;
 
 }
 
 /**
  * Being used in IPAM class to add pools to default scope created by IPAM.
- * @internal
  */
-interface IpamScopeOptions extends IpamScopeProps {
+export interface IpamScopeOptions {
+
   /**
-   * Custom ipam scope id to add a pool
+   * IPAM scope name
    * @default none
    */
-  readonly ipamScopeId?: string;
+  readonly ipamScopeName?: string;
 }
 
 /**
@@ -399,7 +399,7 @@ class IpamScopeBase implements IIpamScopeBase {
   constructor(
     readonly scope: Construct,
     readonly scopeId: string,
-    readonly props: IpamScopeOptions,
+    readonly props: IpamScopeProps,
   ) {}
 
   /**
@@ -470,10 +470,11 @@ export class Ipam extends Resource {
    * Function to add custom scope to an existing IPAM
    * Custom scopes can only be private
    */
-  public addScope(scope: Construct, id: string, options: IpamScopeProps): IIpamScopeBase {
+  public addScope(scope: Construct, id: string, options: IpamScopeOptions): IIpamScopeBase {
     return new IpamScope(scope, id, {
       ...options,
       ipamId: this.ipamId,
+      ipamOperatingRegions: this.operatingRegions,
     });
   }
 }
@@ -485,7 +486,7 @@ export class Ipam extends Resource {
 function createIpamPool(
   scope: Construct,
   id: string,
-  scopeOptions: IpamScopeOptions,
+  scopeOptions: IpamScopeProps,
   poolOptions: PoolOptions,
   scopeId: string,
 ): IpamPool {
