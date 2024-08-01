@@ -4,10 +4,8 @@ import { Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
- *
- * @enum {string}
- * @property {string} IP_V4 - Represents the IPv4 address family.
- * @property {string} IP_V6 - Represents the IPv6 address family.
+ * IP_V4 - Represents the IPv4 address family.
+ * IP_V6 - Represents the IPv6 address family.
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-addressfamily
  */
 export enum AddressFamily {
@@ -76,13 +74,6 @@ export interface IpamProps{
  * Options for configuring an IPAM pool.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html
- *
- * @interface PoolOptions
- * @property {AddressFamily} addressFamily - The address family of the pool (ipv4 or ipv6).
- * @property {CfnIPAMPool.ProvisionedCidrProperty[]} [provisionedCidrs] - Information about the CIDRs provisioned to the pool.
- * @property {string} [locale] - The locale (AWS Region) of the pool.
- * @property {IpamPoolPublicIpSource} [publicIpSource] - The IP address source for pools in the public scope.
- * @property {string} [awsService] - Limits which AWS service can use the pool.
  */
 export interface PoolOptions{
 
@@ -92,7 +83,7 @@ export interface PoolOptions{
   readonly addressFamily: AddressFamily;
 
   /**
-   * [provisionedCidrs] - Information about the CIDRs provisioned to the pool.
+   * Information about the CIDRs provisioned to the pool.
    * @default - No CIDRs are provisioned
    * @see CfnIPAMPool.ProvisionedCidrProperty
    */
@@ -109,7 +100,7 @@ export interface PoolOptions{
   readonly locale?: string;
 
   /**
-   * [publicIpSource] - The IP address source for pools in the public scope.
+   * The IP address source for pools in the public scope.
    * Only used for IPv6 address
    * Only allowed values to this are 'byoip' or 'amazon'
    * @default amazon
@@ -130,12 +121,7 @@ export interface PoolOptions{
 
 /**
  * Properties for creating an IPAM pool.
- *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html
- *
- * @interface IpamPoolProps
- * @extends {PoolOptions}
- * @property {string} ipamScopeId - The ID of the IPAM scope.
  */
 interface IpamPoolProps extends PoolOptions {
   /**
@@ -194,7 +180,6 @@ export interface IIpamPool{
 /**
  * IPAM scope is the highest-level container within IPAM. An IPAM contains two default scopes.
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
- * @property {ipamId}
  */
 export interface IpamScopeProps {
   /**
@@ -380,6 +365,7 @@ class IpamScope extends Resource implements IIpamScopeBase {
     this.scopeId = this._ipamScope.attrIpamScopeId;
     this.scope = scope;
     this.props = props;
+    this.n;
   }
 
   /**
@@ -444,6 +430,11 @@ export class Ipam extends Resource {
    */
   public readonly operatingRegions: string[];
 
+  /**
+   * List of custom scopes created under this IPAM
+   */
+  public readonly customScopes: IIpamScopeBase[] = [];
+
   constructor(scope: Construct, id: string, props?: IpamProps) {
     super(scope, id);
 
@@ -464,6 +455,11 @@ export class Ipam extends Resource {
       ipamScopeId: this._ipam.attrPrivateDefaultScopeId,
     });
 
+    this.node.defaultChild = this.publicScope.scope;
+    this.node.defaultChild = this.privateScope.scope;
+    this.customScopes.forEach(customScope => {
+      this.node.defaultChild = customScope.scope;
+    });
   }
 
   /**
@@ -471,11 +467,13 @@ export class Ipam extends Resource {
    * Custom scopes can only be private
    */
   public addScope(scope: Construct, id: string, options: IpamScopeOptions): IIpamScopeBase {
-    return new IpamScope(scope, id, {
+    const ipamScope = new IpamScope(scope, id, {
       ...options,
       ipamId: this.ipamId,
       ipamOperatingRegions: this.operatingRegions,
     });
+    this.customScopes.push(ipamScope);
+    return ipamScope;
   }
 }
 

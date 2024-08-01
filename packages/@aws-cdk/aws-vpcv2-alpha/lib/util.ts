@@ -62,17 +62,12 @@ export class NetworkUtils {
   /**
    * Converts a string representation of an IPv4 address to its corresponding numerical value.
    *
-   * @param ipAddress The IPv4 address string to be converted.
-   * @returns The numerical value of the IPv4 address.
-   * @throws Error if the provided IPv4 address string is invalid.
-   * Converts a string IPv4 to a number
-   *
    * Uses the formula:
    * (first octet * 256³) + (second octet * 256²) + (third octet * 256) +
    * (fourth octet)
    *
-   * @param  {string} the IP address (e.g. 174.66.173.168)
-   * @returns {number} the integer value of the IP address (e.g 2923605416)
+   * @param  ipAddress the IP address (e.g. 174.66.173.168)
+   * @returns the integer value of the IP address (e.g 2923605416)
    */
   public static ipToNum(ipAddress: string): number {
     if (!this.validIp(ipAddress)) {
@@ -93,8 +88,8 @@ export class NetworkUtils {
    * Takes a number (e.g 2923605416) and converts it to an IPv4 address string
    * currently only supports IPv4
    *
-   * @param  {number} the integer value of the IP address (e.g 2923605416)
-   * @returns {string} the IPv4 address (e.g. 174.66.173.168)
+   * @param ipNum integer value of the IP address (e.g 2923605416)
+   * @returns IPv4 address (e.g. 174.66.173.168)
    */
   public static numToIp(ipNum: number): string {
     // this all because bitwise math is signed
@@ -152,18 +147,8 @@ export class CidrBlock {
     return 2 ** (32 - mask);
   }
 
-  /*
-   * The CIDR Block represented as a string e.g. '10.0.0.0/21'
-   */
   /**
-   * Creates a new CidrBlock instance representing an IPv4 CIDR block.
-   *
-   * @param cidrOrIpAddress The CIDR notation string (e.g., '10.0.0.0/16') or the IP address number to be used as the base address.
-   * @param mask The CIDR prefix length (between 0 and 32) if providing an IP address number as the first argument.
-   */
-  /**
-   * The total number of IP addresses in the CIDR block.
-   * This is calculated as 2^(32 - mask).
+   * IP address in the CIDR block.
    */
   public readonly cidr: string;
 
@@ -381,7 +366,6 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   *
    * @param ipv6Address
    * @returns Converts given ipv6 address range to big int number
    */
