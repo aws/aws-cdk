@@ -54,7 +54,7 @@ export interface SubnetV2Props {
 
   /**
    * Custom Route for subnet
-   * @default Custom route table
+   * @default Default route table 
    */
   readonly routeTable?: IRouteTable;
 
