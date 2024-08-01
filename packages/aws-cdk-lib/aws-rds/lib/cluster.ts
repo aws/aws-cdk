@@ -385,6 +385,13 @@ interface DatabaseClusterBaseProps {
    * @default - false
    */
   readonly enableDataApi?: boolean;
+
+  /**
+   * Specifies whether to manage the master user password with AWS Secrets Manager.
+   *
+   * @default - false
+   */
+  readonly manageMasterUserPassword?: boolean;
 }
 
 /**
@@ -469,6 +476,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    * The secret attached to this cluster
    */
   public abstract readonly secret?: secretsmanager.ISecret
+
+  /**
+   * Specifies whether to manage user password with AWS Secrets Manager.
+   */
+  public abstract readonly manageMasterUserPassword?: boolean;
 
   protected abstract enableDataApi?: boolean;
 
@@ -592,6 +604,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
 
+  public readonly manageMasterUserPassword?: boolean;
+
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
 
@@ -608,6 +622,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
@@ -716,6 +732,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         },
       }),
       storageType: props.storageType?.toString(),
+      ...(this.manageMasterUserPassword && {
+        manageMasterUserPassword: props.manageMasterUserPassword,
+      }),
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -973,6 +992,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
   public readonly secret?: secretsmanager.ISecret;
+  public readonly manageMasterUserPassword?: boolean;
 
   private readonly _clusterResourceIdentifier?: string;
   private readonly _clusterEndpoint?: Endpoint;
@@ -1081,21 +1101,40 @@ export class DatabaseCluster extends DatabaseClusterNew {
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    let cluster: CfnDBCluster;
+    if (!props.manageMasterUserPassword) {
+      const credentials = renderCredentials(this, props.engine, props.credentials);
+      const secret = credentials.secret;
 
-    const cluster = new CfnDBCluster(this, 'Resource', {
-      ...this.newCfnProps,
-      // Admin
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.unsafeUnwrap(),
-    });
+      cluster = new CfnDBCluster(this, 'Resource', {
+        ...this.newCfnProps,
+        // Admin
+        masterUsername: credentials.username,
+        masterUserPassword: credentials.password?.unsafeUnwrap(),
+      });
 
-    this.clusterIdentifier = cluster.ref;
-    this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
+      this.clusterIdentifier = cluster.ref;
+      this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
-    if (secret) {
-      this.secret = secret.attach(this);
+      if (secret) {
+        this.secret = secret.attach(this);
+      }
+    } else {
+      cluster = new CfnDBCluster(this, 'Resource', {
+        ...this.newCfnProps,
+        // Admin
+        // Don't set password if RDS is managing credentials.
+        masterUsername: props.credentials?.username ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin').username,
+        // Define kms key the RDS Managed Secret will use.
+        ...props.credentials?.encryptionKey !== undefined && {
+          masterUserSecret: {
+            kmsKeyId: props.credentials.encryptionKey.keyId,
+          },
+        },
+      });
+
+      this.clusterIdentifier = cluster.ref;
+      this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
     }
 
     // create a number token that represents the port of the cluster
