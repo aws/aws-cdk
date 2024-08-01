@@ -5,7 +5,8 @@
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
    }
   },
   "defaultSecondaryIp18DFC7C62": {

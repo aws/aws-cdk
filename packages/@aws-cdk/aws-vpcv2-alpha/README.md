@@ -56,8 +56,8 @@ const subCidrs = Fn.cidr(vpcFirstIpV6Cidr, 3, 32);
 new vpc_v2.SubnetV2(stack, 'subnetA', {
   vpc,
   availabilityZone: 'us-east-1a',
-  cidrBlock: new vpc_v2.Ipv4Cidr('10.0.0.0/24'),
-  ipv6CidrBlock: new vpc_v2.Ipv6Cidr(Fn.select(0, subCidrs)),
+  cidrBlock: new vpc_v2.IpCidr('10.0.0.0/24'),
+  ipv6CidrBlock: new vpc_v2.IpCidr(Fn.select(0, subCidrs)),
   subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 })
 ```
@@ -74,11 +74,13 @@ The following example illustrates the different options of defining the address 
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
-const ipam = new Ipam(stack, 'Ipam');
+const ipam = new Ipam(stack, 'Ipam', {
+  operatingRegion: ['us-west-1']
+});
 const ipamPublicPool = ipam.publicScope.addPool('PublicPoolA', {
   addressFamily: vpc_v2.AddressFamily.IP_V6,
   awsService: 'ec2',
-  locale: 'us-east-1',
+  locale: 'us-west-1',
   publicIpSource: vpc_v2.IpamPoolPublicIpSource.AMAZON,
 });
 ipamPublicPool.provisionCidr('PublicPoolACidrA', { netmaskLength: 52 } );
@@ -114,9 +116,9 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
-const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
 const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
-  vpcId: vpc.vpcId,
+  vpc: myVpc,
 });
 const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {
   vpc,
@@ -130,14 +132,14 @@ const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
-const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
 const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
-  vpcId: vpc.vpcId,
+  vpc: vpc.myVpc,
 });
 const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
 
 const igw = new vpc_v2.InternetGateway(stack, 'IGW', {
-  vpcId: vpc.vpcId,
+  vpcId: vpc.myVpc,
 });
 new vpc_v2.Route(stack, 'IgwRoute', {
   routeTable,
@@ -151,15 +153,15 @@ Other route targets may require a deeper set of parameters to set up properly. F
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 
-const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
 const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
-  vpcId: vpc.vpcId,
+  vpcId: vpc.myVpc,
 });
 const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
 
 const natgw = new vpc_v2.NatGateway(stack, 'NatGW', {
   subnet: subnet,
-  vpcId: vpc.vpcId,
+  vpcId: vpc.myVpc,
   connectivityType: 'private',
   privateIpAddress: '10.0.0.42',
 });
@@ -176,9 +178,9 @@ It is also possible to set up endpoints connecting other AWS services. For insta
 import * as vpc_v2 from '@aws-cdk/aws-vpcv2-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
+const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
 const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
-  vpcId: vpc.vpcId,
+  vpcId: vpc.myVpc,
 });
 const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
 

@@ -5,7 +5,8 @@
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
    }
   },
   "vpcpcSecondaryIp1C735895D": {
@@ -74,49 +75,6 @@
    "DependsOn": [
     "vpcpcSecondaryIp1C735895D"
    ]
-  },
-  "vpcpcuser2935CC987": {
-   "Type": "AWS::EC2::VPC",
-   "Properties": {
-    "CidrBlock": "10.128.0.0/16",
-    "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
-   }
-  },
-  "testVPCPCVPCPeerConnection9684B188": {
-   "Type": "AWS::EC2::VPCPeeringConnection",
-   "Properties": {
-    "PeerVpcId": {
-     "Fn::GetAtt": [
-      "vpcpcuser2935CC987",
-      "VpcId"
-     ]
-    },
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpc6CAE1A04",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "testPeerconRoute02E64C80": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
-    },
-    "VpcPeeringConnectionId": {
-     "Fn::GetAtt": [
-      "testVPCPCVPCPeerConnection9684B188",
-      "Id"
-     ]
-    }
-   }
   }
  },
  "Parameters": {

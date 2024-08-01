@@ -5,7 +5,8 @@
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
    }
   },
   "vpgwSecondaryIp19894D0A3": {
@@ -85,6 +86,7 @@
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
+    "DestinationIpv6CidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Fn::GetAtt": [
       "testVPGWIGW816C7C4F",

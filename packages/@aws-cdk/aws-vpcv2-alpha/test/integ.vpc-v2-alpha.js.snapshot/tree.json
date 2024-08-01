@@ -17,7 +17,13 @@
                 "path": "aws-cdk-vpcv2-alpha/IpamTest/Ipam",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::IPAM",
-                  "aws:cdk:cloudformation:props": {}
+                  "aws:cdk:cloudformation:props": {
+                    "operatingRegions": [
+                      {
+                        "regionName": "eu-central-1"
+                      }
+                    ]
+                  }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnIPAM",
@@ -35,12 +41,7 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPool",
                       "aws:cdk:cloudformation:props": {
                         "addressFamily": "ipv4",
-                        "ipamScopeId": {
-                          "Fn::GetAtt": [
-                            "IpamTestIpam6C9298EF",
-                            "PrivateDefaultScopeId"
-                          ]
-                        },
+                        "ipamScopeId": "DefaultPrivateScope",
                         "locale": "eu-central-1",
                         "provisionedCidrs": [
                           {
@@ -56,7 +57,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-vpcv2-alpha.IpamPool",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -72,12 +73,7 @@
                       "aws:cdk:cloudformation:props": {
                         "addressFamily": "ipv6",
                         "awsService": "ec2",
-                        "ipamScopeId": {
-                          "Fn::GetAtt": [
-                            "IpamTestIpam6C9298EF",
-                            "PublicDefaultScopeId"
-                          ]
-                        },
+                        "ipamScopeId": "DefaultPublicScope",
                         "locale": "eu-central-1",
                         "publicIpSource": "amazon"
                       }
@@ -90,36 +86,26 @@
                   "PublicPool0Cidr": {
                     "id": "PublicPool0Cidr",
                     "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr",
-                    "children": {
-                      "PoolCidr": {
-                        "id": "PoolCidr",
-                        "path": "aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr/PoolCidr",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPoolCidr",
-                          "aws:cdk:cloudformation:props": {
-                            "ipamPoolId": {
-                              "Fn::GetAtt": [
-                                "IpamTestPublicPool0C44B7C49",
-                                "IpamPoolId"
-                              ]
-                            },
-                            "netmaskLength": 52
-                          }
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPoolCidr",
+                      "aws:cdk:cloudformation:props": {
+                        "ipamPoolId": {
+                          "Fn::GetAtt": [
+                            "IpamTestPublicPool0C44B7C49",
+                            "IpamPoolId"
+                          ]
                         },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPoolCidr",
-                          "version": "0.0.0"
-                        }
+                        "netmaskLength": 52
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-vpcv2-alpha.IpamPoolCidr",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPoolCidr",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-vpcv2-alpha.IpamPool",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
@@ -141,7 +127,8 @@
                   "aws:cdk:cloudformation:props": {
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
-                    "enableDnsSupport": true
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default"
                   }
                 },
                 "constructInfo": {
@@ -213,7 +200,8 @@
                   "aws:cdk:cloudformation:props": {
                     "cidrBlock": "10.1.0.0/16",
                     "enableDnsHostnames": true,
-                    "enableDnsSupport": true
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default"
                   }
                 },
                 "constructInfo": {

@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "fd092dd0b3a92bd8f4649ff6d7f4f38beac3c44262d43f5e585fec04dbe35ebe": {
+    "7eb4b89e3ad943be956e991a90633346958da8aeb57eecff869adb6c64bd14c5": {
       "source": {
         "path": "aws-cdk-routev2-networkif-alpha.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fd092dd0b3a92bd8f4649ff6d7f4f38beac3c44262d43f5e585fec04dbe35ebe.json",
+          "objectKey": "7eb4b89e3ad943be956e991a90633346958da8aeb57eecff869adb6c64bd14c5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

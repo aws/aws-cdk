@@ -1,18 +1,20 @@
 {
  "Resources": {
   "IpamTestIpam6C9298EF": {
-   "Type": "AWS::EC2::IPAM"
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": "eu-central-1"
+     }
+    ]
+   }
   },
   "IpamTestPrivatePool039C763DC": {
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv4",
-    "IpamScopeId": {
-     "Fn::GetAtt": [
-      "IpamTestIpam6C9298EF",
-      "PrivateDefaultScopeId"
-     ]
-    },
+    "IpamScopeId": "DefaultPrivateScope",
     "Locale": "eu-central-1",
     "ProvisionedCidrs": [
      {
@@ -26,17 +28,12 @@
    "Properties": {
     "AddressFamily": "ipv6",
     "AwsService": "ec2",
-    "IpamScopeId": {
-     "Fn::GetAtt": [
-      "IpamTestIpam6C9298EF",
-      "PublicDefaultScopeId"
-     ]
-    },
+    "IpamScopeId": "DefaultPublicScope",
     "Locale": "eu-central-1",
     "PublicIpSource": "amazon"
    }
   },
-  "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D": {
+  "IpamTestPublicPool0PublicPool0CidrC57CE00C": {
    "Type": "AWS::EC2::IPAMPoolCidr",
    "Properties": {
     "IpamPoolId": {
@@ -53,7 +50,8 @@
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
    }
   },
   "VPCintegtest1SecondaryIp17A37C105": {
@@ -91,7 +89,8 @@
    "Properties": {
     "CidrBlock": "10.1.0.0/16",
     "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
    }
   },
   "Vpcintegtest2SecondaryIp1E19DFFAD": {
@@ -112,7 +111,7 @@
     }
    },
    "DependsOn": [
-    "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D"
+    "IpamTestPublicPool0PublicPool0CidrC57CE00C"
    ]
   },
   "Vpcintegtest2SecondaryIp23EC83AC8": {

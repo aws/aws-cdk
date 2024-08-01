@@ -25,7 +25,7 @@ describe('IPAM Test', () => {
     const pool = ipam.publicScope.addPool('Public', {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
-      locale: 'us-east-1',
+      locale: 'us-west-2',
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
     });
 
@@ -40,13 +40,8 @@ describe('IPAM Test', () => {
       'AWS::EC2::IPAMPool',
       {
         AddressFamily: 'ipv6',
-        IpamScopeId: {
-          'Fn::GetAtt': [
-            'Ipam50346F82',
-            'PublicDefaultScopeId',
-          ],
-        },
-        Locale: 'us-east-1',
+        IpamScopeId: 'DefaultPublicScope',
+        Locale: 'us-west-2',
       },
     ); //End Template
   }); // End Test
@@ -56,7 +51,7 @@ describe('IPAM Test', () => {
     const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
       provisionedCidrs: ['10.2.0.0/16'],
-      locale: 'us-east-1',
+      locale: 'us-west-2',
     });
 
     new vpc.VpcV2(stack, 'TestVPC', {
@@ -70,13 +65,8 @@ describe('IPAM Test', () => {
       'AWS::EC2::IPAMPool',
       {
         AddressFamily: 'ipv4',
-        IpamScopeId: {
-          'Fn::GetAtt': [
-            'Ipam50346F82',
-            'PrivateDefaultScopeId',
-          ],
-        },
-        Locale: 'us-east-1',
+        IpamScopeId: 'DefaultPrivateScope',
+        Locale: 'us-west-2',
       },
     ); //End Template
   });
@@ -88,7 +78,7 @@ describe('IPAM Test', () => {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
-      locale: 'us-east-1',
+      locale: 'us-west-2',
     };
     ipamIpv6.publicScope.addPool('TestPool', poolOptions);
 
@@ -101,12 +91,8 @@ describe('IPAM Test', () => {
           Type: 'AWS::EC2::IPAMPool',
           Properties: {
             AddressFamily: 'ipv6',
-            IpamScopeId: {
-              'Fn::GetAtt':
-                ['TestIpamDBF92BA8',
-                  'PublicDefaultScopeId'],
-            },
-            Locale: 'us-east-1',
+            IpamScopeId: 'DefaultPublicScope',
+            Locale: 'us-west-2',
           },
         },
       },
@@ -122,6 +108,7 @@ describe('IPAM Test', () => {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
+      locale: 'us-west-2',
     };
     ipamRegion.publicScope.addPool('TestPool', poolOptions);
 
@@ -134,11 +121,7 @@ describe('IPAM Test', () => {
           Type: 'AWS::EC2::IPAMPool',
           Properties: {
             AddressFamily: 'ipv6',
-            IpamScopeId: {
-              'Fn::GetAtt':
-                ['TestIpamDBF92BA8',
-                  'PublicDefaultScopeId'],
-            },
+            IpamScopeId: 'DefaultPublicScope',
             Locale: 'us-west-2',
           },
         },

@@ -158,12 +158,14 @@ describe('Subnet V2 with custom IP and routing', () => {
   });
 
   test('Create Subnet with IPv6 if it is Ipam Ipv6 is enabled on VPC', () => {
-    const ipam = new Ipam(stack, 'TestIpam', {});
+    const ipam = new Ipam(stack, 'TestIpam', {
+      operatingRegion: ['us-west-1'],
+    });
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
       awsService: AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
-
+      locale: 'us-west-1',
     });
     const TestVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
@@ -188,10 +190,7 @@ describe('Subnet V2 with custom IP and routing', () => {
           Properties:
                     {
                       AddressFamily: 'ipv6',
-                      IpamScopeId: {
-                        'Fn::GetAtt':
-                            ['TestIpamDBF92BA8', 'PublicDefaultScopeId'],
-                      },
+                      IpamScopeId: 'DefaultPublicScope',
                     },
         },
         TestVPCD26570D8: { Type: 'AWS::EC2::VPC' },
@@ -210,12 +209,14 @@ describe('Subnet V2 with custom IP and routing', () => {
   });
 
   test('Should throw error if overlapping CIDR block(IPv6) for the subnet', () => {
-    const ipam = new Ipam(stack, 'TestIpam', {});
+    const ipam = new Ipam(stack, 'TestIpam', {
+      operatingRegion: ['us-west-1'],
+    });
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
       awsService: AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
-
+      locale: 'us-west-1',
     });
     const testVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),

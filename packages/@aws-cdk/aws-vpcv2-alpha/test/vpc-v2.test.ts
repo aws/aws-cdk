@@ -119,7 +119,9 @@ describe('Vpc V2 with full control', () => {
 
   test('VPC Primary IP from Ipv4 Ipam', () => {
 
-    const ipam = new Ipam(stack, 'TestIpam', {});
+    const ipam = new Ipam(stack, 'TestIpam', {
+      operatingRegion: ['us-west-1'],
+    });
 
     const pool = ipam.privateScope.addPool('PrivatePool0', {
       addressFamily: AddressFamily.IP_V4,
@@ -143,12 +145,7 @@ describe('Vpc V2 with full control', () => {
           Type: 'AWS::EC2::IPAMPool',
           Properties: {
             AddressFamily: 'ipv4',
-            IpamScopeId: {
-              'Fn::GetAtt': [
-                'TestIpamDBF92BA8',
-                'PrivateDefaultScopeId',
-              ],
-            },
+            IpamScopeId: 'DefaultPrivateScope',
             Locale: 'us-west-1',
             ProvisionedCidrs: [
               {
@@ -175,12 +172,15 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('VPC Secondary IP from Ipv6 Ipam', () => {
-    const ipam = new Ipam(stack, 'TestIpam', {});
+    const ipam = new Ipam(stack, 'TestIpam', {
+      operatingRegion: ['us-west-1'],
+    });
 
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
       awsService: AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
+      locale: 'us-west-1',
     });
     pool.provisionCidr('PublicPoolCidr', {
       netmaskLength: 60,
@@ -204,17 +204,12 @@ describe('Vpc V2 with full control', () => {
           Properties: {
             AddressFamily: 'ipv6',
             AwsService: 'ec2',
-            IpamScopeId: {
-              'Fn::GetAtt': [
-                'TestIpamDBF92BA8',
-                'PublicDefaultScopeId',
-              ],
-            },
+            IpamScopeId: 'DefaultPublicScope',
             PublicIpSource: 'amazon',
           },
         },
         // Test Amazon Provided IPAM IPv6
-        TestIpamPublicPool0PublicPoolCidrC8176560: {
+        TestIpamPublicPool0PublicPoolCidrB0FF20F7: {
           Type: 'AWS::EC2::IPAMPoolCidr',
           Properties: {
             IpamPoolId: {

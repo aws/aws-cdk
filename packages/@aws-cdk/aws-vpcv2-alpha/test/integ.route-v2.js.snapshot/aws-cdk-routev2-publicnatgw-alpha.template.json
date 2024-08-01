@@ -5,7 +5,8 @@
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
    }
   },
   "natgwpubSecondaryIp1B0697165": {
@@ -82,6 +83,7 @@
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "242.0.0.0/32",
+    "DestinationIpv6CidrBlock": "242.0.0.0/32",
     "GatewayId": {
      "Fn::GetAtt": [
       "testNATgwIGW6AC97E9A",
@@ -148,6 +150,7 @@
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
+    "DestinationIpv6CidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Fn::GetAtt": [
       "testNATgwNATGateway1533420D",

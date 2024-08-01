@@ -5,7 +5,8 @@
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
-    "EnableDnsSupport": true
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
    }
   },
   "nifSecondaryIp15ACDD6AB": {
@@ -74,32 +75,6 @@
    "DependsOn": [
     "nifSecondaryIp15ACDD6AB"
    ]
-  },
-  "testNWIFNetworkInterface47840299": {
-   "Type": "AWS::EC2::NetworkInterface",
-   "Properties": {
-    "SubnetId": {
-     "Ref": "nifSubnetAEB60456"
-    }
-   }
-  },
-  "testNetIntRoute9304C2B1": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NetworkInterfaceId": {
-     "Fn::GetAtt": [
-      "testNWIFNetworkInterface47840299",
-      "Id"
-     ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
-    }
-   }
   }
  },
  "Parameters": {

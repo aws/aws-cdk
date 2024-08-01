@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7892369f7a0e5291ea39692ba08e680f80bf3fcb21a3f3cb53d2d6a0aee74d6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b26d3d95a274c2c0a33c0d9dc63ed3506bddd8e04912b2b77aadcac2d9e5b8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,31 +43,43 @@
         "/aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPrivatePool039C763DC"
+            "data": "IpamTestPrivatePool039C763DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0C44B7C49"
+            "data": "IpamTestPublicPool0C44B7C49",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr/PoolCidr": [
+        "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D"
+            "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C"
           }
         ],
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1EBA1CB75"
+            "data": "VPCintegtest1EBA1CB75",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryIp1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryIp17A37C105"
+            "data": "VPCintegtest1SecondaryIp17A37C105",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryIp2": [
@@ -79,13 +91,19 @@
         "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest20DAD8F9D"
+            "data": "Vpcintegtest20DAD8F9D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIp1E19DFFAD"
+            "data": "Vpcintegtest2SecondaryIp1E19DFFAD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp2": [
@@ -164,6 +182,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamTestPublicPool0PublicPool0CidrPoolCidr72E4EC7D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
