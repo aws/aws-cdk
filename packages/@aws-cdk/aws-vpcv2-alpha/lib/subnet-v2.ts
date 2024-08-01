@@ -351,6 +351,7 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
  * @param ipv6CidrBlock The IPv6 CIDR block to be validated.
  * @returns True if the IPv6 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
  * @throws Error if no subnets are found in the VPC.
+ * @internal
  */
 
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
