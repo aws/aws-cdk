@@ -436,6 +436,8 @@ export class LustreFileSystem extends FileSystemBase {
 
   /**
    * Validates the storage capacity is an acceptable value for the deployment type.
+   *
+   * @see https://docs.aws.amazon.com/fsx/latest/LustreGuide/increase-storage-capacity.html
    */
   private validateStorageCapacity(
     deploymentType: LustreDeploymentType,
