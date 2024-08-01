@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
-import { EncryptionConfiguration } from './encryption-configuration';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
+import { validateEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
-export * from './encryption-configuration';
+import * as kms from '../../aws-kms';
+import { ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack } from '../../core';
 
 /**
  * Properties for defining a new Step Functions Activity
@@ -18,11 +18,18 @@ export interface ActivityProps {
    */
   readonly activityName?: string;
   /**
-   * The EncryptionConfiguration for this activity.
-   *
-   * @default - no EncryptionConfiguration
+   * KMS key used for encryption. It can either be a key or alias construct. If provided it will enable encryption.
+   * By default data is encrypted with an AWS owned key.
+   * @default - no kmsKeyId is associated
    */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * Maximum duration for which SFN will reuse data keys. When the period expires,
+   * StepFunctions will call GenerateDataKey. This setting only applies to a customer managed key and does not apply to an AWS owned KMS key.
+   * @default - 300s
+   */
+  readonly kmsDataKeyReusePeriodSeconds?: Duration;
 }
 
 /**
@@ -65,10 +72,9 @@ export class Activity extends Resource implements IActivity {
    */
   public readonly activityName: string;
 
-  /**
-   * @attribute
-   */
-  public readonly encryptionConfiguration?: EncryptionConfiguration;
+  // Default value for KmsDataKeyReusePeriodSeconds
+  // See: https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+  private readonly defaultPeriodSeconds = 300;
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
@@ -76,9 +82,17 @@ export class Activity extends Resource implements IActivity {
         Lazy.string({ produce: () => this.generateName() }),
     });
 
+    validateEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds);
+
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
-      encryptionConfiguration: props.encryptionConfiguration ?? undefined,
+      encryptionConfiguration: props.kmsKey? {
+        kmsKeyId: props.kmsKey.keyArn,
+        kmsDataKeyReusePeriodSeconds: props.kmsDataKeyReusePeriodSeconds? props.kmsDataKeyReusePeriodSeconds.toSeconds() : this.defaultPeriodSeconds,
+        type: 'CUSTOMER_MANAGED_KMS_KEY',
+      }: {
+        type: 'AWS_OWNED_KEY',
+      },
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
@@ -236,11 +250,4 @@ export interface IActivity extends IResource {
    * @attribute
    */
   readonly activityName: string;
-
-  /**
-   * The EncryptioConfiguration of the activity
-   *
-   * @attribute
-   */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
 }

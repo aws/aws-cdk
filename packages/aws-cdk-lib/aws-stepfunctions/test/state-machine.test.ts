@@ -6,7 +6,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as sfn from '../lib';
-import { EncryptionType } from '../lib/encryption-configuration';
 
 describe('State Machine', () => {
   test('Instantiate Default State Machine with deprecated definition', () => {
@@ -709,11 +708,8 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      encryptionConfiguration: {
-        kmsKeyId: kmsKey.keyId,
-        kmsDataKeyReusePeriodSeconds: 75,
-        type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
-      },
+      kmsKey: kmsKey,
+      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
     });
 
     // THEN
@@ -722,13 +718,254 @@ describe('State Machine', () => {
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
       EncryptionConfiguration: Match.objectLike({
-        KmsKeyId: {
-          Ref: 'Key961B73FD',
-        },
+        KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
         KmsDataKeyReusePeriodSeconds: 75,
-        Type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
+        Type: 'CUSTOMER_MANAGED_KMS_KEY',
       }),
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':root',
+                  ],
+                ],
+              },
+            },
+            Resource: '*',
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+              'kms:DescribeKey',
+            ],
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':stateMachine/MyStateMachine',
+                    ],
+                  ],
+                },
+                'kms:EncryptionContext:aws:states:stateMachineArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':stateMachine/MyStateMachine',
+                    ],
+                  ],
+                },
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Service: 'states.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  }),
+
+  test('instantiate StateMachine with EncryptionConfiguration using Customer Managed Key - defaults to 300 secs for KmsDataKeyReusePeriodSeconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      kmsKey: kmsKey,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      StateMachineType: 'STANDARD',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      EncryptionConfiguration: Match.objectLike({
+        KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        KmsDataKeyReusePeriodSeconds: 300,
+        Type: 'CUSTOMER_MANAGED_KMS_KEY',
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':root',
+                  ],
+                ],
+              },
+            },
+            Resource: '*',
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+              'kms:DescribeKey',
+            ],
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':stateMachine/MyStateMachine',
+                    ],
+                  ],
+                },
+                'kms:EncryptionContext:aws:states:stateMachineArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':stateMachine/MyStateMachine',
+                    ],
+                  ],
+                },
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Service: 'states.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  }),
+
+  test('instantiate StateMachine with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+
+    // FAIL
+    expect(() => {
+      // WHEN
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+        stateMachineType: sfn.StateMachineType.STANDARD,
+        kmsKey: kmsKey,
+        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
+      });
+    }).toThrow('kmsDataKeyReusePeriodSeconds needs to be a value between 60 and 900');
+
+  }),
+
+  test('instantiate StateMachine with no kms key throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+
+    // FAIL
+    expect(() => {
+      // WHEN
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+        stateMachineType: sfn.StateMachineType.STANDARD,
+        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
+      });
+    }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
+
   }),
 
   test('instantiate StateMachine with EncryptionConfiguration using AWS Owned Key', () => {
@@ -740,9 +977,6 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      encryptionConfiguration: {
-        type: EncryptionType.AWS_OWNED_KEY,
-      },
     });
 
     // THEN
@@ -751,231 +985,8 @@ describe('State Machine', () => {
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
       EncryptionConfiguration: Match.objectLike({
-        Type: EncryptionType.AWS_OWNED_KEY,
+        Type: 'AWS_OWNED_KEY',
       }),
     });
-  });
-});
-
-test('Standard StateMachine can grant kms permissions needed to StartExecution', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const kmsKey = new kms.Key(stack, 'Key');
-
-  const role = new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-  });
-
-  const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
-    stateMachineName: 'MyStateMachine',
-    definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
-    stateMachineType: sfn.StateMachineType.STANDARD,
-    encryptionConfiguration: {
-      kmsKeyId: kmsKey.keyId,
-      kmsDataKeyReusePeriodSeconds: 75,
-      type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
-    },
-  });
-
-  // WHEN
-  stateMachine.grantStartExecution(role);
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: Match.arrayWith([Match.objectLike({
-        Action: [
-          'states:StartExecution',
-          'kms:GenerateDataKey',
-          'kms:Decrypt',
-        ],
-        Effect: 'Allow',
-        Resource: {
-          Ref: 'MyStateMachine6C968CA5',
-        },
-      })]),
-    },
-  });
-});
-
-test('Express StateMachine can grant kms permissions needed to StartSyncExecution', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const kmsKey = new kms.Key(stack, 'Key');
-
-  const role = new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-  });
-
-  const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
-    stateMachineName: 'MyStateMachine',
-    definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
-    stateMachineType: sfn.StateMachineType.EXPRESS,
-    encryptionConfiguration: {
-      kmsKeyId: kmsKey.keyId,
-      kmsDataKeyReusePeriodSeconds: 75,
-      type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
-    },
-  });
-
-  // WHEN
-  stateMachine.grantStartSyncExecution(role);
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'states:StartSyncExecution',
-            'kms:Decrypt',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            Ref: 'MyStateMachine6C968CA5',
-          },
-        },
-      ],
-    },
-  },
-  );
-});
-
-test('Standard StateMachine with EncryptionConfiguration can give read permissions', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const kmsKey = new kms.Key(stack, 'Key');
-
-  const role = new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-  });
-
-  const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
-    stateMachineName: 'MyStateMachine',
-    definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
-    stateMachineType: sfn.StateMachineType.STANDARD,
-    encryptionConfiguration: {
-      kmsKeyId: kmsKey.keyId,
-      kmsDataKeyReusePeriodSeconds: 75,
-      type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
-    },
-  });
-
-  // WHEN
-  stateMachine.grantRead(role);
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'states:ListExecutions',
-            'states:ListStateMachines',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            Ref: 'MyStateMachine6C968CA5',
-          },
-        },
-        {
-          Action: [
-            'states:DescribeExecution',
-            'states:DescribeStateMachineForExecution',
-            'states:GetExecutionHistory',
-            'kms:Decrypt',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':states:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':execution:',
-                {
-                  'Fn::Select': [
-                    6,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          Ref: 'MyStateMachine6C968CA5',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                ':*',
-              ],
-            ],
-          },
-        },
-        {
-          Action: [
-            'states:ListActivities',
-            'states:DescribeStateMachine',
-            'states:DescribeActivity',
-            'kms:Decrypt',
-          ],
-          Effect: 'Allow',
-          Resource: '*',
-        },
-      ],
-    },
-  },
-  );
-});
-
-test('Created state machine can grant task response actions to the state machine', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const kmsKey = new kms.Key(stack, 'Key');
-
-  const role = new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-  });
-
-  const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
-    stateMachineName: 'MyStateMachine',
-    definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
-    stateMachineType: sfn.StateMachineType.STANDARD,
-    encryptionConfiguration: {
-      kmsKeyId: kmsKey.keyId,
-      kmsDataKeyReusePeriodSeconds: 75,
-      type: EncryptionType.CUSTOMER_MANAGED_KMS_KEY,
-    },
-  });
-
-  // WHEN
-  stateMachine.grantTaskResponse(role);
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'states:SendTaskSuccess',
-            'states:SendTaskFailure',
-            'states:SendTaskHeartbeat',
-            'kms:Decrypt',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            Ref: 'MyStateMachine6C968CA5',
-          },
-        },
-      ],
-    },
   });
 });

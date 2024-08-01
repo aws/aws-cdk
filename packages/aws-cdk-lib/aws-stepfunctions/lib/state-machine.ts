@@ -1,15 +1,16 @@
 import { Construct } from 'constructs';
-import { EncryptionConfiguration } from './encryption-configuration';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
+import { validateEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
+
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
-export * from './encryption-configuration';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -157,10 +158,18 @@ export interface StateMachineProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * EncryptionConfiguration for this state machine
-   * @default No EncryptionConfiguration
+   * KMS key used for encryption. It can either be a key or alias construct. If provided it will enable encryption.
+   * By default data is encrypted with an AWS owned key.
+   * @default - no kmsKeyId is associated
    */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * Maximum duration for which SFN will reuse data keys. When the period expires,
+   * Step Functions will call GenerateDataKey. This setting only applies to a customer managed key and does not apply to an AWS owned KMS key.
+   * @default - 300s
+   */
+  readonly kmsDataKeyReusePeriodSeconds?: Duration;
 }
 
 /**
@@ -172,7 +181,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    */
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
-      public encryptionConfiguration?: EncryptionConfiguration | undefined;
       public readonly stateMachineArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
@@ -196,33 +204,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   public abstract readonly stateMachineArn: string;
 
-  public abstract readonly encryptionConfiguration?: EncryptionConfiguration;
-
   /**
    * The principal this state machine is running as
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
-
-  private isEncryptionConfigurationSet() {
-    return this.encryptionConfiguration !== undefined;
-  }
-
-  private getKmsGenerateDataKeyAndDecryptActions() {
-    if (this.isEncryptionConfigurationSet()) {
-      return ['kms:GenerateDataKey', 'kms:Decrypt'];
-    } else {
-      return [];
-    }
-  }
-
-  private getKmsDecryptAction() {
-    if (this.isEncryptionConfigurationSet()) {
-      return ['kms:Decrypt'];
-    } else {
-      return [];
-    }
-  }
-
   /**
    * Grant the given identity permissions to start an execution of this state
    * machine.
@@ -230,7 +215,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: ['states:StartExecution', ... this.getKmsGenerateDataKeyAndDecryptActions()],
+      actions: ['states:StartExecution'],
       resourceArns: [this.stateMachineArn],
     });
   }
@@ -242,7 +227,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: ['states:StartSyncExecution', ...this.getKmsDecryptAction()],
+      actions: ['states:StartSyncExecution'],
       resourceArns: [this.stateMachineArn],
     });
   }
@@ -266,7 +251,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:DescribeExecution',
         'states:DescribeStateMachineForExecution',
         'states:GetExecutionHistory',
-        ...this.getKmsDecryptAction(),
       ],
       resourceArns: [`${this.executionArn()}:*`],
     });
@@ -276,7 +260,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:ListActivities',
         'states:DescribeStateMachine',
         'states:DescribeActivity',
-        ...this.getKmsDecryptAction(),
       ],
       resourceArns: ['*'],
     });
@@ -292,7 +275,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
         'states:SendTaskSuccess',
         'states:SendTaskFailure',
         'states:SendTaskHeartbeat',
-        ...this.getKmsDecryptAction(),
       ],
       resourceArns: [this.stateMachineArn],
     });
@@ -441,17 +423,15 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineArn: string;
 
+  // Default value for KmsDataKeyReusePeriodSeconds
+  // See: https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+  private readonly defaultPeriodSeconds = 300;
+
   /**
    * Type of the state machine
    * @attribute
    */
   public readonly stateMachineType: StateMachineType;
-
-  /**
-   * Type of the EncryptionConfiguration
-   * @attribute
-   */
-  public readonly encryptionConfiguration?: EncryptionConfiguration;
 
   /**
    * Identifier for the state machine revision, which is an immutable, read-only snapshot of a state machine’s definition and configuration.
@@ -492,6 +472,31 @@ export class StateMachine extends StateMachineBase {
       }
     }
 
+    validateEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds);
+
+    if (props?.kmsKey) {
+      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey'],
+        principals: [new iam.ServicePrincipal('states.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': this.stack.account,
+            'aws:SourceArn': Stack.of(this).formatArn({
+              service: 'states',
+              resource: 'stateMachine',
+              resourceName: this.physicalName,
+            }),
+            'kms:EncryptionContext:aws:states:stateMachineArn': Stack.of(this).formatArn({
+              service: 'states',
+              resource: 'stateMachine',
+              resourceName: this.physicalName,
+            }),
+          },
+        },
+      }));
+    }
+
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ?? undefined,
@@ -500,12 +505,17 @@ export class StateMachine extends StateMachineBase {
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
-      encryptionConfiguration: props.encryptionConfiguration,
+      encryptionConfiguration: props.kmsKey? {
+        kmsKeyId: props.kmsKey.keyArn,
+        kmsDataKeyReusePeriodSeconds: props.kmsDataKeyReusePeriodSeconds? props.kmsDataKeyReusePeriodSeconds.toSeconds() : this.defaultPeriodSeconds,
+        type: 'CUSTOMER_MANAGED_KMS_KEY',
+      }: {
+        type: 'AWS_OWNED_KEY',
+      },
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
-    this.encryptionConfiguration = props.encryptionConfiguration;
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
@@ -601,13 +611,6 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    * @attribute
    */
   readonly stateMachineArn: string;
-
-  /**
-   * The EncryptioConfiguration of the activity
-   *
-   * @attribute
-   */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
 
   /**
    * Grant the given identity permissions to start an execution of this state

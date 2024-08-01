@@ -108,6 +108,18 @@ new sfn.StateMachine(this, 'StateMachineFromFile', {
 });
 ```
 
+### Creating a StateMachine with Encryption using a Customer Managed Key
+```
+const kmsKey = new kms.Key(stack, 'Key');
+const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionConfiguration', {
+      stateMachineName: 'StateMachineWithCMKEncryptionConfiguration',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      kmsKey: kmsKey,
+      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(60)
+    });
+```
+
 ## State Machine Data
 
 An Execution represents each time the State Machine is run. Every Execution has [State Machine
@@ -885,6 +897,16 @@ const activity = new sfn.Activity(this, 'Activity');
 // Read this CloudFormation Output from your application and use it to poll for work on
 // the activity.
 new CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
+```
+
+### Creating an Activity with Encryption using a Customer Managed Key
+```
+const kmsKey = new kms.Key(stack, 'Key');
+const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
+      activityName: 'ActivityWithCMKEncryptionConfiguration',
+      kmsKey: kmsKey,
+      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+    });
 ```
 
 ### Activity-Level Permissions
