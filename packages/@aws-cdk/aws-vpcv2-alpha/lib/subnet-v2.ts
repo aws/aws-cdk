@@ -253,6 +253,7 @@ const subnetTypeMap = {
  * @param vpc The VPC instance to which the subnet belongs.
  * @param subnet The subnet instance to be stored.
  * @param type The type of the subnet (e.g., public, private, isolated).
+ * @internal
  */
 function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
   const findFunctionType = subnetTypeMap[type];
@@ -277,6 +278,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
  * @param vpc The VPC instance to be validated.
  * @throws Error if the VPC does not support IPv6 addresses.
  * @returns True if the VPC supports IPv6 addresses, false otherwise.
+ * @internal
  */
 function validateSupportIpv6(vpc: IVpcV2) {
   if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
@@ -318,6 +320,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
  * @param vpc The VPC instance to check against.
  * @param ipv4CidrBlock The IPv4 CIDR block to be validated.
  * @returns True if the IPv4 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
+ * @internal
  */
 
 function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {

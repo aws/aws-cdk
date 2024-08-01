@@ -94,7 +94,7 @@ export interface VpcCidrOptions {
    * Dependency to associate Ipv6 CIDR block
    * @default - No dependency
    */
-  readonly dependencies?: any[];
+  readonly dependencies?: CfnResource[];
 }
 
 /**
