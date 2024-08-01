@@ -38,7 +38,6 @@ Flags come in three types:
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) |
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
-| [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
@@ -72,7 +71,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
-| [@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions](#aws-cdkaws-stepfunctions-tasksecsreduceruntaskpermissions) | When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN. | V2NEXT | (fix) |
+| [@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions](#aws-cdkaws-stepfunctions-tasksecsreduceruntaskpermissions) | When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN. | 2.148.0 | (fix) |
 
 <!-- END table -->
 
@@ -101,7 +100,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
-    "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
@@ -748,22 +746,6 @@ always apply, regardless of the value of this flag.
 | 2.51.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-iam:standardizedServicePrincipals
-
-*Use standardized (global) service principals everywhere* (fix)
-
-We used to maintain a database of exceptions to Service Principal names in various regions. This database
-is no longer necessary: all service principals names have been standardized to their global form (`SERVICE.amazonaws.com`).
-
-This flag disables use of that exceptions database and always uses the global service principal.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.51.0 | `false` | `true` |
-
-
 ### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
 
 *Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
@@ -1370,7 +1352,7 @@ for more details.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.148.0 | `false` | `true` |
 
 
 <!-- END details -->
