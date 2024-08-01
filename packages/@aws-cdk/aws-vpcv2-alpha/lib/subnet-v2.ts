@@ -155,20 +155,13 @@ export class SubnetV2 extends Resource implements ISubnet {
 
     let overlap: boolean = false;
     let overlapIpv6: boolean = false;
-    try {
-      overlap = validateOverlappingCidrRanges(props.vpc, props.cidrBlock.cidr);
-    } catch (e) {
-      'No Subnets in VPC';
-    }
+
+    overlap = validateOverlappingCidrRanges(props.vpc, props.cidrBlock.cidr);
 
     //check whether VPC supports ipv6
     if (props.ipv6CidrBlock?.cidr) {
       validateSupportIpv6(props.vpc);
-      try {
-        overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
-      } catch (e) {
-        'No subnets in VPC';
-      }
+      overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
     }
 
     if (overlap || overlapIpv6) {
@@ -322,7 +315,12 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
 function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {
 
-  let allSubnets: ISubnet[] = vpc.selectSubnets().subnets;
+  let allSubnets: ISubnet[];
+  try {
+    allSubnets = vpc.selectSubnets().subnets;
+  } catch (e) {
+    throw new Error('No subnets in VPC');
+  }
 
   const ipMap: [string, string][] = new Array();
 
@@ -356,7 +354,12 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
 
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
 
-  let allSubnets: ISubnet[] = vpc.selectSubnets().subnets;
+  let allSubnets: ISubnet[];
+  try {
+    allSubnets = vpc.selectSubnets().subnets;
+  } catch (e) {
+    throw new Error('No subnets in VPC');
+  }
 
   const ipv6Map: string[]= [];
 
