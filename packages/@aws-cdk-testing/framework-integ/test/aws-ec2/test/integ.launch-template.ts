@@ -16,6 +16,7 @@ const sg1 = new ec2.SecurityGroup(stack, 'sg1', {
 });
 
 const lt = new ec2.LaunchTemplate(stack, 'LT', {
+  versionDescription: 'test template v1',
   httpEndpoint: true,
   httpProtocolIpv6: true,
   httpPutResponseHopLimit: 2,
