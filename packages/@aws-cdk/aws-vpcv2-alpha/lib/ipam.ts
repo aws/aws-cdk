@@ -195,7 +195,7 @@ export interface IIpamPool{
  * IPAM scope is the highest-level container within IPAM. An IPAM contains two default scopes.
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  */
-export interface IpamScopeProps {
+export interface IpamScopeProps extends IpamScopeOptions{
   /**
    * IPAM id to which scope needs to be added
    */

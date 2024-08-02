@@ -17,7 +17,9 @@ describe('IPAM Test', () => {
     stack = new cdk.Stack(app, 'IPAMTestStack', {
       env: envUSA,
     });
-    ipam = new Ipam(stack, 'Ipam', {});
+    ipam = new Ipam(stack, 'Ipam', {
+      operatingRegion: ['us-west-2'],
+    });
   });
 
   test('Creates IP Pool under Public Scope', () => {
@@ -73,7 +75,9 @@ describe('IPAM Test', () => {
 
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
     // Create IPAM resources
-    const ipamIpv6 = new Ipam(stack, 'TestIpam', {});
+    const ipamIpv6 = new Ipam(stack, 'TestIpam', {
+      operatingRegion: ['us-west-2'],
+    });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
@@ -103,7 +107,9 @@ describe('IPAM Test', () => {
 
   test('Get region from stack env', () => {
     // Create IPAM resources
-    const ipamRegion = new Ipam(stack, 'TestIpam', {});
+    const ipamRegion = new Ipam(stack, 'TestIpam', {
+      operatingRegion: ['us-west-2'],
+    });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
@@ -132,7 +138,8 @@ describe('IPAM Test', () => {
   });
 
   test('Creates IPAM with default scopes', () => {
-    new Ipam(stack, 'TestIpam', {});
+    new Ipam(stack, 'TestIpam', {
+    });
     Template.fromStack(stack).hasResource(
       'AWS::EC2::IPAM', {},
     );
