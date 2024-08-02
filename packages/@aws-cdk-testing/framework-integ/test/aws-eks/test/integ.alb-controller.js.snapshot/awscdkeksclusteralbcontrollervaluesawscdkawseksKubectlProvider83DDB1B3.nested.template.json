@@ -21,27 +21,27 @@
       "Ref": "AwsCliLayerF44AAF94"
      },
      {
-      "Ref": "referencetoawscdkeksclusteralbcontrollerKubectlLayer4221D1EERef"
+      "Ref": "referencetoawscdkeksclusteralbcontrollervaluesKubectlLayer1780133FRef"
      }
     ],
     "MemorySize": 1024,
     "Role": {
-     "Ref": "referencetoawscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn"
+     "Ref": "referencetoawscdkeksclusteralbcontrollervaluesClusterKubectlHandlerRole64EB849AArn"
     },
     "Runtime": "python3.10",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksclusteralbcontrollervaluesCluster0F5E9716ClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef"
+       "Ref": "referencetoawscdkeksclusteralbcontrollervaluesVpcPrivateSubnet1Subnet1AC86226Ref"
       },
       {
-       "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref"
+       "Ref": "referencetoawscdkeksclusteralbcontrollervaluesVpcPrivateSubnet2Subnet0987DE3ERef"
       }
      ]
     }
@@ -153,7 +153,7 @@
      },
      "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller-values/@aws-cdk--aws-eks.KubectlProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -184,15 +184,15 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksclusteralbcontrollervaluesCluster0F5E9716ClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef"
+       "Ref": "referencetoawscdkeksclusteralbcontrollervaluesVpcPrivateSubnet1Subnet1AC86226Ref"
       },
       {
-       "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref"
+       "Ref": "referencetoawscdkeksclusteralbcontrollervaluesVpcPrivateSubnet2Subnet0987DE3ERef"
       }
      ]
     }
@@ -328,7 +328,7 @@
   }
  },
  "Outputs": {
-  "awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn": {
+  "awscdkeksclusteralbcontrollervaluesawscdkawseksKubectlProviderframeworkonEvent93C6ED6FArn": {
    "Value": {
     "Fn::GetAtt": [
      "ProviderframeworkonEvent83C1D0A7",
@@ -338,19 +338,19 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksclusteralbcontrollerKubectlLayer4221D1EERef": {
+  "referencetoawscdkeksclusteralbcontrollervaluesKubectlLayer1780133FRef": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn": {
+  "referencetoawscdkeksclusteralbcontrollervaluesClusterKubectlHandlerRole64EB849AArn": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef": {
+  "referencetoawscdkeksclusteralbcontrollervaluesVpcPrivateSubnet1Subnet1AC86226Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref": {
+  "referencetoawscdkeksclusteralbcontrollervaluesVpcPrivateSubnet2Subnet0987DE3ERef": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId": {
+  "referencetoawscdkeksclusteralbcontrollervaluesCluster0F5E9716ClusterSecurityGroupId": {
    "Type": "String"
   }
  }

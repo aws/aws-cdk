@@ -267,7 +267,7 @@
      },
      "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller-values/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -412,7 +412,7 @@
      },
      "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
-    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-alb-controller-values/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -554,7 +554,7 @@
      },
      "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
-    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-alb-controller-values/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -700,7 +700,7 @@
        {
         "Ref": "ProviderframeworkisComplete26D7B0CB"
        },
-       "-c871eac2d03f98bfe821ecde318bbe59eec566ee48"
+       "-c8e3a491f497f12b2a8a35fa8a7c36510b5e43fb53"
       ]
      ]
     },
@@ -888,7 +888,7 @@
   }
  },
  "Outputs": {
-  "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleD37D32B7Arn": {
+  "awscdkeksclusteralbcontrollervaluesawscdkawseksClusterResourceProviderOnEventHandlerServiceRole1CE1DCD4Arn": {
    "Value": {
     "Fn::GetAtt": [
      "OnEventHandlerServiceRole15A26729",
@@ -896,7 +896,7 @@
     ]
    }
   },
-  "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole75085195Arn": {
+  "awscdkeksclusteralbcontrollervaluesawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleF04BF6F0Arn": {
    "Value": {
     "Fn::GetAtt": [
      "IsCompleteHandlerServiceRole5810CC58",
@@ -904,7 +904,7 @@
     ]
    }
   },
-  "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderframeworkonEvent9A4DBD44Arn": {
+  "awscdkeksclusteralbcontrollervaluesawscdkawseksClusterResourceProviderframeworkonEvent8D599867Arn": {
    "Value": {
     "Fn::GetAtt": [
      "ProviderframeworkonEvent83C1D0A7",
