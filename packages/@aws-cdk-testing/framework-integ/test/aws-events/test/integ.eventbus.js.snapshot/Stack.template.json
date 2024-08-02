@@ -3,6 +3,7 @@
   "BusEA82B648": {
    "Type": "AWS::Events::EventBus",
    "Properties": {
+    "Description": "myEventBus",
     "Name": "StackBusAA0A1E4B"
    }
   },

@@ -348,6 +348,25 @@ describe('State Machine', () => {
     });
   });
 
+  test('disable tracing configuration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      tracingEnabled: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      TracingConfiguration: {
+        Enabled: false,
+      },
+    });
+  });
+
   test('grant access', () => {
     // GIVEN
     const stack = new cdk.Stack();
