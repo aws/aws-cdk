@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "vpcpcSecondaryIp1C735895D": {
+  "vpcpcSecondaryIp47C3DD1C0245": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -57,7 +57,7 @@
     }
    },
    "DependsOn": [
-    "vpcpcSecondaryIp1C735895D"
+    "vpcpcSecondaryIp47C3DD1C0245"
    ]
   },
   "vpcpcSubnetRouteTableAssociation8531BF5C": {
@@ -74,7 +74,7 @@
     }
    },
    "DependsOn": [
-    "vpcpcSecondaryIp1C735895D"
+    "vpcpcSecondaryIp47C3DD1C0245"
    ]
   }
  },

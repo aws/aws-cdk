@@ -83,7 +83,7 @@ describe('Subnet V2 with custom IP and routing', () => {
     // Define a second subnet with an overlapping CIDR range
     expect(() => new subnet.SubnetV2(stack, 'InvalidSubnet', {
       vpc: testVPC,
-      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
       availabilityZone: 'us-east-1a',
       subnetType: SubnetType.PUBLIC,
     })).toThrow('CIDR block should not overlap with existing subnet blocks');
@@ -97,7 +97,7 @@ describe('Subnet V2 with custom IP and routing', () => {
 
     expect(() => new subnet.SubnetV2(stack, 'TestSubnet', {
       vpc: testVPC,
-      cidrBlock: new subnet.IpCidr('10.3.0.0/23'),
+      ipv4CidrBlock: new subnet.IpCidr('10.3.0.0/23'),
       availabilityZone: 'us-east-1a',
       subnetType: SubnetType.PUBLIC,
     })).toThrow('CIDR block should be within the range of VPC');
@@ -110,7 +110,7 @@ describe('Subnet V2 with custom IP and routing', () => {
     });
     expect(() => new subnet.SubnetV2(stack, 'TestSubnet', {
       vpc: TestVPC,
-      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
       ipv6CidrBlock: new subnet.IpCidr('2001:db8:1::/64'),
       availabilityZone: 'us-east-1a',
       subnetType: SubnetType.PUBLIC,
@@ -177,7 +177,7 @@ describe('Subnet V2 with custom IP and routing', () => {
 
     new subnet.SubnetV2(stack, 'IpamSubnet', {
       vpc: TestVPC,
-      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
       ipv6CidrBlock: new subnet.IpCidr('2001:db8:1::/64'),
       availabilityZone: 'us-east-1a',
       subnetType: SubnetType.PUBLIC,
@@ -194,7 +194,7 @@ describe('Subnet V2 with custom IP and routing', () => {
                     },
         },
         TestVPCD26570D8: { Type: 'AWS::EC2::VPC' },
-        TestVPCSecondaryIp1E1E7D88C: { Type: 'AWS::EC2::VPCCidrBlock' },
+        TestVPCSecondaryIp47C3DB4AF0F8: { Type: 'AWS::EC2::VPCCidrBlock' },
         IpamSubnet78671F8A: {
           Type: 'AWS::EC2::Subnet',
           Properties: {
@@ -230,7 +230,7 @@ describe('Subnet V2 with custom IP and routing', () => {
       vpcV2: testVPC,
       availabilityZone: 'us-east-1a',
       cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
-      ipv6Cidr: new subnet.IpCidr('2001:db8:1::/64'),
+      ipv6CidrBlock: new subnet.IpCidr('2001:db8:1::/64'),
       subnetType: SubnetType.PUBLIC,
     };
     createTestSubnet(stack, subnetConfig);
@@ -238,7 +238,7 @@ describe('Subnet V2 with custom IP and routing', () => {
     // Define a second subnet with an overlapping CIDR range
     expect(() => new subnet.SubnetV2(stack, 'OverlappingSubnet', {
       vpc: testVPC,
-      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
       ipv6CidrBlock: new subnet.IpCidr('2001:db8:1:1::/64'),
       availabilityZone: 'us-east-1a',
       subnetType: SubnetType.PUBLIC,

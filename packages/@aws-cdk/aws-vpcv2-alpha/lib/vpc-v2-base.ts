@@ -22,6 +22,7 @@ export interface IVpcV2 extends IVpc {
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
    */
   readonly ipv4CidrBlock: string;
+
 }
 
 /**

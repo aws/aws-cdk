@@ -100,9 +100,8 @@ export interface PoolOptions{
   /**
    * Information about the CIDRs provisioned to the pool.
    * @default - No CIDRs are provisioned
-   * @see CfnIPAMPool.ProvisionedCidrProperty
    */
-  readonly provisionedCidrs?: string[];
+  readonly ipv4ProvisionedCidrs?: string[];
 
   /**
    * The locale (AWS Region) of the pool. Should be one of the IPAM operating region.
@@ -323,13 +322,14 @@ class IpamPool extends Resource implements IIpamPool {
 
     this._ipamPool = new CfnIPAMPool(this, id, {
       addressFamily: props.addressFamily,
-      provisionedCidrs: props.provisionedCidrs?.map(cidr => ({ cidr })),
+      provisionedCidrs: props.ipv4ProvisionedCidrs?.map(cidr => ({ cidr })),
       locale: props.locale,
       ipamScopeId: props.ipamScopeId,
       publicIpSource: props.publicIpSource,
       awsService: props.awsService,
     });
     this.ipamPoolId = this._ipamPool.attrIpamPoolId;
+    this.node.defaultChild = this._ipamPool;
   }
 
   /**
@@ -466,11 +466,17 @@ export class Ipam extends Resource {
   constructor(scope: Construct, id: string, props?: IpamProps) {
     super(scope, id);
 
+    if (!props?.operatingRegion && !Stack.of(this).region) {
+      throw new Error('Please provide at least one operating region');
+    }
+
     this.operatingRegions = props?.operatingRegion ?? [Stack.of(this).region];
 
     this._ipam = new CfnIPAM(this, 'Ipam', {
       operatingRegions: this.operatingRegions ? this.operatingRegions.map(region => ({ regionName: region })) : [],
     });
+    this.node.defaultChild = this._ipam;
+
     this.ipamId = this._ipam.attrIpamId;
     this.publicScope = new IpamScopeBase(this, 'DefaultPublicScope', {
       ipamOperatingRegions: this.operatingRegions,
@@ -484,9 +490,7 @@ export class Ipam extends Resource {
     });
 
     this.scopes.push(this.publicScope, this.privateScope);
-    this.scopes.forEach(node => {
-      this.node.defaultChild = node.scope;
-    });
+
   }
 
   /**
@@ -527,7 +531,7 @@ function createIpamPool(
   return new IpamPool(scope, id, {
     ipamPoolName: id,
     addressFamily: poolOptions.addressFamily,
-    provisionedCidrs: poolOptions.provisionedCidrs,
+    ipv4ProvisionedCidrs: poolOptions.ipv4ProvisionedCidrs,
     ipamScopeId: scopeId,
     locale: poolOptions.locale,
     publicIpSource: poolOptions.publicIpSource,

@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "defaultSecondaryIp18DFC7C62": {
+  "defaultSecondaryIp47C3A8F96659": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -57,7 +57,7 @@
     }
    },
    "DependsOn": [
-    "defaultSecondaryIp18DFC7C62"
+    "defaultSecondaryIp47C3A8F96659"
    ]
   },
   "defaultSubnetRouteTableAssociationF1D85D29": {
@@ -74,7 +74,7 @@
     }
    },
    "DependsOn": [
-    "defaultSecondaryIp18DFC7C62"
+    "defaultSecondaryIp47C3A8F96659"
    ]
   }
  },

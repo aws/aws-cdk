@@ -29,9 +29,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-alpha/default/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-alpha/default/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -204,9 +204,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-egressonlyigw-alpha/eigw/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-egressonlyigw-alpha/eigw/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -434,9 +434,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-igw-alpha/igw/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-igw-alpha/igw/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -693,9 +693,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-virtualprivategw-alpha/vpgw/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/vpgw/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -954,9 +954,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-publicnatgw-alpha/natgw_pub/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-publicnatgw-alpha/natgw_pub/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -1301,9 +1301,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -1546,9 +1546,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-networkif-alpha/nif/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-networkif-alpha/nif/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -1721,9 +1721,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -1896,9 +1896,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp1": {
-                "id": "SecondaryIp1",
-                "path": "aws-cdk-routev2-dynamodbendpoint-alpha/dynamodb/SecondaryIp1",
+              "SecondaryIp47C3": {
+                "id": "SecondaryIp47C3",
+                "path": "aws-cdk-routev2-dynamodbendpoint-alpha/dynamodb/SecondaryIp47C3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {

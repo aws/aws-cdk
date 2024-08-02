@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "dynamodbSecondaryIp1747F9BD8": {
+  "dynamodbSecondaryIp47C3D307DC85": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -57,7 +57,7 @@
     }
    },
    "DependsOn": [
-    "dynamodbSecondaryIp1747F9BD8"
+    "dynamodbSecondaryIp47C3D307DC85"
    ]
   },
   "dynamodbSubnetRouteTableAssociationC38B30F3": {
@@ -74,7 +74,7 @@
     }
    },
    "DependsOn": [
-    "dynamodbSecondaryIp1747F9BD8"
+    "dynamodbSecondaryIp47C3D307DC85"
    ]
   },
   "testDynamoEndpoint03D5BDE5": {

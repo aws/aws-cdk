@@ -3,6 +3,7 @@ import { Arn, CfnResource, Lazy, Names } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * IpAddress options to define VPC V2
@@ -273,6 +274,7 @@ export class VpcV2 extends VpcV2Base {
       instanceTenancy: instanceTenancy,
     });
 
+    this.node.defaultChild = this.resource;
     this.vpcCidrBlock = this.resource.attrCidrBlock;
     if (vpcOptions.ipv4CidrBlock) {
       this.ipv4CidrBlock = vpcOptions.ipv4CidrBlock;
@@ -287,10 +289,13 @@ export class VpcV2 extends VpcV2Base {
 
     if (props.secondaryAddressBlocks) {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
+
       let ipCount = 0;
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
-        //TODO: Add unique has for each secondary ip address
+
+        //Counter to generate a random string for input to hash function
         ipCount+=1;
+        const hash = pathHash('Secondary'+ipCount);
         const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
 
         if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool) {
@@ -303,8 +308,7 @@ export class VpcV2 extends VpcV2Base {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
         }
-
-        const cfnVpcCidrBlock = new CfnVPCCidrBlock(this, `SecondaryIp${ipCount}`, {
+        const cfnVpcCidrBlock = new CfnVPCCidrBlock(this, `SecondaryIp${hash}`, {
           vpcId: this.vpcId,
           cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
           ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPool?.ipamPoolId,
@@ -341,7 +345,7 @@ export class VpcV2 extends VpcV2Base {
     /**
      * Dependable that can be depended upon to force internet connectivity established on the VPC
      * Add igw to this if its a public subnet
-     * */
+     */
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
   }
 }
@@ -461,4 +465,14 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
   return (ip1.octet1 === 10 && ip2.octet1 === 10) ||
     (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
     (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16); // CIDR ranges belong to same private IP address ranges
+}
+
+/**
+ * Take a hash of the given path.
+ *
+ * The hash is limited in size.
+ */
+function pathHash(path: string): string {
+  const md5 = md5hash(path);
+  return md5.slice(0, 4).toUpperCase();
 }

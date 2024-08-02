@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "nifSecondaryIp15ACDD6AB": {
+  "nifSecondaryIp47C3A7BC99CF": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -57,7 +57,7 @@
     }
    },
    "DependsOn": [
-    "nifSecondaryIp15ACDD6AB"
+    "nifSecondaryIp47C3A7BC99CF"
    ]
   },
   "nifSubnetRouteTableAssociationE4036B9F": {
@@ -74,7 +74,7 @@
     }
    },
    "DependsOn": [
-    "nifSecondaryIp15ACDD6AB"
+    "nifSecondaryIp47C3A7BC99CF"
    ]
   }
  },

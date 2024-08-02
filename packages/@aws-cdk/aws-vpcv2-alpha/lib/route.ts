@@ -205,6 +205,7 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
     this.resource = new CfnEgressOnlyInternetGateway(this, 'EIGW', {
       vpcId: props.vpc.vpcId,
     });
+    this.node.defaultChild = this.resource;
 
     this.routerTargetId = this.resource.attrId;
   }
@@ -241,6 +242,7 @@ export class InternetGateway extends Resource implements IRouteTarget {
     this.routerType = RouterType.GATEWAY;
 
     this.resource = new CfnInternetGateway(this, 'IGW', {});
+    this.node.defaultChild = this.resource;
 
     this.routerTargetId = this.resource.attrInternetGatewayId;
     this.vpcId = props.vpc.vpcId;
@@ -281,6 +283,7 @@ export class VPNGateway extends Resource implements IRouteTarget {
       type: props.type,
       amazonSideAsn: props.amazonSideAsn,
     });
+    this.node.defaultChild = this.resource;
 
     this.routerTargetId = this.resource.attrVpnGatewayId;
     this.vpcId = props.vpc.vpcId;
@@ -350,7 +353,7 @@ export class NatGateway extends Resource implements IRouteTarget {
     });
 
     this.routerTargetId = this.resource.attrNatGatewayId;
-
+    this.node.defaultChild = this.resource;
     this.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
 }
@@ -507,6 +510,7 @@ export class Route extends Resource implements IRouteV2 {
           this.target.endpoint ? this.target.endpoint.vpcEndpointId : null,
       });
     }
+    this.node.defaultChild = this.resource;
 
     if (this.targetRouterType == RouterType.GATEWAY) {
       if (this.target.gateway instanceof InternetGateway) {
@@ -561,6 +565,7 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
     this.resource = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpc.vpcId,
     });
+    this.node.defaultChild = this.resource;
 
     this.routeTableId = this.resource.attrRouteTableId;
   }

@@ -27,7 +27,7 @@ const ipam = new Ipam(stack, 'IpamTest', {
 
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
-  provisionedCidrs: ['10.2.0.0/16'],
+  ipv4ProvisionedCidrs: ['10.2.0.0/16'],
   locale: 'eu-central-1',
 });
 
@@ -70,14 +70,14 @@ const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'eu-central-1a',
-  cidrBlock: new IpCidr('10.1.0.0/24'),
+  ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
 new SubnetV2(stack, 'testsubnet', {
   vpc,
   availabilityZone: 'eu-central-1b',
-  cidrBlock: new IpCidr('10.2.0.0/24'),
+  ipv4CidrBlock: new IpCidr('10.2.0.0/24'),
   //Test secondary ipv6 address after IPAM pool creation
   //ipv6CidrBlock: new Ipv6Cidr('2001:db8:1::/64'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
@@ -86,7 +86,7 @@ new SubnetV2(stack, 'testsubnet', {
 //validate ipv6
 new SubnetV2(stack, 'validateIpv6', {
   vpc,
-  cidrBlock: new IpCidr('10.3.0.0/24'),
+  ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
   availabilityZone: 'eu-central-1b',
   //Test secondary ipv6 address after IPAM pool creation
   //ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),

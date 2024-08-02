@@ -1,4 +1,4 @@
-import { Resource, Names } from 'aws-cdk-lib';
+import { Resource, Names, Lazy } from 'aws-cdk-lib';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
@@ -39,7 +39,7 @@ export interface SubnetV2Props {
    * ipv4 cidr to assign to this subnet.
    * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-cidrblock
    */
-  readonly cidrBlock: IpCidr;
+  readonly ipv4CidrBlock: IpCidr;
 
   /**
    * Ipv6 CIDR Range for subnet
@@ -153,19 +153,23 @@ export class SubnetV2 extends Resource implements ISubnet {
    * @param props The configuration properties for the subnet.
    */
   constructor(scope: Construct, id: string, props: SubnetV2Props) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.subnetName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+      }),
+    });
 
-    const ipv4CidrBlock = props.cidrBlock.cidr;
+    const ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
-    if (!checkCidrRanges(props.vpc, props.cidrBlock.cidr)) {
+    if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
       throw new Error('CIDR block should be within the range of VPC');
     };
 
     let overlap: boolean = false;
     let overlapIpv6: boolean = false;
 
-    overlap = validateOverlappingCidrRanges(props.vpc, props.cidrBlock.cidr);
+    overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
 
     //check whether VPC supports ipv6
     if (props.ipv6CidrBlock?.cidr) {
@@ -189,7 +193,8 @@ export class SubnetV2 extends Resource implements ISubnet {
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation ?? false,
     });
 
-    this.ipv4CidrBlock = props.cidrBlock.cidr;
+    this.node.defaultChild = subnet;
+    this.ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     this.ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
     this.subnetId = subnet.ref;
     this.availabilityZone = props.availabilityZone;

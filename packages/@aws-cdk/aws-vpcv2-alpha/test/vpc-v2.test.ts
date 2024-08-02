@@ -54,7 +54,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryIp171E5BEAD: {
+        TestVpcSecondaryIp47C3F121E45B: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {
@@ -100,7 +100,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryIp171E5BEAD: {
+        TestVpcSecondaryIp47C3F121E45B: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             AmazonProvidedIpv6CidrBlock: true, //Amazon Provided IPv6 address
@@ -125,7 +125,7 @@ describe('Vpc V2 with full control', () => {
 
     const pool = ipam.privateScope.addPool('PrivatePool0', {
       addressFamily: AddressFamily.IP_V4,
-      provisionedCidrs: ['10.1.0.1/24'],
+      ipv4ProvisionedCidrs: ['10.1.0.1/24'],
       locale: 'us-west-1',
     });
 
@@ -229,7 +229,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryIp171E5BEAD: {
+        TestVpcSecondaryIp47C3F121E45B: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {

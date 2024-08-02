@@ -54,7 +54,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'eu-west-2a',
-  cidrBlock: new IpCidr('10.0.0.0/24'),
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   //defined on the basis of allocation done in IPAM console
   //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,

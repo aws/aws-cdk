@@ -41,7 +41,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "VPCTestSecondaryIp1BB4FC62E": {
+  "VPCTestSecondaryIp47C3DC5611C4": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "Ipv6IpamPoolId": {
@@ -112,7 +112,7 @@
     }
    },
    "DependsOn": [
-    "VPCTestSecondaryIp1BB4FC62E"
+    "VPCTestSecondaryIp47C3DC5611C4"
    ]
   },
   "testsbubnetRouteTableF40F025B": {
@@ -126,7 +126,7 @@
     }
    },
    "DependsOn": [
-    "VPCTestSecondaryIp1BB4FC62E"
+    "VPCTestSecondaryIp47C3DC5611C4"
    ]
   },
   "testsbubnetRouteTableAssociationD6D083FA": {
@@ -140,7 +140,7 @@
     }
    },
    "DependsOn": [
-    "VPCTestSecondaryIp1BB4FC62E"
+    "VPCTestSecondaryIp47C3DC5611C4"
    ]
   },
   "InstanceInstanceSecurityGroupF0E2D5BE": {

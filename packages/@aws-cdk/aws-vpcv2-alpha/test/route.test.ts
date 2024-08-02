@@ -30,7 +30,7 @@ describe('EC2 Routing', () => {
     mySubnet = new subnet.SubnetV2(stack, 'TestSubnet', {
       vpc: myVpc,
       availabilityZone: 'us-east-1a',
-      cidrBlock: new subnet.IpCidr('10.0.0.0/24'),
+      ipv4CidrBlock: new subnet.IpCidr('10.0.0.0/24'),
       ipv6CidrBlock: new subnet.IpCidr(cdk.Fn.select(0, myVpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
       routeTable: routeTable,

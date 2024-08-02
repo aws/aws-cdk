@@ -50,7 +50,7 @@ describe('IPAM Test', () => {
 
     const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
-      provisionedCidrs: ['10.2.0.0/16'],
+      ipv4ProvisionedCidrs: ['10.2.0.0/16'],
       locale: 'us-west-2',
     });
 
