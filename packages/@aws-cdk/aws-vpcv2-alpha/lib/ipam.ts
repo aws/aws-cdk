@@ -221,7 +221,7 @@ export interface IpamScopeProps {
 export interface IpamScopeOptions {
 
   /**
-   * IPAM scope name
+   * IPAM scope name that will be used for tagging
    * @default none
    */
   readonly ipamScopeName?: string;
