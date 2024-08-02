@@ -106,10 +106,15 @@ export class TrustStore extends Resource implements ITrustStore {
     });
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
-      if (!/^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/.test(props.trustStoreName) || props.trustStoreName.length < 1 || props.trustStoreName.length > 32
-      ) {
-        throw new Error(`Invalid trustStoreName: '${props.trustStoreName}'. It must be 1-32 characters long, contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
+
+      if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
+        throw new Error(`Invalid trustStoreName: '${props.trustStoreName}'. It must be 1-32 characters long.`);
       }
+      const validNameRegex = /^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/;
+      if (!validNameRegex.test(props.trustStoreName)) {
+        throw new Error(`Invalid trustStoreName: '${props.trustStoreName}'. It must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
+      }
+
     }
 
     const resource = new CfnTrustStore(this, 'Resource', {

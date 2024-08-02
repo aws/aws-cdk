@@ -1936,7 +1936,7 @@ describe('tests', () => {
   });
 
   describe('Mutual Authentication', () => {
-    test('Mutual Authentication settings with all propeties', () => {
+    test('Mutual Authentication settings with all propeties when mutualuAuthenticationMode is verify', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1967,6 +1967,31 @@ describe('tests', () => {
           IgnoreClientCertificateExpiry: true,
           Mode: 'verify',
           TrustStoreArn: stack.resolve(trustStore.trustStoreArn),
+        },
+      });
+    });
+
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Mutual Authentication settings with all propeties when mutualuAuthenticationMode is %s', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+          mutualAuthenticationMode,
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          Mode: mutualAuthenticationMode,
         },
       });
     });
