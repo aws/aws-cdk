@@ -48,7 +48,7 @@ test('Trust Store with required properties', () => {
   });
 });
 
-test.each(['', '-test', 'test-', '$test', 'a'.repeat(33)])('Throw an error when trutStoreName is %s', (trustStoreName) => {
+test.each(['', '-test', 'test-', '$test', 'a'.repeat(33)])('Throw an error when trustStoreName is %s', (trustStoreName) => {
   // GIVEN
   const bucket = new s3.Bucket(stack, 'Bucket');
 
