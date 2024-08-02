@@ -59,14 +59,14 @@ describe('workflow with triggers', () => {
         glueVersion: glue.GlueVersion.V2_0,
         pythonVersion: glue.PythonVersion.THREE,
         script: glue.Code.fromAsset('myScript'),
-      })
+      }),
     });
     crawler = new glueCfn.CfnCrawler(stack, 'myCrawler', {
       role: 'myRole',
       databaseName: 'myDatabase',
       targets: {
-        s3Targets: [{ path: 'myPath' }]
-      }
+        s3Targets: [{ path: 'myPath' }],
+      },
     });
     securityConfiguration = new glue.SecurityConfiguration(stack, 'mySecurityConfiguration');
   });
@@ -83,9 +83,9 @@ describe('workflow with triggers', () => {
         delayCloudwatchEvent: cdk.Duration.seconds(5),
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
-      }]
+      }],
     });
-  
+
     // THEN
     Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
       Name: 'OnDemandTrigger',
@@ -118,9 +118,9 @@ describe('workflow with triggers', () => {
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
         delayCloudwatchEvent: cdk.Duration.seconds(5),
-      }]
+      }],
     });
-  
+
     // THEN
     Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
       Name: 'DailyScheduleTrigger',
@@ -150,9 +150,9 @@ describe('workflow with triggers', () => {
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
         delayCloudwatchEvent: cdk.Duration.seconds(5),
-      }]
+      }],
     });
-  
+
     // THEN
     Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
       Name: 'WeeklyScheduleTrigger',
@@ -186,9 +186,9 @@ describe('workflow with triggers', () => {
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
         delayCloudwatchEvent: cdk.Duration.seconds(5),
-      }]
+      }],
     });
-  
+
     // THEN
     Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
       Name: 'MonthlyScheduleTrigger',
@@ -209,7 +209,7 @@ describe('workflow with triggers', () => {
   test('customSchedule', () => {
     // WHEN
     workflow.addCustomScheduleTrigger(stack, 'CustomScheduleTrigger', {
-      schedule: Schedule.cron({ minute: '0', hour: '1', day: '1', month: 'JAN', year: '?', }),
+      schedule: Schedule.cron({ minute: '0', hour: '1', day: '1', month: 'JAN', year: '?' }),
       actions: [{
         job: job,
         arguments: {
@@ -219,9 +219,9 @@ describe('workflow with triggers', () => {
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
         delayCloudwatchEvent: cdk.Duration.seconds(5),
-      }]
+      }],
     });
-  
+
     // THEN
     Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
       Name: 'CustomScheduleTrigger',
@@ -259,7 +259,7 @@ describe('workflow with triggers', () => {
         timeout: cdk.Duration.seconds(5 * 60),
       }],
     });
-  
+
     // THEN
     Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
       Name: 'OnDemandTrigger',
@@ -306,7 +306,7 @@ describe('workflow with triggers', () => {
         state: glue.PredicateState.SUCCEEDED,
       }],
     });
-  
+
     // THEN
     Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
       Name: 'ConditionalTrigger',
@@ -333,19 +333,19 @@ describe('workflow with triggers', () => {
 
   test('conditional with no predicates', () => {
     // WHEN
-    expect(() => 
+    expect(() =>
       workflow.addConditionalTrigger(stack, 'ConditionalTrigger', {
-      actions: [{
-        crawler: crawler,
-        arguments: {
-          foo: 'bar',
-          key: 'value',
-        },
-        timeout: cdk.Duration.seconds(5 * 60),
-        securityConfiguration: securityConfiguration,
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
-      }],
-    }),
+        actions: [{
+          crawler: crawler,
+          arguments: {
+            foo: 'bar',
+            key: 'value',
+          },
+          timeout: cdk.Duration.seconds(5 * 60),
+          securityConfiguration: securityConfiguration,
+          delayCloudwatchEvent: cdk.Duration.seconds(5),
+        }],
+      }),
 
     // THEN
     ).toThrow(/At least one job predicate or crawler predicate must be specified./);
@@ -361,14 +361,14 @@ test('workflow with trigger that has both job and crawler as one action', () => 
       glueVersion: glue.GlueVersion.V2_0,
       pythonVersion: glue.PythonVersion.THREE,
       script: glue.Code.fromAsset('myScript'),
-    })
+    }),
   });
   const crawler = new glueCfn.CfnCrawler(stack, 'myCrawler', {
     role: 'myRole',
     databaseName: 'myDatabase',
     targets: {
-      s3Targets: [{ path: 'myPath' }]
-    }
+      s3Targets: [{ path: 'myPath' }],
+    },
   });
 
   // WHEN
@@ -376,8 +376,8 @@ test('workflow with trigger that has both job and crawler as one action', () => 
     actions: [{
       job: job,
       crawler: crawler,
-    }]
-  }), 
+    }],
+  }),
 
   // THEN
   ).toThrow(/Only one of job or crawler can be specified in an action/);
@@ -389,14 +389,14 @@ test('workflow with trigger that has neither job nor crawler as one action', () 
   const workflow = new glue.Workflow(stack, 'myWorkflow');
 
   // WHEN
-  expect(() =>  workflow.addOnDemandTrigger(stack, 'OnDemandTrigger', {
+  expect(() => workflow.addOnDemandTrigger(stack, 'OnDemandTrigger', {
     actions: [{
       arguments: {
         foo: 'bar',
         key: 'value',
       },
-    }]
-  }), 
+    }],
+  }),
 
   // THEN
   ).toThrow(/Either job or crawler must be specified in an action/);
