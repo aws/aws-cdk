@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Schedule } from 'aws-cdk-lib/aws-events';
 import * as glueCfn from 'aws-cdk-lib/aws-glue';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
 
 test('workflow', () => {
@@ -12,9 +13,7 @@ test('workflow', () => {
   new glue.Workflow(stack, 'Workflow');
 
   // THEN
-  Template.fromStack(stack).hasResource('AWS::Glue::Workflow', {
-    Name: 'Workflow',
-  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Workflow', {});
 });
 
 test('workflow with props', () => {
@@ -33,7 +32,7 @@ test('workflow with props', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResource('AWS::Glue::Workflow', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Workflow', {
     Name: 'myWorkflow',
     Description: 'myDescription',
     MaxConcurrentRuns: 1,
@@ -58,7 +57,7 @@ describe('workflow with triggers', () => {
       executable: glue.JobExecutable.pythonEtl({
         glueVersion: glue.GlueVersion.V2_0,
         pythonVersion: glue.PythonVersion.THREE,
-        script: glue.Code.fromAsset('myScript'),
+        script: glue.Code.fromBucket(Bucket.fromBucketName(stack, 'myBucket', 'my-bucket'), 'myKey'),
       }),
     });
     crawler = new glueCfn.CfnCrawler(stack, 'myCrawler', {
@@ -87,7 +86,7 @@ describe('workflow with triggers', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
       Name: 'OnDemandTrigger',
       Type: 'ON_DEMAND',
       Actions: [{
@@ -122,7 +121,7 @@ describe('workflow with triggers', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
       Name: 'DailyScheduleTrigger',
       Type: 'SCHEDULED',
       Schedule: 'cron(0 1 * * ? *)',
@@ -154,7 +153,7 @@ describe('workflow with triggers', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
       Name: 'WeeklyScheduleTrigger',
       Type: 'SCHEDULED',
       Schedule: 'cron(0 1 ? * MON *)',
@@ -190,7 +189,7 @@ describe('workflow with triggers', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
       Name: 'MonthlyScheduleTrigger',
       Type: 'SCHEDULED',
       Schedule: 'cron(0 1 1 * ? *)',
@@ -223,7 +222,7 @@ describe('workflow with triggers', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
       Name: 'CustomScheduleTrigger',
       Type: 'SCHEDULED',
       Schedule: 'cron(0 1 1 JAN ? *)',
@@ -261,7 +260,7 @@ describe('workflow with triggers', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
       Name: 'OnDemandTrigger',
       Type: 'CONDITIONAL',
       Actions: [{
@@ -308,7 +307,7 @@ describe('workflow with triggers', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::Glue::Trigger', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
       Name: 'ConditionalTrigger',
       Type: 'CONDITIONAL',
       Actions: [{
