@@ -594,3 +594,238 @@ new glue.DataQualityRuleset(this, 'MyDataQualityRuleset', {
 ```
 
 For more information, see [AWS Glue Data Quality](https://docs.aws.amazon.com/glue/latest/dg/glue-data-quality.html).
+
+## Workflow
+
+A `Workflow` is a collection of multiple Glue jobs and crawlers that are executed in a DAG. For example, to create a workflow:
+
+```ts
+new glue.Workflow(this, 'MyWorkflow', {
+  workflowName: 'my_workflow',
+  description: 'description',
+  maxConcurrentRuns: 5,
+  defaultRunProperties: {
+    key1: 'value1',
+    key2: 'value2',
+  },
+});
+```
+
+### Add Triggers
+
+A glue `Workflow` requires triggers to be appeneded to the DAG. These triggers are executed at different stages of the DAG, depending on the type of trigger enabled.
+
+#### On Demand Triggers
+
+On Demand triggers are executed manually by the user, or by a third-party service. For example, to add an On Demand trigger to a workflow:
+
+```ts
+declare const myWorkflow: glue.Workflow;
+declare const myJob: glue.IJob;
+declare const myCrawler: glueCfn.CfnCrawler;
+declare const securityConfiguration: glue.ISecurityConfiguration;
+
+myWorkflow.addOnDemandTrigger(this, 'OnDemandTrigger', {
+  triggerName: 'on_demand_trigger',
+  description: 'description',
+  enabled: true,
+  actions: [
+    {
+      job: myJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+      securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: myCrawler,
+    }
+  ],
+});
+```
+
+#### Schedule Triggers
+
+Schedule triggers are executed at a specified time or interval. For example, to add a Schedule trigger to a workflow:
+
+```ts
+declare const myWorkflow: glue.Workflow;
+declare const myJob: glue.IJob;
+declare const myCrawler: glueCfn.CfnCrawler;
+declare const securityConfiguration: glue.ISecurityConfiguration;
+declare const schedule: events.Schedule;
+
+myWorkflow.addCustomScheduleTrigger(this, 'ScheduleTrigger', {
+  triggerName: 'schedule_trigger',
+  description: 'description',
+  enabled: true,
+  schedule,
+  actions: [
+    {
+      job: myJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+      securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: myCrawler,
+    }
+  ],
+});
+```
+
+Convinience methods are available to add triggers to a workflow, for daily, weekly, and monthly schedules:
+
+```ts
+declare const myWorkflow: glue.Workflow;
+declare const myJob: glue.IJob;
+declare const myCrawler: glueCfn.CfnCrawler;
+declare const securityConfiguration: glue.ISecurityConfiguration;
+
+myWorkflow.addDailyScheduleTrigger(this, 'DailyScheduleTrigger', {
+  triggerName: 'daily_schedule_trigger',
+  description: 'description',
+  enabled: true,
+  actions: [
+    {
+      job: myJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+      securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: myCrawler,
+    }
+  ],
+});
+
+myWorkflow.addWeeklyScheduleTrigger(this, 'WeeklyScheduleTrigger', {
+  triggerName: 'weekly_schedule_trigger',
+  description: 'description',
+  enabled: true,
+  actions: [
+    {
+      job: myJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+      securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: myCrawler,
+    }
+  ],
+});
+
+myWorkflow.addMonthlyScheduleTrigger(this, 'MonthlyScheduleTrigger', {
+  triggerName: 'monthly_schedule_trigger',
+  description: 'description',
+  enabled: true,
+  actions: [
+    {
+      job: myJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+      securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: myCrawler,
+    }
+  ],
+});
+```
+
+#### Event Triggers
+
+Event triggers are executed after a number of events have reached. For example, to add an Event trigger to a workflow:
+
+```ts
+declare const myWorkflow: glue.Workflow;
+declare const myJob: glue.IJob;
+declare const myCrawler: glueCfn.CfnCrawler;
+declare const securityConfiguration: glue.ISecurityConfiguration;
+
+myWorkflow.addNotifyEventTrigger(this, 'EventTrigger', {
+  triggerName: 'event_trigger',
+  description: 'description',
+  enabled: true,
+  batchSize: 10,
+  batchWindow: cdk.Duration.minutes(5),
+  actions: [
+    {
+      job: myJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+      securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: myCrawler,
+    }
+  ],
+});
+```
+
+#### Conditional Triggers
+
+Conditional triggers are executed based on a condition. For example, to add a Conditional trigger to a workflow:
+
+```ts
+declare const myWorkflow: glue.Workflow;
+declare const myJob: glue.IJob;
+declare const myCrawler: glueCfn.CfnCrawler;
+declare const predicateJob: glue.IJob;
+declare const predicateCrawler: glueCfn.CfnCrawler;
+declare const securityConfiguration: glue.ISecurityConfiguration;
+
+myWorkflow.addConditionalTrigger(this, 'ConditionalTrigger', {
+  triggerName: 'conditional_trigger',
+  description: 'description',
+  enabled: true,
+  predicateCondition: glue.TriggerPredicateCondition.AND,
+  jobPredicates: [{
+    job: predicateJob,
+    state: glue.PredicateState.SUCCEEDED,
+  }],
+  crawlerPredicates: [{
+    crawler: predicateCrawler,
+    state: glue.PredicateState.SUCCEEDED,
+  }],
+  actions: [
+    {
+      job: myJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+      securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: myCrawler,
+    }
+  ],
+});
+```
