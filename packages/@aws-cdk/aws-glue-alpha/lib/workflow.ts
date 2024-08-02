@@ -458,15 +458,6 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
       );
     }
   }
-
-  // Cloudformation cannot handle the a glue workflow being updated multiple times at once.
-  protected addDependentTrigger(): void {
-    if (this.triggers.length > 1) {
-      this.triggers[this.triggers.length - 1].addDependency(
-        this.triggers[this.triggers.length - 2],
-      );
-    }
-  }
 }
 
 /**
