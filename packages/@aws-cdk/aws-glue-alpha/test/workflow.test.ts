@@ -67,19 +67,24 @@ describe('workflow with triggers', () => {
         s3Targets: [{ path: 'myPath' }],
       },
     });
-    securityConfiguration = new glue.SecurityConfiguration(stack, 'mySecurityConfiguration');
+    securityConfiguration = new glue.SecurityConfiguration(stack, 'mySecurityConfiguration', {
+      s3Encryption: {
+        mode: glue.S3EncryptionMode.S3_MANAGED,
+      },
+    });
   });
 
   test('onDemand', () => {
     // WHEN
     workflow.addOnDemandTrigger(stack, 'OnDemandTrigger', {
+      triggerName: 'OnDemandTrigger',
       actions: [{
         job: job,
         arguments: {
           foo: 'bar',
           key: 'value',
         },
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
       }],
@@ -90,18 +95,18 @@ describe('workflow with triggers', () => {
       Name: 'OnDemandTrigger',
       Type: 'ON_DEMAND',
       Actions: [{
-        JobName: { 'Fn::GetAtt': ['myJobC2A9F6D7', 'Name'] },
-        SecurityConfiguration: { 'Fn::GetAtt': ['mySecurityConfigurationC2A9F6D7', 'Name'] },
+        JobName: { Ref: 'myJob9A6589B3' },
+        SecurityConfiguration: { Ref: 'mySecurityConfiguration58B0C573' },
         Arguments: {
           foo: 'bar',
           key: 'value',
         },
-        Timeout: 300,
+        Timeout: 5,
         NotificationProperty: {
-          NotifyDelayAfter: 5,
+          NotifyDelayAfter: 1,
         },
       }],
-      WorkflowName: { Ref: 'myWorkflowC2A9F6D7' },
+      WorkflowName: { Ref: 'myWorkflow931F3265' },
     });
   });
 
@@ -116,24 +121,27 @@ describe('workflow with triggers', () => {
         },
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
       }],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
-      Name: 'DailyScheduleTrigger',
       Type: 'SCHEDULED',
       Schedule: 'cron(0 1 * * ? *)',
       Actions: [{
-        CrawlerName: { 'Fn::GetAtt': ['myCrawlerC2A9F6D7', 'Name'] },
+        CrawlerName: { Ref: 'myCrawler' },
         Arguments: {
           foo: 'bar',
           key: 'value',
         },
-        Timeout: 300,
+        Timeout: 5,
+        SecurityConfiguration: { Ref: 'mySecurityConfiguration58B0C573' },
+        NotificationProperty: {
+          NotifyDelayAfter: 1,
+        },
       }],
-      WorkflowName: { Ref: 'myWorkflowC2A9F6D7' },
+      WorkflowName: { Ref: 'myWorkflow931F3265' },
     });
   });
 
@@ -148,28 +156,27 @@ describe('workflow with triggers', () => {
         },
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
       }],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
-      Name: 'WeeklyScheduleTrigger',
       Type: 'SCHEDULED',
       Schedule: 'cron(0 1 ? * MON *)',
       Actions: [{
-        JobName: { 'Fn::GetAtt': ['myJobC2A9F6D7', 'Name'] },
-        SecurityConfiguration: { 'Fn::GetAtt': ['mySecurityConfigurationC2A9F6D7', 'Name'] },
+        JobName: { Ref: 'myJob9A6589B3' },
+        SecurityConfiguration: { Ref: 'mySecurityConfiguration58B0C573' },
         Arguments: {
           foo: 'bar',
           key: 'value',
         },
-        Timeout: 300,
+        Timeout: 5,
         NotificationProperty: {
-          NotifyDelayAfter: 5,
+          NotifyDelayAfter: 1,
         },
       }],
-      WorkflowName: { Ref: 'myWorkflowC2A9F6D7' },
+      WorkflowName: { Ref: 'myWorkflow931F3265' },
     });
   });
 
@@ -184,24 +191,26 @@ describe('workflow with triggers', () => {
         },
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
       }],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
-      Name: 'MonthlyScheduleTrigger',
       Type: 'SCHEDULED',
       Schedule: 'cron(0 1 1 * ? *)',
       Actions: [{
-        CrawlerName: { 'Fn::GetAtt': ['myCrawlerC2A9F6D7', 'Name'] },
+        CrawlerName: { Ref: 'myCrawler' },
         Arguments: {
           foo: 'bar',
           key: 'value',
         },
-        Timeout: 300,
+        Timeout: 5,
+        NotificationProperty: {
+          NotifyDelayAfter: 1,
+        },
       }],
-      WorkflowName: { Ref: 'myWorkflowC2A9F6D7' },
+      WorkflowName: { Ref: 'myWorkflow931F3265' },
     });
   });
 
@@ -217,28 +226,27 @@ describe('workflow with triggers', () => {
         },
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
       }],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
-      Name: 'CustomScheduleTrigger',
       Type: 'SCHEDULED',
-      Schedule: 'cron(0 1 1 JAN ? *)',
+      Schedule: 'cron(0 1 1 JAN ? ?)',
       Actions: [{
-        JobName: { 'Fn::GetAtt': ['myJobC2A9F6D7', 'Name'] },
-        SecurityConfiguration: { 'Fn::GetAtt': ['mySecurityConfigurationC2A9F6D7', 'Name'] },
+        JobName: { Ref: 'myJob9A6589B3' },
+        SecurityConfiguration: { Ref: 'mySecurityConfiguration58B0C573' },
         Arguments: {
           foo: 'bar',
           key: 'value',
         },
-        Timeout: 300,
+        Timeout: 5,
         NotificationProperty: {
-          NotifyDelayAfter: 5,
+          NotifyDelayAfter: 1,
         },
       }],
-      WorkflowName: { Ref: 'myWorkflowC2A9F6D7' },
+      WorkflowName: { Ref: 'myWorkflow931F3265' },
     });
   });
 
@@ -254,31 +262,30 @@ describe('workflow with triggers', () => {
           key: 'value',
         },
         securityConfiguration: securityConfiguration,
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
         timeout: cdk.Duration.seconds(5 * 60),
       }],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
-      Name: 'OnDemandTrigger',
       Type: 'CONDITIONAL',
       Actions: [{
-        JobName: { 'Fn::GetAtt': ['myJobC2A9F6D7', 'Name'] },
+        JobName: { Ref: 'myJob9A6589B3' },
         Arguments: {
           foo: 'bar',
           key: 'value',
         },
         NotificationProperty: {
-          NotifyDelayAfter: 0,
-          NotifyDelayAfterEvent: 'ON_FAILURE',
+          NotifyDelayAfter: 1,
         },
+        Timeout: 5,
       }],
       EventBatchingCondition: {
         BatchSize: 50,
         BatchWindow: 300,
       },
-      WorkflowName: { Ref: 'myWorkflowC2A9F6D7' },
+      WorkflowName: { Ref: 'myWorkflow931F3265' },
     });
   });
 
@@ -293,7 +300,7 @@ describe('workflow with triggers', () => {
         },
         timeout: cdk.Duration.seconds(5 * 60),
         securityConfiguration: securityConfiguration,
-        delayCloudwatchEvent: cdk.Duration.seconds(5),
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
       }],
       predicateCondition: glue.TriggerPredicateCondition.AND,
       jobPredicates: [{
@@ -308,25 +315,34 @@ describe('workflow with triggers', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
-      Name: 'ConditionalTrigger',
       Type: 'CONDITIONAL',
       Actions: [{
-        CrawlerName: { 'Fn::GetAtt': ['myCrawlerC2A9F6D7', 'Name'] },
+        CrawlerName: { Ref: 'myCrawler' },
         Arguments: {
           foo: 'bar',
           key: 'value',
         },
-        Timeout: 300,
+        Timeout: 5,
+        NotificationProperty: {
+          NotifyDelayAfter: 1,
+        },
       }],
       Predicate: {
-        Conditions: ['AND'],
-        Logical: {
-          JobName: { 'Fn::GetAtt': ['myJobC2A9F6D7', 'Name'] },
-          State: 'SUCCEEDED',
-        },
-        State: 'SUCCEEDED',
+        Conditions: [
+          {
+            JobName: { Ref: 'myJob9A6589B3' },
+            LogicalOperator: 'EQUALS',
+            State: 'SUCCEEDED',
+          },
+          {
+            CrawlerName: { Ref: 'myCrawler' },
+            LogicalOperator: 'EQUALS',
+            CrawlState: 'SUCCEEDED',
+          },
+        ],
+        Logical: 'ALL',
       },
-      WorkflowName: { Ref: 'myWorkflowC2A9F6D7' },
+      WorkflowName: { Ref: 'myWorkflow931F3265' },
     });
   });
 
@@ -359,7 +375,7 @@ test('workflow with trigger that has both job and crawler as one action', () => 
     executable: glue.JobExecutable.pythonEtl({
       glueVersion: glue.GlueVersion.V2_0,
       pythonVersion: glue.PythonVersion.THREE,
-      script: glue.Code.fromAsset('myScript'),
+      script: glue.Code.fromBucket(Bucket.fromBucketName(stack, 'myBucket', 'my-bucket'), 'myKey'),
     }),
   });
   const crawler = new glueCfn.CfnCrawler(stack, 'myCrawler', {

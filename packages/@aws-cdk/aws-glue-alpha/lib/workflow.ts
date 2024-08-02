@@ -95,7 +95,7 @@ export interface Action {
   readonly crawler?: CfnCrawler;
 
   /**
-   * After a job run starts, the `Duration` to wait before glue will trigger a CloudWatch event.
+   * After a job run starts, the `Duration` to wait before glue will trigger a CloudWatch event, in minutes.
    *
    * @default - A notification will not be sent.
    */
@@ -116,7 +116,7 @@ export interface Action {
   readonly securityConfiguration?: ISecurityConfiguration;
 
   /**
-   * The timeout for a job run.
+   * The timeout for a job run, in minutes.
    *
    * @default - No timeout.
    */
@@ -277,6 +277,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   ): void {
     this.triggers.push(
       new CfnTrigger(scope, id, {
+        name: props.triggerName,
         type: 'ON_DEMAND',
         workflowName: this.workflowName,
         startOnCreation: props.enabled ?? true,
@@ -295,8 +296,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   ): void {
     this.triggers.push(
       new CfnTrigger(scope, id, {
+        name: props.triggerName,
         type: 'SCHEDULED',
-        schedule: 'cron(0 0 * * ? *)',
+        schedule: 'cron(0 1 * * ? *)',
         workflowName: this.workflowName,
         startOnCreation: props.enabled ?? true,
         actions: props.actions?.map(action => this.renderAction(action)),
@@ -314,8 +316,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   ): void {
     this.triggers.push(
       new CfnTrigger(scope, id, {
+        name: props.triggerName,
         type: 'SCHEDULED',
-        schedule: 'cron(0 0 ? * SUN *)',
+        schedule: 'cron(0 1 ? * MON *)',
         workflowName: this.workflowName,
         startOnCreation: props.enabled ?? true,
         actions: props.actions?.map(action => this.renderAction(action)),
@@ -333,8 +336,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   ): void {
     this.triggers.push(
       new CfnTrigger(scope, id, {
+        name: props.triggerName,
         type: 'SCHEDULED',
-        schedule: 'cron(0 0 1 * ? *)',
+        schedule: 'cron(0 1 1 * ? *)',
         workflowName: this.workflowName,
         startOnCreation: props.enabled ?? true,
         actions: props.actions?.map(action => this.renderAction(action)) ?? [],
@@ -352,6 +356,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   ): void {
     this.triggers.push(
       new CfnTrigger(scope, id, {
+        name: props.triggerName,
         type: 'SCHEDULED',
         schedule: props.schedule.expressionString,
         workflowName: this.workflowName,
@@ -371,6 +376,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   ): void {
     this.triggers.push(
       new CfnTrigger(scope, id, {
+        name: props.triggerName,
         type: 'CONDITIONAL',
         workflowName: this.workflowName,
         startOnCreation: props.enabled ?? true,
@@ -417,6 +423,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
 
     this.triggers.push(
       new CfnTrigger(scope, id, {
+        name: props.triggerName,
         type: 'CONDITIONAL',
         workflowName: this.workflowName,
         startOnCreation: props.enabled ?? true,
@@ -430,6 +437,15 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   }
 
   protected renderAction(action: Action): CfnTrigger.ActionProperty {
+    if (!action.job && !action.crawler) {
+      throw new Error('Either job or crawler must be specified in an action');
+    }
+    if (action.job && action.crawler) {
+      throw new Error(
+        'Only one of job or crawler can be specified in an action',
+      );
+    }
+
     return {
       jobName: action.job?.jobName,
       crawlerName: action.crawler?.name ?? action.crawler?.ref,
