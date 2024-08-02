@@ -288,7 +288,14 @@ export class Cluster extends Resource implements ICluster {
     Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id));
   }
 
-  private updateKeyPolicyForEphemeralStorageConfiguration(key: IKey, clusterName?: string) {
+  \**
+   * Applies policy to the target key for encryption.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-create-storage-key.html
+   *\
+  private updateKeyPolicyForEphemeralStorageConfiguration(clusterName?: string) {
+    const key = this._managedStorageConfiguration?.fargateEphemeralStorageKmsKey;
+    if (!key) return;
     const clusterConditions = {
       StringEquals: {
         'kms:EncryptionContext:aws:ecs:clusterAccount': [Aws.ACCOUNT_ID],
