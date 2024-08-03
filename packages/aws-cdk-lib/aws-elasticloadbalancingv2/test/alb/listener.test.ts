@@ -1996,7 +1996,7 @@ describe('tests', () => {
       });
     });
 
-    test('Mutual Authentication settings without all propeties', () => {
+    test('Mutual Authentication settings without all properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
