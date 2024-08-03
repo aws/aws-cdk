@@ -43,6 +43,119 @@ test('workflow with props', () => {
   });
 });
 
+describe('imported workflow', () => {
+  let stack: cdk.Stack;
+  let job: glue.Job;
+  let securityConfiguration: glue.SecurityConfiguration;
+  let triggerProps: glue.TriggerProps;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    job = new glue.Job(stack, 'myJob', {
+      executable: glue.JobExecutable.pythonEtl({
+        glueVersion: glue.GlueVersion.V2_0,
+        pythonVersion: glue.PythonVersion.THREE,
+        script: glue.Code.fromBucket(Bucket.fromBucketName(stack, 'myBucket', 'my-bucket'), 'myKey'),
+      }),
+    });
+    securityConfiguration = new glue.SecurityConfiguration(stack, 'mySecurityConfiguration', {
+      s3Encryption: {
+        mode: glue.S3EncryptionMode.S3_MANAGED,
+      },
+    });
+    triggerProps = {
+      actions: [{
+        job: job,
+        arguments: {
+          foo: 'bar',
+          key: 'value',
+        },
+        timeout: cdk.Duration.seconds(5 * 60),
+        securityConfiguration: securityConfiguration,
+        delayCloudwatchEvent: cdk.Duration.seconds(60),
+      }],
+    };
+  });
+
+  test('fromWorkflowArn', () => {
+    // GIVEN
+    const workflowArn = 'arn:aws:glue:us-east-1:123456789012:workflow/myWorkflow';
+    const predicateJob = new glue.Job(stack, 'myJob2', {
+      executable: glue.JobExecutable.pythonEtl({
+        glueVersion: glue.GlueVersion.V2_0,
+        pythonVersion: glue.PythonVersion.THREE,
+        script: glue.Code.fromBucket(Bucket.fromBucketName(stack, 'myPredicateBucket', 'my-bucket'), 'myKey'),
+      }),
+    });
+
+    // WHEN
+    const imported = glue.Workflow.fromWorkflowArn(stack, 'myWorkflow', workflowArn);
+    imported.addConditionalTrigger('ConditionalTrigger', {
+      ...triggerProps,
+      predicateCondition: glue.TriggerPredicateCondition.AND,
+      jobPredicates: [{
+        job: predicateJob,
+        state: glue.PredicateState.SUCCEEDED,
+      }],
+    });
+
+    // THEN
+    expect(imported.workflowArn).toEqual(workflowArn);
+    expect(imported.workflowName).toEqual('myWorkflow');
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'CONDITIONAL',
+      Actions: [{
+        JobName: { Ref: 'myJob9A6589B3' },
+        Arguments: {
+          foo: 'bar',
+          key: 'value',
+        },
+        Timeout: 5,
+        NotificationProperty: {
+          NotifyDelayAfter: 1,
+        },
+      }],
+      Predicate: {
+        Conditions: [
+          {
+            JobName: { Ref: 'myJob2902BF595' },
+            LogicalOperator: 'EQUALS',
+            State: 'SUCCEEDED',
+          },
+        ],
+        Logical: 'ALL',
+      },
+      WorkflowName: 'myWorkflow',
+    });
+  });
+
+  test('fromWorkflowName', () => {
+    // WHEN
+    const imported = glue.Workflow.fromWorkflowName(stack, 'myWorkflow', 'myWorkflow');
+    imported.addOnDemandTrigger('OnDemandTrigger', triggerProps);
+
+    // THEN
+    expect(imported.workflowName).toEqual('myWorkflow');
+    expect(imported.workflowArn).toMatch(/^arn:.+:glue:.+:.+:workflow\/myWorkflow$/);
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'ON_DEMAND',
+      Actions: [{
+        JobName: { Ref: 'myJob9A6589B3' },
+        SecurityConfiguration: { Ref: 'mySecurityConfiguration58B0C573' },
+        Arguments: {
+          foo: 'bar',
+          key: 'value',
+        },
+        Timeout: 5,
+        NotificationProperty: {
+          NotifyDelayAfter: 1,
+        },
+      }],
+      WorkflowName: 'myWorkflow',
+    });
+  });
+});
+
 describe('workflow with triggers', () => {
   let stack: cdk.Stack;
   let workflow: glue.Workflow;

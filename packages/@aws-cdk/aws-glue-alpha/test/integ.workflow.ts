@@ -195,4 +195,6 @@ workflow.addNotifyEventTrigger('MyNotifyEvent', {
   ],
 });
 
-glue.Workflow.fromWorkflowName(stack, 'imported-workflow', workflow.workflowName);
+const importedWorkflowByName = glue.Workflow.fromWorkflowName(stack, 'imported-workflow-name', workflow.workflowName);
+
+glue.Workflow.fromWorkflowArn(stack, 'imported-workflow-arn', importedWorkflowByName.workflowArn);
