@@ -78,7 +78,7 @@ export class TrustStore extends Resource implements ITrustStore {
   public readonly trustStoreName: string;
 
   /**
-   * The number of ca certificates in the trust store
+   * The number of CA certificates in the trust store
    *
    * @attribute
    */
