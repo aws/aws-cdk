@@ -48,20 +48,6 @@ test('Trust Store with required properties', () => {
   });
 });
 
-test.each(['-test', 'test-', '$test'])('Throw an error when trustStoreName has invalid patten, trustStoreName: %s', (trustStoreName) => {
-  // GIVEN
-  const bucket = new s3.Bucket(stack, 'Bucket');
-
-  // WHEN
-  expect(() => {
-    new elbv2.TrustStore(stack, 'TrustStore', {
-      bucket,
-      key: 'dummy.pem',
-      trustStoreName,
-    });
-  }).toThrow(`Invalid trustStoreName: '${trustStoreName}'. It must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
-});
-
 test.each(['', 'a'.repeat(33)])('Throw an error when trustStoreName length is invalid, trustStoreName: %s', (trustStoreName) => {
   // GIVEN
   const bucket = new s3.Bucket(stack, 'Bucket');
@@ -73,5 +59,19 @@ test.each(['', 'a'.repeat(33)])('Throw an error when trustStoreName length is in
       key: 'dummy.pem',
       trustStoreName,
     });
-  }).toThrow(`Invalid trustStoreName: '${trustStoreName}'. It must be 1-32 characters long.`);
+  }).toThrow(`trustStoreName '${trustStoreName}' must be 1-32 characters long.`);
+});
+
+test.each(['-test', 'test-', '$test'])('Throw an error when trustStoreName has invalid patten, trustStoreName: %s', (trustStoreName) => {
+  // GIVEN
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  // WHEN
+  expect(() => {
+    new elbv2.TrustStore(stack, 'TrustStore', {
+      bucket,
+      key: 'dummy.pem',
+      trustStoreName,
+    });
+  }).toThrow(`trustStoreName '${trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
 });
