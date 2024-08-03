@@ -87,6 +87,9 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
+      this.validateContainerCpu(props.containerCpu, props.cpu);
+      this.validateContainerMemoryLimitMiB(props.containerMemoryLimitMiB, props.memoryLimitMiB);
+
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
         memoryLimitMiB: props.memoryLimitMiB,
@@ -169,6 +172,40 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     if (value === undefined || Token.isUnresolved(value)) { return; }
     if (!Number.isInteger(value) || value < 0) {
       throw new Error(`${name}: Must be a non-negative integer; received ${value}`);
+    }
+  }
+
+  /**
+   * Throws an error if containerCpu is greater than cpu or is a positive integer.
+   * @param containerCpu The minimum number of CPU units to reserve for the container.
+   * @param cpu The number of cpu units used by the task. (default: 256)
+   */
+  private validateContainerCpu(containerCpu?: number, cpu: number = 256) {
+    if (!containerCpu || Token.isUnresolved(containerCpu) || Token.isUnresolved(cpu)) {
+      return;
+    }
+    if (containerCpu > cpu) {
+      throw new Error('containerCpu must be less than to cpu');
+    }
+    if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
+      throw new Error('containerCpu must be a non-negative integer');
+    }
+  }
+
+  /**
+   * Throws an error if containerMemoryLimitMiB is greater than memoryLimitMiB or is a positive integer.
+   * @param containerMemoryLimitMiB The amount (in MiB) of memory to present to the container.
+   * @param memoryLimitMiB The amount (in MiB) of memory used by the task. (default: 512)
+   */
+  private validateContainerMemoryLimitMiB(containerMemoryLimitMiB?: number, memoryLimitMiB: number = 512) {
+    if (!containerMemoryLimitMiB || Token.isUnresolved(containerMemoryLimitMiB) || Token.isUnresolved(memoryLimitMiB)) {
+      return;
+    }
+    if (containerMemoryLimitMiB > memoryLimitMiB) {
+      throw new Error('containerMemoryLimitMiB must be less than to memoryLimitMiB');
+    }
+    if (containerMemoryLimitMiB < 0 || !Number.isInteger(containerMemoryLimitMiB)) {
+      throw new Error('containerMemoryLimitMiB must be a non-negative integer');
     }
   }
 }
