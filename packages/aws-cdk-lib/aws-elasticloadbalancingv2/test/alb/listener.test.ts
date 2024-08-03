@@ -1971,7 +1971,7 @@ describe('tests', () => {
       });
     });
 
-    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Mutual Authentication settings with all propeties when mutualuAuthenticationMode is %s', (mutualAuthenticationMode) => {
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Mutual Authentication settings with all properties when mutualAuthenticationMode is %s', (mutualAuthenticationMode) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
