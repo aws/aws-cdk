@@ -76,7 +76,7 @@ describe('workflow with triggers', () => {
 
   test('onDemand', () => {
     // WHEN
-    workflow.addOnDemandTrigger(stack, 'OnDemandTrigger', {
+    workflow.addOnDemandTrigger('OnDemandTrigger', {
       triggerName: 'OnDemandTrigger',
       actions: [{
         job: job,
@@ -112,7 +112,7 @@ describe('workflow with triggers', () => {
 
   test('dailySchedule', () => {
     // WHEN
-    workflow.addDailyScheduleTrigger(stack, 'DailyScheduleTrigger', {
+    workflow.addDailyScheduleTrigger('DailyScheduleTrigger', {
       actions: [{
         crawler: crawler,
         arguments: {
@@ -147,7 +147,7 @@ describe('workflow with triggers', () => {
 
   test('weeklySchedule', () => {
     // WHEN
-    workflow.addWeeklyScheduleTrigger(stack, 'WeeklyScheduleTrigger', {
+    workflow.addWeeklyScheduleTrigger('WeeklyScheduleTrigger', {
       actions: [{
         job: job,
         arguments: {
@@ -182,7 +182,7 @@ describe('workflow with triggers', () => {
 
   test('monthlySchedule', () => {
     // WHEN
-    workflow.addMonthlyScheduleTrigger(stack, 'MonthlyScheduleTrigger', {
+    workflow.addMonthlyScheduleTrigger('MonthlyScheduleTrigger', {
       actions: [{
         crawler: crawler,
         arguments: {
@@ -216,7 +216,7 @@ describe('workflow with triggers', () => {
 
   test('customSchedule', () => {
     // WHEN
-    workflow.addCustomScheduleTrigger(stack, 'CustomScheduleTrigger', {
+    workflow.addCustomScheduleTrigger('CustomScheduleTrigger', {
       schedule: Schedule.cron({ minute: '0', hour: '1', day: '1', month: 'JAN', year: '?' }),
       actions: [{
         job: job,
@@ -252,7 +252,7 @@ describe('workflow with triggers', () => {
 
   test('notifyEvent', () => {
     // WHEN
-    workflow.addNotifyEventTrigger(stack, 'OnDemandTrigger', {
+    workflow.addNotifyEventTrigger('OnDemandTrigger', {
       batchSize: 50,
       batchWindow: cdk.Duration.minutes(5),
       actions: [{
@@ -291,7 +291,7 @@ describe('workflow with triggers', () => {
 
   test('conditional', () => {
     // WHEN
-    workflow.addConditionalTrigger(stack, 'ConditionalTrigger', {
+    workflow.addConditionalTrigger('ConditionalTrigger', {
       actions: [{
         crawler: crawler,
         arguments: {
@@ -349,7 +349,7 @@ describe('workflow with triggers', () => {
   test('conditional with no predicates', () => {
     // WHEN
     expect(() =>
-      workflow.addConditionalTrigger(stack, 'ConditionalTrigger', {
+      workflow.addConditionalTrigger('ConditionalTrigger', {
         actions: [{
           crawler: crawler,
           arguments: {
@@ -387,7 +387,7 @@ test('workflow with trigger that has both job and crawler as one action', () => 
   });
 
   // WHEN
-  expect(() => workflow.addOnDemandTrigger(stack, 'OnDemandTrigger', {
+  expect(() => workflow.addOnDemandTrigger('OnDemandTrigger', {
     actions: [{
       job: job,
       crawler: crawler,
@@ -404,7 +404,7 @@ test('workflow with trigger that has neither job nor crawler as one action', () 
   const workflow = new glue.Workflow(stack, 'myWorkflow');
 
   // WHEN
-  expect(() => workflow.addOnDemandTrigger(stack, 'OnDemandTrigger', {
+  expect(() => workflow.addOnDemandTrigger('OnDemandTrigger', {
     actions: [{
       arguments: {
         foo: 'bar',
