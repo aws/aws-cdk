@@ -108,7 +108,7 @@ export class TrustStore extends Resource implements ITrustStore {
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
 
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
-        throw new Error(`Invalid trustStoreName: '${props.trustStoreName}'. It must be 1-32 characters long.`);
+        throw new Error(`trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`);
       }
       const validNameRegex = /^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/;
       if (!validNameRegex.test(props.trustStoreName)) {
