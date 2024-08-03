@@ -169,3 +169,30 @@ workflow.addMonthlyScheduleTrigger(stack, 'MyMonthlySchedule', {
     },
   ],
 });
+
+workflow.addNotifyEventTrigger('MyNotifyEvent', {
+  triggerName: 'my_notify_event',
+  description: 'my_notify_event_description',
+  enabled: true,
+  batchSize: 10,
+  batchWindow: cdk.Duration.minutes(10),
+  actions: [
+    {
+      job: glueJob,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      arguments: {
+        '--arg1': 'value1',
+      },
+      securityConfiguration: securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: crawler,
+      delayCloudwatchEvent: cdk.Duration.minutes(5),
+      securityConfiguration: securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+  ],
+});
+
+glue.Workflow.fromWorkflowName(stack, 'imported-workflow', workflow.workflowName);
