@@ -1642,7 +1642,7 @@ export class InstanceType {
       [InstanceClass.MAC2_M2]: 'mac2-m2',
       [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
       [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
-      [InstanceClass.MACINTOSH2_M1_ULTRA]: 'mac2-m1ultra',
+      [InstanceClass.MACINTOSH2_M1_ULTRA]: 'macintosh2-m1-ultra',
       [InstanceClass.MAC2_M1ULTRA]: 'mac2-m1ultra',
       [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
       [InstanceClass.VT1]: 'vt1',
