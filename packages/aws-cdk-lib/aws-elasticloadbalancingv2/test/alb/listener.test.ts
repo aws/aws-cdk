@@ -1936,7 +1936,7 @@ describe('tests', () => {
   });
 
   describe('Mutual Authentication', () => {
-    test('Mutual Authentication settings with all propeties when mutualuAuthenticationMode is verify', () => {
+    test('Mutual Authentication settings with all properties when mutualAuthenticationMode is verify', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
