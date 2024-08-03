@@ -48,7 +48,7 @@ const workflow = new glue.Workflow(stack, 'MyWorkflow', {
   description: 'my_workflow_description',
 });
 
-workflow.addConditionalTrigger(stack, 'MyConditionalTrigger', {
+workflow.addConditionalTrigger('MyConditionalTrigger', {
   triggerName: 'my_conditional_trigger',
   description: 'my_conditional_trigger_description',
   enabled: true,
@@ -80,7 +80,7 @@ workflow.addConditionalTrigger(stack, 'MyConditionalTrigger', {
   ],
 });
 
-workflow.addOnDemandTrigger(stack, 'MyOnDemandTrigger', {
+workflow.addOnDemandTrigger('MyOnDemandTrigger', {
   triggerName: 'my_on_demand_trigger',
   description: 'my_on_demand_trigger_description',
   enabled: true,
@@ -101,7 +101,7 @@ workflow.addOnDemandTrigger(stack, 'MyOnDemandTrigger', {
   ],
 });
 
-workflow.addDailyScheduleTrigger(stack, 'MyDailySchedule', {
+workflow.addDailyScheduleTrigger('MyDailySchedule', {
   triggerName: 'my_daily_schedule',
   description: 'my_daily_schedule_description',
   enabled: true,
@@ -124,7 +124,7 @@ workflow.addDailyScheduleTrigger(stack, 'MyDailySchedule', {
   ],
 });
 
-workflow.addWeeklyScheduleTrigger(stack, 'MyWeeklySchedule', {
+workflow.addWeeklyScheduleTrigger('MyWeeklySchedule', {
   triggerName: 'my_weekly_schedule',
   description: 'my_weekly_schedule_description',
   enabled: true,
@@ -147,7 +147,7 @@ workflow.addWeeklyScheduleTrigger(stack, 'MyWeeklySchedule', {
   ],
 });
 
-workflow.addMonthlyScheduleTrigger(stack, 'MyMonthlySchedule', {
+workflow.addMonthlyScheduleTrigger('MyMonthlySchedule', {
   triggerName: 'my_monthly_schedule',
   description: 'my_monthly_schedule_description',
   enabled: true,

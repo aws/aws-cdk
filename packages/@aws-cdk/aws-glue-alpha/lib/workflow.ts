@@ -270,13 +270,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on demand.
    */
-  public addOnDemandTrigger(
-    scope: Construct,
-    id: string,
-    props: TriggerProps,
-  ): void {
+  public addOnDemandTrigger(id: string, props: TriggerProps): void {
     this.triggers.push(
-      new CfnTrigger(scope, id, {
+      new CfnTrigger(this, id, {
         name: props.triggerName,
         type: 'ON_DEMAND',
         workflowName: this.workflowName,
@@ -289,13 +285,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a daily schedule.
    */
-  public addDailyScheduleTrigger(
-    scope: Construct,
-    id: string,
-    props: TriggerProps,
-  ): void {
+  public addDailyScheduleTrigger(id: string, props: TriggerProps): void {
     this.triggers.push(
-      new CfnTrigger(scope, id, {
+      new CfnTrigger(this, id, {
         name: props.triggerName,
         type: 'SCHEDULED',
         schedule: 'cron(0 1 * * ? *)',
@@ -309,13 +301,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a weekly schedule.
    */
-  public addWeeklyScheduleTrigger(
-    scope: Construct,
-    id: string,
-    props: TriggerProps,
-  ): void {
+  public addWeeklyScheduleTrigger(id: string, props: TriggerProps): void {
     this.triggers.push(
-      new CfnTrigger(scope, id, {
+      new CfnTrigger(this, id, {
         name: props.triggerName,
         type: 'SCHEDULED',
         schedule: 'cron(0 1 ? * MON *)',
@@ -329,13 +317,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a monthly schedule.
    */
-  public addMonthlyScheduleTrigger(
-    scope: Construct,
-    id: string,
-    props: TriggerProps,
-  ): void {
+  public addMonthlyScheduleTrigger(id: string, props: TriggerProps): void {
     this.triggers.push(
-      new CfnTrigger(scope, id, {
+      new CfnTrigger(this, id, {
         name: props.triggerName,
         type: 'SCHEDULED',
         schedule: 'cron(0 1 1 * ? *)',
@@ -349,13 +333,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a custom schedule.
    */
-  public addCustomScheduleTrigger(
-    scope: Construct,
-    id: string,
-    props: ScheduleTriggerProps,
-  ): void {
+  public addCustomScheduleTrigger(id: string, props: ScheduleTriggerProps): void {
     this.triggers.push(
-      new CfnTrigger(scope, id, {
+      new CfnTrigger(this, id, {
         name: props.triggerName,
         type: 'SCHEDULED',
         schedule: props.schedule.expressionString,
@@ -369,13 +349,9 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a notification event.
    */
-  public addNotifyEventTrigger(
-    scope: Construct,
-    id: string,
-    props: NotificationTriggerProps,
-  ): void {
+  public addNotifyEventTrigger(id: string, props: NotificationTriggerProps): void {
     this.triggers.push(
-      new CfnTrigger(scope, id, {
+      new CfnTrigger(this, id, {
         name: props.triggerName,
         type: 'CONDITIONAL',
         workflowName: this.workflowName,
@@ -392,11 +368,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a conditional event.
    */
-  public addConditionalTrigger(
-    scope: Construct,
-    id: string,
-    props: ConditionalTriggerProps,
-  ): void {
+  public addConditionalTrigger(id: string, props: ConditionalTriggerProps): void {
     this.validatePredicates(props.jobPredicates, props.crawlerPredicates);
     const conditions: CfnTrigger.ConditionProperty[] = [];
 
@@ -422,7 +394,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
     }
 
     this.triggers.push(
-      new CfnTrigger(scope, id, {
+      new CfnTrigger(this, id, {
         name: props.triggerName,
         type: 'CONDITIONAL',
         workflowName: this.workflowName,
