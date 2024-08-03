@@ -256,7 +256,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         throw new Error(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`);
       }
 
-      if ((currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH)) {
+      if (currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH) {
         if (props.mutualAuthentication.trustStore) {
           throw new Error(`You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
         }
