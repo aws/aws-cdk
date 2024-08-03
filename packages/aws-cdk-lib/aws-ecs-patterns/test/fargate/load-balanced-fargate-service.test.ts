@@ -1462,7 +1462,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('errors when containerCpu is less than cpu', () => {
+  test('errors when containerCpu is larger than cpu', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1482,7 +1482,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).toThrow('containerCpu must be less than to cpu');
   });
 
-  describe('errors when containerCpu is non-negative integer', () => {
+  describe('errors when containerCpu is positive integer', () => {
     test('when containerCpu is negative integer', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1524,7 +1524,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('errors when containerMemoryLimitMiB is less than memoryLimitMiB', () => {
+  test('errors when containerMemoryLimitMiB is larger than memoryLimitMiB', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1544,7 +1544,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).toThrow('containerMemoryLimitMiB must be less than to memoryLimitMiB');
   });
 
-  describe('errors when containerMemoryLimitMiB is non-negative integer', () => {
+  describe('errors when containerMemoryLimitMiB is positive integer', () => {
     test('when containerMemoryLimitMiB is negative integer', () => {
       // GIVEN
       const stack = new cdk.Stack();
