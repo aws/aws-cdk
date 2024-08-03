@@ -112,7 +112,7 @@ export class TrustStore extends Resource implements ITrustStore {
       }
       const validNameRegex = /^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/;
       if (!validNameRegex.test(props.trustStoreName)) {
-        throw new Error(`Invalid trustStoreName: '${props.trustStoreName}'. It must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
+        throw new Error(`trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
       }
 
     }
