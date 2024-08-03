@@ -73,14 +73,6 @@ Flags come in three types:
 <<<<<<< HEAD
 <<<<<<< HEAD
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
-=======
-=======
-| [@aws-cdk/aws-cloudfront:useOriginAccessControl](#aws-cdkaws-cloudfrontuseoriginaccesscontrol) | When enabled, use Origin Access Control rather than Origin Access Identity | V2NEXT | (fix) |
->>>>>>> 386904900a (wip oac)
->>>>>>> c47258bd5d (wip oac)
-=======
-| [@aws-cdk/aws-cloudfront:useOriginAccessControl](#aws-cdkaws-cloudfrontuseoriginaccesscontrol) | When enabled, an origin access control will be created automatically when a new S3 origin is created. | V2NEXT | (fix) |
->>>>>>> a76e6cc968 (refactor)
 
 <!-- END table -->
 
@@ -144,17 +136,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
 <<<<<<< HEAD
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false
-=======
-<<<<<<< HEAD
-    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true
-=======
-    "@aws-cdk/aws-cloudfront:useOriginAccessControl": true,
->>>>>>> 386904900a (wip oac)
->>>>>>> c47258bd5d (wip oac)
-=======
-    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
-    "@aws-cdk/aws-cloudfront:useOriginAccessControl": true
->>>>>>> a76e6cc968 (refactor)
   }
 }
 ```
@@ -1299,7 +1280,7 @@ any prefix.
 
 *When enabled, the default volume type of the EBS volume will be GP3* (default)
 
-When this feature flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
+When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
 
 
 | Since | Default | Recommended |
@@ -1358,19 +1339,6 @@ property from the event object.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.145.0 | `false` | `false` |
-
-
-### @aws-cdk/aws-cloudfront:useOriginAccessControl
-
-*When enabled, an origin access control will be created automatically when a new S3 origin is created.* (fix)
-
-When this feature flag is enabled, an origin access control will be created automatically when a new `S3Origin` is created instead
-of an origin access identity (legacy).
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
