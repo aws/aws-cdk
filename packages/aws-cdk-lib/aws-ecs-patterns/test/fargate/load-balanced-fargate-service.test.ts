@@ -1462,7 +1462,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('errors when containerCpu is larger than cpu', () => {
+  test('errors when containerCpu is greater than cpu', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1482,7 +1482,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).toThrow('containerCpu must be less than to cpu');
   });
 
-  describe('errors when containerCpu is positive integer', () => {
+  describe('errors when containerCpu is not positive integer', () => {
     test('when containerCpu is negative integer', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1500,7 +1500,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerCpu: -1,
         });
-      }).toThrow('containerCpu must be a non-negative integer');
+      }).toThrow('containerCpu must be positive integer');
     });
 
     test('when containerCpu is float', () => {
@@ -1520,11 +1520,11 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerCpu: 0.5,
         });
-      }).toThrow('containerCpu must be a non-negative integer');
+      }).toThrow('containerCpu must be positive integer');
     });
   });
 
-  test('errors when containerMemoryLimitMiB is larger than memoryLimitMiB', () => {
+  test('errors when containerMemoryLimitMiB is greater than memoryLimitMiB', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1544,7 +1544,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).toThrow('containerMemoryLimitMiB must be less than to memoryLimitMiB');
   });
 
-  describe('errors when containerMemoryLimitMiB is positive integer', () => {
+  describe('errors when containerMemoryLimitMiB is not positive integer', () => {
     test('when containerMemoryLimitMiB is negative integer', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1562,7 +1562,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerMemoryLimitMiB: -1,
         });
-      }).toThrow('containerMemoryLimitMiB must be a non-negative integer');
+      }).toThrow('containerMemoryLimitMiB must be positive integer');
     });
 
     test('when containerMemoryLimitMiB is float', () => {
@@ -1582,7 +1582,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerMemoryLimitMiB: 0.5,
         });
-      }).toThrow('containerMemoryLimitMiB must be a non-negative integer');
+      }).toThrow('containerMemoryLimitMiB must be positive integer');
     });
   });
 });

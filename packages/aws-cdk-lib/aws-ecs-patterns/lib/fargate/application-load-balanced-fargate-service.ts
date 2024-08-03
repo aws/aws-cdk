@@ -176,7 +176,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   }
 
   /**
-   * Throws an error if containerCpu is greater than cpu or is a positive integer.
+   * Throws an error if containerCpu is greater than cpu or is a not positive integer.
    * @param containerCpu The minimum number of CPU units to reserve for the container.
    * @param cpu The number of cpu units used by the task. (default: 256)
    */
@@ -188,12 +188,12 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       throw new Error('containerCpu must be less than to cpu');
     }
     if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
-      throw new Error('containerCpu must be a non-negative integer');
+      throw new Error('containerCpu must be positive integer');
     }
   }
 
   /**
-   * Throws an error if containerMemoryLimitMiB is greater than memoryLimitMiB or is a positive integer.
+   * Throws an error if containerMemoryLimitMiB is greater than memoryLimitMiB or is a not positive integer.
    * @param containerMemoryLimitMiB The amount (in MiB) of memory to present to the container.
    * @param memoryLimitMiB The amount (in MiB) of memory used by the task. (default: 512)
    */
@@ -205,7 +205,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       throw new Error('containerMemoryLimitMiB must be less than to memoryLimitMiB');
     }
     if (containerMemoryLimitMiB < 0 || !Number.isInteger(containerMemoryLimitMiB)) {
-      throw new Error('containerMemoryLimitMiB must be a non-negative integer');
+      throw new Error('containerMemoryLimitMiB must be positive integer');
     }
   }
 }
