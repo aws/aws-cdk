@@ -249,23 +249,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error('At least one of \'port\' or \'protocol\' is required');
     }
 
-    if (props.mutualAuthentication) {
-      const currentMode = props.mutualAuthentication.mutualAuthenticationMode;
-
-      if (currentMode === MutualAuthenticationMode.VERIFY && !props.mutualAuthentication.trustStore) {
-        throw new Error(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`);
-      }
-
-      if (currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH) {
-        if (props.mutualAuthentication.trustStore) {
-          throw new Error(`You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
-        }
-
-        if (props.mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
-          throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
-        }
-      }
-    }
+    validateMutualAuthentication(props.mutualAuthentication);
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
@@ -1051,5 +1035,29 @@ function checkAddRuleProps(props: AddRuleProps) {
   const hasPriority = props.priority !== undefined;
   if (hasAnyConditions !== hasPriority) {
     throw new Error('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
+  }
+}
+
+function validateMutualAuthentication(mutualAuthentication?: MutualAuthentication): void {
+  if (!mutualAuthentication) {
+    return;
+  }
+
+  const currentMode = mutualAuthentication.mutualAuthenticationMode;
+
+  if (currentMode === MutualAuthenticationMode.VERIFY) {
+    if (!mutualAuthentication.trustStore) {
+      throw new Error(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`);
+    }
+  }
+
+  if (currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH) {
+    if (mutualAuthentication.trustStore) {
+      throw new Error(`You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+    }
+
+    if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
+      throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+    }
   }
 }
