@@ -5,7 +5,7 @@ import { Resource } from '../../../core';
 import { CfnTrustStoreRevocation } from '../elasticloadbalancingv2.generated';
 
 /**
- * properties for the trust store revocation
+ * Properties for the trust store revocation
  */
 export interface TrustStoreRevocationProps {
 
