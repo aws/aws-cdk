@@ -87,8 +87,11 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
-      this.validateContainerCpu(props.containerCpu, props.cpu);
-      this.validateContainerMemoryLimitMiB(props.containerMemoryLimitMiB, props.memoryLimitMiB);
+      this.validateHealthyPercentage('containerCpu', props.containerCpu);
+      this.validateHealthyPercentage('containerMemoryLimitMiB', props.containerMemoryLimitMiB);
+
+      this.validateNotExceeding('containerCpu', props.cpu ?? 256, props.containerCpu);
+      this.validateNotExceeding('containerMemoryLimitMiB', props.memoryLimitMiB ?? 512, props.containerMemoryLimitMiB);
 
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
@@ -176,36 +179,12 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   }
 
   /**
-   * Throws an error if containerCpu is greater than cpu or is a not positive integer.
-   * @param containerCpu The minimum number of CPU units to reserve for the container.
-   * @param cpu The number of cpu units used by the task. (default: 256)
+   * Throws an error if the specified value is greater than the limit.
    */
-  private validateContainerCpu(containerCpu?: number, cpu: number = 256) {
-    if (!containerCpu || Token.isUnresolved(containerCpu) || Token.isUnresolved(cpu)) {
-      return;
-    }
-    if (containerCpu > cpu) {
-      throw new Error('containerCpu must be less than to cpu');
-    }
-    if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
-      throw new Error('containerCpu must be positive integer');
-    }
-  }
-
-  /**
-   * Throws an error if containerMemoryLimitMiB is greater than memoryLimitMiB or is a not positive integer.
-   * @param containerMemoryLimitMiB The amount (in MiB) of memory to present to the container.
-   * @param memoryLimitMiB The amount (in MiB) of memory used by the task. (default: 512)
-   */
-  private validateContainerMemoryLimitMiB(containerMemoryLimitMiB?: number, memoryLimitMiB: number = 512) {
-    if (!containerMemoryLimitMiB || Token.isUnresolved(containerMemoryLimitMiB) || Token.isUnresolved(memoryLimitMiB)) {
-      return;
-    }
-    if (containerMemoryLimitMiB > memoryLimitMiB) {
-      throw new Error('containerMemoryLimitMiB must be less than to memoryLimitMiB');
-    }
-    if (containerMemoryLimitMiB < 0 || !Number.isInteger(containerMemoryLimitMiB)) {
-      throw new Error('containerMemoryLimitMiB must be positive integer');
+  private validateNotExceeding(name: string, limit: number, value?: number) {
+    if (value === undefined || Token.isUnresolved(value)) { return; }
+    if (value > limit) {
+      throw new Error(`${name}: Must be less than or equal to ${limit}; received ${value}`);
     }
   }
 }
