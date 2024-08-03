@@ -226,6 +226,62 @@ export interface IWorkflow extends IResource {
    * @attribute
    */
   readonly workflowName: string;
+
+  /**
+   * Adds a trigger to the workflow to run on demand.
+   *
+   * @param id The identifier for the trigger.
+   * @param props The properties for the trigger.
+   */
+  addOnDemandTrigger(id: string, props: TriggerProps): void;
+
+  /**
+   * Adds a trigger to the workflow to run on a daily schedule.
+   *
+   * @param id The identifier for the trigger.
+   * @param props The properties for the trigger.
+   */
+  addDailyScheduleTrigger(id: string, props: TriggerProps): void;
+
+  /**
+   * Adds a trigger to the workflow to run on a weekly schedule.
+   *
+   * @param id The identifier for the trigger.
+   * @param props The properties for the trigger.
+   */
+  addWeeklyScheduleTrigger(id: string, props: TriggerProps): void;
+
+  /**
+   * Adds a trigger to the workflow to run on a monthly schedule.
+   *
+   * @param id The identifier for the trigger.
+   * @param props The properties for the trigger.
+   */
+  addMonthlyScheduleTrigger(id: string, props: TriggerProps): void;
+
+  /**
+   * Adds a trigger to the workflow to run on a custom schedule.
+   *
+   * @param id The identifier for the trigger.
+   * @param props The properties for the trigger.
+   */
+  addCustomScheduleTrigger(id: string, props: ScheduleTriggerProps): void;
+
+  /**
+   * Adds a trigger to the workflow to run on a notification event.
+   *
+   * @param id The identifier for the trigger.
+   * @param props The properties for the trigger.
+   */
+  addNotifyEventTrigger(id: string, props: NotificationTriggerProps): void;
+
+  /**
+   * Adds a trigger to the workflow to run on a conditional event.
+   *
+   * @param id The identifier for the trigger.
+   * @param props The properties for the trigger.
+   */
+  addConditionalTrigger(id: string, props: ConditionalTriggerProps): void;
 }
 
 /**
@@ -262,7 +318,14 @@ export interface WorkflowProps {
 }
 
 abstract class WorkflowBase extends Resource implements IWorkflow {
+  /**
+   * The ARN of the workflow.
+   */
   public abstract readonly workflowArn: string;
+
+  /**
+   * The name of the workflow.
+   */
   public abstract readonly workflowName: string;
 
   private readonly triggers: CfnTrigger[] = [];
@@ -451,7 +514,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
 /**
  * A Glue workflow.
  */
-export class Workflow extends WorkflowBase implements IWorkflow {
+export class Workflow extends WorkflowBase {
   /**
    * Import an existing workflow, using its ARN.
    */
@@ -460,7 +523,7 @@ export class Workflow extends WorkflowBase implements IWorkflow {
     id: string,
     workflowArn: string,
   ): IWorkflow {
-    class Import extends WorkflowBase implements IWorkflow {
+    class Import extends WorkflowBase {
       public readonly workflowArn = workflowArn;
       public readonly workflowName = cdk.Arn.extractResourceName(
         workflowArn,
@@ -479,7 +542,7 @@ export class Workflow extends WorkflowBase implements IWorkflow {
     id: string,
     workflowName: string,
   ): IWorkflow {
-    class Import extends WorkflowBase implements IWorkflow {
+    class Import extends WorkflowBase {
       public readonly workflowArn = Workflow.buildWorkflowArn(
         scope,
         workflowName,
