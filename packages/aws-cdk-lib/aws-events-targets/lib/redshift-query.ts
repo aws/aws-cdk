@@ -1,8 +1,8 @@
-import { bindBaseTargetConfig, singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as sqs from '../../aws-sqs';
+import { bindBaseTargetConfig, singletonEventRole } from './util';
 
 /**
  * Configuration properties of an Amazon Redshift Query event.
@@ -11,10 +11,8 @@ export interface RedshiftQueryProps {
 
   /**
    * The Amazon Redshift database to run the query against.
-   *
-   * @default - no database is specified
    */
-  readonly database?: string;
+  readonly database: string;
 
   /**
    * The Amazon Redshift database user to run the query as. This is required when authenticating via temporary credentials.
@@ -89,7 +87,7 @@ export interface RedshiftQueryProps {
 export class RedshiftQuery implements events.IRuleTarget {
   constructor(
     private readonly clusterArn: string,
-    private readonly props: RedshiftQueryProps = {}) {
+    private readonly props: RedshiftQueryProps) {
   }
 
   bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
@@ -99,9 +97,6 @@ export class RedshiftQuery implements events.IRuleTarget {
     }
     if (this.props.batchSQL) {
       role.addToPrincipalPolicy(this.putBatchEventStatement());
-    }
-    if (!(this.props.database)) {
-      throw new Error('A database must be specified.');
     }
     if (this.props.sql && this.props.batchSQL) {
       throw new Error('Only one of `sql` or `batchSQL` can be specified, not both.');

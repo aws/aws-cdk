@@ -1,6 +1,5 @@
 import { Template } from '../../../assertions';
 import * as events from '../../../aws-events';
-import * as redshiftserverless from '../../../aws-redshiftserverless';
 import { Stack } from '../../../core';
 import * as targets from '../../lib';
 
@@ -163,14 +162,6 @@ describe('RedshiftQuery event target', () => {
             batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
           }));
         }).toThrow(/Only one of `sql` or `batchSQL` can be specified, not both./);
-      });
-
-      test('throws an error if a database is not specified', () => {
-        expect(() => {
-          rule.addTarget(new targets.RedshiftQuery(clusterArn, {
-            sql: 'SELECT * FROM foo',
-          }));
-        }).toThrow(/A database must be specified./);
       });
     });
   });
