@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "Stack.assets": {
+    "aws-stepfunctions-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Stack.assets.json",
+        "file": "aws-stepfunctions-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Stack": {
+    "aws-stepfunctions-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Stack.template.json",
+        "templateFile": "aws-stepfunctions-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2671a34b39f9d75f10baaa810e7901cbcaa8901ff9852aa7a49bf43a87af0155.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ba8b87b0747e6c3e548e85d4dd454f09746ed79a29633c3e0fbb869281f9406.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Stack.assets"
+          "aws-stepfunctions-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,55 +31,49 @@
         }
       },
       "dependencies": [
-        "Stack.assets"
+        "aws-stepfunctions-integ.assets"
       ],
       "metadata": {
-        "/Stack/Bus/Resource": [
+        "/aws-stepfunctions-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BusEA82B648"
+            "data": "StateMachineRoleB840431D"
           }
         ],
-        "/Stack/Bus/cdk-Statement1/Resource": [
+        "/aws-stepfunctions-integ/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement1D7D87B9D"
+            "data": "StateMachine2E01A3A5"
           }
         ],
-        "/Stack/Bus/cdk-Statement2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement2341A5B58"
-          }
-        ],
-        "/Stack/BootstrapVersion": [
+        "/aws-stepfunctions-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Stack/CheckBootstrapVersion": [
+        "/aws-stepfunctions-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Stack"
+      "displayName": "aws-stepfunctions-integ"
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets": {
+    "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets.json",
+        "file": "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9": {
+    "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.template.json",
+        "templateFile": "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -88,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+          "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -97,23 +91,23 @@
         }
       },
       "dependencies": [
-        "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+        "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C.assets"
       ],
       "metadata": {
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/StateMachineDisableXray/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/StateMachineDisableXray/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "IntegTest-EventBusStack/DefaultTest/DeployAssert"
+      "displayName": "StateMachineDisableXray/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

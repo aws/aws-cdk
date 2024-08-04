@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "Stack.assets": {
+    "cdk-synthetics-canary-run-config.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Stack.assets.json",
+        "file": "cdk-synthetics-canary-run-config.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Stack": {
+    "cdk-synthetics-canary-run-config": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Stack.template.json",
+        "templateFile": "cdk-synthetics-canary-run-config.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2671a34b39f9d75f10baaa810e7901cbcaa8901ff9852aa7a49bf43a87af0155.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2419aea0c8a75517961151282103f80d51914702e8458f09e1b5afc1762710de.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Stack.assets"
+          "cdk-synthetics-canary-run-config.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,55 +31,85 @@
         }
       },
       "dependencies": [
-        "Stack.assets"
+        "cdk-synthetics-canary-run-config.assets"
       ],
       "metadata": {
-        "/Stack/Bus/Resource": [
+        "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BusEA82B648"
+            "data": "CanaryArtifactsBucket4A60D32B"
           }
         ],
-        "/Stack/Bus/cdk-Statement1/Resource": [
+        "/cdk-synthetics-canary-run-config/Canary/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement1D7D87B9D"
+            "data": "CanaryArtifactsBucketPolicy63096C41"
           }
         ],
-        "/Stack/Bus/cdk-Statement2/Resource": [
+        "/cdk-synthetics-canary-run-config/Canary/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement2341A5B58"
+            "data": "CanaryServiceRoleD132250E"
           }
         ],
-        "/Stack/BootstrapVersion": [
+        "/cdk-synthetics-canary-run-config/Canary/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Canary11957FE2"
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/Canary/AutoDeleteUnderlyingResourcesCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CanaryAutoDeleteUnderlyingResourcesCustomResource76464216"
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112"
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E"
+          }
+        ],
+        "/cdk-synthetics-canary-run-config/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Stack/CheckBootstrapVersion": [
+        "/cdk-synthetics-canary-run-config/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Stack"
+      "displayName": "cdk-synthetics-canary-run-config"
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets": {
+    "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets.json",
+        "file": "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9": {
+    "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.template.json",
+        "templateFile": "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -88,7 +118,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+          "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -97,23 +127,23 @@
         }
       },
       "dependencies": [
-        "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+        "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72.assets"
       ],
       "metadata": {
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-integ-synthetics-canary-run-config/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-integ-synthetics-canary-run-config/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "IntegTest-EventBusStack/DefaultTest/DeployAssert"
+      "displayName": "cdk-integ-synthetics-canary-run-config/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
