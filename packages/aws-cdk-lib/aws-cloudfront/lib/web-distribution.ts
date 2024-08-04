@@ -479,7 +479,7 @@ export interface LambdaFunctionAssociation {
   /**
    * Allows a Lambda function to have read access to the body content.
    * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
-   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
    *
    * @default false
    */
