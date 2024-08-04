@@ -1,8 +1,8 @@
+import { bindBaseTargetConfig, singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as sqs from '../../aws-sqs';
-import { bindBaseTargetConfig, singletonEventRole } from './util';
 
 /**
  * Configuration properties of an Amazon Redshift Query event.
