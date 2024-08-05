@@ -12,6 +12,9 @@ export interface TopicProps {
   /**
    * A developer-defined string that can be used to identify this SNS topic.
    *
+   * The display name must be maximum 100 characters long, including hyphens (-),
+   * underscores (_), spaces, and tabs.
+   *
    * @default None
    */
   readonly displayName?: string;
@@ -294,6 +297,10 @@ export class Topic extends TopicBase {
       props.signatureVersion !== '2'
     ) {
       throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
+    }
+
+    if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
+      throw new Error(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
