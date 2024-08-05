@@ -9,7 +9,7 @@ import {
   Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { LustreDeploymentType, LustreFileSystem, LustreDataCompressionType, StorageType } from 'aws-cdk-lib/aws-fsx';
+import { LustreDeploymentType, LustreFileSystem, LustreDataCompressionType, StorageType, DriveCacheType } from 'aws-cdk-lib/aws-fsx';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
@@ -47,6 +47,7 @@ const hddFileSystem = new LustreFileSystem(stack, 'FsxLustreFileSystemHddStorage
     deploymentType: LustreDeploymentType.PERSISTENT_1,
     dataCompressionType: LustreDataCompressionType.LZ4,
     perUnitStorageThroughput: 12,
+    driveCacheType: DriveCacheType.READ,
   },
   storageCapacityGiB: 6000,
   vpc,
