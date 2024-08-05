@@ -48,15 +48,14 @@ const securityConfiguration = new glue.SecurityConfiguration(stack, 'MySecurityC
   },
 });
 
-const workflow = new glue.Workflow(stack, 'MyWorkflow', {
-  workflowName: 'my_workflow',
-  description: 'my_workflow_description',
+const onDemandWorkflow = new glue.Workflow(stack, 'MyWorkflow', {
+  workflowName: 'my_on_demand_workflow',
+  description: 'my_on_demand_workflow_description',
 });
 
-workflow.addOnDemandTrigger('MyOnDemandTrigger', {
+onDemandWorkflow.addOnDemandTrigger('MyOnDemandTrigger', {
   triggerName: 'my_on_demand_trigger',
   description: 'my_on_demand_trigger_description',
-  enabled: true,
   actions: [
     {
       job: glueJob,
@@ -74,7 +73,7 @@ workflow.addOnDemandTrigger('MyOnDemandTrigger', {
   ],
 });
 
-workflow.addConditionalTrigger('MyConditionalTrigger', {
+onDemandWorkflow.addConditionalTrigger('MyConditionalTrigger', {
   triggerName: 'my_conditional_trigger',
   description: 'my_conditional_trigger_description',
   enabled: true,
@@ -106,7 +105,12 @@ workflow.addConditionalTrigger('MyConditionalTrigger', {
   ],
 });
 
-workflow.addDailyScheduleTrigger('MyDailySchedule', {
+const dailyWorkflow = new glue.Workflow(stack, 'MyDailyWorkflow', {
+  workflowName: 'my_daily_workflow',
+  description: 'my_daily_workflow_description',
+});
+
+dailyWorkflow.addDailyScheduleTrigger('MyDailySchedule', {
   triggerName: 'my_daily_schedule',
   description: 'my_daily_schedule_description',
   enabled: true,
@@ -129,7 +133,12 @@ workflow.addDailyScheduleTrigger('MyDailySchedule', {
   ],
 });
 
-workflow.addWeeklyScheduleTrigger('MyWeeklySchedule', {
+const weeklyWorkflow = new glue.Workflow(stack, 'MyWeeklyWorkflow', {
+  workflowName: 'my_weekly_workflow',
+  description: 'my_weekly_workflow_description',
+});
+
+weeklyWorkflow.addWeeklyScheduleTrigger('MyWeeklySchedule', {
   triggerName: 'my_weekly_schedule',
   description: 'my_weekly_schedule_description',
   enabled: true,
@@ -152,7 +161,12 @@ workflow.addWeeklyScheduleTrigger('MyWeeklySchedule', {
   ],
 });
 
-workflow.addMonthlyScheduleTrigger('MyMonthlySchedule', {
+const monthlyWorkflow = new glue.Workflow(stack, 'MyMonthlyWorkflow', {
+  workflowName: 'my_monthly_workflow',
+  description: 'my_monthly_workflow_description',
+});
+
+monthlyWorkflow.addMonthlyScheduleTrigger('MyMonthlySchedule', {
   triggerName: 'my_monthly_schedule',
   description: 'my_monthly_schedule_description',
   enabled: true,
@@ -175,10 +189,14 @@ workflow.addMonthlyScheduleTrigger('MyMonthlySchedule', {
   ],
 });
 
-workflow.addNotifyEventTrigger('MyNotifyEvent', {
+const eventWorkflow = new glue.Workflow(stack, 'MyEventWorkflow', {
+  workflowName: 'my_event_workflow',
+  description: 'my_event_workflow_description',
+});
+
+eventWorkflow.addNotifyEventTrigger('MyNotifyEvent', {
   triggerName: 'my_notify_event',
   description: 'my_notify_event_description',
-  enabled: true,
   batchSize: 10,
   batchWindow: cdk.Duration.minutes(10),
   actions: [
@@ -200,7 +218,7 @@ workflow.addNotifyEventTrigger('MyNotifyEvent', {
   ],
 });
 
-const importedWorkflowByName = glue.Workflow.fromWorkflowName(stack, 'imported-workflow-name', workflow.workflowName);
+const importedWorkflowByName = glue.Workflow.fromWorkflowName(stack, 'imported-workflow-name', monthlyWorkflow.workflowName);
 
 glue.Workflow.fromWorkflowArn(stack, 'imported-workflow-arn', importedWorkflowByName.workflowArn);
 
