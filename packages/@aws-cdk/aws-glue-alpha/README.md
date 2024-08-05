@@ -628,7 +628,6 @@ declare const securityConfiguration: glue.ISecurityConfiguration;
 myWorkflow.addOnDemandTrigger('OnDemandTrigger', {
   triggerName: 'on_demand_trigger',
   description: 'description',
-  enabled: true,
   actions: [
     {
       job: myJob,
@@ -766,7 +765,6 @@ declare const securityConfiguration: glue.ISecurityConfiguration;
 myWorkflow.addNotifyEventTrigger('EventTrigger', {
   triggerName: 'event_trigger',
   description: 'description',
-  enabled: true,
   batchSize: 10,
   batchWindow: cdk.Duration.minutes(5),
   actions: [
