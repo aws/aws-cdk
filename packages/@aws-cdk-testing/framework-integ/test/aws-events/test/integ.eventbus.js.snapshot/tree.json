@@ -48,6 +48,7 @@
                         ]
                       }
                     },
+                    "description": "myEventBus",
                     "name": "StackBusAA0A1E4B"
                   }
                 },

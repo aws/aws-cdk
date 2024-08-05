@@ -11,6 +11,7 @@ const dlq = new sqs.Queue(stack, 'DLQ');
 
 const bus = new EventBus(stack, 'Bus', {
   deadLetterQueue: dlq,
+  description: 'myEventBus',
 });
 
 bus.addToResourcePolicy(new iam.PolicyStatement({
