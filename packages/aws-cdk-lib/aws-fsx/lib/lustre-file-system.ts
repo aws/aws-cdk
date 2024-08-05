@@ -52,6 +52,20 @@ export enum LustreAutoImportPolicy {
 }
 
 /**
+ * The type of drive cache used by PERSISTENT_1 file systems that are provisioned with HDD storage devices.
+ */
+export enum DriveCacheType {
+  /**
+   * The Lustre file system is configured with no data cache.
+   */
+  NONE= 'NONE',
+  /**
+   * The Lustre file system is configured with a read cache.
+   */
+  READ= 'READ',
+}
+
+/**
   * The permitted Lustre data compression algorithms
 */
 export enum LustreDataCompressionType {
@@ -175,6 +189,12 @@ export interface LustreConfiguration {
    */
   readonly dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime;
 
+  /**
+   * The type of drive cache used by PERSISTENT_1 file systems that are provisioned with HDD storage devices.
+   *
+   * @default - no drive cache
+   */
+  readonly driveCacheType?: DriveCacheType;
 }
 
 /**
@@ -275,10 +295,7 @@ export class LustreFileSystem extends FileSystemBase {
       weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
       automaticBackupRetentionDays: props.lustreConfiguration.automaticBackupRetention?.toDays(),
       dailyAutomaticBackupStartTime: props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
-      driveCacheType: (
-        props.storageType === StorageType.HDD
-        && props.lustreConfiguration.deploymentType === LustreDeploymentType.PERSISTENT_1
-      ) ? 'READ' : undefined,
+      driveCacheType: props.lustreConfiguration.driveCacheType ?? (props.storageType === StorageType.HDD ? DriveCacheType.NONE : undefined),
     };
     const lustreConfiguration = Object.assign({}, props.lustreConfiguration, updatedLustureProps);
 
@@ -328,6 +345,18 @@ export class LustreFileSystem extends FileSystemBase {
     this.validatePerUnitStorageThroughput(deploymentType, perUnitStorageThroughput, props.storageType);
     this.validateStorageCapacity(deploymentType, props.storageCapacityGiB, props.storageType, perUnitStorageThroughput);
     this.validateStorageType(deploymentType, props.storageType);
+    this.validateDriveCacheType(deploymentType, props.storageType, lustreConfiguration.driveCacheType);
+  }
+
+  /**
+   * Validates the drive cache type is only set for the PERSISTENT_1 deployment type and HDD storage type.
+   */
+  private validateDriveCacheType(deploymentType: LustreDeploymentType, storageType?: StorageType, driveCacheType?: DriveCacheType): void {
+    if (!driveCacheType) return;
+
+    if (deploymentType !== LustreDeploymentType.PERSISTENT_1 || storageType !== StorageType.HDD) {
+      throw new Error(`driveCacheType can only be set for PERSISTENT_1 HDD storage type, got: ${deploymentType} and ${storageType}`);
+    }
   }
 
   /**
@@ -431,7 +460,7 @@ export class LustreFileSystem extends FileSystemBase {
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_2) {
       if (![125, 250, 500, 1000].includes(perUnitStorageThroughput)) {
-        throw new Error('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + perUnitStorageThroughput);
+        throw new Error(`perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ${perUnitStorageThroughput}`);
       }
     }
   }

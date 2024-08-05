@@ -13,6 +13,7 @@ import {
   LustreDataCompressionType,
   DailyAutomaticBackupStartTime,
   StorageType,
+  DriveCacheType,
 } from '../lib';
 
 describe('FSx for Lustre File System', () => {
@@ -928,6 +929,42 @@ describe('FSx for Lustre File System', () => {
           });
         }).toThrow(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
       });
+
+      test.each([{
+        deploymentType: LustreDeploymentType.PERSISTENT_1,
+        storageType: StorageType.SSD,
+        driveCacheType: DriveCacheType.READ,
+      },
+      {
+        deploymentType: LustreDeploymentType.PERSISTENT_1,
+        storageType: StorageType.SSD,
+        driveCacheType: DriveCacheType.NONE,
+      },
+      {
+        deploymentType: LustreDeploymentType.PERSISTENT_2,
+        storageType: StorageType.SSD,
+        driveCacheType: DriveCacheType.READ,
+      },
+      {
+        deploymentType: LustreDeploymentType.PERSISTENT_2,
+        storageType: StorageType.SSD,
+        driveCacheType: DriveCacheType.NONE,
+      }])('throw error for invalid drive cache type', (props) => {
+        lustreConfiguration = {
+          deploymentType: props.deploymentType,
+          driveCacheType: props.driveCacheType,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+            storageType: props.storageType,
+          });
+        }).toThrow(`driveCacheType can only be set for PERSISTENT_1 HDD storage type, got: ${props.deploymentType} and ${props.storageType}`);
+      });
     });
   });
 
@@ -947,7 +984,7 @@ describe('FSx for Lustre File System', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
       LustreConfiguration: {
         DeploymentType: LustreDeploymentType.PERSISTENT_1,
-        ...( storageType === StorageType.HDD ? { DriveCacheType: 'READ' } : undefined ),
+        ...( storageType === StorageType.HDD ? { DriveCacheType: 'NONE' } : undefined ),
       },
       StorageType: storageType,
     });
