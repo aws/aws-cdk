@@ -2,12 +2,17 @@ import * as cdk from 'aws-cdk-lib';
 import * as glueCfn from 'aws-cdk-lib/aws-glue';
 import * as path from 'path';
 import * as glue from '../lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-glue-workflow');
 
 new glue.Workflow(stack, 'MyWorkflowTask');
+const glueRole = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
+});
 const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py'));
 const glueJob = new glue.Job(stack, 'MyJob', {
   executable: glue.JobExecutable.pythonShell({
@@ -21,7 +26,7 @@ const crawler = new glueCfn.CfnCrawler(stack, 'MyCrawler', {
   targets: {
     s3Targets: [{ path: 's3://my_bucket' }],
   },
-  role: 'my_role',
+  role: glueRole.roleArn,
 });
 const predicateGlueJob = new glue.Job(stack, 'MyPredicateJob', {
   executable: glue.JobExecutable.pythonShell({
@@ -35,7 +40,7 @@ const predicateCrawler = new glueCfn.CfnCrawler(stack, 'MyPredicateCrawler', {
   targets: {
     s3Targets: [{ path: 's3://my_bucket' }],
   },
-  role: 'my_role',
+  role: glueRole.roleArn,
 });
 const securityConfiguration = new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
   s3Encryption: {
@@ -46,6 +51,27 @@ const securityConfiguration = new glue.SecurityConfiguration(stack, 'MySecurityC
 const workflow = new glue.Workflow(stack, 'MyWorkflow', {
   workflowName: 'my_workflow',
   description: 'my_workflow_description',
+});
+
+workflow.addOnDemandTrigger('MyOnDemandTrigger', {
+  triggerName: 'my_on_demand_trigger',
+  description: 'my_on_demand_trigger_description',
+  enabled: true,
+  actions: [
+    {
+      job: glueJob,
+      arguments: {
+        '--arg1': 'value1',
+      },
+      securityConfiguration: securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+    {
+      crawler: crawler,
+      securityConfiguration: securityConfiguration,
+      timeout: cdk.Duration.minutes(10),
+    },
+  ],
 });
 
 workflow.addConditionalTrigger('MyConditionalTrigger', {
@@ -74,27 +100,6 @@ workflow.addConditionalTrigger('MyConditionalTrigger', {
     {
       crawler: crawler,
       delayCloudwatchEvent: cdk.Duration.minutes(5),
-      securityConfiguration: securityConfiguration,
-      timeout: cdk.Duration.minutes(10),
-    },
-  ],
-});
-
-workflow.addOnDemandTrigger('MyOnDemandTrigger', {
-  triggerName: 'my_on_demand_trigger',
-  description: 'my_on_demand_trigger_description',
-  enabled: true,
-  actions: [
-    {
-      job: glueJob,
-      arguments: {
-        '--arg1': 'value1',
-      },
-      securityConfiguration: securityConfiguration,
-      timeout: cdk.Duration.minutes(10),
-    },
-    {
-      crawler: crawler,
       securityConfiguration: securityConfiguration,
       timeout: cdk.Duration.minutes(10),
     },
@@ -198,3 +203,9 @@ workflow.addNotifyEventTrigger('MyNotifyEvent', {
 const importedWorkflowByName = glue.Workflow.fromWorkflowName(stack, 'imported-workflow-name', workflow.workflowName);
 
 glue.Workflow.fromWorkflowArn(stack, 'imported-workflow-arn', importedWorkflowByName.workflowArn);
+
+new integ.IntegTest(app, 'aws-cdk-glue-table-integ', {
+  testCases: [stack],
+});
+
+app.synth();
