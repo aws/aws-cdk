@@ -123,7 +123,7 @@ describe('imported workflow', () => {
             State: 'SUCCEEDED',
           },
         ],
-        Logical: 'ALL',
+        Logical: 'AND',
       },
       WorkflowName: 'myWorkflow',
     });
@@ -382,7 +382,7 @@ describe('workflow with triggers', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
-      Type: 'CONDITIONAL',
+      Type: 'EVENT',
       Actions: [{
         JobName: { Ref: 'myJob9A6589B3' },
         Arguments: {
@@ -453,7 +453,7 @@ describe('workflow with triggers', () => {
             CrawlState: 'SUCCEEDED',
           },
         ],
-        Logical: 'ALL',
+        Logical: 'AND',
       },
       WorkflowName: { Ref: 'myWorkflow931F3265' },
     });

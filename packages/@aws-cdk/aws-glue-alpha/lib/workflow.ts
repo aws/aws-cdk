@@ -13,7 +13,7 @@ export enum TriggerPredicateCondition {
   /**
    * Defines when all predicates are met.
    */
-  AND = 'ALL',
+  AND = 'AND',
 
   /**
    * Defines when any predicate is met.
@@ -142,22 +142,27 @@ export interface TriggerProps {
   readonly description?: string;
 
   /**
-   * Whether this trigger is enabled.
-   *
-   * @default true
-   */
-  readonly enabled?: boolean;
-
-  /**
    * The actions to be executed when this trigger fires.
    */
   readonly actions: Action[];
 }
 
 /**
+ * Properties for a trigger that can be enabled or disabled.
+ */
+export interface ActivatableTriggerProps extends TriggerProps {
+  /**
+   * Whether the trigger is enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+}
+
+/**
  * Properties for defining a new schedule trigger, to be assigned to a workflow.
  */
-export interface ScheduleTriggerProps extends TriggerProps {
+export interface ScheduleTriggerProps extends ActivatableTriggerProps {
   /**
    * The schedule for this trigger.
    */
@@ -186,7 +191,7 @@ export interface NotificationTriggerProps extends TriggerProps {
 /**
  * Properties for defining a new conditional trigger, to be assigned to a workflow.
  */
-export interface ConditionalTriggerProps extends TriggerProps {
+export interface ConditionalTriggerProps extends ActivatableTriggerProps {
   /**
    * The condition to be evaluated.
    *
@@ -241,7 +246,7 @@ export interface IWorkflow extends IResource {
    * @param id The identifier for the trigger.
    * @param props The properties for the trigger.
    */
-  addDailyScheduleTrigger(id: string, props: TriggerProps): void;
+  addDailyScheduleTrigger(id: string, props: ActivatableTriggerProps): void;
 
   /**
    * Adds a trigger to the workflow to run on a weekly schedule.
@@ -249,7 +254,7 @@ export interface IWorkflow extends IResource {
    * @param id The identifier for the trigger.
    * @param props The properties for the trigger.
    */
-  addWeeklyScheduleTrigger(id: string, props: TriggerProps): void;
+  addWeeklyScheduleTrigger(id: string, props: ActivatableTriggerProps): void;
 
   /**
    * Adds a trigger to the workflow to run on a monthly schedule.
@@ -257,7 +262,7 @@ export interface IWorkflow extends IResource {
    * @param id The identifier for the trigger.
    * @param props The properties for the trigger.
    */
-  addMonthlyScheduleTrigger(id: string, props: TriggerProps): void;
+  addMonthlyScheduleTrigger(id: string, props: ActivatableTriggerProps): void;
 
   /**
    * Adds a trigger to the workflow to run on a custom schedule.
@@ -339,7 +344,6 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
         name: props.triggerName,
         type: 'ON_DEMAND',
         workflowName: this.workflowName,
-        startOnCreation: props.enabled ?? true,
         actions: props.actions?.map(action => this.renderAction(action)),
       }),
     );
@@ -348,7 +352,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a daily schedule.
    */
-  public addDailyScheduleTrigger(id: string, props: TriggerProps): void {
+  public addDailyScheduleTrigger(id: string, props: ActivatableTriggerProps): void {
     this.triggers.push(
       new CfnTrigger(this, id, {
         name: props.triggerName,
@@ -364,7 +368,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a weekly schedule.
    */
-  public addWeeklyScheduleTrigger(id: string, props: TriggerProps): void {
+  public addWeeklyScheduleTrigger(id: string, props: ActivatableTriggerProps): void {
     this.triggers.push(
       new CfnTrigger(this, id, {
         name: props.triggerName,
@@ -380,7 +384,7 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
   /**
    * Adds a trigger to the workflow to run on a monthly schedule.
    */
-  public addMonthlyScheduleTrigger(id: string, props: TriggerProps): void {
+  public addMonthlyScheduleTrigger(id: string, props: ActivatableTriggerProps): void {
     this.triggers.push(
       new CfnTrigger(this, id, {
         name: props.triggerName,
@@ -416,9 +420,8 @@ abstract class WorkflowBase extends Resource implements IWorkflow {
     this.triggers.push(
       new CfnTrigger(this, id, {
         name: props.triggerName,
-        type: 'CONDITIONAL',
+        type: 'EVENT',
         workflowName: this.workflowName,
-        startOnCreation: props.enabled ?? true,
         actions: props.actions?.map(action => this.renderAction(action)) ?? [],
         eventBatchingCondition: {
           batchSize: props.batchSize ?? 1,
