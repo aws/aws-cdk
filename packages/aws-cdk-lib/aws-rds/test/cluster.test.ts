@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { Secret } from '../../aws-secretsmanager';
+import * as sm from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
 import {
@@ -5264,7 +5264,7 @@ describe('cluster', () => {
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      const secret = new Secret(stack, 'Secret');
+      const secret = new sm.Secret(stack, 'Secret');
 
       // WHEN
       const importedCluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'ImportedCluster', {
@@ -5331,6 +5331,107 @@ describe('cluster', () => {
 
       // THEN
       expect(() => cluster.grantDataApiAccess(role)).toThrow('Cannot grant Data API access when the Data API is disabled');
+    });
+  });
+
+  describe('manageMasterUserPassword prop', () => {
+    test('manageMasterUserPassword cfn property true when associated DB cluster prop is true', () => {
+      // Given
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_1 }),
+        manageMasterUserPassword: true,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        ManageMasterUserPassword: true,
+      });
+
+    });
+
+    test('throw error for setting `manageMasterUserPassword` to true while `credentials` props excludeCharacters is defined', () => {
+      // Given
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_1 }),
+          manageMasterUserPassword: true,
+          credentials: { username: 'test', excludeCharacters: '1234' },
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+        });
+
+        // THEN
+      }).toThrow('Only the `username` and `encryptionKey` credentials properties may be used when `manageMasterUserPassword` is true');
+    });
+
+    test('throw error for setting `manageMasterUserPassword` to true while `credentials` prop secret is defined', () => {
+      // Given
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const secret = new sm.Secret(stack, 'secret');
+
+      // WHEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_1 }),
+          manageMasterUserPassword: true,
+          credentials: { secret: secret },
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+        });
+
+        // THEN
+      }).toThrow('Only the `username` and `encryptionKey` credentials properties may be used when `manageMasterUserPassword` is true');
+    });
+
+    test('throw error for setting `manageMasterUserPassword` to true while `credentials` prop password is defined', () => {
+      // Given
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const secret = new sm.Secret(stack, 'secret');
+
+      // WHEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_1 }),
+          manageMasterUserPassword: true,
+          credentials: { username: 'test', replicaRegions: ['us-east-1', 'us-west-2'] },
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+        });
+
+        // THEN
+      }).toThrow('Only the `username` and `encryptionKey` credentials properties may be used when `manageMasterUserPassword` is true');
+    });
+
+    test('throw error for setting `manageMasterUserPassword` to true while `credentials` is passed a Credentials object', () => {
+      // Given
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const secret = new sm.Secret(stack, 'secret');
+
+      // WHEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_1 }),
+          manageMasterUserPassword: true,
+          credentials: Credentials.fromSecret(secret),
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+        });
+
+        // THEN
+      }).toThrow('Only the `username` and `encryptionKey` credentials properties may be used when `manageMasterUserPassword` is true');
     });
   });
 });
