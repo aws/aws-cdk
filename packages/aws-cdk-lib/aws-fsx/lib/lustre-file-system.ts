@@ -465,14 +465,14 @@ export class LustreFileSystem extends FileSystemBase {
     if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
       if (storageType === StorageType.HDD) {
         if (perUnitStorageThroughput === 12 && storageCapacity % 6000 !== 0) {
-          throw new Error('storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput');
+          throw new Error(`storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput, got ${storageCapacity}`);
         }
         if (perUnitStorageThroughput === 40 && storageCapacity % 1800 !== 0) {
-          throw new Error('storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput');
+          throw new Error(`storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput, got ${storageCapacity}`);
         }
       } else {
         if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
-          throw new Error('storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage');
+          throw new Error(`storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage, got ${storageCapacity}`);
         }
       }
     }
