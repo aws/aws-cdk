@@ -449,7 +449,7 @@ export class LustreFileSystem extends FileSystemBase {
   ): void {
     if (deploymentType === LustreDeploymentType.SCRATCH_1) {
       if (![1200, 2400, 3600].includes(storageCapacity) && storageCapacity % 3600 !== 0) {
-        throw new Error('storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type');
+        throw new Error(`storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type, got ${storageCapacity}.`);
       }
     }
 
