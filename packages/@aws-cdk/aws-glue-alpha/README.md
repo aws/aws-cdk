@@ -625,7 +625,7 @@ declare const myJob: glue.IJob;
 declare const myCrawler: glueCfn.CfnCrawler;
 declare const securityConfiguration: glue.ISecurityConfiguration;
 
-myWorkflow.addOnDemandTrigger(this, 'OnDemandTrigger', {
+myWorkflow.addOnDemandTrigger('OnDemandTrigger', {
   triggerName: 'on_demand_trigger',
   description: 'description',
   enabled: true,
@@ -658,7 +658,7 @@ declare const myCrawler: glueCfn.CfnCrawler;
 declare const securityConfiguration: glue.ISecurityConfiguration;
 declare const schedule: events.Schedule;
 
-myWorkflow.addCustomScheduleTrigger(this, 'ScheduleTrigger', {
+myWorkflow.addCustomScheduleTrigger('ScheduleTrigger', {
   triggerName: 'schedule_trigger',
   description: 'description',
   enabled: true,
@@ -689,7 +689,7 @@ declare const myJob: glue.IJob;
 declare const myCrawler: glueCfn.CfnCrawler;
 declare const securityConfiguration: glue.ISecurityConfiguration;
 
-myWorkflow.addDailyScheduleTrigger(this, 'DailyScheduleTrigger', {
+myWorkflow.addDailyScheduleTrigger('DailyScheduleTrigger', {
   triggerName: 'daily_schedule_trigger',
   description: 'description',
   enabled: true,
@@ -710,7 +710,7 @@ myWorkflow.addDailyScheduleTrigger(this, 'DailyScheduleTrigger', {
   ],
 });
 
-myWorkflow.addWeeklyScheduleTrigger(this, 'WeeklyScheduleTrigger', {
+myWorkflow.addWeeklyScheduleTrigger('WeeklyScheduleTrigger', {
   triggerName: 'weekly_schedule_trigger',
   description: 'description',
   enabled: true,
@@ -731,7 +731,7 @@ myWorkflow.addWeeklyScheduleTrigger(this, 'WeeklyScheduleTrigger', {
   ],
 });
 
-myWorkflow.addMonthlyScheduleTrigger(this, 'MonthlyScheduleTrigger', {
+myWorkflow.addMonthlyScheduleTrigger('MonthlyScheduleTrigger', {
   triggerName: 'monthly_schedule_trigger',
   description: 'description',
   enabled: true,
@@ -763,7 +763,7 @@ declare const myJob: glue.IJob;
 declare const myCrawler: glueCfn.CfnCrawler;
 declare const securityConfiguration: glue.ISecurityConfiguration;
 
-myWorkflow.addNotifyEventTrigger(this, 'EventTrigger', {
+myWorkflow.addNotifyEventTrigger('EventTrigger', {
   triggerName: 'event_trigger',
   description: 'description',
   enabled: true,
@@ -799,7 +799,7 @@ declare const predicateJob: glue.IJob;
 declare const predicateCrawler: glueCfn.CfnCrawler;
 declare const securityConfiguration: glue.ISecurityConfiguration;
 
-myWorkflow.addConditionalTrigger(this, 'ConditionalTrigger', {
+myWorkflow.addConditionalTrigger('ConditionalTrigger', {
   triggerName: 'conditional_trigger',
   description: 'description',
   enabled: true,
