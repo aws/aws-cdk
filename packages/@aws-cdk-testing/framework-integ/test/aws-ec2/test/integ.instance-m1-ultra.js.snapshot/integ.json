@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "IntegMacM1UltraEc2Instance/DefaultTest": {
+      "stacks": [
+        "MacM1UltraEc2InstanceStack"
+      ],
+      "assertionStack": "IntegMacM1UltraEc2Instance/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegMacM1UltraEc2InstanceDefaultTestDeployAssertC4FE442D"
+    }
+  }
+}
