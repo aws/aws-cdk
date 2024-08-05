@@ -41,7 +41,7 @@ describe('RedshiftQuery event target', () => {
         });
       });
 
-      test('assigns the `dev` database to the RedshiftQuery', () => {
+      test('assigns the database to the RedshiftQuery', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
@@ -54,7 +54,7 @@ describe('RedshiftQuery event target', () => {
       });
     });
 
-    describe('with explicity SQL statements', () => {
+    describe('with explicity set SQL statements', () => {
       test('sets the SQL statement', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
