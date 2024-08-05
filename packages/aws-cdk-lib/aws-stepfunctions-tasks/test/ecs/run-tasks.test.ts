@@ -227,7 +227,7 @@ test('Running a task with cpu parameter', () => {
     new tasks.EcsRunTask(stack, 'task', {
       cluster,
       taskDefinition,
-      cpu: '1024',
+      cpu: 1024,
       containerOverrides: [
         {
           containerDefinition,
@@ -235,7 +235,7 @@ test('Running a task with cpu parameter', () => {
         },
       ],
       launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson())).toHaveProperty('Parameters.Overrides.Cpu', '1024');
+    }).toStateJson())).toHaveProperty('Parameters.Overrides.Cpu', 1024);
 });
 
 test('Running a task with memory parameter', () => {
@@ -254,7 +254,7 @@ test('Running a task with memory parameter', () => {
     new tasks.EcsRunTask(stack, 'task', {
       cluster,
       taskDefinition,
-      memoryMiB: '2048',
+      memoryMiB: 2048,
       containerOverrides: [
         {
           containerDefinition,
@@ -262,7 +262,7 @@ test('Running a task with memory parameter', () => {
         },
       ],
       launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson())).toHaveProperty('Parameters.Overrides.Memory', '2048');
+    }).toStateJson())).toHaveProperty('Parameters.Overrides.Memory', 2048);
 });
 
 test('Running a Fargate Task', () => {

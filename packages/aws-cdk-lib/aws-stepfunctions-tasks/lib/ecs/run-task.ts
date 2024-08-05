@@ -97,14 +97,14 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    *
    * @default - No override
    */
-  readonly cpu?: string;
+  readonly cpu?: number;
 
   /**
    * Memory setting override
    *
    * @default - No override
    */
-  readonly memoryMiB?: string;
+  readonly memoryMiB?: number;
 }
 
 /**
@@ -456,8 +456,8 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 }
 
 interface OverrideProps {
-  cpu?: string;
-  memoryMiB?: string;
+  cpu?: number;
+  memoryMiB?: number;
   containerOverrides?: ContainerOverride[];
 }
 
