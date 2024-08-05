@@ -325,7 +325,12 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
-        Overrides: renderOverrides(this.props.cpu, this.props.memoryMiB, this.props.containerOverrides),
+        Overrides: renderOverrides(
+          {
+            cpu: this.props.cpu,
+            memoryMiB: this.props.memoryMiB,
+            containerOverrides: this.props.containerOverrides,
+          }),
         PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
         EnableExecuteCommand: this.props.enableExecuteCommand,
@@ -450,9 +455,16 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   }
 }
 
-function renderOverrides(cpu?: string, memoryMiB?: string, containerOverrides?: ContainerOverride[]) {
+interface OverrideProps {
+  cpu?: string;
+  memoryMiB?: string;
+  containerOverrides?: ContainerOverride[];
+}
+
+function renderOverrides(props: OverrideProps) {
+  const containerOverrides = props.containerOverrides;
   const noContainerOverrides = !containerOverrides || containerOverrides.length === 0;
-  if (noContainerOverrides && !cpu && !memoryMiB) {
+  if (noContainerOverrides && !props.cpu && !props.memoryMiB) {
     return undefined;
   }
 
@@ -475,8 +487,8 @@ function renderOverrides(cpu?: string, memoryMiB?: string, containerOverrides?: 
   }
 
   return {
-    Cpu: cpu,
-    Memory: memoryMiB,
+    Cpu: props.cpu,
+    Memory: props.memoryMiB,
     ContainerOverrides: noContainerOverrides ? undefined : ret,
   };
 }
