@@ -4,7 +4,6 @@ import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
-
 /**
  * IpAddress options to define VPC V2
  */
@@ -292,10 +291,10 @@ export class VpcV2 extends VpcV2Base {
 
       let ipCount = 0;
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
-
         //Counter to generate a random string for input to hash function
         ipCount+=1;
         const hash = pathHash('Secondary'+ipCount);
+
         const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
 
         if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool) {
@@ -476,3 +475,13 @@ function pathHash(path: string): string {
   const md5 = md5hash(path);
   return md5.slice(0, 4).toUpperCase();
 }
+
+// function generateRandomString(length: number): string {
+//   const pattern = /[a-zA-Z0-9]/;
+//   const characters = pattern.source.replace(/\\/g, '');;
+//   let result = '';
+//   for (let i = 0; i < length; i++) {
+//     result += characters.charAt(Math.floor(Math.random() * characters.length));
+//   }
+//   return result;
+// }

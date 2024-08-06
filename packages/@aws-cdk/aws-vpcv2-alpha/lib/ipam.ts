@@ -195,7 +195,7 @@ export interface IIpamPool{
  * IPAM scope is the highest-level container within IPAM. An IPAM contains two default scopes.
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
  */
-export interface IpamScopeProps extends IpamScopeOptions{
+interface IpamScopeProps extends IpamScopeOptions{
   /**
    * IPAM id to which scope needs to be added
    */
@@ -266,11 +266,6 @@ export interface IIpamScopeBase{
    * Default Scope ids created by the IPAM or a new Resource id
    */
   readonly scopeId: string;
-
-  /**
-   * Properties to configure IPAMScope
-   */
-  readonly props?: IpamScopeProps;
 
   /**
    * Defines scope type can be either default or custom
@@ -370,7 +365,7 @@ class IpamScope extends Resource implements IIpamScopeBase {
   /**
    * Properties to configure ipam scope
    */
-  public readonly props: IpamScopeProps;
+  private readonly props: IpamScopeProps;
 
   /**
    * Reference to stack scope to be passed through addPool method inorder to create a new IpamPool
@@ -410,7 +405,7 @@ class IpamScopeBase implements IIpamScopeBase {
   constructor(
     readonly scope: Construct,
     readonly scopeId: string,
-    readonly props: IpamScopeProps,
+    private readonly props: IpamScopeProps,
     readonly scopeType?: IpamScopeType,
   ) {
     this.scopeType = IpamScopeType.DEFAULT;
