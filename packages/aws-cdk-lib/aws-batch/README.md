@@ -111,6 +111,23 @@ computeEnv.addInstanceClass(ec2.InstanceClass.M4);
 computeEnv.addInstanceClass(ec2.InstanceClass.R4);
 ```
 
+#### Configure AMIs
+
+You can configure Amazon Machine Images (AMIs). This example configures your `ComputeEnvironment` to use Amazon Linux 2023.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  vpc,
+  images: [
+    {
+      imageType: batch.EcsMachineImageType.ECS_AL2023,
+    },
+  ],
+});
+```
+
 #### Allocation Strategies
 
 | Allocation Strategy           | Optimized for              | Downsides                     |
