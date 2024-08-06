@@ -233,11 +233,21 @@ const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
 });
 ```
 
-- HDD storage type is only supported for `PERSISTENT_1` deployment type.
-- If you specify `HDD` storage type, FileSystem implicitly uses cache to improve the performance for frequently accessed files by caching up to 20% of the total storage capacity of the file system.
+**Note:** The HDD storage type is only supported for `PERSISTENT_1` deployment types.
 
-For more information, see [document](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html#storage-options).
+To improve the performance of frequently accessed files by caching up to 20% of the total storage capacity of the file system, set `driveCacheType` to `READ`:
 
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.PERSISTENT_1 },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  storageType: fsx.StorageType.HDD,
+  driveCacheType: DriveCacheType.READ,
+});
 ## FSx for Windows File Server
 
 The L2 construct for the FSx for Windows File Server has not yet been implemented. To instantiate an FSx for Windows
