@@ -105,10 +105,10 @@ new route53.ARecord(this, 'ARecord', {
 ```
 
 To create an A record of type alias with target set to another record created outside CDK:
-### This function registers the given input i.e. DNS Name(string) of an existing record as an AliasTarget to the new ARecord. To register a target that is created as part of CDK use this instead https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53_targets-readme.html
+> NOTE: This function `fromARecordAttributes` registers the given input i.e. DNS Name(string) of an existing record as an Alias Target to the new A Record.
+> To register a target that is created as part of CDK use this instead: [aws_route53_targets](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53_targets-readme.html).
 
 ```ts
-
 declare const myZone: route53.HostedZone;
 const targetRecord = 'existing.record.cdk.local';
 const record = route53.ARecord.fromARecordAttributes(this, 'A', {
@@ -228,7 +228,7 @@ stack with a record set that already exists. This is typically the case for reco
 are not already "owned" by CloudFormation or "owned" by another stack or construct that is
 going to be deleted (migration).
 
-> **N.B.:** this feature is dangerous, use with caution! It can only be used safely when
+> NOTE: This feature is dangerous, use with caution! It can only be used safely when
 > `deleteExisting` is set to `true` as soon as the resource is added to the stack. Changing
 > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
 > will delete the record!
@@ -414,7 +414,7 @@ out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environment
 automatically looks into your `~/.aws/config` file for the `[default]` profile.
 If you want to specify a different account run `cdk deploy --profile [profile]`.
 
-```text
+```ts
 new MyDevStack(app, 'dev', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
