@@ -29,6 +29,9 @@ export interface PlaceIndexProps {
   /**
    * A name for the place index
    *
+   * Must be between 1 and 100 characters and contain only alphanumeric characters,
+   * hyphens, periods and underscores.
+   *
    * @default - A name is automatically generated
    */
   readonly placeIndexName?: string;
@@ -175,6 +178,10 @@ export class PlaceIndex extends PlaceIndexBase {
   public readonly placeIndexUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+    }
+
     if (props.placeIndexName && !Token.isUnresolved(props.placeIndexName) && !/^[-.\w]{1,100}$/.test(props.placeIndexName)) {
       throw new Error(`Invalid place index name. The place index name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.placeIndexName}`);
     }

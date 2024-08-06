@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "38bbea7ad7bf5c0e69f3dfe4b69946421447d0c2d561f2ca00b96df51b40c92c": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-call-aws-service-efs-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "38bbea7ad7bf5c0e69f3dfe4b69946421447d0c2d561f2ca00b96df51b40c92c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

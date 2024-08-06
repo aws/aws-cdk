@@ -81,6 +81,17 @@ export interface EventBusProps {
   readonly eventSourceName?: string;
 
   /**
+   * The event bus description.
+   *
+   * The description can be up to 512 characters long.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-description
+   *
+   * @default - no description
+   */
+  readonly description?: string;
+
+  /**
   * The customer managed key that encrypt events on this event bus.
   *
   * @default - Use an AWS managed key
@@ -325,9 +336,14 @@ export class EventBus extends EventBusBase {
 
     super(scope, id, { physicalName: eventBusName });
 
+    if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
+      throw new Error(`description must be less than or equal to 512 characters, got ${props.description.length}`);
+    }
+
     const eventBus = new CfnEventBus(this, 'Resource', {
       name: this.physicalName,
       eventSourceName,
+      description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
     });
 

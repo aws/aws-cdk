@@ -794,6 +794,52 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     });
   });
 
+  test('Amazon Linux 2023 does not support A1 instances.', () => {
+    expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023A1InstanceClass', {
+      ...defaultEcsProps,
+      instanceClasses: [ec2.InstanceClass.A1],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023,
+        },
+      ],
+    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+
+    expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023A1XlargeInstance', {
+      ...defaultEcsProps,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE2)],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023,
+        },
+      ],
+    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+
+    new ManagedEc2EcsComputeEnvironment(stack, 'Al2A1InstanceClass', {
+      ...defaultEcsProps,
+      instanceClasses: [ec2.InstanceClass.A1],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2,
+        },
+      ],
+    });
+
+    new ManagedEc2EcsComputeEnvironment(stack, 'Al2A1XlargeInstance', {
+      ...defaultEcsProps,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE2)],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2,
+        },
+      ],
+    });
+  });
+
   test('can use non-default allocation strategy', () => {
     // WHEN
     new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {

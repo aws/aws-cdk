@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "batch-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "batch-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/812e218c9fa33c5b8c6c8a71d1d566887aff3be3858e7aaa8c3412b5446dbe33.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29532266ce5c96c372f99765edc76d90da88dd7316798a6e86946bc0ffa1802d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -339,6 +340,30 @@
             "data": "taggedCE5029E6F8"
           }
         ],
+        "/batch-stack/ECS_AL2023/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSAL2023SecurityGroup7AE4A1D4"
+          }
+        ],
+        "/batch-stack/ECS_AL2023/InstanceProfileRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSAL2023InstanceProfileRoleEBA7FF23"
+          }
+        ],
+        "/batch-stack/ECS_AL2023/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSAL2023InstanceProfile14B35A51"
+          }
+        ],
+        "/batch-stack/ECS_AL2023/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSAL20239DA0188B"
+          }
+        ],
         "/batch-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -367,6 +392,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

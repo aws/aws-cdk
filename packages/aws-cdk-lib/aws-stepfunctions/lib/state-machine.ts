@@ -457,7 +457,7 @@ export class StateMachine extends StateMachineBase {
       stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
-      tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
+      tracingConfiguration: this.buildTracingConfiguration(props.tracingEnabled),
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
     });
@@ -532,21 +532,27 @@ export class StateMachine extends StateMachineBase {
     };
   }
 
-  private buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
-    this.addToRolePolicy(new iam.PolicyStatement({
-      // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
-      // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
-      actions: [
-        'xray:PutTraceSegments',
-        'xray:PutTelemetryRecords',
-        'xray:GetSamplingRules',
-        'xray:GetSamplingTargets',
-      ],
-      resources: ['*'],
-    }));
+  private buildTracingConfiguration(isTracing?: boolean): CfnStateMachine.TracingConfigurationProperty | undefined {
+    if (isTracing === undefined) {
+      return undefined;
+    }
+
+    if (isTracing) {
+      this.addToRolePolicy(new iam.PolicyStatement({
+        // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
+        // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
+        actions: [
+          'xray:PutTraceSegments',
+          'xray:PutTelemetryRecords',
+          'xray:GetSamplingRules',
+          'xray:GetSamplingTargets',
+        ],
+        resources: ['*'],
+      }));
+    }
 
     return {
-      enabled: true,
+      enabled: isTracing,
     };
   }
 }

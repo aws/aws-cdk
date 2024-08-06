@@ -8,6 +8,8 @@ export * from './alb/application-load-balancer';
 export * from './alb/application-target-group';
 export * from './alb/application-listener-action';
 export * from './alb/conditions';
+export * from './alb/trust-store';
+export * from './alb/trust-store-revocation';
 
 export * from './nlb/network-listener';
 export * from './nlb/network-load-balancer';

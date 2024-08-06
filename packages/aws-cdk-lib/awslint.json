@@ -115,6 +115,7 @@
     "props-physical-name:aws-cdk-lib.aws_elasticloadbalancing.LoadBalancerProps",
     "props-physical-name:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListenerProps",
     "props-physical-name:aws-cdk-lib.aws_elasticloadbalancingv2.NetworkListenerProps",
+    "props-physical-name:aws-cdk-lib.aws_elasticloadbalancingv2.TrustStoreRevocationProps",
     "props-physical-name:aws-cdk-lib.aws_events.EventBusPolicyProps",
     "props-physical-name:aws-cdk-lib.aws_fsx.LustreFileSystemProps",
     "props-physical-name:aws-cdk-lib.aws_iam.AccessKeyProps",

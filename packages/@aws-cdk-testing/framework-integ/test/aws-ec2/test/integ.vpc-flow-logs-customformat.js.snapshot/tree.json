@@ -883,6 +883,28 @@
               "version": "0.0.0"
             }
           },
+          "ECSCluster": {
+            "id": "ECSCluster",
+            "path": "FlowLogsTestStack/ECSCluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlowLogsTestStack/ECSCluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
+              "version": "0.0.0"
+            }
+          },
           "FlowLogsAllFormatCW": {
             "id": "FlowLogsAllFormatCW",
             "path": "FlowLogsTestStack/FlowLogsAllFormatCW",
@@ -1037,7 +1059,7 @@
                       ]
                     },
                     "logDestinationType": "cloud-watch-logs",
-                    "logFormat": "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} ${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} ${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} ${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}",
+                    "logFormat": "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} ${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} ${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} ${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path} ${ecs-cluster-arn} ${ecs-cluster-name} ${ecs-container-instance-arn} ${ecs-container-instance-id} ${ecs-container-id} ${ecs-second-container-id} ${ecs-service-name} ${ecs-task-definition-arn} ${ecs-task-arn} ${ecs-task-id}",
                     "logGroupName": {
                       "Ref": "FlowLogsAllFormatCWLogGroup3DAB6837"
                     },
