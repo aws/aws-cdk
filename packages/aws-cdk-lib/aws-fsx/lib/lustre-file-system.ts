@@ -58,11 +58,11 @@ export enum DriveCacheType {
   /**
    * The Lustre file system is configured with no data cache.
    */
-  NONE= 'NONE',
+  NONE = 'NONE',
   /**
    * The Lustre file system is configured with a read cache.
    */
-  READ= 'READ',
+  READ = 'READ',
 }
 
 /**
