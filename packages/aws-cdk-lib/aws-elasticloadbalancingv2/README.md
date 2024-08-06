@@ -798,3 +798,56 @@ then you will need to enable the `removeRuleSuffixFromLogicalId: true` property 
 
 `ListenerRule`s have a unique `priority` for a given `Listener`.
 Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.
+
+## Configuring Mutual authentication with TLS in Application Load Balancer
+
+You can configure Mutual authentication with TLS (mTLS) for Application Load Balancer.
+
+To set mTLS, you must create an instance of `TrustStore` and set it to `ApplicationListener`.
+
+For more information, see [Mutual authentication with TLS in Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html)
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.Certificate;
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const bucket: s3.Bucket;
+
+const trustStore = new elbv2.TrustStore(this, 'Store', {
+  bucket,
+  key: 'rootCA_cert.pem',
+});
+
+lb.addListener('Listener', {
+  port: 443,
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  certificates: [certificate],
+  // mTLS settings
+  mutualAuthentication: {
+    ignoreClientCertificateExpiry: false,
+    mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+    trustStore,
+  },
+  defaultAction: elbv2.ListenerAction.fixedResponse(200,
+    { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+});
+```
+
+Optionally, you can create a certificate revocation list for a trust store by creating an instance of `TrustStoreRevocation`.
+
+```ts
+declare const trustStore: elbv2.TrustStore;
+declare const bucket: s3.Bucket;
+
+new elbv2.TrustStoreRevocation(this, 'Revocation', {
+  trustStore,
+  revocationContents: [
+    {
+      revocationType: elbv2.RevocationType.CRL,
+      bucket,
+      key: 'crl.pem',
+    },
+  ],
+});
+```
