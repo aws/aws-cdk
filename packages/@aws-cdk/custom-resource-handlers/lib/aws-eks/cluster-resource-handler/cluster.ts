@@ -218,6 +218,13 @@ export class ClusterResourceHandler extends ResourceHandler {
       };
 
       if (updates.updateAuthMode) {
+        // update-authmode will fail if we try to update to the same mode,
+        // so skip in this case.
+        const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+        if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
+          console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
+          return;
+        }
         // the update path must be
         // `undefined or CONFIG_MAP` -> `API_AND_CONFIG_MAP` -> `API`
         // and it's one way path.
