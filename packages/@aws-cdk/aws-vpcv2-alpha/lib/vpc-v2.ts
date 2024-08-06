@@ -3,7 +3,7 @@ import { Arn, CfnResource, Lazy, Names } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+
 /**
  * IpAddress options to define VPC V2
  */
@@ -12,29 +12,29 @@ export class IpAddresses {
   /**
    * An IPv4 CIDR Range
    */
-  public static ipv4(ipv4Cidr: string): IIpAddresses {
-    return new ipv4CidrAllocation(ipv4Cidr);
+  public static ipv4(ipv4Cidr: string, cidrBlockName?: string): IIpAddresses {
+    return new ipv4CidrAllocation(ipv4Cidr, cidrBlockName);
   }
 
   /**
    * An Ipv4 Ipam Pool
    */
-  public static ipv4Ipam(ipv4IpamOptions: IpamOptions): IIpAddresses {
-    return new IpamIpv4(ipv4IpamOptions);
+  public static ipv4Ipam(ipv4IpamOptions: IpamOptions, cidrBlockName?: string): IIpAddresses {
+    return new IpamIpv4(ipv4IpamOptions, cidrBlockName);
   }
 
   /**
    * An Ipv6 Ipam Pool
    */
-  public static ipv6Ipam(ipv6IpamOptions: IpamOptions): IIpAddresses {
-    return new IpamIpv6(ipv6IpamOptions);
+  public static ipv6Ipam(ipv6IpamOptions: IpamOptions, cidrBlockName: string): IIpAddresses {
+    return new IpamIpv6(ipv6IpamOptions, cidrBlockName);
   }
 
   /**
    * Amazon Provided Ipv6 range
    */
-  public static amazonProvidedIpv6() : IIpAddresses {
-    return new AmazonProvided();
+  public static amazonProvidedIpv6(cidrBlockName: string) : IIpAddresses {
+    return new AmazonProvided(cidrBlockName);
   }
 }
 
@@ -95,6 +95,13 @@ export interface VpcCidrOptions {
    * @default - No dependency
    */
   readonly dependencies?: CfnResource[];
+
+  /**
+   * Required to set Secondary cidr block resource name
+   * in order to generate unique logical id for the resource.
+   * @default : no name for primary addresses
+   */
+  readonly cidrBlockName?: string;
 }
 
 /**
@@ -289,13 +296,12 @@ export class VpcV2 extends VpcV2Base {
     if (props.secondaryAddressBlocks) {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
 
-      let ipCount = 0;
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
-        //Counter to generate a random string for input to hash function
-        ipCount+=1;
-        const hash = pathHash('Secondary'+ipCount);
 
         const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
+        if (!secondaryVpcOptions.cidrBlockName) {
+          throw new Error('Cidr Block Name is required to create secondary IP address');
+        }
 
         if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool) {
           this.useIpv6 = true;
@@ -307,7 +313,7 @@ export class VpcV2 extends VpcV2Base {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
         }
-        const cfnVpcCidrBlock = new CfnVPCCidrBlock(this, `SecondaryIp${hash}`, {
+        const cfnVpcCidrBlock = new CfnVPCCidrBlock(this, secondaryVpcOptions.cidrBlockName, {
           vpcId: this.vpcId,
           cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
           ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPool?.ipamPoolId,
@@ -353,8 +359,7 @@ export class VpcV2 extends VpcV2Base {
  */
 class ipv4CidrAllocation implements IIpAddresses {
 
-  constructor(private readonly cidrBlock: string) {
-
+  constructor(private readonly cidrBlock: string, private readonly cidrBlockName?: string) {
   }
 
   /**
@@ -363,6 +368,7 @@ class ipv4CidrAllocation implements IIpAddresses {
   allocateVpcCidr(): VpcCidrOptions {
     return {
       ipv4CidrBlock: this.cidrBlock,
+      cidrBlockName: this.cidrBlockName,
     };
   }
 }
@@ -379,11 +385,12 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor() {};
+  constructor(private readonly cidrBlockName?: string) {};
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
       amazonProvided: true,
+      cidrBlockName: this.cidrBlockName,
     };
   }
 
@@ -395,7 +402,7 @@ class AmazonProvided implements IIpAddresses {
  */
 class IpamIpv6 implements IIpAddresses {
 
-  constructor(private readonly props: IpamOptions) {
+  constructor(private readonly props: IpamOptions, private readonly cidrBlockName?: string) {
   }
 
   allocateVpcCidr(): VpcCidrOptions {
@@ -403,6 +410,7 @@ class IpamIpv6 implements IIpAddresses {
       ipv6NetmaskLength: this.props.netmaskLength,
       ipv6IpamPool: this.props.ipamPool,
       dependencies: this.props.ipamPool?.ipamCidrs.map(c => c as CfnResource),
+      cidrBlockName: this.cidrBlockName,
     };
   }
 }
@@ -413,13 +421,14 @@ class IpamIpv6 implements IIpAddresses {
  */
 class IpamIpv4 implements IIpAddresses {
 
-  constructor(private readonly props: IpamOptions) {
+  constructor(private readonly props: IpamOptions, private readonly cidrBlockName?: string) {
   }
   allocateVpcCidr(): VpcCidrOptions {
 
     return {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
+      cidrBlockName: this.cidrBlockName,
     };
   }
 }
@@ -465,23 +474,3 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
     (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
     (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16); // CIDR ranges belong to same private IP address ranges
 }
-
-/**
- * Take a hash of the given path.
- *
- * The hash is limited in size.
- */
-function pathHash(path: string): string {
-  const md5 = md5hash(path);
-  return md5.slice(0, 4).toUpperCase();
-}
-
-// function generateRandomString(length: number): string {
-//   const pattern = /[a-zA-Z0-9]/;
-//   const characters = pattern.source.replace(/\\/g, '');;
-//   let result = '';
-//   for (let i = 0; i < length; i++) {
-//     result += characters.charAt(Math.floor(Math.random() * characters.length));
-//   }
-//   return result;
-// }

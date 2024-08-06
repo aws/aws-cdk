@@ -20,7 +20,7 @@ describe('EC2 Routing', () => {
     stack = new cdk.Stack(app);
     myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6()],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6('AmazonIpv6')],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });
@@ -46,7 +46,6 @@ describe('EC2 Routing', () => {
       destination: '0.0.0.0/0',
       target: { gateway: eigw },
     });
-    // console.log(Template.fromStack(stack).toJSON().Resources);
     Template.fromStack(stack).templateMatches({
       Resources: {
         // EIGW should be in stack

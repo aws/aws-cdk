@@ -36,7 +36,7 @@ describe('IPAM Test', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 52,
-      })],
+      }, 'Ipv6Ipam')],
     });
     Template.fromStack(stack).hasResourceProperties(
       'AWS::EC2::IPAMPool',
@@ -61,7 +61,7 @@ describe('IPAM Test', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4Ipam({
         ipamPool: pool,
         netmaskLength: 20,
-      })],
+      }, 'SecondaryIpv4')],
     });
     Template.fromStack(stack).hasResourceProperties(
       'AWS::EC2::IPAMPool',

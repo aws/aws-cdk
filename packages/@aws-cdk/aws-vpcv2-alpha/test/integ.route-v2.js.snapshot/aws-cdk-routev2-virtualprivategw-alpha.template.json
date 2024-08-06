@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "vpgwSecondaryIp47C3513204E5": {
+  "vpgwAmazonIpv6C872FF1E": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -57,7 +57,7 @@
     }
    },
    "DependsOn": [
-    "vpgwSecondaryIp47C3513204E5"
+    "vpgwAmazonIpv6C872FF1E"
    ]
   },
   "vpgwSubnetRouteTableAssociation49921F90": {
@@ -74,7 +74,7 @@
     }
    },
    "DependsOn": [
-    "vpgwSecondaryIp47C3513204E5"
+    "vpgwAmazonIpv6C872FF1E"
    ]
   },
   "testVPGWIGW816C7C4F": {

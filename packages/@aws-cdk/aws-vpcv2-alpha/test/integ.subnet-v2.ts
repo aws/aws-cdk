@@ -41,7 +41,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
     ipamPool: pool2,
     netmaskLength: 56,
-  })],
+  }, 'Ipv6IpamCidr')],
   enableDnsHostnames: true,
   enableDnsSupport: true,
 });

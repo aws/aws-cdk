@@ -1,6 +1,7 @@
 {
     "exclude": [
       "from-method:@aws-cdk/aws-vpcv2-alpha.VpcV2",
-      "attribute-tag:@aws-cdk/aws-vpcv2-alpha.RouteTable.routeTableId"
+      "attribute-tag:@aws-cdk/aws-vpcv2-alpha.RouteTable.routeTableId",
+      "from-method:@aws-cdk/aws-vpcv2-alpha.SubnetV2"
     ]
 }

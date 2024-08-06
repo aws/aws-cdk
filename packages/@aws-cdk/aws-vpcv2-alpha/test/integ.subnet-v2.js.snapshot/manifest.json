@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db8dec9d0860eb3409a7631d94032f75c1b2e4d02d23a53213a2e943f9b077f4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccdbd85132bedf38aeb99e5b0c700f48494d3b7c344a96232f29b48a5279b6ef.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,10 +58,10 @@
             "data": "VPCTestFB735C86"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/VPCTest/SecondaryIp47C3": [
+        "/aws-cdk-vpcv2-alpha-new/VPCTest/Ipv6IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCTestSecondaryIp47C3DC5611C4"
+            "data": "VPCTestIpv6IpamCidrD5C271DD"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/VPCTest/VpnGateway/Default": [
@@ -142,10 +142,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "VPCTestSecondaryIp1BB4FC62E": [
+        "VPCTestSecondaryIp48408C993194": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCTestSecondaryIp1BB4FC62E",
+            "data": "VPCTestSecondaryIp48408C993194",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

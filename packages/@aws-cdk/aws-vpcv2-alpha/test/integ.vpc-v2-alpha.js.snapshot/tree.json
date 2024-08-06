@@ -136,9 +136,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp47C3": {
-                "id": "SecondaryIp47C3",
-                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryIp47C3",
+              "ipv4IpamCidr": {
+                "id": "ipv4IpamCidr",
+                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/ipv4IpamCidr",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -162,9 +162,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp3C84": {
-                "id": "SecondaryIp3C84",
-                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryIp3C84",
+              "AmazonProvided": {
+                "id": "AmazonProvided",
+                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/AmazonProvided",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -209,9 +209,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp47C3": {
-                "id": "SecondaryIp47C3",
-                "path": "aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp47C3",
+              "Ipv6IpamCidr": {
+                "id": "Ipv6IpamCidr",
+                "path": "aws-cdk-vpcv2-alpha/Vpc-integ-test-2/Ipv6IpamCidr",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -235,9 +235,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIp3C84": {
-                "id": "SecondaryIp3C84",
-                "path": "aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp3C84",
+              "SecondaryAddress2": {
+                "id": "SecondaryAddress2",
+                "path": "aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryAddress2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -255,9 +255,9 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryIpA930": {
-                "id": "SecondaryIpA930",
-                "path": "aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIpA930",
+              "SecondaryAddress3": {
+                "id": "SecondaryAddress3",
+                "path": "aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryAddress3",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {

@@ -45,7 +45,7 @@ var routeTables: {[id: string]: RouteTable} = {};
 for (const stackName in stacks) {
   const vpc = new vpc_v2.VpcV2(stacks[stackName], stackName, {
     primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
-    secondaryAddressBlocks: [vpc_v2.IpAddresses.amazonProvidedIpv6()],
+    secondaryAddressBlocks: [vpc_v2.IpAddresses.amazonProvidedIpv6('AmazonIpv6')],
     enableDnsHostnames: true,
     enableDnsSupport: true,
   });

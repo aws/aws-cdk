@@ -2,6 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib';
+
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;
 
@@ -38,7 +39,7 @@ describe('Vpc V2 with full control', () => {
   test('VPC with secondary IPv4 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16')],
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', 'SecondaryAddress')],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },
@@ -53,7 +54,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryIp47C3F121E45B: {
+        TestVpcSecondaryAddressD76FCD9C: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {
@@ -73,7 +74,7 @@ describe('Vpc V2 with full control', () => {
     expect(() => {
       new vpc.VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('192.168.0.0/16')],
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('192.168.0.0/16', 'SecondaryIpv4')],
         enableDnsHostnames: true,
         enableDnsSupport: true,
       },
@@ -84,7 +85,7 @@ describe('Vpc V2 with full control', () => {
   test('VPC supports secondary Amazon Provided IPv6 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6()],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6('AmazonProvided')],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },
@@ -99,7 +100,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryIp47C3F121E45B: {
+        TestVpcAmazonProvided569F7097: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             AmazonProvidedIpv6CidrBlock: true, //Amazon Provided IPv6 address
@@ -190,7 +191,7 @@ describe('Vpc V2 with full control', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 64,
-      })],
+      }, 'IPv6Ipam')],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },
@@ -228,7 +229,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryIp47C3F121E45B: {
+        TestVpcIPv6Ipam178145A5: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {

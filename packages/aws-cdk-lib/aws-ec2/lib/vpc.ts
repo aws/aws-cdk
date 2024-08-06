@@ -53,11 +53,6 @@ export interface ISubnet extends IResource {
   readonly routeTable: IRouteTable;
 
   /**
-   * The IPv6 CIDR block for this subnet
-   */
-  readonly ipv6CidrBlock?: string;
-
-  /**
    * Associate a Network ACL with this subnet
    *
    * @param acl The Network ACL to associate

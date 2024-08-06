@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/87b8738b01f024f304ffe295884621f69e23d0070f2a86b6420e36ccab65e5e2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6af0c32b7b4dcf4566eda1afa97ddb6dc00a4597f5633e0d826df8642bc069f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -64,16 +64,16 @@
             "data": "VPCintegtest1EBA1CB75"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryIp47C3": [
+        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/ipv4IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryIp47C313EA741A"
+            "data": "VPCintegtest1ipv4IpamCidr8105B4E4"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryIp3C84": [
+        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/AmazonProvided": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryIp3C84D6CF0FF1"
+            "data": "VPCintegtest1AmazonProvidedE0445E5C"
           }
         ],
         "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/Resource": [
@@ -82,22 +82,22 @@
             "data": "Vpcintegtest20DAD8F9D"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp47C3": [
+        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/Ipv6IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIp47C3B19EFDA1"
+            "data": "Vpcintegtest2Ipv6IpamCidrFF84EC2B"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIp3C84": [
+        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryAddress2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIp3C84B5D8E500"
+            "data": "Vpcintegtest2SecondaryAddress2A96C0AF8"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryIpA930": [
+        "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryAddress3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIpA930968EA798"
+            "data": "Vpcintegtest2SecondaryAddress36FC60BBC"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
@@ -166,46 +166,46 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "VPCintegtest1SecondaryIp435AC9D39D16": [
+        "VPCintegtest1SecondaryIp684795D0A306": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryIp435AC9D39D16",
+            "data": "VPCintegtest1SecondaryIp684795D0A306",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "VPCintegtest1SecondaryIp297056C06FB9": [
+        "VPCintegtest1SecondaryIp757851A2E166": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryIp297056C06FB9",
+            "data": "VPCintegtest1SecondaryIp757851A2E166",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "Vpcintegtest2SecondaryIp82662C67DA2B": [
+        "Vpcintegtest2SecondaryIp4840275314DC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIp82662C67DA2B",
+            "data": "Vpcintegtest2SecondaryIp4840275314DC",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "Vpcintegtest2SecondaryIp9CD8FBE8BBA9": [
+        "Vpcintegtest2SecondaryIp58F23280A479": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIp9CD8FBE8BBA9",
+            "data": "Vpcintegtest2SecondaryIp58F23280A479",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "Vpcintegtest2SecondaryIpD49B95386374": [
+        "Vpcintegtest2SecondaryIpD363CCF2FF57": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIpD49B95386374",
+            "data": "Vpcintegtest2SecondaryIpD363CCF2FF57",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

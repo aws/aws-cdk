@@ -46,9 +46,9 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
     vpc_v2.IpAddresses.ipv4Ipam({
       ipamPool: pool1,
       netmaskLength: 20,
-    }),
+    }, 'ipv4IpamCidr'),
     //Test secondary ipv6 address
-    vpc_v2.IpAddresses.amazonProvidedIpv6(),
+    vpc_v2.IpAddresses.amazonProvidedIpv6('AmazonProvided'),
   ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
@@ -62,9 +62,9 @@ const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
     ipamPool: pool2,
     netmaskLength: 60,
-  }),
-  vpc_v2.IpAddresses.ipv4('10.2.0.0/16'),
-  vpc_v2.IpAddresses.ipv4('10.3.0.0/16')],
+  }, 'Ipv6IpamCidr'),
+  vpc_v2.IpAddresses.ipv4('10.2.0.0/16', 'SecondaryAddress2'),
+  vpc_v2.IpAddresses.ipv4('10.3.0.0/16', 'SecondaryAddress3')],
 });
 
 new SubnetV2(stack, 'testsbubnet', {

@@ -86,6 +86,18 @@ export interface SubnetV2Props {
 }
 
 /**
+ * Interface with additional properties for SubnetV2
+ */
+export interface ISubnetV2 extends ISubnet {
+
+  /**
+   * The IPv6 CIDR block for this subnet
+   */
+  readonly ipv6CidrBlock?: string;
+
+}
+
+/**
  * The SubnetV2 class represents a subnet within a VPC (Virtual Private Cloud) in AWS.
  * It extends the Resource class and implements the ISubnet interface.
  *
@@ -96,7 +108,7 @@ export interface SubnetV2Props {
  * @resource AWS::EC2::Subnet
  *
  */
-export class SubnetV2 extends Resource implements ISubnet {
+export class SubnetV2 extends Resource implements ISubnetV2 {
 
   /**
    * The Availability Zone the subnet is located in
@@ -334,7 +346,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
 function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {
 
-  let allSubnets: ISubnet[];
+  let allSubnets: ISubnetV2[];
   try {
     allSubnets = vpc.selectSubnets().subnets;
   } catch (e) {
@@ -373,7 +385,7 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
  */
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
 
-  let allSubnets: ISubnet[];
+  let allSubnets: ISubnetV2[];
   try {
     allSubnets = vpc.selectSubnets().subnets;
   } catch (e) {
