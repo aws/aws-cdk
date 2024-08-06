@@ -1,4 +1,4 @@
-import { Construct, IConstruct, IDependable, Node } from 'constructs';
+import { Construct, IConstruct, IDependable, Node, MetadataOptions } from 'constructs';
 import { Architecture } from './architecture';
 import { Function as LambdaFunction, FunctionProps, EnvironmentOptions } from './function';
 import { FunctionBase } from './function-base';
@@ -153,6 +153,14 @@ export class SingletonFunction extends FunctionBase {
    */
   public addDependency(...up: IDependable[]) {
     this.lambdaFunction.node.addDependency(...up);
+  }
+
+  /**
+   * Use addMetaData() to write CDK Metadata to Construct tree. View modification in Cloud Assembly manifest.json.
+   * Not written to CloudFormation template.
+   */
+  public addMetadata(type: string, data: any, options?: MetadataOptions) {
+    this.lambdaFunction.node.addMetadata(type, data, options);
   }
 
   /**
