@@ -40,6 +40,15 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
                   "aws:cdk:cloudformation:props": {
+                    "deadLetterConfig": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "DLQ581697C4",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "description": "myEventBus",
                     "name": "StackBusAA0A1E4B"
                   }
                 },
