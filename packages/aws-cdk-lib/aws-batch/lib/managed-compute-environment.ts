@@ -395,9 +395,15 @@ export interface EksMachineImage extends MachineImage{
  */
 export enum EcsMachineImageType {
   /**
-   * Tells Batch that this machine image runs on non-GPU instances
+   * Tells Batch that this machine image runs on non-GPU AL2 instances
    */
   ECS_AL2 = 'ECS_AL2',
+
+  /**
+   * Tells Batch that this machine image runs on non-GPU AL2023 instances.
+   * Amazon Linux 2023 does not support A1 instances.
+   */
+  ECS_AL2023 = 'ECS_AL2023',
 
   /**
    * Tells Batch that this machine image runs on GPU instances
@@ -652,6 +658,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
+    if (this.images?.find(image => image.imageType === EcsMachineImageType.ECS_AL2023) &&
+      (this.instanceClasses.includes(ec2.InstanceClass.A1) ||
+       this.instanceTypes.find(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))))
+    ) {
+      throw new Error('Amazon Linux 2023 does not support A1 instances.');
+    }
 
     const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
     this.instanceRole = instanceRole;
