@@ -291,6 +291,23 @@ ellipsis so a user would know there was more to ...`,
   });
 });
 
+test('support regions that does not have CachePolicy support', () => {
+  stack = new Stack(app, 'StackCN', {
+    env: { account: '1234', region: 'cn-north-1' },
+  });
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: Match.absent(),
+        ForwardedValues: { QueryString: false },
+      },
+    },
+  });
+});
+
 describe('multiple behaviors', () => {
   test('a second behavior can\'t be specified with the catch-all path pattern', () => {
     const origin = defaultOrigin();

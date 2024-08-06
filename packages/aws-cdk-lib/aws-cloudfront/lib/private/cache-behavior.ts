@@ -16,6 +16,19 @@ export interface CacheBehaviorProps extends AddBehaviorOptions {
 }
 
 /**
+ * Options for configuring the behavior of a cache policy.
+ */
+export interface RenderBehaviorOptions {
+  /**
+   * Whether to ignore the cache policy and set it to undefined.
+   * If set to true, cachePolicyId will be set to undefined.
+   * This is required for regions not support CachePolicy like regions from `aws-cn`.
+   * @default false
+   */
+  ignoreCachePolicy?: boolean;
+}
+
+/**
  * Allows configuring a variety of CloudFront functionality for a given URL path pattern.
  *
  * Note: This really should simply by called 'Behavior', but this name is already taken by the legacy
@@ -39,13 +52,16 @@ export class CacheBehavior {
    *
    * @internal
    */
-  public _renderBehavior(): CfnDistribution.CacheBehaviorProperty {
+  public _renderBehavior(options?: RenderBehaviorOptions): CfnDistribution.CacheBehaviorProperty {
     return {
       pathPattern: this.props.pathPattern,
       targetOriginId: this.originId,
       allowedMethods: this.props.allowedMethods?.methods,
       cachedMethods: this.props.cachedMethods?.methods,
-      cachePolicyId: (this.props.cachePolicy ?? CachePolicy.CACHING_OPTIMIZED).cachePolicyId,
+      cachePolicyId: options?.ignoreCachePolicy == true ? undefined :
+        (this.props.cachePolicy ?? CachePolicy.CACHING_OPTIMIZED).cachePolicyId,
+      // forwardedValues would be required if cachePolicy not supported
+      forwardedValues: options?.ignoreCachePolicy == true ? { queryString: false } : undefined,
       compress: this.props.compress ?? true,
       originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyId,
       realtimeLogConfigArn: this.props?.realtimeLogConfig?.realtimeLogConfigArn,
