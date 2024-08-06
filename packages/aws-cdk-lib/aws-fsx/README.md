@@ -248,6 +248,8 @@ const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
   storageType: fsx.StorageType.HDD,
   driveCacheType: DriveCacheType.READ,
 });
+```
+
 ## FSx for Windows File Server
 
 The L2 construct for the FSx for Windows File Server has not yet been implemented. To instantiate an FSx for Windows
