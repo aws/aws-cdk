@@ -156,8 +156,8 @@ export class SingletonFunction extends FunctionBase {
   }
 
   /**
-   * Use addMetaData() to write CDK Metadata to Construct tree. View modification in Cloud Assembly manifest.json.
-   * Not written to CloudFormation template.
+   * Use this method to write to the construct tree.
+   * The metadata entries are written to the Cloud Assembly Manifest if the `treeMetadata` property is specified in the props of the App that contains this Construct.
    */
   public addMetadata(type: string, data: any, options?: MetadataOptions) {
     this.lambdaFunction.node.addMetadata(type, data, options);
