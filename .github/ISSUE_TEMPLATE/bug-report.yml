@@ -24,7 +24,7 @@ body:
     id: regression
     attributes:
       label: Regression Issue
-      description: Select this option if the issue causes any existing functionality to break.
+      description: Select this option if the issue has caused any existing functionality to break.
       options:
         - label: This issue appears to be a regression.
           required: false
