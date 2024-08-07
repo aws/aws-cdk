@@ -24,8 +24,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "$default",
     "AuthorizationType": "NONE",
+    "RouteKey": "$default",
     "Target": {
      "Fn::Join": [
       "",
@@ -39,14 +39,18 @@
     }
    }
   },
-  "mywsapisendmessageRouteSendMessageIntegrationD29E12F9": {
+  "mywsapisendmessageRouteDefaultIntegration702159AD": {
    "Type": "AWS::ApiGatewayV2::Integration",
    "Properties": {
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
     "IntegrationType": "MOCK",
-    "IntegrationUri": ""
+    "IntegrationUri": "",
+    "RequestTemplates": {
+     "application/json": "{\"statusCode\":200}"
+    },
+    "TemplateSelectionExpression": "\\$default"
    }
   },
   "mywsapisendmessageRouteAE873328": {
@@ -55,19 +59,32 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "sendmessage",
     "AuthorizationType": "NONE",
+    "RouteKey": "sendmessage",
+    "RouteResponseSelectionExpression": "$default",
     "Target": {
      "Fn::Join": [
       "",
       [
        "integrations/",
        {
-        "Ref": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+        "Ref": "mywsapisendmessageRouteDefaultIntegration702159AD"
        }
       ]
      ]
     }
+   }
+  },
+  "mywsapisendmessageRouteResponse2ED167D2": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "RouteId": {
+     "Ref": "mywsapisendmessageRouteAE873328"
+    },
+    "RouteResponseKey": "$default"
    }
   },
   "mystage114C35EC": {
@@ -76,8 +93,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "StageName": "dev",
-    "AutoDeploy": true
+    "AutoDeploy": true,
+    "StageName": "dev"
    }
   }
  },
