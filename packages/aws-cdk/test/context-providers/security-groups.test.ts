@@ -1,6 +1,10 @@
 import * as AWS from 'aws-sdk-mock';
+import * as AWS from 'aws-sdk-mock';
 /* eslint-disable import/order */
 import * as aws from 'aws-sdk';
+
+import { SecurityGroupContextProviderPlugin, hasAllTrafficEgress } from '../../lib/context-providers/security-groups';
+
 
 import { SecurityGroupContextProviderPlugin, hasAllTrafficEgress } from '../../lib/context-providers/security-groups';
 
@@ -296,6 +300,74 @@ describe('security group context provider plugin', () => {
     expect(res.allowAllOutbound).toEqual(true);
   });
 
+  test('looks up by security group description, owner id, tag keys, and tags', async () => {
+    // GIVEN
+    const provider = new SecurityGroupContextProviderPlugin(mockSDK);
+
+    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
+      expect(_params).toEqual({
+        GroupIds: undefined,
+        Filters: [
+          {
+            Name: 'description',
+            Values: ['my description'],
+          },
+          {
+            Name: 'tag-key',
+            Values: ['tagA', 'tagB'],
+          },
+          {
+            Name: 'owner-id',
+            Values: ['012345678901'],
+          },
+          {
+            Name: 'tag:tagC',
+            Values: ['valueC', 'otherValueC'],
+          },
+          {
+            Name: 'tag:tagD',
+            Values: ['valueD'],
+          },
+        ],
+      });
+      cb(null, {
+        SecurityGroups: [
+          {
+            GroupId: 'sg-1234',
+            IpPermissionsEgress: [
+              {
+                IpProtocol: '-1',
+                IpRanges: [
+                  { CidrIp: '0.0.0.0/0' },
+                ],
+              },
+              {
+                IpProtocol: '-1',
+                Ipv6Ranges: [
+                  { CidrIpv6: '::/0' },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    // WHEN
+    const res = await provider.getValue({
+      account: '1234',
+      region: 'us-east-1',
+      ownerId: '012345678901',
+      description: 'my description',
+      tagKeys: ['tagA', 'tagB'],
+      tags: { tagC: ['valueC', 'otherValueC'], tagD: ['valueD'] },
+    });
+
+    // THEN
+    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.allowAllOutbound).toEqual(true);
+  });
+
   test('detects non all-outbound egress', async () => {
     // GIVEN
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
@@ -389,6 +461,22 @@ describe('security group context provider plugin', () => {
     ).rejects.toThrow(/\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group/i);
   });
 
+<<<<<<< HEAD
+  test('errors when neither securityGroupId nor securityGroupName are specified', async () => {
+    // GIVEN
+    const provider = new SecurityGroupContextProviderPlugin(mockSDK);
+
+    // WHEN
+    await expect(
+      provider.getValue({
+        account: '123456789012',
+        region: 'us-east-1',
+      }),
+    ).rejects.toThrow(/\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group/i);
+  });
+
+=======
+>>>>>>> abc78bfa61 (feat(ec2): security group lookup via filters (#30625))
   test('identifies allTrafficEgress from SecurityGroup permissions', () => {
     expect(
       hasAllTrafficEgress({
