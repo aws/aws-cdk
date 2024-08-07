@@ -3,6 +3,7 @@ export * from './bastion-host';
 export * from './connections';
 export * from './cfn-init';
 export * from './cfn-init-elements';
+export * from './instance-properties';
 export * from './instance-types';
 export * from './instance';
 export * from './launch-template';

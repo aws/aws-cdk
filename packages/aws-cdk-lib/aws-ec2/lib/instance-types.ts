@@ -1,3 +1,11 @@
+import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
+import * as instancePropertiesJsonData from '../data/instance-properties.json';
+import { BootMode, DiskType, FpgaDeviceInfo, GpuDeviceInfo, HypervisorType, InferenceAcceleratorDeviceInfo, InstanceArchitecture, InstanceDiskInfo, InstanceProperties, NetworkCardInfo, PlacementGroupStrategy, ProcessorFeature, RootDeviceType, UsageClass, VirtualizationType } from './instance-properties';
+import { Size } from '../../core';
+
+type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
+const instancePropertiesData: {[InstanceType: string]: InstancePropertiesData} = instancePropertiesJsonData;
+
 /**
  * What class and generation of instance to use
  *
@@ -1242,21 +1250,6 @@ export enum InstanceClass {
 }
 
 /**
- * Identifies an instance's CPU architecture
- */
-export enum InstanceArchitecture {
-  /**
-   * ARM64 architecture
-   */
-  ARM_64 = 'arm64',
-
-  /**
-   * x86-64 architecture
-   */
-  X86_64 = 'x86_64',
-}
-
-/**
  * What size of instance to use
  */
 export enum InstanceSize {
@@ -1403,6 +1396,26 @@ export enum InstanceSize {
  * know the identifier of the type you want.
  */
 export class InstanceType {
+  /**
+   * **Instance type**: `r6id.16xlarge`:
+   *
+   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * * **Instance size**: {@link InstanceSize.XLARGE16}
+   *
+   * Alias: {@link InstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE}
+   */
+  public static readonly R6ID_16XLARGE = InstanceType.of(InstanceClass.R6ID, InstanceSize.XLARGE16);
+
+  /**
+   * **Instance type**: `r6id.16xlarge`:
+   *
+   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * * **Instance size**: {@link InstanceSize.XLARGE16}
+   *
+   * Alias of: {@link InstanceType.R6ID_16XLARGE}
+   */
+  public static readonly MEMORY6_INTEL_NVME_DRIVE_16XLARGE = InstanceType.of(InstanceClass.MEMORY6_INTEL_NVME_DRIVE, InstanceSize.XLARGE16);
+
   /**
    * Instance type for EC2 instances
    *
@@ -1658,7 +1671,175 @@ export class InstanceType {
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }
 
-  constructor(private readonly instanceTypeIdentifier: string) {
+  private static mapSupportedValue(value = '', opts = { supported: ['supported'] }): boolean | undefined {
+    if (opts.supported.includes(value)) return true;
+    if (value === 'unsupported') return false;
+
+    // Return undefined if the value is either undefined or unknown
+    return undefined;
+  }
+
+  private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties | undefined {
+    const data = instancePropertiesData[instanceTypeIdentifier];
+    if (!data) return;
+
+    return {
+      autoRecoverySupported: data.AutoRecoverySupported,
+      bareMetal: data.BareMetal,
+      burstablePerformanceSupported: data.BurstablePerformanceSupported,
+      currentGeneration: data.CurrentGeneration,
+      dedicatedHostsSupported: data.DedicatedHostsSupported,
+      freeTierEligible: data.FreeTierEligible,
+      hibernationSupported: data.HibernationSupported,
+      hypervisor: data.Hypervisor as HypervisorType | undefined,
+      instanceStorageSupported: data.InstanceStorageSupported,
+      memorySize: data.MemoryInfo?.SizeInMiB ? Size.mebibytes(data.MemoryInfo.SizeInMiB) : undefined,
+      nitroEnclavesSupported: InstanceType.mapSupportedValue(data.NitroEnclavesSupport),
+      nitroTpmSupported: InstanceType.mapSupportedValue(data.NitroTpmSupport),
+      supportedBootModes: data.SupportedBootModes as BootMode[] | undefined,
+      supportedNitroTpmVersions: data.NitroTpmInfo?.SupportedVersions,
+      supportedPlacementGroupStrategies: data.PlacementGroupInfo?.SupportedStrategies as PlacementGroupStrategy[],
+      supportedRootDeviceTypes: data.SupportedRootDeviceTypes as RootDeviceType[] | undefined,
+      supportedUsageClasses: data.SupportedUsageClasses as UsageClass[] | undefined,
+      supportedVirtualizationTypes: data.SupportedVirtualizationTypes as VirtualizationType[] | undefined,
+      ebsInfo: {
+        ebsOptimizedInfo: {
+          baselineBandwidthInMbps: data.EbsInfo?.EbsOptimizedInfo?.BaselineBandwidthInMbps,
+          baselineIops: data.EbsInfo?.EbsOptimizedInfo?.BaselineIops,
+          baselineThroughputInMBps: data.EbsInfo?.EbsOptimizedInfo?.BaselineThroughputInMBps,
+          maximumBandwidthInMbps: data.EbsInfo?.EbsOptimizedInfo?.MaximumBandwidthInMbps,
+          maximumIops: data.EbsInfo?.EbsOptimizedInfo?.MaximumIops,
+          maximumThroughputInMBps: data.EbsInfo?.EbsOptimizedInfo?.MaximumThroughputInMBps,
+        },
+        ebsOptimizedSupported: InstanceType.mapSupportedValue(data.EbsInfo?.EbsOptimizedSupport, { supported: ['supported', 'default'] }),
+        ebsOptimizedSupportedByDefault: data.EbsInfo?.EbsOptimizedSupport === 'default',
+        encryptionSupported: InstanceType.mapSupportedValue(data.EbsInfo?.EncryptionSupport),
+        nvmeSupported: InstanceType.mapSupportedValue(data.EbsInfo?.NvmeSupport, { supported: ['supported', 'required'] }),
+        nvmeRequired: data.EbsInfo?.NvmeSupport === 'required',
+      },
+      fpgaInfo: {
+        fpgas: data.FpgaInfo?.Fpgas?.map<FpgaDeviceInfo>((fpga) => ({
+          name: fpga.Name,
+          count: fpga.Count,
+          manufacturer: fpga.Manufacturer,
+          memorySize: fpga.MemoryInfo?.SizeInMiB ? Size.mebibytes(fpga.MemoryInfo.SizeInMiB) : undefined,
+        })),
+        totalFpgaMemory: data.FpgaInfo?.TotalFpgaMemoryInMiB ? Size.mebibytes(data.FpgaInfo?.TotalFpgaMemoryInMiB) : undefined,
+      },
+      gpuInfo: {
+        gpus: data.GpuInfo?.Gpus?.map<GpuDeviceInfo>((gpu) => ({
+          name: gpu.Name,
+          manufacturer: gpu.Manufacturer,
+          count: gpu.Count,
+          memorySize: gpu.MemoryInfo?.SizeInMiB ? Size.mebibytes(gpu.MemoryInfo.SizeInMiB) : undefined,
+        })),
+        totalGpuMemory: data.GpuInfo?.TotalGpuMemoryInMiB ? Size.mebibytes(data.GpuInfo?.TotalGpuMemoryInMiB) : undefined,
+      },
+      inferenceAcceleratorInfo: {
+        accelerators: data.InferenceAcceleratorInfo?.Accelerators?.map<InferenceAcceleratorDeviceInfo>((accelerator) => ({
+          name: accelerator.Name,
+          manufacturer: accelerator.Manufacturer,
+          count: accelerator.Count,
+          memoryInfo: accelerator.MemoryInfo?.SizeInMiB ?
+            Size.mebibytes(accelerator.MemoryInfo.SizeInMiB)
+            : undefined,
+        })),
+        totalInferenceMemory: data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB ?
+          Size.mebibytes(data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB)
+          : undefined,
+      },
+      instanceStorageInfo: {
+        disks: data.InstanceStorageInfo?.Disks?.map<InstanceDiskInfo>((disk) => ({
+          count: disk.Count,
+          size: disk.SizeInGB ? Size.gibibytes(disk.SizeInGB) : undefined,
+          type: disk.Type as DiskType,
+        })),
+        totalStorage: data.InstanceStorageInfo?.TotalSizeInGB ?
+          Size.gibibytes(data.InstanceStorageInfo.TotalSizeInGB) :
+          undefined,
+      },
+      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
+      /* mediaAcceleratorInfo: {
+        accelerators: data.MediaAcceleratorInfo?.Accelerators?.map<MediaAcceleratorDeviceInfo>((accelerator) => ({
+          name: accelerator.Name,
+          manufacturer: accelerator.Manufacturer,
+          count: accelerator.Count,
+        })),
+        totalMediaMemory: data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB ?
+          Size.mebibytes(data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB)
+          : undefined,
+      }, */
+      networkInfo: {
+        defaultNetworkCardIndex: data.NetworkInfo?.DefaultNetworkCardIndex,
+        maximumEfaInterfaces: data.NetworkInfo?.EfaInfo?.MaximumEfaInterfaces,
+        efaSupported: data.NetworkInfo?.EfaSupported,
+        enaSupported: InstanceType.mapSupportedValue(data.NetworkInfo?.EnaSupport),
+        // This mapping is not a mistake, 'required' is being interpreted as supported by default.
+        // CloudFormation's 'required' does not accurately reflect the actual behavior, since
+        // the instance type can be successfully launched without the requirements of ENA
+        enaSupportedByDefault: data.NetworkInfo?.EnaSupport === 'required',
+        enaSrdSupported: data.NetworkInfo?.EnaSrdSupported,
+        encryptionInTransitSupported: data.NetworkInfo?.EncryptionInTransitSupported,
+        ipv4AddressesPerInterface: data.NetworkInfo?.Ipv4AddressesPerInterface,
+        ipv6AddressesPerInterface: data.NetworkInfo?.Ipv6AddressesPerInterface,
+        ipv6Supported: data.NetworkInfo?.Ipv6Supported,
+        maximumNetworkCards: data.NetworkInfo?.MaximumNetworkCards,
+        maximumNetworkInterfaces: data.NetworkInfo?.MaximumNetworkInterfaces,
+        networkPerformance: data.NetworkInfo?.NetworkPerformance,
+        networkCards: data.NetworkInfo?.NetworkCards?.map<NetworkCardInfo>((card) => ({
+          maximumNetworkInterfaces: card.MaximumNetworkInterfaces,
+          networkCardIndex: card.NetworkCardIndex,
+          networkPerformance: card.NetworkPerformance,
+          baselineBandwidthInGbps: card.BaselineBandwidthInGbps,
+          peakBandwidthInGbps: card.PeakBandwidthInGbps,
+        })),
+      },
+      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
+      /* neuronInfo: {
+        neurons: data.NeuronInfo?.Neurons?.map<NeuronDeviceInfo>((neuron) => ({
+          name: neuron.Name,
+          count: neuron.CoreInfo?.Count,
+          version: neuron.CoreInfo?.Version,
+          manufacturer: neuron.Manufacturer,
+          memorySize: neuron.MemoryInfo?.SizeInMiB ?
+            Size.mebibytes(neuron.MemoryInfo?.SizeInMiB)
+            : undefined,
+        })),
+        totalNeuronMemory: data.NeuronInfo?.TotalNeuronMemoryInMiB ?
+          Size.mebibytes(data.NeuronInfo?.TotalNeuronMemoryInMiB)
+          : undefined,
+      }, */
+      processorInfo: {
+        // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
+        // manufacturer: data.ProcessorInfo?.manufacturer,
+        supportedArchitectures: data.ProcessorInfo?.SupportedArchitectures as InstanceArchitecture[] | undefined,
+        supportedFeatures: data.ProcessorInfo?.SupportedFeatures as ProcessorFeature[] | undefined,
+        sustainedClockSpeedInGhz: data.ProcessorInfo?.SustainedClockSpeedInGhz,
+      },
+      vCpuInfo: {
+        defaultCores: data.VCpuInfo?.DefaultCores,
+        defaultThreadsPerCore: data.VCpuInfo?.DefaultThreadsPerCore,
+        defaultVCpus: data.VCpuInfo?.DefaultVCpus,
+        validCores: data.VCpuInfo?.ValidCores,
+        validThreadsPerCore: data.VCpuInfo?.ValidThreadsPerCore,
+      },
+    };
+  };
+
+  constructor(
+    /**
+     * The instance type, as returned by the EC2 API
+     *
+     * @example "t3.small"
+     */
+    private readonly instanceTypeIdentifier: string,
+
+    /**
+     * Instance properties for the instance type, obtained from cached SDK data
+     *
+     * @default - Cached SDK data properties for the corresponding instance type
+     */
+    public readonly instanceProperties = InstanceType.mapInstanceProperties(instanceTypeIdentifier)) {
   }
 
   /**
@@ -1670,8 +1851,11 @@ export class InstanceType {
 
   /**
    * The instance's CPU architecture
+   *
+   * @deprecated - use {@link instanceProperties}
    */
   public get architecture(): InstanceArchitecture {
+    // TODO use data first
     // capture the family, generation, capabilities, and size portions of the instance type id
     const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
@@ -1702,8 +1886,11 @@ export class InstanceType {
 
   /**
    * Return whether this instance type is a burstable instance type
+   *
+   * @deprecated - use {@link instanceProperties}
    */
   public isBurstable(): boolean {
+    // TODO use data first
     return this.instanceTypeIdentifier.startsWith('t3') || this.instanceTypeIdentifier.startsWith('t4g') || this.instanceTypeIdentifier.startsWith('t2');
   }
 
