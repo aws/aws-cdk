@@ -24,15 +24,15 @@ body:
     id: regression
     attributes:
       label: Regression Issue
-      description: Select this option if the issue has caused any existing functionality to break.
+      description:  What is a regression? If it worked in a previous version but doesn’t in the latest version, it’s considered a regression. In this case, Please provide specific version number in the report.
       options:
-        - label: This issue appears to be a regression.
+        - label: Select this option if this issue appears to be a regression.
           required: false
   - type: input
     id: working-version
     attributes:
       label: Last Known Working CDK Version
-      description: Specify the last known CDK version where this code was functioning as expected (if applicable).
+      description: Specify the last known CDK version where this code was functioning as expected(if applicable).
     validations:
       required: false
   - type: textarea
