@@ -14,6 +14,7 @@ import {
   Expression,
   ClassSpec,
   $T,
+  Statement,
 } from '@cdklabs/typewriter';
 import { Runtime } from './config';
 import { HandlerFrameworkModule } from './framework';
@@ -56,6 +57,13 @@ interface ConstructorBuildProps {
    * @default MemberVisbility.Public
    */
   readonly constructorVisbility?: MemberVisibility;
+
+    /**
+   * StatementProps. Additional statements to constructor are optional.
+   *
+   * @default undefined
+   */
+    readonly statementProps?: Statement[];
 }
 
 /**
@@ -206,10 +214,16 @@ export abstract class HandlerFrameworkClass extends ClassType {
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
+        const metadataProps: Statement[] = [
+          expr.directCode('this.addMetadata("aws:cdk:is-custom-resource-handler-singleton", true)'),
+          expr.directCode('if (props?.logGroup) this.logGroup.node.addMetadata("aws:cdk:is-custom-resource-handler-logGroup", true)'),
+          expr.directCode('if (props?.logRetention) ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata("aws:cdk:is-custom-resource-handler-logRetention", true)'),
+        ];
         this.buildConstructor({
           constructorPropsType: _interface.type,
           superProps,
           constructorVisbility: MemberVisibility.Public,
+          statementProps: metadataProps,
         });
       }
     })();
@@ -359,6 +373,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
     const superInitializerArgs: Expression[] = [scope, id, props.superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
+    if (props.statementProps){
+      for(const eachStatement of props.statementProps){
+        init.addBody(eachStatement);
+      }
+    }
   }
 
   private buildRuntimeProperty(scope: HandlerFrameworkModule, options: BuildRuntimePropertyOptions = {}) {
