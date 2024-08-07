@@ -772,3 +772,84 @@ new s3.Bucket(this, 'Bucket2', {
   objectLockDefaultRetention: s3.ObjectLockRetention.compliance(Duration.days(365)),
 });
 ```
+
+## Replicating Objects
+
+You can use [replicating objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html) to enable automatic, asynchronous copying of objects across Amazon S3 buckets.
+Buckets that are configured for object replication can be owned by the same AWS account or by different accounts.
+You can replicate objects to a single destination bucket or to multiple destination buckets.
+The destination buckets can be in different AWS Regions or within the same Region as the source bucket.
+
+To replicate objects to a destination bucket, you can specify the `replicationRules` property:
+
+```ts
+declare const destinationBucket1: s3.IBucket;declare const destinationBucket2: s3.IBucket;
+
+const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+  // Versioning must be enabled on both the source and destination bucket
+  versioned: true,
+  replicationRules: [
+    {
+      // The destination bucket for the replication rule.
+      destination: s3.ReplicationDestination.sameAccount(destinationBucket1),
+      // The priority of the rule.
+      // Amazon S3 will attempt to replicate objects according to all replication rules.
+      // However, if there are two or more rules with the same destination bucket, then objects will be replicated according to the rule with the highest priority.
+      // The higher the number, the higher the priority.
+      // It is essential to specify priority explicitly when the replication configuration has multiple rules.
+      priority: 1,
+    },
+    {
+      destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
+      priority: 2,
+      // Whether to specify S3 Replication Time Control (S3 RTC).
+      replicationTimeControl: true,
+      // Wherther to enable replication metrics.
+      metrics: true,
+      // The kms key to use for the destination bucket.
+      kmsKey,
+      // The storage class to use for the destination bucket.
+      storageClass: s3.StorageClass.INFREQUENT_ACCESS,
+      // Whether to replicate objects with SSE-KMS encryption.
+      sseKmsEncryptedObjects: true,
+      // Whether to replicate modifications on replicas.
+      replicaModifications: true,
+      // Whether to replicate delete markers.
+      // This property cannot be enabled if the replication rule has a tag filter.
+      deleteMarkerReplication: false,
+      // The ID of the rule.
+      id: 'full-settings-rule',
+      // The prefix filter for the rule.
+      prefixFilter: 'prefix',
+      // The tag filter for the rule.
+      tagFilter: [
+        {
+          key: 'tagKey',
+          value: 'tagValue',
+        },
+      ],
+    },
+  ],
+});
+```
+
+### Cross Account Replication
+
+You can replicate objects to a destination bucket in a different account by specifying the `ReplicationDestination.crossAccount()` method:
+
+```ts
+const destination = s3.ReplicationDestination.crossAccount(
+  // The destination bucket for the replication rule.
+  destinationBucket2,
+  // The account ID of the destination bucket owner.
+  123456789012,
+  // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+  // The replicas are owned by same AWS account that owns the source object by default.
+  true,
+),
+```
+
+**Note**: For the cross account replication, the owner of the destination bucket must also add a bucket policy to grant the owner of the source bucket permissions to perform replication actions.
+Details on how to configure the bucket policy can be found in the [Amazon S3 User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html).
+
+

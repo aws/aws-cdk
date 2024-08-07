@@ -3982,7 +3982,7 @@ describe('bucket', () => {
           {
             destination: s3.ReplicationDestination.sameAccount(dstBucket),
             replicationTimeControl: true,
-            replicationTimeControlMetrics: true,
+            metrics: true,
             kmsKey,
             storageClass: s3.StorageClass.GLACIER,
             sseKmsEncryptedObjects: true,

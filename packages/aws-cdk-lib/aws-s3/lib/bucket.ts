@@ -1422,7 +1422,7 @@ export interface ReplicationRule {
    *
    * @default - Replication metrics are not enabled
    */
-  readonly replicationTimeControlMetrics?: boolean;
+  readonly metrics?: boolean;
 
   /**
    * The customer managed AWS KMS key stored in AWS Key Management Service (KMS) for the destination bucket.
@@ -2623,7 +2623,7 @@ export class Bucket extends BucketBase {
       throw new Error('\'priority\' must be specified for all replication rules when there are multiple rules');
     }
     props.replicationRules.forEach(rule => {
-      if (rule.replicationTimeControl && !rule.replicationTimeControlMetrics) {
+      if (rule.replicationTimeControl && !rule.metrics) {
         throw new Error('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.');
       }
       if (rule.deleteMarkerReplication && rule.tagFilter) {
@@ -2708,8 +2708,8 @@ export class Bucket extends BucketBase {
                 minutes: 15,
               },
             } : undefined,
-            metrics: rule.replicationTimeControlMetrics !== undefined ? {
-              status: rule.replicationTimeControlMetrics ? 'Enabled' : 'Disabled',
+            metrics: rule.metrics !== undefined ? {
+              status: rule.metrics ? 'Enabled' : 'Disabled',
               eventThreshold: {
                 minutes: 15,
               },
