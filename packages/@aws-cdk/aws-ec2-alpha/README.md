@@ -27,7 +27,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
 new vpc_v2.VpcV2(stack, 'Vpc', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.amazonProvidedIpv6(),
+    vpc_v2.IpAddresses.amazonProvidedIpv6({cidrBlockName: 'AmazonProvidedIpv6'}),
   ],
 });
 ```
@@ -48,7 +48,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
 const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.amazonProvidedIpv6(),
+    vpc_v2.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvidedIp'}),
   ],
 });
 const vpcFirstIpV6Cidr = Fn.select(0, vpc.ipv6CidrBlocks);
@@ -93,14 +93,16 @@ ipamPrivatePool.provisionCidr('PrivatePoolACidrA', { netmaskLength: 8 } );
 new vpc_v2.VpcV2(stack, 'Vpc', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.amazonProvidedIpv6(),
+    vpc_v2.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonIpv6' }),
     vpc_v2.IpAddresses.ipv6Ipam({
       ipv6IpamPool: ipamPublicPool,
       ipv6NetmaskLength: 52,
+      cidrBlockName: 'ipv6Ipam',
     }),
     vpc_v2.IpAddresses.ipv4Ipam({
       ipv6IpamPool: ipamPrivatePool,
       ipv6NetmaskLength: 8,
+      cidrBlockName: 'ipv4Ipam',
     }),
   ],
 });
