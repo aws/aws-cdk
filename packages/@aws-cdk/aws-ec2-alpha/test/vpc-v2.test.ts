@@ -39,7 +39,9 @@ describe('Vpc V2 with full control', () => {
   test('VPC with secondary IPv4 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', 'SecondaryAddress')],
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
+        cidrBlockName: 'SecondaryAddress',
+      })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },
@@ -74,7 +76,9 @@ describe('Vpc V2 with full control', () => {
     expect(() => {
       new vpc.VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('192.168.0.0/16', 'SecondaryIpv4')],
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('192.168.0.0/16', {
+          cidrBlockName: 'SecondaryIpv4',
+        })],
         enableDnsHostnames: true,
         enableDnsSupport: true,
       },
@@ -85,7 +89,7 @@ describe('Vpc V2 with full control', () => {
   test('VPC supports secondary Amazon Provided IPv6 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6('AmazonProvided')],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvided' })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },
@@ -191,7 +195,9 @@ describe('Vpc V2 with full control', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 64,
-      }, 'IPv6Ipam')],
+      }, {
+        cidrBlockName: 'IPv6Ipam',
+      })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     },

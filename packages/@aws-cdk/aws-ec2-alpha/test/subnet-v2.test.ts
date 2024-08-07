@@ -27,7 +27,9 @@ describe('Subnet V2 with custom IP and routing', () => {
 
     const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', 'Secondary1')],
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
+        cidrBlockName: 'Secondary1',
+      })],
     });
 
     const subnetConfig = {
@@ -68,7 +70,9 @@ describe('Subnet V2 with custom IP and routing', () => {
   test('Should throw error if overlapping CIDR block(IPv4) for the subnet', () => {
     const testVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', 'Secondary1')],
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
+        cidrBlockName: 'Secondary1',
+      })],
     });
 
     const subnetConfig = {
@@ -92,7 +96,9 @@ describe('Subnet V2 with custom IP and routing', () => {
   test('Should throw error if invalid CIDR block', () => {
     const testVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', 'Secondary1')],
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
+        cidrBlockName: 'Secondary1',
+      })],
     });
 
     expect(() => new subnet.SubnetV2(stack, 'TestSubnet', {
@@ -106,7 +112,9 @@ describe('Subnet V2 with custom IP and routing', () => {
   test('Should throw error if VPC does not support IPv6', () => {
     const TestVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', 'Secondary1')],
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
+        cidrBlockName: 'Secondary1',
+      })],
     });
     expect(() => new subnet.SubnetV2(stack, 'TestSubnet', {
       vpc: TestVPC,
@@ -120,7 +128,9 @@ describe('Subnet V2 with custom IP and routing', () => {
   test('Create Subnet with IPv6 if it is Amazon Provided Ipv6 is enabled on VPC', () => {
     const testVPC = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6('AmazonIpv6')],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({
+        cidrBlockName: 'AmazonIpv6',
+      })],
     });
 
     const subnetConfig = {
@@ -172,7 +182,9 @@ describe('Subnet V2 with custom IP and routing', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 60,
-      }, 'ipv6Ipam')],
+      }, {
+        cidrBlockName: 'ipv6Ipam',
+      })],
     });
 
     new subnet.SubnetV2(stack, 'IpamSubnet', {
@@ -223,7 +235,9 @@ describe('Subnet V2 with custom IP and routing', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 60,
-      }, 'ipv6Ipam')],
+      }, {
+        cidrBlockName: 'ipv6Ipam',
+      })],
     });
 
     const subnetConfig = {

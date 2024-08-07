@@ -20,7 +20,9 @@ describe('EC2 Routing', () => {
     stack = new cdk.Stack(app);
     myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6('AmazonIpv6')],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({
+        cidrBlockName: 'AmazonIpv6',
+      })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });

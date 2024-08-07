@@ -5,6 +5,17 @@ import { IpamOptions, IIpamPool } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
 
 /**
+ * Additional props needed for secondary Address
+ */
+export interface SecondaryAddressProps {
+  /**
+   * Required to set Secondary cidr block resource name
+   * in order to generate unique logical id for the resource.
+   */
+  readonly cidrBlockName: string;
+}
+
+/**
  * IpAddress options to define VPC V2
  */
 export class IpAddresses {
@@ -12,29 +23,29 @@ export class IpAddresses {
   /**
    * An IPv4 CIDR Range
    */
-  public static ipv4(ipv4Cidr: string, cidrBlockName?: string): IIpAddresses {
-    return new ipv4CidrAllocation(ipv4Cidr, cidrBlockName);
+  public static ipv4(ipv4Cidr: string, props?: SecondaryAddressProps): IIpAddresses {
+    return new ipv4CidrAllocation(ipv4Cidr, props);
   }
 
   /**
    * An Ipv4 Ipam Pool
    */
-  public static ipv4Ipam(ipv4IpamOptions: IpamOptions, cidrBlockName?: string): IIpAddresses {
-    return new IpamIpv4(ipv4IpamOptions, cidrBlockName);
+  public static ipv4Ipam(ipv4IpamOptions: IpamOptions, props?: SecondaryAddressProps): IIpAddresses {
+    return new IpamIpv4(ipv4IpamOptions, props);
   }
 
   /**
    * An Ipv6 Ipam Pool
    */
-  public static ipv6Ipam(ipv6IpamOptions: IpamOptions, cidrBlockName: string): IIpAddresses {
-    return new IpamIpv6(ipv6IpamOptions, cidrBlockName);
+  public static ipv6Ipam(ipv6IpamOptions: IpamOptions, props: SecondaryAddressProps): IIpAddresses {
+    return new IpamIpv6(ipv6IpamOptions, props);
   }
 
   /**
    * Amazon Provided Ipv6 range
    */
-  public static amazonProvidedIpv6(cidrBlockName: string) : IIpAddresses {
-    return new AmazonProvided(cidrBlockName);
+  public static amazonProvidedIpv6(props: SecondaryAddressProps) : IIpAddresses {
+    return new AmazonProvided(props);
   }
 }
 
@@ -359,7 +370,7 @@ export class VpcV2 extends VpcV2Base {
  */
 class ipv4CidrAllocation implements IIpAddresses {
 
-  constructor(private readonly cidrBlock: string, private readonly cidrBlockName?: string) {
+  constructor(private readonly cidrBlock: string, private readonly props?: SecondaryAddressProps) {
   }
 
   /**
@@ -368,7 +379,7 @@ class ipv4CidrAllocation implements IIpAddresses {
   allocateVpcCidr(): VpcCidrOptions {
     return {
       ipv4CidrBlock: this.cidrBlock,
-      cidrBlockName: this.cidrBlockName,
+      cidrBlockName: this.props?.cidrBlockName,
     };
   }
 }
@@ -385,12 +396,12 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor(private readonly cidrBlockName?: string) {};
+  constructor(private readonly props: SecondaryAddressProps) {};
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
       amazonProvided: true,
-      cidrBlockName: this.cidrBlockName,
+      cidrBlockName: this.props.cidrBlockName,
     };
   }
 
@@ -402,7 +413,7 @@ class AmazonProvided implements IIpAddresses {
  */
 class IpamIpv6 implements IIpAddresses {
 
-  constructor(private readonly props: IpamOptions, private readonly cidrBlockName?: string) {
+  constructor(private readonly props: IpamOptions, private readonly ipProps: SecondaryAddressProps) {
   }
 
   allocateVpcCidr(): VpcCidrOptions {
@@ -410,7 +421,7 @@ class IpamIpv6 implements IIpAddresses {
       ipv6NetmaskLength: this.props.netmaskLength,
       ipv6IpamPool: this.props.ipamPool,
       dependencies: this.props.ipamPool?.ipamCidrs.map(c => c as CfnResource),
-      cidrBlockName: this.cidrBlockName,
+      cidrBlockName: this.ipProps.cidrBlockName,
     };
   }
 }
@@ -421,14 +432,14 @@ class IpamIpv6 implements IIpAddresses {
  */
 class IpamIpv4 implements IIpAddresses {
 
-  constructor(private readonly props: IpamOptions, private readonly cidrBlockName?: string) {
+  constructor(private readonly props: IpamOptions, private readonly ipProps?: SecondaryAddressProps) {
   }
   allocateVpcCidr(): VpcCidrOptions {
 
     return {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
-      cidrBlockName: this.cidrBlockName,
+      cidrBlockName: this.ipProps?.cidrBlockName,
     };
   }
 }
