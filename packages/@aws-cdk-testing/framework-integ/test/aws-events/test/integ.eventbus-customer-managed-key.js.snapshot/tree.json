@@ -1,0 +1,241 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "eventbue-customer-managed-key": {
+        "id": "eventbue-customer-managed-key",
+        "path": "eventbue-customer-managed-key",
+        "children": {
+          "KmsKey": {
+            "id": "KmsKey",
+            "path": "eventbue-customer-managed-key/KmsKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "eventbue-customer-managed-key/KmsKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:Decrypt",
+                            "kms:DescribeKey",
+                            "kms:GenerateDataKey"
+                          ],
+                          "Condition": {
+                            "StringEquals": {
+                              "aws:SourceAccount": {
+                                "Ref": "AWS::AccountId"
+                              },
+                              "aws:SourceArn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":events:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":event-bus/eventbuecustomermanagedkeyBus178EB991"
+                                  ]
+                                ]
+                              },
+                              "kms:EncryptionContext:aws:events:event-bus:arn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":events:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":event-bus/eventbuecustomermanagedkeyBus178EB991"
+                                  ]
+                                ]
+                              }
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "events.amazonaws.com"
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "Bus": {
+            "id": "Bus",
+            "path": "eventbue-customer-managed-key/Bus",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "eventbue-customer-managed-key/Bus/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "kmsKeyIdentifier": {
+                      "Fn::GetAtt": [
+                        "KmsKey46693ADD",
+                        "Arn"
+                      ]
+                    },
+                    "name": "eventbuecustomermanagedkeyBus178EB991"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnEventBus",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.EventBus",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "eventbue-customer-managed-key/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "eventbue-customer-managed-key/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "eventbue-customer-managed-key-test": {
+        "id": "eventbue-customer-managed-key-test",
+        "path": "eventbue-customer-managed-key-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "eventbue-customer-managed-key-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "eventbue-customer-managed-key-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "eventbue-customer-managed-key-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "eventbue-customer-managed-key-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "eventbue-customer-managed-key-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
