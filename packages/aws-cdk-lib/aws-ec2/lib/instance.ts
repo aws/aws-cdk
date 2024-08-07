@@ -644,7 +644,7 @@ export class Instance extends Resource implements IInstance {
    * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
-  private applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+  public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     init.attach(this.instance, {
       platform: this.osType,
       instanceRole: this.role,

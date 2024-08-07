@@ -2303,6 +2303,8 @@ const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
 });
 
 const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateName: 'MyTemplateV1',
+  versionDescription: 'This is my v1 template',
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
