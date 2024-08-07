@@ -1529,6 +1529,13 @@ export class ReplicationDestination {
     return new ReplicationDestination(bucket, account, accessControlTransition);
   }
 
+  /**
+   * Replicate to another bucket in the same or different account.
+   *
+   * @param bucket the destination bucket
+   * @param account the account to replicate to
+   * @param accessControlTransition whether to want to change replica ownership to the AWS account that owns the destination bucket. The replicas are owned by same AWS account that owns the source object by default.
+   */
   private constructor(public readonly bucket: IBucket, public readonly account?: string, public readonly accessControlTransition?: boolean) {}
 }
 
