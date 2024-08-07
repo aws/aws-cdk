@@ -182,7 +182,6 @@ describe('Subnet V2 with custom IP and routing', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 60,
-      }, {
         cidrBlockName: 'ipv6Ipam',
       })],
     });
@@ -235,7 +234,6 @@ describe('Subnet V2 with custom IP and routing', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 60,
-      }, {
         cidrBlockName: 'ipv6Ipam',
       })],
     });

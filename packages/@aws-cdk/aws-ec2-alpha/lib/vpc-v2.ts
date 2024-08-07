@@ -30,15 +30,15 @@ export class IpAddresses {
   /**
    * An Ipv4 Ipam Pool
    */
-  public static ipv4Ipam(ipv4IpamOptions: IpamOptions, props?: SecondaryAddressProps): IIpAddresses {
-    return new IpamIpv4(ipv4IpamOptions, props);
+  public static ipv4Ipam(ipv4IpamOptions: IpamOptions): IIpAddresses {
+    return new IpamIpv4(ipv4IpamOptions);
   }
 
   /**
    * An Ipv6 Ipam Pool
    */
-  public static ipv6Ipam(ipv6IpamOptions: IpamOptions, props: SecondaryAddressProps): IIpAddresses {
-    return new IpamIpv6(ipv6IpamOptions, props);
+  public static ipv6Ipam(ipv6IpamOptions: IpamOptions): IIpAddresses {
+    return new IpamIpv6(ipv6IpamOptions);
   }
 
   /**
@@ -370,7 +370,7 @@ export class VpcV2 extends VpcV2Base {
  */
 class ipv4CidrAllocation implements IIpAddresses {
 
-  constructor(private readonly cidrBlock: string, private readonly props?: SecondaryAddressProps) {
+  constructor(private readonly cidrBlock: string, private readonly props?: { cidrBlockName: string}) {
   }
 
   /**
@@ -396,7 +396,7 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor(private readonly props: SecondaryAddressProps) {};
+  constructor(private readonly props: { cidrBlockName: string}) {};
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
@@ -413,7 +413,7 @@ class AmazonProvided implements IIpAddresses {
  */
 class IpamIpv6 implements IIpAddresses {
 
-  constructor(private readonly props: IpamOptions, private readonly ipProps: SecondaryAddressProps) {
+  constructor(private readonly props: IpamOptions) {
   }
 
   allocateVpcCidr(): VpcCidrOptions {
@@ -421,7 +421,7 @@ class IpamIpv6 implements IIpAddresses {
       ipv6NetmaskLength: this.props.netmaskLength,
       ipv6IpamPool: this.props.ipamPool,
       dependencies: this.props.ipamPool?.ipamCidrs.map(c => c as CfnResource),
-      cidrBlockName: this.ipProps.cidrBlockName,
+      cidrBlockName: this.props.cidrBlockName,
     };
   }
 }
@@ -432,14 +432,14 @@ class IpamIpv6 implements IIpAddresses {
  */
 class IpamIpv4 implements IIpAddresses {
 
-  constructor(private readonly props: IpamOptions, private readonly ipProps?: SecondaryAddressProps) {
+  constructor(private readonly props: IpamOptions) {
   }
   allocateVpcCidr(): VpcCidrOptions {
 
     return {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
-      cidrBlockName: this.ipProps?.cidrBlockName,
+      cidrBlockName: this.props?.cidrBlockName,
     };
   }
 }

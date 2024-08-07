@@ -137,6 +137,7 @@ describe('Vpc V2 with full control', () => {
       primaryAddressBlock: vpc.IpAddresses.ipv4Ipam({
         ipamPool: pool,
         netmaskLength: 28,
+        cidrBlockName: 'IPv4Ipam',
       }),
       enableDnsHostnames: true,
       enableDnsSupport: true,
@@ -195,7 +196,6 @@ describe('Vpc V2 with full control', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 64,
-      }, {
         cidrBlockName: 'IPv6Ipam',
       })],
       enableDnsHostnames: true,

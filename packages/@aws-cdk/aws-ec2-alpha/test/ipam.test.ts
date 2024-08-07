@@ -36,7 +36,6 @@ describe('IPAM Test', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: pool,
         netmaskLength: 52,
-      }, {
         cidrBlockName: 'Ipv6Ipam',
       })],
     });
@@ -63,7 +62,6 @@ describe('IPAM Test', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4Ipam({
         ipamPool: pool,
         netmaskLength: 20,
-      }, {
         cidrBlockName: 'SecondaryIpv4',
       })],
     });

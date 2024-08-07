@@ -46,7 +46,6 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
     vpc_v2.IpAddresses.ipv4Ipam({
       ipamPool: pool1,
       netmaskLength: 20,
-    }, {
       cidrBlockName: 'ipv4IpamCidr',
     }),
     //Test secondary ipv6 address
@@ -66,7 +65,6 @@ const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
     ipamPool: pool2,
     netmaskLength: 60,
-  }, {
     cidrBlockName: 'Ipv6IpamCidr',
   }),
   vpc_v2.IpAddresses.ipv4('10.2.0.0/16', {

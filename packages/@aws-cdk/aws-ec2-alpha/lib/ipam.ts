@@ -249,6 +249,12 @@ export interface IpamOptions {
    * @default - None
    */
   readonly ipamPool?: IIpamPool;
+
+  /**
+   * Required to set Secondary cidr block resource name
+   * in order to generate unique logical id for the resource.
+   */
+  readonly cidrBlockName: string;
 }
 
 /**
