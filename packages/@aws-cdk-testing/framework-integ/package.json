@@ -43,9 +43,9 @@
     "@aws-cdk/lambda-layer-kubectl-v29": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v30": "^2.0.0",
     "aws-cdk-lib": "0.0.0",
-    "aws-sdk": "^2.1653.0",
+    "aws-sdk": "^2.1669.0",
     "aws-sdk-mock": "5.6.0",
-    "cdk8s": "2.68.85",
+    "cdk8s": "2.68.93",
     "cdk8s-plus-27": "2.9.5",
     "constructs": "^10.0.0"
   },

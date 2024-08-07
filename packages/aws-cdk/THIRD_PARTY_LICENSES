@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.101.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.101.0 | Apache-2.0
+** @jsii/check-node@1.102.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.102.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -59,7 +59,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** ajv@8.16.0 - https://www.npmjs.com/package/ajv/v/8.16.0 | MIT
+** ajv@8.17.1 - https://www.npmjs.com/package/ajv/v/8.17.1 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2015-2021 Evgeny Poberezkin
@@ -286,7 +286,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1653.0 - https://www.npmjs.com/package/aws-sdk/v/2.1653.0 | Apache-2.0
+** aws-sdk@2.1669.0 - https://www.npmjs.com/package/aws-sdk/v/2.1669.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -916,7 +916,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** debug@4.3.5 - https://www.npmjs.com/package/debug/v/4.3.5 | MIT
+** debug@4.3.6 - https://www.npmjs.com/package/debug/v/4.3.6 | MIT
 (The MIT License)
 
 Copyright (c) 2014-2017 TJ Holowaychuk <tj@vision-media.ca>
@@ -2936,7 +2936,7 @@ Copyright (c) 2010-2024 Mathias Bynens <https://mathiasbynens.be/>
 
 ----------------
 
-** semver@7.6.2 - https://www.npmjs.com/package/semver/v/7.6.2 | ISC
+** semver@7.6.3 - https://www.npmjs.com/package/semver/v/7.6.3 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors
