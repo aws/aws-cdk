@@ -843,23 +843,13 @@ Alternatively, use lookup methods to import security groups if you do not know t
 const sg = ec2.SecurityGroup.fromLookupByName(this, 'SecurityGroupLookup', 'security-group-name', vpc);
 ```
 
-You can perform lookups based on filter conditions detailed in the [API](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSecurityGroups.html).
-```ts
-const sg = ec2.SecurityGroup.fromLookupByFilters(this, 'SecurityGroupLookup', {
-  ownerId: "012345678901",
-  description: "my description",
-  tagKeys: ["tagA", "tagB"],
-  tags: { tagC: ["valueC", "otherValueC"], tagD: ["valueD"] }
-});
-```
-
 If the security group ID is known and configuration details are unknown, use method `SecurityGroup.fromLookupById` instead. This method will lookup property `allowAllOutbound` from the current configuration of the security group.
 
 ```ts
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName`, `SecurityGroup.fromLookupById`, and `SecurityGroup.fromLookupByFilters` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
 
 ### Cross Stack Connections
 

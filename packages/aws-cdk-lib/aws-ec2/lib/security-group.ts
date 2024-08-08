@@ -388,13 +388,6 @@ export class SecurityGroup extends SecurityGroupBase {
   }
 
   /**
-   * Look up a security group by filters
-   */
-  public static fromLookupByFilters(scope: Construct, id: string, filters: SecurityGroupLookupOptions) {
-    return this.fromLookupAttributes(scope, id, filters);
-  }
-
-  /**
    * Import an existing security group into this app.
    *
    * This method will assume that the Security Group has a rule in it which allows
@@ -441,15 +434,7 @@ export class SecurityGroup extends SecurityGroupBase {
    * Look up a security group.
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
-    if ([
-      options.securityGroupId,
-      options.securityGroupName,
-      options.vpc?.vpcId,
-      options.description,
-      options.ownerId,
-      options.tagKeys,
-      options.tags,
-    ].some(opt => Token.isUnresolved(opt))) {
+    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
     }
 
@@ -459,10 +444,6 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: options.securityGroupId,
         securityGroupName: options.securityGroupName,
         vpcId: options.vpc?.vpcId,
-        description: options.description,
-        ownerId: options.ownerId,
-        tagKeys: options.tagKeys,
-        tags: options.tags,
       },
       dummyValue: {
         securityGroupId: 'sg-12345678',
@@ -835,13 +816,13 @@ function isAllTrafficRule(rule: any) {
  *
  * Either `securityGroupName` or `securityGroupId` has to be specified.
  */
-export interface SecurityGroupLookupOptions {
+interface SecurityGroupLookupOptions {
   /**
    * The name of the security group
    *
    * If given, will import the SecurityGroup with this name.
    *
-   * @default - Don't filter on securityGroupName
+   * @default Don't filter on securityGroupName
    */
   readonly securityGroupName?: string;
 
@@ -850,7 +831,7 @@ export interface SecurityGroupLookupOptions {
    *
    * If given, will import the SecurityGroup with this ID.
    *
-   * @default - Don't filter on securityGroupId
+   * @default Don't filter on securityGroupId
    */
   readonly securityGroupId?: string;
 
@@ -859,35 +840,7 @@ export interface SecurityGroupLookupOptions {
    *
    * If given, will filter the SecurityGroup based on the VPC.
    *
-   * @default - Don't filter on VPC
+   * @default Don't filter on VPC
    */
   readonly vpc?: IVpc;
-
-  /**
-   * Security group description
-   *
-   * @default - Don't filter on description
-   */
-  readonly description?: string;
-
-  /**
-   * Account ID of the owner of the security group
-   *
-   * @default - Don't filter on owner ID
-   */
-  readonly ownerId?: string;
-
-  /**
-   * The keys of tags assigned to the security group
-   *
-   * @default - Don't filter on tag keys
-   */
-  readonly tagKeys?: string[];
-
-  /**
-   * The key/value combination of a tag assigned to the security group
-   *
-   * @default - Don't filter on tags
-   */
-  readonly tags?: Record<string, string[]>;
 }
