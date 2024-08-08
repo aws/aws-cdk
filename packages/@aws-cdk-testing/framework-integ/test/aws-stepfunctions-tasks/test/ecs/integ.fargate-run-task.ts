@@ -57,6 +57,8 @@ const definition = new sfn.Pass(stack, 'Start', {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }),
     taskTimeout: sfn.Timeout.at('$.Timeout'),
+    cpu: '1024',
+    memoryMiB: '2048',
   }),
 ).next(
   new tasks.EcsRunTask(stack, 'FargateTaskSetRevisionNumber', {

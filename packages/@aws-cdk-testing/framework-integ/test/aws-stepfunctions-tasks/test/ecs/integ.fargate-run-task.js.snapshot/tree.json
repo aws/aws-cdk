@@ -1012,7 +1012,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.TaskStateBase",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EcsRunTask",
               "version": "0.0.0"
             }
           },
@@ -1056,7 +1056,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.TaskStateBase",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EcsRunTask",
               "version": "0.0.0"
             }
           },
@@ -1100,7 +1100,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.TaskStateBase",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EcsRunTask",
               "version": "0.0.0"
             }
           },
@@ -1391,7 +1391,7 @@
                               "GroupId"
                             ]
                           },
-                          "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskSetRevisionNumber\":{\"Next\":\"FargateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "\"]}},\"Overrides\":{\"Cpu\":\"1024\",\"Memory\":\"2048\",\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskSetRevisionNumber\":{\"Next\":\"FargateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
