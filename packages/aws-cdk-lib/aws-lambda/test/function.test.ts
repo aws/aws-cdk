@@ -2950,7 +2950,7 @@ describe('function', () => {
           code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
           filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/not-mnt/foo-bar'),
         });
-      }).toThrow();
+      }).toThrow('Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given /not-mnt/foo-bar');
     });
 
     test('validate localMountPath length when mounting efs', () => {
@@ -2980,7 +2980,7 @@ describe('function', () => {
           code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
           filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, `/mnt/${'a'.repeat(160)}`),
         });
-      }).toThrow();
+      }).toThrow('Local mount path can not be longer than 160 characters but has 165 characters');
     });
 
     test('correct security group is created when deployed in separate stacks', () => {
