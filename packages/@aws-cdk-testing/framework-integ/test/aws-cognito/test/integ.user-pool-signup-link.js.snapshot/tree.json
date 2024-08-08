@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-user-pool-signup-link": {
         "id": "integ-user-pool-signup-link",
         "path": "integ-user-pool-signup-link",
@@ -24,6 +16,14 @@
                 "id": "smsRole",
                 "path": "integ-user-pool-signup-link/myuserpool/smsRole",
                 "children": {
+                  "ImportsmsRole": {
+                    "id": "ImportsmsRole",
+                    "path": "integ-user-pool-signup-link/myuserpool/smsRole/ImportsmsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool-signup-link/myuserpool/smsRole/Resource",
@@ -65,13 +65,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -129,7 +129,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
                   "version": "0.0.0"
                 }
               },
@@ -150,19 +150,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolDomain",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
               "version": "0.0.0"
             }
           },
@@ -176,9 +176,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
                   "aws:cdk:cloudformation:props": {
-                    "userPoolId": {
-                      "Ref": "myuserpool01998219"
-                    },
                     "allowedOAuthFlows": [
                       "implicit",
                       "code"
@@ -198,17 +195,20 @@
                     "generateSecret": false,
                     "supportedIdentityProviders": [
                       "COGNITO"
-                    ]
+                    ],
+                    "userPoolId": {
+                      "Ref": "myuserpool01998219"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+              "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
               "version": "0.0.0"
             }
           },
@@ -216,28 +216,52 @@
             "id": "user-pool-id",
             "path": "integ-user-pool-signup-link/user-pool-id",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "client-id": {
             "id": "client-id",
             "path": "integ-user-pool-signup-link/client-id",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-user-pool-signup-link/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-user-pool-signup-link/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

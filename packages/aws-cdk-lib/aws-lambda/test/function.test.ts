@@ -3489,16 +3489,29 @@ describe('function', () => {
       })).toThrowError('SnapStart currently not supported by runtime nodejs18.x');
     });
 
-    test('arm64 validation for snapStart', () => {
+    test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
-
-      expect(() => new lambda.Function(stack, 'MyLambda', {
+      //WHEN
+      new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
         architecture: lambda.Architecture.ARM_64,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently not supported on Arm_64');
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+            {
+              Handler: 'example.Handler::handleRequest',
+              Runtime: 'java11',
+              Architectures: ['arm64'],
+              SnapStart: {
+                ApplyOn: 'PublishedVersions',
+              },
+            },
+      });
     });
 
     test('EFS validation for snapStart', () => {
@@ -3523,7 +3536,7 @@ describe('function', () => {
       })).toThrowError('SnapStart is currently not supported using EFS');
     });
 
-    test('arm64 validation for snapStart', () => {
+    test('ephemeral storage limit validation for snapStart', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
@@ -3625,7 +3638,7 @@ describe('function', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:2'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3647,14 +3660,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_24_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-24-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3671,7 +3684,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_24_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
