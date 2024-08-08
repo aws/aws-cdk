@@ -1188,11 +1188,11 @@ make sure to specify `env.region` in your stack environment.
 For example:
 
 ```ts
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'Stack', {
+const app = new App();
+const stack = new Stack(app, 'Stack', {
     env: { account: '1234', region: 'cn-north-1' },
   });
 declare const origin: cloudfront.IOrigin;
 
-new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+new cloudfront.Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 ```
