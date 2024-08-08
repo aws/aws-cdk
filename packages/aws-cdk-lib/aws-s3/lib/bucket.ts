@@ -1446,14 +1446,14 @@ export interface ReplicationRule {
   /**
    * Specifies whether Amazon S3 replicates objects created with server-side encryption using an AWS KMS key stored in AWS Key Management Service.
    *
-   * @default
+   * @default false
    */
   readonly sseKmsEncryptedObjects?: boolean;
 
   /**
    * Specifies whether Amazon S3 replicates modifications on replicas.
    *
-   * @default
+   * @default false
    */
   readonly replicaModifications?: boolean;
 
