@@ -166,9 +166,14 @@ export interface StateMachineProps {
   readonly kmsKey?: kms.IKey;
 
   /**
-   * Maximum duration for which SFN will reuse data keys. When the period expires,
-   * Step Functions will call GenerateDataKey. This setting only applies to a customer managed key and does not apply to an AWS owned KMS key.
-   * @default - 300s
+   * Maximum duration that Step Functions will reuse customer managed data keys.
+   * When the period expires, Step Functions will call GenerateDataKey.
+   * 
+   * You can only provide a value if `kmsKey` is set.
+   *
+   * Must be between 60 and 900 seconds.
+   *
+   * @default Duration.seconds(300)
    */
   readonly kmsDataKeyReusePeriodSeconds?: Duration;
 }
