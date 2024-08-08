@@ -158,9 +158,10 @@ export interface StateMachineProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * KMS key used for encryption. It can either be a key or alias construct. If provided it will enable encryption.
-   * By default data is encrypted with an AWS owned key.
-   * @default - no kmsKeyId is associated
+   * Specifies a symmetric customer managed KMS key for server-side encryption of the state machine definition and execution history.
+   * Step Functions will reuse the key for a maximum of `kmsDataKeyReusePeriodSeconds`.
+   *
+   * @default - data is transparently encrypted using an AWS owned key
    */
   readonly kmsKey?: kms.IKey;
 
