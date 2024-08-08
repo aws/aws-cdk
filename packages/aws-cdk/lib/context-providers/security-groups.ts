@@ -17,6 +17,10 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
       throw new Error('\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group');
     }
 
+    if (!args.securityGroupId && !args.securityGroupName) {
+      throw new Error('\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group');
+    }
+
     const options = { assumeRoleArn: args.lookupRoleArn };
     const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
 
@@ -31,32 +35,6 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
       filters.push({
         Name: 'group-name',
         Values: [args.securityGroupName],
-      });
-    }
-    if (args.description) {
-      filters.push({
-        Name: 'description',
-        Values: [args.description],
-      });
-    }
-    if (args.tagKeys) {
-      filters.push({
-        Name: 'tag-key',
-        Values: args.tagKeys,
-      });
-    }
-    if (args.ownerId) {
-      filters.push({
-        Name: 'owner-id',
-        Values: [args.ownerId],
-      });
-    }
-    if (args.tags) {
-      Object.entries(args.tags).forEach(([key, values]) => {
-        filters.push({
-          Name: `tag:${key}`,
-          Values: values,
-        });
       });
     }
 
