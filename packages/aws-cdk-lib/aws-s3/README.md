@@ -850,7 +850,7 @@ const destination = s3.ReplicationDestination.crossAccount(
   // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
   // The replicas are owned by same AWS account that owns the source object by default.
   true,
-),
+);
 ```
 
 **Note**: For the cross account replication, the owner of the destination bucket must also add a bucket policy to grant the owner of the source bucket permissions to perform replication actions.
