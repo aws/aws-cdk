@@ -127,7 +127,7 @@ export class Docker {
     await this.execute(['login',
       '--username', credentials.username,
       '--password-stdin',
-      credentials.endpoint], {
+      credentials.endpoint.replace(/^https?:\/\/|\/$/g, '')], {
       input: credentials.password,
 
       // Need to quiet otherwise Docker will complain
