@@ -234,6 +234,25 @@ export interface TableOptions extends SchemaOptions {
   readonly writeCapacity?: number;
 
   /**
+   * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
+     * those will share the table's maximum on-demand throughput.
+   *
+   * Can only be provided if billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
+  readonly maxReadRequestUnits?: number;
+  /**
+     * The write request units for the table. Careful if you add Global Secondary Indexes, as
+     * those will share the table's maximum on-demand throughput.
+     *
+     * Can only be provided if billingMode is PAY_PER_REQUEST.
+     *
+     * @default - on-demand throughput is disabled
+     */
+  readonly maxWriteRequestUnits?: number;
+
+  /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
    *
    * @default PROVISIONED if `replicationRegions` is not specified, PAY_PER_REQUEST otherwise
@@ -418,6 +437,24 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default 5
    */
   readonly writeCapacity?: number;
+
+  /**
+   * The maximum read request units for the global secondary index.
+   *
+   * Can only be provided if table billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
+  readonly maxReadRequestUnits?: number;
+
+  /**
+   * The maximum write request units for the global secondary index.
+   *
+   * Can only be provided if table billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
+  readonly maxWriteRequestUnits?: number;
 }
 
 /**
@@ -1124,6 +1161,13 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
       },
+      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits ?
+        {
+          onDemandThroughput: this.billingMode === BillingMode.PROVISIONED ? undefined : {
+            maxReadRequestUnits: props.maxReadRequestUnits || undefined,
+            maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
+          },
+        } : undefined),
       sseSpecification,
       streamSpecification,
       tableClass: props.tableClass,
@@ -1189,6 +1233,13 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
       },
+      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits ?
+        {
+          onDemandThroughput: this.billingMode === BillingMode.PROVISIONED ? undefined : {
+            maxReadRequestUnits: props.maxReadRequestUnits || undefined,
+            maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
+          },
+        } : undefined),
     });
 
     this.secondaryIndexSchemas.set(props.indexName, {
