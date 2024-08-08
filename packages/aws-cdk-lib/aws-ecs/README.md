@@ -156,6 +156,19 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+To customize the cache key use the `additionalCacheKey` parameter.
+This can be useful if you want to scope the context variable to a construct 
+(eg, using `additionalCacheKey: this.node.path`).
+
+```ts
+declare const vpc: ec2.Vpc;
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true, additionalCacheKey: this.node.path }),
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
+```
+
 To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts

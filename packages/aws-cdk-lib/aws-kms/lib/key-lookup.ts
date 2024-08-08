@@ -8,4 +8,11 @@ export interface KeyLookupOptions {
    * Must be in the format `alias/<AliasName>`.
    */
   readonly aliasName: string;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }

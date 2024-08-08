@@ -47,6 +47,13 @@ export interface AmazonLinuxImageSsmParameterBaseOptions {
   readonly cachedInContext?: boolean;
 
   /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
+
+  /**
    * Initial user data
    *
    * @default - Empty UserData for Linux machines
@@ -71,7 +78,7 @@ export abstract class AmazonLinuxImageSsmParameterBase implements IMachineImage 
   }
 
   getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext, this.props.parameterName);
+    const imageId = lookupImage(scope, this.cachedInContext, this.props.parameterName, this.props.additionalCacheKey);
 
     const osType = OperatingSystemType.LINUX;
     return {
