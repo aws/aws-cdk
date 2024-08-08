@@ -59,6 +59,14 @@
     "@aws-cdk/service-spec-types" "^0.0.83"
     "@cdklabs/tskb" "^0.0.3"
 
+"@aws-cdk/cloud-assembly-schema@^36.0.1":
+  version "36.0.1"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-36.0.1.tgz#bba4995b7cb6d33780b736e1a46a9b14623cff7e"
+  integrity sha512-mRIx3rIfUMSFzmT0hUEUnZJXImuuczUQZbhWcgpEHZ/tPXoZfCq+MNyDkNW78FMn/VK+JuK3kZrX3udV9Rzhaw==
+  dependencies:
+    jsonschema "^1.4.1"
+    semver "^7.6.3"
+
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
   version "2.0.242"
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v24/-/lambda-layer-kubectl-v24-2.0.242.tgz#4273a5ad7714f933a7eba155eb9280823086db71"
@@ -14999,6 +15007,11 @@ semver@^7.0.0, semver@^7.1.1, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semve
   version "7.6.2"
   resolved "https://registry.npmjs.org/semver/-/semver-7.6.2.tgz#1e3b34759f896e8f14d6134732ce798aeb0c6e13"
   integrity sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==
+
+semver@^7.6.3:
+  version "7.6.3"
+  resolved "https://registry.npmjs.org/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
+  integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
 
 sentence-case@^3.0.4:
   version "3.0.4"
