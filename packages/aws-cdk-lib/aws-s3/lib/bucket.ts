@@ -1842,8 +1842,6 @@ export interface Tag {
  *
  * @example
  * import { RemovalPolicy } from 'aws-cdk-lib';
- * import { render } from '../../aws-stepfunctions/test/private/render-util';
-import { CfnFilterProps, CfnFilter } from '../../aws-inspectorv2/lib/inspectorv2.generated';
  *
  * new s3.Bucket(scope, 'Bucket', {
  *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
