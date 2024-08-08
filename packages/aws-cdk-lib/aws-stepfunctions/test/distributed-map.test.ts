@@ -237,6 +237,76 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State and S3ObjectsItemReaderPath', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucketNamePath = '$.bucketName';
+    const prefixPath = '$.prefix';
+
+    //WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemReaderPath: new stepfunctions.S3ObjectsItemReaderPath({
+        bucketNamePath,
+        prefixPath,
+        maxItems: 10,
+      }),
+      itemSelector: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    //THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemSelector: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:listObjectsV2',
+                ],
+              ],
+            },
+            ReaderConfig: {
+              MaxItems: 10,
+            },
+            Parameters: {
+              'Bucket.$': bucketNamePath,
+              'Prefix.$': prefixPath,
+            },
+          },
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State and S3JsonItemReader', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -724,6 +794,39 @@ describe('Distributed Map State', () => {
     });
 
     expect(() => app.synth()).toThrow(/Provide either `itemsPath` or `itemReader`, but not both/);
+  }),
+
+  test('fails in synthesis if itemsPath and itemReaderPath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        itemReaderPath: new stepfunctions.S3ObjectsItemReaderPath({
+          bucketNamePath: '$.bucketName',
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `itemsPath` or `itemReaderPath`, but not both/);
+  }),
+
+  test('fails in synthesis if itemsReader and itemReaderPath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        itemReader: new stepfunctions.S3JsonItemReader({
+          bucket: new s3.Bucket(stack, 'TestBucket'),
+          key: 'test.json',
+        }),
+        itemReaderPath: new stepfunctions.S3ObjectsItemReaderPath({
+          bucketNamePath: '$.bucketName',
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `itemReader` or `itemReaderPath`, but not both/);
   }),
 
   test('fails in synthesis if ItemProcessor is in INLINE mode', () => {
