@@ -4,6 +4,7 @@ import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb');
@@ -56,6 +57,7 @@ const applicationLoadBalancedEc2Service = new ApplicationLoadBalancedEc2Service(
       weight: 2,
     },
   ],
+  ipAddressType: elbv2.IpAddressType.IPV4,
 });
 applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(securityGroup);
 
