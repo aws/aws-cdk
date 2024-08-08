@@ -783,7 +783,9 @@ The destination buckets can be in different AWS Regions or within the same Regio
 To replicate objects to a destination bucket, you can specify the `replicationRules` property:
 
 ```ts
-declare const destinationBucket1: s3.IBucket;declare const destinationBucket2: s3.IBucket;
+declare const destinationBucket1: s3.IBucket;
+declare const destinationBucket2: s3.IBucket;
+declare const kmsKey: kms.IKey;
 
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   // Versioning must be enabled on both the source and destination bucket
@@ -838,11 +840,13 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 You can replicate objects to a destination bucket in a different account by specifying the `ReplicationDestination.crossAccount()` method:
 
 ```ts
+declare const destinationBucket: s3.IBucket;
+
 const destination = s3.ReplicationDestination.crossAccount(
   // The destination bucket for the replication rule.
-  destinationBucket2,
+  destinationBucket,
   // The account ID of the destination bucket owner.
-  123456789012,
+  '123456789012',
   // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
   // The replicas are owned by same AWS account that owns the source object by default.
   true,
@@ -851,5 +855,3 @@ const destination = s3.ReplicationDestination.crossAccount(
 
 **Note**: For the cross account replication, the owner of the destination bucket must also add a bucket policy to grant the owner of the source bucket permissions to perform replication actions.
 Details on how to configure the bucket policy can be found in the [Amazon S3 User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html).
-
-
