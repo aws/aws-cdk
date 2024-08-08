@@ -4,7 +4,7 @@ import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule } from './rule';
+import { LifecycleRule, StorageClass } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
@@ -1400,6 +1400,145 @@ export abstract class TargetObjectKeyFormat {
   public abstract _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'];
 }
 
+/**
+ * Specifies which Amazon S3 objects to replicate and where to store the replicas.
+ */
+export interface ReplicationRule {
+  /**
+   * A container for information about the replication destination.
+   */
+  readonly destination: ReplicationDestination;
+
+  /**
+   * Specifying S3 Replication Time Control (S3 RTC),
+   * including whether S3 RTC is enabled and the time when all objects and operations on objects must be replicated.
+   *
+   * @default - S3 Replication Time Control is not enabled
+   */
+  readonly replicationTimeControl?: boolean;
+
+  /**
+   * A container specifying replication metrics-related settings enabling replication metrics and events.
+   *
+   * @default - Replication metrics are not enabled
+   */
+  readonly metrics?: boolean;
+
+  /**
+   * The customer managed AWS KMS key stored in AWS Key Management Service (KMS) for the destination bucket.
+   * Amazon S3 uses this key to encrypt replica objects.
+   *
+   * Amazon S3 only supports symmetric encryption KMS keys.
+   *
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html
+   *
+   * @default - Amazon S3 uses the AWS managed KMS key for encryption
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The storage class to use when replicating objects, such as S3 Standard or reduced redundancy.
+   *
+   * @default - The storage class of the source object
+   */
+  readonly storageClass?: StorageClass;
+
+  /**
+   * Specifies whether Amazon S3 replicates objects created with server-side encryption using an AWS KMS key stored in AWS Key Management Service.
+   *
+   * @default false
+   */
+  readonly sseKmsEncryptedObjects?: boolean;
+
+  /**
+   * Specifies whether Amazon S3 replicates modifications on replicas.
+   *
+   * @default false
+   */
+  readonly replicaModifications?: boolean;
+
+  /**
+   * The priority indicates which rule has precedence whenever two or more replication rules conflict.
+   *
+   * Amazon S3 will attempt to replicate objects according to all replication rules.
+   * However, if there are two or more rules with the same destination bucket,
+   * then objects will be replicated according to the rule with the highest priority.
+   *
+   * The higher the number, the higher the priority.
+   *
+   * It is essential to specify priority explicitly when the replication configuration has multiple rules.
+   *
+   * @default 0
+   */
+  readonly priority?: number;
+
+  /**
+   * Specifies whether Amazon S3 replicates delete markers.
+   *
+   * @default false
+   */
+  readonly deleteMarkerReplication?: boolean;
+
+  /**
+   * A unique identifier for the rule.
+   *
+   * The maximum value is 255 characters.
+   *
+   * @default - auto generated random ID
+   */
+  readonly id?: string;
+
+  /**
+   * An object key name prefix that identifies the object or objects to which the rule applies.
+   *
+   * @default - applies to all objects
+   */
+  readonly prefixFilter?: string;
+
+  /**
+   * The tag array used for tag filters.
+   *
+   * The rule applies only to objects that have the tag in this set.
+   *
+   * @default - applies to all objects
+   */
+  readonly tagFilter?: Tag[];
+}
+
+/**
+ * A container for information about the replication destination.
+ */
+export class ReplicationDestination {
+  /**
+   * Replicate to another bucket in the same account.
+   *
+   * @param bucket the destination bucket
+   */
+  public static sameAccount(bucket: IBucket): ReplicationDestination {
+    return new ReplicationDestination(bucket);
+  }
+
+  /**
+   * Replicate to another bucket in a different account.
+   *
+   * @param bucket the destination bucket
+   * @param account the account to replicate to
+   * @param accessControlTransition whether to want to change replica ownership to the AWS account that owns the destination bucket. The replicas are owned by same AWS account that owns the source object by default.
+   */
+  public static crossAccount(bucket: IBucket, account: string, accessControlTransition?: boolean): ReplicationDestination {
+    return new ReplicationDestination(bucket, account, accessControlTransition);
+  }
+
+  /**
+   * Replicate to another bucket in the same or different account.
+   *
+   * @param bucket the destination bucket
+   * @param account the account to replicate to
+   * @param accessControlTransition whether to want to change replica ownership to the AWS account that owns the destination bucket. The replicas are owned by same AWS account that owns the source object by default.
+   */
+  private constructor(public readonly bucket: IBucket, public readonly account?: string, public readonly accessControlTransition?: boolean) {}
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1671,6 +1810,13 @@ export interface BucketProps {
   * @default No minimum TLS version is enforced.
   */
   readonly minimumTLSVersion?: number;
+
+  /**
+   * A container for one or more replication rules.
+   *
+   * @default - No replication
+   */
+  readonly replicationRules?: ReplicationRule[];
 }
 
 /**
@@ -1921,6 +2067,8 @@ export class Bucket extends BucketBase {
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
 
+    const replicationConfiguration = this.renderReplicationConfiguration(props);
+
     this.objectOwnership = props.objectOwnership;
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
@@ -1939,6 +2087,7 @@ export class Bucket extends BucketBase {
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
+      replicationConfiguration,
     });
     this._resource = resource;
 
@@ -2457,6 +2606,122 @@ export class Bucket extends BucketBase {
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
       routingRules,
+    };
+  }
+
+  private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
+    if (!props.replicationRules || props.replicationRules.length === 0) {
+      return undefined;
+    }
+
+    if (!props.versioned) {
+      throw new Error('Replication rules require versioning to be enabled on the bucket');
+    }
+    if (props.replicationRules.length > 1 && props.replicationRules.some(rule => rule.priority === undefined)) {
+      throw new Error('\'priority\' must be specified for all replication rules when there are multiple rules');
+    }
+    props.replicationRules.forEach(rule => {
+      if (rule.replicationTimeControl && !rule.metrics) {
+        throw new Error('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.');
+      }
+      if (rule.deleteMarkerReplication && rule.tagFilter) {
+        throw new Error('\'tagFilter\' cannot be specified when \'deleteMarkerReplication\' is enabled.');
+      }
+    });
+
+    const destinationBuckets = props.replicationRules.map(rule => rule.destination.bucket);
+    const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
+
+    const role = new iam.Role(this, 'ReplicationRole', {
+      assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+    });
+
+    // add permissions to the role
+    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+      resources: [Lazy.string({ produce: () => this.bucketArn })],
+      effect: iam.Effect.ALLOW,
+    }));
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+      resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+      effect: iam.Effect.ALLOW,
+    }));
+    if (destinationBuckets.length > 0) {
+      role.addToPolicy(new iam.PolicyStatement({
+        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+        resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+        effect: iam.Effect.ALLOW,
+      }));
+    }
+
+    kmsKeys.forEach(kmsKey => {
+      kmsKey.grantEncrypt(role);
+    });
+
+    return {
+      role: role.roleArn,
+      rules: props.replicationRules.map((rule) => {
+        const sourceSelectionCriteria = (rule.replicaModifications !== undefined || rule.sseKmsEncryptedObjects !== undefined) ? {
+          replicaModifications: rule.replicaModifications !== undefined ? {
+            status: rule.replicaModifications ? 'Enabled' : 'Disabled',
+          } : undefined,
+          sseKmsEncryptedObjects: rule.sseKmsEncryptedObjects !== undefined ? {
+            status: rule.sseKmsEncryptedObjects ? 'Enabled' : 'Disabled',
+          } : undefined,
+        } : undefined;
+
+        // Whether to configure filter settings by And property.
+        const isAndFilter = rule.tagFilter && rule.tagFilter.length > 0;
+        // To avoid deploy error when there are multiple replication rules with undefined prefix,
+        // CDK set the prefix to an empty string if it is undefined.
+        const prefix = rule.prefixFilter ?? '';
+        const filter = isAndFilter ? {
+          and: {
+            prefix,
+            tagFilters: rule.tagFilter,
+          },
+        } : {
+          prefix,
+        };
+
+        return {
+          id: rule.id,
+          priority: rule.priority,
+          status: 'Enabled',
+          destination: {
+            bucket: rule.destination.bucket.bucketArn,
+            account: rule.destination.account,
+            storageClass: rule.storageClass?.toString(),
+            accessControlTranslation: rule.destination.accessControlTransition ? {
+              owner: 'Destination',
+            } : undefined,
+            encryptionConfiguration: rule.kmsKey ? {
+              replicaKmsKeyId: rule.kmsKey.keyArn,
+            } : undefined,
+            replicationTime: rule.replicationTimeControl !== undefined ? {
+              status: rule.replicationTimeControl ? 'Enabled' : 'Disabled',
+              time: {
+                minutes: 15,
+              },
+            } : undefined,
+            metrics: rule.metrics !== undefined ? {
+              status: rule.metrics ? 'Enabled' : 'Disabled',
+              eventThreshold: {
+                minutes: 15,
+              },
+            } : undefined,
+          },
+          filter,
+          // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,
+          // CDK explicitly set the deleteMarkerReplication if it is undefined.
+          deleteMarkerReplication: {
+            status: rule.deleteMarkerReplication ? 'Enabled' : 'Disabled',
+          },
+          sourceSelectionCriteria,
+        };
+      }),
     };
   }
 
