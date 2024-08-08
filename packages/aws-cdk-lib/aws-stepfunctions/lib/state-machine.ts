@@ -429,8 +429,10 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineArn: string;
 
-  // Default value for KmsDataKeyReusePeriodSeconds
-  // See: https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+  /** 
+   * Default value for `kmsDataKeyReusePeriodSeconds`
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+   */
   private readonly defaultPeriodSeconds = 300;
 
   /**
