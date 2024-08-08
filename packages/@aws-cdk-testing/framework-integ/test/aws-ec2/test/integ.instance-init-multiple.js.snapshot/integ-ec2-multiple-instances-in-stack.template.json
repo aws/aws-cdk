@@ -906,7 +906,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: 8787022e9944cbeb\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: 370d9b2dcf8bf44b\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -954,6 +954,29 @@
         "mode": "000644",
         "owner": "root",
         "group": "root"
+       }
+      },
+      "commands": {
+       "000": {
+        "command": [
+         "useradd",
+         "-u",
+         "1001",
+         "-g",
+         "1001",
+         "eguser"
+        ]
+       },
+       "001": {
+        "command": [
+         "useradd",
+         "-a",
+         "-u",
+         "1001",
+         "-g",
+         "1001",
+         "eguser"
+        ]
        }
       }
      }
