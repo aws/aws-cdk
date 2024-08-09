@@ -32,8 +32,9 @@ const authorizer = new apigateway.TokenAuthorizer(stack, 'Authorizer', {
 });
 
 const api = new apigateway.RestApi(stack, 'IntegRestApi');
+const testResource = api.root.addResource('test');
 
-api.root.addResource('test').addMethod(
+testResource.addMethod(
   'GET',
   new apigateway.MockIntegration({
     integrationResponses: [
@@ -46,7 +47,35 @@ api.root.addResource('test').addMethod(
     ],
     passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
     requestTemplates: {
-      'application/json': '{ "statusCode": 200 }',
+      'application/json': JSON.stringify({ statusCode: 200 }),
+    },
+  }),
+  {
+    authorizer,
+    methodResponses: [
+      {
+        statusCode: '200',
+      },
+    ],
+  },
+);
+
+testResource.addResource('{id}').addMethod(
+  'POST',
+  new apigateway.MockIntegration({
+    integrationResponses: [
+      {
+        statusCode: '200',
+        responseTemplates: {
+          'application/json': JSON.stringify({
+            path: '$context.path',
+          }),
+        },
+      },
+    ],
+    passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+    requestTemplates: {
+      'application/json': JSON.stringify({ statusCode: 200 }),
     },
   }),
   {
@@ -63,25 +92,35 @@ const connection = new events.Connection(stack, 'Connection', {
   authorization: events.Authorization.basic(username, cdk.SecretValue.unsafePlainText(password)),
 });
 
-const httpInvokeTask = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
+const definition = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
   apiRoot: api.urlForPath('/'),
   apiEndpoint: sfn.TaskInput.fromText('/test'),
   connection,
   method: sfn.TaskInput.fromText('GET'),
-});
+  resultPath: sfn.JsonPath.DISCARD,
+}).next(new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint with Path Parameter', {
+  apiRoot: api.urlForPath('/'),
+  apiEndpoint: sfn.TaskInput.fromText(sfn.JsonPath.format('/test/{}', sfn.JsonPath.stringAt('$.id'))),
+  connection,
+  method: sfn.TaskInput.fromText('POST'),
+}));
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: httpInvokeTask,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
   timeout: cdk.Duration.seconds(30),
 });
 
 const testCase = new IntegTest(app, 'HttpInvokeTest', {
+  allowDestroy: ['AWS::ApiGateway::Deployment'],
   testCases: [stack],
 });
 
 // Start an execution
 const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: sm.stateMachineArn,
+  input: JSON.stringify({
+    id: 'abc-123',
+  }),
 });
 
 // describe the results of the execution
@@ -91,7 +130,13 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 
 // assert the results
 describe.expect(ExpectedResult.objectLike({
-  status: 'SUCCEEDED',
+  output: ExpectedResult.objectLike({
+    ResponseBody: {
+      path: '/test/abc-123x',
+    },
+    StatusCode: 200,
+  }),
+  status: 'BANANAS',
 }));
 
 app.synth();
