@@ -347,7 +347,7 @@ export class Distribution extends Resource implements IDistribution {
         enabled: props.enabled ?? true,
         origins: Lazy.any({ produce: () => this.renderOrigins() }),
         originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
-        defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
+        defaultCacheBehavior: this.defaultBehavior._renderBehavior({ ignoreCachePolicy: !this.isCachePolicySupported() }),
         aliases: props.domainNames,
         cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
         comment: trimmedComment,
@@ -598,6 +598,14 @@ export class Distribution extends Resource implements IDistribution {
     return this.grant(identity, 'cloudfront:CreateInvalidation');
   }
 
+  private isCachePolicySupported(): boolean {
+    const region = Stack.of(this).region;
+    if (!Token.isUnresolved(region) && region.startsWith('cn-')) {
+      return false;
+    }
+    return true;
+  };
+
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
     const ORIGIN_ID_MAX_LENGTH = 128;
 
@@ -676,7 +684,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
     if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+    return this.additionalBehaviors.map(behavior => behavior._renderBehavior({ ignoreCachePolicy: !this.isCachePolicySupported() }));
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {

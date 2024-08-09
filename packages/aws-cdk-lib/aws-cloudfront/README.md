@@ -1179,3 +1179,20 @@ See:
 
 * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
 * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html
+
+## Notes for China region
+
+CloudFront in AWS China regions does not support CachePolicy. If you are deploying distributions in AWS China regions,
+make sure to specify `env.region` in your stack environment.
+
+For example:
+
+```ts
+const app = new App();
+const stack = new Stack(app, 'Stack', {
+    env: { account: '1234', region: 'cn-north-1' },
+  });
+declare const origin: cloudfront.IOrigin;
+
+new cloudfront.Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+```
