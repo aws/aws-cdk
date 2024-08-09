@@ -143,6 +143,13 @@ export interface StackSteps {
   readonly pre?: Step[];
 
   /**
+   * Additional steps to run after all of the prepare-nodes in the stage. If this property is set allPrepareNodesFirst has to be set to true also. This is the case, because dependency cycle will occour otherwise.
+   *
+   * @default - No additional steps
+   */
+  readonly postPrepare?: Step[];
+
+  /**
    * Steps that execute after stack is prepared but before stack is deployed
    *
    * @default - no additional steps

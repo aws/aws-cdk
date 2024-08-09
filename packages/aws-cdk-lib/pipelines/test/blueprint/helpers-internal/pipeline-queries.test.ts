@@ -57,17 +57,17 @@ describe('pipeline-queries', () => {
       },
       {
         description: 'output referenced in stack pre step',
-        additionalSetup: () => stackDeployment.addStackSteps([step], [], []),
+        additionalSetup: () => stackDeployment.addStackSteps([step], [], [], []),
         expectedResultGetter: () => [outputName],
       },
       {
         description: 'output referenced in stack changeSet step',
-        additionalSetup: () => stackDeployment.addStackSteps([], [step], []),
+        additionalSetup: () => stackDeployment.addStackSteps([], [step], [], []),
         expectedResultGetter: () => [outputName],
       },
       {
         description: 'output referenced in stack post step',
-        additionalSetup: () => stackDeployment.addStackSteps([], [], [step]),
+        additionalSetup: () => stackDeployment.addStackSteps([], [], [step], []),
         expectedResultGetter: () => [outputName],
       },
       {

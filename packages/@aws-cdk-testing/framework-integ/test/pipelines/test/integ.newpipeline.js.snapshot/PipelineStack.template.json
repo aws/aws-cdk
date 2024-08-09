@@ -257,16 +257,16 @@
          "Version": "1"
         },
         "Configuration": {
-         "Owner": "rix0rrr",
-         "Repo": "cdk-pipelines-demo",
+         "Owner": "Nico-DB",
+         "Repo": "aws-cdk",
          "Branch": "main",
          "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
          "PollForSourceChanges": false
         },
-        "Name": "rix0rrr_cdk-pipelines-demo",
+        "Name": "Nico-DB_aws-cdk",
         "OutputArtifacts": [
          {
-          "Name": "rix0rrr_cdk_pipelines_demo_Source"
+          "Name": "Nico_DB_aws_cdk_Source"
          }
         ],
         "RunOrder": 1
@@ -291,7 +291,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "rix0rrr_cdk_pipelines_demo_Source"
+          "Name": "Nico_DB_aws_cdk_Source"
          }
         ],
         "Name": "Synth",
@@ -387,7 +387,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Stack1.Prepare",
+        "Name": "Stack1.Prepare-Beta-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -493,7 +493,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Stack2.Prepare",
+        "Name": "Stack2.Prepare-Beta-Stack2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -604,7 +604,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod1.Stack1.Prepare",
+        "Name": "Prod1.Stack1.Prepare-Prod1-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -672,7 +672,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod2.Stack1.Prepare",
+        "Name": "Prod2.Stack1.Prepare-Prod2-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -816,7 +816,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod1.Stack2.Prepare",
+        "Name": "Prod1.Stack2.Prepare-Prod1-Stack2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -884,7 +884,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod2.Stack2.Prepare",
+        "Name": "Prod2.Stack2.Prepare-Prod2-Stack2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1033,7 +1033,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod3.Stack1.Prepare",
+        "Name": "Prod3.Stack1.Prepare-Prod3-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1101,7 +1101,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod4.Stack1.Prepare",
+        "Name": "Prod4.Stack1.Prepare-Prod4-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1169,7 +1169,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod5.Stack1.Prepare",
+        "Name": "Prod5.Stack1.Prepare-Prod5-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1237,7 +1237,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod6.Stack1.Prepare",
+        "Name": "Prod6.Stack1.Prepare-Prod6-Stack1",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1457,7 +1457,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod3.Stack2.Prepare",
+        "Name": "Prod3.Stack2.Prepare-Prod3-Stack2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1525,7 +1525,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod4.Stack2.Prepare",
+        "Name": "Prod4.Stack2.Prepare-Prod4-Stack2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1593,7 +1593,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod5.Stack2.Prepare",
+        "Name": "Prod5.Stack2.Prepare-Prod5-Stack2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1661,7 +1661,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Prod6.Stack2.Prepare",
+        "Name": "Prod6.Stack2.Prepare-Prod6-Stack2",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -1849,7 +1849,7 @@
     "PipelineRoleB27FAA37"
    ]
   },
-  "PipelineSourcerix0rrrcdkpipelinesdemoWebhookResourceDB0C1BCA": {
+  "PipelineSourceNicoDBawscdkWebhookResource5DAA82C4": {
    "Type": "AWS::CodePipeline::Webhook",
    "Properties": {
     "Authentication": "GITHUB_HMAC",
@@ -1862,8 +1862,9 @@
       "MatchEquals": "refs/heads/{Branch}"
      }
     ],
-    "RegisterWithThirdParty": true,
-    "TargetAction": "rix0rrr_cdk-pipelines-demo",
+
+    "TargetAction": "Nico-DB_aws-cdk",
+
     "TargetPipeline": {
      "Ref": "Pipeline9850B417"
     },

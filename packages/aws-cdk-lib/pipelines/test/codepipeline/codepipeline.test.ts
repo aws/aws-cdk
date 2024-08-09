@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Template, Annotations, Match } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
@@ -10,7 +10,7 @@ import { Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
+import { FileAssetApp, ModernTestGitHubNpmPipeline, PIPELINE_ENV, StageWithStackOutput, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
 
@@ -370,7 +370,7 @@ describe('deployment of stack', () => {
             Configuration: Match.objectLike({
               ActionMode: 'CHANGE_SET_REPLACE',
             }),
-            Name: 'Prepare',
+            Name: 'Prepare-App-Stack',
           }),
           Match.objectLike({
             Configuration: Match.objectLike({
@@ -471,8 +471,8 @@ test('synths with change set approvers', () => {
     Stages: Match.arrayWith([{
       Name: 'TheApp',
       Actions: Match.arrayWith([
-        Match.objectLike({ Name: 'Stack1.Prepare', RunOrder: 1 }),
-        Match.objectLike({ Name: 'Stack2.Prepare', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack1.Prepare-TheApp-Stack1', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack2.Prepare-TheApp-Stack2', RunOrder: 1 }),
         Match.objectLike({ Name: 'Stack1.ChangeSetApproval', RunOrder: 2 }),
         Match.objectLike({ Name: 'Stack1.Deploy', RunOrder: 3 }),
         Match.objectLike({ Name: 'Stack2.Deploy', RunOrder: 3 }),

@@ -91,11 +91,14 @@ export class StackDeployment {
   /**
    * Build a `StackDeployment` from a Stack Artifact in a Cloud Assembly.
    */
-  public static fromArtifact(stackArtifact: cxapi.CloudFormationStackArtifact): StackDeployment {
+  public static fromArtifact(
+    stackArtifact: cxapi.CloudFormationStackArtifact,
+  ): StackDeployment {
     const artRegion = stackArtifact.environment.region;
     const region = artRegion === cxapi.UNKNOWN_REGION ? undefined : artRegion;
     const artAccount = stackArtifact.environment.account;
-    const account = artAccount === cxapi.UNKNOWN_ACCOUNT ? undefined : artAccount;
+    const account =
+      artAccount === cxapi.UNKNOWN_ACCOUNT ? undefined : artAccount;
 
     return new StackDeployment({
       account,
@@ -104,7 +107,10 @@ export class StackDeployment {
       stackArtifactId: stackArtifact.id,
       constructPath: stackArtifact.hierarchicalId,
       stackName: stackArtifact.stackName,
-      absoluteTemplatePath: path.join(stackArtifact.assembly.directory, stackArtifact.templateFile),
+      absoluteTemplatePath: path.join(
+        stackArtifact.assembly.directory,
+        stackArtifact.templateFile,
+      ),
       assumeRoleArn: stackArtifact.assumeRoleArn,
       executionRoleArn: stackArtifact.cloudFormationExecutionRoleArn,
       assets: extractStackAssets(stackArtifact),
@@ -206,6 +212,12 @@ export class StackDeployment {
    */
   public readonly post: Step[] = [];
 
+  /**
+   * Additional steps to run after all of the prepare-nodes in the stage
+   */
+
+  public readonly postPrepare: Step[] = [];
+
   private constructor(props: StackDeploymentProps) {
     this.stackArtifactId = props.stackArtifactId;
     this.constructPath = props.constructPath;
@@ -216,7 +228,9 @@ export class StackDeployment {
     this.executionRoleArn = props.executionRoleArn;
     this.stackName = props.stackName;
     this.absoluteTemplatePath = props.absoluteTemplatePath;
-    this.templateUrl = props.templateS3Uri ? s3UrlFromUri(props.templateS3Uri, props.region) : undefined;
+    this.templateUrl = props.templateS3Uri
+      ? s3UrlFromUri(props.templateS3Uri, props.region)
+      : undefined;
 
     this.assets = new Array<StackAsset>();
 
@@ -242,10 +256,16 @@ export class StackDeployment {
    * @param changeSet steps executed after stack.prepare and before stack.deploy
    * @param post steps executed after stack.deploy
    */
-  public addStackSteps(pre: Step[], changeSet: Step[], post: Step[]) {
+  public addStackSteps(
+    pre: Step[],
+    changeSet: Step[],
+    post: Step[],
+    postPrepare: Step[],
+  ) {
     this.pre.push(...pre);
     this.changeSet.push(...changeSet);
     this.post.push(...post);
+    this.postPrepare.push(...postPrepare);
   }
 }
 

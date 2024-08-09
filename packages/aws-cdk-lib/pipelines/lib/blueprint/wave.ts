@@ -19,6 +19,14 @@ export interface WaveProps {
    * @default - No additional steps
    */
   readonly post?: Step[];
+
+  /**
+   * Additional steps to run after all of the prepare-nodes in the stage. If this property is set allPrepareNodesFirst has to be set to true also. This is the case, because dependency cycle will occour otherwise.
+   *
+   * @default - No additional steps
+   */
+  readonly postPrepare?: Step[];
+
 }
 
 /**
@@ -36,15 +44,25 @@ export class Wave {
   public readonly post: Step[];
 
   /**
+   * Additional steps to run after all of the prepare-nodes in the stage. If this property is set allPrepareNodesFirst has to be set to true also. This is the case, because dependency cycle will occour otherwise.
+   *
+   */
+  public readonly postPrepare: Step[];
+
+  /**
    * The stages that are deployed in this wave
    */
   public readonly stages: StageDeployment[] = [];
 
   constructor(
     /** Identifier for this Wave */
-    public readonly id: string, props: WaveProps = {}) {
+    public readonly id: string,
+    props: WaveProps = {},
+  ) {
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
+    this.postPrepare = props.postPrepare ?? [];
+
   }
 
   /**
@@ -72,6 +90,13 @@ export class Wave {
   public addPost(...steps: Step[]) {
     this.post.push(...steps);
   }
+
+  /**
+   * Add an additional step to run after all of the stacks in this stage
+   */
+  public addPostPrepare(...steps: Step[]) {
+    this.postPrepare.push(...steps);
+  }
 }
 
 /**
@@ -93,11 +118,19 @@ export interface AddStageOpts {
   readonly post?: Step[];
 
   /**
+   * Additional steps to run after all of the prepare-nodes in the stage. If this property is set allPrepareNodesFirst has to be set to true also. This is the case, because dependency cycle will occour otherwise.
+   *
+   * @default - No additional steps
+   */
+  readonly postPrepare?: Step[];
+
+  /**
    * Instructions for stack level steps
    *
    * @default - No additional instructions
    */
   readonly stackSteps?: StackSteps[];
+
 }
 
 /**
@@ -117,4 +150,12 @@ export interface WaveOptions {
    * @default - No additional steps
    */
   readonly post?: Step[];
+
+  /**
+   * Additional steps to run after all of the prepare-nodes in the stage
+   *
+   * @default - No additional steps
+   */
+  readonly postPrepare?: Step[];
+
 }

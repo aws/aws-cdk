@@ -1,6 +1,6 @@
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
 import * as pipelines from 'aws-cdk-lib/pipelines';
@@ -13,12 +13,11 @@ class PipelineStack extends Stack {
       crossAccountKeys: true,
       enableKeyRotation: true,
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('tkglaser/cdk-pipelines-demo', 'main'),
-        commands: [
-          'npm ci',
-          'npm run build',
-          'npx cdk synth',
-        ],
+        input: pipelines.CodePipelineSource.gitHub(
+          'Nico-DB/aws-cdk',
+          'main',
+        ),
+        commands: ['npm ci', 'npm run build', 'npx cdk synth'],
       }),
     });
 
