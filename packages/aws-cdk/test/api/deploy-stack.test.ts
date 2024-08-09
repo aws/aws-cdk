@@ -460,6 +460,42 @@ test('deploy is not skipped if parameters are different', async () => {
   }));
 });
 
+test('deploy is skipped if notificationArns are the same', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK.template);
+  givenStackExists({
+    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+  });
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK,
+    notificationArns: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).not.toHaveBeenCalled();
+});
+
+test('deploy is not skipped if notificationArns are different', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK.template);
+  givenStackExists({
+    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+  });
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK,
+    notificationArns: ['arn:aws:sns:bermuda-triangle-1337:123456789012:MagicTopic'],
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+});
+
 test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
   givenStackExists(
@@ -624,7 +660,7 @@ test('deploy is not skipped if stack is in a _FAILED state', async () => {
   await deployStack({
     ...standardDeployStackArguments(),
     usePreviousParameters: true,
-  }).catch(() => {});
+  }).catch(() => { });
 
   // THEN
   expect(cfnMocks.createChangeSet).toHaveBeenCalled();

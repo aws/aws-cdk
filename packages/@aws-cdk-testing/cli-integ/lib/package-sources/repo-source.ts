@@ -75,13 +75,14 @@ const YARN_MONOREPO_CACHE: Record<string, any> = {};
   *
   * Cached in YARN_MONOREPO_CACHE.
   */
-async function findYarnPackages(root: string): Promise<Record<string, string>> {
+export async function findYarnPackages(root: string): Promise<Record<string, string>> {
   if (!(root in YARN_MONOREPO_CACHE)) {
-    const output: YarnWorkspacesOutput = JSON.parse(await shell(['yarn', 'workspaces', '--silent', 'info'], {
+    const outputDataString: string = JSON.parse(await shell(['yarn', 'workspaces', '--json', 'info'], {
       captureStderr: false,
       cwd: root,
       show: 'error',
-    }));
+    })).data;
+    const output: YarnWorkspacesOutput = JSON.parse(outputDataString);
 
     const ret: Record<string, string> = {};
     for (const [k, v] of Object.entries(output)) {
@@ -96,7 +97,7 @@ async function findYarnPackages(root: string): Promise<Record<string, string>> {
  * Find the root directory of the repo from the current directory
  */
 export async function autoFindRoot() {
-  const found = await findUp('release.json');
+  const found = findUp('release.json');
   if (!found) {
     throw new Error(`Could not determine repository root: 'release.json' not found from ${process.cwd()}`);
   }
