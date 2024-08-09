@@ -224,6 +224,13 @@ export interface ChangeSetDeploymentMethod {
    * If not provided, a name will be generated automatically.
    */
   readonly changeSetName?: string;
+
+  /**
+   * Indicates if the stack set imports resources that already exist.
+   *
+   * @default false
+   */
+  readonly importExistingResources?: boolean;
 }
 
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -374,7 +381,8 @@ class FullCloudFormationDeployment {
   private async changeSetDeployment(deploymentMethod: ChangeSetDeploymentMethod): Promise<DeployStackResult> {
     const changeSetName = deploymentMethod.changeSetName ?? 'cdk-deploy-change-set';
     const execute = deploymentMethod.execute ?? true;
-    const changeSetDescription = await this.createChangeSet(changeSetName, execute);
+    const importExistingResources = deploymentMethod.importExistingResources ?? false;
+    const changeSetDescription = await this.createChangeSet(changeSetName, execute, importExistingResources);
     await this.updateTerminationProtection();
 
     if (changeSetHasNoChanges(changeSetDescription)) {
@@ -405,7 +413,7 @@ class FullCloudFormationDeployment {
     return this.executeChangeSet(changeSetDescription);
   }
 
-  private async createChangeSet(changeSetName: string, willExecute: boolean) {
+  private async createChangeSet(changeSetName: string, willExecute: boolean, importExistingResources: boolean) {
     await this.cleanupOldChangeset(changeSetName);
 
     debug(`Attempting to create ChangeSet with name ${changeSetName} to ${this.verb} stack ${this.stackName}`);
@@ -417,6 +425,7 @@ class FullCloudFormationDeployment {
       ResourcesToImport: this.options.resourcesToImport,
       Description: `CDK Changeset for execution ${this.uuid}`,
       ClientToken: `create${this.uuid}`,
+      ImportExistingResources: importExistingResources,
       ...this.commonPrepareOptions(),
     }).promise();
 
