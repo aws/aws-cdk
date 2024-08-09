@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-cdk-glue-table-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-glue-workflow"
+      ],
+      "assertionStack": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70"
+    }
+  }
+}
