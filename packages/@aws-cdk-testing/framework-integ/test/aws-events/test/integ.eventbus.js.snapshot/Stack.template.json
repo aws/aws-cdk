@@ -1,8 +1,21 @@
 {
  "Resources": {
+  "DLQ581697C4": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "BusEA82B648": {
    "Type": "AWS::Events::EventBus",
    "Properties": {
+    "DeadLetterConfig": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "DLQ581697C4",
+       "Arn"
+      ]
+     }
+    },
     "Description": "myEventBus",
     "Name": "StackBusAA0A1E4B"
    }
