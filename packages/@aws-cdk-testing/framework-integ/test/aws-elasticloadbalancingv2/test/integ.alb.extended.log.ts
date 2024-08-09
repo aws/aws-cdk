@@ -18,8 +18,16 @@ class ExtendedLB extends elbv2.ApplicationLoadBalancer {
       serverAccessLogsPrefix: 'selflog/',
       enforceSSL: true,
     });
-
     this.logAccessLogs(accessLogsBucket);
+
+    const connectionLogsBucket = new s3.Bucket(this, 'ALBConnectionLogsBucket', {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      versioned: true,
+      serverAccessLogsPrefix: 'selflog/',
+      enforceSSL: true,
+    });
+    this.logConnectionLogs(connectionLogsBucket);
   }
 }
 
