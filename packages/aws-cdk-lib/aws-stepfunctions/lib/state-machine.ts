@@ -168,7 +168,7 @@ export interface StateMachineProps {
   /**
    * Maximum duration that Step Functions will reuse customer managed data keys.
    * When the period expires, Step Functions will call GenerateDataKey.
-   * 
+   *
    * You can only provide a value if `kmsKey` is set.
    *
    * Must be between 60 and 900 seconds.
@@ -176,6 +176,12 @@ export interface StateMachineProps {
    * @default Duration.seconds(300)
    */
   readonly kmsDataKeyReusePeriodSeconds?: Duration;
+
+  /**
+   * Enable encrypted logging using a KMS key. If enabled you need to provide the log group via the logs? prop.
+   * @default - false;
+   */
+  readonly enableEncryptedLogging?: boolean;
 }
 
 /**
@@ -429,7 +435,7 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineArn: string;
 
-  /** 
+  /**
    * Default value for `kmsDataKeyReusePeriodSeconds`
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
    */
@@ -459,9 +465,15 @@ export class StateMachine extends StateMachineBase {
       throw new Error('You need to specify either definition or definitionBody');
     }
 
+    if (props?.enableEncryptedLogging && props.logs === undefined) {
+      throw new Error('You need to specify a valid log group via the logs prop in order to enable CWL encryption');
+    }
+
     if (props.stateMachineName !== undefined) {
       this.validateStateMachineName(props.stateMachineName);
     }
+
+    validateEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
@@ -479,8 +491,6 @@ export class StateMachine extends StateMachineBase {
         this.addToRolePolicy(statement);
       }
     }
-
-    validateEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds);
 
     if (props?.kmsKey) {
       props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
@@ -503,6 +513,24 @@ export class StateMachine extends StateMachineBase {
           },
         },
       }));
+
+      if (props?.enableEncryptedLogging && props?.logs) {
+        props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey*'],
+          principals: [new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`)],
+          conditions: {
+            ArnEquals: {
+              'kms:EncryptionContext:aws:logs:arn': Stack.of(this).formatArn({
+                service: 'logs',
+                resource: 'log-group',
+                sep: ':',
+                resourceName: props.logs.destination.logGroupName,
+              }),
+            },
+          },
+        }));
+      }
     }
 
     const resource = new CfnStateMachine(this, 'Resource', {

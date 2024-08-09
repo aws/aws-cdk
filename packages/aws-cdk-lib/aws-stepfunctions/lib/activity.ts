@@ -17,17 +17,24 @@ export interface ActivityProps {
    * @default - If not supplied, a name is generated
    */
   readonly activityName?: string;
+
   /**
-   * KMS key used for encryption. It can either be a key or alias construct. If provided it will enable encryption.
-   * By default data is encrypted with an AWS owned key.
-   * @default - no kmsKeyId is associated
+   * Specifies a symmetric customer managed KMS key for server-side encryption of the state machine definition and execution history.
+   * Step Functions will reuse the key for a maximum of `kmsDataKeyReusePeriodSeconds`.
+   *
+   * @default - data is transparently encrypted using an AWS owned key
    */
   readonly kmsKey?: kms.IKey;
 
   /**
-   * Maximum duration for which SFN will reuse data keys. When the period expires,
-   * StepFunctions will call GenerateDataKey. This setting only applies to a customer managed key and does not apply to an AWS owned KMS key.
-   * @default - 300s
+   * Maximum duration that Step Functions will reuse customer managed data keys.
+   * When the period expires, Step Functions will call GenerateDataKey.
+   *
+   * You can only provide a value if `kmsKey` is set.
+   *
+   * Must be between 60 and 900 seconds.
+   *
+   * @default Duration.seconds(300)
    */
   readonly kmsDataKeyReusePeriodSeconds?: Duration;
 }
@@ -72,8 +79,10 @@ export class Activity extends Resource implements IActivity {
    */
   public readonly activityName: string;
 
-  // Default value for KmsDataKeyReusePeriodSeconds
-  // See: https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+  /**
+   * Default value for `kmsDataKeyReusePeriodSeconds`
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+   */
   private readonly defaultPeriodSeconds = 300;
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {

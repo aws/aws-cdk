@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "StateMachineWithCMKWithCWLEncryption/DefaultTest": {
+      "stacks": [
+        "stepfunctions-cmk-cwl-integ"
+      ],
+      "assertionStack": "StateMachineWithCMKWithCWLEncryption/DefaultTest/DeployAssert",
+      "assertionStackName": "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050"
+    }
+  }
+}

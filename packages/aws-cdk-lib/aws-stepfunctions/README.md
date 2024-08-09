@@ -109,6 +109,7 @@ new sfn.StateMachine(this, 'StateMachineFromFile', {
 ```
 
 ### Creating a StateMachine with Encryption using a Customer Managed Key
+You can provide a symmetric KMS key to encrypt the state machine definition and execution history:
 ```
 const kmsKey = new kms.Key(stack, 'Key');
 const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionConfiguration', {
@@ -118,6 +119,29 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
       kmsKey: kmsKey,
       kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(60)
     });
+```
+
+### Creating a StateMachine with CWL Encryption using a Customer Managed Key,
+You can encrypt data sent to CloudWatch Logs. To use encrypted logging, you must set `enableEncryptedLogging` to `true` and provide the `logs?` prop:
+```
+const kmsKey = new kms.Key(this, 'Key');
+const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
+  logGroupName: '/aws/vendedlogs/states/MyLogGroup',
+});
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
+  stateMachineName: 'StateMachineWithCMKWithCWLEncryption',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  kmsKey: this.kmsKey,
+  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+  enableEncryptedLogging: true,
+  logs: {
+    destination: this.logGroup,
+    level: sfn.LogLevel.FATAL,
+    includeExecutionData: false,
+  },
+});
 ```
 
 ## State Machine Data
@@ -900,6 +924,7 @@ new CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 ```
 
 ### Creating an Activity with Encryption using a Customer Managed Key
+When you provide a symmetric KMS key, all inputs/ outputs from the Step Functions Activity will be encrypted using the provided KMS key:
 ```
 const kmsKey = new kms.Key(stack, 'Key');
 const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
