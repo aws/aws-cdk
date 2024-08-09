@@ -24,7 +24,7 @@ function isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: Dur
 export function constructEncryptionConfiguration(props: StateMachineProps, defaultPeriodSeconds: number) {
   if (props?.kmsKey) {
     return {
-      kmsKeyId: props.kmsKey!.keyArn,
+      kmsKeyId: props.kmsKey.keyArn,
       kmsDataKeyReusePeriodSeconds: props.kmsDataKeyReusePeriodSeconds ? props.kmsDataKeyReusePeriodSeconds.toSeconds() : defaultPeriodSeconds,
       type: 'CUSTOMER_MANAGED_KMS_KEY',
     };

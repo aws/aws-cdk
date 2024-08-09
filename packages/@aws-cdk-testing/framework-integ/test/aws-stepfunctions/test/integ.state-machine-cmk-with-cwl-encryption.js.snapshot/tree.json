@@ -153,6 +153,14 @@
                             }
                           },
                           "Resource": "*"
+                        },
+                        {
+                          "Action": "kms:Decrypt*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "delivery.logs.amazonaws.com"
+                          },
+                          "Resource": "*"
                         }
                       ],
                       "Version": "2012-10-17"

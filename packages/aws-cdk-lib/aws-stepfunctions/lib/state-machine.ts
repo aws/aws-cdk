@@ -530,6 +530,12 @@ export class StateMachine extends StateMachineBase {
             },
           },
         }));
+
+        props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['kms:Decrypt*'],
+          principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
+        }));
       }
     }
 
