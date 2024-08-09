@@ -371,6 +371,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DEADLINE_CLOUD_SCHEDULING = new InterfaceVpcEndpointAwsService('deadline.scheduling');
   public static readonly DEVOPS_GURU = new InterfaceVpcEndpointAwsService('devops-guru');
   public static readonly DIRECTORY_SERVICE = new InterfaceVpcEndpointAwsService('ds');
+  public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
@@ -589,6 +590,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
 
   /**
    * Whether Private DNS is supported by default.
+   * If the interface endpoint doesn't support Private DNS, privateDnsDefault will be set false.
    */
   public readonly privateDnsDefault?: boolean = true;
 
@@ -614,6 +616,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
       },
     });
 
+    this.privateDnsDefault = this.getPrivateDnsDefault(name);
     this.name = `${prefix || defaultEndpointPrefix}.${regionPrefix}${name}${defaultEndpointSuffix}`;
     this.shortName = name;
     this.port = port || 443;
@@ -666,6 +669,16 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
       'cn-northwest-1': ['transcribe'],
     };
     return VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name) ? '.cn' : '';
+  }
+
+  /**
+ * Get whether the inteface endpoint support Private DNS
+ */
+  private getPrivateDnsDefault(name: string) {
+    const PRIVATE_DNS_NOT_SUPPORTED_SERVICES = [
+      'dynamodb',
+    ];
+    return !PRIVATE_DNS_NOT_SUPPORTED_SERVICES.includes(name);
   }
 }
 
@@ -826,6 +839,10 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
+    }
+
+    if (props.service instanceof InterfaceVpcEndpointAwsService && props.service.privateDnsDefault === false && props.privateDnsEnabled === true) {
+      throw new Error(`Cannot create a VPC Endpoint private dns enabled: ${props.service.shortName}`);
     }
 
     // Determine which subnets to place the endpoint in
