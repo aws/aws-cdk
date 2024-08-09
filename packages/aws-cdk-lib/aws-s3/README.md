@@ -307,7 +307,7 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
-If you do not want for S3 to validate permissions of Amazon SQS, Amazon SNS, and Lambda destinations you can use this flag:
+If you do not want for S3 to validate permissions of Amazon SQS, Amazon SNS, and Lambda destinations you can use the `notificationsSkipDestinationValidation` flag:
 
 ```ts
 declare const myQueue: sqs.Queue;
