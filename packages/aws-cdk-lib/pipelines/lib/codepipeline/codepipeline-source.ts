@@ -112,6 +112,19 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   }
 
   /**
+   * Returns a CodeConnection source.
+   *
+   * @param repoString A string that encodes owner and repository separated by a slash (e.g. 'owner/repo'). The provided string must be resolvable at runtime.
+   * @param branch The branch to use.
+   * @param props The source properties, including the connection ARN.
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-create.html
+   */
+  public static codeConnection(repoString: string, branch: string, props: CodeConnectionsSourceOptions): CodePipelineSource {
+    return new CodeConnectionsSource(repoString, branch, props);
+  }
+
+  /**
    * Returns a CodeCommit source.
    *
    * If you need access to symlinks or the repository history, be sure to set
@@ -455,6 +468,102 @@ class CodeStarConnectionSource extends CodePipelineSource {
 
   protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeStarConnectionsSourceAction({
+      output,
+      actionName: this.props.actionName ?? actionName,
+      runOrder,
+      connectionArn: this.props.connectionArn,
+      owner: this.owner,
+      repo: this.repo,
+      branch: this.branch,
+      codeBuildCloneOutput: this.props.codeBuildCloneOutput,
+      triggerOnPush: this.props.triggerOnPush,
+      variablesNamespace,
+    });
+  }
+}
+
+/**
+ * Configuration options for CodeConnection source
+ */
+export interface CodeConnectionsSourceOptions {
+  /**
+   * The ARN of the CodeConnection created in the AWS console
+   * that has permissions to access this GitHub or BitBucket repository.
+   *
+   * @example 'arn:aws:codeconnection:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh'
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-create.html
+   */
+  readonly connectionArn: string;
+
+  /**
+   * If this is set, the next CodeBuild job clones the repository (instead of CodePipeline downloading the files).
+   *
+   * This provides access to repository history, and retains symlinks (symlinks would otherwise be
+   * removed by CodePipeline).
+   *
+   * **Note**: if this option is true, only CodeBuild jobs can use the output artifact.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeConnectionSource.html#action-reference-CodeConnectionSource-config
+   */
+  readonly codeBuildCloneOutput?: boolean;
+
+  /**
+   * Controls automatically starting your pipeline when a new commit
+   * is made on the configured repository and branch. If unspecified,
+   * the default value is true, and the field does not display by default.
+   *
+   * @default true
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeConnectionSource.html
+   */
+  readonly triggerOnPush?: boolean;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository string
+   */
+  readonly actionName?: string;
+}
+
+class CodeConnectionsSource extends CodePipelineSource {
+  private readonly owner: string;
+  private readonly repo: string;
+
+  constructor(repoString: string, readonly branch: string, readonly props: CodeConnectionsSourceOptions) {
+    super(repoString);
+
+    if (!this.isValidRepoString(repoString)) {
+      throw new Error(`CodeConnection repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group1>/<group2>/.../<repo>', got '${repoString}'`);
+    }
+
+    const parts = repoString.split('/');
+
+    this.owner = parts[0];
+    this.repo = parts.slice(1).join('/');
+    this.configurePrimaryOutput(new FileSet('Source', this));
+  }
+
+  private isValidRepoString(repoString: string) {
+    if (Token.isUnresolved(repoString)) {
+      return false;
+    }
+
+    const parts = repoString.split('/');
+
+    // minimum length is 2 (owner/repo) and
+    // maximum length is 22 (owner/parent group/twenty sub groups/repo).
+    // maximum length is based on limitation of GitLab, see https://docs.gitlab.com/ee/user/group/subgroups/
+    if (parts.length < 2 || parts.length > 23) {
+      return false;
+    }
+
+    // check if all element in parts is not empty
+    return parts.every(element => element !== '');
+  }
+
+  protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
+    return new cp_actions.CodeConnectionsSourceAction({
       output,
       actionName: this.props.actionName ?? actionName,
       runOrder,
