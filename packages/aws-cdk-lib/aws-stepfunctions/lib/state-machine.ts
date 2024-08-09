@@ -3,7 +3,7 @@ import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
-import { validateEncryptionConfiguration } from './util';
+import { constructEncryptionConfiguration, validateEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -493,7 +493,7 @@ export class StateMachine extends StateMachineBase {
     }
 
     if (props?.kmsKey) {
-      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+      props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey'],
         principals: [new iam.ServicePrincipal('states.amazonaws.com')],
@@ -515,7 +515,7 @@ export class StateMachine extends StateMachineBase {
       }));
 
       if (props?.enableEncryptedLogging && props?.logs) {
-        props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
           resources: ['*'],
           actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey*'],
           principals: [new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`)],
@@ -541,13 +541,7 @@ export class StateMachine extends StateMachineBase {
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
-      encryptionConfiguration: props.kmsKey? {
-        kmsKeyId: props.kmsKey.keyArn,
-        kmsDataKeyReusePeriodSeconds: props.kmsDataKeyReusePeriodSeconds? props.kmsDataKeyReusePeriodSeconds.toSeconds() : this.defaultPeriodSeconds,
-        type: 'CUSTOMER_MANAGED_KMS_KEY',
-      }: {
-        type: 'AWS_OWNED_KEY',
-      },
+      encryptionConfiguration: constructEncryptionConfiguration(props, this.defaultPeriodSeconds),
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 

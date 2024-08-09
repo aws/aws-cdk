@@ -1,3 +1,4 @@
+import { StateMachineProps } from './state-machine';
 import { IKey } from '../../aws-kms';
 import { Duration } from '../../core';
 
@@ -18,4 +19,16 @@ export function validateEncryptionConfiguration(kmsKey: IKey | undefined, kmsDat
 }
 function isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: Duration) {
   return kmsDataKeyReusePeriodSeconds < Duration.seconds(60) || kmsDataKeyReusePeriodSeconds > Duration.seconds(900);
+}
+
+export function constructEncryptionConfiguration(props: StateMachineProps, defaultPeriodSeconds: number) {
+  if (props?.kmsKey) {
+    return {
+      kmsKeyId: props.kmsKey!.keyArn,
+      kmsDataKeyReusePeriodSeconds: props.kmsDataKeyReusePeriodSeconds ? props.kmsDataKeyReusePeriodSeconds.toSeconds() : defaultPeriodSeconds,
+      type: 'CUSTOMER_MANAGED_KMS_KEY',
+    };
+  } else {
+    return { type: 'AWS_OWNED_KEY' };
+  }
 }

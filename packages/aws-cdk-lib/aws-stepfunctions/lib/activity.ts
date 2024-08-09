@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
-import { validateEncryptionConfiguration } from './util';
+import { constructEncryptionConfiguration, validateEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -95,13 +95,7 @@ export class Activity extends Resource implements IActivity {
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
-      encryptionConfiguration: props.kmsKey? {
-        kmsKeyId: props.kmsKey.keyArn,
-        kmsDataKeyReusePeriodSeconds: props.kmsDataKeyReusePeriodSeconds? props.kmsDataKeyReusePeriodSeconds.toSeconds() : this.defaultPeriodSeconds,
-        type: 'CUSTOMER_MANAGED_KMS_KEY',
-      }: {
-        type: 'AWS_OWNED_KEY',
-      },
+      encryptionConfiguration: constructEncryptionConfiguration(props, this.defaultPeriodSeconds),
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
