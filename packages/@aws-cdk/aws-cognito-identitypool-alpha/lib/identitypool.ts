@@ -1,7 +1,7 @@
 import {
   CfnIdentityPool,
-  UserPool,
-  UserPoolClient,
+  IUserPool,
+  IUserPoolClient,
 } from 'aws-cdk-lib/aws-cognito';
 import {
   IOpenIdConnectProvider,
@@ -157,7 +157,7 @@ export class IdentityPoolProviderUrl {
   }
 
   /** User Pool Provider Url */
-  public static userPool(userPool: UserPool, userPoolClient: UserPoolClient): IdentityPoolProviderUrl {
+  public static userPool(userPool: IUserPool, userPoolClient: IUserPoolClient): IdentityPoolProviderUrl {
     const url = `${userPool.userPoolProviderName}:${userPoolClient.userPoolClientId}`;
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.USER_POOL, url);
   }
