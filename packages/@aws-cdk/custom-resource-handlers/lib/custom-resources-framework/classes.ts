@@ -29,6 +29,10 @@ import { toLambdaRuntime } from './utils/framework-utils';
 const CORE_INTERNAL_STACK_IMPORT_PATH = '../../stack';
 const CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH = '../../custom-resource-provider';
 const ALPHA_MODULE_LAMBDA_IMPORT_PATH = 'aws-cdk-lib/aws-lambda';
+const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
+const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
+const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
+const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
 
 /**
  * Initialization properties for a class constructor.
@@ -59,11 +63,11 @@ interface ConstructorBuildProps {
   readonly constructorVisbility?: MemberVisibility;
 
     /**
-   * StatementProps. Additional statements to constructor are optional.
+   * Statement. Additional statements to constructor are optional.
    *
    * @default undefined
    */
-    readonly statementProps?: Statement[];
+    readonly statements?: Statement[];
 }
 
 /**
@@ -214,16 +218,17 @@ export abstract class HandlerFrameworkClass extends ClassType {
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
-        const metadataProps: Statement[] = [
-          expr.directCode('this.addMetadata("aws:cdk:is-custom-resource-handler-singleton", true)'),
-          expr.directCode('if (props?.logGroup) this.logGroup.node.addMetadata("aws:cdk:is-custom-resource-handler-logGroup", true)'),
-          expr.directCode('if (props?.logRetention) ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata("aws:cdk:is-custom-resource-handler-logRetention", true)'),
+        const metadataStatements: Statement[] = [
+          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
+          expr.directCode(`if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`),
+          // (this singleton function) as it extends FunctionBase and property lambdaFunction is available to be cast to lambda.Function to access the internal readonly _logRetention
+          expr.directCode(`if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`),
         ];
         this.buildConstructor({
           constructorPropsType: _interface.type,
           superProps,
           constructorVisbility: MemberVisibility.Public,
-          statementProps: metadataProps,
+          statements: metadataStatements,
         });
       }
     })();
@@ -324,11 +329,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
             isCustomResourceProvider: true,
           })],
         ]);
+        const metadataStatements: Statement[] = [
+          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`),
+        ]
         this.buildConstructor({
           constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
           superProps,
           constructorVisbility: MemberVisibility.Private,
           optionalConstructorProps: true,
+          statements: metadataStatements,
         });
       }
     })();
@@ -373,9 +382,9 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
     const superInitializerArgs: Expression[] = [scope, id, props.superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
-    if (props.statementProps){
-      for(const eachStatement of props.statementProps){
-        init.addBody(eachStatement);
+    if (props.statements){
+      for(const statement of props.statements){
+        init.addBody(statement);
       }
     }
   }
