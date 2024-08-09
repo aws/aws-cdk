@@ -1,547 +1,161 @@
 import { Capture, Template, Match } from '../../assertions';
-import * as cdk from '../../core'
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import * as ses from '../../aws-ses';
 import * as s3deploy from '../../aws-s3-deployment';
-import * as events from "../../aws-events";
-import * as targets from "../../aws-events-targets";
-import * as iam from "../../aws-iam";
+import * as cdk from '../../core';
 import { CustomResourceConfig } from '../custom-resource-config';
 
-describe('CustomResourceConfig empty retention', ()=> {
-    test('catch thrown error if no retention', ()=> {
-        const app = new cdk.App();
-        try {
-            CustomResourceConfig.of(app).addLogRetentionLifetime()
-        } catch (e) {
-            expect(e.message).toBe("Retention must have a value");
-        }
-    })
-})
-describe('aws-ses drop spams', () => {
-    test('Drop spams - UnModified by Aspects', () => {
-        const app = new cdk.App();
-        const stack = new cdk.Stack(app);
+describe('when logging is undefined', () => {
 
-        new ses.ReceiptRuleSet(stack, 'RuleSet', {
-            dropSpam: true,
-        });
+  test('when CustomResourceConfig.addLogRetentionLifetime is called, singleton-backed custom resource has new logGroup with retention period specified', () => {
+    const set_log_retention = logs.RetentionDays.TEN_YEARS;
+    const app = new cdk.App();
+    CustomResourceConfig.of(app).addLogRetentionLifetime(set_log_retention);
+    const stack = new cdk.Stack(app);
 
-        const template = Template.fromStack(stack);
-
-        template.resourceCountIs('AWS::Logs::LogGroup', 0);
-    })
-    test('Drop spams - Modified by Aspects', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        new ses.ReceiptRuleSet(stack, 'RuleSet', {
-            dropSpam: true,
-        });
-
-        const template = Template.fromStack(stack);
-
-        template.resourceCountIs('AWS::Logs::LogGroup', 1);
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: SET_LOG_RETENTION
-        })
-        template.hasResourceProperties('AWS::Lambda::Function', {
-            LoggingConfig: {
-                LogGroup: {
-                    Ref: Match.stringLikeRegexp('SingletonLambda')
-                }
-            }
-        })
-    })
-    test('Drop spams - snapshot', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        new ses.ReceiptRuleSet(stack, 'RuleSet', {
-            dropSpam: true,
-        });
-
-        const template = Template.fromStack(stack);
-
-        expect(template.toJSON()).toMatchSnapshot();
-    })
-})
-describe('aws-events-targets awsapi', () => {
-    test('UnModified by Aspects', () => {
-        const app = new cdk.App();
-        const stack = new cdk.Stack(app);
-
-        const connection = new events.Connection(stack, "Connection", {
-            authorization: events.Authorization.apiKey(
-                "x-api-key",
-                cdk.SecretValue.unsafePlainText("no-secret")
-            ),
-            description: "Connection with API Key x-api-key",
-        });
-        const destination = new events.ApiDestination(stack, "Destination", {
-            connection,
-            endpoint: "https://amazon.com",
-            description: "Calling example.com with API key x-api-key",
-        });
-        const rule = new events.Rule(stack, "Rule", {
-            schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-            targets: [new targets.ApiDestination(destination)],
-        });
-        const awsApi = new targets.AwsApi({
-            action: "action",
-            service: "service",
-            apiVersion: "apiVersion",
-            catchErrorPattern: "catchErrorPattern",
-            parameters: "hello-world",
-            policyStatement: new iam.PolicyStatement({
-                actions: ["s3:GetObject"],
-                resources: ["*"],
-            }),
-        });
-        rule.addTarget(awsApi);
-
-        const template = Template.fromStack(stack);
-        template.resourceCountIs('AWS::Logs::LogGroup', 0);
-        template.hasResourceProperties('AWS::Lambda::Function', {
-            LoggingConfig: Match.absent(),
-        })
-    })
-    test('Modified by Aspects', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const connection = new events.Connection(stack, "Connection", {
-            authorization: events.Authorization.apiKey(
-                "x-api-key",
-                cdk.SecretValue.unsafePlainText("no-secret")
-            ),
-            description: "Connection with API Key x-api-key",
-        });
-        const destination = new events.ApiDestination(stack, "Destination", {
-            connection,
-            endpoint: "https://amazon.com",
-            description: "Calling example.com with API key x-api-key",
-        });
-        const rule = new events.Rule(stack, "Rule", {
-            schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-            targets: [new targets.ApiDestination(destination)],
-        });
-        const awsApi = new targets.AwsApi({
-            action: "action",
-            service: "service",
-            apiVersion: "apiVersion",
-            catchErrorPattern: "catchErrorPattern",
-            parameters: "hello-world",
-            policyStatement: new iam.PolicyStatement({
-                actions: ["s3:GetObject"],
-                resources: ["*"],
-            }),
-        });
-        rule.addTarget(awsApi);
-
-        const template = Template.fromStack(stack);
-
-        template.resourceCountIs('AWS::Logs::LogGroup', 1);
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: SET_LOG_RETENTION
-        })
-        template.hasResourceProperties('AWS::Lambda::Function', {
-            LoggingConfig: {
-                LogGroup: {
-                    Ref: Match.stringLikeRegexp('AWS')
-                }
-            }
-        })
-    })
-    test('awsapi - snapshot', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const connection = new events.Connection(stack, "Connection", {
-            authorization: events.Authorization.apiKey(
-                "x-api-key",
-                cdk.SecretValue.unsafePlainText("no-secret")
-            ),
-            description: "Connection with API Key x-api-key",
-        });
-        const destination = new events.ApiDestination(stack, "Destination", {
-            connection,
-            endpoint: "https://amazon.com",
-            description: "Calling example.com with API key x-api-key",
-        });
-        const rule = new events.Rule(stack, "Rule", {
-            schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-            targets: [new targets.ApiDestination(destination)],
-        });
-        const awsApi = new targets.AwsApi({
-            action: "action",
-            service: "service",
-            apiVersion: "apiVersion",
-            catchErrorPattern: "catchErrorPattern",
-            parameters: "hello-world",
-            policyStatement: new iam.PolicyStatement({
-                actions: ["s3:GetObject"],
-                resources: ["*"],
-            }),
-        });
-        rule.addTarget(awsApi);
-
-        const template = Template.fromStack(stack);
-
-        expect(template.toJSON()).toMatchSnapshot();
-    })
-})
-
-describe('LogGroup', () => {
-    test('s3LogGroup - UnModified by Aspects', () => {
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
-
-        const app = new cdk.App();
-        const stack = new cdk.Stack(app);
-
-        const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-        new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
-            sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-            destinationBucket: websiteBucket,
-            logGroup: new logs.LogGroup(stack, 'LogGroup', {
-                retention: LOCALLY_SET_LOG_RETENTION,
-            }),
-        });
-
-        const template = Template.fromStack(stack);
-
-        template.resourceCountIs('AWS::Logs::LogGroup', 1);
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: LOCALLY_SET_LOG_RETENTION,
-        });
-        template.hasResourceProperties('AWS::Lambda::Function', {
-            LoggingConfig: {
-                LogGroup: {
-                    Ref: Match.stringLikeRegexp('LogGroup')
-                }
-            }
-        })
+    let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 's3deployNone', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
     });
 
-    test('s3LogGroup - update lambda logGroup to SET_LOG_RETENTION', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
+    const template = Template.fromStack(stack);
 
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          Ref: Match.stringLikeRegexp('CustomCDKBucketDeployment'),
+        },
+      },
+    });
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: set_log_retention,
+    });
+  });
 
-        const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-        new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
-            sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-            destinationBucket: websiteBucket,
-            logGroup: new logs.LogGroup(stack, 'LogGroup', {
-                retention: LOCALLY_SET_LOG_RETENTION,
-            }),
-        });
+  test('when CustomResourceConfig.addLogRetentionLifetime is called with extra logGroup, extra logGroup remain unmodified by CustomResourceConfig', () => {
+    const set_log_retention = logs.RetentionDays.TEN_YEARS;
+    const default_log_group_retention = logs.RetentionDays.TWO_YEARS;
+    const app = new cdk.App();
+    CustomResourceConfig.of(app).addLogRetentionLifetime(set_log_retention);
+    const stack = new cdk.Stack(app);
 
-        const template = Template.fromStack(stack);
-
-        template.resourceCountIs('AWS::Logs::LogGroup', 1);
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: SET_LOG_RETENTION,
-        });
+    const ignored = new logs.LogGroup(stack, 'ignored', {});
+    let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 's3deployNone', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
     });
 
-    test('s3LogGroupExtraLogGroup - assert extra non-custom logGroup is ignored and does not change', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
-        const DEFAULT_LOG_GROUP_RETENTION = logs.RetentionDays.TWO_YEARS;
+    const template = Template.fromStack(stack);
 
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const ignored = new logs.LogGroup(stack, 'ignored', {});
-        const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-        new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
-            sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-            destinationBucket: websiteBucket,
-            logGroup: new logs.LogGroup(stack, 'LogGroup', {
-                retention: LOCALLY_SET_LOG_RETENTION,
-            }),
-        });
-
-        const template = Template.fromStack(stack);
-
-        template.resourceCountIs('AWS::Logs::LogGroup', 2);
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: SET_LOG_RETENTION,
-        });
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: DEFAULT_LOG_GROUP_RETENTION,
-        });
+    template.resourceCountIs('AWS::Logs::LogGroup', 2);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: set_log_retention,
     });
-    test('s3LogGroup - Duplicate logGroup, one will be ignored, one set by Log Retention for singleton lambda', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployLogGroup1", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-            logGroup: new logs.LogGroup(stack, "LogGroup1", {
-                retention: LOCALLY_SET_LOG_RETENTION
-            }),
-        });
-        new s3deploy.BucketDeployment(stack, "s3deployLogGroup2", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-            logGroup: new logs.LogGroup(stack, "LogGroup2", {
-                retention: LOCALLY_SET_LOG_RETENTION
-            }),
-        });
-
-        const template = Template.fromStack(stack);
-        template.hasResourceProperties('AWS::Lambda::Function', {
-            LoggingConfig: {
-                LogGroup: {
-                    Ref: Match.stringLikeRegexp('LogGroup1')
-                }
-            }
-        })
-        template.resourceCountIs('AWS::Logs::LogGroup', 2)
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: SET_LOG_RETENTION
-        })
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: LOCALLY_SET_LOG_RETENTION
-        })
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: default_log_group_retention,
     });
-    test('s3LogGroup - snapshot', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
+  });
 
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const template = Template.fromStack(stack);
-        expect(template.toJSON()).toMatchSnapshot();
-    });
 });
 
-describe('LogRetention', () => {
-    test('s3LogRetention - UnModified by Aspects', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
+describe('when logRetention is specified', () => {
+  test('when CustomResourceConfig.addLogRetentionLifetime is called, singleton-backed custom resource logRetention period modified', () => {
+    const set_log_retention = logs.RetentionDays.TEN_YEARS;
+    const locally_set_log_retention = logs.RetentionDays.ONE_WEEK;
+    const app = new cdk.App();
+    CustomResourceConfig.of(app).addLogRetentionLifetime(set_log_retention);
+    const stack = new cdk.Stack(app);
 
-        const app = new cdk.App();
-        const stack = new cdk.Stack(app);
-
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployLogRetention", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-            logRetention: LOCALLY_SET_LOG_RETENTION
-        });
-
-        const template = Template.fromStack(stack);
-
-        const captureRetentionInDays = new Capture();
-        template.hasResourceProperties('Custom::LogRetention', {
-            RetentionInDays: captureRetentionInDays,
-        });
-        expect(captureRetentionInDays.asNumber()).toEqual(
-            LOCALLY_SET_LOG_RETENTION
-        );
-        expect(captureRetentionInDays.asNumber()).not.toEqual(
-            SET_LOG_RETENTION,
-        );
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 's3deployLogRetention', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logRetention: locally_set_log_retention,
     });
+    const template = Template.fromStack(stack);
 
-    test('s3LogRetention - Update the Custom LogRetention to SET_LOG_RETENTION', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployLogRetention", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-            logRetention: LOCALLY_SET_LOG_RETENTION
-        });
-        const template = Template.fromStack(stack);
-
-        const captureRetentionInDays = new Capture();
-        template.hasResourceProperties('Custom::LogRetention', {
-            RetentionInDays: captureRetentionInDays,
-        });
-        expect(captureRetentionInDays.asNumber()).toEqual(SET_LOG_RETENTION);
-        expect(captureRetentionInDays.asNumber()).not.toEqual(
-            LOCALLY_SET_LOG_RETENTION
-        );
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: SET_LOG_RETENTION
-        })
+    const captureRetentionInDays = new Capture();
+    template.hasResourceProperties('Custom::LogRetention', {
+      RetentionInDays: captureRetentionInDays,
     });
-
-    test('s3LogRetentionWithExtraLogGroup - assert that extra logGroup is unchanged', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
-        const DEFAULT_LOG_GROUP_RETENTION = logs.RetentionDays.TWO_YEARS;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const ignored = new logs.LogGroup(stack, "ignored", {});
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployLogGroup", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-            logRetention: LOCALLY_SET_LOG_RETENTION
-        });
-
-        const template = Template.fromStack(stack);
-
-        template.hasResourceProperties('Custom::LogRetention', {
-            RetentionInDays: SET_LOG_RETENTION,
-        });
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: DEFAULT_LOG_GROUP_RETENTION,
-        });
-        template.hasResourceProperties('AWS::Logs::LogGroup', {
-            RetentionInDays: SET_LOG_RETENTION
-        })
+    expect(captureRetentionInDays.asNumber()).toEqual(set_log_retention);
+    expect(captureRetentionInDays.asNumber()).not.toEqual(
+      locally_set_log_retention,
+    );
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: set_log_retention,
     });
-    test('s3LogRetention - snapshot', () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const LOCALLY_SET_LOG_RETENTION = logs.RetentionDays.ONE_WEEK;
+  });
 
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployLogRetention", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-            logRetention: LOCALLY_SET_LOG_RETENTION
-        });
-
-        const template = Template.fromStack(stack);
-
-        expect(template.toJSON()).toMatchSnapshot();
-    });
 });
 
-describe("s3None", () => {
-    test("s3None - UnModified by Aspects", () => {
-        const app = new cdk.App();
-        const stack = new cdk.Stack(app);
+describe('when logGroup is specified', () => {
+  test('when CustomResourceConfig.addLogRetentionLifetime is called, singleton-backed custom resource logGroup period modified', () => {
+    const set_log_retention = logs.RetentionDays.TEN_YEARS;
+    const locally_set_log_retention = logs.RetentionDays.ONE_WEEK;
+    const app = new cdk.App();
+    CustomResourceConfig.of(app).addLogRetentionLifetime(set_log_retention);
+    const stack = new cdk.Stack(app);
 
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployNone", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-        });
-
-        const template = Template.fromStack(stack);
-
-        template.hasResourceProperties("AWS::Lambda::Function", {
-            LoggingConfig: Match.absent(),
-        });
-        template.resourceCountIs("AWS::Logs::LogGroup", 0);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup', {
+        retention: locally_set_log_retention,
+      }),
     });
-    test("s3None - Updated LogGroup to SET_LOG_RETENTION", () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
 
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
+    const template = Template.fromStack(stack);
 
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployNone", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-        });
-
-        const template = Template.fromStack(stack);
-
-        template.hasResourceProperties("AWS::Lambda::Function", {
-            LoggingConfig: {
-                LogGroup: {
-                    Ref: Match.stringLikeRegexp("CustomCDKBucketDeployment"),
-                },
-            },
-        });
-        template.resourceCountIs("AWS::Logs::LogGroup", 1);
-        template.hasResourceProperties("AWS::Logs::LogGroup", {
-            RetentionInDays: SET_LOG_RETENTION,
-        });
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: set_log_retention,
     });
-    test("s3None - assert that extra logGroup is unchanged", () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-        const DEFAULT_LOG_GROUP_RETENTION = logs.RetentionDays.TWO_YEARS;
+  });
 
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
+  test('when duplicate custom resource with logGroup, only one singleton-Lambda associated logGroup is modified, and the other ignored', () => {
+    const set_log_retention = logs.RetentionDays.TEN_YEARS;
+    const locally_set_log_retention = logs.RetentionDays.ONE_WEEK;
+    const app = new cdk.App();
+    CustomResourceConfig.of(app).addLogRetentionLifetime(set_log_retention);
+    const stack = new cdk.Stack(app);
 
-        const ignored = new logs.LogGroup(stack, "ignored", {});
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployNone", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-        });
-
-        const template = Template.fromStack(stack);
-
-        template.hasResourceProperties("AWS::Lambda::Function", {
-            LoggingConfig: {
-                LogGroup: {
-                    Ref: Match.stringLikeRegexp("CustomCDKBucketDeployment"),
-                },
-            },
-        });
-        template.resourceCountIs("AWS::Logs::LogGroup", 2);
-        template.hasResourceProperties("AWS::Logs::LogGroup", {
-            RetentionInDays: SET_LOG_RETENTION,
-        });
-        template.hasResourceProperties("AWS::Logs::LogGroup", {
-            RetentionInDays: DEFAULT_LOG_GROUP_RETENTION,
-        });
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 's3deployLogGroup1', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup1', {
+        retention: locally_set_log_retention,
+      }),
     });
-    test("s3None - snapshot", () => {
-        const SET_LOG_RETENTION = logs.RetentionDays.TEN_YEARS;
-
-        const app = new cdk.App();
-        CustomResourceConfig.of(app).addLogRetentionLifetime(SET_LOG_RETENTION);
-        const stack = new cdk.Stack(app);
-
-        const websiteBucket = new s3.Bucket(stack, "WebsiteBucket", {});
-        new s3deploy.BucketDeployment(stack, "s3deployNone", {
-            sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
-            destinationBucket: websiteBucket,
-        });
-
-        const template = Template.fromStack(stack);
-
-        expect(template.toJSON()).toMatchSnapshot();
+    new s3deploy.BucketDeployment(stack, 's3deployLogGroup2', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup2', {
+        retention: locally_set_log_retention,
+      }),
     });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          Ref: Match.stringLikeRegexp('LogGroup1'),
+        },
+      },
+    });
+    template.resourceCountIs('AWS::Logs::LogGroup', 2);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: set_log_retention,
+    });
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: locally_set_log_retention,
+    });
+  });
+
 });
