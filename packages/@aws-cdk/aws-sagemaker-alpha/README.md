@@ -35,13 +35,12 @@ In the event that a single container is sufficient for your inference use-case, 
 single-container model:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 import * as path from 'path';
 
-const image = sagemaker.ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
-const modelData = sagemaker.ModelData.fromAsset(path.join('path', 'to', 'artifact', 'file.tar.gz'));
+const image = ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
+const modelData = ModelData.fromAsset(path.join('path', 'to', 'artifact', 'file.tar.gz'));
 
-const model = new sagemaker.Model(this, 'PrimaryContainerModel', {
+const model = new Model(this, 'PrimaryContainerModel', {
   containers: [
     {
       image: image,
@@ -60,16 +59,15 @@ more about SageMaker inference pipelines. To define an inference pipeline, you c
 additional containers for your model:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
-declare const image1: sagemaker.ContainerImage;
-declare const modelData1: sagemaker.ModelData;
-declare const image2: sagemaker.ContainerImage;
-declare const modelData2: sagemaker.ModelData;
-declare const image3: sagemaker.ContainerImage;
-declare const modelData3: sagemaker.ModelData;
+declare const image1: ContainerImage;
+declare const modelData1: ModelData;
+declare const image2: ContainerImage;
+declare const modelData2: ModelData;
+declare const image3: ContainerImage;
+declare const modelData3: ModelData;
 
-const model = new sagemaker.Model(this, 'InferencePipelineModel', {
+const model = new Model(this, 'InferencePipelineModel', {
   containers: [
     { image: image1, modelData: modelData1 },
     { image: image2, modelData: modelData2 },
@@ -89,10 +87,9 @@ abstract base class.
 Reference a local directory containing a Dockerfile:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 import * as path from 'path';
 
-const image = sagemaker.ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
+const image = ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
 ```
 
 #### ECR Image
@@ -101,10 +98,9 @@ Reference an image available within ECR:
 
 ```typescript
 import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 const repository = ecr.Repository.fromRepositoryName(this, 'Repository', 'repo');
-const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
+const image = ContainerImage.fromEcrRepository(repository, 'tag');
 ```
 
 #### DLC Image
@@ -112,12 +108,11 @@ const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
 Reference a deep learning container image:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 const repositoryName = 'huggingface-pytorch-training';
 const tag = '1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04';
 
-const image = sagemaker.ContainerImage.fromDlc(repositoryName, tag);
+const image = ContainerImage.fromDlc(repositoryName, tag);
 ```
 
 ### Model Artifacts
@@ -132,10 +127,9 @@ base class. The default is to have no model artifacts associated with a model.
 Reference local model data:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 import * as path from 'path';
 
-const modelData = sagemaker.ModelData.fromAsset(path.join('path', 'to', 'artifact', 'file.tar.gz'));
+const modelData = ModelData.fromAsset(path.join('path', 'to', 'artifact', 'file.tar.gz'));
 ```
 
 #### S3 Model Data
@@ -144,10 +138,28 @@ Reference an S3 bucket and object key as the artifacts for a model:
 
 ```typescript
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
-const modelData = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
+const modelData = ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
+```
+
+When deploying ML models, one option is to archive andcompress the model artifacts into a tar.gz format.
+Although this method works well for small models,
+compressing a large model artifact with hundreds of billions of parameters and
+then decompressing it on an endpoint can take a significant amount of time.
+For large model inference, we recommend that you deploy uncompressed ML model.
+
+If you want to use uncompressed ML model,
+you can provide options to `ModelData.fromBucket` like a following the code.
+
+```typescript
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+const bucket = new s3.Bucket(this, 'MyBucket');
+const modelData = ModelData.fromBucket(bucket, 'path/to/artifact', {
+  compressionType: CompressionType.NONE,
+  s3DataType: S3DataType.S3_PREFIX,
+});
 ```
 
 ## Model Hosting
@@ -168,12 +180,11 @@ for model B. Amazon SageMaker distributes two-thirds of the traffic to Model A, 
 model B:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
-declare const modelA: sagemaker.Model;
-declare const modelB: sagemaker.Model;
+declare const modelA: Model;
+declare const modelB: Model;
 
-const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+const endpointConfig = new EndpointConfig(this, 'EndpointConfig', {
   instanceProductionVariants: [
     {
       model: modelA,
@@ -199,11 +210,10 @@ more information about the API, see the
 API. Defining an endpoint requires at minimum the associated endpoint configuration:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
-declare const endpointConfig: sagemaker.EndpointConfig;
+declare const endpointConfig: EndpointConfig;
 
-const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+const endpoint = new Endpoint(this, 'Endpoint', { endpointConfig });
 ```
 
 ### AutoScaling
@@ -211,12 +221,11 @@ const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
 To enable autoscaling on the production variant, use the `autoScaleInstanceCount` method:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
-declare const model: sagemaker.Model;
+declare const model: Model;
 
 const variantName = 'my-variant';
-const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+const endpointConfig = new EndpointConfig(this, 'EndpointConfig', {
   instanceProductionVariants: [
     {
       model: model,
@@ -225,7 +234,7 @@ const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
   ]
 });
 
-const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+const endpoint = new Endpoint(this, 'Endpoint', { endpointConfig });
 const productionVariant = endpoint.findInstanceProductionVariant(variantName);
 const instanceCount = productionVariant.autoScaleInstanceCount({
   maxCapacity: 3
@@ -244,11 +253,10 @@ To monitor CloudWatch metrics for a production variant, use one or more of the m
 methods:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
-declare const endpointConfig: sagemaker.EndpointConfig;
+declare const endpointConfig: EndpointConfig;
 
-const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+const endpoint = new Endpoint(this, 'Endpoint', { endpointConfig });
 const productionVariant = endpoint.findInstanceProductionVariant('my-variant');
 productionVariant.metricModelLatency().createAlarm(this, 'ModelLatencyAlarm', {
   threshold: 100000,

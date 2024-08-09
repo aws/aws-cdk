@@ -1,10 +1,10 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { ContainerImage } from './container-image';
-import { ModelData } from './model-data';
-import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
+import { CompressionType, ModelData, S3DataType } from './model-data';
 
 /**
  * Interface that defines a Model resource.
@@ -357,11 +357,22 @@ export class Model extends ModelBase {
   }
 
   private renderContainer(container: ContainerDefinition): CfnModel.ContainerDefinitionProperty {
+    const image = container.image.bind(this, this);
+    const modelDataConfig = container.modelData?.bind(this, this);
+    const useModelDataSource = modelDataConfig?.compressionType === CompressionType.NONE
+     || modelDataConfig?.s3DataType === S3DataType.S3_PREFIX;
     return {
-      image: container.image.bind(this, this).imageName,
+      image: image.imageName,
       containerHostname: container.containerHostname,
       environment: container.environment,
-      modelDataUrl: container.modelData ? container.modelData.bind(this, this).uri : undefined,
+      modelDataSource: useModelDataSource ? {
+        s3DataSource: {
+          s3Uri: modelDataConfig.uri,
+          s3DataType: modelDataConfig.s3DataType!,
+          compressionType: modelDataConfig.compressionType!,
+        },
+      } : undefined,
+      modelDataUrl: !useModelDataSource ? modelDataConfig?.uri : undefined,
     };
   }
 
