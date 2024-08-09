@@ -1709,3 +1709,17 @@ test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {
     },
   });
 });
+
+test('outputObjectKeys to control SourceObjectKeys being sent back', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    outputObjectKeys: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectKeys: false,
+  });
+});
