@@ -247,4 +247,69 @@ describe('notification', () => {
       Runtime: 'python3.11',
     });
   });
+
+  test('skip destination validation is set to false by default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+    });
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      SkipDestinationValidation: false,
+    });
+  });
+
+  test('skip destination validation is set to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsSkipDestinationValidation: true,
+    });
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      SkipDestinationValidation: true,
+    });
+  });
+
+  test('skip destination validation is set to false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsSkipDestinationValidation: false,
+    });
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      SkipDestinationValidation: false,
+    });
+  });
 });

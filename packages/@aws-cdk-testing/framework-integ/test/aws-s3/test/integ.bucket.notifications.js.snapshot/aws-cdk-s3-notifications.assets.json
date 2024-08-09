@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "889faa48d7408b18cd22cdc7cd002813ab1c5ebd9388e2010c9fc3c4bf2f8cb7": {
+    "0781cf23c51efeb24a4478d85080aac63542478ceb81170ff895a996890ee5d2": {
       "source": {
         "path": "aws-cdk-s3-notifications.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "889faa48d7408b18cd22cdc7cd002813ab1c5ebd9388e2010c9fc3c4bf2f8cb7.json",
+          "objectKey": "0781cf23c51efeb24a4478d85080aac63542478ceb81170ff895a996890ee5d2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
