@@ -1,8 +1,9 @@
 import { App, Stack } from 'aws-cdk-lib';
-
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { TestEnrichment, TestSource, TestTarget } from './test-classes';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { TestEnrichment, TestSource, TestSourceWithDeadLetterTarget, TestTarget } from './test-classes';
 import { DesiredState, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, LogDestinationConfig, LogLevel, Pipe } from '../lib';
 
 class TestLogDestination implements ILogDestination {
@@ -185,6 +186,75 @@ describe('Pipe', () => {
       },
       );
 
+    });
+
+    test('grantPush is called for sources with an SNS topic DLQ', () => {
+      // WHEN
+      const topic = new Topic(stack, 'MyTopic');
+      const sourceWithDeadLetterTarget = new TestSourceWithDeadLetterTarget(topic);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source: sourceWithDeadLetterTarget,
+        target,
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::IAM::Policy', {
+        Properties: {
+          Roles: [{
+            Ref: 'TestPipeRole0FD00B2B',
+          }],
+          PolicyDocument: {
+            Statement: [{
+              Action: 'sns:Publish',
+              Resource: {
+                Ref: 'MyTopic86869434',
+              },
+            }],
+          },
+        },
+      });
+    });
+
+    test('grantPush is called for sources with an SQS queue DLQ', () => {
+      // WHEN
+      const queue = new Queue(stack, 'MyQueue');
+      const sourceWithDeadLetterTarget = new TestSourceWithDeadLetterTarget(queue);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source: sourceWithDeadLetterTarget,
+        target,
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::IAM::Policy', {
+        Properties: {
+          Roles: [{
+            Ref: 'TestPipeRole0FD00B2B',
+          }],
+          PolicyDocument: {
+            Statement: [{
+              Action: [
+                'sqs:SendMessage',
+                'sqs:GetQueueAttributes',
+                'sqs:GetQueueUrl',
+              ],
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyQueueE6CA6235',
+                  'Arn',
+                ],
+              },
+            }],
+          },
+        },
+      });
     });
   });
 

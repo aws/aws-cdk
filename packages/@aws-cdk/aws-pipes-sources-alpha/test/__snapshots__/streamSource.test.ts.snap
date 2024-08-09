@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`stream source validations should grant pipe role write access to dead-letter queue 1`] = `
+{
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
+
+exports[`stream source validations should grant pipe role write access to dead-letter queue 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "sqs:SendMessage",
+              "sqs:GetQueueAttributes",
+              "sqs:GetQueueUrl",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyQueueE6CA6235",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;
+
+exports[`stream source validations should grant pipe role write access to dead-letter topic 1`] = `
+{
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
+
+exports[`stream source validations should grant pipe role write access to dead-letter topic 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sns:Publish",
+            "Effect": "Allow",
+            "Resource": {
+              "Ref": "MyTopic86869434",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;

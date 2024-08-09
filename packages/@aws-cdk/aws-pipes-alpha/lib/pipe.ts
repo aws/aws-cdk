@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
-import { ISource } from './source';
+import { ISource, SourceWithDeadLetterTarget } from './source';
 import { ITarget } from './target';
 
 /**
@@ -233,6 +233,10 @@ export class Pipe extends PipeBase {
      */
     const source = props.source.bind(this);
     props.source.grantRead(this.pipeRole);
+    if (SourceWithDeadLetterTarget.isSourceWithDeadLetterTarget(props.source)) {
+      props.source.grantPush(this.pipeRole, props.source.deadLetterTarget);
+    }
+
     // Add the filter criteria to the source parameters
     const sourceParameters : CfnPipe.PipeSourceParametersProperty= {
       ...source.sourceParameters,
