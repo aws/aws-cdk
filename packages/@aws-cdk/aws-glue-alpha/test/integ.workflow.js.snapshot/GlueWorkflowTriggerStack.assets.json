@@ -1,0 +1,32 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855": {
+      "source": {
+        "path": "asset.432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "db15b89b0de33d7503c531cae5fa3f18506eb8982953470211e04f53dfe9a2da": {
+      "source": {
+        "path": "GlueWorkflowTriggerStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "db15b89b0de33d7503c531cae5fa3f18506eb8982953470211e04f53dfe9a2da.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
