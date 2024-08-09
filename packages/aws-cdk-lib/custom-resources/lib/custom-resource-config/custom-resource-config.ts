@@ -69,7 +69,12 @@ export class CustomResourceLogRetention implements IAspect {
     }
   }
 
-  createNewLogGroupForSingletonFunction(scope: lambda.CfnFunction): logs.ILogGroup {
+  /*
+   * Creates a new logGroup and associates with the singletonLambda
+   * Returns a Cloudwatch LogGroup
+   * @param {lambda.CfnFunction} scope - SingletonFunction
+   */
+  private createNewLogGroupForSingletonFunction(scope: lambda.CfnFunction): logs.ILogGroup {
     return new logs.LogGroup(scope, 'logGroup', {
       retention: this.SET_LOG_RETENTION,
     });
