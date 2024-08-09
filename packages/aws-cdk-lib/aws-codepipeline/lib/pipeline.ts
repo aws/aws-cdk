@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import {
   ActionCategory,
+  ActionConfig,
   IAction,
   IPipeline,
   IStage,
@@ -255,6 +256,8 @@ export interface PipelineProps {
    * You can always add more triggers later by calling `Pipeline#addTrigger`.
    *
    * @default - No triggers
+   *
+   * @deprecated - Use other instead
    */
   readonly triggers?: TriggerProps[];
 
@@ -466,7 +469,8 @@ export class Pipeline extends PipelineBase {
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
   private readonly variables = new Array<Variable>();
-  private readonly triggers = new Array<Trigger>();
+  private readonly triggers_deprecated = new Array<Trigger>();
+  private readonly triggers = new Array<CfnPipeline.PipelineTriggerDeclarationProperty>();
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -642,17 +646,19 @@ export class Pipeline extends PipelineBase {
    *
    * @param props Trigger property to add to this Pipeline
    * @returns the newly created trigger
+   *
+   * @deprecated - Use triggers in CodeStarSourceConnections Source Action
    */
   public addTrigger(props: TriggerProps): Trigger {
     const trigger = new Trigger(props);
     const actionName = props.gitConfiguration?.sourceAction.actionProperties.actionName;
 
     // check for duplicate source actions for triggers
-    if (actionName !== undefined && this.triggers.find(t => t.sourceAction?.actionProperties.actionName === actionName)) {
+    if (actionName !== undefined && this.triggers_deprecated.find(t => t.sourceAction?.actionProperties.actionName === actionName)) {
       throw new Error(`Trigger with duplicate source action '${actionName}' added to the Pipeline`);
     }
 
-    this.triggers.push(trigger);
+    this.triggers_deprecated.push(trigger);
     return trigger;
   }
 
@@ -719,16 +725,56 @@ export class Pipeline extends PipelineBase {
       bucket: crossRegionInfo.artifactBucket,
     });
 
+    // Do we have a trigger configuration, boolean, or undefined?
+    const updatedActionConfig = this.processTriggersInActionConfig(actionConfig, action.actionProperties.actionName);
+
     return new FullActionDescriptor({
       // must be 'action', not 'richAction',
       // as those are returned by the IStage.actions property,
       // and it's important customers of Pipeline get the same instance
       // back as they added to the pipeline
       action,
-      actionConfig,
+      actionConfig: updatedActionConfig,
       actionRole,
       actionRegion: crossRegionInfo.region,
     });
+  }
+
+  private processTriggersInActionConfig(actionConfig: ActionConfig, actionName: string): ActionConfig {
+    // No updates needed if trigger isn't set. This is the boolean or undefined use case for DetectChanges
+    if (!this.isTriggerConfiguration(actionConfig)) return actionConfig;
+
+    const trigger: CfnPipeline.PipelineTriggerDeclarationProperty = actionConfig.configuration.DetectChanges;
+    const _actionConfig = actionConfig;
+
+    // The trigger class in CodeStarConnectionsSourceAction can be used without filters for v1.
+    // If used, `DetectChanges` is set to true but no triggers are actually set.
+    // If `Trigger.NONE` was used, `DetectChanges` was already set to `false` so we only need to handle
+    // for `Trigger.ALL` here.
+    if (this.pipelineType === PipelineType.V1) {
+      _actionConfig.configuration.DetectChanges = this.setV1DetectChanges(trigger);
+      return _actionConfig;
+    }
+
+    // Even though the value of `DetectChanges` is ignored in this case, we'll format it correctly
+    _actionConfig.configuration.DetectChanges = true;
+    this.triggers.push({
+      providerType: trigger.providerType,
+      gitConfiguration: trigger.gitConfiguration ?? { sourceActionName: actionName },
+    });
+    return _actionConfig;
+  }
+
+  private isTriggerConfiguration(actionConfig: ActionConfig) {
+    return !!actionConfig.configuration?.DetectChanges?.providerType;
+  }
+
+  private setV1DetectChanges(trigger: CfnPipeline.PipelineTriggerDeclarationProperty) {
+    if (trigger.gitConfiguration) {
+      throw new Error(`Invalid configuration for ${this.physicalName}. Filters may only be set if PipelineType is set to V2.`);
+    }
+
+    return true;
   }
 
   /**
@@ -1183,7 +1229,7 @@ export class Pipeline extends PipelineBase {
 
   private validateTriggers(): string[] {
     const errors: string[] = [];
-    if (this.triggers.length && this.pipelineType !== PipelineType.V2) {
+    if (this.triggers_deprecated.length && this.pipelineType !== PipelineType.V2) {
       errors.push('Triggers can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
     }
     return errors;
@@ -1254,7 +1300,9 @@ export class Pipeline extends PipelineBase {
   }
 
   private renderTriggers(): CfnPipeline.PipelineTriggerDeclarationProperty[] {
-    return this.triggers.map(trigger => trigger._render());
+    const triggers_deprecated = this.triggers_deprecated.map(trigger => trigger._render());
+    this.triggers.push(...triggers_deprecated);
+    return this.triggers;
   }
 
   private requireRegion(): string {
