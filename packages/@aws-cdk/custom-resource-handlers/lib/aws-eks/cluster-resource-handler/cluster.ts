@@ -247,6 +247,13 @@ export class ClusterResourceHandler extends ResourceHandler {
           this.newProps.accessConfig?.authenticationMode === 'API') {
           throw new Error('Cannot update from CONFIG_MAP to API');
         }
+        // update-authmode will fail if we try to update to the same mode,
+        // so skip in this case.
+        const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+        if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
+          console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
+          return;
+        }
         config.accessConfig = this.newProps.accessConfig;
       };
 
