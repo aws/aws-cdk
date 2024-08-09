@@ -82,6 +82,45 @@ describe('EC2 Routing', () => {
     });
   });
 
+  test('Route to EIGW via addRoute method', () => {
+    const eigw = new route.EgressOnlyInternetGateway(stack, 'TestEIGW', {
+      vpc: myVpc,
+    });
+    routeTable.addRoute('0.0.0.0/0', { gateway: eigw });
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        // EIGW should be in stack
+        TestEIGW4E4CDA8D: {
+          Type: 'AWS::EC2::EgressOnlyInternetGateway',
+          Properties: {
+            VpcId: {
+              'Fn::GetAtt': [
+                'TestVpcE77CE678', 'VpcId',
+              ],
+            },
+          },
+        },
+        // Route linking IP to EIGW should be in stack
+        TestRouteTableRoute37ACB8C6: {
+          Type: 'AWS::EC2::Route',
+          Properties: {
+            DestinationCidrBlock: '0.0.0.0/0',
+            EgressOnlyInternetGatewayId: {
+              'Fn::GetAtt': [
+                'TestEIGW4E4CDA8D', 'Id',
+              ],
+            },
+            RouteTableId: {
+              'Fn::GetAtt': [
+                'TestRouteTableC34C2E1C', 'RouteTableId',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('Route to VPN Gateway', () => {
     const vpngw = new route.VPNGateway(stack, 'TestVpnGw', {
       type: VpnConnectionType.IPSEC_1,

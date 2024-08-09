@@ -569,6 +569,27 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
 
     this.routeTableId = this.resource.attrRouteTableId;
   }
+
+  /**
+   * Add a new route to the route table.
+   * @param destination The IPv4 or IPv6 CIDR block used for the destination match.
+   * @param target The gateway or endpoint targeted by the route.
+   */
+  public addRoute(destination: string, target: RouteTargetType) {
+    if (!target.gateway && !target.endpoint) {
+      throw new Error('Target is defined without a gateway or endpoint.');
+    }
+
+    let routerType: RouterType = target.gateway ? target.gateway.routerType : RouterType.VPC_ENDPOINT;
+    let routerTargetId: string = target.gateway ? target.gateway.routerTargetId : target.endpoint!.vpcEndpointId;
+
+    new CfnRoute(this, 'Route', {
+      routeTableId: this.routeTableId,
+      destinationCidrBlock: destination,
+      destinationIpv6CidrBlock: destination,
+      [routerTypeToPropName(routerType)]: routerTargetId,
+    });
+  }
 }
 
 function routerTypeToPropName(routerType: RouterType) {

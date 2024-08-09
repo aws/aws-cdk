@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "6cd56bb964ed1f90f0206d705f085aef381173834b50d5ba372fa2185156d51d": {
+    "4ae0e03763447a62903fc1eef199dcd108da4256bdc2fc7b50c39443f702de69": {
       "source": {
         "path": "aws-cdk-routev2-egressonlyigw-alpha.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6cd56bb964ed1f90f0206d705f085aef381173834b50d5ba372fa2185156d51d.json",
+          "objectKey": "4ae0e03763447a62903fc1eef199dcd108da4256bdc2fc7b50c39443f702de69.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
