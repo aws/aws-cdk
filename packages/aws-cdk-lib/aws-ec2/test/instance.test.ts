@@ -956,6 +956,22 @@ test('specify ebs optimized instance', () => {
   });
 });
 
+test('specify disable api termination', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: new InstanceType('t3.large'),
+    disableApiTermination: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't3.large',
+    DisableApiTermination: true,
+  });
+});
+
 test.each([
   [true, true],
   [false, false],
