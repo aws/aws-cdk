@@ -1433,6 +1433,158 @@ describe('ApplicationLoadBalancedFargateService', () => {
       },
     });
   });
+
+  test('specify containerCpu and containerMemoryLimitMiB', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      loadBalancerName: 'alb-test-load-balancer',
+      containerCpu: 128,
+      containerMemoryLimitMiB: 256,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Cpu: 128,
+          Memory: 256,
+        }),
+      ],
+    });
+  });
+
+  test('errors when containerCpu is greater than cpu', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        cpu: 256,
+        loadBalancerName: 'alb-test-load-balancer',
+        containerCpu: 512,
+      });
+    }).toThrow('containerCpu must be less than to cpu');
+  });
+
+  describe('errors when containerCpu is not positive integer', () => {
+    test('when containerCpu is negative integer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      // THEN
+      expect(() => {
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('test'),
+          },
+          cpu: 256,
+          loadBalancerName: 'alb-test-load-balancer',
+          containerCpu: -1,
+        });
+      }).toThrow('containerCpu must be positive integer');
+    });
+
+    test('when containerCpu is float', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      // THEN
+      expect(() => {
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('test'),
+          },
+          cpu: 256,
+          loadBalancerName: 'alb-test-load-balancer',
+          containerCpu: 0.5,
+        });
+      }).toThrow('containerCpu must be positive integer');
+    });
+  });
+
+  test('errors when containerMemoryLimitMiB is greater than memoryLimitMiB', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        memoryLimitMiB: 256,
+        loadBalancerName: 'alb-test-load-balancer',
+        containerMemoryLimitMiB: 512,
+      });
+    }).toThrow('containerMemoryLimitMiB must be less than to memoryLimitMiB');
+  });
+
+  describe('errors when containerMemoryLimitMiB is not positive integer', () => {
+    test('when containerMemoryLimitMiB is negative integer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      // THEN
+      expect(() => {
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('test'),
+          },
+          memoryLimitMiB: 256,
+          loadBalancerName: 'alb-test-load-balancer',
+          containerMemoryLimitMiB: -1,
+        });
+      }).toThrow('containerMemoryLimitMiB must be positive integer');
+    });
+
+    test('when containerMemoryLimitMiB is float', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      // THEN
+      expect(() => {
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('test'),
+          },
+          memoryLimitMiB: 256,
+          loadBalancerName: 'alb-test-load-balancer',
+          containerMemoryLimitMiB: 0.5,
+        });
+      }).toThrow('containerMemoryLimitMiB must be positive integer');
+    });
+  });
 });
 
 describe('NetworkLoadBalancedFargateService', () => {
