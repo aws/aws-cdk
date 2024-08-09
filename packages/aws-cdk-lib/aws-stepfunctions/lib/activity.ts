@@ -1,9 +1,11 @@
 import { Construct } from 'constructs';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
+import { constructEncryptionConfiguration, validateEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import * as kms from '../../aws-kms';
+import { ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack } from '../../core';
 
 /**
  * Properties for defining a new Step Functions Activity
@@ -15,6 +17,26 @@ export interface ActivityProps {
    * @default - If not supplied, a name is generated
    */
   readonly activityName?: string;
+
+  /**
+   * Specifies a symmetric customer managed KMS key for server-side encryption of the state machine definition and execution history.
+   * Step Functions will reuse the key for a maximum of `kmsDataKeyReusePeriodSeconds`.
+   *
+   * @default - data is transparently encrypted using an AWS owned key
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * Maximum duration that Step Functions will reuse customer managed data keys.
+   * When the period expires, Step Functions will call GenerateDataKey.
+   *
+   * You can only provide a value if `kmsKey` is set.
+   *
+   * Must be between 60 and 900 seconds.
+   *
+   * @default Duration.seconds(300)
+   */
+  readonly kmsDataKeyReusePeriodSeconds?: Duration;
 }
 
 /**
@@ -57,14 +79,23 @@ export class Activity extends Resource implements IActivity {
    */
   public readonly activityName: string;
 
+  /**
+   * Default value for `kmsDataKeyReusePeriodSeconds`
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+   */
+  private readonly defaultPeriodSeconds = 300;
+
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
       physicalName: props.activityName ||
-                Lazy.string({ produce: () => this.generateName() }),
+        Lazy.string({ produce: () => this.generateName() }),
     });
+
+    validateEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds);
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
+      encryptionConfiguration: constructEncryptionConfiguration(props, this.defaultPeriodSeconds),
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {

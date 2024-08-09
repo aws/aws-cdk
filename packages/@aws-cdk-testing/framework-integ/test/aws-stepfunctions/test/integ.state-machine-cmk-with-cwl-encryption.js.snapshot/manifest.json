@@ -1,0 +1,137 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "stepfunctions-cmk-cwl-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "stepfunctions-cmk-cwl-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "stepfunctions-cmk-cwl-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stepfunctions-cmk-cwl-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2529af721ac642145a39f8a1d340abf74e36b0885358e4329e6fe31ec216467e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "stepfunctions-cmk-cwl-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "stepfunctions-cmk-cwl-integ.assets"
+      ],
+      "metadata": {
+        "/stepfunctions-cmk-cwl-integ/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/stepfunctions-cmk-cwl-integ/MyLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLogGroup5C0DAD85"
+          }
+        ],
+        "/stepfunctions-cmk-cwl-integ/StateMachineWithCMKWithCWLEncryption/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCMKWithCWLEncryptionRole9A736AB1"
+          }
+        ],
+        "/stepfunctions-cmk-cwl-integ/StateMachineWithCMKWithCWLEncryption/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCMKWithCWLEncryptionRoleDefaultPolicyEEF0DE0C"
+          }
+        ],
+        "/stepfunctions-cmk-cwl-integ/StateMachineWithCMKWithCWLEncryption/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCMKWithCWLEncryptionE07EB791"
+          }
+        ],
+        "/stepfunctions-cmk-cwl-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/stepfunctions-cmk-cwl-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "stepfunctions-cmk-cwl-integ"
+    },
+    "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050.assets"
+      ],
+      "metadata": {
+        "/StateMachineWithCMKWithCWLEncryption/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/StateMachineWithCMKWithCWLEncryption/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "StateMachineWithCMKWithCWLEncryption/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
