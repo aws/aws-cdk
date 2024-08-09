@@ -40,6 +40,13 @@ export interface AddonProps {
    * The EKS cluster the Add-On is associated with.
    */
   readonly cluster: ICluster;
+  /**
+   * Specifying this option preserves the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on.
+   * If an IAM account is associated with the add-on, it isn't removed.
+   *
+   * @default true
+   */
+  readonly preserveOnDelete?: boolean;
 }
 
 /**
@@ -127,6 +134,7 @@ export class Addon extends Resource implements IAddon {
       addonName: props.addonName,
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
+      preserveOnDelete: props.preserveOnDelete,
     });
 
     this.addonName = this.getResourceNameAttribute(resource.ref);
