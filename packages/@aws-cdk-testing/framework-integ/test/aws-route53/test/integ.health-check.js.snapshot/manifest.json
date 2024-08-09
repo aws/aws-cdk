@@ -1,0 +1,342 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-route53-health-check.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-route53-health-check.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-route53-health-check": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-route53-health-check.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93bfd1fc7c23db76d6f3cf2dd083a7840e4f7babf86ab10f22565eeb26d99e69.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-route53-health-check.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-route53-health-check.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-route53-health-check/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/aws-cdk-route53-health-check/HealthCheckHttp/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckHttp45CD8FAC"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordHttp/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordHttp1E242324"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordHttp2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordHttp2C99D5094"
+          }
+        ],
+        "/aws-cdk-route53-health-check/HealthCheckHttps/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckHttpsE7EFCB62"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordHttps/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordHttps92EB971E"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordHttps2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordHttps2771FA16F"
+          }
+        ],
+        "/aws-cdk-route53-health-check/HealthCheckTcp/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckTcpC39A45DC"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordTcp/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordTcp8F151AA4"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordTcp2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordTcp21F5B796C"
+          }
+        ],
+        "/aws-cdk-route53-health-check/HealthCheckCalculated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckCalculated4BA910E7"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCalculated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCalculatedFD72BD16"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCalculated2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCalculated22107FE58"
+          }
+        ],
+        "/aws-cdk-route53-health-check/LambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionServiceRoleC555A460"
+          }
+        ],
+        "/aws-cdk-route53-health-check/LambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionBF21E41F"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Alarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm7103F465"
+          }
+        ],
+        "/aws-cdk-route53-health-check/HealthCheckCloudWatch/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckCloudWatch996681BB"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCloudWatch/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCloudWatchD1A5EC36"
+          }
+        ],
+        "/aws-cdk-route53-health-check/ARecordCloudWatch2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordCloudWatch26685731B"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckHttp45CD8FAC\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckHttpsE7EFCB62\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckTcpC39A45DC\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefHealthCheckTcpC39A45DCAEC05583"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckCalculated4BA910E7\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefHealthCheckCalculated4BA910E7270DC992"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"LambdaFunctionBF21E41F\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefLambdaFunctionBF21E41F66817B40"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"Alarm7103F465\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAlarm7103F465225BDD34"
+          }
+        ],
+        "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckCloudWatch996681BB\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D"
+          }
+        ],
+        "/aws-cdk-route53-health-check/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-route53-health-check/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-route53-health-check"
+    },
+    "integtestDefaultTestDeployAssert24D5C536.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestDefaultTestDeployAssert24D5C536.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestDefaultTestDeployAssert24D5C536": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/67a522d02903acca2401c2bd99265d7b55a7c7db26718c07061266e497fde491.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestDefaultTestDeployAssert24D5C536.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-route53-health-check",
+        "integtestDefaultTestDeployAssert24D5C536.assets"
+      ],
+      "metadata": {
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
