@@ -1,8 +1,8 @@
-import { Capture, Template, Match } from '../../assertions';
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
-import * as s3deploy from '../../aws-s3-deployment';
-import * as cdk from '../../core';
+import { Capture, Template, Match } from '../../../../assertions';
+import * as logs from '../../../../aws-logs';
+import * as s3 from '../../../../aws-s3';
+import * as s3deploy from '../../../../aws-s3-deployment';
+import * as cdk from '../../../../core';
 import { CustomResourceConfig } from '../custom-resource-config';
 
 describe('when logging is undefined', () => {

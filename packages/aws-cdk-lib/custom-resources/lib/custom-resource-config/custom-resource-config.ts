@@ -1,7 +1,7 @@
 import { IConstruct, MetadataEntry } from 'constructs';
-import * as lambda from '../aws-lambda';
-import * as logs from '../aws-logs';
-import { CfnResource, IAspect, Aspects } from '../core/lib';
+import * as lambda from '../../../aws-lambda';
+import * as logs from '../../../aws-logs';
+import { CfnResource, IAspect, Aspects } from '../../../core/lib';
 
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
