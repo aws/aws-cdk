@@ -138,6 +138,17 @@ domain.mapSubDomain(main, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```
 
+To specify a custom certificate for your custom domain use the `customCertificate` property:
+
+```ts
+declare const customCertificate: acm.Certificate;
+declare const amplifyApp: amplify.App;
+
+const domain = amplifyApp.addDomain('example.com', {
+  customCertificate, // set your custom certificate
+});
+```
+
 ## Restricting access
 
 Password protect the app with basic auth by specifying the `basicAuth` prop.

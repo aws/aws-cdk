@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "36.0.0",
+  "testCases": {
+    "amplify-app-custom-domain-integ/DefaultTest": {
+      "stacks": [
+        "cdk-amplify-app-custom-domain"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "amplify-app-custom-domain-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB"
+    }
+  }
+}
