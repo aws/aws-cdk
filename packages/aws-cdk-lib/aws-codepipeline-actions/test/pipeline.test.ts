@@ -551,7 +551,7 @@ describe('pipeline', () => {
   describe('cross-region Pipeline', () => {
     test('generates the required Action & ArtifactStores properties in the template', () => {
       const pipelineRegion = 'us-west-2';
-      const pipelineAccount = '123';
+      const pipelineAccount = '123456789012';
 
       const app = new App();
 
@@ -620,7 +620,7 @@ describe('pipeline', () => {
             'Region': 'us-east-1',
             'ArtifactStore': {
               'Type': 'S3',
-              'Location': 'teststack-support-us-easteplicationbucket1a8063b3cdac6e7e0e73',
+              'Location': 'teststack-support-us-easteplicationbucket851dbc8fad9a87dc5f52',
             },
           },
           {

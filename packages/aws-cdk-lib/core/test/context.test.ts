@@ -6,7 +6,7 @@ import { synthesize } from '../lib/private/synthesis';
 
 describe('context', () => {
   test('AvailabilityZoneProvider returns a list with dummy values if the context is not available', () => {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
     const azs = stack.availabilityZones;
 
     expect(azs).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
@@ -15,7 +15,7 @@ describe('context', () => {
 
   test('AvailabilityZoneProvider will return context list if available', () => {
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
@@ -28,7 +28,7 @@ describe('context', () => {
 
   test('AvailabilityZoneProvider will complain if not given a list', () => {
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
     const before = stack.availabilityZones;
     expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
@@ -41,7 +41,7 @@ describe('context', () => {
   });
 
   test('ContextProvider consistently generates a key', () => {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
     const key = ContextProvider.getKey(stack, {
       provider: 'ssm',
       props: {
@@ -51,9 +51,9 @@ describe('context', () => {
     });
 
     expect(key).toEqual({
-      key: 'ssm:account=12345:anyStringParam=bar:parameterName=foo:region=us-east-1',
+      key: 'ssm:account=123456789012:anyStringParam=bar:parameterName=foo:region=us-east-1',
       props: {
-        account: '12345',
+        account: '123456789012',
         region: 'us-east-1',
         parameterName: 'foo',
         anyStringParam: 'bar',
@@ -69,9 +69,9 @@ describe('context', () => {
       },
     });
     expect(complexKey).toEqual({
-      key: 'vpc:account=12345:cidrBlock=192.168.0.16:igw=false:region=us-east-1:tags.Env=Preprod:tags.Name=MyVPC',
+      key: 'vpc:account=123456789012:cidrBlock=192.168.0.16:igw=false:region=us-east-1:tags.Env=Preprod:tags.Name=MyVPC',
       props: {
-        account: '12345',
+        account: '123456789012',
         region: 'us-east-1',
         cidrBlock: '192.168.0.16',
         tags: { Name: 'MyVPC', Env: 'Preprod' },
@@ -82,7 +82,7 @@ describe('context', () => {
 
   test('Key generation can contain arbitrarily deep structures', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
     // WHEN
     const key = ContextProvider.getKey(stack, {
@@ -97,9 +97,9 @@ describe('context', () => {
 
     // THEN
     expect(key).toEqual({
-      key: 'provider:account=12345:list.0.key=key1:list.0.value=value1:list.1.key=key2:list.1.value=value2:region=us-east-1',
+      key: 'provider:account=123456789012:list.0.key=key1:list.0.value=value1:list.1.key=key2:list.1.value=value2:region=us-east-1',
       props: {
-        account: '12345',
+        account: '123456789012',
         region: 'us-east-1',
         list: [
           { key: 'key1', value: 'value1' },
@@ -111,7 +111,7 @@ describe('context', () => {
 
   test('Keys with undefined values are not serialized', () => {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
     // WHEN
     const result = ContextProvider.getKey(stack, {
@@ -124,9 +124,9 @@ describe('context', () => {
 
     // THEN
     expect(result).toEqual({
-      key: 'provider:account=12345:p1=42:region=us-east-1',
+      key: 'provider:account=123456789012:p1=42:region=us-east-1',
       props: {
-        account: '12345',
+        account: '123456789012',
         region: 'us-east-1',
         p1: 42,
         p2: undefined,
@@ -136,10 +136,10 @@ describe('context', () => {
 
   test('context provider errors are attached to tree', () => {
     const contextProps = { provider: 'availability-zones' };
-    const contextKey = 'availability-zones:account=12345:region=us-east-1'; // Depends on the mangling algo
+    const contextKey = 'availability-zones:account=123456789012:region=us-east-1'; // Depends on the mangling algo
 
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
     // NOTE: error key is inlined here because it's part of the CX-API
     // compatibility surface.
@@ -161,7 +161,7 @@ describe('context', () => {
   });
 
   test('can skip account/region from attach to context', () => {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
     expect(ContextProvider.getKey(stack, { provider: 'asdf', includeEnvironment: false }).key).toEqual('asdf:');
   });
 });

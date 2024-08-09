@@ -281,31 +281,31 @@ describe('User Pool', () => {
   test('import using id', () => {
     // GIVEN
     const stack = new Stack(undefined, undefined, {
-      env: { region: 'some-region-1', account: '0123456789012' },
+      env: { region: 'some-region-1', account: '123456789012' },
     });
     const userPoolId = 'test-user-pool';
 
     // WHEN
     const pool = UserPool.fromUserPoolId(stack, 'userpool', userPoolId);
     expect(pool.userPoolId).toEqual(userPoolId);
-    expect(pool.userPoolArn).toMatch(/cognito-idp:some-region-1:0123456789012:userpool\/test-user-pool/);
+    expect(pool.userPoolArn).toMatch(/cognito-idp:some-region-1:123456789012:userpool\/test-user-pool/);
   });
 
   test('import using arn', () => {
     // GIVEN
     const stack = new Stack();
-    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:123456789012:userpool/test-user-pool';
 
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:123456789012:userpool/test-user-pool');
   });
 
   test('import using arn without resourceName fails', () => {
     // GIVEN
     const stack = new Stack();
-    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:*';
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:123456789012:*';
 
     // WHEN
     expect(() => {
@@ -315,7 +315,7 @@ describe('User Pool', () => {
 
   test('import from different account region using arn', () => {
     // GIVEN
-    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:123456789012:userpool/test-user-pool';
 
     const stack = new Stack(undefined, undefined, {
       env: {
@@ -326,9 +326,9 @@ describe('User Pool', () => {
 
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
-    expect(pool.env.account).toEqual('0123456789012');
+    expect(pool.env.account).toEqual('123456789012');
     expect(pool.env.region).toEqual('us-east-1');
-    expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:123456789012:userpool/test-user-pool');
   });
 
   test('support tags', () => {
@@ -1741,7 +1741,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1769,7 +1769,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1783,7 +1783,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1812,7 +1812,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1825,7 +1825,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1850,7 +1850,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1863,7 +1863,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1888,7 +1888,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1901,7 +1901,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1926,7 +1926,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1939,7 +1939,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1964,7 +1964,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1977,7 +1977,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-2',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -2007,7 +2007,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -2021,7 +2021,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-2',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -2052,7 +2052,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/example.com',
+              ':ses:us-east-1:111111111111:identity/example.com',
             ],
           ],
         },
@@ -2065,7 +2065,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-2',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 

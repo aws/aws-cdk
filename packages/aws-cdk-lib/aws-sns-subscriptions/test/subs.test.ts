@@ -313,13 +313,13 @@ test('queue subscription cross region', () => {
   const app = new App();
   const topicStack = new Stack(app, 'TopicStack', {
     env: {
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-1',
     },
   });
   const queueStack = new Stack(app, 'QueueStack', {
     env: {
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-2',
     },
   });
@@ -369,7 +369,7 @@ test('queue subscription cross region', () => {
                           {
                             'Ref': 'AWS::Partition',
                           },
-                          ':sns:us-east-1:11111111111:topicName',
+                          ':sns:us-east-1:111111111111:topicName',
                         ],
                       ],
                     },
@@ -408,7 +408,7 @@ test('queue subscription cross region', () => {
                 {
                   'Ref': 'AWS::Partition',
                 },
-                ':sns:us-east-1:11111111111:topicName',
+                ':sns:us-east-1:111111111111:topicName',
               ],
             ],
           },
@@ -527,7 +527,7 @@ test('queue subscription cross region, topic env agnostic', () => {
   const topicStack = new Stack(app, 'TopicStack', {});
   const queueStack = new Stack(app, 'QueueStack', {
     env: {
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-1',
     },
   });
@@ -652,7 +652,7 @@ test('queue subscription cross region, queue env agnostic', () => {
   const app = new App();
   const topicStack = new Stack(app, 'TopicStack', {
     env: {
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-1',
     },
   });
@@ -703,7 +703,7 @@ test('queue subscription cross region, queue env agnostic', () => {
                           {
                             'Ref': 'AWS::Partition',
                           },
-                          ':sns:us-east-1:11111111111:topicName',
+                          ':sns:us-east-1:111111111111:topicName',
                         ],
                       ],
                     },
@@ -742,7 +742,7 @@ test('queue subscription cross region, queue env agnostic', () => {
                 {
                   'Ref': 'AWS::Partition',
                 },
-                ':sns:us-east-1:11111111111:topicName',
+                ':sns:us-east-1:111111111111:topicName',
               ],
             ],
           },
@@ -1444,13 +1444,13 @@ test('lambda subscription, cross region', () => {
   const app = new App();
   const topicStack = new Stack(app, 'TopicStack', {
     env: {
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-1',
     },
   });
   const lambdaStack = new Stack(app, 'LambdaStack', {
     env: {
-      account: '11111111111',
+      account: '111111111111',
       region: 'us-east-2',
     },
   });
@@ -1538,7 +1538,7 @@ test('lambda subscription, cross region', () => {
                 {
                   'Ref': 'AWS::Partition',
                 },
-                ':sns:us-east-1:11111111111:topicName',
+                ':sns:us-east-1:111111111111:topicName',
               ],
             ],
           },
@@ -1556,7 +1556,7 @@ test('lambda subscription, cross region', () => {
                 {
                   'Ref': 'AWS::Partition',
                 },
-                ':sns:us-east-1:11111111111:topicName',
+                ':sns:us-east-1:111111111111:topicName',
               ],
             ],
           },

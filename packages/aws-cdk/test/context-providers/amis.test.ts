@@ -29,7 +29,7 @@ test('calls DescribeImages on the request', async () => {
 
   // WHEN
   await new AmiContextProviderPlugin(mockSDK).getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'asdf',
     owners: ['some-owner'],
     filters: {
@@ -68,7 +68,7 @@ test('returns the most recent AMI matching the criteria', async () => {
 
   // WHEN
   const result = await new AmiContextProviderPlugin(mockSDK).getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'asdf',
     filters: {},
   });

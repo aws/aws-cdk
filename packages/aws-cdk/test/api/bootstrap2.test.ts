@@ -44,7 +44,7 @@ describe('Bootstrapping v2', () => {
     const value = {
       Policy: {
         PolicyName: 'my-policy',
-        Arn: 'arn:aws:iam::0123456789012:policy/my-policy',
+        Arn: 'arn:aws:iam::123456789012:policy/my-policy',
       },
     };
     mockGetPolicyIamCode = jest.fn().mockReturnValue(value);

@@ -414,7 +414,7 @@ describe('IAM role', () => {
     });
 
     // THEN
-    expect(() => role.grantAssumeRole(new AccountPrincipal('123456789')))
+    expect(() => role.grantAssumeRole(new AccountPrincipal('123456789012')))
       .toThrow('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
   });
 

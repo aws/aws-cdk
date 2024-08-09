@@ -49,7 +49,7 @@ describe('deploy', () => {
       lookups: false,
       notices: true,
       profile: 'my-profile',
-      roleArn: 'arn:aws:iam::1111111111:role/my-role',
+      roleArn: 'arn:aws:iam::111111111111:role/my-role',
       staging: false,
       verbose: true,
       ec2Creds: true,
@@ -113,7 +113,7 @@ describe('deploy', () => {
         '--profile', 'my-profile',
         '--proxy', 'https://proxy',
         '--ca-bundle-path', '/some/path',
-        '--role-arn', 'arn:aws:iam::1111111111:role/my-role',
+        '--role-arn', 'arn:aws:iam::111111111111:role/my-role',
         'Stack1',
       ]),
       expect.anything(),
@@ -229,8 +229,8 @@ describe('deploy', () => {
     await cdk.deploy({
       stacks: ['Stack1'],
       notificationArns: [
-        'arn:aws:us-east-1:1111111111:some:resource',
-        'arn:aws:us-east-1:1111111111:some:other-resource',
+        'arn:aws:us-east-1:111111111111:some:resource',
+        'arn:aws:us-east-1:111111111111:some:other-resource',
       ],
     });
 
@@ -238,8 +238,8 @@ describe('deploy', () => {
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
       [
         'deploy',
-        '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
-        '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
+        '--notification-arns', 'arn:aws:us-east-1:111111111111:some:resource',
+        '--notification-arns', 'arn:aws:us-east-1:111111111111:some:other-resource',
         '--progress', 'events',
         'Stack1',
       ],
