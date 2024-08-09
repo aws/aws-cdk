@@ -64,6 +64,38 @@ const customEngineVersion = rds.AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.
 
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
 
+To create a cluster with an RDS managed Secret in AWS Secrets Manager, use the `manageMasterUserPassword` property.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_2 }),
+  manageMasterUserPassword: true,
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+```
+
+The `manageMasterUserPassword` property supports a custom username or a custom username with a customer supplied AWS KMS key.
+
+You can specify the `username` and the `encryptionKey` via the `credentials` property.
+
+**Note:** `username` must be specified if `encryptionKey` is set.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_2 }),
+  credentials: { username: 'exampleMasterUser', encryptionKey: kmsKey },
+  manageMasterUserPassword: true,
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+```
+
+> Visit [Password management with Amazon RDS and AWS Secrets Manager](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html) or [Password management with Amazon Aurora and AWS Secrets Manager](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-secrets-manager.html) for more details.
+
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "IntegClusterManagedPasswordTest/DefaultTest": {
+      "stacks": [
+        "integ-cluster-managed-password"
+      ],
+      "assertionStack": "IntegClusterManagedPasswordTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegClusterManagedPasswordTestDefaultTestDeployAssertBBE0A609"
+    }
+  }
+}
