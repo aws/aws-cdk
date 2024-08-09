@@ -165,9 +165,34 @@ export class Docker {
       map[domain] = 'cdk-assets'; // Use docker-credential-cdk-assets for this domain
       return map;
     }, {});
-    fs.writeFileSync(path.join(this.configDir, 'config.json'), JSON.stringify({ credHelpers }), { encoding: 'utf-8' });
+
+    // Parsing the original Docker config file to ensure additional configuration is not lost like proxy settings
+    const originalDockerConfig = this.dockerConfig();
+    const mergedConfig = { ...originalDockerConfig, credHelpers };
+
+    fs.writeFileSync(path.join(this.configDir, 'config.json'), JSON.stringify(mergedConfig), { encoding: 'utf-8' });
 
     return true;
+  }
+
+  public dockerConfigFile(): string {
+    return process.env.CDK_DOCKER_CONFIG_FILE ?? path.join((os.userInfo().homedir ?? os.homedir()).trim() || '/', '.docker', 'config.json');
+  }
+
+  public dockerConfig(): any | undefined {
+    try {
+
+      if (fs.existsSync(this.dockerConfigFile())) {
+        return JSON.parse(fs.readFileSync(this.dockerConfigFile(), { encoding: 'utf-8' }));
+      } else {
+        return {};
+      }
+    } catch (e: any) {
+      if (e instanceof SyntaxError) {
+        throw new Error(`Unable to parse \'${this.dockerConfigFile()}\' in order to determine the configuration. Please ensure \'${this.dockerConfigFile()}\' is a valid JSON.`);
+      }
+      throw e;
+    }
   }
 
   /**
@@ -208,6 +233,10 @@ export class Docker {
       flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
     }
     return flag;
+  }
+
+  public get configDirectory(): string | undefined {
+    return this.configDir;
   }
 }
 
