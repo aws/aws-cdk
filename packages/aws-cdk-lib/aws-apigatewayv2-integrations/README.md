@@ -11,6 +11,7 @@
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
+  - [Integration Responses](#integration-responses)
 - [Import Issues](#import-issues)
   - [DotNet Namespace](#dotnet-namespace)
   - [Java Package](#java-package)
@@ -311,6 +312,52 @@ webSocketApi.addRoute('$connect', {
 
 You can also set additional properties to change the behavior of your integration, such as `contentHandling`.
 See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html).
+
+### Integration Responses
+
+You can set up your integrations to send responses to your WebSocket client using the [`returnResponse`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2.WebSocketRouteOptions.html#returnresponse) field.
+
+Additionally, some integrations allow you to manipulate and customize your responses, mapped by HTTP response code. This can be done via the `responses` field or the `addResponse` method.
+See [Setting up a WebSocket API integration responses in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html).
+
+Similar to `requestTemplates`, `responseTemplates` can use context or response dependent variables. In the case of an integration response, `$input` will be replaced by the response contents. See [API Gateway WebSocket API mapping template reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html)
+
+```ts
+import { WebSocketAwsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+declare const integration: WebSocketAwsIntegration;
+
+// Default response key, will be used if no other matched
+integration.addResponse(apigwv2.WebSocketIntegrationResponseKey.default);
+
+integration.addResponse(
+  // Success response key, will match all 2xx response HTTP status codes
+  apigwv2.WebSocketIntegrationResponseKey.success,
+  { responseTemplates: { 'application/json': JSON.stringify({ success: true }) } },
+);
+
+integration.addResponse(
+  // You can also create custom response integrations for specific status codes
+  apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(410),
+  {
+    responseTemplates: {
+      'application/json': `{
+        "error": "Gone",
+        "message": $input.json('$.Message')
+      }`,
+    },
+  },
+);
+
+webSocketApi.addRoute('putItem', { integration, returnResponse: true });
+```
 
 ## Import Issues
 

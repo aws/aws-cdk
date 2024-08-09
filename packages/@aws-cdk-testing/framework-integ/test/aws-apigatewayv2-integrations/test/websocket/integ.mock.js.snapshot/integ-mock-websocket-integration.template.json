@@ -24,8 +24,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "$default",
     "AuthorizationType": "NONE",
+    "RouteKey": "$default",
     "Target": {
      "Fn::Join": [
       "",
@@ -39,7 +39,7 @@
     }
    }
   },
-  "mywsapisendmessageRouteSendMessageIntegrationD29E12F9": {
+  "mywsapisendmessageRouteDefaultIntegration702159AD": {
    "Type": "AWS::ApiGatewayV2::Integration",
    "Properties": {
     "ApiId": {
@@ -49,25 +49,53 @@
     "IntegrationUri": ""
    }
   },
+  "mywsapisendmessageRoutedefaultintegmockwebsocketintegrationmywsapisendmessageRouteDefaultIntegrationA39F8D2401A55BEB": {
+   "Type": "AWS::ApiGatewayV2::IntegrationResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationId": {
+     "Ref": "mywsapisendmessageRouteDefaultIntegration702159AD"
+    },
+    "IntegrationResponseKey": "$default",
+    "ResponseTemplates": {
+     "$default": "{\"success\":true}"
+    }
+   }
+  },
   "mywsapisendmessageRouteAE873328": {
    "Type": "AWS::ApiGatewayV2::Route",
    "Properties": {
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "RouteKey": "sendmessage",
     "AuthorizationType": "NONE",
+    "RouteKey": "sendmessage",
+    "RouteResponseSelectionExpression": "$default",
     "Target": {
      "Fn::Join": [
       "",
       [
        "integrations/",
        {
-        "Ref": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
+        "Ref": "mywsapisendmessageRouteDefaultIntegration702159AD"
        }
       ]
      ]
     }
+   }
+  },
+  "mywsapisendmessageRouteResponse2ED167D2": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "RouteId": {
+     "Ref": "mywsapisendmessageRouteAE873328"
+    },
+    "RouteResponseKey": "$default"
    }
   },
   "mystage114C35EC": {
@@ -76,8 +104,8 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "StageName": "dev",
-    "AutoDeploy": true
+    "AutoDeploy": true,
+    "StageName": "dev"
    }
   }
  },
