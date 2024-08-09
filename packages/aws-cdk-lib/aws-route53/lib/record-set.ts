@@ -176,7 +176,7 @@ export interface RecordSetOptions {
    * new record set will be created immediately after the existing one is deleted. It
    * also avoids "manual" actions to delete existing record sets.
    *
-   * > **N.B.:** this feature is dangerous, use with caution! It can only be used safely when
+   * > NOTE: This feature is dangerous, use with caution! It can only be used safely when
    * > `deleteExisting` is set to `true` as soon as the resource is added to the stack. Changing
    * > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
    * > will delete the record!
@@ -465,8 +465,8 @@ export class ARecord extends RecordSet {
 
   /**
    * Creates new A record of type alias with target set to an existing A Record DNS.
-   * Use when the target A record is created outside of CDK
-   * For records created as part of CDK use @aws-cdk-lib/aws-route53-targets/route53-record.ts
+   * Use when the target A record is created outside of CDK.
+   * For records created as part of CDK use `@aws-cdk-lib/aws-route53-targets/route53-record.ts`.
    * @param scope the parent Construct for this Construct
    * @param id Logical Id of the resource
    * @param attrs the ARecordAttributes (Target Arecord DNS name and HostedZone)
