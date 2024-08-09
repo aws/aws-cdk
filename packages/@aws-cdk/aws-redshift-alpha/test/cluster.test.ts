@@ -132,6 +132,54 @@ test('creates a secret when master credentials are not specified', () => {
   });
 });
 
+test('creates a secret with a custom excludeCharacters', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      excludeCharacters: '"@/\\\ \'`',
+    },
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+    MasterUsername: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          {
+            Ref: 'RedshiftSecretA08D42D6',
+          },
+          ':SecretString:username::}}',
+        ],
+      ],
+    },
+    MasterUserPassword: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          {
+            Ref: 'RedshiftSecretA08D42D6',
+          },
+          ':SecretString:password::}}',
+        ],
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+    GenerateSecretString: {
+      ExcludeCharacters: '"@/\\\ \'`',
+      GenerateStringKey: 'password',
+      PasswordLength: 30,
+      SecretStringTemplate: '{"username":"admin"}',
+    },
+  });
+});
+
 describe('node count', () => {
 
   test('Single Node Clusters do not define node count', () => {
