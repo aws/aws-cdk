@@ -268,7 +268,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       associateStage: true,
     });
     app.synth();
-    Template.fromStack(application.appRegistryApplication.stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
+    Template.fromStack(application.appRegistryApplication.stack, { skipClean: true }).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
     Template.fromStack(pipelineStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
 });

@@ -121,7 +121,8 @@ export class AwsApiCall extends ApiCallBase {
               // Remove the at sign, slash, and hyphen because when using the v3 package name or client name as the service name,
               // the `id` includes them, but they are not allowed in the `CfnOutput` logical id
               // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html#outputs-section-syntax
-            }).overrideLogicalId(`AssertionResults${id}`.replace(/[\@\/\-]/g, ''));
+              key: `AssertionResults${id}`.replace(/[\@\/\-]/g, ''),
+            });
           }
         }
       },

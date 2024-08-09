@@ -190,7 +190,7 @@ behavior('tags get reflected in pipeline', (suite) => {
   function THEN_codePipelineExpectation() {
     // THEN
     const templateConfig = new Capture();
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'App',
         Actions: Match.arrayWith([
@@ -215,6 +215,7 @@ behavior('tags get reflected in pipeline', (suite) => {
         CostCenter: 'F00B4R',
       },
     }));
+    Template.clean(pipelineStack);
   }
 });
 

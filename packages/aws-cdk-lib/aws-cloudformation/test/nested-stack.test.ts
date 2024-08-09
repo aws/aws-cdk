@@ -460,7 +460,7 @@ describeDeprecated('NestedStack', () => {
     const assembly = app.synth();
 
     // nested stack should output this value as if it was referenced by the parent (without the export)
-    Template.fromStack(nestedUnderStack1).templateMatches({
+    Template.fromStack(nestedUnderStack1, { skipClean: true }).templateMatches({
       Resources: {
         ResourceInNestedStack: {
           Type: 'MyResource',
@@ -487,7 +487,7 @@ describeDeprecated('NestedStack', () => {
     });
 
     // consuming stack should use ImportValue to import the value from the parent stack
-    Template.fromStack(stack2).templateMatches({
+    Template.fromStack(stack2, { skipClean: true }).templateMatches({
       Resources: {
         ResourceInStack2: {
           Type: 'JustResource',
@@ -506,6 +506,8 @@ describeDeprecated('NestedStack', () => {
     expect(stack1Artifact.dependencies.length).toEqual(0);
     expect(stack2Artifact.dependencies.length).toEqual(1);
     expect(stack2Artifact.dependencies[0]).toEqual(stack1Artifact);
+    Template.clean(stack1);
+    Template.clean(stack2);
   });
 
   test('references between sibling nested stacks should output from one and getAtt from the other', () => {

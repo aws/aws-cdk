@@ -55,13 +55,14 @@ describe(synthetics.Code.fromAsset, () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Template.fromStack(stack, { skipClean: true }).hasResourceProperties('AWS::Synthetics::Canary', {
       Code: {
         Handler: 'canary.handler',
         S3Bucket: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS).s3Location?.bucketName),
         S3Key: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS).s3Location?.objectKey),
       },
     });
+    Template.clean(stack);
   });
 
   test('fromAsset works for python runtimes', () => {
@@ -79,13 +80,14 @@ describe(synthetics.Code.fromAsset, () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Template.fromStack(stack, { skipClean: true }).hasResourceProperties('AWS::Synthetics::Canary', {
       Code: {
         Handler: 'canary.handler',
         S3Bucket: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.PYTHON).s3Location?.bucketName),
         S3Key: stack.resolve(directoryAsset.bind(stack, 'canary.handler', synthetics.RuntimeFamily.PYTHON).s3Location?.objectKey),
       },
     });
+    Template.clean(stack);
   });
 
   test('only one Asset object gets created even if multiple canaries use the same AssetCode', () => {

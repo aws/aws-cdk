@@ -41,7 +41,7 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
   });
 
   function THEN_codePipelineExpectation() {
-    const template = Template.fromStack(pipelineStack);
+    const template = Template.fromStack(pipelineStack, { skipClean: true });
     template.resourceCountIs('AWS::Lambda::Function', 1);
     template.hasResourceProperties('AWS::Lambda::Function', {
       Role: {
@@ -89,7 +89,7 @@ behavior('security check option passes correct environment variables to check pr
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([
         {
           Name: 'App',
@@ -135,7 +135,7 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
 
   function THEN_codePipelineExpectation() {
     // CodePipeline must be tagged as SECURITY_CHECK=ALLOW_APPROVE
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Tags: [
         {
           Key: 'SECURITY_CHECK',
@@ -144,7 +144,7 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
       ],
     });
     // Lambda Function only has access to pipelines tagged SECURITY_CHECK=ALLOW_APPROVE
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -159,7 +159,7 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
       },
     });
     // CodeBuild must have access to the stacks and invoking the lambda function
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           {
@@ -220,7 +220,7 @@ behavior('confirmBroadeningPermissions option at addApplicationStage runs securi
   suite.doesNotApply.modern();
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
         {
           Actions: [Match.objectLike({ Name: 'GitHub', RunOrder: 1 })],
@@ -267,7 +267,7 @@ behavior('confirmBroadeningPermissions option at addApplication runs security ch
   suite.doesNotApply.modern();
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
         {
           Actions: [Match.objectLike({ Name: 'GitHub', RunOrder: 1 })],
@@ -326,8 +326,8 @@ behavior('confirmBroadeningPermissions and notification topic options generates 
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).resourceCountIs('AWS::SNS::Topic', 1);
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).resourceCountIs('AWS::SNS::Topic', 1);
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([
         {
           Name: 'MyStack',
@@ -392,10 +392,10 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
   suite.doesNotApply.modern();
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).resourceCountIs('AWS::Lambda::Function', 1);
+    Template.fromStack(pipelineStack, { skipClean: true }).resourceCountIs('AWS::Lambda::Function', 1);
     // 1 for github build, 1 for synth stage, and 1 for the application security check
-    Template.fromStack(pipelineStack).resourceCountIs('AWS::CodeBuild::Project', 3);
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).resourceCountIs('AWS::CodeBuild::Project', 3);
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Tags: [
         {
           Key: 'SECURITY_CHECK',

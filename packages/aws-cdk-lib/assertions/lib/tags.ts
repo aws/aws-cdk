@@ -1,3 +1,4 @@
+import * as fs from 'fs-extra';
 import { Match } from './match';
 import { Matcher } from './matcher';
 import { Stack, Stage } from '../../core';
@@ -76,16 +77,33 @@ export class Tags {
   }
 }
 
-function getManifestTags(stack: Stack): ManifestTags {
+function getManifestTags(stack: Stack, skipClean?: boolean): ManifestTags {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
 
-  // synthesis is not forced: the stack will only be synthesized once regardless
-  // of the number of times this is called.
-  const assembly = root.synth();
+  // We may have deleted all of this in a prior run so check and remake it if
+  // that is the case.
+  const outdir = root!.outdir;
+  const assetOutdir = root!.assetOutdir;
 
+  if (!fs.existsSync(outdir)) {
+    fs.mkdirSync(outdir, { recursive: true });
+  }
+
+  if (!fs.existsSync(assetOutdir)) {
+    fs.mkdirSync(assetOutdir, { recursive: true });
+  }
+
+  const assembly = root.synth({ force: true });
   const artifact = assembly.getStackArtifact(stack.artifactId);
+
+  if (skipClean !== true) {
+    // Now clean up after yourself
+    fs.rmSync(outdir, { recursive: true, force: true });
+    fs.rmSync(assetOutdir, { recursive: true, force: true });
+  }
+
   return artifact.tags;
 }

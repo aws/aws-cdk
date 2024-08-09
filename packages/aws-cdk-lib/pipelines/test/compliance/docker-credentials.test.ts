@@ -51,7 +51,7 @@ behavior('synth action receives install commands and access to relevant credenti
       domainCredentials: { 'synth.example.com': { secretsManagerSecretId: secretSynthArn } },
     });
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -70,7 +70,7 @@ behavior('synth action receives install commands and access to relevant credenti
         })),
       },
     });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([{
           Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
@@ -121,7 +121,7 @@ behavior('synth action receives Windows install commands if a Windows image is d
       domainCredentials: { 'synth.example.com': { secretsManagerSecretId: secretSynthArn } },
     });
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: { Image: 'aws/codebuild/windows-base:2.0' },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -164,7 +164,7 @@ behavior('self-update receives install commands and access to relevant credentia
       domainCredentials: { 'selfupdate.example.com': { secretsManagerSecretId: secretUpdateArn } },
     });
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -185,7 +185,7 @@ behavior('self-update receives install commands and access to relevant credentia
         })),
       },
     });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([{
           Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
@@ -220,7 +220,7 @@ behavior('asset publishing receives install commands and access to relevant cred
       domainCredentials: { 'publish.example.com': { secretsManagerSecretId: secretPublishArn } },
     });
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
       Source: {
         BuildSpec: Match.serializedJson(Match.objectLike({
@@ -239,7 +239,7 @@ behavior('asset publishing receives install commands and access to relevant cred
         })),
       },
     });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([{
           Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],

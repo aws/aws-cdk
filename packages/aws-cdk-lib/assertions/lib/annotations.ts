@@ -1,3 +1,4 @@
+import * as fs from 'fs-extra';
 import { Messages } from './private/message';
 import { findMessage, hasMessage, hasNoMessage } from './private/messages';
 import { Stack, Stage } from '../../core';
@@ -12,8 +13,8 @@ export class Annotations {
    * Base your assertions on the messages returned by a synthesized CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStack(stack: Stack): Annotations {
-    return new Annotations(toMessages(stack));
+  public static fromStack(stack: Stack, skipClean?: boolean): Annotations {
+    return new Annotations(toMessages(stack, skipClean));
   }
 
   private readonly _messages: Messages;
@@ -153,16 +154,33 @@ function convertMessagesTypeToArray(messages: Messages): SynthesisMessage[] {
   return Object.values(messages) as SynthesisMessage[];
 }
 
-function toMessages(stack: Stack): any {
+function toMessages(stack: Stack, skipClean?: boolean): any {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
 
-  // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
-  const force = true;
+  // We may have deleted all of this in a prior run so check and remake it if
+  // that is the case.
+  const outdir = root!.outdir;
+  const assetOutdir = root!.assetOutdir;
 
-  const assembly = root.synth({ force });
+  if (!fs.existsSync(outdir)) {
+    fs.mkdirSync(outdir, { recursive: true });
+  }
 
-  return assembly.getStackArtifact(stack.artifactId).messages;
+  if (!fs.existsSync(assetOutdir)) {
+    fs.mkdirSync(assetOutdir, { recursive: true });
+  }
+
+  const assembly = root.synth({ force: true });
+  const messages = assembly.getStackArtifact(stack.artifactId).messages;
+
+  if (skipClean !== true) {
+    // Now clean up after yourself
+    fs.rmSync(outdir, { recursive: true, force: true });
+    fs.rmSync(assetOutdir, { recursive: true, force: true });
+  }
+
+  return messages;
 }

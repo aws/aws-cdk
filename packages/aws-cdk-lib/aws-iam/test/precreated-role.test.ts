@@ -46,7 +46,7 @@ describe('precreatedRole report created', () => {
       ],
     });
 
-    Template.fromStack(otherStack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(otherStack, { skipClean: true }).resourceCountIs('AWS::IAM::Role', 0);
     const assembly = app.synth();
     const filePath = path.join(assembly.directory, 'iam-policy-report.json');
     const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
@@ -73,6 +73,7 @@ describe('precreatedRole report created', () => {
         }],
       }],
     });
+    Template.clean(otherStack);
   });
 
   test('with managed policies', () => {

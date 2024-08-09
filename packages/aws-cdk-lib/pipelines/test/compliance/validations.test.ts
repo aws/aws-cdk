@@ -37,7 +37,7 @@ behavior('can add manual approval after app', (suite) => {
     });
 
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'MyApp',
         Actions: sortByRunOrder([
@@ -69,7 +69,7 @@ behavior('can add steps to wave', (suite) => {
     wave.addStage(new OneStackApp(pipelineStack, 'Stage3'));
 
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'MyWave',
         Actions: sortByRunOrder([
@@ -103,7 +103,7 @@ behavior('script validation steps can use stack outputs as environment variables
     }));
 
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'MyApp',
         Actions: Match.arrayWith([
@@ -128,7 +128,7 @@ behavior('script validation steps can use stack outputs as environment variables
       }]),
     });
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
@@ -163,7 +163,7 @@ behavior('script validation steps can use stack outputs as environment variables
     });
 
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Alpha',
         Actions: Match.arrayWith([
@@ -199,7 +199,7 @@ behavior('stackOutput generates names limited to 100 characters', (suite) => {
     }));
 
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
         Actions: Match.arrayWith([
@@ -239,7 +239,7 @@ behavior('stackOutput generates names limited to 100 characters', (suite) => {
       ],
     });
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
         Actions: Match.arrayWith([
@@ -284,7 +284,7 @@ behavior('validation step can run from scripts in source', (suite) => {
   function THEN_codePipelineExpectation() {
     const sourceArtifact = new Capture();
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Source',
         Actions: [
@@ -294,7 +294,7 @@ behavior('validation step can run from scripts in source', (suite) => {
         ],
       }]),
     });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Test',
         Actions: Match.arrayWith([
@@ -305,7 +305,7 @@ behavior('validation step can run from scripts in source', (suite) => {
         ]),
       }]),
     });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
@@ -362,7 +362,7 @@ behavior('can use additional output artifacts from build', (suite) => {
   function THEN_codePipelineExpectation() {
     const integArtifact = new Capture();
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Build',
         Actions: [
@@ -377,7 +377,7 @@ behavior('can use additional output artifacts from build', (suite) => {
       }]),
     });
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Test',
         Actions: Match.arrayWith([
@@ -388,7 +388,7 @@ behavior('can use additional output artifacts from build', (suite) => {
         ]),
       }]),
     });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
@@ -449,7 +449,7 @@ behavior('can add policy statements to shell script action', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
           Action: 's3:Banana',
@@ -501,7 +501,7 @@ behavior('can grant permissions to shell script action', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
@@ -561,7 +561,7 @@ behavior('can run shell script actions in a VPC', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
@@ -635,7 +635,7 @@ behavior('can run shell script actions with a specific SecurityGroup', (suite) =
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Test',
         Actions: Match.arrayWith([
@@ -645,7 +645,7 @@ behavior('can run shell script actions with a specific SecurityGroup', (suite) =
         ]),
       }]),
     });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       VpcConfig: {
         SecurityGroupIds: [
           {
@@ -713,7 +713,7 @@ behavior('can run scripts with specified BuildEnvironment', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:2.0',
       },
@@ -754,7 +754,7 @@ behavior('can run scripts with magic environment variables', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: Match.arrayWith([{
         Name: 'Test',
         Actions: Match.arrayWith([

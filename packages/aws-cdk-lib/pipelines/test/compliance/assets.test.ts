@@ -42,7 +42,7 @@ describe('basic pipeline', () => {
 
     function THEN_codePipelineExpectation() {
       // THEN
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: Match.not(Match.arrayWith([Match.objectLike({
           Name: 'Assets',
         })])),
@@ -67,7 +67,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           Stages: [
             Match.objectLike({ Name: 'Source' }),
             Match.objectLike({ Name: 'Build' }),
@@ -96,7 +96,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           Stages: [
             Match.objectLike({ Name: 'Source' }),
             Match.objectLike({ Name: 'Build' }),
@@ -126,7 +126,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           Stages: [
             Match.objectLike({ Name: 'Source' }),
             Match.objectLike({ Name: 'Build' }),
@@ -155,7 +155,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           Stages: [
             Match.objectLike({ Name: 'Source' }),
             Match.objectLike({ Name: 'Build' }),
@@ -186,7 +186,7 @@ describe('basic pipeline', () => {
     });
 
     function THEN_codePipelineExpectation() {
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
@@ -220,7 +220,7 @@ describe('basic pipeline', () => {
     });
 
     function THEN_codePipelineExpectation() {
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: Match.arrayWith([{
           Name: 'Assets',
           Actions: [
@@ -242,7 +242,7 @@ describe('basic pipeline', () => {
       pipeline.addStage('SomeStage').addStackArtifactDeployment(asm.getStackByName('FileAssetApp-Stack'));
 
       // THEN
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: Match.arrayWith([{
           Name: 'Assets',
           Actions: [
@@ -277,7 +277,7 @@ describe('basic pipeline', () => {
     });
 
     function THEN_codePipelineExpectation() {
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         Source: {
           BuildSpec: Match.serializedJson(Match.objectLike({
             phases: {
@@ -311,7 +311,7 @@ describe('basic pipeline', () => {
     });
 
     function THEN_codePipelineExpectation() {
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         Source: {
           BuildSpec: Match.serializedJson(Match.objectLike({
             phases: {
@@ -349,7 +349,7 @@ describe('basic pipeline', () => {
     });
 
     function THEN_codePipelineExpectation() {
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
@@ -386,7 +386,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Role', {
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [
               {
@@ -399,7 +399,7 @@ describe('basic pipeline', () => {
             ],
           },
         });
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy',
           expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
       }
     });
@@ -436,7 +436,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy',
           expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::0123456789012:role/cdk-hnb659fds-file-publishing-role-0123456789012-eu-west-1'],
             'CdkAssetsFileRole6BE17A07'));
       }
@@ -465,7 +465,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy',
           expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
       }
     });
@@ -489,7 +489,7 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Role', {
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
             Statement: [
               {
@@ -502,7 +502,7 @@ describe('basic pipeline', () => {
             ],
           },
         });
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy',
           expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
       }
     });
@@ -528,9 +528,9 @@ describe('basic pipeline', () => {
       });
 
       function THEN_codePipelineExpectation() {
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy',
           expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
-        Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
+        Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy',
           expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
       }
     });
@@ -570,7 +570,7 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
@@ -614,7 +614,7 @@ describe('pipeline with VPC', () => {
 
     function THEN_codePipelineExpectation() {
       // THEN
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         VpcConfig: Match.objectLike({
           SecurityGroupIds: [
             { 'Fn::GetAtt': ['CdkAssetsDockerAsset1SecurityGroup078F5C66', 'GroupId'] },
@@ -649,7 +649,7 @@ describe('pipeline with VPC', () => {
 
     function THEN_codePipelineExpectation() {
       // Assets Project
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
         Roles: [
           { Ref: 'CdkAssetsDockerRole484B6DD3' },
         ],
@@ -684,7 +684,7 @@ describe('pipeline with VPC', () => {
 
     function THEN_codePipelineExpectation() {
       // Assets Project
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             Match.objectLike({
@@ -703,7 +703,7 @@ describe('pipeline with VPC', () => {
         },
         Roles: [{ Ref: 'CdkAssetsDockerRole484B6DD3' }],
       });
-      Template.fromStack(pipelineStack).hasResource('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResource('AWS::CodeBuild::Project', {
         Properties: {
           ServiceRole: { 'Fn::GetAtt': ['CdkAssetsDockerRole484B6DD3', 'Arn'] },
         },
@@ -738,7 +738,7 @@ describe('pipeline with single asset publisher', () => {
     function THEN_codePipelineExpectation() {
       // THEN
       const buildSpecName = new Capture(stringLike('buildspec-*.yaml'));
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: Match.arrayWith([{
           Name: 'Assets',
           Actions: [
@@ -747,7 +747,7 @@ describe('pipeline with single asset publisher', () => {
           ],
         }]),
       });
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
@@ -762,6 +762,7 @@ describe('pipeline with single asset publisher', () => {
       const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+      Template.clean(pipelineStack);
     }
   });
 
@@ -800,7 +801,7 @@ describe('pipeline with single asset publisher', () => {
       // THEN
       const buildSpecName1 = new Capture(stringLike('buildspec-*.yaml'));
       const buildSpecName2 = new Capture(stringLike('buildspec-*.yaml'));
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         Source: {
           BuildSpec: buildSpecName1,
         },
@@ -864,7 +865,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
     function THEN_codePipelineExpectation() {
       const buildSpecName = new Capture(stringLike('buildspec-*'));
 
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: Match.arrayWith([{
           Name: 'Assets',
           Actions: [
@@ -873,7 +874,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
           ],
         }]),
       });
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
         },
@@ -887,6 +888,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
       expect(buildSpec.phases.pre_install.commands).toContain('preinstall');
       expect(buildSpec.cache.paths).toContain('node_modules');
+      Template.clean(pipelineStack);
     }
   });
 });
@@ -969,7 +971,7 @@ behavior('necessary secrets manager permissions get added to asset roles', suite
   });
 
   function THEN_codePipelineExpectation() {
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([{
           Action: 'secretsmanager:GetSecretValue',
@@ -1012,7 +1014,7 @@ behavior('adding environment variable to assets job adds SecretsManager permissi
     });
     pipeline.addStage(new FileAssetApp(pipelineStack, 'MyApp'));
 
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack, { skipClean: true }).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
@@ -1038,7 +1040,20 @@ function synthesize(stack: Stack) {
     throw new Error('unexpected: all stacks must be part of a Stage');
   }
 
-  return root.synth({ skipValidation: true });
+  // We may have deleted all of this in a prior run so check and remake it if
+  // that is the case.
+  const outdir = root!.outdir;
+  const assetOutdir = root!.assetOutdir;
+
+  if (!fs.existsSync(outdir)) {
+    fs.mkdirSync(outdir, { recursive: true });
+  }
+
+  if (!fs.existsSync(assetOutdir)) {
+    fs.mkdirSync(assetOutdir, { recursive: true });
+  }
+
+  return root.synth({ skipValidation: true, force: true });
 }
 
 function unsingleton<A>(xs: A[]): A | A[] {

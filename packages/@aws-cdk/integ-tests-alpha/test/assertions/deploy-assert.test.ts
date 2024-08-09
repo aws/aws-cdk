@@ -412,7 +412,7 @@ describe('User provided assertions stack', () => {
     integ.assertions.awsApiCall('Service', 'Api', { Reference: cr.ref });
 
     // THEN
-    const integTemplate = Template.fromStack(integStack);
+    const integTemplate = Template.fromStack(integStack, { skipClean: true });
     const assertionTemplate = Template.fromStack(assertionStack);
     integTemplate.resourceCountIs('Custom::Bar', 1);
     assertionTemplate.resourceCountIs('Custom::DeployAssert@SdkCallServiceApi', 1);
