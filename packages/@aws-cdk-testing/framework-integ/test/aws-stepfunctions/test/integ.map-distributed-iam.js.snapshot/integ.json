@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cdk-stepfunctions-map-distributed-iam-integ/DefaultTest": {
+      "stacks": [
+        "cdk-stepfunctions-map-distributed-stack"
+      ],
+      "assertionStack": "cdk-stepfunctions-map-distributed-iam-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkstepfunctionsmapdistributediamintegDefaultTestDeployAssert63593303"
+    }
+  }
+}

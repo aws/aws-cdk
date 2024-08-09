@@ -182,7 +182,15 @@ export class StateGraph {
           }),
         }));
 
-        break;
+        return;
+      }
+    }
+
+    // recursively bind on any child graphs, taking care to not call it on this since that would of course create an
+    // infinite loop.
+    for (const stateGraph of this.allContainedStates.values()) {
+      if (stateGraph !== this) {
+        stateGraph.bind(stateMachine);
       }
     }
   }

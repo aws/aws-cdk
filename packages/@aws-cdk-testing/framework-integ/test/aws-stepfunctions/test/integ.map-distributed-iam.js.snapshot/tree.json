@@ -1,0 +1,429 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-stepfunctions-map-distributed-stack": {
+        "id": "cdk-stepfunctions-map-distributed-stack",
+        "path": "cdk-stepfunctions-map-distributed-stack",
+        "children": {
+          "Map 1": {
+            "id": "Map 1",
+            "path": "cdk-stepfunctions-map-distributed-stack/Map 1",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.DistributedMap",
+              "version": "0.0.0"
+            }
+          },
+          "Pass State 1": {
+            "id": "Pass State 1",
+            "path": "cdk-stepfunctions-map-distributed-stack/Pass State 1",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine1": {
+            "id": "StateMachine1",
+            "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": "{\"StartAt\":\"My-Map-State\",\"States\":{\"My-Map-State\":{\"Type\":\"Map\",\"End\":true,\"ItemsPath\":\"$.inputForMap\",\"ItemSelector\":{\"foo\":\"foo\",\"bar.$\":\"$.bar\"},\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass State 1\",\"States\":{\"Pass State 1\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrencyPath\":\"$.maxConcurrency\"}},\"TimeoutSeconds\":30}",
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachine1RoleDE82F282",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              },
+              "DistributedMapPolicy": {
+                "id": "DistributedMapPolicy",
+                "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1/DistributedMapPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1/DistributedMapPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "states:StartExecution",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "StateMachine18AFC9B86"
+                              }
+                            },
+                            {
+                              "Action": [
+                                "states:DescribeExecution",
+                                "states:StopExecution"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "StateMachine18AFC9B86"
+                                    },
+                                    ":*"
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "StateMachine1DistributedMapPolicyA6BF4F8F",
+                        "roles": [
+                          {
+                            "Ref": "StateMachine1RoleDE82F282"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine1ARN": {
+            "id": "StateMachine1ARN",
+            "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1ARN",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine1RoleARN": {
+            "id": "StateMachine1RoleARN",
+            "path": "cdk-stepfunctions-map-distributed-stack/StateMachine1RoleARN",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Map 2": {
+            "id": "Map 2",
+            "path": "cdk-stepfunctions-map-distributed-stack/Map 2",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.DistributedMap",
+              "version": "0.0.0"
+            }
+          },
+          "Pass State 2": {
+            "id": "Pass State 2",
+            "path": "cdk-stepfunctions-map-distributed-stack/Pass State 2",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine2": {
+            "id": "StateMachine2",
+            "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": "{\"StartAt\":\"My-Map-State\",\"States\":{\"My-Map-State\":{\"Type\":\"Map\",\"End\":true,\"ItemsPath\":\"$.inputForMap\",\"ItemSelector\":{\"foo\":\"foo\",\"bar.$\":\"$.bar\"},\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass State 2\",\"States\":{\"Pass State 2\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrencyPath\":\"$.maxConcurrency\"}},\"TimeoutSeconds\":30}",
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachine2Role6BE3CF0B",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              },
+              "DistributedMapPolicy": {
+                "id": "DistributedMapPolicy",
+                "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2/DistributedMapPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2/DistributedMapPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "states:StartExecution",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "StateMachine21CE8E3CE"
+                              }
+                            },
+                            {
+                              "Action": [
+                                "states:DescribeExecution",
+                                "states:StopExecution"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "StateMachine21CE8E3CE"
+                                    },
+                                    ":*"
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "StateMachine2DistributedMapPolicyECDEB23C",
+                        "roles": [
+                          {
+                            "Ref": "StateMachine2Role6BE3CF0B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine2ARN": {
+            "id": "StateMachine2ARN",
+            "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2ARN",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine2RoleARN": {
+            "id": "StateMachine2RoleARN",
+            "path": "cdk-stepfunctions-map-distributed-stack/StateMachine2RoleARN",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-stepfunctions-map-distributed-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-stepfunctions-map-distributed-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-stepfunctions-map-distributed-iam-integ": {
+        "id": "cdk-stepfunctions-map-distributed-iam-integ",
+        "path": "cdk-stepfunctions-map-distributed-iam-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-stepfunctions-map-distributed-iam-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-stepfunctions-map-distributed-iam-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-stepfunctions-map-distributed-iam-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-stepfunctions-map-distributed-iam-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-stepfunctions-map-distributed-iam-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
