@@ -4,6 +4,7 @@ The CustomResourceConfig Aspect will modified CDK-vended custom resources.
 
 ```ts
     // The code below shows an example of how to instantiate this type.
+    // The singleton lambda will be configured with a logGroup with a defined logRetention.
     import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
     CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
