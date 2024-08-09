@@ -46,6 +46,36 @@ export interface PreparedSdkWithLookupRoleForEnvironment {
   readonly envResources: EnvironmentResources;
 }
 
+/**
+ * SDK obtained by assuming the changeset role
+ * for a given environment
+ */
+export interface PreparedSdkWithChangesetRoleForEnvironment {
+  /**
+   * The SDK for the given environment
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * The resolved environment for the stack
+   * (no more 'unknown-account/unknown-region')
+   */
+  readonly resolvedEnvironment: cxapi.Environment;
+
+  /**
+   * Whether or not the assume role was successful.
+   * If the assume role was not successful (false)
+   * then that means that the 'sdk' returned contains
+   * the default credentials (not the assume role credentials)
+   */
+  readonly didAssumeRole: boolean;
+
+  /**
+   * An object for accessing the bootstrap resources in this environment
+   */
+  readonly envResources: EnvironmentResources;
+}
+
 export interface DeployStackOptions {
   /**
    * Stack to deploy
@@ -441,8 +471,18 @@ export class Deployments {
     return stack.exists;
   }
 
-  public async prepareSdkWithDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
-    return this.prepareSdkFor(stackArtifact, undefined, Mode.ForWriting);
+  public async prepareSdkWithChangesetOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
+    // try to assume the lookup role
+    const result = await this.prepareSdkWithChangesetRoleFor(stackArtifact);
+    if (result.didAssumeRole) {
+      return {
+        resolvedEnvironment: result.resolvedEnvironment,
+        stackSdk: result.sdk,
+        envResources: result.envResources,
+      };
+    }
+    // fall back to the deploy role
+    return this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
   }
 
   private async prepareSdkWithLookupOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
@@ -568,6 +608,41 @@ export class Deployments {
 
       throw (e);
     }
+  }
+
+  /**
+    * Try to use the bootstrap changesetRole.
+    * There's a case where the changesetRole may not exist (it was added in bootstrap stack version 21).
+    *
+    * if the changesetRole does not exist, `cachedSdkForEnvironment` will either:
+    *   1. Return the default credentials if the default credentials are for the stack account
+    *   2. Throw an error if the default credentials are not for the stack account.
+    *
+    * If we do not successfully assume the changesetRole, but do get back the default credentials
+    * then return those and note that we are returning the default credentials. The calling
+    * function can then decide to use them or fallback to another role.
+    */
+  public async prepareSdkWithChangesetRoleFor(
+    stack: cxapi.CloudFormationStackArtifact,
+  ): Promise<PreparedSdkWithChangesetRoleForEnvironment> {
+    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
+
+    // Substitute any placeholders with information about the current environment
+    const arns = await replaceEnvPlaceholders({
+      changesetRoleArn: stack.changesetRole?.arn,
+    }, resolvedEnvironment, this.sdkProvider);
+
+    // Trying to assume changeset role and cache the sdk for the environment
+    const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForWriting, {
+      assumeRoleArn: arns.changesetRoleArn,
+    });
+
+    const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
+
+    if (!stackSdk.didAssumeRole) {
+      warning(`changeset role ${ stack.changesetRole ? 'exists but' : 'does not exist, hence'} was not assumed. Proceeding with default credentials.`);
+    }
+    return { ...stackSdk, resolvedEnvironment, envResources };
   }
 
   private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {

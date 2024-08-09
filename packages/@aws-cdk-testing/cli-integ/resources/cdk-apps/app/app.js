@@ -637,6 +637,18 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
+class IamRolesStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    for(let i = 1; i <= Number(process.env.NUMBER_OF_ROLES) ; i++) {
+      new iam.Role(this, `Role${i}`, {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+    }
+  }
+}
+
 const app = new cdk.App({
   context: {
     '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
@@ -676,6 +688,8 @@ switch (stackSet) {
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+
+    new IamRolesStack(app, `${stackPrefix}-iam-roles`);
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);
