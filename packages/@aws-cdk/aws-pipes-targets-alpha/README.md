@@ -171,3 +171,19 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
     target: pipeTarget
 });
 ```
+
+### Amazon SageMaker Pipeline
+
+A SageMaker pipeline can be used as a target for a pipe. The pipeline will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetPipeline: sagemaker.IPipeline;
+
+const pipelineTarget = new targets.SageMakerTarget(targetPipeline, {});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipelineTarget,
+});
+```
