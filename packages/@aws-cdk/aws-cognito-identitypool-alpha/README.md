@@ -61,13 +61,13 @@ directly. Learn more at [Amazon Cognito Identity Pools](https://docs.aws.amazon.
 
 ### Authenticated and Unauthenticated Identities
 
-Identity pools define two types of identities: authenticated(`user`) and unauthenticated (`guest`). Every identity in  
+Identity pools define two types of identities: authenticated (`user`) and unauthenticated (`guest`). Every identity in  
 an identity pool is either authenticated or unauthenticated. Each identity pool has a default role for authenticated  
-identities, and a default role for unauthenticated identities. Absent other overriding rules (see below), these are the  
-roles that will be assumed by the corresponding users in the authentication process. 
+identities (always), and a default role for unauthenticated identities (only when `allowUnauthenticatedIdentities` property is `true`). 
+Absent other overriding rules (see below), these are the roles that will be assumed by the corresponding users in the authentication process. 
 
-A basic Identity Pool with minimal configuration has no required props, with default authenticated (user) and  
-unauthenticated (guest) roles applied to the identity pool: 
+A basic Identity Pool with minimal configuration has no required props, with default authenticated (user) role 
+applied to the identity pool: 
 
 ```ts
 new IdentityPool(this, 'myIdentityPool');
@@ -79,15 +79,17 @@ to roles using the public `authenticatedRole` and `unauthenticatedRole` properti
 ```ts
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
-const identityPool = new IdentityPool(this, 'myIdentityPool');
+const identityPool = new IdentityPool(this, 'myIdentityPool', {
+  allowUnauthenticatedIdentities: true,
+});
 declare const table: dynamodb.Table;
 
 // Grant permissions to authenticated users
 table.grantReadWriteData(identityPool.authenticatedRole);
 // Grant permissions to unauthenticated guest users
-table.grantReadData(identityPool.unauthenticatedRole);
+table.grantReadData(identityPool.unauthenticatedRole!);
 
-//Or add policy statements straight to the role
+// Or add policy statements straight to the role
 identityPool.authenticatedRole.addToPrincipalPolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
   actions: ['dynamodb:*'],

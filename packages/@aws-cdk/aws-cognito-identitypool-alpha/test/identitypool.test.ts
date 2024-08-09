@@ -31,13 +31,74 @@ import {
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
 describe('identity pool', () => {
-  test('minimal setup', () => {
+  test('minimal setup without unauthenticated identities', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolMinimal');
     const temp = Template.fromStack(stack);
 
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       AllowUnauthenticatedIdentities: false,
+    });
+    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolMinimal44837852',
+      },
+      Roles: {
+        authenticated: {
+          'Fn::GetAtt': ['TestIdentityPoolMinimalAuthenticatedRoleD44EC696', 'Arn'],
+        },
+      },
+    });
+
+    temp.resourceCountIs('AWS::IAM::Role', 1);
+    temp.resourceCountIs('AWS::IAM::Policy', 0);
+    temp.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRoleWithWebIdentity',
+            Condition: {
+              'StringEquals': {
+                'cognito-identity.amazonaws.com:aud': {
+                  Ref: 'TestIdentityPoolMinimal44837852',
+                },
+              },
+              'ForAnyValue:StringLike': {
+                'cognito-identity.amazonaws.com:amr': 'authenticated',
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Federated: 'cognito-identity.amazonaws.com',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('minimal setup with unauthenticated identities', () => {
+    const stack = new Stack();
+    new IdentityPool(stack, 'TestIdentityPoolMinimal', {
+      allowUnauthenticatedIdentities: true,
+    });
+    const temp = Template.fromStack(stack);
+
+    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
+      AllowUnauthenticatedIdentities: true,
+    });
+    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolMinimal44837852',
+      },
+      Roles: {
+        authenticated: {
+          'Fn::GetAtt': ['TestIdentityPoolMinimalAuthenticatedRoleD44EC696', 'Arn'],
+        },
+        unauthenticated: {
+          'Fn::GetAtt': ['TestIdentityPoolMinimalUnauthenticatedRole9B47C42F', 'Arn'],
+        },
+      },
     });
 
     temp.resourceCountIs('AWS::IAM::Role', 2);
@@ -107,7 +168,7 @@ describe('identity pool', () => {
       actions: ['execute-api:*', 'dynamodb:*'],
       resources: ['*'],
     }));
-    identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+    identityPool.unauthenticatedRole!.addToPrincipalPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ['execute-api:*'],
       resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
@@ -155,15 +216,26 @@ describe('identity pool', () => {
       },
     });
   });
+
+  test('allowUnauthenticatedIdentities assigns a default unauthenticated role', () => {
+    const stack = new Stack();
+    const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
+      allowUnauthenticatedIdentities: true,
+    });
+    expect(identityPool.unauthenticatedRole).not.toBeUndefined();
+  });
+
   test('adding actions and resources to default roles', () => {
     const stack = new Stack();
-    const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions');
+    const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
+      allowUnauthenticatedIdentities: true,
+    });
     identityPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ['execute-api:*', 'dynamodb:*'],
       resources: ['*'],
     }));
-    identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+    identityPool.unauthenticatedRole!.addToPrincipalPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ['execute-api:*'],
       resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
@@ -386,7 +458,7 @@ describe('identity pool', () => {
       },
     });
     const temp = Template.fromStack(stack);
-    temp.resourceCountIs('AWS::IAM::Role', 2);
+    temp.resourceCountIs('AWS::IAM::Role', 1);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       IdentityPoolName: 'my-id-pool',
       SupportedLoginProviders: {
@@ -422,12 +494,6 @@ describe('role mappings', () => {
         authenticated: {
           'Fn::GetAtt': [
             'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
-            'Arn',
-          ],
-        },
-        unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
             'Arn',
           ],
         },
@@ -476,12 +542,6 @@ describe('role mappings', () => {
             'Arn',
           ],
         },
-        unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
-            'Arn',
-          ],
-        },
       },
     });
   });
@@ -508,12 +568,6 @@ describe('role mappings', () => {
         authenticated: {
           'Fn::GetAtt': [
             'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
-            'Arn',
-          ],
-        },
-        unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
             'Arn',
           ],
         },
@@ -654,12 +708,6 @@ describe('role mappings', () => {
         authenticated: {
           'Fn::GetAtt': [
             'TestIdentityPoolRoleMappingRulesAuthenticatedRole14D102C7',
-            'Arn',
-          ],
-        },
-        unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingRulesUnauthenticatedRole79A7AF99',
             'Arn',
           ],
         },

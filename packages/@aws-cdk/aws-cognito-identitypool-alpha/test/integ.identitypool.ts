@@ -1,3 +1,4 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import {
   UserPool,
   UserPoolIdentityProviderGoogle,
@@ -10,6 +11,7 @@ import {
 } from 'aws-cdk-lib/aws-iam';
 import {
   App,
+  RemovalPolicy,
   Stack,
 } from 'aws-cdk-lib';
 import {
@@ -23,7 +25,9 @@ import {
 const app = new App();
 const stack = new Stack(app, 'integ-identitypool');
 
-const userPool = new UserPool(stack, 'Pool');
+const userPool = new UserPool(stack, 'Pool', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
   userPool,
   clientId: 'google-client-id',
@@ -38,7 +42,9 @@ new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
     },
   },
 });
-const otherPool = new UserPool(stack, 'OtherPool');
+const otherPool = new UserPool(stack, 'OtherPool', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
   userPool: otherPool,
   clientId: 'amzn-client-id',
@@ -54,6 +60,7 @@ new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
 const client = userPool.addClient('testClient');
 const provider = new UserPoolAuthenticationProvider({ userPool, userPoolClient: client });
 const idPool = new IdentityPool(stack, 'identitypool', {
+  allowUnauthenticatedIdentities: true,
   authenticationProviders: {
     userPools: [provider],
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
@@ -74,10 +81,20 @@ idPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   actions: ['dynamodb:*'],
   resources: ['*'],
 }));
-idPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+idPool.unauthenticatedRole!.addToPrincipalPolicy(new PolicyStatement({
   effect: Effect.ALLOW,
   actions: ['dynamodb:Get*'],
   resources: ['*'],
 }));
 idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
-app.synth();
+
+new IdentityPool(stack, 'identitypool-wo-unauth', {
+  allowUnauthenticatedIdentities: false,
+  authenticationProviders: {
+    userPools: [provider],
+  },
+});
+
+new IntegTest(app, 'integtest-identitypool', {
+  testCases: [stack],
+});

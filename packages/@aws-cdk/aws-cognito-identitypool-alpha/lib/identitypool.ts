@@ -371,9 +371,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
   public readonly authenticatedRole: IRole;
 
   /**
-    * Default role for unauthenticated users
-    */
-  public readonly unauthenticatedRole: IRole;
+   * Default role for unauthenticated users
+   */
+  public readonly unauthenticatedRole?: IRole;
 
   /**
    * List of Identity Providers added in constructor for use with property overrides
@@ -428,8 +428,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
       resourceName: this.identityPoolId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-    this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated');
-    this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
+    this.authenticatedRole = props.authenticatedRole ?? this.configureDefaultRole('Authenticated');
+    this.unauthenticatedRole = props.unauthenticatedRole ?? (props.allowUnauthenticatedIdentities ? this.configureDefaultRole('Unauthenticated') : undefined);
     const attachment = new IdentityPoolRoleAttachment(this, 'DefaultRoleAttachment', {
       identityPool: this,
       authenticatedRole: this.authenticatedRole,
