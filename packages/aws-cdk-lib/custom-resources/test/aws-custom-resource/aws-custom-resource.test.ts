@@ -1392,6 +1392,27 @@ test('can specify removal policy', () => {
   });
 });
 
+test('set serviceTimeout', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    serviceTimeout: cdk.Duration.seconds(60),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
+    ServiceTimeout: '60',
+  });
+});
+
 describe('logging configuration', () => {
   test('without logging configured', () => {
     // GIVEN

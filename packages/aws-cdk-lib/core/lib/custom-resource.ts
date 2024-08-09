@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
+import { Duration } from './duration';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -54,6 +55,15 @@ export interface CustomResourceProps {
    * ```
    */
   readonly serviceToken: string;
+
+  /**
+   * The maximum time that can elapse before a custom resource operation times out.
+   *
+   * The value must be between 1 second and 3600 seconds.
+   *
+   * @default Duration.seconds(3600)
+   */
+  readonly serviceTimeout?: Duration;
 
   /**
    * Properties to pass to the Lambda
@@ -132,10 +142,20 @@ export class CustomResource extends Resource {
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
 
+    if (props.serviceTimeout !== undefined && !Token.isUnresolved(props.serviceTimeout)
+    ) {
+      const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
+
+      if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
+        throw new Error(`serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`);
+      }
+    }
+
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
         ServiceToken: props.serviceToken,
+        ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
         ...properties,
       },
     });
