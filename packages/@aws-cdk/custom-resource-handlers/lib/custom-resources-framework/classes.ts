@@ -25,14 +25,16 @@ import {
   CORE_MODULE,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
+import {
+  CUSTOM_RESOURCE_PROVIDER, 
+  CUSTOM_RESOURCE_SINGLETON, 
+  CUSTOM_RESOURCE_SINGLETON_LOG_GROUP, 
+  CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION
+} from 'aws-cdk-lib/custom-resources'
 
 const CORE_INTERNAL_STACK_IMPORT_PATH = '../../stack';
 const CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH = '../../custom-resource-provider';
 const ALPHA_MODULE_LAMBDA_IMPORT_PATH = 'aws-cdk-lib/aws-lambda';
-const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
-const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
-const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
-const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
 
 /**
  * Initialization properties for a class constructor.
