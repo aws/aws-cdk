@@ -691,6 +691,25 @@ if (cluster.albController) {
 }
 ```
 
+If you need to configure the underlying ALB Controller, you can pass optional values that will be forwarded to the underling HelmChart construct.
+For example, if your organization uses AWS Firewall Manager you will need to disable aws-load-balancer-controller's waf modification behavior or it will periodically disassociate WAFs that are not specified in the Ingress' annotations.
+
+Note: supported value options may vary depending on the version of the aws-load-balancer-controller helm chart you are using. You should consult the [ArtifactHub documentation](https://artifacthub.io/packages/helm/aws/aws-load-balancer-controller) for your version to ensure you are configuring the chart correctly.
+
+```ts
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_29,
+  albController: {
+    version: eks.AlbControllerVersion.V2_6_2,
+    helmChartValues: {
+      enableWaf: false,
+      enableWafv2: false,
+    },
+  },
+});
+```
+
+
 ### VPC Support
 
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
