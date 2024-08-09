@@ -1366,7 +1366,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
-    this.instanceResourceId = instance.attrDbInstanceArn;
+    this.instanceResourceId = instance.attrDbiResourceId;
 
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
