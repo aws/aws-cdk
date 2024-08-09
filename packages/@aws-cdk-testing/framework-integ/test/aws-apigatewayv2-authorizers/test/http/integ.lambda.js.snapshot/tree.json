@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "d7d3785243d748927f2a8d6edcecf909f96191df27a815e305aaeba98bcd2c64.zip"
+                      "s3Key": "9b3143f6d2fe3103f2f3162c221163ad6a5a0ba2219cc1e5af2e300325588714.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -125,285 +125,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "MyHttpApi": {
-            "id": "MyHttpApi",
-            "path": "AuthorizerInteg/MyHttpApi",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "AuthorizerInteg/MyHttpApi/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
-                  "aws:cdk:cloudformation:props": {
-                    "name": "MyHttpApi",
-                    "protocolType": "HTTP"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
-                  "version": "0.0.0"
-                }
-              },
-              "DefaultStage": {
-                "id": "DefaultStage",
-                "path": "AuthorizerInteg/MyHttpApi/DefaultStage",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "AuthorizerInteg/MyHttpApi/DefaultStage/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
-                          "Ref": "MyHttpApi8AEAAC21"
-                        },
-                        "autoDeploy": true,
-                        "stageName": "$default"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
-                  "version": "0.0.0"
-                }
-              },
-              "GET--": {
-                "id": "GET--",
-                "path": "AuthorizerInteg/MyHttpApi/GET--",
-                "children": {
-                  "RootIntegration": {
-                    "id": "RootIntegration",
-                    "path": "AuthorizerInteg/MyHttpApi/GET--/RootIntegration",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "AuthorizerInteg/MyHttpApi/GET--/RootIntegration/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
-                          "aws:cdk:cloudformation:props": {
-                            "apiId": {
-                              "Ref": "MyHttpApi8AEAAC21"
-                            },
-                            "integrationType": "AWS_PROXY",
-                            "integrationUri": {
-                              "Fn::GetAtt": [
-                                "lambda8B5974B5",
-                                "Arn"
-                              ]
-                            },
-                            "payloadFormatVersion": "2.0"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RootIntegration-Permission": {
-                    "id": "RootIntegration-Permission",
-                    "path": "AuthorizerInteg/MyHttpApi/GET--/RootIntegration-Permission",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                      "aws:cdk:cloudformation:props": {
-                        "action": "lambda:InvokeFunction",
-                        "functionName": {
-                          "Fn::GetAtt": [
-                            "lambda8B5974B5",
-                            "Arn"
-                          ]
-                        },
-                        "principal": "apigateway.amazonaws.com",
-                        "sourceArn": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "arn:",
-                              {
-                                "Ref": "AWS::Partition"
-                              },
-                              ":execute-api:",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              ":",
-                              {
-                                "Ref": "AWS::AccountId"
-                              },
-                              ":",
-                              {
-                                "Ref": "MyHttpApi8AEAAC21"
-                              },
-                              "/*/*/"
-                            ]
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "AuthorizerInteg/MyHttpApi/GET--/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
-                          "Ref": "MyHttpApi8AEAAC21"
-                        },
-                        "authorizationType": "CUSTOM",
-                        "authorizerId": {
-                          "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
-                        },
-                        "routeKey": "GET /",
-                        "target": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "integrations/",
-                              {
-                                "Ref": "MyHttpApiGETRootIntegration5068C5B0"
-                              }
-                            ]
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
-                }
-              },
-              "LambdaAuthorizer": {
-                "id": "LambdaAuthorizer",
-                "path": "AuthorizerInteg/MyHttpApi/LambdaAuthorizer",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "AuthorizerInteg/MyHttpApi/LambdaAuthorizer/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
-                          "Ref": "MyHttpApi8AEAAC21"
-                        },
-                        "authorizerPayloadFormatVersion": "2.0",
-                        "authorizerResultTtlInSeconds": 300,
-                        "authorizerType": "REQUEST",
-                        "authorizerUri": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "arn:",
-                              {
-                                "Ref": "AWS::Partition"
-                              },
-                              ":apigateway:",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              ":lambda:path/2015-03-31/functions/",
-                              {
-                                "Fn::GetAtt": [
-                                  "authfunction96361832",
-                                  "Arn"
-                                ]
-                              },
-                              "/invocations"
-                            ]
-                          ]
-                        },
-                        "enableSimpleResponses": true,
-                        "identitySource": [
-                          "$request.header.X-API-Key"
-                        ],
-                        "name": "my-simple-authorizer"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
-                  "version": "0.0.0"
-                }
-              },
-              "AuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7-Permission": {
-                "id": "AuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7-Permission",
-                "path": "AuthorizerInteg/MyHttpApi/AuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7-Permission",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "authfunction96361832",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "apigateway.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            "Ref": "AWS::Partition"
-                          },
-                          ":execute-api:",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          ":",
-                          {
-                            "Ref": "AWS::AccountId"
-                          },
-                          ":",
-                          {
-                            "Ref": "MyHttpApi8AEAAC21"
-                          },
-                          "/authorizers/",
-                          {
-                            "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
-                          }
-                        ]
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -450,7 +171,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
                   "version": "0.0.0"
                 }
               },
@@ -507,7 +228,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
                   "version": "0.0.0"
                 }
               },
@@ -561,7 +282,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -662,7 +383,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "54deaef2af5b9afbfc9cbcbb9261b1c0d4cce6560831d7ae1959f3da899011c8.zip"
+                      "s3Key": "0793b3c94d0be9d628975dbbcd1dc523196de50a41fb1920880248ae3c24259b.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -719,7 +440,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
                   "version": "0.0.0"
                 }
               },
@@ -802,21 +523,2309 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-              "version": "0.0.0"
-            }
-          },
-          "URL": {
-            "id": "URL",
-            "path": "AuthorizerInteg/URL",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
               "version": "0.0.0"
             }
           },
           "URLWithDefaultAuthorizer": {
             "id": "URLWithDefaultAuthorizer",
             "path": "AuthorizerInteg/URLWithDefaultAuthorizer",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi0": {
+            "id": "MyHttpApi0",
+            "path": "AuthorizerInteg/MyHttpApi0",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi0/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi0",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi0/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi0/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi0D09FAD11"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi0/GET--",
+                "children": {
+                  "RootIntegration0": {
+                    "id": "RootIntegration0",
+                    "path": "AuthorizerInteg/MyHttpApi0/GET--/RootIntegration0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi0/GET--/RootIntegration0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi0D09FAD11"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration0-Permission": {
+                    "id": "RootIntegration0-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi0/GET--/RootIntegration0-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi0D09FAD11"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi0/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi0D09FAD11"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi0LambdaAuthorizer08E9DC1D0"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi0GETRootIntegration0C4A7CE34"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer0": {
+                "id": "LambdaAuthorizer0",
+                "path": "AuthorizerInteg/MyHttpApi0/LambdaAuthorizer0",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi0/LambdaAuthorizer0/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi0D09FAD11"
+                        },
+                        "authorizerPayloadFormatVersion": "1.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": false,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer0"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi0LambdaAuthorizer0A044074A-Permission": {
+                "id": "AuthorizerIntegMyHttpApi0LambdaAuthorizer0A044074A-Permission",
+                "path": "AuthorizerInteg/MyHttpApi0/AuthorizerIntegMyHttpApi0LambdaAuthorizer0A044074A-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi0D09FAD11"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi0LambdaAuthorizer08E9DC1D0"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL0": {
+            "id": "URL0",
+            "path": "AuthorizerInteg/URL0",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi1": {
+            "id": "MyHttpApi1",
+            "path": "AuthorizerInteg/MyHttpApi1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi1",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi1/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi1/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi1C04FAC4F"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi1/GET--",
+                "children": {
+                  "RootIntegration1": {
+                    "id": "RootIntegration1",
+                    "path": "AuthorizerInteg/MyHttpApi1/GET--/RootIntegration1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi1/GET--/RootIntegration1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi1C04FAC4F"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration1-Permission": {
+                    "id": "RootIntegration1-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi1/GET--/RootIntegration1-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi1C04FAC4F"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi1/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi1C04FAC4F"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi1LambdaAuthorizer1332A2516"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi1GETRootIntegration1E8CC6FF7"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer1": {
+                "id": "LambdaAuthorizer1",
+                "path": "AuthorizerInteg/MyHttpApi1/LambdaAuthorizer1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi1/LambdaAuthorizer1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi1C04FAC4F"
+                        },
+                        "authorizerPayloadFormatVersion": "2.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": true,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer1"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi1LambdaAuthorizer103E77337-Permission": {
+                "id": "AuthorizerIntegMyHttpApi1LambdaAuthorizer103E77337-Permission",
+                "path": "AuthorizerInteg/MyHttpApi1/AuthorizerIntegMyHttpApi1LambdaAuthorizer103E77337-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi1C04FAC4F"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi1LambdaAuthorizer1332A2516"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL1": {
+            "id": "URL1",
+            "path": "AuthorizerInteg/URL1",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi2": {
+            "id": "MyHttpApi2",
+            "path": "AuthorizerInteg/MyHttpApi2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi2",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi2/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi2/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi267446531"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi2/GET--",
+                "children": {
+                  "RootIntegration2": {
+                    "id": "RootIntegration2",
+                    "path": "AuthorizerInteg/MyHttpApi2/GET--/RootIntegration2",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi2/GET--/RootIntegration2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi267446531"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration2-Permission": {
+                    "id": "RootIntegration2-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi2/GET--/RootIntegration2-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi267446531"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi2/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi267446531"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi2LambdaAuthorizer2B546ED5B"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi2GETRootIntegration261BAE04C"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer2": {
+                "id": "LambdaAuthorizer2",
+                "path": "AuthorizerInteg/MyHttpApi2/LambdaAuthorizer2",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi2/LambdaAuthorizer2/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi267446531"
+                        },
+                        "authorizerPayloadFormatVersion": "1.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": false,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer2"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi2LambdaAuthorizer2DAB5A5AF-Permission": {
+                "id": "AuthorizerIntegMyHttpApi2LambdaAuthorizer2DAB5A5AF-Permission",
+                "path": "AuthorizerInteg/MyHttpApi2/AuthorizerIntegMyHttpApi2LambdaAuthorizer2DAB5A5AF-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi267446531"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi2LambdaAuthorizer2B546ED5B"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL2": {
+            "id": "URL2",
+            "path": "AuthorizerInteg/URL2",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi3": {
+            "id": "MyHttpApi3",
+            "path": "AuthorizerInteg/MyHttpApi3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi3",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi3/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi3/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi350ADB087"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi3/GET--",
+                "children": {
+                  "RootIntegration3": {
+                    "id": "RootIntegration3",
+                    "path": "AuthorizerInteg/MyHttpApi3/GET--/RootIntegration3",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi3/GET--/RootIntegration3/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi350ADB087"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration3-Permission": {
+                    "id": "RootIntegration3-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi3/GET--/RootIntegration3-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi350ADB087"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi3/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi350ADB087"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi3LambdaAuthorizer3EB82A5F8"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi3GETRootIntegration31E57120C"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer3": {
+                "id": "LambdaAuthorizer3",
+                "path": "AuthorizerInteg/MyHttpApi3/LambdaAuthorizer3",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi3/LambdaAuthorizer3/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi350ADB087"
+                        },
+                        "authorizerPayloadFormatVersion": "1.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": false,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer3"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi3LambdaAuthorizer3DF44B3D3-Permission": {
+                "id": "AuthorizerIntegMyHttpApi3LambdaAuthorizer3DF44B3D3-Permission",
+                "path": "AuthorizerInteg/MyHttpApi3/AuthorizerIntegMyHttpApi3LambdaAuthorizer3DF44B3D3-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi350ADB087"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi3LambdaAuthorizer3EB82A5F8"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL3": {
+            "id": "URL3",
+            "path": "AuthorizerInteg/URL3",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi4": {
+            "id": "MyHttpApi4",
+            "path": "AuthorizerInteg/MyHttpApi4",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi4/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi4",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi4/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi4/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi4DD12A662"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi4/GET--",
+                "children": {
+                  "RootIntegration4": {
+                    "id": "RootIntegration4",
+                    "path": "AuthorizerInteg/MyHttpApi4/GET--/RootIntegration4",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi4/GET--/RootIntegration4/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi4DD12A662"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration4-Permission": {
+                    "id": "RootIntegration4-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi4/GET--/RootIntegration4-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi4DD12A662"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi4/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi4DD12A662"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi4LambdaAuthorizer4B1BA194E"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi4GETRootIntegration49BE39F05"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer4": {
+                "id": "LambdaAuthorizer4",
+                "path": "AuthorizerInteg/MyHttpApi4/LambdaAuthorizer4",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi4/LambdaAuthorizer4/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi4DD12A662"
+                        },
+                        "authorizerPayloadFormatVersion": "1.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": false,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer4"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi4LambdaAuthorizer4E57900D7-Permission": {
+                "id": "AuthorizerIntegMyHttpApi4LambdaAuthorizer4E57900D7-Permission",
+                "path": "AuthorizerInteg/MyHttpApi4/AuthorizerIntegMyHttpApi4LambdaAuthorizer4E57900D7-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi4DD12A662"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi4LambdaAuthorizer4B1BA194E"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL4": {
+            "id": "URL4",
+            "path": "AuthorizerInteg/URL4",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi5": {
+            "id": "MyHttpApi5",
+            "path": "AuthorizerInteg/MyHttpApi5",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi5/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi5",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi5/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi5/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi5142D3E2E"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi5/GET--",
+                "children": {
+                  "RootIntegration5": {
+                    "id": "RootIntegration5",
+                    "path": "AuthorizerInteg/MyHttpApi5/GET--/RootIntegration5",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi5/GET--/RootIntegration5/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi5142D3E2E"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration5-Permission": {
+                    "id": "RootIntegration5-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi5/GET--/RootIntegration5-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi5142D3E2E"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi5/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi5142D3E2E"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi5LambdaAuthorizer56A62F872"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi5GETRootIntegration5C3B9517B"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer5": {
+                "id": "LambdaAuthorizer5",
+                "path": "AuthorizerInteg/MyHttpApi5/LambdaAuthorizer5",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi5/LambdaAuthorizer5/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi5142D3E2E"
+                        },
+                        "authorizerPayloadFormatVersion": "2.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": true,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer5"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi5LambdaAuthorizer50E64DE65-Permission": {
+                "id": "AuthorizerIntegMyHttpApi5LambdaAuthorizer50E64DE65-Permission",
+                "path": "AuthorizerInteg/MyHttpApi5/AuthorizerIntegMyHttpApi5LambdaAuthorizer50E64DE65-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi5142D3E2E"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi5LambdaAuthorizer56A62F872"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL5": {
+            "id": "URL5",
+            "path": "AuthorizerInteg/URL5",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi6": {
+            "id": "MyHttpApi6",
+            "path": "AuthorizerInteg/MyHttpApi6",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi6/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi6",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi6/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi6/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi65E475639"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi6/GET--",
+                "children": {
+                  "RootIntegration6": {
+                    "id": "RootIntegration6",
+                    "path": "AuthorizerInteg/MyHttpApi6/GET--/RootIntegration6",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi6/GET--/RootIntegration6/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi65E475639"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration6-Permission": {
+                    "id": "RootIntegration6-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi6/GET--/RootIntegration6-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi65E475639"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi6/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi65E475639"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi6LambdaAuthorizer666A9A3F2"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi6GETRootIntegration6B423AC9F"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer6": {
+                "id": "LambdaAuthorizer6",
+                "path": "AuthorizerInteg/MyHttpApi6/LambdaAuthorizer6",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi6/LambdaAuthorizer6/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi65E475639"
+                        },
+                        "authorizerPayloadFormatVersion": "2.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": true,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer6"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi6LambdaAuthorizer6288C4E69-Permission": {
+                "id": "AuthorizerIntegMyHttpApi6LambdaAuthorizer6288C4E69-Permission",
+                "path": "AuthorizerInteg/MyHttpApi6/AuthorizerIntegMyHttpApi6LambdaAuthorizer6288C4E69-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi65E475639"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi6LambdaAuthorizer666A9A3F2"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL6": {
+            "id": "URL6",
+            "path": "AuthorizerInteg/URL6",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi7": {
+            "id": "MyHttpApi7",
+            "path": "AuthorizerInteg/MyHttpApi7",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi7/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi7",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi7/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi7/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi7C025375D"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi7/GET--",
+                "children": {
+                  "RootIntegration7": {
+                    "id": "RootIntegration7",
+                    "path": "AuthorizerInteg/MyHttpApi7/GET--/RootIntegration7",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi7/GET--/RootIntegration7/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi7C025375D"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegration7-Permission": {
+                    "id": "RootIntegration7-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi7/GET--/RootIntegration7-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi7C025375D"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi7/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi7C025375D"
+                        },
+                        "authorizationType": "CUSTOM",
+                        "authorizerId": {
+                          "Ref": "MyHttpApi7LambdaAuthorizer77BFACABF"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApi7GETRootIntegration7C3AF9A0E"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "LambdaAuthorizer7": {
+                "id": "LambdaAuthorizer7",
+                "path": "AuthorizerInteg/MyHttpApi7/LambdaAuthorizer7",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi7/LambdaAuthorizer7/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi7C025375D"
+                        },
+                        "authorizerPayloadFormatVersion": "2.0",
+                        "authorizerResultTtlInSeconds": 300,
+                        "authorizerType": "REQUEST",
+                        "authorizerUri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "authfunction96361832",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        },
+                        "enableSimpleResponses": false,
+                        "identitySource": [
+                          "$request.header.X-API-Key"
+                        ],
+                        "name": "my-simple-authorizer7"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthorizerIntegMyHttpApi7LambdaAuthorizer76AD1EB2C-Permission": {
+                "id": "AuthorizerIntegMyHttpApi7LambdaAuthorizer76AD1EB2C-Permission",
+                "path": "AuthorizerInteg/MyHttpApi7/AuthorizerIntegMyHttpApi7LambdaAuthorizer76AD1EB2C-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "authfunction96361832",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApi7C025375D"
+                          },
+                          "/authorizers/",
+                          {
+                            "Ref": "MyHttpApi7LambdaAuthorizer77BFACABF"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "URL7": {
+            "id": "URL7",
+            "path": "AuthorizerInteg/URL7",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -849,7 +2858,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

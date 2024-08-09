@@ -176,7 +176,7 @@ import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 declare const authHandler: lambda.Function;
 
 const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
-  responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
+  responseType: HttpLambdaResponseType.SIMPLE, // Define if returns simple or IAM response
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
