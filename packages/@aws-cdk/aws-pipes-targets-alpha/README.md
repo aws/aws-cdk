@@ -171,3 +171,20 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
     target: pipeTarget
 });
 ```
+
+### Amazon EventBridge API Destination
+
+An EventBridge API destination can be used as a target for a pipe. 
+The API destination will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const dest: events.ApiDestination;
+
+const apiTarget = new targets.ApiDestinationTarget(dest);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: apiTarget,
+});
+```
