@@ -353,6 +353,86 @@ test('StringParameter.fromStringParameterName', () => {
   });
 });
 
+test('fromStringParameterArn StringParameter.fromStringParameterArn', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const sharingParameterArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sharingParameterArn);
+
+  // THEN
+  expect(stack.resolve(param.parameterArn)).toEqual(sharingParameterArn);
+  expect(stack.resolve(param.parameterName)).toEqual('dummyName');
+  expect(stack.resolve(param.parameterType)).toEqual('String');
+  expect(stack.resolve(param.stringValue)).toEqual({ Ref: 'MyParamNameParameter' });
+  Template.fromStack(stack).templateMatches({
+    Parameters: {
+      MyParamNameParameter: {
+        Type: 'AWS::SSM::Parameter::Value<String>',
+        Default: sharingParameterArn,
+      },
+    },
+  });
+});
+
+test('fromStringParameterArn throws when StringParameter.fromStringParameterArn is called with a token ARN', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const tokenizedParam = new cdk.CfnParameter(stack, 'TokenParam', {
+    type: 'String',
+  }).valueAsString;
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', tokenizedParam);
+  }).toThrow(/stringParameterArn cannot be an unresolved token/);
+});
+
+test('fromStringParameterArn throws error when StringParameterArn has unexpected format', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const invalidArn = 'invalid:arn:format';
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', invalidArn);
+  }).toThrow('unexpected StringParameterArn format');
+});
+
+test('fromStringParameterArn throws error when StringParameterArn is in a different region than the stack', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', { env: { region: 'us-west-2' } });
+  const differentRegionArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', differentRegionArn);
+  }).toThrow('stringParameterArn must be in the same region as the stack');
+});
+
+test('fromStringParameterArn does not throw error when StringParameterArn is in the same region as the stack', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', { env: { region: 'us-east-1' } });
+  const sameRegionArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sameRegionArn);
+  }).not.toThrow();
+});
+
+test('fromStringParameterArn does not throw error when stack region is unresolved', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const sameRegionArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sameRegionArn);
+  }).not.toThrow();
+});
+
 test('StringParameter.fromStringParameterAttributes', () => {
   // GIVEN
   const stack = new cdk.Stack();
