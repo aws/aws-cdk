@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a230c6ac4fd9d5aa1c50b3d259d306931b243a5d23f9dfd23bff0ebd01ad9a2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f2dcd7b7c7528c9dc40a786b8e94ed681d7edf1f42b9ca16d0d3e6ab419c019.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -176,6 +176,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MysqlReplica87D29F78"
+          }
+        ],
+        "/cdk-rds-read-replica/DBRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBRole890CB76D"
+          }
+        ],
+        "/cdk-rds-read-replica/DBRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBRoleDefaultPolicyDBB64848"
+          }
+        ],
+        "/cdk-rds-read-replica/DBUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBUser03089649"
           }
         ],
         "/cdk-rds-read-replica/BootstrapVersion": [
