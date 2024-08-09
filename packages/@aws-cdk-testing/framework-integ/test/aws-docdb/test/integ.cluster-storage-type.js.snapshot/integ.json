@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "StorageTypeClusterTest/DefaultTest": {
+      "stacks": [
+        "StorageTypeClusterTestStack"
+      ],
+      "assertionStack": "StorageTypeClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "StorageTypeClusterTestDefaultTestDeployAssert1804B4F9"
+    }
+  }
+}
