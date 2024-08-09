@@ -25,6 +25,22 @@ export interface HttpRequest {
    * Parameters from the custom resource
    */
   readonly parameters: HttpRequestParameters;
+
+  /**
+   * Whether or not to flatten the response from the HTTP request
+   *
+   * Valid values are 'true' or 'false' as strings
+   *
+   * Typically when using an HttpRequest you will be passing it as the
+   * `actual` value to an assertion provider so this would be set
+   * to 'false' (you want the actual response).
+   *
+   * If you are using the HttpRequest to perform more of a query to return
+   * a single value to use, then this should be set to 'true'.
+   *
+   * @default 'false'
+   */
+  readonly flattenResponse?: string;
 }
 
 /**
