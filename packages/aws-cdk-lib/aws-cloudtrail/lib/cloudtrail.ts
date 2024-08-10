@@ -345,7 +345,6 @@ export class Trail extends Resource {
       eventSelectors: this.eventSelectors,
       isOrganizationTrail: props.isOrganizationTrail,
       insightSelectors: this.insightTypeValues,
-      advancedEventSelectors
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
