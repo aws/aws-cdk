@@ -241,9 +241,9 @@ To improve the performance of frequently accessed files by caching up to 20% of 
 declare const vpc: ec2.Vpc;
 
 const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
-  lustreConfiguration: { 
+  lustreConfiguration: {
     deploymentType: fsx.LustreDeploymentType.PERSISTENT_1,
-    driveCacheType: DriveCacheType.READ,
+    driveCacheType: fsx.DriveCacheType.READ,
     },
   storageCapacityGiB: 1200,
   vpc,
