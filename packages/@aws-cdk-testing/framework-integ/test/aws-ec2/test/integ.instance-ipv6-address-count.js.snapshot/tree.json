@@ -632,8 +632,8 @@
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
-                    "instanceType": "t2.micro",
-                    "ipv6AddressCount": 1,
+                    "instanceType": "m5.large",
+                    "ipv6AddressCount": 2,
                     "securityGroupIds": [
                       {
                         "Fn::GetAtt": [

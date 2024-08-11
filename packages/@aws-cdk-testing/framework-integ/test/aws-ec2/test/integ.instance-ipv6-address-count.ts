@@ -20,12 +20,12 @@ class TestStack extends cdk.Stack {
     });
 
     new ec2.Instance(this, 'Instance', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       machineImage: ec2.MachineImage.latestAmazonLinux2(),
       vpc: vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       allowAllIpv6Outbound: true,
-      ipv6AddressCount: 1,
+      ipv6AddressCount: 2,
     });
   }
 }
