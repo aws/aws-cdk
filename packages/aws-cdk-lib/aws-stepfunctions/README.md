@@ -127,6 +127,7 @@ You can encrypt data sent to CloudWatch Logs. To use encrypted logging, you must
 const kmsKey = new kms.Key(this, 'Key');
 const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
   logGroupName: '/aws/vendedlogs/states/MyLogGroup',
+  encryptionKey: kmsKey,
 });
 
 const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
