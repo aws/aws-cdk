@@ -517,18 +517,8 @@ export class StateMachine extends StateMachineBase {
       if (props?.enableEncryptedLogging && props?.logs) {
         props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
           resources: ['*'],
-          actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey*'],
+          actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
           principals: [new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`)],
-          conditions: {
-            ArnEquals: {
-              'kms:EncryptionContext:aws:logs:arn': Stack.of(this).formatArn({
-                service: 'logs',
-                resource: 'log-group',
-                sep: ':',
-                resourceName: props.logs.destination.logGroupName,
-              }),
-            },
-          },
         }));
 
         props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({

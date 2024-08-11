@@ -15,6 +15,7 @@ class KMSStateMachine extends cdk.Stack {
     this.kmsKey = new kms.Key(this, 'Key');
     this.logGroup = new logs.LogGroup(this, 'MyLogGroup', {
       logGroupName: '/aws/vendedlogs/states/MyLogGroup',
+      encryptionKey: this.kmsKey,
     });
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {

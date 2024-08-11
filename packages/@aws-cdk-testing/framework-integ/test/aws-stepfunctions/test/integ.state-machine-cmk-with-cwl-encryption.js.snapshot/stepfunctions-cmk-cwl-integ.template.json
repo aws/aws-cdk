@@ -90,38 +90,11 @@
       {
        "Action": [
         "kms:Decrypt*",
-        "kms:DescribeKey*",
+        "kms:Describe*",
         "kms:Encrypt*",
         "kms:GenerateDataKey*",
         "kms:ReEncrypt*"
        ],
-       "Condition": {
-        "ArnEquals": {
-         "kms:EncryptionContext:aws:logs:arn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":logs:",
-            {
-             "Ref": "AWS::Region"
-            },
-            ":",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":log-group:",
-            {
-             "Ref": "MyLogGroup5C0DAD85"
-            }
-           ]
-          ]
-         }
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": {
@@ -157,6 +130,12 @@
   "MyLogGroup5C0DAD85": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "Key961B73FD",
+      "Arn"
+     ]
+    },
     "LogGroupName": "/aws/vendedlogs/states/MyLogGroup",
     "RetentionInDays": 731
    },
