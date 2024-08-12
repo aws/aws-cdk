@@ -256,27 +256,37 @@
               "Route": {
                 "id": "Route",
                 "path": "aws-cdk-routev2-egressonlyigw-alpha/TestRoottable/Route",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "0.0.0.0/0",
-                    "egressOnlyInternetGatewayId": {
-                      "Fn::GetAtt": [
-                        "testEOIGWviaAddRouteEIGWE430E12B",
-                        "Id"
-                      ]
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-routev2-egressonlyigw-alpha/TestRoottable/Route/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "destinationIpv6CidrBlock": "0.0.0.0/0",
+                        "egressOnlyInternetGatewayId": {
+                          "Fn::GetAtt": [
+                            "testEOIGWviaAddRouteEIGWE430E12B",
+                            "Id"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRoottableRouteTableFA28AA38",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
                     },
-                    "routeTableId": {
-                      "Fn::GetAtt": [
-                        "TestRoottableRouteTableFA28AA38",
-                        "RouteTableId"
-                      ]
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               }

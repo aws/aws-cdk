@@ -32,7 +32,7 @@
     }
    }
   },
-  "TestRoottableRoute44770015": {
+  "TestRoottableRouteC5589CBD": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",

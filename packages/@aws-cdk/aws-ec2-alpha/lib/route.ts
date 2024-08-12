@@ -580,14 +580,10 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
       throw new Error('Target is defined without a gateway or endpoint.');
     }
 
-    let routerType: RouterType = target.gateway ? target.gateway.routerType : RouterType.VPC_ENDPOINT;
-    let routerTargetId: string = target.gateway ? target.gateway.routerTargetId : target.endpoint!.vpcEndpointId;
-
-    new CfnRoute(this, 'Route', {
-      routeTableId: this.routeTableId,
-      destinationCidrBlock: destination,
-      destinationIpv6CidrBlock: destination,
-      [routerTypeToPropName(routerType)]: routerTargetId,
+    new Route(this, 'Route', {
+      routeTable: this,
+      destination: destination,
+      target: target,
     });
   }
 }

@@ -101,7 +101,7 @@ describe('EC2 Routing', () => {
           },
         },
         // Route linking IP to EIGW should be in stack
-        TestRouteTableRoute37ACB8C6: {
+        TestRouteTableRoute25C3843B: {
           Type: 'AWS::EC2::Route',
           Properties: {
             DestinationCidrBlock: '0.0.0.0/0',
