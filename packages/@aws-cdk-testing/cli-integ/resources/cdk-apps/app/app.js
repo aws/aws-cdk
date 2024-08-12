@@ -424,17 +424,8 @@ class LambdaStack extends cdk.Stack {
 
 class SessionTagsLambdaStack extends cdk.Stack {
   constructor(parent, id, props) {
-    // we will update the synthesizer to make the test pass later:
-    // const synthesizer = parent.node.tryGetContext('legacySynth') === 'true' ?
-    //   new LegacyStackSynthesizer({
-    //     fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
-    //   })
-    //   : new DefaultStackSynthesizer({
-    //     fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
-    //   })
     super(parent, id, {
       ...props,
-      // synthesizer: synthesizer,
     });
 
     const fn = new lambda.Function(this, 'my-function', {
