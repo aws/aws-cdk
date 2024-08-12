@@ -16,13 +16,12 @@ class TestCustomResourceConfig extends cdk.Stack {
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
     });
-
   }
 }
 
 const app = new cdk.App();
-const set_log_retention = logs.RetentionDays.TEN_YEARS;
-CustomResourceConfig.of(app).addLogRetentionLifetime(set_log_retention);
+const logRetentionDays = logs.RetentionDays.TEN_YEARS;
+CustomResourceConfig.of(app).addLogRetentionLifetime(logRetentionDays);
 const testCase = new TestCustomResourceConfig(app, 'test-custom-resource-config-undefined-log');
 
 new integ.IntegTest(app, 'integ-test-custom-resource-config-undefined-log', {
@@ -30,4 +29,3 @@ new integ.IntegTest(app, 'integ-test-custom-resource-config-undefined-log', {
   diffAssets: false,
 });
 
-app.synth();

@@ -64,12 +64,12 @@ interface ConstructorBuildProps {
    */
   readonly constructorVisbility?: MemberVisibility;
 
-    /**
-   * Statement. Additional statements to constructor are optional.
+  /**
+   * These statements are added to the constructor body in the order they appear in this property. 
    *
    * @default undefined
    */
-    readonly statements?: Statement[];
+  readonly statements?: Statement[];
 }
 
 /**
@@ -331,9 +331,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             isCustomResourceProvider: true,
           })],
         ]);
-        const metadataStatements: Statement[] = [
-          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`),
-        ]
+        const metadataStatements: Statement[] = [expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`)];
         this.buildConstructor({
           constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
           superProps,
@@ -385,7 +383,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
     const superInitializerArgs: Expression[] = [scope, id, props.superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
     if (props.statements){
-      for(const statement of props.statements){
+      for (const statement of props.statements) {
         init.addBody(statement);
       }
     }

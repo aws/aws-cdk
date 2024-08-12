@@ -1,10 +1,8 @@
 # Custom Resource Config
 
-The CustomResourceConfig Aspect will modified CDK-vended custom resources.
+You can set the log retention of every CDK-vended custom resource in a given scope with `CustomResourceConfig`. The following example configures every custom resource in this CDK app to retain its logs for ten years:
 
 ```ts
-    // The code below shows an example of how to instantiate this type.
-    // The singleton lambda will be configured with a logGroup with a defined logRetention.
     import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
     CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);

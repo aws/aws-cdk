@@ -10,7 +10,7 @@ class TestCustomResourceConfig extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const locally_set_log_retention = logs.RetentionDays.ONE_WEEK;
+    const locallySetLogRetentionDays = logs.RetentionDays.ONE_WEEK;
 
     let websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {});
 
@@ -18,7 +18,7 @@ class TestCustomResourceConfig extends cdk.Stack {
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
       logGroup: new logs.LogGroup(this, 'LogGroup', {
-        retention: locally_set_log_retention,
+        retention: locallySetLogRetentionDays,
       }),
     });
 
@@ -26,13 +26,11 @@ class TestCustomResourceConfig extends cdk.Stack {
 }
 
 const app = new cdk.App();
-const set_log_retention = logs.RetentionDays.TEN_YEARS;
-CustomResourceConfig.of(app).addLogRetentionLifetime(set_log_retention);
+const logRetentionDays = logs.RetentionDays.TEN_YEARS;
+CustomResourceConfig.of(app).addLogRetentionLifetime(logRetentionDays);
 const testCase = new TestCustomResourceConfig(app, 'test-custom-resource-config-logGroup');
 
 new integ.IntegTest(app, 'integ-test-custom-resource-config-logGroup', {
   testCases: [testCase],
   diffAssets: false,
 });
-
-app.synth();
