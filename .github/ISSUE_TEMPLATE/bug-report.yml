@@ -24,7 +24,7 @@ body:
     id: regression
     attributes:
       label: Regression Issue
-      description:  What is a regression? If it worked in a previous version but doesn’t in the latest version, it’s considered a regression. In this case, Please provide specific version number in the report.
+      description:  What is a regression? If it worked in a previous version but doesn’t in the latest version, it’s considered a regression. In this case, please provide specific version number in the report.
       options:
         - label: Select this option if this issue appears to be a regression.
           required: false
