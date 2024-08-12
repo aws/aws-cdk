@@ -614,7 +614,7 @@ function defined<A>(x: A): x is NonNullable<A> {
  */
 export async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
   if (process.env.REPO_ROOT) {
-    const monoRepo = await findYarnPackages(process.env.REPO_ROOT ?? '');
+    const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
 
     // Replace the install target with the physical location of this package
     for (const key of Object.keys(packages)) {

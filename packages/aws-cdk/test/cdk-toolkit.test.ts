@@ -508,7 +508,7 @@ describe('deploy', () => {
           sdkProvider: cloudExecutable.sdkProvider,
           deployments: new FakeCloudFormation({
             'Test-Stack-A': { Foo: 'Bar' },
-          }, notificationArns),
+          }),
         });
 
         // WHEN
@@ -529,7 +529,7 @@ describe('deploy', () => {
           sdkProvider: cloudExecutable.sdkProvider,
           deployments: new FakeCloudFormation({
             'Test-Stack-A': { Foo: 'Bar' },
-          }, notificationArns),
+          }),
         });
 
         // WHEN
