@@ -83,17 +83,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
  * @returns currentPolicy - the updated policy.
  */
 function updatePolicy(currentPolicy: any, policyStatementToAdd: any) {
-  // // Check to see if a duplicate key policy exists by matching on the sid. This is to prevent duplicate key policies
-  // // from being added/updated in response to a stack being updated one or more times after initial creation.
-  // const existingPolicyIndex = currentPolicy.Statement.findIndex((statement: any) => statement.Sid === policyStatementToAdd.Sid);
-  // // If a match is found, overwrite the key policy statement...
-  // // Otherwise, push the new key policy to the array of statements
-  // if (existingPolicyIndex > -1) {
-  //   currentPolicy.Statement[existingPolicyIndex] = policyStatementToAdd;
-  // } else {
-  //   currentPolicy.Statement.push(policyStatementToAdd);
-  // }
-
   if (!isStatementInPolicy(currentPolicy, policyStatementToAdd)) {
     currentPolicy.Statement.push(policyStatementToAdd);
   }
