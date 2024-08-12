@@ -432,7 +432,7 @@ export class Nodegroup extends Resource implements INodegroup {
        * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
        */
-      possibleAmiTypes = getPossibleAmiTypes(instanceTypes).concat(NodegroupAmiType.CUSTOM);
+      possibleAmiTypes = getPossibleAmiTypes(instanceTypes);
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
@@ -662,5 +662,5 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
     throw new Error('instanceTypes of different architectures is not allowed');
   }
 
-  return archAmiMap.get(Array.from(architectures)[0])!;
+  return archAmiMap.get(Array.from(architectures)[0])!.concat(NodegroupAmiType.CUSTOM);
 }
