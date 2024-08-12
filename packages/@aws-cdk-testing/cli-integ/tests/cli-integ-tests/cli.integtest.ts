@@ -187,7 +187,7 @@ integTest('context setting', withDefaultFixture(async (fixture) => {
   }
 }));
 
-// bootstrapping also performs synthesis. As it turns out, bootstarp-stage synthesis still causes the lookups to be cached, meaning that the lookup never
+// bootstrapping also performs synthesis. As it turns out, bootstrap-stage synthesis still causes the lookups to be cached, meaning that the lookup never
 // happens when we actually call `cdk synth --no-lookups`. This results in the error never being thrown, because it never tries to lookup anything.
 // Fix this by not trying to bootstrap; there's no need to bootstrap anyway, since the test never tries to deploy anything.
 integTest('context in stage propagates to top', withoutBootstrap(async (fixture) => {
