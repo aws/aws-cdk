@@ -5,16 +5,6 @@
       "stacks": [
         "ResourcePolicyTest-v2"
       ],
-      "regions": [
-        "us-east-1"
-      ],
-      "cdkCommandOptions": {
-        "deploy": {
-          "args": {
-            "rollback": true
-          }
-        }
-      },
       "assertionStack": "table-v2-resource-policy-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7"
     }
