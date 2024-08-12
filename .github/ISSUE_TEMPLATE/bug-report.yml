@@ -32,7 +32,7 @@ body:
     id: working-version
     attributes:
       label: Last Known Working CDK Version
-      description: Specify the last known CDK version where this code was functioning as expected(if applicable).
+      description: Specify the last known CDK version where this code was functioning as expected (if applicable).
     validations:
       required: false
   - type: textarea
