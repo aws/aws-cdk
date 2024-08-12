@@ -197,8 +197,8 @@ export interface NodegroupOptions {
    */
   readonly subnets?: SubnetSelection;
   /**
-   * The AMI type for your node group. If you explicitly specify the launchTemplate with custom AMI, do not specify this property, or
-   * the node group deployment will fail. In other cases, you will need to specify correct amiType for the nodegroup.
+   * The AMI type for your node group. If you explicitly specify the launchTemplate with custom AMI, either set this property to `CUSTOM` or leave
+   * it undefined, otherwise the node group deployment will fail. In other cases, you will need to specify correct amiType for the nodegroup.
    *
    * @default - auto-determined from the instanceTypes property when launchTemplateSpec property is not specified
    */
@@ -296,7 +296,9 @@ export interface NodegroupOptions {
    */
   readonly tags?: { [name: string]: string };
   /**
-   * Launch template specification used for the nodegroup
+   * Launch template specification used for the nodegroup.
+   * Required when `amiType` is set to `CUSTOM`.
+   *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */

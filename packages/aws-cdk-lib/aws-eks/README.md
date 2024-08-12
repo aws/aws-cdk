@@ -227,7 +227,8 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-To use a custom AMI for the node group, you can set `amiType` to `eks.NodegroupAmiType.CUSTOM` and provide a launch template.
+To use a custom AMI for the node group, you can set `amiType` to `CUSTOM`.
+A launch template must be provided.
 
 ```ts
 declare const cluster: eks.Cluster;
