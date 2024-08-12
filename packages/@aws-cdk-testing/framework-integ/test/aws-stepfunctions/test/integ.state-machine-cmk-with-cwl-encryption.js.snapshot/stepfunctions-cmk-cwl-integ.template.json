@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "Key961B73FD": {
+  "StateMachineKey3DE756E3": {
    "Type": "AWS::KMS::Key",
    "Properties": {
     "KeyPolicy": {
@@ -95,6 +95,33 @@
         "kms:GenerateDataKey*",
         "kms:ReEncrypt*"
        ],
+       "Condition": {
+        "ArnEquals": {
+         "kms:EncryptionContext:aws:logs:arn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":logs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":log-group:",
+            {
+             "Ref": "MyLogGroup5C0DAD85"
+            }
+           ]
+          ]
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": {
@@ -127,12 +154,60 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
+  "LogGroupKeyD49CF390": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logs.amazonaws.com"
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "MyLogGroup5C0DAD85": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "KmsKeyId": {
      "Fn::GetAtt": [
-      "Key961B73FD",
+      "LogGroupKeyD49CF390",
       "Arn"
      ]
     },
@@ -197,7 +272,7 @@
      "KmsDataKeyReusePeriodSeconds": 75,
      "KmsKeyId": {
       "Fn::GetAtt": [
-       "Key961B73FD",
+       "StateMachineKey3DE756E3",
        "Arn"
       ]
      },

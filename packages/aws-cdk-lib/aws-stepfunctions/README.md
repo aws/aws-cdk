@@ -122,23 +122,32 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
 ```
 
 ### Creating a StateMachine with CWL Encryption using a Customer Managed Key,
-You can encrypt data sent to CloudWatch Logs. To use encrypted logging, you must set `enableEncryptedLogging` to `true` and provide the `logs?` prop:
+You can encrypt data sent to CloudWatch Logs. To use encrypted logging, you must set `enableEncryptedLogging` to `true` and provide the `logs?` prop.
 ```
-const kmsKey = new kms.Key(this, 'Key');
+const stateMachineKmsKey = new kms.Key(this, 'StateMachineKey');
+const logGroupKmsKey = new kms.Key(this, 'LogGroupKmsKey');
+
+/**
+     * We need to grant the service principal encrypt and decrypt permissions since passing
+     *  a KMS key when creating a LogGroup doesn't automatically grant the service principal encrypt/decrypt permissions
+     *  see: https://github.com/aws/aws-cdk/issues/28304
+     * 
+*/
+logGroupKmsKey.grantEncryptDecrypt(new iam.ServicePrincipal('logs.amazonaws.com'));
 const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
   logGroupName: '/aws/vendedlogs/states/MyLogGroup',
-  encryptionKey: kmsKey,
+  encryptionKey: logGroupKmsKey,
 });
 
 const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
   stateMachineName: 'StateMachineWithCMKWithCWLEncryption',
   definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
   stateMachineType: sfn.StateMachineType.STANDARD,
-  kmsKey: this.kmsKey,
+  kmsKey: stateMachineKmsKey,
   kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
   enableEncryptedLogging: true,
   logs: {
-    destination: this.logGroup,
+    destination: logGroup,
     level: sfn.LogLevel.FATAL,
     includeExecutionData: false,
   },

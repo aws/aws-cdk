@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eadae23a0571e6a284dc45b98337d3e67ef5d04838b9d04d55ca4bcde0421baf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/366a6425f7ac8f2ea13c41c91ec578a46fbdae2d8dd46ac2cbd8137eb89ee85b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,16 @@
         "stepfunctions-cmk-cwl-integ.assets"
       ],
       "metadata": {
-        "/stepfunctions-cmk-cwl-integ/Key/Resource": [
+        "/stepfunctions-cmk-cwl-integ/StateMachineKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD"
+            "data": "StateMachineKey3DE756E3"
+          }
+        ],
+        "/stepfunctions-cmk-cwl-integ/LogGroupKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupKeyD49CF390"
           }
         ],
         "/stepfunctions-cmk-cwl-integ/MyLogGroup/Resource": [
@@ -74,6 +80,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "Key961B73FD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
