@@ -436,6 +436,9 @@ Resources:
             Principal:
               AWS:
                 Ref: AWS::AccountId
+            Condition:
+              StringEquals:
+                aws:RequestTag/Department: "Engineering"
           - Fn::If:
               - HasTrustedAccounts
               - Action: sts:AssumeRole
@@ -443,6 +446,9 @@ Resources:
                 Principal:
                   AWS:
                     Ref: TrustedAccounts
+                Condition:
+                  StringEquals:
+                    aws:RequestTag/Department: "Engineering"
               - Ref: AWS::NoValue
       Policies:
         - PolicyDocument:

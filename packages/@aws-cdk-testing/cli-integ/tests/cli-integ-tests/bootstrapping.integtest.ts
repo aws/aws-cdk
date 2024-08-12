@@ -88,7 +88,7 @@ integTest('can and deploy with session tags', withoutBootstrap(async (fixture) =
 
   await fixture.cdkBootstrapModern({
     toolkitStackName: bootstrapStackName,
-    bootstrapTemplate: 'bootstrap-templates/custom-bootstrap-template.yaml',
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-session-tags.yaml'),
   });
 
   // Deploy stack that uses file assets
