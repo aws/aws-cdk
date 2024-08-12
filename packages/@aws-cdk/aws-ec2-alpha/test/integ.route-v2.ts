@@ -83,10 +83,7 @@ new Route(stacks.eigw, 'testEIGWRoute', {
   destination: '10.0.0.0/24',
   target: { gateway: eigw },
 });
-const eigwAddRoute = new EgressOnlyInternetGateway(stacks.eigw, 'testEOIGWviaAddRoute', {
-  vpc: vpcs.eigw,
-});
-routeTables.eigw.addRoute('0.0.0.0/0', { gateway: eigwAddRoute });
+routeTables.eigw.addRoute('0.0.0.0/0', { gateway: eigw });
 
 const igw = new InternetGateway(stacks.igw, 'testIGW', {
   vpc: vpcs.igw,

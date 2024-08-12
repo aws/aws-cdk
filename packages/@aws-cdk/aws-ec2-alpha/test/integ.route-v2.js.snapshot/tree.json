@@ -267,7 +267,7 @@
                         "destinationIpv6CidrBlock": "0.0.0.0/0",
                         "egressOnlyInternetGatewayId": {
                           "Fn::GetAtt": [
-                            "testEOIGWviaAddRouteEIGWE430E12B",
+                            "testEOIGWEIGW54CCAD37",
                             "Id"
                           ]
                         },
@@ -421,35 +421,6 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-ec2-alpha.Route",
-              "version": "0.0.0"
-            }
-          },
-          "testEOIGWviaAddRoute": {
-            "id": "testEOIGWviaAddRoute",
-            "path": "aws-cdk-routev2-egressonlyigw-alpha/testEOIGWviaAddRoute",
-            "children": {
-              "EIGW": {
-                "id": "EIGW",
-                "path": "aws-cdk-routev2-egressonlyigw-alpha/testEOIGWviaAddRoute/EIGW",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::EgressOnlyInternetGateway",
-                  "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "eigwC0F094EF",
-                        "VpcId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnEgressOnlyInternetGateway",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2-alpha.EgressOnlyInternetGateway",
               "version": "0.0.0"
             }
           },

@@ -97,7 +97,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48796b9e38d59e5a5005633618f2c28e0e21c8d3156f5fcfd9b75e49c5d4defd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9c1a7071ffb437e4f0b10aafb57215dbdb5c5f320f0fbf09194c6f79e461098.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -160,12 +160,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testEIGWRouteEB4FE8D5"
-          }
-        ],
-        "/aws-cdk-routev2-egressonlyigw-alpha/testEOIGWviaAddRoute/EIGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "testEOIGWviaAddRouteEIGWE430E12B"
           }
         ],
         "/aws-cdk-routev2-egressonlyigw-alpha/BootstrapVersion": [

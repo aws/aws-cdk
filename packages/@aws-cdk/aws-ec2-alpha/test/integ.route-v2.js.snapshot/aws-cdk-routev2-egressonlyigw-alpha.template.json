@@ -39,7 +39,7 @@
     "DestinationIpv6CidrBlock": "0.0.0.0/0",
     "EgressOnlyInternetGatewayId": {
      "Fn::GetAtt": [
-      "testEOIGWviaAddRouteEIGWE430E12B",
+      "testEOIGWEIGW54CCAD37",
       "Id"
      ]
     },
@@ -111,17 +111,6 @@
      "Fn::GetAtt": [
       "TestRoottableRouteTableFA28AA38",
       "RouteTableId"
-     ]
-    }
-   }
-  },
-  "testEOIGWviaAddRouteEIGWE430E12B": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "eigwC0F094EF",
-      "VpcId"
      ]
     }
    }
