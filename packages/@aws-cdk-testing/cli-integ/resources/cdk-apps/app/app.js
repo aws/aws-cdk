@@ -422,6 +422,31 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
+class SessionTagsLambdaStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    // we will update the synthesizer to make the test pass later:
+    // const synthesizer = parent.node.tryGetContext('legacySynth') === 'true' ?
+    //   new LegacyStackSynthesizer({
+    //     fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
+    //   })
+    //   : new DefaultStackSynthesizer({
+    //     fileAssetsBucketName: parent.node.tryGetContext('bootstrapBucket'),
+    //   })
+    super(parent, id, {
+      ...props,
+      // synthesizer: synthesizer,
+    });
+
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.asset(path.join(__dirname, 'lambda')),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler'
+    });
+
+    new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
+  }
+}
+
 class LambdaHotswapStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -643,6 +668,9 @@ const app = new cdk.App({
   },
 });
 
+// const sessionTagApp = new cdk.App({
+// });
+
 const defaultEnv = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEFAULT_REGION
@@ -672,6 +700,7 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+    new SessionTagsLambdaStack(app, `${stackPrefix}-sesion-tags-lambda`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
