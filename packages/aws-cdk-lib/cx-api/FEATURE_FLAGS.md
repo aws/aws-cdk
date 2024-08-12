@@ -70,8 +70,6 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | (default) |
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
-<<<<<<< HEAD
-<<<<<<< HEAD
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 
 <!-- END table -->
@@ -132,8 +130,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
-<<<<<<< HEAD
-<<<<<<< HEAD
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false
   }
