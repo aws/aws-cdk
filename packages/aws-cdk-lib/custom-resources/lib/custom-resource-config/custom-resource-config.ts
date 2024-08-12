@@ -1,7 +1,8 @@
 import { IConstruct, MetadataEntry } from 'constructs';
+import * as cloudformation from '../../../aws-cloudformation';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { CfnResource, IAspect, Aspects } from '../../../core/lib';
+import { IAspect, Aspects } from '../../../core/lib';
 
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
@@ -55,8 +56,10 @@ export class CustomResourceLogRetention implements IAspect {
           });
         }
       }
-      if (node instanceof CfnResource && node.cfnResourceType === 'Custom::LogRetention') {
-        node.addPropertyOverride('RetentionInDays', this.SET_LOG_RETENTION);
+
+      if (metadataEntry.type == CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION) {
+        let localNode = node.node.defaultChild as cloudformation.CfnCustomResource;
+        localNode.addPropertyOverride('RetentionInDays', this.SET_LOG_RETENTION);
       }
     }
   }
