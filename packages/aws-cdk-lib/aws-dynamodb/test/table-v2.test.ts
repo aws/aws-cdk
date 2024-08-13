@@ -3008,3 +3008,181 @@ test('Resource policy test', () => {
     ],
   });
 });
+
+test('Add resource policy to local table only', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+    resourcePolicy: doc,
+    replicas: [{
+      region: 'eu-west-2',
+    }],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: 'eu-west-2',
+      },
+      {
+        Region: 'eu-west-1',
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'dynamodb:GetItem',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: 'arn:aws:iam::111122223333:user/foobar',
+                },
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('Add resource policy to replica table only', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+    replicas: [{
+      region: 'eu-west-2',
+      resourcePolicy: doc,
+    }],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: 'eu-west-2',
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'dynamodb:GetItem',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: 'arn:aws:iam::111122223333:user/foobar',
+                },
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        },
+      },
+      {
+        Region: 'eu-west-1',
+      },
+    ],
+  });
+});
+
+test('Add two different resource policies to replicas', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const doc1 = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+  const doc2 = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:DeleteItem'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/barfoo')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+    resourcePolicy: doc1,
+    replicas: [{
+      region: 'eu-west-2',
+      resourcePolicy: doc2,
+    }],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: 'eu-west-2',
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'dynamodb:DeleteItem',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: 'arn:aws:iam::111122223333:user/barfoo',
+                },
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        },
+      },
+      {
+        Region: 'eu-west-1',
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'dynamodb:GetItem',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: 'arn:aws:iam::111122223333:user/foobar',
+                },
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        }
+      },
+    ],
+  });
+});
