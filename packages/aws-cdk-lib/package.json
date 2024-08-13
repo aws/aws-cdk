@@ -135,7 +135,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.12",
+    "@aws-cdk/aws-service-spec": "^0.1.16",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -373,6 +373,7 @@
     "./aws-lambda-destinations": "./aws-lambda-destinations/index.js",
     "./aws-lambda-event-sources": "./aws-lambda-event-sources/index.js",
     "./aws-lambda-nodejs": "./aws-lambda-nodejs/index.js",
+    "./aws-launchwizard": "./aws-launchwizard/index.js",
     "./aws-lex": "./aws-lex/index.js",
     "./aws-licensemanager": "./aws-licensemanager/index.js",
     "./aws-lightsail": "./aws-lightsail/index.js",
