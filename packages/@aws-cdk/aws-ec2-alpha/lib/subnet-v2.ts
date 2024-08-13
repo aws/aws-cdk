@@ -1,8 +1,9 @@
 import { Resource, Names, Lazy } from 'aws-cdk-lib';
-import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
+import { RouteTable } from './route';
 
 /**
  * Interface to define subnet CIDR
@@ -146,17 +147,16 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   public readonly ipv6CidrBlock?: string;
 
   /**
-   * The route table for this subnet
-   */
-  public readonly routeTable: IRouteTable;
-
-  /**
    * The type of subnet (public or private) that this subnet represents.
    * @attribute SubnetType
    */
   public readonly subnetType: SubnetType;
 
   private _networkAcl: INetworkAcl;
+
+  private _routeTable: IRouteTable;
+
+  private routeTableAssociation: CfnSubnetRouteTableAssociation;
 
   /**
    * Constructs a new SubnetV2 instance.
@@ -214,18 +214,18 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
     if (props.routeTable) {
-      this.routeTable = props.routeTable;
+      this._routeTable = props.routeTable;
     } else {
-      const defaultTable = new CfnRouteTable(this, 'RouteTable', {
-        vpcId: props.vpc.vpcId,
+      this._routeTable = new RouteTable(this, 'RouteTable', {
+        vpc: props.vpc,
       });
-      this.routeTable = { routeTableId: defaultTable.ref };
     }
 
     const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: this.routeTable.routeTableId,
+      routeTableId: this._routeTable.routeTableId,
     });
+    this.routeTableAssociation = routeAssoc;
     this._internetConnectivityEstablished.add(routeAssoc);
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
@@ -250,12 +250,30 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       subnet: this,
     });
   }
+
+  /**
+   * Associate a Route Table with this subnet.
+   * @param routeTable The Route Table to associate with this subnet.
+   */
+  public associateRouteTable(routeTable: IRouteTable) {
+    this._routeTable = routeTable;
+    this.routeTableAssociation.addPropertyOverride('RouteTableId', routeTable.routeTableId);
+  }
+
+
   /**
    * Returns the Network ACL associated with this subnet.
    */
 
   public get networkAcl(): INetworkAcl {
     return this._networkAcl;
+  }
+
+  /**
+   * Returns the Route Table associated with this subnet.
+   */
+  public get routeTable(): IRouteTable {
+    return this._routeTable;
   }
 }
 
