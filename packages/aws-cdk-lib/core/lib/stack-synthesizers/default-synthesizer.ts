@@ -211,6 +211,34 @@ export interface DefaultStackSynthesizerProps {
    * @default DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER
    */
   readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
+   * Session tags to be used for the deploy role
+   *
+   * @default - No Session Tags
+   */
+  readonly deployRoleSessionTags?: { [key: string]: string };
+
+  /**
+   * Session tags to be used for the lookup role
+   *
+   * @default - No Session Tags
+   */
+  readonly lookupRoleSessionTags?: { [key: string]: string };
+
+  /**
+   * Session tags to be used for the file asset publishing role
+   *
+   * @default - No Session Tags
+   */
+  readonly fileAssetPublishingRoleSessionTags?: { [key: string]: string };
+
+  /**
+   * Session tags to be used for the image asset publishing role
+   *
+   * @default - No Session Tags
+   */
+  readonly imageAssetPublishingRoleSessionTags?: { [key: string]: string };
 }
 
 /**
@@ -382,6 +410,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       role: this.fileAssetPublishingRoleArn ? {
         assumeRoleArn: this.fileAssetPublishingRoleArn,
         assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+        assumeRoleSessionTags: this.props.fileAssetPublishingRoleSessionTags,
       } : undefined,
     });
     return this.cloudFormationLocationFromFileAsset(location);
@@ -396,6 +425,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       role: this.imageAssetPublishingRoleArn ? {
         assumeRoleArn: this.imageAssetPublishingRoleArn,
         assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+        assumeRoleSessionTags: this.props.imageAssetPublishingRoleSessionTags,
       } : undefined,
     });
     return this.cloudFormationLocationFromDockerImageAsset(location);
@@ -443,6 +473,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     this.emitArtifact(session, {
       assumeRoleExternalId: this.props.deployRoleExternalId,
       assumeRoleArn: this._deployRoleArn,
+      assumeRoleSessionTags: this.props.deployRoleSessionTags,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
@@ -451,6 +482,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
         arn: this.lookupRoleArn,
         assumeRoleExternalId: this.props.lookupRoleExternalId,
+        assumeRoleSessionTags: this.props.lookupRoleSessionTags,
         requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,

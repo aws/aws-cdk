@@ -44,6 +44,7 @@ export class AssetManifestBuilder {
       region: resolvedOr(stack.region, undefined),
       assumeRoleArn: target.role?.assumeRoleArn,
       assumeRoleExternalId: target.role?.assumeRoleExternalId,
+      assumeRoleSessionTags: target.role?.assumeRoleSessionTags,
     });
   }
 
@@ -82,6 +83,7 @@ export class AssetManifestBuilder {
       region: resolvedOr(stack.region, undefined),
       assumeRoleArn: target.role?.assumeRoleArn,
       assumeRoleExternalId: target.role?.assumeRoleExternalId,
+      assumeRoleSessionTags: target.role?.assumeRoleSessionTags,
     });
   }
 
@@ -231,6 +233,13 @@ export interface RoleOptions {
    * @default - No external ID
    */
   readonly assumeRoleExternalId?: string;
+
+  /**
+   * The session tags to use for the assume role
+   *
+   * @default - No Session Tags
+   */
+  readonly assumeRoleSessionTags?: { [key: string]: string};
 }
 
 function validateFileAssetSource(asset: FileAssetSource) {

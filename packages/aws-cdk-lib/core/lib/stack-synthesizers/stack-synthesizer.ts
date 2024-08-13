@@ -241,6 +241,14 @@ export interface SynthesizeStackArtifactOptions {
   readonly assumeRoleExternalId?: string;
 
   /**
+   * Session tags to be used on the assume role
+   *
+   * @default - No session tags
+   */
+  readonly assumeRoleSessionTags?: { [key: string]: string};
+
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
