@@ -1242,6 +1242,18 @@ const stack = new Stack(app, 'StackName', {
 });
 ```
 
+### Receiving CloudFormation Stack Events
+
+You can add one or more SNS Topic ARNs to any Stack:
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  notificationArns: ['arn:aws:sns:us-east-1:23456789012:Topic'],
+});
+```
+
+Stack events will be sent to any SNS Topics in this list.
+
 ### CfnJson
 
 `CfnJson` allows you to postpone the resolution of a JSON blob from
