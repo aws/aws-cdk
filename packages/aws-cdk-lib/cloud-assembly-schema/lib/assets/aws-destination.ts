@@ -22,4 +22,11 @@ export interface AwsDestination {
    * @default - No ExternalId will be supplied
    */
   readonly assumeRoleExternalId?: string;
+
+  /**
+   * The session tags to use for the assume role
+   *
+   * @default - No Session Tags
+   */
+  readonly assumeRoleSessionTags?: { [key: string]: string};
 }

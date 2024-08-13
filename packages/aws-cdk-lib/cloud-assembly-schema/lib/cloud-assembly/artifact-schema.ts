@@ -18,6 +18,13 @@ export interface BootstrapRole {
   readonly assumeRoleExternalId?: string;
 
   /**
+   * The session tags to use for the assume role
+   *
+   * @default - No Session Tags
+   */
+  readonly assumeRoleSessionTags?: { [key: string]: string};
+
+  /**
    * Version of bootstrap stack required to use this role
    *
    * @default - No bootstrap stack required

@@ -247,7 +247,6 @@ export interface SynthesizeStackArtifactOptions {
    */
   readonly assumeRoleSessionTags?: { [key: string]: string};
 
-
   /**
    * The role that is passed to CloudFormation to execute the change set
    *
