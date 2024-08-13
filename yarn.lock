@@ -59,10 +59,10 @@
     "@aws-cdk/service-spec-types" "^0.0.83"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^36.0.1":
-  version "36.0.1"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-36.0.1.tgz#bba4995b7cb6d33780b736e1a46a9b14623cff7e"
-  integrity sha512-mRIx3rIfUMSFzmT0hUEUnZJXImuuczUQZbhWcgpEHZ/tPXoZfCq+MNyDkNW78FMn/VK+JuK3kZrX3udV9Rzhaw==
+"@aws-cdk/cloud-assembly-schema@^36.0.3":
+  version "36.0.3"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-36.0.3.tgz#bd1c73c0659ebdac58c397ef83c5cbab67d96dd9"
+  integrity sha512-o/4LJxErIxwUDWzoY3wAKZdb2kmpM/1Rydojvxc1bXdxEWbr4HDsZLtOeyeVTFxeh1mIEIbGCZHMd/gA0MskuQ==
   dependencies:
     jsonschema "^1.4.1"
     semver "^7.6.3"
