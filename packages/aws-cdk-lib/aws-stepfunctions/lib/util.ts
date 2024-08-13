@@ -1,3 +1,4 @@
+import { ActivityProps } from './activity';
 import { StateMachineProps } from './state-machine';
 import { IKey } from '../../aws-kms';
 import { Duration } from '../../core';
@@ -21,7 +22,7 @@ function isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: Dur
   return kmsDataKeyReusePeriodSeconds < Duration.seconds(60) || kmsDataKeyReusePeriodSeconds > Duration.seconds(900);
 }
 
-export function constructEncryptionConfiguration(props: StateMachineProps, defaultPeriodSeconds: number) {
+export function constructEncryptionConfiguration(props: StateMachineProps | ActivityProps, defaultPeriodSeconds: number) {
   if (props?.kmsKey) {
     return {
       kmsKeyId: props.kmsKey.keyArn,
