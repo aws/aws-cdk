@@ -195,7 +195,7 @@ export class SdkProvider {
     }
 
     // We will proceed to AssumeRole using whatever we've been given.
-    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
+    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, options.assumeRoleSessionTags, env.region);
 
     // Exercise the AssumeRoleCredentialsProvider we've gotten at least once so
     // we can determine whether the AssumeRole call succeeds or not.
@@ -358,15 +358,22 @@ export class SdkProvider {
     masterCredentials: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>,
     roleArn: string,
     externalId: string | undefined,
+    sessionTags: { [key: string]: string } | undefined,
     region: string | undefined) {
     debug(`Assuming role '${roleArn}'.`);
 
     region = region ?? this.defaultRegion;
-
     const creds = new AWS.ChainableTemporaryCredentials({
       params: {
         RoleArn: roleArn,
         ...externalId ? { ExternalId: externalId } : {},
+        ...sessionTags ? {
+          Tags: Object.entries(sessionTags).map(([key, value]) => ({
+            Key: key,
+            Value: value,
+          })),
+        } : {},
+        ...sessionTags ? { TransitiveTagKeys: Object.keys(sessionTags) } : {},
         RoleSessionName: `aws-cdk-${safeUsername()}`,
       },
       stsConfig: {
@@ -513,6 +520,11 @@ export interface CredentialsOptions {
    * External ID required to assume the given role.
    */
   readonly assumeRoleExternalId?: string;
+
+  /**
+   * Session tags required to assume the given role.
+   */
+  readonly assumeRoleSessionTags?: { [key: string]: string };
 }
 
 /**
