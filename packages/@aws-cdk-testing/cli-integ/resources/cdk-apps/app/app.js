@@ -426,6 +426,9 @@ class SessionTagsLambdaStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, {
       ...props,
+      // synthesizer: new DefaultStackSynthesizer({
+      //   session
+      // })
     });
 
     const fn = new lambda.Function(this, 'my-function', {
