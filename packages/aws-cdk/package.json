@@ -96,7 +96,7 @@
     "xml-js": "^1.6.11"
   },
   "dependencies": {
-    "@aws-cdk/cloud-assembly-schema": "^36.0.3",
+    "@aws-cdk/cloud-assembly-schema": "^36.0.5",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
