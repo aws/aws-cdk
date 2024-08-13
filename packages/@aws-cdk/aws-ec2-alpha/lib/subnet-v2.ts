@@ -260,7 +260,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     this.routeTableAssociation.addPropertyOverride('RouteTableId', routeTable.routeTableId);
   }
 
-
   /**
    * Returns the Network ACL associated with this subnet.
    */

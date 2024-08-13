@@ -319,7 +319,6 @@ describe('Subnet V2 with custom IP and routing', () => {
 
     testsubnet.associateRouteTable(routeTable);
 
-    console.log(Template.fromStack(stack).toJSON().Resources.TestSubnetRouteTableAssociationFE267B30)
     expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetRouteTableAssociation', {
       Properties: {
         RouteTableId: {
