@@ -147,14 +147,17 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   public readonly ipv6CidrBlock?: string;
 
   /**
+   * The route table for this subnet
+   */
+  public readonly routeTable: IRouteTable;
+
+  /**
    * The type of subnet (public or private) that this subnet represents.
    * @attribute SubnetType
    */
   public readonly subnetType: SubnetType;
 
   private _networkAcl: INetworkAcl;
-
-  private _routeTable: IRouteTable;
 
   private routeTableAssociation: CfnSubnetRouteTableAssociation;
 
@@ -214,16 +217,16 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
     if (props.routeTable) {
-      this._routeTable = props.routeTable;
+      this.routeTable = props.routeTable;
     } else {
-      this._routeTable = new RouteTable(this, 'RouteTable', {
+      this.routeTable = new RouteTable(this, 'RouteTable', {
         vpc: props.vpc,
       });
     }
 
     const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: this._routeTable.routeTableId,
+      routeTableId: this.routeTable.routeTableId,
     });
     this.routeTableAssociation = routeAssoc;
     this._internetConnectivityEstablished.add(routeAssoc);
@@ -254,10 +257,11 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   /**
    * Associate a Route Table with this subnet.
    * @param routeTable The Route Table to associate with this subnet.
+   * @returns The Route Table newly-associated with this subnet.
    */
   public associateRouteTable(routeTable: IRouteTable) {
-    this._routeTable = routeTable;
     this.routeTableAssociation.addPropertyOverride('RouteTableId', routeTable.routeTableId);
+    return routeTable
   }
 
   /**
@@ -266,13 +270,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
   public get networkAcl(): INetworkAcl {
     return this._networkAcl;
-  }
-
-  /**
-   * Returns the Route Table associated with this subnet.
-   */
-  public get routeTable(): IRouteTable {
-    return this._routeTable;
   }
 }
 
