@@ -128,13 +128,6 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 
   /**
-   * SNS Topic ARNs that will receive stack events.
-   *
-   * @default - no notfication arns.
-   */
-  readonly notificationArns?: string[];
-
-  /**
    * Synthesis method to use while deploying this stack
    *
    * The Stack Synthesizer controls aspects of synthesis and deployment,
@@ -372,13 +365,6 @@ export class Stack extends Construct implements ITaggable {
   public readonly _crossRegionReferences: boolean;
 
   /**
-   * SNS Notification ARNs to receive stack events.
-   *
-   * @internal
-   */
-  public readonly _notificationArns: string[];
-
-  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -464,7 +450,6 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
     }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
-    this._notificationArns = props.notificationArns ?? [];
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`);
