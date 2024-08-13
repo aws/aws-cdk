@@ -827,7 +827,7 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
 
 #### Custom Resource Config
 
-You can set the log retention of every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
+You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
 
 The following example configures every custom resource in this CDK app to retain its logs for ten years:
 ```ts
@@ -843,7 +843,7 @@ The following example configures every custom resource in this CDK app to retain
       destinationBucket: websiteBucket,
     });
 ```
-The following example shows configuring resources of nested stacks to retain its logs for ten years:
+The following example configures every custom resource in a nested stack to retain its log for ten years:
 ```ts
 export class RootStack extends cdk.Stack {
     constructor(scope: Construct) {
@@ -860,7 +860,7 @@ export class AlphaStack extends cdk.NestedStack {
         new s3deploy.BucketDeployment(this, "s3deployNone", {
             sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
             destinationBucket: websiteBucket,
-            logRetention: logs.RetentionDays.ONE_DAY,
+            logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
         });
     }
 }
@@ -871,24 +871,19 @@ export class BetaStack extends cdk.NestedStack {
         new s3deploy.BucketDeployment(this, "s3deployNone", {
             sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
             destinationBucket: websiteBucket,
-            logRetention: logs.RetentionDays.ONE_DAY,
+            logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
         });
     }
 }
 ```
 
 The following example shows configuring resources of two top-level stacks to retain its logs for ten years:
-```tsc
-export class RootStack extends cdk.Stack {
-    constructor(scope: Construct) {
-        super(scope, "rootStack");
-        new AlphaStack(this);
-        new BetaStack(this);
-        CustomResourceConfig.of(this).addLogRetentionLifetime(
-            logs.RetentionDays.TEN_YEARS
-        );
-    }
-}
+```ts
+const app = cdk.App();
+new AlphaStack(app);
+new BetaStack(app);
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+
 export class AlphaStack extends cdk.Stack {
     constructor(scope: Construct) {
         super(scope, "AlphaStack");
@@ -911,4 +906,18 @@ export class BetaStack extends cdk.Stack {
         });
     }
 }
+```
+
+The following example configures custom resource log groups deletion policy:
+```ts
+    import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+    const stack = new cdk.Stack(app);
+    CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+    let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 's3deployNone', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
 ```

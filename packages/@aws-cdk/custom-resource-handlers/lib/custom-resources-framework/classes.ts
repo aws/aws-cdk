@@ -223,7 +223,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const metadataStatements: Statement[] = [
           expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
           expr.directCode(`if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`),
-          // (this singleton function) as it extends FunctionBase and property lambdaFunction is available to be cast to lambda.Function to access the internal readonly _logRetention
+          // We need to access the private `_logRetention` custom resource, the only public property - `logGroup` - provides an ARN reference to the resource, instead of the resource itself.
           expr.directCode(`if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`),
         ];
         this.buildConstructor({
