@@ -637,13 +637,6 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-class NotificationArnPropStack extends cdk.Stack {
-  constructor(parent, id, props) {
-    super(parent, id, props);
-    new sns.Topic(this, 'topic');
-  }
-}
-
 const app = new cdk.App({
   context: {
     '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
@@ -683,10 +676,6 @@ switch (stackSet) {
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
-
-    new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
-      notificationArns: [`arn:aws:sns:${defaultEnv.region}:${defaultEnv.account}:${stackPrefix}-test-topic-prop`],
-    });
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);

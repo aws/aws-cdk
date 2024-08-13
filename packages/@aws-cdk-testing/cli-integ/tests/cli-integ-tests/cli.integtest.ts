@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture, randomString, withoutBootstrap } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture, randomString } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -187,10 +187,7 @@ integTest('context setting', withDefaultFixture(async (fixture) => {
   }
 }));
 
-// bootstrapping also performs synthesis. As it turns out, bootstrap-stage synthesis still causes the lookups to be cached, meaning that the lookup never
-// happens when we actually call `cdk synth --no-lookups`. This results in the error never being thrown, because it never tries to lookup anything.
-// Fix this by not trying to bootstrap; there's no need to bootstrap anyway, since the test never tries to deploy anything.
-integTest('context in stage propagates to top', withoutBootstrap(async (fixture) => {
+integTest('context in stage propagates to top', withDefaultFixture(async (fixture) => {
   await expect(fixture.cdkSynth({
     // This will make it error to prove that the context bubbles up, and also that we can fail on command
     options: ['--no-lookups'],
@@ -469,12 +466,11 @@ integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => 
   );
 }));
 
-integTest('deploy with notification ARN as flag', withDefaultFixture(async (fixture) => {
-  const topicName = `${fixture.stackNamePrefix}-test-topic-flag`;
+integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => {
+  const topicName = `${fixture.stackNamePrefix}-test-topic`;
 
   const response = await fixture.aws.sns('createTopic', { Name: topicName });
   const topicArn = response.TopicArn!;
-
   try {
     await fixture.cdkDeploy('test-2', {
       options: ['--notification-arns', topicArn],
@@ -483,27 +479,6 @@ integTest('deploy with notification ARN as flag', withDefaultFixture(async (fixt
     // verify that the stack we deployed has our notification ARN
     const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
       StackName: fixture.fullStackName('test-2'),
-    });
-    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
-  } finally {
-    await fixture.aws.sns('deleteTopic', {
-      TopicArn: topicArn,
-    });
-  }
-}));
-
-integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixture) => {
-  const topicName = `${fixture.stackNamePrefix}-test-topic-prop`;
-
-  const response = await fixture.aws.sns('createTopic', { Name: topicName });
-  const topicArn = response.TopicArn!;
-
-  try {
-    await fixture.cdkDeploy('notification-arn-prop');
-
-    // verify that the stack we deployed has our notification ARN
-    const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
-      StackName: fixture.fullStackName('notification-arn-prop'),
     });
     expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
   } finally {
