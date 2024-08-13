@@ -7,10 +7,6 @@ import { cached } from './cached';
 import { Account } from './sdk-provider';
 import { traceMethods } from '../../util/tracing';
 
-/* eslint-disable @typescript-eslint/no-require-imports */
-require('aws-sdk/lib/maintenance_mode_message').suppress = true;
-/* eslint-enable @typescript-eslint/no-require-imports */
-
 export interface ISDK {
   /**
    * The region this SDK has been instantiated for

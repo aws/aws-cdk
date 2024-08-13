@@ -44,8 +44,8 @@ test('process events', async () => {
 
   // THEN
   const expectedLocaleTimeString = eventDate.toLocaleTimeString();
-  expect(stderrMock).toHaveBeenCalledTimes(1);
-  expect(stderrMock.mock.calls[0][0]).toContain(
+  expect(stderrMock).toHaveBeenCalledTimes(2);
+  expect(stderrMock.mock.calls[1][0]).toContain(
     `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
   );
 });
