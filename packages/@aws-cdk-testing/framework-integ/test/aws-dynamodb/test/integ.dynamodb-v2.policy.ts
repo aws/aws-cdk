@@ -31,6 +31,9 @@ class TestStack extends Stack {
     });
 
     table.grantReadData(new iam.AccountPrincipal('123456789012'));
+    table.addReplica({
+      region: 'eu-west-2',
+    });
   }
 }
 

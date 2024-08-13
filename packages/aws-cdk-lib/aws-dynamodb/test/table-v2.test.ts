@@ -3181,7 +3181,7 @@ test('Add two different resource policies to replicas', () => {
             ],
             Version: '2012-10-17',
           },
-        }
+        },
       },
     ],
   });
