@@ -173,8 +173,8 @@ function obscureDiff(diff: TemplateDiff) {
     // see https://github.com/aws/aws-cdk/issues/17942
     diff.unknown = diff.unknown.filter(change => {
       if (!change) { return true; }
-      if (change.newValue.CheckBootstrapVersion) { return false; }
-      if (change.oldValue.CheckBootstrapVersion) { return false; }
+      if (change.newValue?.CheckBootstrapVersion) { return false; }
+      if (change.oldValue?.CheckBootstrapVersion) { return false; }
       return true;
     });
   }
