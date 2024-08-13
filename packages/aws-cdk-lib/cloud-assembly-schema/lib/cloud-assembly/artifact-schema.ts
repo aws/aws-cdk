@@ -56,13 +56,6 @@ export interface AwsCloudFormationStackProperties {
   readonly tags?: { [id: string]: string };
 
   /**
-   * SNS Notification ARNs that should receive CloudFormation Stack Events.
-   *
-   * @default - No notification arns
-   */
-  readonly notificationArns?: string[];
-
-  /**
    * The name to use for the CloudFormation stack.
    * @default - name derived from artifact ID
    */
