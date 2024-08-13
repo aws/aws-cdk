@@ -51,8 +51,10 @@ export class CustomResourceLogRetention implements IAspect {
         const localNode = node.node.defaultChild as lambda.CfnFunction;
 
         if (localNode && !localNode.loggingConfig) {
+          const newLogGroup = this.createNewLogGroupForSingletonFunction(localNode);
+          newLogGroup.node.addMetadata(`${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}`, true);
           localNode.addPropertyOverride('LoggingConfig', {
-            LogGroup: this.createNewLogGroupForSingletonFunction(localNode).logGroupName,
+            LogGroup: newLogGroup.logGroupName,
           });
         }
       }
