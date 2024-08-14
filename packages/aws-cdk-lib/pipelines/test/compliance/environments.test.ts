@@ -301,8 +301,7 @@ test('action has right settings for cross-region deployment', () => {
       ],
     }]),
   });
-},
-);
+});
 
 test('action has right settings for cross-account/cross-region deployment', () => {
   // WHEN
@@ -399,5 +398,4 @@ test('action has right settings for cross-account/cross-region deployment', () =
       })]),
     },
   });
-},
-);
+});

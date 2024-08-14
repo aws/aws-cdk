@@ -26,8 +26,7 @@ test('interdependent stacks are in the right order', () => {
       ]),
     }]),
   });
-},
-);
+});
 
 test('multiple independent stacks go in parallel', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -48,5 +47,4 @@ test('multiple independent stacks go in parallel', () => {
       ]),
     }]),
   });
-},
-);
+});

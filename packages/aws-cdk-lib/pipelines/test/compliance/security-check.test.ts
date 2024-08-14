@@ -51,8 +51,7 @@ test('security check option generates lambda/codebuild at pipeline scope', () =>
     },
   });
   expect(Object.keys(projects).length).toEqual(3);
-},
-);
+});
 
 test('security check option passes correct environment variables to check project', () => {
 
@@ -85,8 +84,7 @@ test('security check option passes correct environment variables to check projec
       },
     ]),
   });
-},
-);
+});
 
 test('pipeline created with auto approve tags and lambda/codebuild w/ valid permissions', () => {
 
@@ -169,8 +167,7 @@ test('pipeline created with auto approve tags and lambda/codebuild w/ valid perm
       ]),
     },
   });
-},
-);
+});
 
 test('confirmBroadeningPermissions and notification topic options generates the right resources', () => {
 
@@ -221,5 +218,4 @@ test('confirmBroadeningPermissions and notification topic options generates the 
       },
     ]),
   });
-},
-);
+});

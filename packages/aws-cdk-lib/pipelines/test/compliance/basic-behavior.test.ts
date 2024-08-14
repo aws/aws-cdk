@@ -39,8 +39,7 @@ test('stack templates in nested assemblies are correctly addressed', () => {
       ]),
     }]),
   });
-},
-);
+});
 
 test('obvious error is thrown when stage contains no stacks', () => {
 
@@ -80,8 +79,7 @@ test('overridden stack names are respected', () => {
       },
     ]),
   });
-},
-);
+});
 
 test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
 
@@ -109,8 +107,7 @@ test('changing CLI version leads to a different pipeline structure (restarting i
   });
 
   expect(JSON.stringify(structure2.asArray())).not.toEqual(JSON.stringify(structure3.asArray()));
-},
-);
+});
 
 test('tags get reflected in pipeline', () => {
 
@@ -147,8 +144,7 @@ test('tags get reflected in pipeline', () => {
       CostCenter: 'F00B4R',
     },
   }));
-},
-);
+});
 
 class OneStackAppWithCustomName extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {

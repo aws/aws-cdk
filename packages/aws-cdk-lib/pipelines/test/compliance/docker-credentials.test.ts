@@ -70,8 +70,7 @@ test('synth action receives install commands and access to relevant credentials'
     },
     Roles: [{ Ref: stringLike('Cdk*BuildProjectRole*') }],
   });
-},
-);
+});
 
 test('synth action receives Windows install commands if a Windows image is detected', () => {
   const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk2', {
@@ -111,8 +110,7 @@ test('synth action receives Windows install commands if a Windows image is detec
       })),
     },
   });
-},
-);
+});
 
 test('self-update receives install commands and access to relevant credentials', () => {
   const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
@@ -155,8 +153,7 @@ test('self-update receives install commands and access to relevant credentials',
     },
     Roles: [{ Ref: stringLike('*SelfMutat*Role*') }],
   });
-},
-);
+});
 
 test('asset publishing receives install commands and access to relevant credentials', () => {
 

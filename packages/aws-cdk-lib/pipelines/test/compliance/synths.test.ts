@@ -64,8 +64,7 @@ test('synth takes arrays of commands', () => {
       })),
     },
   });
-},
-);
+});
 
 test('synth sets artifact base-directory to cdk.out', () => {
 
@@ -84,8 +83,7 @@ test('synth sets artifact base-directory to cdk.out', () => {
       })),
     },
   });
-},
-);
+});
 
 test('synth supports setting subdirectory', () => {
 
@@ -112,8 +110,7 @@ test('synth supports setting subdirectory', () => {
       })),
     },
   });
-},
-);
+});
 
 test('npm synth sets, or allows setting, UNSAFE_PERM=true', () => {
 
@@ -135,8 +132,7 @@ test('npm synth sets, or allows setting, UNSAFE_PERM=true', () => {
       ],
     },
   });
-},
-);
+});
 
 test('Magic CodePipeline variables passed to synth envvars must be rendered in the action', () => {
 
@@ -166,12 +162,10 @@ test('Magic CodePipeline variables passed to synth envvars must be rendered in t
       ],
     }]),
   });
-},
-);
+});
 
 test('CodeBuild: environment variables specified in multiple places are correctly merged', () => {
-
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     synth: new CodeBuildStep('Synth', {
       env: {
         SOME_ENV_VAR: 'SomeValue',
@@ -193,34 +187,37 @@ test('CodeBuild: environment variables specified in multiple places are correctl
   });
 
   // THEN
-  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-    Environment: {
-      Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
-    },
-    Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: [
-              'install1',
-              'install2',
-            ],
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        PrivilegedMode: true,
+        EnvironmentVariables: Match.arrayWith([
+          {
+            Name: 'INNER_VAR',
+            Type: 'PLAINTEXT',
+            Value: 'InnerValue',
           },
-          build: {
-            commands: [
-              'build1',
-              'build2',
-              'test1',
-              'test2',
-              'cdk synth',
-            ],
+          {
+            Name: 'SOME_ENV_VAR',
+            Type: 'PLAINTEXT',
+            Value: 'SomeValue',
           },
-        },
-      })),
-    },
-  });
+        ]),
+      }),
+      Source: {
+        BuildSpec: Match.serializedJson(Match.objectLike({
+          phases: {
+            install: {
+              commands: ['install1', 'install2'],
+            },
+            build: {
+              commands: ['synth'],
+            },
+          },
+        })),
+      },
+    });
 
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2', {
     synth: new cdkp.CodeBuildStep('Synth', {
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
       primaryOutputDirectory: '.',
@@ -271,8 +268,7 @@ test('CodeBuild: environment variables specified in multiple places are correctl
       })),
     },
   });
-},
-);
+});
 
 test('install command can be overridden/specified', () => {
   // WHEN
@@ -295,8 +291,7 @@ test('install command can be overridden/specified', () => {
       })),
     },
   });
-},
-);
+});
 
 test('Synth can output additional artifacts', () => {
 
@@ -332,8 +327,7 @@ test('Synth can output additional artifacts', () => {
       })),
     },
   });
-},
-);
+});
 
 test('Synth can be made to run in a VPC', () => {
   const vpc: ec2.Vpc = new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc');
@@ -447,8 +441,7 @@ test('Modern, using CodeBuildStep', () => {
       }]),
     },
   });
-},
-);
+});
 
 test('Pipeline action contains a hash that changes as the buildspec changes', () => {
   const hash1 = modernSynthWithAction(() => ({ commands: ['asdf'] }));
@@ -539,8 +532,7 @@ test('Synth CodeBuild project role can be granted permissions', () => {
       })]),
     },
   });
-},
-);
+});
 
 test('Synth can reference an imported ECR repo', () => {
 
@@ -589,8 +581,7 @@ test('CodeBuild: Can specify additional policy statements', () => {
       })]),
     },
   });
-},
-);
+});
 
 test('Multiple input sources in side-by-side directories', () => {
 
@@ -756,8 +747,7 @@ test('can provide custom BuildSpec that is merged with generated one', () => {
       })),
     },
   });
-},
-);
+});
 
 test('stacks synthesized for pipeline will be checked during synth', () => {
   let stage: OneStackApp = new OneStackApp(pipelineStack, 'MyApp');
@@ -773,5 +763,4 @@ test('stacks synthesized for pipeline will be checked during synth', () => {
   for (const stack of asm.stacks) {
     expect(stack.validateOnSynth).toEqual(true);
   }
-},
-);
+});

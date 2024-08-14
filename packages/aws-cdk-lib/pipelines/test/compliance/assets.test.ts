@@ -179,8 +179,7 @@ describe('basic pipeline', () => {
         })),
       },
     });
-  },
-  );
+  });
 
   test('multiple assets are published in parallel', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -195,8 +194,7 @@ describe('basic pipeline', () => {
         ],
       }]),
     });
-  },
-  );
+  });
 
   test('file image asset publishers do not use privilegedmode', () => {
     // WHEN
@@ -218,8 +216,7 @@ describe('basic pipeline', () => {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       }),
     });
-  },
-  );
+  });
 
   test('docker image asset publishers use privilegedmode', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -240,8 +237,7 @@ describe('basic pipeline', () => {
         PrivilegedMode: true,
       }),
     });
-  },
-  );
+  });
 
   test('can control fix/CLI version used in asset publishing', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -263,8 +259,7 @@ describe('basic pipeline', () => {
         })),
       },
     });
-  },
-  );
+  });
 
   describe('asset roles and policies', () => {
     test('includes file publishing assets role for apps with file assets', () => {
@@ -399,8 +394,7 @@ test('can supply pre-install scripts to asset upload', () => {
       })),
     },
   });
-},
-);
+});
 
 describe('pipeline with VPC', () => {
   let vpc: ec2.Vpc;
@@ -428,8 +422,7 @@ describe('pipeline with VPC', () => {
         VpcId: { Ref: 'Vpc8378EB38' },
       }),
     });
-  },
-  );
+  });
 
   test('Pipeline-generated CodeBuild Projects have appropriate execution role permissions', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -449,8 +442,7 @@ describe('pipeline with VPC', () => {
         }]),
       },
     });
-  },
-  );
+  });
 
   test('Asset publishing CodeBuild Projects have correct VPC permissions', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -485,45 +477,44 @@ describe('pipeline with VPC', () => {
         'CdkAssetsDockerAsset1PolicyDocument8DA96A22',
       ],
     });
-  },
-  );
+  });
+});
+
+test('adding environment variable to assets job adds SecretsManager permissions', () => {
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    assetPublishingCodeBuildDefaults: {
+      buildEnvironment: {
+        environmentVariables: {
+          FOOBAR: {
+            value: 'FoobarSecret',
+            type: cb.BuildEnvironmentVariableType.SECRETS_MANAGER,
+          },
+        },
+      },
+    },
+  });
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'MyApp'));
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'secretsmanager:GetSecretValue',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+            ]],
+          },
+        }),
+      ]),
+    },
+  });
 });
 
 describe('pipeline with single asset publisher', () => {
-  test('multiple assets are using the same job in singlePublisherMode', () => {
-    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-      publishAssetsInParallel: false,
-    });
-    pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
-
-    // THEN
-    const buildSpecName = new Capture(stringLike('buildspec-*.yaml'));
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'Assets',
-        Actions: [
-          // Only one file asset action
-          Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
-        ],
-      }]),
-    });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: {
-        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
-      },
-      Source: {
-        BuildSpec: buildSpecName,
-      },
-    });
-    const assembly = synthesize(pipelineStack);
-
-    const actualFileName = buildSpecName.asString();
-
-    const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
-  });
-
   test('other pipeline writes to separate assets build spec file', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       publishAssetsInParallel: false,
@@ -550,59 +541,9 @@ describe('pipeline with single asset publisher', () => {
     });
 
     expect(buildSpecName1.asString()).not.toEqual(buildSpecName2.asString());
-  },
-  );
-
-  describe('pipeline with custom asset publisher BuildSpec', () => {
-    test('custom buildspec is merged correctly', () => {
-      // WHEN
-      const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-        publishAssetsInParallel: false,
-        assetPublishingCodeBuildDefaults: {
-          partialBuildSpec: cb.BuildSpec.fromObject({
-            phases: {
-              pre_install: {
-                commands: 'preinstall',
-              },
-            },
-            cache: {
-              paths: 'node_modules',
-            },
-          }),
-        },
-      });
-      pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
-
-      const buildSpecName = new Capture(stringLike('buildspec-*'));
-
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        Stages: Match.arrayWith([{
-          Name: 'Assets',
-          Actions: [
-            // Only one file asset action
-            Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
-          ],
-        }]),
-      });
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-        Environment: {
-          Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
-        },
-        Source: {
-          BuildSpec: buildSpecName,
-        },
-      });
-      const assembly = synthesize(pipelineStack);
-      const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, buildSpecName.asString())).toString());
-      expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-      expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
-      expect(buildSpec.phases.pre_install.commands).toContain('preinstall');
-      expect(buildSpec.cache.paths).toContain('node_modules');
-    },
-    );
   });
 
-  test('necessary secrets manager permissions get added to asset roles', suite => {
+  test('necessary secrets manager permissions get added to asset roles', () => {
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
       assetPublishingCodeBuildDefaults: {
         buildEnvironment: {
@@ -640,45 +581,93 @@ describe('pipeline with single asset publisher', () => {
       { Ref: 'PipelineAssetsFileRole59943A77' },
     ],
   });
-},
-);
 
-test('adding environment variable to assets job adds SecretsManager permissions', suite => {
-  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-    assetPublishingCodeBuildDefaults: {
-      buildEnvironment: {
-        environmentVariables: {
-          FOOBAR: {
-            value: 'FoobarSecret',
-            type: cb.BuildEnvironmentVariableType.SECRETS_MANAGER,
-          },
-        },
+  test('multiple assets are using the same job in singlePublisherMode', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      publishAssetsInParallel: false,
+    });
+    pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+    // THEN
+    const buildSpecName = new Capture(stringLike('buildspec-*.yaml'));
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Name: 'Assets',
+        Actions: [
+          // Only one file asset action
+          Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
+        ],
+      }]),
+    });
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
-    },
-  });
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'MyApp'));
+      Source: {
+        BuildSpec: buildSpecName,
+      },
+    });
+    const assembly = synthesize(pipelineStack);
 
-  Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: Match.arrayWith([
-        Match.objectLike({
-          Action: 'secretsmanager:GetSecretValue',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
-            ]],
+    const actualFileName = buildSpecName.asString();
+
+    const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+  });
+});
+
+describe('pipeline with custom asset publisher BuildSpec', () => {
+  test('custom buildspec is merged correctly', () => {
+    // WHEN
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      publishAssetsInParallel: false,
+      assetPublishingCodeBuildDefaults: {
+        partialBuildSpec: cb.BuildSpec.fromObject({
+          phases: {
+            pre_install: {
+              commands: 'preinstall',
+            },
+          },
+          cache: {
+            paths: 'node_modules',
           },
         }),
-      ]),
-    },
+      },
+    });
+    pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+    const buildSpecName = new Capture(stringLike('buildspec-*'));
+
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
+        Name: 'Assets',
+        Actions: [
+          // Only one file asset action
+          Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
+        ],
+      }]),
+    });
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
+      },
+      Source: {
+        BuildSpec: buildSpecName,
+      },
+    });
+
+    const assembly = synthesize(pipelineStack);
+    const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, buildSpecName.asString())).toString());
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+    expect(buildSpec.phases.pre_install.commands).toContain('preinstall');
+    expect(buildSpec.cache.paths).toContain('node_modules');
   });
 });
 
 function synthesize(stack: Stack) {
-  const root = stack.node.root;
+  const root = Stage.of(stack);
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage');
   }

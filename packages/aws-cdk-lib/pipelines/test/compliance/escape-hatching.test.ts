@@ -110,6 +110,5 @@ test('can add another action to an existing stage', () => {
       ],
     }]),
   });
-},
-);
+});
 

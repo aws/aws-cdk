@@ -55,8 +55,7 @@ test('CodePipeline has self-mutation stage', () => {
       Type: 'CODEPIPELINE',
     },
   });
-},
-);
+});
 
 test('selfmutation stage correctly identifies nested assembly of pipeline stack', () => {
 
@@ -78,8 +77,7 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
       })),
     },
   });
-},
-);
+});
 
 test('selfmutation feature can be turned off', () => {
 
@@ -94,8 +92,7 @@ test('selfmutation feature can be turned off', () => {
       Actions: Match.anyValue(),
     }])),
   });
-},
-);
+});
 
 test('can control fix/CLI version used in pipeline selfupdate', () => {
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -116,8 +113,7 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
       })),
     },
   });
-},
-);
+});
 
 test('Pipeline stack itself can use assets (has implications for selfupdate)', () => {
 
@@ -163,8 +159,7 @@ test('self-update project role uses tagged bootstrap-role permissions', () => {
       ]),
     },
   });
-},
-);
+});
 
 test('self-mutation stage can be customized with BuildSpec', () => {
 
@@ -205,5 +200,4 @@ test('self-mutation stage can be customized with BuildSpec', () => {
       Type: 'CODEPIPELINE',
     },
   });
-},
-);
+});

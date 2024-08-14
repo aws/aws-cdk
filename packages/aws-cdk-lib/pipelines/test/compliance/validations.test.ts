@@ -195,8 +195,7 @@ test('validation step can run from scripts in source', () => {
       })),
     },
   });
-},
-);
+});
 
 test('can use additional output artifacts from build', () => {
   const synth = new ShellStep('Synth', {
@@ -261,8 +260,7 @@ test('can use additional output artifacts from build', () => {
       })),
     },
   });
-},
-);
+});
 
 test('can add policy statements to shell script action', () => {
 
@@ -291,8 +289,7 @@ test('can add policy statements to shell script action', () => {
       })]),
     },
   });
-},
-);
+});
 
 test('can grant permissions to shell script action', () => {
   const bucket: s3.IBucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::this-particular-bucket');
@@ -321,27 +318,26 @@ test('can grant permissions to shell script action', () => {
       })]),
     },
   });
-},
-);
+});
 
 test('can run shell script actions in a VPC', () => {
   const vpc: ec2.Vpc = new ec2.Vpc(pipelineStack, 'VPC');
 
   // All CodeBuild jobs automatically go into the VPC
-  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     codeBuildDefaults: { vpc },
   });
 
-  pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
+  pipeline.addStage(new TwoStackApp(app, 'MyApp-1'), {
     post: [new cdkp.ShellStep('VpcAction', {
       commands: ['set -eu', 'true'],
     })],
   });
 
   // Can also explicitly specify a VPC when going to the "full config" class
-  const pipeline2 = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  const pipeline2 = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2');
 
-  pipeline2.addStage(new TwoStackApp(app, 'MyApp'), {
+  pipeline2.addStage(new TwoStackApp(app, 'MyApp-2'), {
     post: [new cdkp.CodeBuildStep('VpcAction', {
       commands: ['set -eu', 'true'],
       vpc,
@@ -381,8 +377,7 @@ test('can run shell script actions in a VPC', () => {
       })),
     },
   });
-},
-);
+});
 
 test('can run shell script actions with a specific SecurityGroup', () => {
   const vpc: ec2.Vpc = new ec2.Vpc(pipelineStack, 'VPC');
@@ -424,13 +419,12 @@ test('can run shell script actions with a specific SecurityGroup', () => {
       },
     },
   });
-},
-);
+});
 
 test('can run scripts with specified BuildEnvironment', () => {
 
   // Run all Build jobs with the given image
-  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     codeBuildDefaults: {
       buildEnvironment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
@@ -438,15 +432,15 @@ test('can run scripts with specified BuildEnvironment', () => {
     },
   });
 
-  pipeline.addStage(new TwoStackApp(app, 'Test'), {
+  pipeline.addStage(new TwoStackApp(app, 'Test-1'), {
     post: [new cdkp.ShellStep('imageAction', {
       commands: ['true'],
     })],
   });
 
-  const pipeline2 = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  const pipeline2 = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2');
 
-  pipeline2.addStage(new TwoStackApp(app, 'Test'), {
+  pipeline2.addStage(new TwoStackApp(app, 'Test-2'), {
     post: [new cdkp.CodeBuildStep('imageAction', {
       commands: ['true'],
       buildEnvironment: {
@@ -460,8 +454,7 @@ test('can run scripts with specified BuildEnvironment', () => {
       Image: 'aws/codebuild/standard:2.0',
     },
   });
-},
-);
+});
 
 test('can run scripts with magic environment variables', () => {
 
@@ -497,5 +490,4 @@ test('can run scripts with magic environment variables', () => {
       ]),
     }]),
   });
-},
-);
+});
