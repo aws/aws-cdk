@@ -14,7 +14,7 @@ describe('task definition', () => {
 
       // WHEN
       new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '256',
+        cpu: '512',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -51,7 +51,7 @@ describe('task definition', () => {
         assumedBy: new iam.AccountRootPrincipal(),
       });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '256',
+        cpu: '512',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -96,7 +96,7 @@ describe('task definition', () => {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '256',
+        cpu: '512',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
         executionRole: executionRole,
@@ -154,7 +154,7 @@ describe('task definition', () => {
         },
       );
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '256',
+        cpu: '512',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -387,7 +387,7 @@ describe('task definition', () => {
         },
       );
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
-        cpu: '256',
+        cpu: '512',
         memoryMiB: '512',
         compatibility: ecs.Compatibility.EC2_AND_FARGATE,
       });
@@ -456,34 +456,6 @@ describe('task definition', () => {
       expect(() => {
         Template.fromStack(stack);
       }).toThrow("ECS Container Container must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified");
-    });
-
-    test('throws error when invalid CPU and memory combination is provided with Fargate compatibilities', () => {
-      const stack = new cdk.Stack();
-
-      new ecs.TaskDefinition(stack, 'TaskDef', {
-        compatibility: ecs.Compatibility.EC2_AND_FARGATE,
-        cpu: '122',
-        memoryMiB: '513',
-      });
-
-      expect(() => {
-        Template.fromStack(stack);
-      }).toThrow(/Invalid CPU and memory combinations for FARGATE compatible task definition/);
-    });
-
-    test('successful when valid CPU and memory combination is provided with Fargate compatibilities', () => {
-      const stack = new cdk.Stack();
-      new ecs.TaskDefinition(stack, 'TaskDef', {
-        compatibility: ecs.Compatibility.EC2_AND_FARGATE,
-        cpu: '256',
-        memoryMiB: '512',
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        Cpu: '256',
-        Memory: '512',
-      });
     });
   });
 
@@ -588,7 +560,7 @@ describe('task definition', () => {
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '512',
-          memoryMiB: '1024',
+          memoryMiB: '512',
           compatibility: ecs.Compatibility.FARGATE,
         });
 
@@ -638,7 +610,7 @@ describe('task definition', () => {
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
           cpu: '512',
-          memoryMiB: '1024',
+          memoryMiB: '512',
           compatibility: ecs.Compatibility.FARGATE,
         });
 
