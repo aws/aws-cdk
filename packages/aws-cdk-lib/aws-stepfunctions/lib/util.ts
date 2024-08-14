@@ -10,7 +10,7 @@ export function noEmptyObject<A>(o: Record<string, A>): Record<string, A> | unde
 
 export function validateEncryptionConfiguration(kmsKey: IKey | undefined, kmsDataKeyReusePeriodSeconds: Duration | undefined) {
   if (kmsKey === undefined && kmsDataKeyReusePeriodSeconds !== undefined) {
-    throw new Error('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
+    throw new Error('You cannot set kmsDataKeyReusePeriodSeconds without providing a value for kmsKey');
   }
 
   if (kmsKey !== undefined && kmsDataKeyReusePeriodSeconds !== undefined
