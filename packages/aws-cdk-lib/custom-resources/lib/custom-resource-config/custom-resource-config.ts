@@ -14,7 +14,7 @@ export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resour
  */
 export class CustomResourceConfig {
   /**
-   * Returns the tags API for this scope.
+   * Returns the CustomResourceConfig for this scope.
    * @param scope The scope
    */
   public static of(scope: IConstruct): CustomResourceConfig {
@@ -35,24 +35,23 @@ export class CustomResourceConfig {
  * Manages log retention for AWS vended custom resources within a construct scope.
  */
 export class CustomResourceLogRetention implements IAspect {
-  private readonly SET_LOG_RETENTION: logs.RetentionDays;
+  private readonly logRetention: logs.RetentionDays;
 
   constructor(setLogRetention: logs.RetentionDays) {
-    this.SET_LOG_RETENTION = setLogRetention;
+    this.logRetention = setLogRetention;
   }
   visit(node: IConstruct) {
     for (const metadataEntry of node.node.metadata as MetadataEntry[]) {
       if (metadataEntry.type == CUSTOM_RESOURCE_SINGLETON_LOG_GROUP) {
         const localNode = node.node.defaultChild as logs.CfnLogGroup;
-        localNode.addPropertyOverride('RetentionInDays', this.SET_LOG_RETENTION);
+        localNode.addPropertyOverride('RetentionInDays', this.logRetention);
       }
 
       if (metadataEntry.type == CUSTOM_RESOURCE_SINGLETON) {
         const localNode = node.node.defaultChild as lambda.CfnFunction;
 
         if (localNode && !localNode.loggingConfig) {
-          const newLogGroup = this.createNewLogGroupForSingletonFunction(localNode);
-          newLogGroup.node.addMetadata(`${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}`, true);
+          const newLogGroup = this.createLogGroup(localNode);
           localNode.addPropertyOverride('LoggingConfig', {
             LogGroup: newLogGroup.logGroupName,
           });
@@ -61,7 +60,7 @@ export class CustomResourceLogRetention implements IAspect {
 
       if (metadataEntry.type == CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION) {
         let localNode = node.node.defaultChild as cloudformation.CfnCustomResource;
-        localNode.addPropertyOverride('RetentionInDays', this.SET_LOG_RETENTION);
+        localNode.addPropertyOverride('RetentionInDays', this.logRetention);
       }
     }
   }
@@ -71,9 +70,11 @@ export class CustomResourceLogRetention implements IAspect {
    * Returns a Cloudwatch LogGroup
    * @param {lambda.CfnFunction} scope - SingletonFunction
    */
-  private createNewLogGroupForSingletonFunction(scope: lambda.CfnFunction): logs.ILogGroup {
-    return new logs.LogGroup(scope, 'logGroup', {
-      retention: this.SET_LOG_RETENTION,
+  private createLogGroup(scope: lambda.CfnFunction): logs.ILogGroup {
+    const newLogGroup = new logs.LogGroup(scope, 'logGroup', {
+      retention: this.logRetention,
     });
+    newLogGroup.node.addMetadata(`${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}`, true);
+    return newLogGroup;
   }
 }
