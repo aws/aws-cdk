@@ -554,7 +554,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     // WHEN
     const taskDef = new ecs.FargateTaskDefinition(stack1, 'TaskDef', {
       cpu: 1024,
-      memoryLimitMiB: 2048,
+      memoryLimitMiB: 1024,
     });
     const container = taskDef.addContainer('Container', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -1816,7 +1816,7 @@ describe('NetworkLoadBalancedFargateService', () => {
     });
     const taskDef = new ecs.FargateTaskDefinition(stack2, 'TaskDef', {
       cpu: 1024,
-      memoryLimitMiB: 2048,
+      memoryLimitMiB: 1024,
     });
     const container = taskDef.addContainer('myContainer', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
