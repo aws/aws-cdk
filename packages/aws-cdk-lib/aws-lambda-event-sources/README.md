@@ -313,6 +313,39 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
+By default, Lambda will encrypt Filter Criteria using AWS managed keys. But if you want to use a self managed KMS key to encrypt the filters, You can specify the self managed key using the `filterEncryption` property.
+
+```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { Key } from 'aws-cdk-lib/aws-kms';
+
+// Your MSK cluster arn
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// Your self managed KMS key
+const myKey = Key.fromKeyArn(
+  this,
+  'SourceBucketEncryptionKey',
+  'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+);
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  filters: [
+    lambda.FilterCriteria.filter({
+      stringEquals: lambda.FilterRule.isEqual('test'),
+    }),
+  ],
+  filterEncryption: myKey,
+}));
+```
+
 You can also specify an S3 bucket as an "on failure" destination:
 
 ```ts

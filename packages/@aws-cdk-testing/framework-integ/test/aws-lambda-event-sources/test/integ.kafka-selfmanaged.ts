@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { TestFunction } from './test-function';
 import { AuthenticationMethod, SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 class KafkaSelfManagedEventSourceTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -60,6 +61,32 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
         ],
       }),
     );
+
+    const myKey = new Key(this, 'fc-test-key-name', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pendingWindow: cdk.Duration.days(7),
+      description: 'KMS key for test fc encryption',
+    });
+
+    const fn2 = new TestFunction(this, 'F2');
+    rootCASecret.grantRead(fn2);
+    clientCertificatesSecret.grantRead(fn2);
+
+    fn2.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic2',
+      consumerGroupId: 'myTestConsumerGroup2',
+      secret: clientCertificatesSecret,
+      authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filters: [
+        lambda.FilterCriteria.filter({
+          numericEquals: lambda.FilterRule.isEqual(2),
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
   }
 }
 
