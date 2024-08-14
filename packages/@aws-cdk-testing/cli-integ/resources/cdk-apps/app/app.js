@@ -428,7 +428,7 @@ class SessionTagsLambdaStack extends cdk.Stack {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
         deployRoleSessionTags: {
-          ['Department'] : 'Engineering',
+          'Department' : 'Engineering',
         },
       })
     });
