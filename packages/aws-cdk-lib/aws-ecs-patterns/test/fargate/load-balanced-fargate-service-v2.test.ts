@@ -642,8 +642,7 @@ describe('Application Load Balancer', () => {
       // WHEN
       new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
         cluster: new ecs.Cluster(stack, 'EcsCluster', { vpc }),
-        cpu: 256,
-        memoryLimitMiB: 512,
+        memoryLimitMiB: 256,
         taskImageOptions: {
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         },
