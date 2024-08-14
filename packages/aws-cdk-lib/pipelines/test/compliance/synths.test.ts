@@ -187,35 +187,35 @@ test('CodeBuild: environment variables specified in multiple places are correctl
   });
 
   // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: Match.objectLike({
-        PrivilegedMode: true,
-        EnvironmentVariables: Match.arrayWith([
-          {
-            Name: 'INNER_VAR',
-            Type: 'PLAINTEXT',
-            Value: 'InnerValue',
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Environment: Match.objectLike({
+      PrivilegedMode: true,
+      EnvironmentVariables: Match.arrayWith([
+        {
+          Name: 'INNER_VAR',
+          Type: 'PLAINTEXT',
+          Value: 'InnerValue',
+        },
+        {
+          Name: 'SOME_ENV_VAR',
+          Type: 'PLAINTEXT',
+          Value: 'SomeValue',
+        },
+      ]),
+    }),
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: ['install1', 'install2'],
           },
-          {
-            Name: 'SOME_ENV_VAR',
-            Type: 'PLAINTEXT',
-            Value: 'SomeValue',
+          build: {
+            commands: ['synth'],
           },
-        ]),
-      }),
-      Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            install: {
-              commands: ['install1', 'install2'],
-            },
-            build: {
-              commands: ['synth'],
-            },
-          },
-        })),
-      },
-    });
+        },
+      })),
+    },
+  });
 
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2', {
     synth: new cdkp.CodeBuildStep('Synth', {

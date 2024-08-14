@@ -516,13 +516,13 @@ test('adding environment variable to assets job adds SecretsManager permissions'
 
 describe('pipeline with single asset publisher', () => {
   test('other pipeline writes to separate assets build spec file', () => {
-    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
       publishAssetsInParallel: false,
     });
     pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
     const pipelineStack2 = new Stack(app, 'PipelineStack2', { env: PIPELINE_ENV });
-    const otherPipeline = new ModernTestGitHubNpmPipeline(pipelineStack2, 'Cdk', {
+    const otherPipeline = new ModernTestGitHubNpmPipeline(pipelineStack2, 'Cdk-2', {
       publishAssetsInParallel: false,
     });
     otherPipeline.addStage(new TwoFileAssetsApp(app, 'OtherFileAssetApp'));
@@ -558,28 +558,27 @@ describe('pipeline with single asset publisher', () => {
     });
     pipeline.addStage(new FileAssetApp(pipelineStack, 'MyApp'));
 
-  });
-
-  Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: 'secretsmanager:GetSecretValue',
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([{
+          Action: 'secretsmanager:GetSecretValue',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+              ],
             ],
-          ],
-        },
-      }]),
-    },
-    Roles: [
-      { Ref: 'PipelineAssetsFileRole59943A77' },
-    ],
+          },
+        }]),
+      },
+      Roles: [
+        { Ref: 'PipelineAssetsFileRole59943A77' },
+      ],
+    });
   });
 
   test('multiple assets are using the same job in singlePublisherMode', () => {
