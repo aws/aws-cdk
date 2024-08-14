@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "ResourcePolicyTest-v2": {
-        "id": "ResourcePolicyTest-v2",
-        "path": "ResourcePolicyTest-v2",
+      "resource-policy-stack-v2": {
+        "id": "resource-policy-stack-v2",
+        "path": "resource-policy-stack-v2",
         "children": {
           "TableTestV2-1": {
             "id": "TableTestV2-1",
-            "path": "ResourcePolicyTest-v2/TableTestV2-1",
+            "path": "resource-policy-stack-v2/TableTestV2-1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ResourcePolicyTest-v2/TableTestV2-1/Resource",
+                "path": "resource-policy-stack-v2/TableTestV2-1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
                   "aws:cdk:cloudformation:props": {
@@ -33,7 +33,9 @@
                     ],
                     "replicas": [
                       {
-                        "region": "eu-west-1",
+                        "region": {
+                          "Ref": "AWS::Region"
+                        },
                         "resourcePolicy": {
                           "policyDocument": {
                             "Statement": [
@@ -45,7 +47,11 @@
                                     "Fn::Join": [
                                       "",
                                       [
-                                        "arn:aws:iam::",
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::",
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
@@ -71,13 +77,56 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
+              "version": "0.0.0"
+            }
+          },
+          "TableTestV2-2": {
+            "id": "TableTestV2-2",
+            "path": "resource-policy-stack-v2/TableTestV2-2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "resource-policy-stack-v2/TableTestV2-2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "replicas": [
+                      {
+                        "region": {
+                          "Ref": "AWS::Region"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnGlobalTable",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "ResourcePolicyTest-v2/BootstrapVersion",
+            "path": "resource-policy-stack-v2/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -85,7 +134,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "ResourcePolicyTest-v2/CheckBootstrapVersion",
+            "path": "resource-policy-stack-v2/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -97,17 +146,17 @@
           "version": "0.0.0"
         }
       },
-      "table-v2-resource-policy-integ-test": {
-        "id": "table-v2-resource-policy-integ-test",
-        "path": "table-v2-resource-policy-integ-test",
+      "table-v2-policy": {
+        "id": "table-v2-policy",
+        "path": "table-v2-policy",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "table-v2-resource-policy-integ-test/DefaultTest",
+            "path": "table-v2-policy/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "table-v2-resource-policy-integ-test/DefaultTest/Default",
+                "path": "table-v2-policy/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -115,11 +164,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "table-v2-resource-policy-integ-test/DefaultTest/DeployAssert",
+                "path": "table-v2-policy/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "table-v2-resource-policy-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "table-v2-policy/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -127,7 +176,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "table-v2-resource-policy-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "table-v2-policy/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
