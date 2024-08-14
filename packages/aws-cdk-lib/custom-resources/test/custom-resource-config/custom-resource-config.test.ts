@@ -148,4 +148,3 @@ describe('when logGroup is specified', () => {
   });
 });
 
-
