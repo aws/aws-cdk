@@ -15,7 +15,12 @@
    "Properties": {
     "AddressFamily": "ipv6",
     "AwsService": "ec2",
-    "IpamScopeId": "DefaultPublicScope",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "Ipam50346F82",
+      "PublicDefaultScopeId"
+     ]
+    },
     "Locale": "eu-west-2",
     "PublicIpSource": "amazon"
    }

@@ -14,7 +14,12 @@
    "Type": "AWS::EC2::IPAMPool",
    "Properties": {
     "AddressFamily": "ipv4",
-    "IpamScopeId": "DefaultPrivateScope",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PrivateDefaultScopeId"
+     ]
+    },
     "Locale": "eu-central-1",
     "ProvisionedCidrs": [
      {
@@ -28,7 +33,12 @@
    "Properties": {
     "AddressFamily": "ipv6",
     "AwsService": "ec2",
-    "IpamScopeId": "DefaultPublicScope",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PublicDefaultScopeId"
+     ]
+    },
     "Locale": "eu-central-1",
     "PublicIpSource": "amazon"
    }

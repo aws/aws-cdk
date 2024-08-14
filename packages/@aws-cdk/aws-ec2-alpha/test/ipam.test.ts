@@ -43,7 +43,9 @@ describe('IPAM Test', () => {
       'AWS::EC2::IPAMPool',
       {
         AddressFamily: 'ipv6',
-        IpamScopeId: 'DefaultPublicScope',
+        IpamScopeId: {
+          'Fn::GetAtt': ['Ipam50346F82', 'PublicDefaultScopeId'],
+        },
         Locale: 'us-west-2',
       },
     ); //End Template
@@ -69,7 +71,9 @@ describe('IPAM Test', () => {
       'AWS::EC2::IPAMPool',
       {
         AddressFamily: 'ipv4',
-        IpamScopeId: 'DefaultPrivateScope',
+        IpamScopeId: {
+          'Fn::GetAtt': ['Ipam50346F82', 'PrivateDefaultScopeId'],
+        },
         Locale: 'us-west-2',
       },
     ); //End Template
@@ -97,7 +101,9 @@ describe('IPAM Test', () => {
           Type: 'AWS::EC2::IPAMPool',
           Properties: {
             AddressFamily: 'ipv6',
-            IpamScopeId: 'DefaultPublicScope',
+            IpamScopeId: {
+              'Fn::GetAtt': ['TestIpamDBF92BA8', 'PublicDefaultScopeId'],
+            },
             Locale: 'us-west-2',
           },
         },
@@ -129,7 +135,9 @@ describe('IPAM Test', () => {
           Type: 'AWS::EC2::IPAMPool',
           Properties: {
             AddressFamily: 'ipv6',
-            IpamScopeId: 'DefaultPublicScope',
+            IpamScopeId: {
+              'Fn::GetAtt': ['TestIpamDBF92BA8', 'PublicDefaultScopeId'],
+            },
             Locale: 'us-west-2',
           },
         },
