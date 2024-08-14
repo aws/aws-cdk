@@ -229,7 +229,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     this.routeTableAssociation = routeAssoc;
     this._internetConnectivityEstablished.add(routeAssoc);
-
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     this.subnetType = props.subnetType;
@@ -277,7 +276,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   public get networkAcl(): INetworkAcl {
     return this._networkAcl;
   }
-
 }
 
 const subnetTypeMap = {
