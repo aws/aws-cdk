@@ -3,7 +3,7 @@
   "testCases": {
     "integ-test-custom-resource-config-undefined-log/DefaultTest": {
       "stacks": [
-        "test-custom-resource-config-undefined-log"
+        "MyStack"
       ],
       "diffAssets": false,
       "assertionStack": "integ-test-custom-resource-config-undefined-log/DefaultTest/DeployAssert",

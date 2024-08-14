@@ -2,7 +2,7 @@ import { IConstruct, MetadataEntry } from 'constructs';
 import * as cloudformation from '../../../aws-cloudformation';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { IAspect, Aspects } from '../../../core/lib';
+import { IAspect, Aspects, RemovalPolicy } from '../../../core/lib';
 
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
@@ -28,6 +28,12 @@ export class CustomResourceConfig {
    */
   public addLogRetentionLifetime(rentention: logs.RetentionDays) {
     Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention));
+  }
+  /**
+   * Set the deletion policy of the available logGroup on AWS vended custom resources that have CDK metadata from the CDK library.
+   */
+  public addRemovalPolicy(removalPolicy: RemovalPolicy) {
+    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy));
   }
 }
 
@@ -76,5 +82,24 @@ export class CustomResourceLogRetention implements IAspect {
     });
     newLogGroup.node.addMetadata(`${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}`, true);
     return newLogGroup;
+  }
+}
+
+/**
+ * Manages removal policy for log group of AWS vended custom resources within a construct scope.
+ */
+export class CustomResourceRemovalPolicy implements IAspect {
+  private readonly removalPolicy: RemovalPolicy;
+
+  constructor(removalPolicy: RemovalPolicy) {
+    this.removalPolicy = removalPolicy;
+  }
+  visit(node: IConstruct) {
+    for (const metadataEntry of node.node.metadata as MetadataEntry[]) {
+      if (metadataEntry.type == CUSTOM_RESOURCE_SINGLETON_LOG_GROUP) {
+        const localNode = node.node.defaultChild as logs.CfnLogGroup;
+        localNode.applyRemovalPolicy(this.removalPolicy);
+      }
+    }
   }
 }

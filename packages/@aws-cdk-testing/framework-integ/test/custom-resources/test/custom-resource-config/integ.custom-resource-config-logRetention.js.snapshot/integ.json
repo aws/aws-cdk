@@ -3,7 +3,7 @@
   "testCases": {
     "integ-test-custom-resource-config-logRetention/DefaultTest": {
       "stacks": [
-        "test-custom-resource-config-logRetention"
+        "MyStack"
       ],
       "diffAssets": false,
       "assertionStack": "integ-test-custom-resource-config-logRetention/DefaultTest/DeployAssert",
