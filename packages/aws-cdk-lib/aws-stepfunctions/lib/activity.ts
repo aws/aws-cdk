@@ -19,7 +19,7 @@ export interface ActivityProps {
   readonly activityName?: string;
 
   /**
-   * Specifies a symmetric customer managed KMS key for server-side encryption of the state machine definition and execution history.
+   * Specifies a symmetric customer managed KMS key for server-side encryption of the activity inputs.
    * Step Functions will reuse the key for a maximum of `kmsDataKeyReusePeriodSeconds`.
    *
    * @default - data is transparently encrypted using an AWS owned key
