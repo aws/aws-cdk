@@ -426,9 +426,11 @@ class SessionTagsLambdaStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, {
       ...props,
-      // synthesizer: new DefaultStackSynthesizer({
-      //   session
-      // })
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleSessionTags: {
+          ['Department'] : 'Engineering',
+        },
+      })
     });
 
     const fn = new lambda.Function(this, 'my-function', {
@@ -694,7 +696,7 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
-    new SessionTagsLambdaStack(app, `${stackPrefix}-sesion-tags-lambda`);
+    new SessionTagsLambdaStack(app, `${stackPrefix}-session-tags-lambda`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
