@@ -908,16 +908,4 @@ export class BetaStack extends cdk.Stack {
 }
 ```
 
-The following example configures custom resource log groups deletion policy:
-```ts
-    import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
-    const stack = new cdk.Stack(app);
-    CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
-
-    let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 's3deployNone', {
-      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-      destinationBucket: websiteBucket,
-    });
-```

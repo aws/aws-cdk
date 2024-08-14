@@ -148,47 +148,4 @@ describe('when logGroup is specified', () => {
   });
 });
 
-describe('when removalPolicy is specified', () => {
-  test('with logGroup specified, logGroup set to delete ', () => {
-    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
-    const app = new cdk.App();
-    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
-    const stack = new cdk.Stack(app);
-
-    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
-      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-      destinationBucket: websiteBucket,
-      logGroup: new logs.LogGroup(stack, 'LogGroup', { }),
-    });
-
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::Logs::LogGroup', 1);
-    template.hasResource('AWS::Logs::LogGroup', {
-      UpdateReplacePolicy: 'Delete',
-      DeletionPolicy: 'Delete',
-    });
-  });
-
-  test('no logGroup specified, CustomLogRetention, logGroup set to delete ', () => {
-    const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
-    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
-    const app = new cdk.App();
-    CustomResourceConfig.of(app).addLogRetentionLifetime(customResourceLogRetention);
-    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
-    const stack = new cdk.Stack(app);
-
-    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
-      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-      destinationBucket: websiteBucket,
-    });
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::Logs::LogGroup', 1);
-    template.hasResource('AWS::Logs::LogGroup', {
-      UpdateReplacePolicy: 'Delete',
-      DeletionPolicy: 'Delete',
-    });
-  });
-});
 
