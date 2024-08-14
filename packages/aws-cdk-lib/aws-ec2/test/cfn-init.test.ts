@@ -136,6 +136,68 @@ test('empty configs are not rendered', () => {
   });
 });
 
+test('duplicate config arguments not deduplicated', () => {
+  //GIVEN
+  const config = new ec2.InitConfig([
+    ec2.InitCommand.argvCommand([
+      'useradd', '-u', '1001', '-g', '1001', 'eguser',
+    ]),
+    ec2.InitCommand.argvCommand([
+      'useradd', '-a', '-u', '1001', '-g', '1001', 'eguser',
+    ]),
+  ]);
+
+  // WHEN
+  const init = ec2.CloudFormationInit.fromConfigSets({
+    configSets: { default: ['config'] },
+    configs: { config },
+  });
+  init.attach(resource, linuxOptions());
+
+  // THEN
+  expectMetadataLike({
+    'AWS::CloudFormation::Init': {
+      configSets: {
+        default: ['config'],
+      },
+      config: {
+        commands: {
+          '000': {
+            command: ['useradd', '-u', '1001', '-g', '1001', 'eguser'],
+          },
+          '001': {
+            command: ['useradd', '-a', '-u', '1001', '-g', '1001', 'eguser'],
+          },
+        },
+      },
+    },
+  });
+});
+
+test('deepMerge properly deduplicates non-command arguments', () => {
+  // WHEN
+  const config = new ec2.InitConfig([
+    ec2.InitSource.fromUrl('/tmp/blinky', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/blinky', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/pinky', 'https://amazon.com/pinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/pinky', 'https://amazon.com/pinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/inky', 'https://amazon.com/inky.zip'),
+    ec2.InitSource.fromUrl('/tmp/clyde', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/clyde', 'https://amazon.com/blinky.zip'),
+    ec2.InitSource.fromUrl('/tmp/clyde', 'https://amazon.com/blinky.zip'),
+  ]);
+
+  // THEN
+  expect(config._bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
+    sources: {
+      '/tmp/blinky': 'https://amazon.com/blinky.zip',
+      '/tmp/pinky': 'https://amazon.com/pinky.zip',
+      '/tmp/inky': 'https://amazon.com/inky.zip',
+      '/tmp/clyde': 'https://amazon.com/blinky.zip',
+    },
+  }));
+});
+
 describe('userdata', () => {
   let simpleInit: ec2.CloudFormationInit;
   beforeEach(() => {
