@@ -192,6 +192,7 @@ describe('when removalPolicy is specified', () => {
     });
   });
 });
+
 describe('when lambdaRuntime is specified', () => {
   test('upgrade lambda runtime to user defined from python3.9 to python3.12', () => {
     const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
