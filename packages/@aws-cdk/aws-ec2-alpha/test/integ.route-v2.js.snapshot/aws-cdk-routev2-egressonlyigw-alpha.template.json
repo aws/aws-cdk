@@ -32,30 +32,11 @@
     }
    }
   },
-  "TestRoottableRouteC5589CBD": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "DestinationIpv6CidrBlock": "0.0.0.0/0",
-    "EgressOnlyInternetGatewayId": {
-     "Fn::GetAtt": [
-      "testEOIGWEIGW54CCAD37",
-      "Id"
-     ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
-    }
-   }
-  },
   "eigwSubnetCC28B9F9": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "us-east-1a",
+    "AvailabilityZone": "us-west-1a",
     "CidrBlock": "10.0.0.0/24",
     "VpcId": {
      "Fn::GetAtt": [
@@ -99,8 +80,8 @@
   "testEIGWRouteEB4FE8D5": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "DestinationCidrBlock": "10.0.0.0/24",
-    "DestinationIpv6CidrBlock": "10.0.0.0/24",
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "DestinationIpv6CidrBlock": "0.0.0.0/0",
     "EgressOnlyInternetGatewayId": {
      "Fn::GetAtt": [
       "testEOIGWEIGW54CCAD37",

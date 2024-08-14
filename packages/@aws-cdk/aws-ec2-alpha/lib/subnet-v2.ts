@@ -227,8 +227,10 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       routeTableId: this._routeTable.routeTableId,
     });
 
+
     this.routeTableAssociation = routeAssoc;
     this._internetConnectivityEstablished.add(routeAssoc);
+
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     this.subnetType = props.subnetType;
@@ -251,6 +253,13 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       networkAcl,
       subnet: this,
     });
+  }
+
+  /**
+   * Return the Route Table associated with this subnet
+   */
+  public get routeTable(): IRouteTable {
+    return this._routeTable;
   }
 
   /**
