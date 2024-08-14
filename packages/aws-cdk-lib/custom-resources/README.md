@@ -829,6 +829,8 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
 
 You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
 
+*Please understand that there is no guarantee the order in which Custom Resource Config is run. More than one Custom Resource Config of the same scope might result in conflict.
+
 The following example configures every custom resource in this CDK app to retain its logs for ten years:
 ```ts
     import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
@@ -907,5 +909,3 @@ export class BetaStack extends cdk.Stack {
     }
 }
 ```
-
-
