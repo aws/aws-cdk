@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
+import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
 import { Annotations, Aws, CustomResource, Names, Stack } from '../../core';
 import { S3OriginAccessControlKeyPolicyProvider } from '../../custom-resource-handlers/dist/aws-cloudfront-origins/s3-origin-access-control-key-policy-provider.generated';
-import { IKey } from '../../aws-kms';
-import { AccessLevel } from '../../aws-cloudfront';
 
 const BUCKET_ACTIONS = {
   READ: ['s3:GetObject'],
@@ -52,12 +52,15 @@ export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
  * A S3 Bucket Origin
  */
 export abstract class S3BucketOrigin extends cloudfront.OriginBase {
+  /**
+   * Create a S3 Origin with Origin Access Control (OAI) configured
+   */
   public static withOriginAccessControl(bucket: IBucket, props?: S3BucketOriginWithOACProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
       private originAccessControl?: cloudfront.IOriginAccessControl;
 
       constructor() {
-        super(bucket, {...props});
+        super(bucket, { ...props });
         this.originAccessControl = props?.originAccessControl;
       }
 
@@ -93,7 +96,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
       getActions(accessLevels: cloudfront.AccessLevel[]) {
         let actions: string[] = [];
         for (const accessLevel of new Set(accessLevels)) {
-            actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
+          actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
         }
         return actions;
       }
@@ -145,12 +148,15 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
     }();
   }
 
+  /**
+   * Create a S3 Origin with Origin Access Identity (OAI) configured
+   */
   public static withOriginAccessIdentity(bucket: IBucket, props?: S3BucketOriginWithOAIProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
       private originAccessIdentity?: cloudfront.IOriginAccessIdentity;
 
       constructor() {
-        super(bucket, {...props});
+        super(bucket, { ...props });
         this.originAccessIdentity = props?.originAccessIdentity;
       }
 
@@ -190,10 +196,13 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
     }();
   }
 
+  /**
+   * Create a S3 Origin with default S3 bucket settings (no origin access control)
+   */
   public static withBucketDefaults(bucket: IBucket, props?: cloudfront.OriginProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
       constructor() {
-        super(bucket, {...props});
+        super(bucket, { ...props });
       }
     }();
   }
@@ -202,6 +211,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
     super(bucket.bucketRegionalDomainName, props);
   }
 
+  /** @internal */
   protected _bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     return super.bind(scope, options);
   }
