@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/55adc2a4d264e77d2c794df6cb13dd26ee0a9986d5b00a9bfe3cd48b6e0b2dfe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db1c5d9623e5e22db4e511f52daf89f93fb1cbb8f325df40d03d5c50413e63a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -259,7 +259,10 @@
         "/integ-ec2-multiple-instances-in-stack/SecondInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondInstance4834A636"
+            "data": "SecondInstance4834A636",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/integ-ec2-multiple-instances-in-stack/BootstrapVersion": [
