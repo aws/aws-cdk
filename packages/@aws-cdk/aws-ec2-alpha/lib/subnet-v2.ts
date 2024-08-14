@@ -1,9 +1,9 @@
 import { Resource, Names, Lazy } from 'aws-cdk-lib';
-import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
-import { RouteTable } from './route';
+import { IRouteTableV2, RouteTable } from './route';
 
 /**
  * Interface to define subnet CIDR
@@ -57,7 +57,7 @@ export interface SubnetV2Props {
    * Custom Route for subnet
    * @default Default route table
    */
-  readonly routeTable?: IRouteTable;
+  readonly routeTable?: IRouteTableV2;
 
   /**
    * The type of Subnet to configure.
@@ -154,7 +154,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
   private _networkAcl: INetworkAcl;
 
-  private _routeTable: IRouteTable;
+  private _routeTable: IRouteTableV2;
 
   private routeTableAssociation: CfnSubnetRouteTableAssociation;
 
@@ -216,7 +216,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     if (props.routeTable) {
       this._routeTable = props.routeTable;
     } else {
-      //Assigning a default route Table
+      // Assigning a default route table
       this._routeTable = new RouteTable(this, 'RouteTable', {
         vpc: props.vpc,
       });
@@ -256,7 +256,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   /**
    * Return the Route Table associated with this subnet
    */
-  public get routeTable(): IRouteTable {
+  public get routeTable(): IRouteTableV2 {
     return this._routeTable;
   }
 
@@ -264,7 +264,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * Associate a Route Table with this subnet.
    * @param routeTableProps The Route Table to associate with this subnet.
    */
-  public associateRouteTable(routeTableProps: IRouteTable) {
+  public associateRouteTable(routeTableProps: IRouteTableV2) {
     this._routeTable = routeTableProps;
     this.routeTableAssociation.addPropertyOverride('RouteTableId', routeTableProps.routeTableId);
   }

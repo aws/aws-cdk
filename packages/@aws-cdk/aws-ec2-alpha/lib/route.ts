@@ -413,7 +413,7 @@ export interface IRouteV2 {
    * The ID of the route table for the route.
    * @attribute routeTable
    */
-  readonly routeTable: IRouteTable;
+  readonly routeTable: IRouteTableV2;
 
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
@@ -437,7 +437,7 @@ export interface RouteProps {
    * The ID of the route table for the route.
    * @attribute routeTable
    */
-  readonly routeTable: IRouteTable;
+  readonly routeTable: IRouteTableV2;
 
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
@@ -479,7 +479,7 @@ export class Route extends Resource implements IRouteV2 {
    * The route table for the route.
    * @attribute routeTable
    */
-  public readonly routeTable: IRouteTable;
+  public readonly routeTable: IRouteTableV2;
 
   /**
    * The type of router the route is targetting
@@ -528,6 +528,15 @@ export class Route extends Resource implements IRouteV2 {
   }
 }
 
+export interface IRouteTableV2 extends IRouteTable {
+  /**
+   * Adds a new custom route to the route table.
+   * @param destination The IPv4 or IPv6 CIDR block used for the destination match.
+   * @param target The gateway or endpoint targeted by the route.
+   */
+  addRoute(destination: string, target: RouteTargetType): void;
+}
+
 /**
  * Properties to define a route table.
  */
@@ -548,7 +557,7 @@ export interface RouteTableProps {
  * Creates a route table for the specified VPC
  * @resource AWS::EC2::RouteTable
  */
-export class RouteTable extends Resource implements IRouteTable, IDependable {
+export class RouteTable extends Resource implements IRouteTableV2, IDependable {
   /**
    * The ID of the route table.
    */
