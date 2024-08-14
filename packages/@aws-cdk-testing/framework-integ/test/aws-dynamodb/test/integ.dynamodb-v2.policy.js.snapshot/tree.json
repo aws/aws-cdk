@@ -71,7 +71,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
               "version": "0.0.0"
             }
           },
