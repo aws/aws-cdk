@@ -18,14 +18,14 @@ describe('S3OriginAccessControl', () => {
   test('creates an OriginAccessControl with custom properties', () => {
     const description = 'Test description';
     const originAccessControlName = 'TestS3OriginAccessControl';
-    const signingBehavior = SigningBehavior.NEVER;
+    const signingBehavior = SigningBehavior.NO_OVERRIDE;
     const signingProtocol = SigningProtocol.SIGV4;
     const originAccessControlOriginType = OriginAccessControlOriginType.S3;
 
     new S3OriginAccessControl(stack, 'MyS3OriginAccessControl', {
       description,
       originAccessControlName,
-      signing: Signing.SIGV4_NO_OVERRIDE
+      signing: Signing.SIGV4_NO_OVERRIDE,
     });
 
     const template = Template.fromStack(stack);
