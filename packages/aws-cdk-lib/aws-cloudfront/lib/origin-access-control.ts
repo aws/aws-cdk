@@ -34,17 +34,20 @@ export interface OriginAccessControlBaseProps {
   readonly signing?: Signing;
 }
 
+/**
+ * The level of permissions granted to the CloudFront Distribution when configuring OAC
+ */
 export enum AccessLevel {
   /**
-   * Grants 's3:GetObject' permission to OAC
+   * Grants read permissions to CloudFront Distribution
    */
   READ = 'READ',
   /**
-   * Grants 's3:PutObject' permission to OAC
+   * Grants write permission to CloudFront Distribution
    */
   WRITE = 'WRITE',
   /**
-   * Grants 's3:DeleteObject' permission to OAC
+   * Grants delete permission to CloudFront Distribution
    */
   DELETE = 'DELETE',
 }
@@ -154,8 +157,6 @@ export class Signing {
 
 /**
  * An Origin Access Control.
- * @resource AWS::CloudFront::OriginAccessControl
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
  * @internal
  */
 export abstract class OriginAccessControlBase extends Resource implements IOriginAccessControl {
@@ -168,6 +169,8 @@ export abstract class OriginAccessControlBase extends Resource implements IOrigi
 
 /**
  * An Origin Access Control for Amazon S3 origins.
+ * @resource AWS::CloudFront::OriginAccessControl
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
  */
 export class S3OriginAccessControl extends OriginAccessControlBase {
   /**
@@ -187,7 +190,7 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
    */
   public readonly originAccessControlId: string;
 
-  constructor(scope: Construct, id: string, props: OriginAccessControlBaseProps = {}) {
+  constructor(scope: Construct, id: string, props: S3OriginAccessControlProps = {}) {
     super(scope, id);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
