@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "test-custom-resource-config-undefined-log.assets": {
+    "MyStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "test-custom-resource-config-undefined-log.assets.json",
+        "file": "MyStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "test-custom-resource-config-undefined-log": {
+    "MyStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "test-custom-resource-config-undefined-log.template.json",
+        "templateFile": "MyStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/356c9c96351f7cc89a01d3f29cb5d3c5f3f797304f544fc9163fec1faf7a94b9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce0a6bec1c9e10557d8436e3c5dc0e5f06542681dd67981a5fdc4daa2d9475ae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "test-custom-resource-config-undefined-log.assets"
+          "MyStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,71 +31,77 @@
         }
       },
       "dependencies": [
-        "test-custom-resource-config-undefined-log.assets"
+        "MyStack.assets"
       ],
       "metadata": {
-        "/test-custom-resource-config-undefined-log/WebsiteBucket/Resource": [
+        "/MyStack/WebsiteBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "WebsiteBucket75C24D94"
           }
         ],
-        "/test-custom-resource-config-undefined-log/s3deployNone/AwsCliLayer/Resource": [
+        "/MyStack/s3deployNone/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "s3deployNoneAwsCliLayer8E653504"
           }
         ],
-        "/test-custom-resource-config-undefined-log/s3deployNone/CustomResource/Default": [
+        "/MyStack/s3deployNone/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "s3deployNoneCustomResource0EA66D66"
           }
         ],
-        "/test-custom-resource-config-undefined-log/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+        "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           }
         ],
-        "/test-custom-resource-config-undefined-log/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+        "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
           }
         ],
-        "/test-custom-resource-config-undefined-log/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+        "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
           }
         ],
-        "/test-custom-resource-config-undefined-log/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+        "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/test-custom-resource-config-undefined-log/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource/logGroup/Resource": [
+        "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource/logGroup": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-logGroup",
+            "data": true
+          }
+        ],
+        "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource/logGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756ClogGroupD6937F08"
           }
         ],
-        "/test-custom-resource-config-undefined-log/BootstrapVersion": [
+        "/MyStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/test-custom-resource-config-undefined-log/CheckBootstrapVersion": [
+        "/MyStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "test-custom-resource-config-undefined-log"
+      "displayName": "MyStack"
     },
     "integtestcustomresourceconfigundefinedlogDefaultTestDeployAssertE1DBC36D.assets": {
       "type": "cdk:asset-manifest",
