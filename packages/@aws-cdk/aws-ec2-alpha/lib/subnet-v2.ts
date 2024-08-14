@@ -1,9 +1,9 @@
 import { Resource, Names, Lazy } from 'aws-cdk-lib';
-import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
-import { IRouteTableV2, RouteTable } from './route';
+import { RouteTable } from './route';
 
 /**
  * Interface to define subnet CIDR
@@ -57,7 +57,7 @@ export interface SubnetV2Props {
    * Custom Route for subnet
    * @default Default route table
    */
-  readonly routeTable?: IRouteTableV2;
+  readonly routeTable?: IRouteTable;
 
   /**
    * The type of Subnet to configure.
@@ -154,7 +154,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
   private _networkAcl: INetworkAcl;
 
-  private _routeTable: IRouteTableV2;
+  private _routeTable: IRouteTable;
 
   private routeTableAssociation: CfnSubnetRouteTableAssociation;
 
@@ -256,7 +256,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   /**
    * Return the Route Table associated with this subnet
    */
-  public get routeTable(): IRouteTableV2 {
+  public get routeTable(): IRouteTable {
     return this._routeTable;
   }
 
@@ -264,7 +264,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * Associate a Route Table with this subnet.
    * @param routeTableProps The Route Table to associate with this subnet.
    */
-  public associateRouteTable(routeTableProps: IRouteTableV2) {
+  public associateRouteTable(routeTableProps: IRouteTable) {
     this._routeTable = routeTableProps;
     this.routeTableAssociation.addPropertyOverride('RouteTableId', routeTableProps.routeTableId);
   }
