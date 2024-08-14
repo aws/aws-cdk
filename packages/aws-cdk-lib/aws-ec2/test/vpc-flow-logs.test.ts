@@ -712,6 +712,16 @@ test('log format for built-in types is correct', () => {
       LogFormat.PKT_DST_AWS_SERVICE,
       LogFormat.FLOW_DIRECTION,
       LogFormat.TRAFFIC_PATH,
+      LogFormat.ECS_CLUSTER_ARN,
+      LogFormat.ECS_CLUSTER_NAME,
+      LogFormat.ECS_CONTAINER_INSTANCE_ARN,
+      LogFormat.ECS_CONTAINER_INSTANCE_ID,
+      LogFormat.ECS_CONTAINER_ID,
+      LogFormat.ECS_SECOND_CONTAINER_ID,
+      LogFormat.ECS_SERVICE_NAME,
+      LogFormat.ECS_TASK_DEFINITION_ARN,
+      LogFormat.ECS_TASK_ARN,
+      LogFormat.ECS_TASK_ID,
     ],
   });
 
@@ -722,7 +732,10 @@ test('log format for built-in types is correct', () => {
                 + '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} '
                 + '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} '
                 + '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} '
-                + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}'),
+                + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path} '
+                + '${ecs-cluster-arn} ${ecs-cluster-name} ${ecs-container-instance-arn} ${ecs-container-instance-id} '
+                + '${ecs-container-id} ${ecs-second-container-id} ${ecs-service-name} ${ecs-task-definition-arn} '
+                + '${ecs-task-arn} ${ecs-task-id}'),
   });
 });
 
