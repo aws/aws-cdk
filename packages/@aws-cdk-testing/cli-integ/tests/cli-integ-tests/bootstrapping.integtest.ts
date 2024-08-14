@@ -82,17 +82,16 @@ integTest('can and deploy if omitting execution policies', withoutBootstrap(asyn
   });
 }));
 
-// Session Tags Bootstrapping test:
-integTest('can and deploy with session tags', withoutBootstrap(async (fixture) => {
+// Custom Bootstrap test with Session Tags on the DeployRole
+integTest('can deploy with session tags on the deploy role', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
   await fixture.cdkBootstrapModern({
     toolkitStackName: bootstrapStackName,
-    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-session-tags.yaml'),
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-deploy-role-tags.yaml'),
   });
 
-  // Deploy stack that uses file assets
-  await fixture.cdkDeploy('lambda', {
+  await fixture.cdkDeploy('session-tags-lambda', {
     options: [
       '--toolkit-stack-name', bootstrapStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
