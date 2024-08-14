@@ -161,6 +161,7 @@ export class CdkToolkit {
         let changeSet = undefined;
 
         if (options.changeSet) {
+
           let stackExists = false;
           try {
             stackExists = await this.props.deployments.stackExists({
@@ -211,6 +212,14 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     if (options.watch) {
       return this.watch(options);
+    }
+
+    if (options.notificationArns) {
+      options.notificationArns.map( arn => {
+        if (!validateSnsTopicArn(arn)) {
+          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+        }
+      });
     }
 
     const startSynthTime = new Date().getTime();
@@ -309,17 +318,7 @@ export class CdkToolkit {
         }
       }
 
-      let notificationArns: string[] = [];
-      notificationArns = notificationArns.concat(options.notificationArns ?? []);
-      notificationArns = notificationArns.concat(stack.notificationArns);
-
-      notificationArns.map(arn => {
-        if (!validateSnsTopicArn(arn)) {
-          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
-        }
-      });
-
-      const stackIndex = stacks.indexOf(stack) + 1;
+      const stackIndex = stacks.indexOf(stack)+1;
       print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
       const startDeployTime = new Date().getTime();
 
@@ -336,7 +335,7 @@ export class CdkToolkit {
           roleArn: options.roleArn,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
-          notificationArns,
+          notificationArns: options.notificationArns,
           tags,
           execute: options.execute,
           changeSetName: options.changeSetName,
