@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.151.1](https://github.com/aws/aws-cdk/compare/v2.151.0...v2.151.1) (2024-08-14)
+
+
+### Reverts
+
+* feat(ecs): add validation checks to memory cpu combinations of FARGATE compatible task definitions ([#31110](https://github.com/aws/aws-cdk/issues/31110)) ([8fdf015](https://github.com/aws/aws-cdk/commit/8fdf015fdc310d6d62cec31b6d89e1ff1decb8b6))
+
 ## [2.151.0](https://github.com/aws/aws-cdk/compare/v2.150.0...v2.151.0) (2024-08-01)
 
 
