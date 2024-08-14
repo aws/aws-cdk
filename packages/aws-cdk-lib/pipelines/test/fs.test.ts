@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { toPosixPath } from '../../lib/private/fs';
+import { toPosixPath } from '../lib/private/fs';
 
 test('translate path.sep', () => {
   expect(toPosixPath(`a${path.sep}b${path.sep}c`)).toEqual('a/b/c');
