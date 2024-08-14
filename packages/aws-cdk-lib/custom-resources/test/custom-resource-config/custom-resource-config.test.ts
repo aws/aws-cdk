@@ -1,5 +1,4 @@
 import { Template, Match } from '../../../assertions';
-import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as s3deploy from '../../../aws-s3-deployment';
@@ -193,41 +192,3 @@ describe('when removalPolicy is specified', () => {
   });
 });
 
-describe('when lambdaRuntime is specified', () => {
-  test('upgrade lambda runtime to user defined from python3.9 to python3.12', () => {
-    const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
-    const app = new cdk.App();
-    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
-    const stack = new cdk.Stack(app);
-
-    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
-      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-      destinationBucket: websiteBucket,
-    });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: customResourceRuntime.toString(),
-    });
-  });
-
-  test('will not change lambda runtime family, keep custom resource runtime at python3.9', () => {
-    const customResourceRuntime = lambda.Runtime.NODEJS_20_X;
-    const app = new cdk.App();
-    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
-    const stack = new cdk.Stack(app);
-
-    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 's3deployLogGroup', {
-      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-      destinationBucket: websiteBucket,
-    });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'python3.9',
-    });
-
-  });
-});

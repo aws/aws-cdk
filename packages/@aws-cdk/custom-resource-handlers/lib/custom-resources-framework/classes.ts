@@ -30,7 +30,6 @@ import {
   CUSTOM_RESOURCE_SINGLETON, 
   CUSTOM_RESOURCE_SINGLETON_LOG_GROUP, 
   CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION,
-  CUSTOM_RESOURCE_RUNTIME_FAMILY
 } from 'aws-cdk-lib/custom-resources'
 
 const CORE_INTERNAL_STACK_IMPORT_PATH = '../../stack';
@@ -223,7 +222,6 @@ export abstract class HandlerFrameworkClass extends ClassType {
         ]);
         const metadataStatements: Statement[] = [
           expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
-          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
           expr.directCode(`if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`),
           // We need to access the private `_logRetention` custom resource, the only public property - `logGroup` - provides an ARN reference to the resource, instead of the resource itself.
           expr.directCode(`if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`),

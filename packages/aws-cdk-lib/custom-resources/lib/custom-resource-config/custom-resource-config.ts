@@ -8,7 +8,6 @@ export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-cust
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
 export const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
 export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
-export const CUSTOM_RESOURCE_RUNTIME_FAMILY = 'aws:cdk:is-custom-resource-handler-runtime-family';
 
 /**
  * Manages AWS vended Custom Resources
@@ -35,12 +34,6 @@ export class CustomResourceConfig {
    */
   public addRemovalPolicy(removalPolicy: RemovalPolicy) {
     Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy));
-  }
-  /**
-   * Set the lambda runtime version on AWS vended custom resources that have CDK metadata from the CDK library.
-   */
-  public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
-    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime));
   }
 }
 
@@ -111,23 +104,3 @@ export class CustomResourceRemovalPolicy implements IAspect {
   }
 }
 
-/**
- * Manages Lambda Runtime for AWS vended custom resources within a construct scope.
- */
-export class CustomResourceLambdaRuntime implements IAspect {
-  private readonly lambdaRuntime: lambda.Runtime;
-
-  constructor(lambdaRuntime: lambda.Runtime) {
-    this.lambdaRuntime = lambdaRuntime;
-  }
-  visit(node: IConstruct) {
-    for (const metadataEntry of node.node.metadata as MetadataEntry[]) {
-      if (metadataEntry.type == CUSTOM_RESOURCE_RUNTIME_FAMILY) {
-        if (metadataEntry.data == this.lambdaRuntime.family) {
-          const localNode = node.node.defaultChild as lambda.CfnFunction;
-          localNode.addPropertyOverride('Runtime', this.lambdaRuntime.toString());
-        }
-      }
-    }
-  }
-}
