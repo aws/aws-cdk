@@ -1,3 +1,4 @@
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Lazy, Resource, IResolvable } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
@@ -36,6 +37,13 @@ export interface DomainOptions {
    * @default - all repository branches ['*', 'pr*']
    */
   readonly autoSubdomainCreationPatterns?: string[];
+
+  /**
+   * The type of SSL/TLS certificate to use for your custom domain
+   *
+   * @default - Amplify uses the default certificate that it provisions and manages for you
+   */
+  readonly customCertificate?: acm.ICertificate;
 }
 
 /**
@@ -130,6 +138,10 @@ export class Domain extends Resource {
       enableAutoSubDomain: !!props.enableAutoSubdomain,
       autoSubDomainCreationPatterns: props.autoSubdomainCreationPatterns || ['*', 'pr*'],
       autoSubDomainIamRole: props.autoSubDomainIamRole?.roleArn,
+      certificateSettings: props.customCertificate ? {
+        certificateType: 'CUSTOM',
+        customCertificateArn: props.customCertificate.certificateArn,
+      } : undefined,
     });
 
     this.arn = domain.attrArn;

@@ -1,4 +1,5 @@
 import { Template } from 'aws-cdk-lib/assertions';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
@@ -36,6 +37,78 @@ test('create a domain', () => {
       ],
     },
     DomainName: 'amazon.com',
+    SubDomainSettings: [
+      {
+        BranchName: {
+          'Fn::GetAtt': [
+            'AppmainF505BAED',
+            'BranchName',
+          ],
+        },
+        Prefix: 'prod',
+      },
+      {
+        BranchName: {
+          'Fn::GetAtt': [
+            'AppdevB328DAFC',
+            'BranchName',
+          ],
+        },
+        Prefix: {
+          'Fn::GetAtt': [
+            'AppdevB328DAFC',
+            'BranchName',
+          ],
+        },
+      },
+    ],
+  });
+});
+
+test('create a domain with custom certificate', () => {
+  // GIVEN
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+  });
+  const prodBranch = app.addBranch('main');
+  const devBranch = app.addBranch('dev');
+
+  const customCertificate = new acm.Certificate(stack, 'Cert', {
+    domainName: '*.example.com',
+  });
+
+  // WHEN
+  const domain = app.addDomain('example.com', {
+    subDomains: [
+      {
+        branch: prodBranch,
+        prefix: 'prod',
+      },
+    ],
+    customCertificate,
+  });
+  domain.mapSubDomain(devBranch);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
+    AppId: {
+      'Fn::GetAtt': [
+        'AppF1B96344',
+        'AppId',
+      ],
+    },
+    DomainName: 'example.com',
+    CertificateSettings: {
+      CertificateType: 'CUSTOM',
+      CustomCertificateArn: {
+        Ref: 'Cert5C9FAEC1',
+      },
+    },
     SubDomainSettings: [
       {
         BranchName: {
