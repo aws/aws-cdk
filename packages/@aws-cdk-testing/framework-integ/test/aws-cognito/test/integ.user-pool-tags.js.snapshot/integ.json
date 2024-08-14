@@ -1,0 +1,13 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "IntegUserPoolTags/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-tags"
+      ],
+      "diffAssets": true,
+      "assertionStack": "IntegUserPoolTags/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegUserPoolTagsDefaultTestDeployAssert1D43EBD4"
+    }
+  }
+}

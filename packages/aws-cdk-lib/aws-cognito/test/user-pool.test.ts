@@ -2085,6 +2085,27 @@ describe('User Pool', () => {
       }),
     })).toThrow(/"fromEmail" contains a different domain than the "sesVerifiedDomain"/);
   });
+
+  test('user pool tags', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      tags: {
+        tag1: 'foo',
+        tag2: 'bar',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      UserPoolTags: {
+        tag1: 'foo',
+        tag2: 'bar',
+      },
+    });
+  });
 });
 
 test('device tracking is configured correctly', () => {

@@ -749,6 +749,12 @@ export interface UserPoolProps {
    * @default - no value
    */
   readonly advancedSecurityMode?: AdvancedSecurityMode;
+
+  /**
+   * The tags applied to the user pool.
+   * @default {} - no tags
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -1006,6 +1012,7 @@ export class UserPool extends UserPoolBase {
       deviceConfiguration: props.deviceTracking,
       userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
       deletionProtection: defaultDeletionProtection(props.deletionProtection),
+      userPoolTags: props.tags,
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 
