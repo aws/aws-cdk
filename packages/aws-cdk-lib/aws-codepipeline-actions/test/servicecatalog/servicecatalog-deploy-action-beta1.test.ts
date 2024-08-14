@@ -7,7 +7,7 @@ import * as cpactions from '../../lib';
 /* eslint-disable quote-props */
 
 describe('ServiceCatalog Deploy Action', () => {
-  test('addAction successfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath', () => {
+  test('addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath', () => {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
