@@ -15,7 +15,7 @@ export function validateEncryptionConfiguration(kmsKey: IKey | undefined, kmsDat
 
   if (kmsKey !== undefined && kmsDataKeyReusePeriodSeconds !== undefined
     && isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds)) {
-    throw new Error('kmsDataKeyReusePeriodSeconds needs to be a value between 60 and 900');
+    throw new Error('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   }
 }
 function isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: Duration) {
