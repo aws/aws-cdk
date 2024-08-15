@@ -170,6 +170,7 @@ export class PublishingAws implements cdk_assets.IAws {
       env, // region, name, account
       assumeRuleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
+      assumeRoleSessionTags: options.assumeRoleSessionTags,
       quiet: options.quiet,
     });
 
@@ -181,6 +182,7 @@ export class PublishingAws implements cdk_assets.IAws {
     const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
+      assumeRoleSessionTags: options.assumeRoleSessionTags,
     }, options.quiet)).sdk;
     this.sdkCache.set(cacheKey, sdk);
 

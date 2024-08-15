@@ -362,6 +362,13 @@
                     "description": "External ID to use when assuming role for cloudformation deployments (Default - No external ID)",
                     "type": "string"
                 },
+                "assumeRoleSessionTags": {
+                    "description": "The session tags to use for the assume role (Default - No Session Tags)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "cloudFormationExecutionRoleArn": {
                     "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
                     "type": "string"
@@ -402,6 +409,13 @@
                 "assumeRoleExternalId": {
                     "description": "External ID to use when assuming the bootstrap role (Default - No external ID)",
                     "type": "string"
+                },
+                "assumeRoleSessionTags": {
+                    "description": "The session tags to use for the assume role (Default - No Session Tags)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "requiresBootstrapStackVersion": {
                     "description": "Version of bootstrap stack required to use this role (Default - No bootstrap stack required)",

@@ -90,6 +90,13 @@ export interface AwsCloudFormationStackProperties {
   readonly assumeRoleExternalId?: string;
 
   /**
+   * The session tags to use for the assume role
+   *
+   * @default - No Session Tags
+   */
+  readonly assumeRoleSessionTags?: { [key: string]: string};
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)

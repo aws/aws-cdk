@@ -97,6 +97,13 @@
                 "assumeRoleExternalId": {
                     "description": "The ExternalId that needs to be supplied while assuming this role (Default - No ExternalId will be supplied)",
                     "type": "string"
+                },
+                "assumeRoleSessionTags": {
+                    "description": "The session tags to use for the assume role (Default - No Session Tags)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             },
             "required": [
@@ -241,6 +248,13 @@
                 "assumeRoleExternalId": {
                     "description": "The ExternalId that needs to be supplied while assuming this role (Default - No ExternalId will be supplied)",
                     "type": "string"
+                },
+                "assumeRoleSessionTags": {
+                    "description": "The session tags to use for the assume role (Default - No Session Tags)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             },
             "required": [

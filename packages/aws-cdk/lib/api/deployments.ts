@@ -492,6 +492,7 @@ export class Deployments {
     const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
       assumeRoleExternalId: stack.assumeRoleExternalId,
+      assumeRoleSessionTags: stack.assumeRoleSessionTags,
     });
 
     return {
@@ -677,6 +678,7 @@ export class Deployments {
       `${mode}`,
       options?.assumeRoleArn ?? '',
       options?.assumeRoleExternalId ?? '',
+      options?.assumeRoleSessionTags ?? '',
     ].join(':');
     const existing = this.sdkCache.get(cacheKey);
     if (existing) {

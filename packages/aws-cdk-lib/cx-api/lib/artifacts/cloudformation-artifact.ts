@@ -93,6 +93,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   readonly assumeRoleExternalId?: string;
 
   /**
+   * The session tags to use for the assume role
+   *
+   * @default - No Session Tags
+   */
+  readonly assumeRoleSessionTags?: { [key: string]: string};
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
@@ -160,6 +167,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.tags = properties.tags ?? this.tagsFromMetadata();
     this.assumeRoleArn = properties.assumeRoleArn;
     this.assumeRoleExternalId = properties.assumeRoleExternalId;
+    this.assumeRoleSessionTags = properties.assumeRoleSessionTags;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
