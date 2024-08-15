@@ -16,7 +16,13 @@ import {
   $T,
   Statement,
 } from '@cdklabs/typewriter';
-import { Runtime } from './config';
+import { 
+  Runtime,
+  CUSTOM_RESOURCE_PROVIDER, 
+  CUSTOM_RESOURCE_SINGLETON, 
+  CUSTOM_RESOURCE_SINGLETON_LOG_GROUP, 
+  CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION,
+ } from './config';
 import { HandlerFrameworkModule } from './framework';
 import {
   PATH_MODULE,
@@ -25,12 +31,6 @@ import {
   CORE_MODULE,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
-import {
-  CUSTOM_RESOURCE_PROVIDER, 
-  CUSTOM_RESOURCE_SINGLETON, 
-  CUSTOM_RESOURCE_SINGLETON_LOG_GROUP, 
-  CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION,
-} from './config'
 
 const CORE_INTERNAL_STACK_IMPORT_PATH = '../../stack';
 const CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH = '../../custom-resource-provider';
