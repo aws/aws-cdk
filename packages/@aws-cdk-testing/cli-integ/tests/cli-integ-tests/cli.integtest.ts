@@ -1824,6 +1824,22 @@ integTest('hotswap deployment for ecs service detects failed deployment and erro
 }));
 
 integTest('hotswap ECS deployment respects properties override', withDefaultFixture(async (fixture) => {
+  // Update the CDK context with the new ECS properties
+  let ecsMinimumHealthyPercent = 100;
+  let ecsMaximumHealthyPercent = 200;
+  let cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+  cdkJson = {
+    ...cdkJson,
+    hotswap: {
+      ecs: {
+        minimumHealthyPercent: ecsMinimumHealthyPercent,
+        maximumHealthyPercent: ecsMaximumHealthyPercent,
+      },
+    },
+  };
+
+  await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+
   // GIVEN
   const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
     captureStderr: false,
@@ -1851,8 +1867,8 @@ integTest('hotswap ECS deployment respects properties override', withDefaultFixt
     cluster: clusterName,
     services: [serviceName],
   });
-  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(100);
-  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(200);
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(ecsMinimumHealthyPercent);
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(ecsMaximumHealthyPercent);
 
 }));
 
