@@ -51,12 +51,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.3.tgz#9b5d213b5ce5ad4461f6a4720195ff8de72e6523"
   integrity sha512-twhuEG+JPOYCYPx/xy5uH2+VUsIEhPTzDY0F1KuB+ocjWWB/KEDiOVL19nHvbPCB6fhWnkykXEMJ4HHcKvjtvg==
 
-"@aws-cdk/aws-service-spec@^0.1.16":
-  version "0.1.16"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.16.tgz#2cb1f7b1783c4dc362492296ebf61c7fd5cc88c7"
-  integrity sha512-9NX+04puH6zkTQY2shOzSWa8Ge1sdz0M4sqZw/UI9mgHbflfhxgSkjTwz6Fe/B3FH3ZA1RXl/wW6ThEqeAb3fw==
+"@aws-cdk/aws-service-spec@^0.1.17":
+  version "0.1.17"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.17.tgz#8d3cf28223e8d43caf37cb28b96e1185c190bfbe"
+  integrity sha512-QCrkR16/gbWoQJiDdP8JhnMWcRCHkhslnRXMg8q3GfEFZ9p0SD3dqrXBCjT4imQQJUn1jrfWWufo5yz4KpbP7w==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.84"
+    "@aws-cdk/service-spec-types" "^0.0.85"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^36.0.0":
@@ -117,6 +117,13 @@
   version "0.0.84"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.84.tgz#b6fa7429bb556d26eb39c18a2ee9802079bdb234"
   integrity sha512-AM3ghRsd9cZlpW+nuVRRdQiPuGV9iWDyHnR/Vjd9xKQEf+Qmh9vnRmB205rFncAIlbFjHXxgapII+lujHCGDmQ==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.85":
+  version "0.0.85"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.85.tgz#6d1d8d6720c50d44f0519a50b519dbcb33962203"
+  integrity sha512-cqTOKSy4ASJISezk4c3dv4AxGt1C8UfUdux9r58jmuNwNROjPfVTuAnSweACbmG18A1/rVvfyTUt5E72otYqgQ==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -7297,9 +7304,9 @@ axios@^0.27.2:
     form-data "^4.0.0"
 
 axios@^1.6.0, axios@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.7.2.tgz#b625db8a7051fbea61c35a3cbb3a1daa7b9c7621"
-  integrity sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==
+  version "1.7.4"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.7.4.tgz#4c8ded1b43683c8dd362973c393f3ede24052aa2"
+  integrity sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
