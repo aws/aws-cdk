@@ -468,7 +468,7 @@ export interface KeyProps {
    */
   readonly keyUsage?: KeyUsage;
 
-    /**
+  /**
    * Creates a multi-Region primary key that you can replicate in other AWS Regions.
    * You can't change the MultiRegion value after the KMS key is created.
    *

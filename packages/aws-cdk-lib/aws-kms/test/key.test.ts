@@ -655,7 +655,7 @@ test('creates a multi-Region primary key', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     MultiRegion: true,
   });
-})
+});
 
 describe('imported keys', () => {
   test('throw an error when providing something that is not a valid key ARN', () => {
