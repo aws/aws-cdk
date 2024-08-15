@@ -834,6 +834,7 @@ CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEAR
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
 
 The following example configures every custom resource in this CDK app to retain its logs for ten years:
+
 ```ts
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
@@ -847,6 +848,7 @@ new s3deploy.BucketDeployment(stack, 's3deploy', {
   destinationBucket: websiteBucket,
 });
 ```
+
 The following example configures every custom resource in two top-level stacks to retain its log for ten years:
 ```ts
 const app = new App();
