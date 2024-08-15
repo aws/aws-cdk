@@ -4,7 +4,7 @@ import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableEcsServiceChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hostswapProperties: HotswapProperties,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapProperties: HotswapProperties,
 ): Promise<ChangeHotswapResult> {
   // the only resource change we can evaluate here is an ECS TaskDefinition
   if (change.newValue.Type !== 'AWS::ECS::TaskDefinition') {
@@ -34,7 +34,7 @@ export async function isHotswappableEcsServiceChange(
     // hotswap is not possible in FALL_BACK mode
     reportNonHotswappableChange(ret, change, undefined, 'No ECS services reference the changed task definition', false);
   } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
-    // if something besides an ECS Service is referencing the TaskDefinition,
+    // if something besides an ECS Service is rxeferencing the TaskDefinition,
     // hotswap is not possible in FALL_BACK mode
     const nonEcsServiceTaskDefRefs = resourcesReferencingTaskDef.filter(r => r.Type !== 'AWS::ECS::Service');
     for (const taskRef of nonEcsServiceTaskDefRefs) {
@@ -83,7 +83,7 @@ export async function isHotswappableEcsServiceChange(
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
-        let ecsHotswapProperties = hostswapProperties.ecsHotswapProperties;
+        let ecsHotswapProperties = hotswapProperties.ecsHotswapProperties;
         let minimumHealthyPercent = ecsHotswapProperties?.minimumHealthyPercent;
         let maximumHealthyPercent = ecsHotswapProperties?.maximumHealthyPercent;
 

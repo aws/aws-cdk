@@ -1833,8 +1833,6 @@ integTest('hotswap ECS deployment respects properties override', withDefaultFixt
   await fixture.cdkDeploy('ecs-hotswap', {
     options: [
       '--hotswap',
-      '--hotswap-ecs-minimum-healthy-percent', '100',
-      '--hotswap-ecs-maximum-healthy-percent', '200',
     ],
     modEnv: {
       DYNAMIC_ECS_PROPERTY_VALUE: 'new value',

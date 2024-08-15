@@ -16,7 +16,7 @@ import { CloudFormationStack } from './util/cloudformation';
 import { print } from '../logging';
 
 type HotswapDetector = (
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hostswapProperties: HotswapProperties,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapProperties: HotswapProperties,
 ) => Promise<ChangeHotswapResult>;
 
 const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
