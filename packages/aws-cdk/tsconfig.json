@@ -35,9 +35,6 @@
     "references": [
         {
             "path": "../@aws-cdk/cloudformation-diff"
-        },
-        {
-            "path": "../cdk-assets"
         }
     ]
 }
