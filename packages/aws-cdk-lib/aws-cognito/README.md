@@ -50,6 +50,9 @@ the `userPoolName` to give your own identifier to the user pool. If not, CloudFo
 new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
   signInCaseSensitive: false, // case insensitive is preferred in most situations
+  tags: {
+    environment: 'production',
+  },
 });
 ```
 
