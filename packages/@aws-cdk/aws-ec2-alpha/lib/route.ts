@@ -531,7 +531,7 @@ class Route extends Resource implements IRoute {
 /**
  * Properties to define a route table.
  */
-interface RouteTableProps {
+export interface RouteTableProps {
   /**
    * The ID of the VPC.
    */
