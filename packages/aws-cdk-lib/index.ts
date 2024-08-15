@@ -157,6 +157,7 @@ export * as aws_lambda from './aws-lambda';
 export * as aws_lambda_destinations from './aws-lambda-destinations';
 export * as aws_lambda_event_sources from './aws-lambda-event-sources';
 export * as aws_lambda_nodejs from './aws-lambda-nodejs';
+export * as aws_launchwizard from './aws-launchwizard';
 export * as aws_lex from './aws-lex';
 export * as aws_licensemanager from './aws-licensemanager';
 export * as aws_lightsail from './aws-lightsail';

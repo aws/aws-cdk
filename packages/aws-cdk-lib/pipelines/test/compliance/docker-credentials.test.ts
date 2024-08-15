@@ -6,7 +6,7 @@ import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { behavior, PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, DockerAssetApp, stringLike } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, DockerAssetApp, stringLike } from '../testhelpers';
 
 const secretSynthArn = 'arn:aws:secretsmanager:eu-west-1:0123456789012:secret:synth-012345';
 const secretUpdateArn = 'arn:aws:secretsmanager:eu-west-1:0123456789012:secret:update-012345';
@@ -30,247 +30,172 @@ afterEach(() => {
   app.cleanup();
 });
 
-behavior('synth action receives install commands and access to relevant credentials', (suite) => {
-  suite.legacy(() => {
-    const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk');
-    pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
+test('synth action receives install commands and access to relevant credentials', () => {
 
-    THEN_codePipelineExpectation();
+  const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
+  pipeline.addStage(new DockerAssetApp(app, 'App1'));
+
+  const expectedCredsConfig = JSON.stringify({
+    version: '1.0',
+    domainCredentials: { 'synth.example.com': { secretsManagerSecretId: secretSynthArn } },
   });
 
-  suite.modern(() => {
-    const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
-    pipeline.addStage(new DockerAssetApp(app, 'App1'));
-
-    THEN_codePipelineExpectation();
-  });
-
-  function THEN_codePipelineExpectation() {
-    const expectedCredsConfig = JSON.stringify({
-      version: '1.0',
-      domainCredentials: { 'synth.example.com': { secretsManagerSecretId: secretSynthArn } },
-    });
-
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
-      Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            pre_build: {
-              commands: Match.arrayWith([
-                'mkdir $HOME/.cdk',
-                `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
-              ]),
-            },
-            // Prove we're looking at the Synth project
-            build: {
-              commands: Match.arrayWith([stringLike('*cdk*synth*')]),
-            },
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          pre_build: {
+            commands: Match.arrayWith([
+              'mkdir $HOME/.cdk',
+              `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
+            ]),
           },
-        })),
-      },
-    });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-          Effect: 'Allow',
-          Resource: secretSynthArn,
-        }]),
-        Version: '2012-10-17',
-      },
-      Roles: [{ Ref: stringLike('Cdk*BuildProjectRole*') }],
-    });
-  }
-});
-
-behavior('synth action receives Windows install commands if a Windows image is detected', (suite) => {
-  suite.legacy(() => {
-    const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk2', {
-      npmSynthOptions: {
-        environment: {
-          buildImage: cb.WindowsBuildImage.WINDOWS_BASE_2_0,
+          // Prove we're looking at the Synth project
+          build: {
+            commands: Match.arrayWith([stringLike('*cdk*synth*')]),
+          },
         },
-      },
-    });
-    pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
+      })),
+    },
+  });
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+        Effect: 'Allow',
+        Resource: secretSynthArn,
+      }]),
+      Version: '2012-10-17',
+    },
+    Roles: [{ Ref: stringLike('Cdk*BuildProjectRole*') }],
+  });
+});
 
-    THEN_codePipelineExpectation();
+test('synth action receives Windows install commands if a Windows image is detected', () => {
+  const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk2', {
+    synth: new CodeBuildStep('Synth', {
+      commands: ['cdk synth'],
+      primaryOutputDirectory: 'cdk.out',
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      buildEnvironment: {
+        buildImage: cb.WindowsBuildImage.WINDOWS_BASE_2_0,
+        computeType: cb.ComputeType.MEDIUM,
+      },
+    }),
+  });
+  pipeline.addStage(new DockerAssetApp(app, 'App1'));
+
+  const expectedCredsConfig = JSON.stringify({
+    version: '1.0',
+    domainCredentials: { 'synth.example.com': { secretsManagerSecretId: secretSynthArn } },
   });
 
-  suite.modern(() => {
-    const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk2', {
-      synth: new CodeBuildStep('Synth', {
-        commands: ['cdk synth'],
-        primaryOutputDirectory: 'cdk.out',
-        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
-        buildEnvironment: {
-          buildImage: cb.WindowsBuildImage.WINDOWS_BASE_2_0,
-          computeType: cb.ComputeType.MEDIUM,
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Environment: { Image: 'aws/codebuild/windows-base:2.0' },
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          pre_build: {
+            commands: Match.arrayWith([
+              'mkdir %USERPROFILE%\\.cdk',
+              `echo '${expectedCredsConfig}' > %USERPROFILE%\\.cdk\\cdk-docker-creds.json`,
+            ]),
+          },
+          // Prove we're looking at the Synth project
+          build: {
+            commands: Match.arrayWith([stringLike('*cdk*synth*')]),
+          },
         },
-      }),
-    });
-    pipeline.addStage(new DockerAssetApp(app, 'App1'));
-
-    THEN_codePipelineExpectation();
+      })),
+    },
   });
-
-  function THEN_codePipelineExpectation() {
-    const expectedCredsConfig = JSON.stringify({
-      version: '1.0',
-      domainCredentials: { 'synth.example.com': { secretsManagerSecretId: secretSynthArn } },
-    });
-
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: { Image: 'aws/codebuild/windows-base:2.0' },
-      Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            pre_build: {
-              commands: Match.arrayWith([
-                'mkdir %USERPROFILE%\\.cdk',
-                `echo '${expectedCredsConfig}' > %USERPROFILE%\\.cdk\\cdk-docker-creds.json`,
-              ]),
-            },
-            // Prove we're looking at the Synth project
-            build: {
-              commands: Match.arrayWith([stringLike('*cdk*synth*')]),
-            },
-          },
-        })),
-      },
-    });
-  }
 });
 
-behavior('self-update receives install commands and access to relevant credentials', (suite) => {
-  suite.legacy(() => {
-    const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk');
-    pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
+test('self-update receives install commands and access to relevant credentials', () => {
+  const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
+  pipeline.addStage(new DockerAssetApp(app, 'App1'));
 
-    THEN_codePipelineExpectation('install');
+  const expectedCredsConfig = JSON.stringify({
+    version: '1.0',
+    domainCredentials: { 'selfupdate.example.com': { secretsManagerSecretId: secretUpdateArn } },
   });
 
-  suite.modern(() => {
-    const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
-    pipeline.addStage(new DockerAssetApp(app, 'App1'));
-
-    THEN_codePipelineExpectation('pre_build');
-  });
-
-  function THEN_codePipelineExpectation(expectedPhase: string) {
-    const expectedCredsConfig = JSON.stringify({
-      version: '1.0',
-      domainCredentials: { 'selfupdate.example.com': { secretsManagerSecretId: secretUpdateArn } },
-    });
-
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
-      Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            [expectedPhase]: {
-              commands: Match.arrayWith([
-                'mkdir $HOME/.cdk',
-                `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
-              ]),
-            },
-            // Prove we're looking at the SelfMutate project
-            build: {
-              commands: Match.arrayWith([
-                stringLike('cdk * deploy PipelineStack*'),
-              ]),
-            },
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          pre_build: {
+            commands: Match.arrayWith([
+              'mkdir $HOME/.cdk',
+              `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
+            ]),
           },
-        })),
-      },
-    });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-          Effect: 'Allow',
-          Resource: secretUpdateArn,
-        }]),
-        Version: '2012-10-17',
-      },
-      Roles: [{ Ref: stringLike('*SelfMutat*Role*') }],
-    });
-  }
+          // Prove we're looking at the SelfMutate project
+          build: {
+            commands: Match.arrayWith([
+              stringLike('cdk * deploy PipelineStack*'),
+            ]),
+          },
+        },
+      })),
+    },
+  });
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+        Effect: 'Allow',
+        Resource: secretUpdateArn,
+      }]),
+      Version: '2012-10-17',
+    },
+    Roles: [{ Ref: stringLike('*SelfMutat*Role*') }],
+  });
 });
 
-behavior('asset publishing receives install commands and access to relevant credentials', (suite) => {
-  suite.legacy(() => {
-    const pipeline = new LegacyPipelineWithCreds(pipelineStack, 'Cdk');
-    pipeline.addApplicationStage(new DockerAssetApp(app, 'App1'));
+test('asset publishing receives install commands and access to relevant credentials', () => {
 
-    THEN_codePipelineExpectation('install');
+  const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
+  pipeline.addStage(new DockerAssetApp(app, 'App1'));
+
+  const expectedCredsConfig = JSON.stringify({
+    version: '1.0',
+    domainCredentials: { 'publish.example.com': { secretsManagerSecretId: secretPublishArn } },
   });
 
-  suite.modern(() => {
-    const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
-    pipeline.addStage(new DockerAssetApp(app, 'App1'));
-
-    THEN_codePipelineExpectation('pre_build');
-  });
-
-  function THEN_codePipelineExpectation(expectedPhase: string) {
-    const expectedCredsConfig = JSON.stringify({
-      version: '1.0',
-      domainCredentials: { 'publish.example.com': { secretsManagerSecretId: secretPublishArn } },
-    });
-
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
-      Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            [expectedPhase]: {
-              commands: Match.arrayWith([
-                'mkdir $HOME/.cdk',
-                `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
-              ]),
-            },
-            // Prove we're looking at the Publishing project
-            build: {
-              commands: Match.arrayWith([stringLike('cdk-assets*')]),
-            },
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          pre_build: {
+            commands: Match.arrayWith([
+              'mkdir $HOME/.cdk',
+              `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
+            ]),
           },
-        })),
-      },
-    });
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-          Effect: 'Allow',
-          Resource: secretPublishArn,
-        }]),
-        Version: '2012-10-17',
-      },
-      Roles: [{ Ref: 'CdkAssetsDockerRole484B6DD3' }],
-    });
-  }
+          // Prove we're looking at the Publishing project
+          build: {
+            commands: Match.arrayWith([stringLike('cdk-assets*')]),
+          },
+        },
+      })),
+    },
+  });
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+        Effect: 'Allow',
+        Resource: secretPublishArn,
+      }]),
+      Version: '2012-10-17',
+    },
+    Roles: [{ Ref: 'CdkAssetsDockerRole484B6DD3' }],
+  });
 });
-
-class LegacyPipelineWithCreds extends LegacyTestGitHubNpmPipeline {
-  constructor(scope: Construct, id: string, props?: ConstructorParameters<typeof LegacyTestGitHubNpmPipeline>[2]) {
-    super(scope, id, {
-      dockerCredentials: [
-        cdkp.DockerCredential.customRegistry('synth.example.com', secretSynth, {
-          usages: [cdkp.DockerCredentialUsage.SYNTH],
-        }),
-        cdkp.DockerCredential.customRegistry('selfupdate.example.com', secretUpdate, {
-          usages: [cdkp.DockerCredentialUsage.SELF_UPDATE],
-        }),
-        cdkp.DockerCredential.customRegistry('publish.example.com', secretPublish, {
-          usages: [cdkp.DockerCredentialUsage.ASSET_PUBLISHING],
-        }),
-      ],
-      ...props,
-    });
-  }
-}
 
 class ModernPipelineWithCreds extends ModernTestGitHubNpmPipeline {
   constructor(scope: Construct, id: string, props?: ConstructorParameters<typeof ModernTestGitHubNpmPipeline>[2]) {

@@ -1265,7 +1265,7 @@
                         "Fn::Join": [
                           "",
                           [
-                            "#!/bin/bash\n# fingerprint: 8787022e9944cbeb\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+                            "#!/bin/bash\n# fingerprint: 370d9b2dcf8bf44b\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
                             {
                               "Ref": "AWS::Region"
                             },
