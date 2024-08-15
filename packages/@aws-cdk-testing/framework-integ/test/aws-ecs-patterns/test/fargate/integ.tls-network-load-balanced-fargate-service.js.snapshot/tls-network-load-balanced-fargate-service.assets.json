@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "files": {
     "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "7733d32dda0aa48b53bee81067768213ec110ede3d9b78087a2e5e902a907787": {
+    "192a015f74d76ceb23aebae253f5b94f68dfd80333b4384b40ae74eb95c2f868": {
       "source": {
         "path": "tls-network-load-balanced-fargate-service.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7733d32dda0aa48b53bee81067768213ec110ede3d9b78087a2e5e902a907787.json",
+          "objectKey": "192a015f74d76ceb23aebae253f5b94f68dfd80333b4384b40ae74eb95c2f868.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
