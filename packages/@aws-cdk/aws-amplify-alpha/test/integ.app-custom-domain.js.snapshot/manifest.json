@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "lambda-event-source-kafka-self-managed.assets": {
+    "cdk-amplify-app-custom-domain.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "lambda-event-source-kafka-self-managed.assets.json",
+        "file": "cdk-amplify-app-custom-domain.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "lambda-event-source-kafka-self-managed": {
+    "cdk-amplify-app-custom-domain": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "lambda-event-source-kafka-self-managed.template.json",
+        "templateFile": "cdk-amplify-app-custom-domain.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4bf07b5cad381e52a796b0a42748934cce430e155ffe31f0366eef200d40356f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5314d52dac3409b06902f1cf40df3d58dceb16146ad8cf66843edee0096d1d87.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "lambda-event-source-kafka-self-managed.assets"
+          "cdk-amplify-app-custom-domain.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,103 +31,88 @@
         }
       },
       "dependencies": [
-        "lambda-event-source-kafka-self-managed.assets"
+        "cdk-amplify-app-custom-domain.assets"
       ],
       "metadata": {
-        "/lambda-event-source-kafka-self-managed/F/ServiceRole/Resource": [
+        "/cdk-amplify-app-custom-domain/Repo/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FServiceRole3AC82EE1"
+            "data": "Repo02AC86CF"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/F/ServiceRole/DefaultPolicy/Resource": [
+        "/cdk-amplify-app-custom-domain/App/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FServiceRoleDefaultPolicy17A19BFA"
+            "data": "AppRole1AF9B530"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/F/Resource": [
+        "/cdk-amplify-app-custom-domain/App/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FC4345940"
+            "data": "AppRoleDefaultPolicy9CADBAA1"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/F/KafkaEventSource:838c4d5ff3c99c1a617120adfca83e5b:my-test-topic/Resource": [
+        "/cdk-amplify-app-custom-domain/App/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FKafkaEventSource838c4d5ff3c99c1a617120adfca83e5bmytesttopic1E7A7798"
+            "data": "AppF1B96344"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/S/Resource": [
+        "/cdk-amplify-app-custom-domain/App/main/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "S509448A1"
+            "data": "AppmainF505BAED"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/SC/Resource": [
+        "/cdk-amplify-app-custom-domain/App/dev/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SC0855C491"
+            "data": "AppdevB328DAFC"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/fc-test-key-name/Resource": [
+        "/cdk-amplify-app-custom-domain/App/*.example.com/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "fctestkeyname524AF060"
+            "data": "Appexamplecom6AF1A3AD"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/F2/ServiceRole/Resource": [
+        "/cdk-amplify-app-custom-domain/Certificate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "F2ServiceRole7F7C6006"
+            "data": "Certificate4E7ABB08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/lambda-event-source-kafka-self-managed/F2/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "F2ServiceRoleDefaultPolicy999D30A8"
-          }
-        ],
-        "/lambda-event-source-kafka-self-managed/F2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "F23BAC7B9C"
-          }
-        ],
-        "/lambda-event-source-kafka-self-managed/F2/KafkaEventSource:838c4d5ff3c99c1a617120adfca83e5b:my-test-topic2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "F2KafkaEventSource838c4d5ff3c99c1a617120adfca83e5bmytesttopic20A678189"
-          }
-        ],
-        "/lambda-event-source-kafka-self-managed/BootstrapVersion": [
+        "/cdk-amplify-app-custom-domain/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/lambda-event-source-kafka-self-managed/CheckBootstrapVersion": [
+        "/cdk-amplify-app-custom-domain/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "lambda-event-source-kafka-self-managed"
+      "displayName": "cdk-amplify-app-custom-domain"
     },
-    "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F.assets": {
+    "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F.assets.json",
+        "file": "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F": {
+    "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F.template.json",
+        "templateFile": "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -136,7 +121,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F.assets"
+          "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -145,23 +130,23 @@
         }
       },
       "dependencies": [
-        "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F.assets"
+        "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets"
       ],
       "metadata": {
-        "/LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/amplify-app-custom-domain-integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/amplify-app-custom-domain-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert"
+      "displayName": "amplify-app-custom-domain-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
