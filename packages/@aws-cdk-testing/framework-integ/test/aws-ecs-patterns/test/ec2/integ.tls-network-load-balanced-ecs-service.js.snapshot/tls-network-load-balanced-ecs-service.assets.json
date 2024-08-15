@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "files": {
     "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "8c130433bdf0eb0ffb90dfb96123f33291e2b2f20528567ad88f8789b2ee8b63": {
+    "62df9989dce7c1c326116355048d41f0060c074ddc0a003cd37f281e7230f4ec": {
       "source": {
         "path": "tls-network-load-balanced-ecs-service.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8c130433bdf0eb0ffb90dfb96123f33291e2b2f20528567ad88f8789b2ee8b63.json",
+          "objectKey": "62df9989dce7c1c326116355048d41f0060c074ddc0a003cd37f281e7230f4ec.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
