@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.152.0](https://github.com/aws/aws-cdk/compare/v2.151.1...v2.152.0) (2024-08-14)
+
+
+### Features
+
+* **lambda:** support filter criteria encryption ([6aa72a2](https://github.com/aws/aws-cdk/commit/6aa72a215859ab96e9fd8b4ccee0d40bda753200))
+
 ## [2.151.1](https://github.com/aws/aws-cdk/compare/v2.151.0...v2.151.1) (2024-08-14)
 
 
