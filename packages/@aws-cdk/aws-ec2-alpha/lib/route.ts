@@ -2,6 +2,7 @@ import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway
 import { Construct, IDependable } from 'constructs';
 import { Duration, Resource } from 'aws-cdk-lib/core';
 import { IVpcV2 } from './vpc-v2-base';
+import { NetworkUtils } from './util';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -491,12 +492,21 @@ class Route extends Resource implements IRoute {
    */
   public readonly resource?: CfnRoute;
 
+  /**
+   * Destination cidr block for ipv4 or ipv6
+   */
+  private destinationIpv6Cidr?: string;
+
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
 
-    this.destination = props.destination;
     this.target = props.target;
     this.routeTable = props.routeTable;
+    this.destination = props.destination;
+    if (!NetworkUtils.validIp(props.destination)) {
+      //TODO Validate for IPv6 CIDR range
+      this.destinationIpv6Cidr = props.destination;
+    }
 
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
 
@@ -505,7 +515,7 @@ class Route extends Resource implements IRoute {
       this.resource = new CfnRoute(this, 'Route', {
         routeTableId: this.routeTable.routeTableId,
         destinationCidrBlock: this.destination,
-        destinationIpv6CidrBlock: this.destination,
+        destinationIpv6CidrBlock: this.destinationIpv6Cidr,
         [routerTypeToPropName(this.targetRouterType)]: this.target.gateway ? this.target.gateway.routerTargetId :
           this.target.endpoint ? this.target.endpoint.vpcEndpointId : null,
       });
