@@ -462,7 +462,7 @@ export interface RouteProps {
  * Creates a new route with added functionality.
  * @resource AWS::EC2::Route
  */
-export class Route extends Resource implements IRouteV2 {
+class Route extends Resource implements IRouteV2 {
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
    *
@@ -575,12 +575,12 @@ export class RouteTable extends Resource implements IRouteTable, IDependable {
    * @param destination The IPv4 or IPv6 CIDR block used for the destination match.
    * @param target The gateway or endpoint targeted by the route.
    */
-  public addRoute(destination: string, target: RouteTargetType) {
+  public addRoute(id: string, destination: string, target: RouteTargetType) {
     if (!target.gateway && !target.endpoint) {
       throw new Error('Target is defined without a gateway or endpoint.');
     }
 
-    new Route(this, 'Route', {
+    new Route(this, id, {
       routeTable: this,
       destination: destination,
       target: target,

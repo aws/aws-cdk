@@ -12,7 +12,7 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, Route, RouteTable, VPNGateway } from '../lib/route';
+import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, RouteTable, VPNGateway } from '../lib/route';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { Fn } from 'aws-cdk-lib';
 
@@ -78,49 +78,28 @@ for (const stackName in stacks) {
 const eigw = new EgressOnlyInternetGateway(stacks.eigw, 'testEOIGW', {
   vpc: vpcs.eigw,
 });
-new Route(stacks.eigw, 'testEIGWRoute', {
-  routeTable: routeTables.eigw,
-  destination: '10.0.0.0/24',
-  target: { gateway: eigw },
-});
-routeTables.eigw.addRoute('0.0.0.0/0', { gateway: eigw });
+routeTables.eigw.addRoute('eigwRoute', '0.0.0.0/0', { gateway: eigw });
 
 const igw = new InternetGateway(stacks.igw, 'testIGW', {
   vpc: vpcs.igw,
 });
-new Route(stacks.igw, 'testIGWRoute', {
-  routeTable: routeTables.igw,
-  destination: '0.0.0.0/0',
-  target: { gateway: igw },
-});
+routeTables.igw.addRoute('igwRoute', '0.0.0.0/0', { gateway: igw });
 
 const vpgw = new VPNGateway(stacks.vpgw, 'testVPGW', {
   type: VpnConnectionType.IPSEC_1,
   vpc: vpcs.vpgw,
 });
-new Route(stacks.vpgw, 'testVPGWRoute', {
-  routeTable: routeTables.vpgw,
-  destination: '0.0.0.0/0',
-  target: { gateway: vpgw },
-});
+routeTables.vpgw.addRoute('vpgwRoute', '0.0.0.0/0', { gateway: vpgw });
 
 const natGwIgw = new InternetGateway(stacks.natgw_pub, 'testNATgwIGW', {
   vpc: vpcs.natgw_pub,
 });
-new Route(stacks.natgw_pub, 'testnatgwigwRoute', {
-  routeTable: routeTables.natgw_pub,
-  destination: '242.0.0.0/32',
-  target: { gateway: natGwIgw },
-});
+routeTables.natgw_pub.addRoute('natGwRoute', '0.0.0.0/0', { gateway: natGwIgw });
 const natGwPub = new NatGateway(stacks.natgw_pub, 'testNATgw', {
   subnet: subnets.natgw_pub,
   vpc: vpcs.natgw_pub,
 });
-new Route(stacks.natgw_pub, 'testNATGWRoute', {
-  routeTable: routeTables.natgw_pub,
-  destination: '0.0.0.0/0',
-  target: { gateway: natGwPub },
-});
+routeTables.natgw_pub.addRoute('natGwPubRoute', '0.0.0.0/0', { gateway: natGwPub });
 
 const natGwPriv = new NatGateway(stacks.natgw_priv, 'testNATgw', {
   subnet: subnets.natgw_priv,
@@ -131,22 +110,14 @@ const natGwPriv = new NatGateway(stacks.natgw_priv, 'testNATgw', {
     '10.0.0.43', '10.0.0.44', '10.0.0.45',
   ],
 });
-new Route(stacks.natgw_priv, 'testNATGWRoute', {
-  routeTable: routeTables.natgw_priv,
-  destination: '0.0.0.0/0',
-  target: { gateway: natGwPriv },
-});
+routeTables.natgw_priv.addRoute('natGwPrivRoute', '0.0.0.0/0', { gateway: natGwPriv });
 
 const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoint', {
   service: GatewayVpcEndpointAwsService.DYNAMODB,
   vpc: vpcs.dynamodb,
   subnets: [subnets.dynamodb],
 });
-new Route(stacks.dynamodb, 'testDynamoRoute', {
-  routeTable: routeTables.dynamodb,
-  destination: '0.0.0.0/0',
-  target: { endpoint: dynamoEndpoint },
-});
+routeTables.dynamodb.addRoute('dynamoRoute', '0.0.0.0/0', { endpoint: dynamoEndpoint });
 
 var i = 0;
 for (const stackName in stacks) {
