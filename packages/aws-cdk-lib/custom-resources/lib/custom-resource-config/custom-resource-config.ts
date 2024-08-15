@@ -4,6 +4,7 @@ import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { IAspect, Aspects } from '../../../core/lib';
 
+/* This is duplicated in @aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts */
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
 export const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
