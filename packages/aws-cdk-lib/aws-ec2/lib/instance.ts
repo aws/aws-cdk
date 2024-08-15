@@ -294,6 +294,8 @@ export interface InstanceProps {
   /**
    * Whether to associate a public IP address to the primary network interface attached to this instance.
    *
+   * You cannot specify this property and `ipv6AddressCount` at the same time.
+   *
    * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
@@ -364,6 +366,8 @@ export interface InstanceProps {
    * The number of IPv6 addresses to associate with the primary network interface.
    *
    * Amazon EC2 chooses the IPv6 addresses from the range of your subnet.
+   *
+   * You cannot specify this property and `associatePublicIpAddress` at the same time.
    *
    * @default - For instances associated with an IPv6 subnet, use 1; otherwise, use 0.
    */
@@ -529,6 +533,12 @@ export class Instance extends Resource implements IInstance {
       (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
     ) {
       throw new Error(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`);
+    }
+
+    if (
+      props.ipv6AddressCount !== undefined &&
+      props.associatePublicIpAddress !== undefined) {
+      throw new Error('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,

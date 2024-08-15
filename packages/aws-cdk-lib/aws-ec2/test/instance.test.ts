@@ -1052,3 +1052,16 @@ test.each([-1, 0.1, 1.1])('throws if ipv6AddressCount is not a positive integer'
     });
   }).toThrow(`\'ipv6AddressCount\' must be a non-negative integer, got: ${ipv6AddressCount}`);
 });
+
+test.each([true, false])('throw error for specifying ipv6AddressCount with associatePublicIpAddress', (associatePublicIpAddress) => {
+  // THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      ipv6AddressCount: 2,
+      associatePublicIpAddress,
+    });
+  }).toThrow('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+});
