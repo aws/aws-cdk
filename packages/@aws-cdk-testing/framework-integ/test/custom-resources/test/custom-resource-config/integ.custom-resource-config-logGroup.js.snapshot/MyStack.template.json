@@ -5,7 +5,7 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "aws-cdk:cr-owned:c19d3033",
+      "Key": "aws-cdk:cr-owned:156aa6de",
       "Value": "true"
      }
     ]
@@ -21,7 +21,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "s3deployNoneAwsCliLayer8E653504": {
+  "s3deployAwsCliLayerD0CD1E6B": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -33,7 +33,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "s3deployNoneCustomResource0EA66D66": {
+  "s3deployCustomResourceDB97D82D": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -203,7 +203,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "s3deployNoneAwsCliLayer8E653504"
+      "Ref": "s3deployAwsCliLayerD0CD1E6B"
      }
     ],
     "LoggingConfig": {

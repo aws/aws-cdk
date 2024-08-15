@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "MyStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5a7db20a2eeaa3919968a78deb7107c921ba74be9cdd9473bce284bf5450590.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21b4d2ecb7821580fa7275de5e71e79a3134f1d31c696d13a198c4357127c530.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,16 +40,16 @@
             "data": "WebsiteBucket75C24D94"
           }
         ],
-        "/MyStack/s3deployNone/AwsCliLayer/Resource": [
+        "/MyStack/s3deploy/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "s3deployNoneAwsCliLayer8E653504"
+            "data": "s3deployAwsCliLayerD0CD1E6B"
           }
         ],
-        "/MyStack/s3deployNone/CustomResource/Default": [
+        "/MyStack/s3deploy/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "s3deployNoneCustomResource0EA66D66"
+            "data": "s3deployCustomResourceDB97D82D"
           }
         ],
         "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
