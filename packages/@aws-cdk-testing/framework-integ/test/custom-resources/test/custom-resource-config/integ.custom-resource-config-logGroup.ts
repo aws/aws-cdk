@@ -7,15 +7,14 @@ import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'MyStack');
-const locallySetLogRetentionDays = logs.RetentionDays.ONE_WEEK;
 
 let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
 
-new s3deploy.BucketDeployment(stack, 's3deployNone', {
+new s3deploy.BucketDeployment(stack, 's3deploy', {
   sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
   destinationBucket: websiteBucket,
   logGroup: new logs.LogGroup(stack, 'LogGroup', {
-    retention: locallySetLogRetentionDays,
+    retention: logs.RetentionDays.ONE_WEEK,
   }),
 });
 

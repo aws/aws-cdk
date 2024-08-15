@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'MyStack');
 
 let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-new s3deploy.BucketDeployment(stack, 's3deployNone', {
+new s3deploy.BucketDeployment(stack, 's3deploy', {
   sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
   destinationBucket: websiteBucket,
   logRetention: logs.RetentionDays.ONE_WEEK,
