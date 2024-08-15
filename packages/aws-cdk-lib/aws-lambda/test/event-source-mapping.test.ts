@@ -1,4 +1,5 @@
 import { Match, Template } from '../../assertions';
+import { Key } from '../../aws-kms';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
@@ -321,6 +322,74 @@ describe('event source mapping', () => {
         ],
       },
     });
+  });
+
+  test('adding filter criteria encryption', () => {
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    let eventSourceArn = 'some-arn';
+
+    const myKey = Key.fromKeyArn(
+      stack,
+      'SourceBucketEncryptionKey',
+      'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    );
+
+    // WHEN
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: eventSourceArn,
+      kafkaTopic: topicNameParam.valueAsString,
+      filters: [
+        FilterCriteria.filter({
+          orFilter: FilterRule.or('one', 'two'),
+          stringEquals: FilterRule.isEqual('test'),
+        }),
+        FilterCriteria.filter({
+          numericEquals: FilterRule.isEqual(1),
+        }),
+      ],
+      filterEncryption: myKey,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+          },
+          {
+            Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+          },
+        ],
+      },
+      KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    });
+
+  });
+
+  test('adding filter criteria encryption without filter criteria', () => {
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    let eventSourceArn = 'some-arn';
+
+    const myKey = Key.fromKeyArn(
+      stack,
+      'SourceBucketEncryptionKey',
+      'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    );
+
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: eventSourceArn,
+      kafkaTopic: topicNameParam.valueAsString,
+      filterEncryption: myKey,
+    })).toThrow(/filter criteria must be provided to enable setting filter criteria encryption/);
   });
 
   test('kafkaBootstrapServers appears in stack', () => {
