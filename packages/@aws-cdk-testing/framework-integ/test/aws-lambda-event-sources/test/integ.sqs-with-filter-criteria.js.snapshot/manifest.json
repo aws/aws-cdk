@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "lambda-event-source-filter-criteria-sqs.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambda-event-source-filter-criteria-sqs.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68d6842ea4469781d0a31e238982e6e384917b532b01a55bda819955e7d3beda.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b13ae7c9fc3e3d5e6921b00ac79b3ec76c7b8006a622b9b14fc849181dbce1e7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,6 +64,36 @@
             "data": "Q63C6E3AB"
           }
         ],
+        "/lambda-event-source-filter-criteria-sqs/fc-test-key-name/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fctestkeyname524AF060"
+          }
+        ],
+        "/lambda-event-source-filter-criteria-sqs/F2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F2ServiceRole7F7C6006"
+          }
+        ],
+        "/lambda-event-source-filter-criteria-sqs/F2/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F2ServiceRoleDefaultPolicy999D30A8"
+          }
+        ],
+        "/lambda-event-source-filter-criteria-sqs/F2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F23BAC7B9C"
+          }
+        ],
+        "/lambda-event-source-filter-criteria-sqs/F2/SqsEventSource:lambdaeventsourcefiltercriteriasqsQA0FC5C93/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F2SqsEventSourcelambdaeventsourcefiltercriteriasqsQA0FC5C9369D735ED"
+          }
+        ],
         "/lambda-event-source-filter-criteria-sqs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -73,6 +104,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "fctestkeynameAliasEF6099A0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "fctestkeynameAliasEF6099A0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -91,6 +131,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "SQSFilterCriteriaDefaultTestDeployAssert70A9A808.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
