@@ -3,7 +3,7 @@
   "testCases": {
     "IntegTest/DefaultTest": {
       "stacks": [
-        "TestStack"
+        "InstanceIpv6AddressCountTestStack"
       ],
       "assertionStack": "IntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"

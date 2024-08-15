@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "TestStack": {
-        "id": "TestStack",
-        "path": "TestStack",
+      "InstanceIpv6AddressCountTestStack": {
+        "id": "InstanceIpv6AddressCountTestStack",
+        "path": "InstanceIpv6AddressCountTestStack",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "TestStack/Vpc",
+            "path": "InstanceIpv6AddressCountTestStack/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "TestStack/Vpc/Resource",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "TestStack/Vpc"
+                        "value": "InstanceIpv6AddressCountTestStack/Vpc"
                       }
                     ]
                   }
@@ -37,7 +37,7 @@
               },
               "ipv6cidr": {
                 "id": "ipv6cidr",
-                "path": "TestStack/Vpc/ipv6cidr",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/ipv6cidr",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
@@ -54,11 +54,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "TestStack/Vpc/PublicSubnet1",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "TestStack/Vpc/PublicSubnet1/Subnet",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -106,7 +106,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "TestStack/Vpc/PublicSubnet1"
+                            "value": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -121,7 +121,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "TestStack/Vpc/PublicSubnet1/Acl",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -129,14 +129,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "TestStack/Vpc/PublicSubnet1/RouteTable",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/Vpc/PublicSubnet1"
+                            "value": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -151,7 +151,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "TestStack/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -170,7 +170,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "TestStack/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -190,7 +190,7 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "TestStack/Vpc/PublicSubnet1/DefaultRoute6",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -216,11 +216,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "TestStack/Vpc/PublicSubnet2",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "TestStack/Vpc/PublicSubnet2/Subnet",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -268,7 +268,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "TestStack/Vpc/PublicSubnet2"
+                            "value": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -283,7 +283,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "TestStack/Vpc/PublicSubnet2/Acl",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -291,14 +291,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "TestStack/Vpc/PublicSubnet2/RouteTable",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/Vpc/PublicSubnet2"
+                            "value": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -313,7 +313,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "TestStack/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -332,7 +332,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "TestStack/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -352,7 +352,7 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "TestStack/Vpc/PublicSubnet2/DefaultRoute6",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -378,14 +378,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "TestStack/Vpc/IGW",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "TestStack/Vpc"
+                        "value": "InstanceIpv6AddressCountTestStack/Vpc"
                       }
                     ]
                   }
@@ -397,7 +397,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "TestStack/Vpc/VPCGW",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -416,7 +416,7 @@
               },
               "EIGW6": {
                 "id": "EIGW6",
-                "path": "TestStack/Vpc/EIGW6",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/EIGW6",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::EgressOnlyInternetGateway",
                   "aws:cdk:cloudformation:props": {
@@ -432,11 +432,11 @@
               },
               "RestrictDefaultSecurityGroupCustomResource": {
                 "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "TestStack/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "path": "InstanceIpv6AddressCountTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "TestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "path": "InstanceIpv6AddressCountTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -456,7 +456,7 @@
           },
           "LatestNodeRuntimeMap": {
             "id": "LatestNodeRuntimeMap",
-            "path": "TestStack/LatestNodeRuntimeMap",
+            "path": "InstanceIpv6AddressCountTestStack/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -464,11 +464,11 @@
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "TestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "InstanceIpv6AddressCountTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "TestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "InstanceIpv6AddressCountTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -476,7 +476,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "TestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "InstanceIpv6AddressCountTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -484,7 +484,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "TestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "InstanceIpv6AddressCountTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -498,19 +498,19 @@
           },
           "Instance": {
             "id": "Instance",
-            "path": "TestStack/Instance",
+            "path": "InstanceIpv6AddressCountTestStack/Instance",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "TestStack/Instance/InstanceSecurityGroup",
+                "path": "InstanceIpv6AddressCountTestStack/Instance/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "TestStack/Instance/InstanceSecurityGroup/Resource",
+                    "path": "InstanceIpv6AddressCountTestStack/Instance/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "TestStack/Instance/InstanceSecurityGroup",
+                        "groupDescription": "InstanceIpv6AddressCountTestStack/Instance/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -526,7 +526,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/Instance"
+                            "value": "InstanceIpv6AddressCountTestStack/Instance"
                           }
                         ],
                         "vpcId": {
@@ -547,11 +547,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "TestStack/Instance/InstanceRole",
+                "path": "InstanceIpv6AddressCountTestStack/Instance/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "TestStack/Instance/InstanceRole/ImportInstanceRole",
+                    "path": "InstanceIpv6AddressCountTestStack/Instance/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -559,7 +559,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "TestStack/Instance/InstanceRole/Resource",
+                    "path": "InstanceIpv6AddressCountTestStack/Instance/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -578,7 +578,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "TestStack/Instance"
+                            "value": "InstanceIpv6AddressCountTestStack/Instance"
                           }
                         ]
                       }
@@ -596,7 +596,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "TestStack/Instance/InstanceProfile",
+                "path": "InstanceIpv6AddressCountTestStack/Instance/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -614,7 +614,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "TestStack/Instance/Resource",
+                "path": "InstanceIpv6AddressCountTestStack/Instance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                   "aws:cdk:cloudformation:props": {
@@ -648,7 +648,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "TestStack/Instance"
+                        "value": "InstanceIpv6AddressCountTestStack/Instance"
                       }
                     ],
                     "userData": {
@@ -669,7 +669,7 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "TestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "InstanceIpv6AddressCountTestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -677,7 +677,7 @@
           },
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "TestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "InstanceIpv6AddressCountTestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -685,7 +685,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "TestStack/BootstrapVersion",
+            "path": "InstanceIpv6AddressCountTestStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -693,7 +693,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "TestStack/CheckBootstrapVersion",
+            "path": "InstanceIpv6AddressCountTestStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"

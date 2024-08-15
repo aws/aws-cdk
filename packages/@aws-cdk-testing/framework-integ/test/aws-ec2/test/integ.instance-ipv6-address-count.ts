@@ -30,7 +30,7 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const testCase = new TestStack(app, 'TestStack');
+const testCase = new TestStack(app, 'InstanceIpv6AddressCountTestStack');
 
 new IntegTest(app, 'IntegTest', {
   testCases: [testCase],

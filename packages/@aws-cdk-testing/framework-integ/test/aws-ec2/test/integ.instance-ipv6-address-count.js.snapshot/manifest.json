@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "TestStack.assets": {
+    "InstanceIpv6AddressCountTestStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestStack.assets.json",
+        "file": "InstanceIpv6AddressCountTestStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestStack": {
+    "InstanceIpv6AddressCountTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TestStack.template.json",
+        "templateFile": "InstanceIpv6AddressCountTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/51034d6409334a512ab2c63ffe046b02e07d0e5f7cfc19b9bde608cf5770d784.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b8c723f6e8d52e03024845bdd29b361872d50fdd5f37b9f06475020cf1716dd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestStack.assets"
+          "InstanceIpv6AddressCountTestStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,167 +31,167 @@
         }
       },
       "dependencies": [
-        "TestStack.assets"
+        "InstanceIpv6AddressCountTestStack.assets"
       ],
       "metadata": {
-        "/TestStack/Vpc/Resource": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/TestStack/Vpc/ipv6cidr": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/ipv6cidr": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpcipv6cidr40D3CB78"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/Subnet": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/RouteTable": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/DefaultRoute": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/DefaultRoute6": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet1/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute6A21265FB"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/Subnet": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/RouteTable": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/DefaultRoute": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/DefaultRoute6": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/PublicSubnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute63E63096C"
           }
         ],
-        "/TestStack/Vpc/IGW": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/TestStack/Vpc/VPCGW": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/TestStack/Vpc/EIGW6": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/EIGW6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcEIGW61416F369"
           }
         ],
-        "/TestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/InstanceIpv6AddressCountTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
-        "/TestStack/LatestNodeRuntimeMap": [
+        "/InstanceIpv6AddressCountTestStack/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/TestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/InstanceIpv6AddressCountTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/TestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/InstanceIpv6AddressCountTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/TestStack/Instance/InstanceSecurityGroup/Resource": [
+        "/InstanceIpv6AddressCountTestStack/Instance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceInstanceSecurityGroupF0E2D5BE"
           }
         ],
-        "/TestStack/Instance/InstanceRole/Resource": [
+        "/InstanceIpv6AddressCountTestStack/Instance/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceInstanceRoleE9785DE5"
           }
         ],
-        "/TestStack/Instance/InstanceProfile": [
+        "/InstanceIpv6AddressCountTestStack/Instance/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceInstanceProfileAB5AEF02"
           }
         ],
-        "/TestStack/Instance/Resource": [
+        "/InstanceIpv6AddressCountTestStack/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceC1063A87"
           }
         ],
-        "/TestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/InstanceIpv6AddressCountTestStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/TestStack/BootstrapVersion": [
+        "/InstanceIpv6AddressCountTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestStack/CheckBootstrapVersion": [
+        "/InstanceIpv6AddressCountTestStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestStack"
+      "displayName": "InstanceIpv6AddressCountTestStack"
     },
     "IntegTestDefaultTestDeployAssertE3E7D2A4.assets": {
       "type": "cdk:asset-manifest",
