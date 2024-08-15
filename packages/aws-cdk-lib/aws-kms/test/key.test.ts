@@ -646,7 +646,7 @@ test('fails if key policy has no IAM principals', () => {
   expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
 });
 
-test('creates a multi-Region primary key', () => {
+test('multi-region primary key', () => {
   const stack = new cdk.Stack();
   new kms.Key(stack, 'MyKey', {
     multiRegion: true,

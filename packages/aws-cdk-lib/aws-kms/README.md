@@ -42,7 +42,7 @@ const key = new kms.Key(this, 'MyKey', {
 ```
 
 
-Creates a multi-Region primary key:
+Create a multi-Region primary key:
 
 ```ts
 const key = new kms.Key(this, 'MyKey', {
