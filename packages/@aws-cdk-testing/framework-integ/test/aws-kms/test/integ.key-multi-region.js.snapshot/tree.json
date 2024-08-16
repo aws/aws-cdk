@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "TestStack": {
-        "id": "TestStack",
-        "path": "TestStack",
+      "KmsKeyMultiRegionStack": {
+        "id": "KmsKeyMultiRegionStack",
+        "path": "KmsKeyMultiRegionStack",
         "children": {
           "key": {
             "id": "key",
-            "path": "TestStack/key",
+            "path": "KmsKeyMultiRegionStack/key",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "TestStack/key/Resource",
+                "path": "KmsKeyMultiRegionStack/key/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -62,7 +62,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "TestStack/BootstrapVersion",
+            "path": "KmsKeyMultiRegionStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -70,7 +70,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "TestStack/CheckBootstrapVersion",
+            "path": "KmsKeyMultiRegionStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"

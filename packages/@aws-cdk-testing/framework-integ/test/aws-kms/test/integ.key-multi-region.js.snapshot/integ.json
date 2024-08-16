@@ -3,7 +3,7 @@
   "testCases": {
     "kms-key-multi-region/DefaultTest": {
       "stacks": [
-        "TestStack"
+        "KmsKeyMultiRegionStack"
       ],
       "assertionStack": "kms-key-multi-region/DefaultTest/DeployAssert",
       "assertionStackName": "kmskeymultiregionDefaultTestDeployAssert5D62E49E"

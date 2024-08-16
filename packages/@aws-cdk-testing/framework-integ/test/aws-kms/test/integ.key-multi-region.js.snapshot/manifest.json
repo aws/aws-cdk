@@ -1,19 +1,19 @@
 {
   "version": "36.0.5",
   "artifacts": {
-    "TestStack.assets": {
+    "KmsKeyMultiRegionStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestStack.assets.json",
+        "file": "KmsKeyMultiRegionStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestStack": {
+    "KmsKeyMultiRegionStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TestStack.template.json",
+        "templateFile": "KmsKeyMultiRegionStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestStack.assets"
+          "KmsKeyMultiRegionStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,29 +31,29 @@
         }
       },
       "dependencies": [
-        "TestStack.assets"
+        "KmsKeyMultiRegionStack.assets"
       ],
       "metadata": {
-        "/TestStack/key/Resource": [
+        "/KmsKeyMultiRegionStack/key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "keyFEDD6EC0"
           }
         ],
-        "/TestStack/BootstrapVersion": [
+        "/KmsKeyMultiRegionStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestStack/CheckBootstrapVersion": [
+        "/KmsKeyMultiRegionStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestStack"
+      "displayName": "KmsKeyMultiRegionStack"
     },
     "kmskeymultiregionDefaultTestDeployAssert5D62E49E.assets": {
       "type": "cdk:asset-manifest",
