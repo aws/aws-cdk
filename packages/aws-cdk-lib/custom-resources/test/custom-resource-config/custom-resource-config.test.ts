@@ -116,6 +116,7 @@ describe('when a singleton-backed custom resource log group is specified', () =>
       RetentionInDays: customResourceLogRetention,
     });
   });
+});
 
 
 test('addLogRetentionLifetime modifies the retention period of the custom resources in two top-level stacks', () => {
