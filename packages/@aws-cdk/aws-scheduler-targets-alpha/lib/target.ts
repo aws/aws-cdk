@@ -116,9 +116,11 @@ export abstract class ScheduleTargetBase {
     const id = 'SchedulerRoleForTarget-' + hash;
     const existingRole = stack.node.tryFindChild(id) as iam.Role;
 
-    const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal('scheduler.amazonaws.com'), {
-      StringEquals: {
-        'aws:SourceAccount': schedule.env.account,
+    const principal = new iam.ServicePrincipal('scheduler.amazonaws.com', {
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': schedule.env.account,
+        },
       },
     });
     if (existingRole) {

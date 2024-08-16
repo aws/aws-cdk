@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.152.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.151.1-alpha.0...v2.152.0-alpha.0) (2024-08-14)
+
+## [2.151.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.151.0-alpha.0...v2.151.1-alpha.0) (2024-08-14)
+
+## [2.151.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.150.0-alpha.0...v2.151.0-alpha.0) (2024-08-01)
+
+
+### Features
+
+* **kinesisanalytics-flink:** add support for Flink 1.19 ([#30723](https://github.com/aws/aws-cdk/issues/30723)) ([c185194](https://github.com/aws/aws-cdk/commit/c185194e2bc5bb538672df51482e1bfb134698b5)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html#aws-resource-kinesisanalyticsv2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html/issues/aws-resource-kinesisanalyticsv2)
+
+## [2.150.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.149.0-alpha.0...v2.150.0-alpha.0) (2024-07-22)
+
+## [2.149.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.1-alpha.0...v2.149.0-alpha.0) (2024-07-12)
+
+## [2.148.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.0-alpha.0...v2.148.1-alpha.0) (2024-07-11)
+
 ## [2.148.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.147.3-alpha.0...v2.148.0-alpha.0) (2024-07-05)
 
 
