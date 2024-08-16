@@ -263,7 +263,8 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "destinationCidrBlock": "0.0.0.0/0",
+                        "destinationCidrBlock": "::/0",
+                        "destinationIpv6CidrBlock": "::/0",
                         "egressOnlyInternetGatewayId": {
                           "Fn::GetAtt": [
                             "testEOIGWEIGW54CCAD37",
