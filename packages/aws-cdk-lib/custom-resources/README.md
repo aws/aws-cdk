@@ -884,8 +884,8 @@ import * as cdk from 'aws-cdk-lib';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
-const app = new App();
-const stack = new Stack(app, 'Stack');
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
 CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 
 const nestedStackA = new cdk.NestedStack(stack, 'NestedStackA');
