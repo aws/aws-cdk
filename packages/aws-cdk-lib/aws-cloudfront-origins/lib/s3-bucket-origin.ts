@@ -53,7 +53,7 @@ export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
  */
 export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   /**
-   * Create a S3 Origin with Origin Access Control (OAI) configured
+   * Create a S3 Origin with Origin Access Control (OAC) configured
    */
   public static withOriginAccessControl(bucket: IBucket, props?: S3BucketOriginWithOACProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
@@ -65,7 +65,9 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
       }
 
       public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
-        this.originAccessControl = new cloudfront.S3OriginAccessControl(scope, 'S3OriginAccessControl');
+        if (!this.originAccessControl) {
+          this.originAccessControl = new cloudfront.S3OriginAccessControl(scope, 'S3OriginAccessControl');
+        }
 
         const distributionId = options.distributionId;
         const actions = this.getActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
