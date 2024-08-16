@@ -861,6 +861,9 @@ export class Function extends FunctionBase {
   /** @internal */
   public readonly _layers: ILayerVersion[] = [];
 
+  /** @internal */
+  public _logRetention?: logs.LogRetention;
+
   private _logGroup?: logs.ILogGroup;
 
   /**
@@ -1072,6 +1075,7 @@ export class Function extends FunctionBase {
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
+      this._logRetention = logRetention;
     }
 
     props.code.bindToResource(resource);
