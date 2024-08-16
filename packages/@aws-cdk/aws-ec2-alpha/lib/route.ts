@@ -509,7 +509,7 @@ class Route extends Resource implements IRoute {
       this.destinationIpv6Cidr = props.destination;
     }
 
-    if(this.target.gateway?.routerType == RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4){
+    if (this.target.gateway?.routerType == RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
       throw new Error('Egress only internet gateway does not support IPv4 routing');
     }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;

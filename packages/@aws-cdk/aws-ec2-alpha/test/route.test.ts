@@ -43,7 +43,7 @@ describe('EC2 Routing', () => {
     const eigw = new route.EgressOnlyInternetGateway(stack, 'TestEIGW', {
       vpc: myVpc,
     });
-    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: eigw });
+    routeTable.addRoute('Route', '::/0', { gateway: eigw });
 
     const template = Template.fromStack(stack);
     // EIGW should be in stack
@@ -56,7 +56,7 @@ describe('EC2 Routing', () => {
     });
     // Route linking IP to EIGW should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
-      DestinationCidrBlock: '0.0.0.0/0',
+      DestinationCidrBlock: '::/0',
       EgressOnlyInternetGatewayId: {
         'Fn::GetAtt': [
           'TestEIGW4E4CDA8D', 'Id',

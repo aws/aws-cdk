@@ -151,6 +151,7 @@ new vpc_v2.Route(stack, 'IgwRoute', {
 ```
 
 Alternatively, `Route`s can be created via a method in the `RouteTable` class. An example using the `EgressOnlyInternetGateway` construct can be seen below:
+Note: `EgressOnlyInternetGateway` can only be used to set up outbound IPv6 routing.
 
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
@@ -164,7 +165,7 @@ const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
 const eigw = new vpc_v2.EgressOnlyInternetGateway(stack, 'EIGW', {
   vpcId: vpc.myVpc,
 });
-routeTable.addRoute('0.0.0.0/0', { gateway: eigw });
+routeTable.addRoute('::/0', { gateway: eigw });
 ```
 
 Other route targets may require a deeper set of parameters to set up properly. For instance, the example below illustrates how to set up a `NatGateway`:
