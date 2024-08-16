@@ -219,6 +219,7 @@ describe('customizeRoles', () => {
     // WHEN
     const role = new Role(stack, 'Role', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      assumeRoleAction: "sts:AssumeRoleWithWebIdentity";
     });
     const principal = Role.fromRoleName(stack, 'OtherRole', 'OtherRole');
     role.grant(principal, 'sts:AssumeRole');
@@ -288,7 +289,7 @@ describe('customizeRoles', () => {
         },
         conditions: {},
       },
-      AssumeRoleAction: 'sts:AssumeRole',
+      AssumeRoleAction: 'sts:AssumeRoleWithWebIdentity',
       PrincipalAccount: {
         Ref: 'AWS::AccountId',
       },
