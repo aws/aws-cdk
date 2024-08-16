@@ -2983,6 +2983,39 @@ describe('function', () => {
       }).toThrow('Local mount path can not be longer than 160 characters but has 165 characters');
     });
 
+    test('No error when local mount path is Tokenized and Unresolved', () => {
+      // GIVEN
+      const realLocalMountPath = '/not-mnt/foo-bar';
+      const tokenizedLocalMountPath = cdk.Token.asString(new cdk.Intrinsic(realLocalMountPath));
+
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, tokenizedLocalMountPath),
+        });
+      }).not.toThrow();
+    });
+
     test('correct security group is created when deployed in separate stacks', () => {
       const app = new cdk.App();
 
