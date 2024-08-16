@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "StateMachineWithCMKWithCWLEncryption/DefaultTest": {
+    "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest": {
       "stacks": [
-        "stepfunctions-cmk-cwl-integ"
+        "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig"
       ],
-      "assertionStack": "StateMachineWithCMKWithCWLEncryption/DefaultTest/DeployAssert",
-      "assertionStackName": "StateMachineWithCMKWithCWLEncryptionDefaultTestDeployAssert8D14B050"
+      "assertionStack": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "StateMachineAndActivityWithCMKEncryptionConfigurationDefaultTestDeployAssert11207853"
     }
   }
 }
