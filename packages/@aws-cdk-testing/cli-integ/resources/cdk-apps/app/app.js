@@ -664,9 +664,6 @@ const app = new cdk.App({
   },
 });
 
-// const sessionTagApp = new cdk.App({
-// });
-
 const defaultEnv = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEFAULT_REGION
