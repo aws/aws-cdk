@@ -34,6 +34,12 @@ export interface RoleProps {
   readonly assumedBy: IPrincipal;
 
   /**
+   * The action to use when this Principal is used
+   * @default - sts:AssumeRole
+   */
+  readonly assumeRoleAction?: 'sts:AssumeRole';
+
+  /**
    * ID that the role assumer needs to provide when assuming this role
    *
    * If the configured and provided external IDs do not match, the
@@ -369,8 +375,6 @@ export class Role extends Resource implements IRole {
 
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = this.env.account;
-
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
    * The assume role policy document associated with this role.
