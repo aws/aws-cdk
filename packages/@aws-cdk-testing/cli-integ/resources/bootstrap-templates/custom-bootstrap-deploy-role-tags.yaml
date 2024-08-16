@@ -381,6 +381,7 @@ Resources:
               StringEquals:
                 aws:ResourceAccount:
                   - Fn::Sub: ${AWS::AccountId}
+                aws:PrincipalTag/Department: "Engineering"
             Effect: Allow
           - Action:
               - kms:Decrypt

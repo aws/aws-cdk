@@ -430,6 +430,9 @@ class SessionTagsLambdaStack extends cdk.Stack {
         deployRoleSessionTags: {
           'Department' : 'Engineering',
         },
+        fileAssetPublishingRoleSessionTags: {
+          'Department' : 'Engineering',
+        },
       })
     });
 
@@ -442,7 +445,6 @@ class SessionTagsLambdaStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
   }
 }
-
 class LambdaHotswapStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
