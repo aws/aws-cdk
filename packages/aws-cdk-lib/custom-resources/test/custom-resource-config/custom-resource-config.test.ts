@@ -118,7 +118,6 @@ describe('when a singleton-backed custom resource log group is specified', () =>
   });
 });
 
-
 test('addLogRetentionLifetime modifies the retention period of the custom resources in two top-level stacks', () => {
   // GIVEN
   const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
