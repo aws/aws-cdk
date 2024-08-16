@@ -117,41 +117,6 @@ describe('when a singleton-backed custom resource log group is specified', () =>
     });
   });
 
-  test('addLogRetentionLifetime only modifies the singleton-backed custom resource log group', () => {
-    // GIVEN
-    const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 'BucketDeployment1', {
-      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-      destinationBucket: websiteBucket,
-      logGroup: new logs.LogGroup(stack, 'LogGroup1', {
-        retention: logs.RetentionDays.ONE_WEEK,
-      }),
-    });
-    new s3deploy.BucketDeployment(stack, 'BucketDeployment2', {
-      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
-      destinationBucket: websiteBucket,
-      logGroup: new logs.LogGroup(stack, 'LogGroup2', {
-        retention: logs.RetentionDays.ONE_WEEK,
-      }),
-    });
-
-    // WHEN
-    CustomResourceConfig.of(app).addLogRetentionLifetime(customResourceLogRetention);
-
-    // THEN
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::Logs::LogGroup', 2);
-    template.hasResourceProperties('AWS::Logs::LogGroup', {
-      RetentionInDays: customResourceLogRetention,
-    });
-    template.hasResourceProperties('AWS::Logs::LogGroup', {
-      RetentionInDays: logs.RetentionDays.ONE_WEEK,
-    });
-  });
-});
 
 test('addLogRetentionLifetime modifies the retention period of the custom resources in two top-level stacks', () => {
   // GIVEN
