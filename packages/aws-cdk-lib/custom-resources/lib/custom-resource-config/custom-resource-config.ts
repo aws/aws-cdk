@@ -16,7 +16,6 @@ export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resour
 export class CustomResourceConfig {
   /**
    * Returns the CustomResourceConfig for this scope.
-   * @param scope The scope
    */
   public static of(scope: IConstruct): CustomResourceConfig {
     return new CustomResourceConfig(scope);
@@ -25,7 +24,7 @@ export class CustomResourceConfig {
   private constructor(private readonly scope: IConstruct) { }
 
   /**
-   * Set the log retention specified on AWS vended custom resources that have certain CDK metadata from the CDK library.
+   * Set the log retention of AWS-vended custom resource lambdas.
    */
   public addLogRetentionLifetime(rentention: logs.RetentionDays) {
     Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention));
@@ -34,7 +33,7 @@ export class CustomResourceConfig {
 }
 
 /**
- * Manages log retention for AWS vended custom resources within a construct scope.
+ * Manages log retention for AWS vended custom resources.
  */
 export class CustomResourceLogRetention implements IAspect {
   private readonly logRetention: logs.RetentionDays;
@@ -70,7 +69,6 @@ export class CustomResourceLogRetention implements IAspect {
   /*
    * Creates a new logGroup and associates with the singletonLambda
    * Returns a Cloudwatch LogGroup
-   * @param {lambda.CfnFunction} scope - SingletonFunction
    */
   private createLogGroup(scope: lambda.CfnFunction): logs.ILogGroup {
     const newLogGroup = new logs.LogGroup(scope, 'logGroup', {
