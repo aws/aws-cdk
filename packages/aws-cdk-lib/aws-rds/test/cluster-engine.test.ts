@@ -106,6 +106,8 @@ describe('cluster engine', () => {
       'aurora-postgresql10');
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('14.3', '14') }).parameterGroupFamily).toEqual(
       'aurora-postgresql14');
+    expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('15.7', '15') }).parameterGroupFamily).toEqual(
+      'aurora-postgresql15');
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('16.3', '16') }).parameterGroupFamily).toEqual(
       'aurora-postgresql16');
   });
