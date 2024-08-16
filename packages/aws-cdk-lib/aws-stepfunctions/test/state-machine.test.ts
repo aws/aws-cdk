@@ -698,7 +698,7 @@ describe('State Machine', () => {
     });
   });
 
-  test('instantiate StateMachine with EncryptionConfiguration using Customer Managed Key', () => {
+  test('Instantiate StateMachine with EncryptionConfiguration using Customer Managed Key', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const kmsKey = new kms.Key(stack, 'Key');
@@ -754,33 +754,9 @@ describe('State Machine', () => {
             Action: [
               'kms:Decrypt',
               'kms:GenerateDataKey',
-              'kms:DescribeKey',
             ],
             Condition: {
               StringEquals: {
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':states:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':stateMachine/MyStateMachine',
-                    ],
-                  ],
-                },
                 'kms:EncryptionContext:aws:states:stateMachineArn': {
                   'Fn::Join': [
                     '',
@@ -815,7 +791,7 @@ describe('State Machine', () => {
     });
   }),
 
-  test('instantiate StateMachine with EncryptionConfiguration using Customer Managed Key - defaults to 300 secs for KmsDataKeyReusePeriodSeconds', () => {
+  test('Instantiate StateMachine with EncryptionConfiguration using Customer Managed Key - defaults to 300 secs for KmsDataKeyReusePeriodSeconds', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const kmsKey = new kms.Key(stack, 'Key');
@@ -870,33 +846,9 @@ describe('State Machine', () => {
             Action: [
               'kms:Decrypt',
               'kms:GenerateDataKey',
-              'kms:DescribeKey',
             ],
             Condition: {
               StringEquals: {
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':states:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':stateMachine/MyStateMachine',
-                    ],
-                  ],
-                },
                 'kms:EncryptionContext:aws:states:stateMachineArn': {
                   'Fn::Join': [
                     '',
@@ -931,7 +883,7 @@ describe('State Machine', () => {
     });
   }),
 
-  test('instantiate StateMachine with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
+  test('Instantiate StateMachine with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const kmsKey = new kms.Key(stack, 'Key');
@@ -946,47 +898,6 @@ describe('State Machine', () => {
         kmsKey: kmsKey,
         kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
       });
-    }).toThrow('kmsDataKeyReusePeriodSeconds needs to be a value between 60 and 900');
-
-  }),
-
-  test('instantiate StateMachine with no kms key throws error', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const kmsKey = new kms.Key(stack, 'Key');
-
-    // FAIL
-    expect(() => {
-      // WHEN
-      new sfn.StateMachine(stack, 'MyStateMachine', {
-        stateMachineName: 'MyStateMachine',
-        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
-        stateMachineType: sfn.StateMachineType.STANDARD,
-        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
-      });
-    }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
-
-  }),
-
-  test('instantiate StateMachine with EncryptionConfiguration using AWS Owned Key', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new sfn.StateMachine(stack, 'MyStateMachine', {
-      stateMachineName: 'MyStateMachine',
-      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
-      stateMachineType: sfn.StateMachineType.STANDARD,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
-      StateMachineName: 'MyStateMachine',
-      StateMachineType: 'STANDARD',
-      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
-      EncryptionConfiguration: Match.objectLike({
-        Type: 'AWS_OWNED_KEY',
-      }),
-    });
+    }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   });
 });

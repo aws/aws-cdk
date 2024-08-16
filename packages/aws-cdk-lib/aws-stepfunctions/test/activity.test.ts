@@ -72,7 +72,7 @@ describe('Activity', () => {
 
   });
 
-  test('instantiate Activity with EncryptionConfiguration using Customer Managed Key', () => {
+  test('Instantiate Activity with EncryptionConfiguration using Customer Managed Key', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const kmsKey = new kms.Key(stack, 'Key');
@@ -94,7 +94,7 @@ describe('Activity', () => {
     });
   });
 
-  test('instantiate Activity with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
+  test('Instantiate Activity with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const kmsKey = new kms.Key(stack, 'Key');
@@ -106,37 +106,6 @@ describe('Activity', () => {
         kmsKey: kmsKey,
         kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(5),
       });
-    }).toThrow('kmsDataKeyReusePeriodSeconds needs to be a value between 60 and 900');
-
-  }),
-
-  test('instantiate Activity with no kms key throws error', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // FAIL
-    expect(() => {
-      // WHEN
-      new stepfunctions.Activity(stack, 'Activity', {
-        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(5),
-      });
-    }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
-  }),
-
-  test('instantiate Activity with EncryptionConfiguration using AWS Owned Key', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new stepfunctions.Activity(stack, 'Activity', {
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
-      Name: 'Activity',
-      EncryptionConfiguration: Match.objectLike({
-        Type: 'AWS_OWNED_KEY',
-      }),
-    });
+    }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   });
 });

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
-import { constructEncryptionConfiguration, validateEncryptionConfiguration } from './util';
+import { constructEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -48,6 +48,7 @@ export class Activity extends Resource implements IActivity {
    */
   public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
     class Imported extends Resource implements IActivity {
+      kmsKey: kms.IKey | undefined;
       public get activityArn() { return activityArn; }
       public get activityName() {
         return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
@@ -80,10 +81,9 @@ export class Activity extends Resource implements IActivity {
   public readonly activityName: string;
 
   /**
-   * Default value for `kmsDataKeyReusePeriodSeconds`
-   * @see https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
+   * @attribute
    */
-  private readonly defaultPeriodSeconds = 300;
+  public readonly kmsKey: kms.IKey | undefined;
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
@@ -91,11 +91,27 @@ export class Activity extends Resource implements IActivity {
         Lazy.string({ produce: () => this.generateName() }),
     });
 
-    validateEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds);
+    if (props?.kmsKey) {
+      this.kmsKey = props.kmsKey;
+      props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        principals: [new iam.ServicePrincipal('states.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'kms:EncryptionContext:aws:states:activityArn': Stack.of(this).formatArn({
+              service: 'states',
+              resource: 'activity',
+              resourceName: this.physicalName,
+            }),
+          },
+        },
+      }));
+    }
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
-      encryptionConfiguration: constructEncryptionConfiguration(props, this.defaultPeriodSeconds),
+      encryptionConfiguration: props.kmsKey ? constructEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds) : undefined,
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
@@ -253,4 +269,11 @@ export interface IActivity extends IResource {
    * @attribute
    */
   readonly activityName: string;
+
+  /**
+   * The kms key used by the activity
+   *
+   * @attribute
+   */
+  readonly kmsKey: kms.IKey | undefined;
 }

@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
+import { IKey } from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 
 /**
@@ -35,6 +36,9 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
     super(scope, id, props);
 
+    if (this.props.activity?.kmsKey) {
+      this.taskPolicies = this.createPolicyStatements(this.props.activity.kmsKey);
+    }
     this.taskMetrics = {
       metricDimensions: { ActivityArn: this.props.activity.activityArn },
       metricPrefixSingular: 'Activity',
@@ -50,5 +54,16 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
       Resource: this.props.activity.activityArn,
       Parameters: this.props.parameters ? sfn.FieldUtils.renderObject(this.props.parameters) : undefined,
     };
+  }
+
+  private createPolicyStatements(kmskey: IKey): iam.PolicyStatement[] {
+    return [
+      new iam.PolicyStatement({
+        actions: [
+          'kms:Decrypt', 'kms:GenerateDataKey',
+        ],
+        resources: [`${kmskey.keyArn}`],
+      }),
+    ];
   }
 }
