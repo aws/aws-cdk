@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { Stack } from '../../core';
+import { Names, Stack } from '../../core';
 import { S3OriginAccessControl, SigningBehavior, SigningProtocol, OriginAccessControlOriginType, Signing } from '../lib';
 
 describe('S3OriginAccessControl', () => {
@@ -10,9 +10,20 @@ describe('S3OriginAccessControl', () => {
   });
 
   test('creates an S3OriginAccessControl with default properties', () => {
-    new S3OriginAccessControl(stack, 'DefaultS3OriginAccessControl');
+    const oac = new S3OriginAccessControl(stack, 'DefaultS3OriginAccessControl');
 
-    Template.fromStack(stack).resourceCountIs('AWS::CloudFront::OriginAccessControl', 1);
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::CloudFront::OriginAccessControl', 1);
+    template.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        Name: Names.uniqueResourceName(oac, {
+          maxLength: 64,
+        }),
+        SigningBehavior: SigningBehavior.ALWAYS,
+        SigningProtocol: SigningProtocol.SIGV4,
+        OriginAccessControlOriginType: OriginAccessControlOriginType.S3,
+      },
+    });
   });
 
   test('creates an OriginAccessControl with custom properties', () => {
