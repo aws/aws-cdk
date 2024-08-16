@@ -836,6 +836,7 @@ CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY)
 The following example configures every custom resource in this CDK app to retain its logs for ten years:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
@@ -852,6 +853,7 @@ new s3deploy.BucketDeployment(stack, 's3deploy', {
 
 The following example configures every custom resource in two top-level stacks to retain its log for ten years:
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
@@ -878,6 +880,7 @@ new s3deploy.BucketDeployment(stackB, "s3deployB", {
 
 This also applies to nested stacks:
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
