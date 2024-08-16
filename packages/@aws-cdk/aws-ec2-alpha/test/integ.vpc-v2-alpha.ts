@@ -20,7 +20,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
 const ipam = new Ipam(stack, 'IpamTest', {
-  operatingRegion: ['eu-central-1'],
+  operatingRegion: ['ap-south-1'],
 });
 
 /**Test Ipam Pool Ipv4 */
@@ -28,13 +28,13 @@ const ipam = new Ipam(stack, 'IpamTest', {
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
   ipv4ProvisionedCidrs: ['10.2.0.0/16'],
-  locale: 'eu-central-1',
+  locale: 'ap-south-1',
 });
 
 const pool2 = ipam.publicScope.addPool('PublicPool0', {
   addressFamily: AddressFamily.IP_V6,
   awsService: AwsServiceName.EC2,
-  locale: 'eu-central-1',
+  locale: 'ap-south-1',
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
 pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );
@@ -78,14 +78,14 @@ const vpc = new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
 
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
-  availabilityZone: 'eu-central-1a',
+  availabilityZone: 'ap-south-1a',
   ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
 new SubnetV2(stack, 'testsubnet', {
   vpc,
-  availabilityZone: 'eu-central-1b',
+  availabilityZone: 'ap-south-1b',
   ipv4CidrBlock: new IpCidr('10.2.0.0/24'),
   //Test secondary ipv6 address after IPAM pool creation
   //ipv6CidrBlock: new Ipv6Cidr('2001:db8:1::/64'),
@@ -96,7 +96,7 @@ new SubnetV2(stack, 'testsubnet', {
 new SubnetV2(stack, 'validateIpv6', {
   vpc,
   ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
-  availabilityZone: 'eu-central-1b',
+  availabilityZone: 'ap-south-1b',
   //Test secondary ipv6 address after IPAM pool creation
   //ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),
   subnetType: SubnetType.PRIVATE_ISOLATED,

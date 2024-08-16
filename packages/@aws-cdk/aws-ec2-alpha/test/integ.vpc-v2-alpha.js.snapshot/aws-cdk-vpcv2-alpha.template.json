@@ -5,7 +5,7 @@
    "Properties": {
     "OperatingRegions": [
      {
-      "RegionName": "eu-central-1"
+      "RegionName": "ap-south-1"
      }
     ]
    }
@@ -20,7 +20,7 @@
       "PrivateDefaultScopeId"
      ]
     },
-    "Locale": "eu-central-1",
+    "Locale": "ap-south-1",
     "ProvisionedCidrs": [
      {
       "Cidr": "10.2.0.0/16"
@@ -39,7 +39,7 @@
       "PublicDefaultScopeId"
      ]
     },
-    "Locale": "eu-central-1",
+    "Locale": "ap-south-1",
     "PublicIpSource": "amazon"
    }
   },
@@ -152,7 +152,7 @@
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "eu-central-1a",
+    "AvailabilityZone": "ap-south-1a",
     "CidrBlock": "10.1.0.0/24",
     "VpcId": {
      "Fn::GetAtt": [
@@ -167,7 +167,7 @@
     "Vpcintegtest2SecondaryAddress36FC60BBC"
    ]
   },
-  "testsbubnetRouteTableF40F025B": {
+  "testsbubnetRouteTableD0136BEA": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
@@ -187,7 +187,10 @@
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "testsbubnetRouteTableF40F025B"
+     "Fn::GetAtt": [
+      "testsbubnetRouteTableD0136BEA",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "testsbubnetSubnet77337845"
@@ -203,7 +206,7 @@
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "eu-central-1b",
+    "AvailabilityZone": "ap-south-1b",
     "CidrBlock": "10.2.0.0/24",
     "VpcId": {
      "Fn::GetAtt": [
@@ -218,7 +221,7 @@
     "Vpcintegtest2SecondaryAddress36FC60BBC"
    ]
   },
-  "testsubnetRouteTable55223C61": {
+  "testsubnetRouteTable682580B2": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
@@ -238,7 +241,10 @@
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "testsubnetRouteTable55223C61"
+     "Fn::GetAtt": [
+      "testsubnetRouteTable682580B2",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "testsubnetSubnetDD417829"
@@ -254,7 +260,7 @@
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "eu-central-1b",
+    "AvailabilityZone": "ap-south-1b",
     "CidrBlock": "10.3.0.0/24",
     "VpcId": {
      "Fn::GetAtt": [
@@ -269,7 +275,7 @@
     "Vpcintegtest2SecondaryAddress36FC60BBC"
    ]
   },
-  "validateIpv6RouteTable10861B00": {
+  "validateIpv6RouteTable09389F8D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
@@ -289,7 +295,10 @@
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "validateIpv6RouteTable10861B00"
+     "Fn::GetAtt": [
+      "validateIpv6RouteTable09389F8D",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
      "Ref": "validateIpv6Subnet07BD40AE"

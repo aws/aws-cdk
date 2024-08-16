@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a7489230071452bf2d95e6aff482ada8c6c5139402293c5aadfaa9821bd931a0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05dd5343aac11e069ac1e728ef6bc8fd02caae9a5c84c5723ddf8735bca3ba99.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,19 +43,28 @@
         "/aws-cdk-vpcv2-alpha/IpamTest/PrivatePool0/PrivatePool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPrivatePool039C763DC"
+            "data": "IpamTestPrivatePool039C763DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0C44B7C49"
+            "data": "IpamTestPublicPool0C44B7C49",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/IpamTest/PublicPool0/PublicPool0Cidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C"
+            "data": "IpamTestPublicPool0PublicPool0CidrC57CE00C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/Resource": [
@@ -67,7 +76,10 @@
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/ipv4IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1ipv4IpamCidr8105B4E4"
+            "data": "VPCintegtest1ipv4IpamCidr8105B4E4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/AmazonProvided": [
@@ -85,7 +97,10 @@
         "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/Ipv6IpamCidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2Ipv6IpamCidrFF84EC2B"
+            "data": "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/Vpc-integ-test-2/SecondaryAddress2": [
@@ -103,55 +118,73 @@
         "/aws-cdk-vpcv2-alpha/testsbubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetSubnet77337845"
+            "data": "testsbubnetSubnet77337845",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTable": [
+        "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetRouteTableF40F025B"
+            "data": "testsbubnetRouteTableD0136BEA"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsbubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsbubnetRouteTableAssociationD6D083FA"
+            "data": "testsbubnetRouteTableAssociationD6D083FA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetSubnetDD417829"
+            "data": "testsubnetSubnetDD417829",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-vpcv2-alpha/testsubnet/RouteTable": [
+        "/aws-cdk-vpcv2-alpha/testsubnet/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetRouteTable55223C61"
+            "data": "testsubnetRouteTable682580B2"
           }
         ],
         "/aws-cdk-vpcv2-alpha/testsubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetRouteTableAssociationC106676D"
+            "data": "testsubnetRouteTableAssociationC106676D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/validateIpv6/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "validateIpv6Subnet07BD40AE"
+            "data": "validateIpv6Subnet07BD40AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTable": [
+        "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "validateIpv6RouteTable10861B00"
+            "data": "validateIpv6RouteTable09389F8D"
           }
         ],
         "/aws-cdk-vpcv2-alpha/validateIpv6/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "validateIpv6RouteTableAssociationD6330457"
+            "data": "validateIpv6RouteTableAssociationD6330457",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha/BootstrapVersion": [
@@ -164,6 +197,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "testsbubnetRouteTableF40F025B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsbubnetRouteTableF40F025B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "testsubnetRouteTable55223C61": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testsubnetRouteTable55223C61",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "validateIpv6RouteTable10861B00": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "validateIpv6RouteTable10861B00",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
