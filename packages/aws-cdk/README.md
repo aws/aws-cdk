@@ -443,12 +443,19 @@ Hotswapping is currently supported for the following changes
 - VTL mapping template changes for AppSync Resolvers and Functions.
 - Schema changes for AppSync GraphQL Apis.
 
-You can optionally pass additional parameters to configure the behavior of your hotswap deployments. A list of the currently available configuration options can be found below.
+You can optionally configure the behavior of your hotswap deployments in `cdk.json`. Currently you can only configure ECS hotswap behavior:
 
-| Service | Parameter |
-| ------- | --------- |
-| ECS | hotswap-ecs-minimum-healthy-percent |
-| ECS | hotswap-ecs-maximum-healthy-percent |
+```json
+{
+"hotswap": {
+    "ecs": {
+      "minimumHealthyPercent": 100,
+      "maximumHealthyPercent": 250
+    }
+  }
+}
+```
+
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.

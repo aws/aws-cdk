@@ -245,16 +245,15 @@ export class CdkToolkit {
       warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
-    let ecsHotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']).ecs;
-    let ecsHotswapProperties = new EcsHotswapProperties(
-      ecsHotswapPropertiesFromSettings.minimumHealthyPercent,
-      ecsHotswapPropertiesFromSettings.maximumHealthyPercent,
-    );
+    let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
 
     let hotswapProperties = new HotswapProperties();
-    hotswapProperties.ecsHotswapProperties = ecsHotswapProperties;
+    hotswapProperties.ecsHotswapProperties = new EcsHotswapProperties(
+      hotswapPropertiesFromSettings.ecs?.minimumHealthyPercent,
+      hotswapPropertiesFromSettings.ecs?.maximumHealthyPercent,
+    );
 
-    if (!ecsHotswapProperties.isEmpty() && options.hotswap == HotswapMode.FULL_DEPLOYMENT) {
+    if (!hotswapProperties.ecsHotswapProperties.isEmpty() && options.hotswap == HotswapMode.FULL_DEPLOYMENT) {
       warning('⚠️ Hotswap properties defined while not in hotswap mode will be ignored.');
     }
 
@@ -1303,16 +1302,6 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly watch?: boolean;
-
-  /**
-   * An override for the minimum healthy percent for an ECS service during hotswap deployments.
-   */
-  readonly hotswapEcsMinimumHealthyPercent?: number;
-
-  /**
-   *   An override for the maximum healthy percent for an ECS service during hotswap deployments.
-   */
-  readonly hotswapEcsMaximumHealthyPercent?: number;
 
   /**
    * Whether we should cache the Cloud Assembly after the first time it has been synthesized.

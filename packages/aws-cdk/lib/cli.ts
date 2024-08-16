@@ -158,16 +158,6 @@ async function parseCommandLineArguments(args: string[]) {
           'and falls back to a full deployment if that is not possible. ' +
           'Do not use this in production environments',
       })
-      .option('hotswap-ecs-minimum-healthy-percent', {
-        type: 'number',
-        desc: 'When using hotswap for ECS, set the minimum healthy percent' +
-          'for the updated task definition',
-      })
-      .option('hotswap-ecs-maximum-healthy-percent', {
-        type: 'number',
-        desc: 'When using hotswap for ECS, set the maximum healthy percent' +
-          'for the updated task definition',
-      })
       .option('watch', {
         type: 'boolean',
         desc: 'Continuously observe the project files, ' +
@@ -608,8 +598,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
           hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
-          hotswapEcsMinimumHealthyPercent: args['hotswap-ecs-minimum-healthy-percent'],
-          hotswapEcsMaximumHealthyPercent: args['hotswap-ecs-maximum-healthy-percent'],
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
