@@ -837,10 +837,11 @@ The following example configures every custom resource in this CDK app to retain
 
 ```ts
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
-const app = new App();
+const app = new cdk.App();
 CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
-const stack = new Stack(app, 'Stack');
+const stack = new cdk.Stack(app, 'Stack');
 
 let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
 new s3deploy.BucketDeployment(stack, 's3deploy', {
@@ -851,10 +852,13 @@ new s3deploy.BucketDeployment(stack, 's3deploy', {
 
 The following example configures every custom resource in two top-level stacks to retain its log for ten years:
 ```ts
-const app = new App();
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const app = new cdk.App();
 CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 
-const stackA = new Stack(app, 'stackA');
+const stackA = new cdk.Stack(app, 'stackA');
 let websiteBucketA = new s3.Bucket(stackA, "WebsiteBucketA", {});
 new s3deploy.BucketDeployment(stackA, "s3deployA", {
     sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
@@ -862,7 +866,7 @@ new s3deploy.BucketDeployment(stackA, "s3deployA", {
     logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
 });
 
-const stackB = new Stack(app, 'stackB');
+const stackB = new cdk.Stack(app, 'stackB');
 let websiteBucketB = new s3.Bucket(stackB, "WebsiteBucketB", {});
 new s3deploy.BucketDeployment(stackB, "s3deployB", {
     sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
@@ -874,11 +878,14 @@ new s3deploy.BucketDeployment(stackB, "s3deployB", {
 
 This also applies to nested stacks:
 ```ts
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
 const app = new App();
 const stack = new Stack(app, 'Stack');
 CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 
-const nestedStackA = new NestedStack(stack, 'NestedStackA');
+const nestedStackA = new cdk.NestedStack(stack, 'NestedStackA');
 let websiteBucketA = new s3.Bucket(nestedStackA, "WebsiteBucketA", {});
 new s3deploy.BucketDeployment(nestedStackA, "s3deployA", {
     sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
@@ -886,7 +893,7 @@ new s3deploy.BucketDeployment(nestedStackA, "s3deployA", {
     logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
 });
 
-const nestedStackB = new NestedStack(stack, 'NestedStackB');
+const nestedStackB = new cdk.NestedStack(stack, 'NestedStackB');
 let websiteBucketB = new s3.Bucket(nestedStackB, "WebsiteBucketB", {});
 new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
     sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
