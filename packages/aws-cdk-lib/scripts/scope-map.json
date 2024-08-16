@@ -38,6 +38,9 @@
   "aws-applicationinsights": [
     "AWS::ApplicationInsights"
   ],
+  "aws-applicationsignals": [
+    "AWS::ApplicationSignals"
+  ],
   "aws-appmesh": [
     "AWS::AppMesh"
   ],
@@ -49,6 +52,9 @@
   ],
   "aws-appsync": [
     "AWS::AppSync"
+  ],
+  "aws-apptest": [
+    "AWS::AppTest"
   ],
   "aws-aps": [
     "AWS::APS"
@@ -416,6 +422,9 @@
   ],
   "aws-lambda": [
     "AWS::Lambda"
+  ],
+  "aws-launchwizard": [
+    "AWS::LaunchWizard"
   ],
   "aws-lex": [
     "AWS::Lex"
