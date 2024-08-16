@@ -1,0 +1,19 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "04c131c2ac60191f2c8727aa07d5487e104dc560d8b986240cc8d1c671844ea7": {
+      "source": {
+        "path": "cloudfront-s3-origin-oac.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "04c131c2ac60191f2c8727aa07d5487e104dc560d8b986240cc8d1c671844ea7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
