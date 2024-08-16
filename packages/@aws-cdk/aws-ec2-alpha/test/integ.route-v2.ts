@@ -78,7 +78,7 @@ for (const stackName in stacks) {
 const eigw = new EgressOnlyInternetGateway(stacks.eigw, 'testEOIGW', {
   vpc: vpcs.eigw,
 });
-routeTables.eigw.addRoute('eigwRoute', '0.0.0.0/0', { gateway: eigw });
+routeTables.eigw.addRoute('eigwRoute', '::/0', { gateway: eigw });
 
 const igw = new InternetGateway(stacks.igw, 'testIGW', {
   vpc: vpcs.igw,

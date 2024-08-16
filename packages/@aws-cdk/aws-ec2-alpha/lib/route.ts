@@ -503,11 +503,15 @@ class Route extends Resource implements IRoute {
     this.target = props.target;
     this.routeTable = props.routeTable;
     this.destination = props.destination;
-    if (!NetworkUtils.validIp(props.destination)) {
+    const isDestinationIpv4 = NetworkUtils.validIp(props.destination);
+    if (!isDestinationIpv4) {
       //TODO Validate for IPv6 CIDR range
       this.destinationIpv6Cidr = props.destination;
     }
 
+    if(this.target.gateway?.routerType == RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4){
+      throw new Error('Egress only internet gateway does not support IPv4 routing');
+    }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
 
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it

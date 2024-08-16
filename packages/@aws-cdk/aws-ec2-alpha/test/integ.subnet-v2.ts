@@ -10,7 +10,7 @@
 
 import * as vpc_v2 from '../lib/vpc-v2';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { AddressFamily, AwsServiceName, IpCidr, Ipam, IpamPoolPublicIpSource, SubnetV2 } from '../lib';
+import { AddressFamily, AwsServiceName, InternetGateway, IpCidr, Ipam, IpamPoolPublicIpSource, RouteTable, SubnetV2 } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
@@ -51,7 +51,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
  * can assign IPv6 address only after the allocation
  * uncomment ipv6CidrBlock and provide valid IPv6 range
  */
-new SubnetV2(stack, 'testsbubnet', {
+const mySubnet = new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
@@ -67,11 +67,25 @@ vpc.enableVpnGateway({
   type: 'ipsec.1',
 });
 
+/**Test compatibility with existing construct */
 new ec2.Instance(stack, 'Instance', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
   machineImage: new ec2.AmazonLinuxImage(),
 });
+
+/** Test route table association */
+
+const igw = new InternetGateway(stack, 'testIGW', {
+  vpc,
+});
+
+const routeTable = new RouteTable(stack, 'TestRoottable', {
+  vpc,
+});
+
+routeTable.addRoute('eigwRoute', '0.0.0.0/0', { gateway: igw });
+mySubnet.associateRouteTable(routeTable);
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
