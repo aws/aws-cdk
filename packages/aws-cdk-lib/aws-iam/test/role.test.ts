@@ -400,7 +400,7 @@ describe('IAM role', () => {
 
     // THEN
     expect(() => role.grantAssumeRole(new ServicePrincipal('beep-boop.amazonaws.com')))
-      .toThrow('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+      .toThrow('Cannot use a service or account principal with grantAssumeRole, use addPrincipalsToAssumedBy() or assumeRolePolicy instead.');
   });
 
   test('a role cannot grant AssumeRole permission to an Account Principal', () => {
@@ -415,7 +415,7 @@ describe('IAM role', () => {
 
     // THEN
     expect(() => role.grantAssumeRole(new AccountPrincipal('123456789')))
-      .toThrow('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+      .toThrow('Cannot use a service or account principal with grantAssumeRole, use addPrincipalsToAssumedBy() or assumeRolePolicy instead.');
   });
 
   test('extend TrustRelationships of a role using addPrincipalsToAssumedBy()', () => {
@@ -448,7 +448,7 @@ describe('IAM role', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: 'some-service.1.amazonaws.com',
+              Service: 'some-service.2.amazonaws.com',
               AWS: [
                 'arn:aws:iam::123456789012:role/MyRole',
                 { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] },
