@@ -117,6 +117,42 @@
      "Version": "2012-10-17"
     }
    }
+  },
+  "TestRoleExtend463E7146": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        },
+        "Service": [
+         "ec2.amazonaws.com",
+         "sqs.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
   }
  },
  "Parameters": {

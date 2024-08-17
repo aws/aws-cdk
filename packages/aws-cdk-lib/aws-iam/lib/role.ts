@@ -5,7 +5,7 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
+import { Effect, PolicyStatement } from './policy-statement';
 import { AccountPrincipal, AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, ServicePrincipal } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
@@ -375,7 +375,7 @@ export class Role extends Resource implements IRole {
   /**
    * The assume role policy document associated with this role.
    */
-  public readonly assumeRolePolicy?: PolicyDocument;
+  public readonly assumeRolePolicy: PolicyDocument;
 
   /**
    * Returns the ARN of this role.
@@ -596,7 +596,8 @@ export class Role extends Resource implements IRole {
   public grantAssumeRole(identity: IPrincipal) {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new Error('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+      throw new Error('Cannot use a service or account principal with grantAssumeRole,\
+        use addPrincipalsToAssumedBy() or assumeRolePolicy instead.');
     }
     return this.grant(identity, 'sts:AssumeRole');
   }
@@ -697,6 +698,20 @@ export class Role extends Resource implements IRole {
     return getPrecreatedRoleConfig(this);
   }
 
+  /**
+   * Adds given list of Principals to the TrustRelationship.
+   * This helps in overcoming how grantAssumeRole() works for Service / Account Principals.
+   * More Details on how grantAssumeRole() doesn't adds principals to trust relationship on below issue:
+   * https://github.com/aws/aws-cdk/issues/22550#issuecomment-1283095003
+   */
+  public addPrincipalsToAssumedBy(principals: IPrincipal[]): void {
+    this.assumeRolePolicy.addStatements(
+      new PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        principals: principals,
+        effect: Effect.ALLOW,
+      }));
+  }
 }
 
 /**

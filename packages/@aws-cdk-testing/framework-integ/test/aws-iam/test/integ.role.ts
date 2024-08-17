@@ -31,6 +31,15 @@ new Role(stack, 'TestRole3', {
   assumedBy: new OrganizationPrincipal('o-1234'),
 });
 
+// Using addPrincipalsToAssumedBy()
+const role_extend = new Role(stack, 'TestRole_Extend', {
+  assumedBy: new ServicePrincipal('sqs.amazonaws.com'),
+});
+role_extend.addPrincipalsToAssumedBy([
+  new ServicePrincipal('ec2.amazonaws.com'),
+  new AccountRootPrincipal(),
+]);
+
 new IntegTest(app, 'integ-iam-role', {
   testCases: [stack],
 });

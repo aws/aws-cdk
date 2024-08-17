@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
 import { Template, Match, Annotations } from '../../assertions';
-import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary, Token } from '../../core';
+import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary, Token, Arn } from '../../core';
 import { AccountPrincipal, AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
 describe('isRole() returns', () => {
@@ -416,6 +416,49 @@ describe('IAM role', () => {
     // THEN
     expect(() => role.grantAssumeRole(new AccountPrincipal('123456789')))
       .toThrow('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+  });
+
+  test('extend TrustRelationships of a role using addPrincipalsToAssumedBy()', () => {
+    // GIVEN
+    const stack = new Stack();
+    stack.partition;
+
+    // WHEN
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('some-service.amazonaws.com'),
+    });
+    role.addPrincipalsToAssumedBy([
+      new ServicePrincipal('some-service.2.amazonaws.com'),
+      new ArnPrincipal('arn:aws:iam::123456789012:role/MyRole'),
+      new AccountPrincipal('123456789012'),
+    ]);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'some-service.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'some-service.1.amazonaws.com',
+              AWS: [
+                'arn:aws:iam::123456789012:role/MyRole',
+                { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] },
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 
   testDeprecated('can supply externalId', () => {

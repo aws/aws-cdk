@@ -371,9 +371,9 @@ new iam.Role(this, 'Role', {
 
 ### Granting a principal permission to assume a role
 
-A principal can be granted permission to assume a role using `grantAssumeRole`.
+A **principal** can be granted permission to assume a role using `grantAssumeRole`.
 
-Note that this does not apply to service principals or account principals as they must be added to the role trust policy via `assumeRolePolicy`.
+Note that this does not apply to service principals or account principals as they must be added to the role trust policy via `addPrincipalsToAssumedBy()` or directly `assumeRolePolicy`. **addPrincipalsToAssumedBy()** under the hood uses `assumeRolePolicy`.
 
 ```ts
 const user = new iam.User(this, 'user')
@@ -393,7 +393,14 @@ const role = new iam.Role(this, 'role', {
   assumedBy: new iam.AccountPrincipal(this.account),
 });
 
-role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+// Using addPrincipalsToAssumedBy()
+role.addPrincipalsToAssumedBy([
+  new iam.AccountPrincipal('123456789012'),
+  ...
+])
+
+// Using assumeRolePolicy
+role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
   actions: ['sts:AssumeRole'],
   principals: [
     new iam.AccountPrincipal('123456789'),
