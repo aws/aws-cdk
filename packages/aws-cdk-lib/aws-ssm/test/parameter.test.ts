@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import { Template, Annotations } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
@@ -422,15 +422,16 @@ test('fromStringParameterArn does not throw error when StringParameterArn is in 
   }).not.toThrow();
 });
 
-test('fromStringParameterArn does not throw error when stack region is unresolved', () => {
+test('fromStringParameterArn emits an annotation when stack region is unresolved', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(undefined, 'Stack');
   const sameRegionArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
 
+  // WHEN
+  ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sameRegionArn);
+
   // THEN
-  expect(() => {
-    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sameRegionArn);
-  }).not.toThrow();
+  Annotations.fromStack(stack).hasWarning('/Stack', 'Cross-account references will only work within the same region [ack: aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion]');
 });
 
 test('StringParameter.fromStringParameterAttributes', () => {

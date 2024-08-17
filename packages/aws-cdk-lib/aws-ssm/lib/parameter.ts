@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
+  Annotations,
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   ContextProvider, Fn, IResource, Resource, Stack, Token,
   Tokenization,
@@ -488,7 +489,11 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const stackRegion = Stack.of(scope).region;
     if (arnParts.length !== 6) {
       throw new Error('unexpected StringParameterArn format');
+    } else if (Token.isUnresolved(stackRegion)) {
+      // Region is unknown during synthesis, emit a warning for visibility
+      Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion', 'Cross-account references will only work within the same region');
     } else if (!Token.isUnresolved(stackRegion) && arnParts[3] !== stackRegion) {
+      // If the region is known, it must match the region specified in the ARN string
       throw new Error('stringParameterArn must be in the same region as the stack');
     }
 
