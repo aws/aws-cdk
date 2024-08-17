@@ -396,8 +396,7 @@ const role = new iam.Role(this, 'role', {
 // Using addPrincipalsToAssumedBy()
 role.addPrincipalsToAssumedBy([
   new iam.AccountPrincipal('123456789012'),
-  ...
-])
+]);
 
 // Using assumeRolePolicy
 role.assumeRolePolicy.addStatements(new iam.PolicyStatement({

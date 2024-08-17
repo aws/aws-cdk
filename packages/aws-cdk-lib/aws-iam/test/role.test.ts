@@ -421,7 +421,6 @@ describe('IAM role', () => {
   test('extend TrustRelationships of a role using addPrincipalsToAssumedBy()', () => {
     // GIVEN
     const stack = new Stack();
-    stack.partition;
 
     // WHEN
     const role = new Role(stack, 'MyRole', {
