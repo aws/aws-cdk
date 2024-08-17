@@ -1406,6 +1406,8 @@ export abstract class TargetObjectKeyFormat {
 export interface ReplicationRule {
   /**
    * A container for information about the replication destination.
+   *
+   * The destination can be either in the same AWS account or a cross account.
    */
   readonly destination: ReplicationDestination;
 
