@@ -19,14 +19,10 @@ const destinationBucket2 = new s3.Bucket(stack, 'DestinationBucket2', {
 const destinationKmsKey = new kms.Key(stack, 'DestinationKmsKey', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
-const sourceKmsKey = new kms.Key(stack, 'SourceKmsKey', {
-  removalPolicy: RemovalPolicy.DESTROY,
-});
 
 const sourceBucket = new s3.Bucket(stack, 'SourceBucket', {
   removalPolicy: RemovalPolicy.DESTROY,
   versioned: true,
-  encryptionKey: sourceKmsKey,
   replicationRules: [
     {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket1),

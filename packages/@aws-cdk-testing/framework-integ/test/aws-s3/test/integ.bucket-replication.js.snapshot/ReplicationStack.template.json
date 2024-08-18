@@ -20,7 +20,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "KmsKey46693ADD": {
+  "DestinationKmsKey0D94AA3C": {
    "Type": "AWS::KMS::Key",
    "Properties": {
     "KeyPolicy": {
@@ -160,7 +160,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "KmsKey46693ADD",
+         "DestinationKmsKey0D94AA3C",
          "Arn"
         ]
        }
@@ -207,7 +207,7 @@
       },
       {
        "DeleteMarkerReplication": {
-        "Status": "Disabled"
+        "Status": "Enabled"
        },
        "Destination": {
         "Bucket": {
@@ -219,7 +219,7 @@
         "EncryptionConfiguration": {
          "ReplicaKmsKeyID": {
           "Fn::GetAtt": [
-           "KmsKey46693ADD",
+           "DestinationKmsKey0D94AA3C",
            "Arn"
           ]
          }
@@ -239,15 +239,7 @@
         "StorageClass": "STANDARD_IA"
        },
        "Filter": {
-        "And": {
-         "Prefix": "prefix",
-         "TagFilters": [
-          {
-           "Key": "tag-key",
-           "Value": "tag-value"
-          }
-         ]
-        }
+        "Prefix": "prefix"
        },
        "Id": "full-settings-rule",
        "Priority": 1,
@@ -269,6 +261,32 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefSourceBucketDDD2130AFF6DDDA5": {
+   "Value": {
+    "Ref": "SourceBucketDDD2130A"
+   },
+   "Export": {
+    "Name": "ReplicationStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+   }
+  },
+  "ExportsOutputRefDestinationBucket1590C2E3AE3A57174": {
+   "Value": {
+    "Ref": "DestinationBucket1590C2E3A"
+   },
+   "Export": {
+    "Name": "ReplicationStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
+   }
+  },
+  "ExportsOutputRefDestinationBucket217C2CCD298F62E2F": {
+   "Value": {
+    "Ref": "DestinationBucket217C2CCD2"
+   },
+   "Export": {
+    "Name": "ReplicationStack:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
+   }
   }
  },
  "Parameters": {
