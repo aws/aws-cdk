@@ -365,7 +365,6 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Validates the auto import policy
    */
-
   private validateAutoImportPolicy(deploymentType: LustreDeploymentType, importPath?: string, autoImportPolicy?: LustreAutoImportPolicy): void {
     if (autoImportPolicy === undefined) { return; }
     if (importPath === undefined) {
