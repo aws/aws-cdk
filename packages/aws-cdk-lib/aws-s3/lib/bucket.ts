@@ -2061,6 +2061,7 @@ export class Bucket extends BucketBase {
     this.notificationsHandlerRole = props.notificationsHandlerRole;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    this.encryptionKey = encryptionKey;
 
     Bucket.validateBucketName(this.physicalName);
 
@@ -2095,7 +2096,6 @@ export class Bucket extends BucketBase {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
@@ -2661,6 +2661,7 @@ export class Bucket extends BucketBase {
     kmsKeys.forEach(kmsKey => {
       kmsKey.grantEncrypt(role);
     });
+    this.encryptionKey?.grantDecrypt(role);
 
     return {
       role: role.roleArn,
