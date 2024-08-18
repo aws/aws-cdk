@@ -1,0 +1,143 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "ReplicationStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ReplicationStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ReplicationStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ReplicationStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d089beaf1f52f0641918e0b9cba2d424d4740a13ebdb5f23b4a4d7ee2bfcbc04.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ReplicationStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ReplicationStack.assets"
+      ],
+      "metadata": {
+        "/ReplicationStack/DestinationBucket1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationBucket1590C2E3A"
+          }
+        ],
+        "/ReplicationStack/DestinationBucket2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationBucket217C2CCD2"
+          }
+        ],
+        "/ReplicationStack/KmsKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KmsKey46693ADD"
+          }
+        ],
+        "/ReplicationStack/SourceBucket/ReplicationRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceBucketReplicationRole9043C65F"
+          }
+        ],
+        "/ReplicationStack/SourceBucket/ReplicationRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceBucketReplicationRoleDefaultPolicyF98AD664"
+          }
+        ],
+        "/ReplicationStack/SourceBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceBucketDDD2130A"
+          }
+        ],
+        "/ReplicationStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ReplicationStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ReplicationStack"
+    },
+    "ReplicationIntegDefaultTestDeployAssert2C07A074.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ReplicationIntegDefaultTestDeployAssert2C07A074.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ReplicationIntegDefaultTestDeployAssert2C07A074": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ReplicationIntegDefaultTestDeployAssert2C07A074.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ReplicationIntegDefaultTestDeployAssert2C07A074.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ReplicationIntegDefaultTestDeployAssert2C07A074.assets"
+      ],
+      "metadata": {
+        "/ReplicationInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ReplicationInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ReplicationInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

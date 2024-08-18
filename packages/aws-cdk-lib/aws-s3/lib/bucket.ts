@@ -2661,6 +2661,7 @@ export class Bucket extends BucketBase {
     kmsKeys.forEach(kmsKey => {
       kmsKey.grantEncrypt(role);
     });
+    // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
     this.encryptionKey?.grantDecrypt(role);
 
     return {
