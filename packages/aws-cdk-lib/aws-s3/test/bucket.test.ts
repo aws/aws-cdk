@@ -4227,6 +4227,117 @@ describe('bucket', () => {
       });
     });
 
+    test('source object encryption', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        encryption: s3.BucketEncryption.KMS,
+        encryptionKey: kmsKey,
+        replicationRules: [
+          { destination: s3.ReplicationDestination.sameAccount(dstBucket) },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        VersioningConfiguration: { Status: 'Enabled' },
+        ReplicationConfiguration: {
+          Role: {
+            'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+          },
+          Rules: [
+            {
+              Destination: {
+                Bucket: {
+                  'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                },
+              },
+              Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
+            },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['SrcBucket613E28A1', 'Arn'],
+              },
+            },
+            {
+              Action: [
+                's3:GetObjectVersionForReplication',
+                's3:GetObjectVersionAcl',
+                's3:GetObjectVersionTagging',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'SrcBucket613E28A1',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:ReplicateObject',
+                's3:ReplicateDelete',
+                's3:ReplicateTags',
+                's3:ObjectOwnerOverrideToBucketOwner',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'] },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'Key961B73FD',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        Roles: [
+          {
+            'Ref': 'SrcBucketReplicationRole5B31865A',
+          },
+        ],
+      });
+    });
+
     describe('filter', () => {
       test('specify only prefix filter', () => {
         const app = new cdk.App();
