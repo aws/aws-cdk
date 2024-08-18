@@ -167,6 +167,7 @@ describe('FSx for Lustre File System', () => {
         }).toThrow('fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types');
       });
     });
+
     describe('exportPath', () => {
       test('export path valid', () => {
         const importPath = 's3://import-bucket';
