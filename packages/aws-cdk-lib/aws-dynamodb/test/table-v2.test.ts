@@ -1029,6 +1029,161 @@ describe('table', () => {
       table.replica('us-west-2');
     }).toThrow('Replica tables are not supported in a region agnostic stack');
   });
+
+  test('with on-demand maximum throughput', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.onDemand({
+        maxReadRequestUnits: 10,
+        maxWriteRequestUnits: 10,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      WriteOnDemandThroughputSettings: {
+        MaxWriteRequestUnits: 10,
+      },
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ReadOnDemandThroughputSettings: {
+            MaxReadRequestUnits: 10,
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('with on-demand maximum throughput - read only', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.onDemand({
+        maxReadRequestUnits: 10,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ReadOnDemandThroughputSettings: {
+            MaxReadRequestUnits: 10,
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('with on-demand maximum throughput - index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          maxReadRequestUnits: 100,
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          maxReadRequestUnits: 1,
+          maxWriteRequestUnits: 1,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi1',
+          KeySchema: [
+            { AttributeName: 'pk', KeyType: 'HASH' },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+        {
+          IndexName: 'gsi2',
+          KeySchema: [
+            { AttributeName: 'pk', KeyType: 'HASH' },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          WriteOnDemandThroughputSettings: {
+            MaxWriteRequestUnits: 1,
+          },
+        },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          GlobalSecondaryIndexes: [{
+            IndexName: 'gsi1',
+            ReadOnDemandThroughputSettings: {
+              MaxReadRequestUnits: 100,
+            },
+          },
+          {
+            IndexName: 'gsi2',
+            ReadOnDemandThroughputSettings: {
+              MaxReadRequestUnits: 1,
+            },
+          }],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
 });
 
 describe('replica tables', () => {

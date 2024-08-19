@@ -205,6 +205,27 @@ You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 
+**Important**: 
+> By default `fn.grantInvoke()` grants permission to the principal to invoke any version of the function, including all past ones. If you only want the principal to be granted permission to invoke the latest version or the unqualified Lambda ARN, use `grantInvokeLatestVersion(grantee)`.
+
+```ts
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+// Grant invoke only to latest version and unqualified lambda arn
+fn.grantInvokeLatestVersion(principal);
+
+```
+
+If you want to grant access for invoking a specific version of Lambda function, you can use `fn.grantInvokeVersion(grantee, version)`
+
+```ts
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+declare const version: lambda.IVersion;
+// Grant invoke only to the specific version
+fn.grantInvokeVersion(principal, version);
+```
+
 For more information, see
 [Granting function access to AWS services](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html#permissions-resource-serviceinvoke)
 in the AWS Lambda Developer Guide.
@@ -759,6 +780,53 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 }));
 ```
 
+By default, Lambda will encrypt Filter Criteria using AWS managed keys. But if you want to use a self managed KMS key to encrypt the filters, You can specify the self managed key using the `filterEncryption` property.
+
+```ts
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { Key } from 'aws-cdk-lib/aws-kms';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+// Your self managed KMS key
+const myKey = Key.fromKeyArn(
+  this,
+  'SourceBucketEncryptionKey',
+  'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+);
+
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [lambda.FilterCriteria.filter({ eventName: lambda.FilterRule.isEqual('INSERT') })],
+  filterEncryption: myKey,
+}));
+```
+
+> Lambda requires allow `kms:Decrypt` on Lambda principal `lambda.amazonaws.com` to use the key for Filter Criteria Encryption. If you create the KMS key in the stack, CDK will automatically add this permission to the Key when you creates eventSourceMapping. However, if you import the key using function like `Key.fromKeyArn` then you need to add the following permission to the KMS key before using it to encrypt Filter Criteria
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "kms:Decrypt",
+            "Resource": "*"
+        }
+    ]
+}
+```
+
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
 ## Imported Lambdas
@@ -946,7 +1014,7 @@ managing concurrency.
 
 ## Lambda with SnapStart
 
-SnapStart is currently supported only on Java 11/Java 17 runtime. SnapStart does not support provisioned concurrency, the arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+SnapStart is currently supported only on Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
 
