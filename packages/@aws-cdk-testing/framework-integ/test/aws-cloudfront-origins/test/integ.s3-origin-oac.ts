@@ -14,7 +14,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(bucket);
 const distribution = new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: {
-    origin: s3Origin
+    origin: s3Origin,
   },
 });
 
@@ -30,15 +30,16 @@ integ.assertions.awsApiCall('CloudFront', 'getDistributionConfig', {
       Quantity: 1,
       Items: Match.arrayWith([
         Match.objectLike(
-        {
-          S3OriginConfig: {
-            OriginAccessIdentity: ""
-          },
-          OriginAccessControlId: Match.stringLikeRegexp('^[A-Z0-9]+$'),
-        })
+          {
+            S3OriginConfig: {
+              OriginAccessIdentity: '',
+            },
+            OriginAccessControlId: Match.stringLikeRegexp('^[A-Z0-9]+$'),
+          }),
       ]),
-    }}),
-  }));
+    },
+  }),
+}));
 
 const originAccessControlId = integ.assertions.awsApiCall('CloudFront', 'getDistributionConfig', {
   Id: distribution.distributionId,
@@ -48,8 +49,8 @@ integ.assertions.awsApiCall('CloudFront', 'getOriginAccessControlConfig', {
   Id: originAccessControlId,
 }).expect(ExpectedResult.objectLike({
   OriginAccessControlConfig: {
-    SigningProtocol: "sigv4",
-    SigningBehavior: "always",
-    OriginAccessControlOriginType: "s3"
-  }
+    SigningProtocol: 'sigv4',
+    SigningBehavior: 'always',
+    OriginAccessControlOriginType: 's3',
+  },
 }));
