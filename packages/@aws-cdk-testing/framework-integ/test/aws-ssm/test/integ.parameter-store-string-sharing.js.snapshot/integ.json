@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "SSMParameterStoreSharingTest/DefaultTest": {
+      "stacks": [
+        "integ-ssmps-sharing-consuming"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "SSMParameterStoreSharingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447"
+    }
+  }
+}
