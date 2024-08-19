@@ -2,17 +2,14 @@ import { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
 import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
-import { Annotations, Aws, CustomResource, Names, Stack } from '../../core';
-import { S3OriginAccessControlKeyPolicyProvider } from '../../custom-resource-handlers/dist/aws-cloudfront-origins/s3-origin-access-control-key-policy-provider.generated';
+import { Annotations, Aws, Names, Stack } from '../../core';
 
 const BUCKET_ACTIONS = {
   READ: ['s3:GetObject'],
   WRITE: ['s3:PutObject'],
   DELETE: ['s3:DeleteObject'],
 };
-const S3_ORIGIN_ACCESS_CONTROL_KEY_RESOURCE_TYPE = 'Custom::S3OriginAccessControlKeyPolicy';
 
 /**
  * Properties for configuring a origin using a standard S3 bucket
@@ -80,7 +77,9 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         if (bucket.encryptionKey) {
-          this.grantDistributionAccessToKey(scope, distributionId, bucket.encryptionKey);
+          // TODO: update this warning
+          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateKeyPolicy',
+            'If you run into a circular dependency issue during deployment, please refer to README for instructions.');
         }
 
         const originBindConfig = this._bind(scope, options);
@@ -120,32 +119,6 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         );
         const result = bucket.addToResourcePolicy(oacReadOnlyBucketPolicyStatement);
         return result;
-      }
-
-      /**
-       * Use custom resource to update KMS key policy
-       */
-      grantDistributionAccessToKey(scope: Construct, distributionId: string, key: IKey) {
-        const provider = S3OriginAccessControlKeyPolicyProvider.getOrCreateProvider(scope, S3_ORIGIN_ACCESS_CONTROL_KEY_RESOURCE_TYPE,
-          {
-            description: 'Lambda function that updates SSE-KMS key policy to allow CloudFront distribution access.',
-          });
-        provider.addToRolePolicy({
-          Action: ['kms:PutKeyPolicy', 'kms:GetKeyPolicy', 'kms:DescribeKey'],
-          Effect: 'Allow',
-          Resource: [key.keyArn],
-        });
-
-        new CustomResource(scope, 'S3OriginKMSKeyPolicyCustomResource', {
-          resourceType: S3_ORIGIN_ACCESS_CONTROL_KEY_RESOURCE_TYPE,
-          serviceToken: provider.serviceToken,
-          properties: {
-            DistributionId: distributionId,
-            KmsKeyId: key.keyId,
-            AccountId: bucket.env.account,
-            Partition: Stack.of(scope).partition,
-          },
-        });
       }
     }();
   }
