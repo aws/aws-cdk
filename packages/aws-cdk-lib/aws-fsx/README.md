@@ -63,7 +63,7 @@ lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.SCRATCH_2 },
   storageCapacityGiB: 1200,
   vpc,
   vpcSubnet: vpc.privateSubnets[0],
-  fileSystemTypeVersion: fsx.FileSystemTypeVersion.LUSTRE_2_15,
+  fileSystemTypeVersion: fsx.FileSystemTypeVersion.V_2_15,
 });
 ```
 
