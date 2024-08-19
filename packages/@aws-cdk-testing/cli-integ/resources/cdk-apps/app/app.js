@@ -422,7 +422,7 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
-class SessionTagsLambdaStack extends cdk.Stack {
+class SessionTagsStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, {
       ...props,
