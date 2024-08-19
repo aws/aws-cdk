@@ -433,6 +433,9 @@ class SessionTagsStack extends cdk.Stack {
         fileAssetPublishingRoleSessionTags: {
           'Department' : 'Engineering',
         },
+        imageAssetPublishingRoleSessionTags: {
+          'Department' : 'Engineering',
+        },
       })
     });
 
@@ -440,6 +443,16 @@ class SessionTagsStack extends cdk.Stack {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler'
+    });
+
+    new docker.DockerImageAsset(this, 'image', {
+      directory: path.join(__dirname, 'docker')
+    });
+
+    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
+    // be deployed (and its assets never built)
+    new cdk.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
     });
 
     new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });

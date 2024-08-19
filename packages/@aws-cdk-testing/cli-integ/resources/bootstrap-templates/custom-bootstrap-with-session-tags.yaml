@@ -418,6 +418,9 @@ Resources:
             Resource:
               Fn::Sub: "${ContainerAssetsRepository.Arn}"
             Effect: Allow
+            Condition:
+              StringEquals:
+                aws:PrincipalTag/Department: "Engineering"
           - Action:
               - ecr:GetAuthorizationToken
             Resource: "*"
