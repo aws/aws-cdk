@@ -373,3 +373,9 @@ export const config: HandlerFrameworkConfig = {
     ],
   },
 };
+
+/* This is duplicated in aws-cdk-lib/custom-resources/lib/custom-resource-config/custom-resource-config.ts */
+export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
+export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
+export const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
+export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
