@@ -1331,6 +1331,7 @@ Unlike most feature flags, we don't recommend setting this feature flag to true.
 the event object, then setting this feature flag will keep this behavior. Otherwise, setting this feature flag to false will trigger an 'Update' event by removing the 'logApiResponseData'
 property from the event object.
 
+
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
