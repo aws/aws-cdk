@@ -537,6 +537,8 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   protected notificationsHandlerRole?: iam.IRole;
 
+  protected notificationsSkipDestinationValidation?: boolean;
+
   protected objectOwnership?: ObjectOwnership;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
@@ -890,6 +892,7 @@ export abstract class BucketBase extends Resource implements IBucket {
       this.notifications = new BucketNotifications(this, 'Notifications', {
         bucket: this,
         handlerRole: this.notificationsHandlerRole,
+        skipDestinationValidation: this.notificationsSkipDestinationValidation ?? false,
       });
     }
     cb(this.notifications);
@@ -1653,6 +1656,13 @@ export interface BucketProps {
   readonly notificationsHandlerRole?: iam.IRole;
 
   /**
+   * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
+   *
+   * @default false
+   */
+  readonly notificationsSkipDestinationValidation?: boolean;
+
+  /**
    * Inteligent Tiering Configurations
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
@@ -1911,6 +1921,7 @@ export class Bucket extends BucketBase {
     });
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
+    this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 

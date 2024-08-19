@@ -19,6 +19,11 @@ export enum Runtime {
    * The Python 3.10 runtime
    */
   PYTHON_3_10 = 'python3.10',
+
+  /**
+   * The Python 3.11 runtime
+   */
+  PYTHON_3_11 = 'python3.11',
 }
 
 /**
@@ -262,7 +267,8 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'notifications-resource-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_9,
+        // Should match the actual Lambda runtime version in https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.ts
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
     ],

@@ -94,6 +94,11 @@ export class NotificationsResourceHandler extends Construct {
         Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
         Role: this.role.roleArn,
+        /**
+         * When updating runtime version here do not forget to update it also in:
+         *   1. Unit test Dockerfile: https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resource-handlers/test/aws-s3/notifications-resource-handler/Dockerfile
+         *   2. Custom Resource Handler Framework: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.ts
+         */
         Runtime: 'python3.11',
         Timeout: 300,
       },

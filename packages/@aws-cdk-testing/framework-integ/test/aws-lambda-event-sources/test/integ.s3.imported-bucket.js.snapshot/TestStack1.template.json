@@ -2,11 +2,18 @@
  "Resources": {
   "bucket43879C71": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "BucketName": "cdk-integration-test-s3-imported-bucket-name"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefbucket43879C716CF1CFA3": {
+   "Value": {
+    "Ref": "bucket43879C71"
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "Export": {
+    "Name": "TestStack1:ExportsOutputRefbucket43879C716CF1CFA3"
+   }
   }
  },
  "Parameters": {
