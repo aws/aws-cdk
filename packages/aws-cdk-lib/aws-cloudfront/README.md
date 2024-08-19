@@ -8,7 +8,7 @@ possible performance.
 
 ## Distribution API
 
-The `Distribution` API is currently being built to replace the existing `CloudFrontWebDistribution` API. The `Distribution` API is optimized for the
+The `Distribution` API replaces the `CloudFrontWebDistribution` API which is now deprecated. The `Distribution` API is optimized for the
 most common use cases of CloudFront distributions (e.g., single origin and behavior, few customizations) while still providing the ability for more
 advanced use cases. The API focuses on simplicity for the common use cases, and convenience methods for creating the behaviors and origins necessary
 for more complex use cases.
@@ -38,9 +38,128 @@ new cloudfront.Distribution(this, 'myDist', {
 
 The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
 treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
-CloudFront's redirect and error handling will be used. In the latter case, the Origin will create an origin access identity and grant it access to the
-underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
-URLs and not S3 URLs directly.
+CloudFront's redirect and error handling will be used.
+
+## Restricting access to an S3 origin
+
+CloudFront provides two ways to send authenticated requests to an Amazon S3 origin:
+origin access control (OAC) and origin access identity (OAI).
+OAI is considered legacy due to limited functionality and regional
+limitations, whereas OAC is recommended because it supports All Amazon S3
+buckets in all AWS Regions, Amazon S3 server-side encryption with AWS KMS (SSE-KMS), and dynamic requests (PUT and DELETE) to Amazon S3. Additionally,
+OAC provides stronger security posture with short term credentials,
+and more frequent credential rotations as compared to OAI.
+(see [Restricting access to an Amazon S3 Origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)).
+OAI and OAC can be used in conjunction with a bucket that is not public to
+require that your users access your content using CloudFront URLs and not S3 URLs directly.
+
+> Note: OAC and OAI can only be used with an regular S3 bucket origin (not a bucket configured as a website endpoint).
+
+The `S3BucketOrigin` class supports creating a S3 origin with OAC, OAI, and no access control (using your bucket access settings) via
+the `withOriginAccessControl()`, `withOriginAccessIdentity()`, and `withBucketDefaults()` methods respectively.
+
+To setup an S3 origin with OAC (recommended):
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket) // Automatically creates an OAC
+  },
+});
+```
+
+You can also pass in a custom S3 origin access control:
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+const oac = new cloudfront.S3OriginAccessControl(this, 'MyOAC', { signing: cloudfront.Signing.SIGV4_NO_OVERRIDE });
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(
+  bucket, { originAccessControl: oac }
+)
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: s3Origin
+  },
+});
+```
+
+Depending on the types of HTTP requests you need to send to the S3 origin, you can set the `originAccessLevels` property to specify the level of permissions (READ, WRITE, or DELETE) to grant CloudFront OAC. The default is read-only permissions.
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+const oac = new cloudfront.S3OriginAccessControl(this, 'myS3OAC');
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
+  originAccessControl: oac,
+  originAccessLevels: [origins.AccessLevel.READ, origins.AccessLevel.WRITE, origins.AccessLevel.DELETE]
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: s3Origin
+  },
+});
+```
+
+## Migrating from OAI to OAC
+
+If you are currently using OAI for your S3 origin and wish to migrate to OAC,
+replace the `S3Origin` construct (now deprecated) with `S3BucketOrigin.withOriginAccessControl()` which automatically
+creates and sets up a OAC for you.
+The OAI will be deleted as part of the
+stack update. The logical IDs of the resources managed by
+the stack (i.e. distribution, bucket) will be unchanged. Run `cdk diff` before deploying to verify the
+changes to your stack.
+
+Existing setup using OAI and `S3Origin`:
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+});
+```
+
+Updated setup using `S3BucketOrigin.withOriginAccessControl()`:
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket) },
+});
+```
+
+For more information, see [Migrating from origin access identity (OAI) to origin access control (OAC)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#migrate-from-oai-to-oac).
+
+### Using pre-existing S3 buckets
+
+If you are using an imported bucket for your S3 Origin and want to use OAC,
+you will need to update
+the S3 bucket policy manually. CDK apps **cannot** modify the configuration of imported constructs. After deploying the distribution, add the following
+policy statement to your
+S3 bucket to allow CloudFront read-only access
+(or additional permissions as required):
+
+```json
+{
+    "Statement": {
+        "Sid": "GrantOACAccessToS3",
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "cloudfront.amazonaws.com"
+        },
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::<S3 bucket name>/*",
+        "Condition": {
+            "StringEquals": {
+                "AWS:SourceArn": "arn:aws:cloudfront::<account ID>:distribution/<CloudFront distribution ID>"
+            }
+        }
+    }
+}
+```
+
+> Note: If your bucket previously used OAI, you will need to manually remove the policy statement
+that gives the OAI access to your bucket from your bucket policy.
 
 #### ELBv2 Load Balancer
 
@@ -951,7 +1070,7 @@ If no changes are desired during migration, you will at the least be able to use
 
 ## CloudFrontWebDistribution API
 
-> The `CloudFrontWebDistribution` construct is the original construct written for working with CloudFront distributions.
+> The `CloudFrontWebDistribution` construct is the original construct written for working with CloudFront distributions and has been marked as deprecated.
 > Users are encouraged to use the newer `Distribution` instead, as it has a simpler interface and receives new features faster.
 
 Example usage:
