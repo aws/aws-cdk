@@ -1636,7 +1636,8 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
    *
-   * @default - No ObjectOwnership configuration, uploading account will own the object.
+   * @default - No ObjectOwnership configuration. By default, Amazon S3 sets Object Ownership to `Bucket owner enforced`.
+   * This means ACLs are disabled and the bucket owner will own every object.
    *
    */
   readonly objectOwnership?: ObjectOwnership;
