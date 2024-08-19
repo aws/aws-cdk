@@ -11,7 +11,7 @@ export const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-h
 export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
 
 /**
- * Manages AWS vended Custom Resources
+ * Manages AWS-vended Custom Resources
  */
 export class CustomResourceConfig {
   /**
@@ -40,7 +40,7 @@ export class CustomResourceConfig {
 }
 
 /**
- * Manages log retention for AWS vended custom resources.
+ * Manages log retention for AWS-vended custom resources.
  */
 export class CustomResourceLogRetention implements IAspect {
   private readonly logRetention: logs.RetentionDays;
@@ -87,7 +87,7 @@ export class CustomResourceLogRetention implements IAspect {
 }
 
 /**
- * Manages removal policy for AWS vended custom resources.
+ * Manages removal policy for AWS-vended custom resources.
  */
 export class CustomResourceRemovalPolicy implements IAspect {
   private readonly removalPolicy: RemovalPolicy;

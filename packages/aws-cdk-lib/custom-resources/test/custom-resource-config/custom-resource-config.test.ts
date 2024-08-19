@@ -201,7 +201,7 @@ test('addLogRetentionLifetime modifies the retention period of the custom resour
   });
 });
 
-describe('when custom resource logGroup is default set to Retain', () => {
+describe('when custom resource logGroup removalPolicy is undefined', () => {
   test('addRemovalPolicy modifies custom resource logGroup to Delete', () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
@@ -211,7 +211,9 @@ describe('when custom resource logGroup is default set to Retain', () => {
     new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
-      logGroup: new logs.LogGroup(stack, 'LogGroup', {}),
+      logGroup: new logs.LogGroup(stack, 'LogGroup', {
+        removalPolicy: cdk.RemovalPolicy.RETAIN, /* Explicitly set to the default value `RETAIN` */
+      }),
     });
 
     // WHEN
@@ -248,6 +250,63 @@ describe('when custom resource logGroup is default set to Retain', () => {
     template.hasResource('AWS::Logs::LogGroup', {
       UpdateReplacePolicy: 'Delete',
       DeletionPolicy: 'Delete',
+    });
+  });
+
+  test('addRemovalPolicy keeps custom resource logGroup to Retain', () => {
+    // GIVEN
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.RETAIN;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup1', {}),
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('addRemovalPolicy modifies custom resource logGroup to Delete and non-custom resource logGroup unmodified at Retain', () => {
+    // GIVEN
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup1', {
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      }),
+    });
+    new logs.LogGroup(stack, 'LogGroup2', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 2);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
     });
   });
 });
