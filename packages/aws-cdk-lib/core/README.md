@@ -155,6 +155,54 @@ new MyStack(app, 'MyStack', {
 For more information on bootstrapping accounts and customizing synthesis,
 see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
+## Session Tags
+
+Stack Synthesizers also support passing Session Tags to the different [IAM roles created by CDK during bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles): 
+
+Here is an example of passing a session tag to the `DeploymentActionRole`:
+
+```ts
+class MyStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleSessionTags: {
+          'Department' : 'Engineering',
+        },
+      })
+    });
+  }
+}
+```
+
+The same applies for custom synthesizers. For example, if you have a custom bootstrap stack that does not use the `CloudFormationExecutionRole` but instead want to use the `DeploymentActionRole`, you could define a custom synthesizer like so:
+
+```ts
+class CustomSynthesizer extends DefaultStackSynthesizer {
+  // This custom synthesizer does not use a CFN Exec Role
+  // It will use the Deploy Role by default instead
+  get cloudFormationExecutionRoleArn() {
+    return undefined
+  }
+}
+
+class MyStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new CustomSynthesizer({
+        deployRoleSessionTags: {
+          'Department' : 'Engineering',
+        },
+      })
+    });
+  }
+}
+```
+
+For more information on Session Tags see [Define permissions based on attributes with ABAC authorization](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html).
+
 ## Nested Stacks
 
 [Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
