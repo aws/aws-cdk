@@ -2,7 +2,7 @@ import { IConstruct, MetadataEntry } from 'constructs';
 import * as cloudformation from '../../../aws-cloudformation';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { IAspect, Aspects } from '../../../core/lib';
+import { Aspects, IAspect, RemovalPolicy } from '../../../core/lib';
 
 /* This is duplicated in @aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts */
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
@@ -28,6 +28,13 @@ export class CustomResourceConfig {
    */
   public addLogRetentionLifetime(rentention: logs.RetentionDays) {
     Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention));
+  }
+
+  /**
+   * Set the removal policy of AWS-vended custom resource logGroup.
+   */
+  public addRemovalPolicy(removalPolicy: RemovalPolicy) {
+    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy));
   }
 
 }
@@ -79,3 +86,21 @@ export class CustomResourceLogRetention implements IAspect {
   }
 }
 
+/**
+ * Manages removal policy for AWS vended custom resources.
+ */
+export class CustomResourceRemovalPolicy implements IAspect {
+  private readonly removalPolicy: RemovalPolicy;
+
+  constructor(removalPolicy: RemovalPolicy) {
+    this.removalPolicy = removalPolicy;
+  }
+  visit(node: IConstruct) {
+    for (const metadataEntry of node.node.metadata as MetadataEntry[]) {
+      if (metadataEntry.type == CUSTOM_RESOURCE_SINGLETON_LOG_GROUP) {
+        const localNode = node.node.defaultChild as logs.CfnLogGroup;
+        localNode.applyRemovalPolicy(this.removalPolicy);
+      }
+    }
+  }
+}

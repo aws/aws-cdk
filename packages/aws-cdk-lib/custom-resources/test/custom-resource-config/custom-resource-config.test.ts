@@ -200,3 +200,54 @@ test('addLogRetentionLifetime modifies the retention period of the custom resour
     RetentionInDays: customResourceLogRetention,
   });
 });
+
+describe('when custom resource logGroup is default set to Retain', () => {
+  test('addRemovalPolicy modifies custom resource logGroup to Delete', () => {
+    // GIVEN
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup', {}),
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+  });
+
+  test('addLogRetentionLifetime creates new logGroup and addRemovalPolicy modify the logGroup to removalPolicy Delete', () => {
+    // GIVEN
+    const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+    CustomResourceConfig.of(app).addLogRetentionLifetime(customResourceLogRetention);
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+  });
+});

@@ -904,3 +904,21 @@ new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
     logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
 });
 ```
+
+The following example configures custom resource log groups removal policy to `DESTROY`:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+  sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+  destinationBucket: websiteBucket,
+  logGroup: new logs.logGroup(stack, 'LogGroup', {});
+});  // logGroup removalPolicy overridden by the `DESTROY` set by `CustomResourceConfig`.
+```
