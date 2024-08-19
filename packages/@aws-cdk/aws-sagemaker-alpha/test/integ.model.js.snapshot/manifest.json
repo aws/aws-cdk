@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3091b68a4482354b22fb86be9dfa04e7f07fd597c15825ad5b16b32f8fdaaf6a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bf7be4479c7f2590f4e7436df08e6f6516adf0e7234bfcfd7ea7115c7e6dfb6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -236,6 +236,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DlcRepositoryAccountMap"
+          }
+        ],
+        "/aws-cdk-sagemaker-model/NetworkIsolationModel/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NetworkIsolationModelRole562D6C7F"
+          }
+        ],
+        "/aws-cdk-sagemaker-model/NetworkIsolationModel/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NetworkIsolationModelRoleDefaultPolicy84ACFE88"
+          }
+        ],
+        "/aws-cdk-sagemaker-model/NetworkIsolationModel/Model": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NetworkIsolationModel29FE9107"
           }
         ],
         "/aws-cdk-sagemaker-model/BootstrapVersion": [
