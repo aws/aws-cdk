@@ -69,43 +69,6 @@
         "sqs:GetQueueUrl",
         "sqs:SendMessage"
        ],
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket12520700A",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": {
-        "Fn::GetAtt": [
-         "MyQueueE6CA6235",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl",
-        "sqs:SendMessage"
-       ],
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket25524B414",
-           "Arn"
-          ]
-         }
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": "s3.amazonaws.com"
@@ -432,27 +395,6 @@
         "kms:GenerateDataKey*",
         "kms:ReEncrypt*"
        ],
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket12520700A",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:Decrypt",
-        "kms:GenerateDataKey*"
-       ],
        "Effect": "Allow",
        "Principal": {
         "Service": "s3.amazonaws.com"
@@ -490,16 +432,6 @@
         "sqs:GetQueueUrl",
         "sqs:SendMessage"
        ],
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket12520700A",
-           "Arn"
-          ]
-         }
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": "s3.amazonaws.com"

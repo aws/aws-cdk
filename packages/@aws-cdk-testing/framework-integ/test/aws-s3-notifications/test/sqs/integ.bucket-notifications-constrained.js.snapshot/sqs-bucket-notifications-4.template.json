@@ -1,250 +1,92 @@
 {
  "Resources": {
-  "Bucket12520700A": {
-   "Type": "AWS::S3::Bucket",
+  "Key43FAC5CCC": {
+   "Type": "AWS::KMS::Key",
    "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "Bucket1Policy65042C0B": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "Bucket12520700A"
-    },
-    "PolicyDocument": {
+    "KeyPolicy": {
      "Statement": [
       {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
        "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
+        "kms:Encrypt",
+        "kms:ReEncrypt*"
        ],
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "Bucket12520700A",
-          "Arn"
-         ]
-        },
-        {
          "Fn::Join": [
           "",
           [
+           "arn:",
            {
-            "Fn::GetAtt": [
-             "Bucket12520700A",
-             "Arn"
-            ]
+            "Ref": "AWS::Partition"
            },
-           "/*"
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
           ]
          ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "Bucket1AutoDeleteObjectsCustomResource41848F29": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "Bucket12520700A"
-    }
-   },
-   "DependsOn": [
-    "Bucket1Policy65042C0B"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
+        },
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": "*"
       },
-      "value"
-     ]
-    },
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "Bucket12520700A"
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
        },
-       " S3 bucket."
-      ]
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Queue454A744FE": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "Key43FAC5CCC",
+      "Arn"
      ]
     }
    },
-   "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
-  "Construct1IntegUnmanagedBucket1Notifications4A1599D7": {
-   "Type": "Custom::S3BucketNotifications",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "Bucket12520700A"
-    },
-    "NotificationConfiguration": {
-     "QueueConfigurations": [
-      {
-       "Events": [
-        "s3:ObjectCreated:*"
-       ],
-       "Filter": {
-        "Key": {
-         "FilterRules": [
-          {
-           "Name": "prefix",
-           "Value": "bucket1"
-          }
-         ]
-        }
-       },
-       "QueueArn": {
-        "Fn::GetAtt": [
-         "IntegQueue16691AAFF",
-         "Arn"
-        ]
-       }
-      }
-     ]
-    },
-    "Managed": false
-   },
-   "DependsOn": [
-    "IntegQueue1Policy53174001",
-    "IntegQueue16691AAFF"
-   ]
-  },
-  "Construct2IntegUnmanagedBucket2Notifications950BFEEC": {
-   "Type": "Custom::S3BucketNotifications",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "Bucket12520700A"
-    },
-    "NotificationConfiguration": {
-     "QueueConfigurations": [
-      {
-       "Events": [
-        "s3:ObjectCreated:*"
-       ],
-       "Filter": {
-        "Key": {
-         "FilterRules": [
-          {
-           "Name": "prefix",
-           "Value": "bucket2"
-          }
-         ]
-        }
-       },
-       "QueueArn": {
-        "Fn::GetAtt": [
-         "IntegQueue2DA51259C",
-         "Arn"
-        ]
-       }
-      }
-     ]
-    },
-    "Managed": false
-   },
-   "DependsOn": [
-    "Construct1IntegUnmanagedBucket1Notifications4A1599D7",
-    "IntegQueue2Policy109EC112",
-    "IntegQueue2DA51259C"
-   ]
-  },
-  "IntegQueue16691AAFF": {
-   "Type": "AWS::SQS::Queue",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "IntegQueue1Policy53174001": {
+  "Queue4Policy23BF39CE": {
    "Type": "AWS::SQS::QueuePolicy",
    "Properties": {
     "PolicyDocument": {
@@ -261,7 +103,7 @@
        },
        "Resource": {
         "Fn::GetAtt": [
-         "IntegQueue16691AAFF",
+         "Queue454A744FE",
          "Arn"
         ]
        }
@@ -271,47 +113,77 @@
     },
     "Queues": [
      {
-      "Ref": "IntegQueue16691AAFF"
+      "Ref": "Queue454A744FE"
      }
     ]
    }
   },
-  "IntegQueue2DA51259C": {
-   "Type": "AWS::SQS::Queue",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "IntegQueue2Policy109EC112": {
-   "Type": "AWS::SQS::QueuePolicy",
+  "Bucket4F6F00B1D": {
+   "Type": "AWS::S3::Bucket",
    "Properties": {
-    "PolicyDocument": {
-     "Statement": [
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
       {
-       "Action": [
-        "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl",
-        "sqs:SendMessage"
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "Key43FAC5CCC",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Bucket4NotificationsE4514E45": {
+   "Type": "Custom::S3BucketNotifications",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Bucket4F6F00B1D"
+    },
+    "NotificationConfiguration": {
+     "QueueConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectCreated:*"
        ],
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": {
+       "QueueArn": {
         "Fn::GetAtt": [
-         "IntegQueue2DA51259C",
+         "Queue454A744FE",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Events": [
+        "s3:ObjectRemoved:*"
+       ],
+       "QueueArn": {
+        "Fn::GetAtt": [
+         "Queue454A744FE",
          "Arn"
         ]
        }
       }
-     ],
-     "Version": "2012-10-17"
+     ]
     },
-    "Queues": [
-     {
-      "Ref": "IntegQueue2DA51259C"
-     }
-    ]
-   }
+    "Managed": true
+   },
+   "DependsOn": [
+    "Queue4Policy23BF39CE",
+    "Queue454A744FE"
+   ]
   },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
    "Type": "AWS::IAM::Role",
@@ -350,10 +222,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "s3:GetBucketNotification",
-        "s3:PutBucketNotification"
-       ],
+       "Action": "s3:PutBucketNotification",
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -389,156 +258,6 @@
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
    ]
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs20.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs20.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs18.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs20.x"
-   },
-   "il-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-south-1": {
-    "value": "nodejs20.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs20.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-2": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-west-2": {
-    "value": "nodejs20.x"
-   }
-  }
- },
- "Outputs": {
-  "ExportsOutputRefIntegQueue16691AAFF77621FF1": {
-   "Value": {
-    "Ref": "IntegQueue16691AAFF"
-   },
-   "Export": {
-    "Name": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue16691AAFF77621FF1"
-   }
-  },
-  "ExportsOutputRefIntegQueue2DA51259CC4A33DFB": {
-   "Value": {
-    "Ref": "IntegQueue2DA51259C"
-   },
-   "Export": {
-    "Name": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue2DA51259CC4A33DFB"
-   }
-  },
-  "ExportsOutputRefBucket12520700A8CDAA090": {
-   "Value": {
-    "Ref": "Bucket12520700A"
-   },
-   "Export": {
-    "Name": "integ-sqs-bucket-notifications:ExportsOutputRefBucket12520700A8CDAA090"
-   }
   }
  },
  "Parameters": {

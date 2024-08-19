@@ -277,25 +277,6 @@
                                 "sqs:GetQueueUrl",
                                 "sqs:SendMessage"
                               ],
-                              "Condition": {
-                                "ArnLike": {
-                                  "aws:SourceArn": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":s3:::",
-                                        {
-                                          "Ref": "Bucket12520700A"
-                                        }
-                                      ]
-                                    ]
-                                  }
-                                }
-                              },
                               "Effect": "Allow",
                               "Principal": {
                                 "Service": "s3.amazonaws.com"
@@ -368,25 +349,6 @@
                                 "sqs:GetQueueUrl",
                                 "sqs:SendMessage"
                               ],
-                              "Condition": {
-                                "ArnLike": {
-                                  "aws:SourceArn": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":s3:::",
-                                        {
-                                          "Ref": "Bucket12520700A"
-                                        }
-                                      ]
-                                    ]
-                                  }
-                                }
-                              },
                               "Effect": "Allow",
                               "Principal": {
                                 "Service": "s3.amazonaws.com"

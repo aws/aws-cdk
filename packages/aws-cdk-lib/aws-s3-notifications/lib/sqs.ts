@@ -8,19 +8,36 @@ import { Annotations } from '../../core';
  * Use an SQS queue as a bucket notification destination
  */
 export class SqsDestination implements s3.IBucketNotificationDestination {
-  constructor(private readonly queue: sqs.IQueue) {
+
+  /**
+   * Should we need to add Global permission to `s3.awsamazon.com` service for all Buckets
+   * NOTE : we can't restrict it to specific bucket, as it will create Circular Dependency mentioned below issues,
+   * - https://github.com/aws/aws-cdk/issues/3067
+   * - https://github.com/aws/aws-cdk/issues/18988
+   */
+  private readonly shouldAddGlobalS3PermissionToKMSandSQS : boolean
+
+  constructor(private readonly queue: sqs.IQueue, shouldAddGlobalS3PermissionToKMSandSQS: boolean = true) {
+    this.shouldAddGlobalS3PermissionToKMSandSQS = shouldAddGlobalS3PermissionToKMSandSQS;
   }
 
   /**
    * Allows using SQS queues as destinations for bucket notifications.
    * Use `bucket.onEvent(event, queue)` to subscribe.
    */
-  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
-    this.queue.grantSendMessages(new iam.ServicePrincipal('s3.amazonaws.com', {
-      conditions: {
-        ArnLike: { 'aws:SourceArn': bucket.bucketArn },
-      },
-    }));
+  public bind(_scope: Construct, _bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
+    if (this.shouldAddGlobalS3PermissionToKMSandSQS) {
+      // If user is okay to add global permission, we will add and show security warning
+      this.queue.grantSendMessages(new iam.ServicePrincipal('s3.amazonaws.com'));
+
+      const warning = 'Consider passing \`shouldAddGlobalS3PermissionToKMSandSQS:false\` and add restricted permission with condition - \'aws:SourceArn\': bucket.bucketArn';
+      Annotations.of(_scope).addWarningV2('@aws-cdk/aws-s3-notifications:securityWarning', warning);
+    } else {
+      // If user didn't want this to be Global, then we will show CRITICAL warning calling out to add
+      // the required permission without using imported values.
+      const warning = 'You have opted out to add global permission for KMS & SQS Key Policy. Consider manually adding kms.grantEncryptDecrypt(), queue.grantSendMessages()';
+      Annotations.of(_scope).addWarningV2('@aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded', warning);
+    }
 
     // if this queue is encrypted, we need to allow S3 to read messages since that's how
     // it verifies that the notification destination configuration is valid.

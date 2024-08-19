@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "integ-sqs-bucket-notifications.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef47196a1164a6bb22a3430f1d900a5b55cafe2a3a3cae8f0aed878066e087ad.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f25257408a4f1aa316724ba9bcc707487cdfab06eb66c2b9adbd420759e6b95d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -70,10 +70,22 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Consider passing `shouldAddGlobalS3PermissionToKMSandSQS:false` and add restricted permission with condition - 'aws:SourceArn': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]"
+          }
+        ],
         "/integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Construct1IntegUnmanagedBucket1Notifications4A1599D7"
+          }
+        ],
+        "/integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Consider passing `shouldAddGlobalS3PermissionToKMSandSQS:false` and add restricted permission with condition - 'aws:SourceArn': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]"
           }
         ],
         "/integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications/Resource": [
@@ -174,7 +186,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40a992d3e3be00ea1943c76c93c4fdc5cd96a0f75dcd542bba2dcad41b86652e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dfc5614dd5684f4de1007904da151996b6a9eaf0e9096c6b7f7416c3c5fc74c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
