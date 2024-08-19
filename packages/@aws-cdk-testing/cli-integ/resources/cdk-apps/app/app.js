@@ -695,7 +695,7 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
-    new SessionTagsLambdaStack(app, `${stackPrefix}-session-tags-lambda`);
+    new SessionTagsLambdaStack(app, `${stackPrefix}-session-tags`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
