@@ -524,16 +524,6 @@
         "sqs:GetQueueUrl",
         "sqs:SendMessage"
        ],
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket3WithSkipDestinationValidation4A19337A",
-           "Arn"
-          ]
-         }
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": "s3.amazonaws.com"

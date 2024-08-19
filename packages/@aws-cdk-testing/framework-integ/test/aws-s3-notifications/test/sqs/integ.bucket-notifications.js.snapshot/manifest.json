@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/489af69e0b9e304040eec17ce595406117fd9518befb6c48218ea92323a1f144.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4293cd64028fa6f4402b15ab258cbfc656e4e8efb2fc470aa8da5f662a630d8a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -118,6 +118,12 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -152,6 +158,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket3WithSkipDestinationValidation4A19337A"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket3WithSkipDestinationValidation/Notifications": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Consider passing `shouldAddGlobalS3PermissionToKMSandSQS:false` and add restricted permission with condition - 'aws:SourceArn': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]"
           }
         ],
         "/sqs-bucket-notifications/Bucket3WithSkipDestinationValidation/Notifications/Resource": [
@@ -195,51 +207,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "Key34D87D45D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Key34D87D45D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Queue3693B6BCE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Queue3693B6BCE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Queue3Policy1491E485": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Queue3Policy1491E485",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Bucket3CFB7F7D7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Bucket3CFB7F7D7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Bucket3NotificationsAFEFF359": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Bucket3NotificationsAFEFF359",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "sqs-bucket-notifications"
@@ -261,7 +228,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1d55ed4ebdd74d2a65adadbfccdb4b4864dfd59964df4439a925ab411d44b46f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e275af360436904d73a262770d7a0c20714cdb2f3d48b2cfa23b2390bdc793f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
