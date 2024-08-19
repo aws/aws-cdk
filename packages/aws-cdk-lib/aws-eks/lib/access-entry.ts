@@ -240,7 +240,7 @@ export enum AccessEntryType {
   /**
    * Represents a standard access entry.
    */
-  STANDARD = 'Standard',
+  STANDARD = 'STANDARD',
 
   /**
    * Represents a Fargate Linux access entry.
