@@ -132,7 +132,7 @@ export interface DistributionProps {
    * you should add (at least one of) the domain names of the certificate to this list.
    *
    * When you want to move a domain name between distributions, you can associate a certificate without specifying any domain names.
-   * See [Moving an alternate domain name to a different distribution](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html#alternate-domain-names-move) for details.
+   * For more information, see the _Moving an alternate domain name to a different distribution_ section in the README.
    *
    * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
    */
