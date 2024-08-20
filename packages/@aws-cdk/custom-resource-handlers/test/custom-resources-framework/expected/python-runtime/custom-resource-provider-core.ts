@@ -28,5 +28,6 @@ export class TestProvider extends CustomResourceProviderBase {
       "codeDirectory": path.join(__dirname, 'my-handler'),
       "runtimeName": "python3.10"
     });
+    this.node.addMetadata('aws:cdk:is-custom-resource-handler-customResourceProvider', true);
   }
 }

@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "TestStack.assets": {
+    "TestStack1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestStack.assets.json",
+        "file": "TestStack1.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestStack": {
+    "TestStack1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TestStack.template.json",
+        "templateFile": "TestStack1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e93b48e8e2cf416f545f744236fd8a9af443005dc095de35333e862a3c8b7d2c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe62ac880051c735d06ab04c47aefb078cc6bcc5804ed60cb4521e8c7d10c56e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestStack.assets"
+          "TestStack1.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,120 +31,126 @@
         }
       },
       "dependencies": [
-        "TestStacksetup",
-        "TestStack.assets"
+        "TestStack1.assets"
       ],
       "metadata": {
-        "/TestStack/Imported/Notifications/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNotificationsDB5DE386"
-          }
-        ],
-        "/TestStack/Imported/AllowBucketNotificationsToTestStackF6B9A9222": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedAllowBucketNotificationsToTestStackF6B9A922242C13EDE"
-          }
-        ],
-        "/TestStack/F/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FServiceRole3AC82EE1"
-          }
-        ],
-        "/TestStack/F/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FC4345940"
-          }
-        ],
-        "/TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-          }
-        ],
-        "/TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
-          }
-        ],
-        "/TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
-          }
-        ],
-        "/TestStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/TestStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "TestStack"
-    },
-    "TestStacksetup.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "TestStacksetup.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "TestStacksetup": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "TestStacksetup.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9d5d2afd7cad7805a660b33abe42f39394da0cb61eeaa862ed0c9783f53a0a45.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "TestStacksetup.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "TestStacksetup.assets"
-      ],
-      "metadata": {
-        "/TestStacksetup/bucket/Resource": [
+        "/TestStack1/bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "bucket43879C71"
           }
         ],
-        "/TestStacksetup/BootstrapVersion": [
+        "/TestStack1/Exports/Output{\"Ref\":\"bucket43879C71\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefbucket43879C716CF1CFA3"
+          }
+        ],
+        "/TestStack1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestStacksetup/CheckBootstrapVersion": [
+        "/TestStack1/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestStacksetup"
+      "displayName": "TestStack1"
+    },
+    "TestStack2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TestStack2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TestStack2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TestStack2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa093a135e1763b14e1e42c296937f1091acdcd1257d167aa8f71970d40caeb1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TestStack2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TestStack1",
+        "TestStack2.assets"
+      ],
+      "metadata": {
+        "/TestStack2/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/TestStack2/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/TestStack2/Imported/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNotificationsDB5DE386"
+          }
+        ],
+        "/TestStack2/Imported/AllowBucketNotificationsToTestStack2F56424633": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedAllowBucketNotificationsToTestStack2F56424633CA7CA6E4"
+          }
+        ],
+        "/TestStack2/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+          }
+        ],
+        "/TestStack2/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
+          }
+        ],
+        "/TestStack2/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
+          }
+        ],
+        "/TestStack2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TestStack2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TestStack2"
     },
     "issue4324DefaultTestDeployAssert63CED672.assets": {
       "type": "cdk:asset-manifest",

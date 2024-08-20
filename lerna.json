@@ -2,7 +2,6 @@
   "npmClient": "yarn",
   "packages": [
     "packages/aws-cdk-lib",
-    "packages/cdk-assets",
     "packages/aws-cdk",
     "packages/cdk",
     "packages/@aws-cdk/*",

@@ -40,6 +40,15 @@ export interface ReplicaGlobalSecondaryIndexOptions {
    * @default - inherited from the primary table
    */
   readonly readCapacity?: Capacity;
+
+  /**
+   * The maximum read request units for a specific global secondary index on a replica table.
+   *
+   * Note: This can only be configured if primary table billing is PAY_PER_REQUEST.
+   *
+   * @default - inherited from the primary table
+   */
+  readonly maxReadRequestUnits?: number;
 }
 
 /**
@@ -75,6 +84,24 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    * @default - inherited from the primary table.
    */
   readonly writeCapacity?: Capacity;
+
+  /**
+   * The maximum read request units.
+   *
+   * Note: This can only be configured if the primary table billing is PAY_PER_REQUEST.
+   *
+   * @default - inherited from the primary table.
+   */
+  readonly maxReadRequestUnits?: number;
+
+  /**
+   * The maximum write request units.
+   *
+   * Note: This can only be configured if the primary table billing is PAY_PER_REQUEST.
+   *
+   * @default - inherited from the primary table.
+   */
+  readonly maxWriteRequestUnits?: number;
 }
 
 /**
@@ -148,6 +175,15 @@ export interface ReplicaTableProps extends TableOptionsV2 {
    * @default - inherited from the primary table
    */
   readonly readCapacity?: Capacity;
+
+  /**
+   * The maxium read request units.
+   *
+   * Note: This can only be configured if the primary table billing is PAY_PER_REQUEST.
+   *
+   * @default - inherited from the primary table
+   */
+  readonly maxReadRequestUnits?: number;
 
   /**
    * Options used to configure global secondary index properties.
@@ -459,6 +495,9 @@ export class TableV2 extends TableBaseV2 {
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
   private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
 
+  private readonly maxReadRequestUnits?: number;
+  private readonly maxWriteRequestUnits?: number;
+
   private readonly replicaTables = new Map<string, ReplicaTableProps>();
   private readonly replicaKeys: { [region: string]: IKey } = {};
   private readonly replicaTableArns: string[] = [];
@@ -467,6 +506,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
+  private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
@@ -485,9 +525,15 @@ export class TableV2 extends TableBaseV2 {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
 
-    this.billingMode = props.billing?.mode ?? BillingMode.PAY_PER_REQUEST;
-    this.readProvisioning = props.billing?._renderReadCapacity();
-    this.writeProvisioning = props.billing?._renderWriteCapacity();
+    if (props.billing?.mode === BillingMode.PAY_PER_REQUEST || props.billing?.mode === undefined) {
+      this.maxReadRequestUnits = props.billing?._renderReadCapacity();
+      this.maxWriteRequestUnits = props.billing?._renderWriteCapacity();
+      this.billingMode = BillingMode.PAY_PER_REQUEST;
+    } else {
+      this.readProvisioning = props.billing?._renderReadCapacity();
+      this.writeProvisioning = props.billing?._renderWriteCapacity();
+      this.billingMode = props.billing.mode;
+    }
 
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
@@ -501,6 +547,9 @@ export class TableV2 extends TableBaseV2 {
       localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
+      writeOnDemandThroughputSettings: this.maxWriteRequestUnits
+        ? { maxWriteRequestUnits: this.maxWriteRequestUnits }
+        : undefined,
       streamSpecification: Lazy.any(
         { produce: () => props.dynamoStream ? { streamViewType: props.dynamoStream } : this.renderStreamSpecification() },
       ),
@@ -636,6 +685,11 @@ export class TableV2 extends TableBaseV2 {
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
       tags: props.tags,
+      readOnDemandThroughputSettings: props.maxReadRequestUnits
+        ? { maxReadRequestUnits: props.maxReadRequestUnits }
+        : this.maxReadRequestUnits
+          ? { maxReadRequestUnits: this.maxReadRequestUnits }
+          : undefined,
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
         : undefined,
@@ -649,11 +703,18 @@ export class TableV2 extends TableBaseV2 {
     props.readCapacity && this.globalSecondaryIndexReadCapacitys.set(props.indexName, props.readCapacity);
     const writeProvisionedThroughputSettings = props.writeCapacity ? props.writeCapacity._renderWriteCapacity() : this.writeProvisioning;
 
+    props.maxReadRequestUnits && this.globalSecondaryIndexMaxReadUnits.set(props.indexName, props.maxReadRequestUnits);
+
+    const writeOnDemandThroughputSettings: CfnGlobalTable.WriteOnDemandThroughputSettingsProperty | undefined = props.maxWriteRequestUnits
+      ? { maxWriteRequestUnits: props.maxWriteRequestUnits }
+      : undefined;
+
     return {
       indexName: props.indexName,
       keySchema,
       projection,
       writeProvisionedThroughputSettings,
+      writeOnDemandThroughputSettings,
     };
   }
 
@@ -678,18 +739,24 @@ export class TableV2 extends TableBaseV2 {
       const indexName = gsi.indexName;
       let contributorInsights = this.tableOptions.contributorInsights;
       let readCapacity = this.globalSecondaryIndexReadCapacitys.get(indexName);
-
+      let maxReadRequestUnits = this.globalSecondaryIndexMaxReadUnits.get(indexName);
       if (indexNamesFromOptions.includes(indexName)) {
         const indexOptions = options[indexName];
         contributorInsights = indexOptions.contributorInsights;
         readCapacity = indexOptions.readCapacity;
+        maxReadRequestUnits = indexOptions.maxReadRequestUnits;
       }
 
       const readProvisionedThroughputSettings = readCapacity?._renderReadCapacity() ?? this.readProvisioning;
 
+      const readOnDemandThroughputSettings: CfnGlobalTable.ReadOnDemandThroughputSettingsProperty | undefined = maxReadRequestUnits
+        ? { maxReadRequestUnits: maxReadRequestUnits }
+        : undefined;
+
       replicaGlobalSecondaryIndexes.push({
         indexName,
         readProvisionedThroughputSettings,
+        readOnDemandThroughputSettings,
         contributorInsightsSpecification: contributorInsights !== undefined
           ? { enabled: contributorInsights }
           : undefined,

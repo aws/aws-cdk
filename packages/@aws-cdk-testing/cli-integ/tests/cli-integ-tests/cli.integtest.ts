@@ -102,6 +102,12 @@ integTest('cdk synth', withDefaultFixture(async (fixture) => {
     },
   }));
 
+  expect(await fixture.cdkSynth({
+    options: [fixture.fullStackName('test-1')],
+  })).not.toEqual(expect.stringContaining(`
+Rules:
+  CheckBootstrapVersion:`));
+
   await fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false });
   expect(fixture.template('test-2')).toEqual(expect.objectContaining({
     Resources: {

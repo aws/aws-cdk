@@ -1,0 +1,99 @@
+{
+ "Resources": {
+  "String0BA8456E": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "/My/Public/Parameter",
+    "Tier": "Advanced",
+    "Type": "String",
+    "Value": "Abc123"
+   }
+  },
+  "ParamShare": {
+   "Type": "AWS::RAM::ResourceShare",
+   "Properties": {
+    "AllowExternalPrincipals": true,
+    "Name": "ParamShare",
+    "PermissionArns": [
+     "arn:aws:ram::aws:permission/AWSRAMDefaultPermissionSSMParameterReadOnly"
+    ],
+    "Principals": [
+     "234567890123"
+    ],
+    "ResourceArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:ssm:us-east-1:12345678:parameter",
+        {
+         "Ref": "String0BA8456E"
+        }
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "String0BA8456E"
+   ]
+  }
+ },
+ "Outputs": {
+  "ResourceShareArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ParamShare",
+     "Arn"
+    ]
+   }
+  },
+  "ParameterArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:ssm:us-east-1:12345678:parameter",
+      {
+       "Ref": "String0BA8456E"
+      }
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

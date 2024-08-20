@@ -11,6 +11,9 @@ export class TestSingletonFunction extends lambda.SingletonFunction {
       "handler": "index.handler",
       "runtime": lambda.Runtime.PYTHON_3_10
     });
+    this.addMetadata('aws:cdk:is-custom-resource-handler-singleton', true);
+    if (props?.logGroup) { this.logGroup.node.addMetadata('aws:cdk:is-custom-resource-handler-logGroup', true) };
+    if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('aws:cdk:is-custom-resource-handler-logRetention', true) };
   }
 }
 
