@@ -17,7 +17,10 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var cdk = require('aws-cdk-lib');
   var {
     DefaultStackSynthesizer,
+    StackSynthesizer,
     LegacyStackSynthesizer,
+    AssetManifestBuilder,
+    assertBound,
     aws_ec2: ec2,
     aws_ecs: ecs,
     aws_sso: sso,
@@ -30,6 +33,9 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_ecr_assets: docker,
     Stack
   } = require('aws-cdk-lib');
+  var {
+    StringSpecializer
+  } = require('aws-cdk-lib/core/lib/helpers-internal');
 }
 
 const { Annotations } = cdk;
@@ -439,20 +445,112 @@ class SessionTagsStack extends cdk.Stack {
       })
     });
 
+    // Lambda Function to test AssetPublishingRole
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler'
     });
+    new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
 
+    // DockerImageAsset to test ImageAssetPublishingRole
     new docker.DockerImageAsset(this, 'image', {
       directory: path.join(__dirname, 'docker')
     });
-
-    // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
-    // be deployed (and its assets never built)
     new cdk.CfnResource(this, 'Handle', {
       type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
+  }
+}
+
+class CustomSynthesizer extends cdk.StackSynthesizer {
+  assetManifest = new AssetManifestBuilder();
+  fileAssetPublishingRoleArn;
+  bucketName = 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}'
+  bucketPrefix = '';
+  bootstrapStackVersionSsmParameter = '/cdk-bootstrap/hnb659fds/version';
+  qualifier = '';
+  props;
+
+  DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
+  BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
+  DEFAULT_DEPLOY_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}';
+  DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}';
+
+  DEFAULT_QUALIFIER = 'hnb659fds';
+
+  constructor(props) {
+    super();
+    this.props = props;
+  }
+
+  bind(stack) {
+    super.bind(stack);
+
+    const qualifier = stack.node.tryGetContext(this.BOOTSTRAP_QUALIFIER_CONTEXT) ?? this.DEFAULT_QUALIFIER;
+    this.qualifier = qualifier;
+
+    this.fileAssetPublishingRoleArn = this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN;
+  }
+
+  addFileAsset(asset) {
+    const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
+      bucketName: this.bucketName,
+      bucketPrefix: this.bucketPrefix,
+      role: this.fileAssetPublishingRoleArn ? {
+        assumeRoleArn: this.fileAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+        assumeRoleSessionTags: this.props.fileAssetPublishingRoleSessionTags,
+      } : undefined,
+    });
+    return this.cloudFormationLocationFromFileAsset(location);
+  }
+
+  synthesize(session) {
+    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
+    const templateAsset = this.addFileAsset(templateAssetSource);
+
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
+      requiresBootstrapStackVersion: 6,
+      bootstrapStackVersionSsmParameter: '/cdk-bootstrap/hnb659fds/version',
+    });
+
+    this.emitArtifact(session, {
+      assumeRoleExternalId: this.props.deployRoleExternalId,
+      assumeRoleArn: this.deployRoleArn,
+      assumeRoleSessionTags: this.props.deployRoleSessionTags,
+      // Pass in undefined for the CFN exec role:
+      cloudFormationExecutionRoleArn: undefined,
+      stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
+      requiresBootstrapStackVersion: 6,
+      bootstrapStackVersionSsmParameter: '/cdk-bootstrap/hnb659fds/version',
+      additionalDependencies: [assetManifestId],
+      lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
+        arn: this.lookupRoleArn,
+        assumeRoleExternalId: this.props.lookupRoleExternalId,
+        assumeRoleSessionTags: this.props.lookupRoleSessionTags,
+        requiresBootstrapStackVersion: 6,
+        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
+      } : undefined,
+    });
+  }
+}
+
+class SessionTagsWithCustomSynthesizerStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new CustomSynthesizer({
+        // deployRoleSessionTags: {
+        //   'Department' : 'Engineering',
+        // },
+      })
+    });
+
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.asset(path.join(__dirname, 'lambda')),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler'
     });
 
     new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
@@ -709,6 +807,7 @@ switch (stackSet) {
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
     new SessionTagsStack(app, `${stackPrefix}-session-tags`);
+    new SessionTagsWithCustomSynthesizerStack(app, `${stackPrefix}-session-tags-with-custom-synthesizer`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);

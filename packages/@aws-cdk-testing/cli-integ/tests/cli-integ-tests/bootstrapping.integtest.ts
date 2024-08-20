@@ -82,7 +82,7 @@ integTest('can and deploy if omitting execution policies', withoutBootstrap(asyn
   });
 }));
 
-// Custom Bootstrap test with Session Tags on the DeployRole
+// Custom Bootstrap test with Session Tags on the Deploy, FileAssetPublishing and ImageAssetPublishing Roles
 integTest('can deploy with session tags on the deploy, file asset, and image asset publishing roles', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
@@ -92,6 +92,24 @@ integTest('can deploy with session tags on the deploy, file asset, and image ass
   });
 
   await fixture.cdkDeploy('session-tags', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+  });
+}));
+
+// Custom Bootstrap test without CloudFormationExecutionRole and Session Tags on the DeployRole
+integTest('can deploy with session tags using custom synthesizer', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    toolkitStackName: bootstrapStackName,
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-with-session-tags.yaml'),
+  });
+
+  await fixture.cdkDeploy('session-tags-with-custom-synthesizer', {
     options: [
       '--toolkit-stack-name', bootstrapStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
