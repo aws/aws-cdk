@@ -539,6 +539,7 @@ export class Deployments {
       const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
+        assumeRoleSessionTags: stack.lookupRole?.assumeRoleSessionTags,
       });
 
       const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
