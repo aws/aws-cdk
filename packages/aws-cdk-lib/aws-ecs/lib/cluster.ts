@@ -205,6 +205,10 @@ export class Cluster extends Resource implements ICluster {
    */
   private _executeCommandConfiguration?: ExecuteCommandConfiguration;
 
+  /**
+   * The configuration for ECS managed Storage
+   * @private
+   */
   private _managedStorageConfiguration?: ManagedStorageConfiguration;
 
   /**
@@ -364,15 +368,16 @@ export class Cluster extends Resource implements ICluster {
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
 
-  private renderClusterConfiguration(): CfnCluster.ClusterConfigurationProperty {
+  private renderClusterConfiguration(): CfnCluster.ClusterConfigurationProperty | undefined {
+    if (!this._executeCommandConfiguration && !this._managedStorageConfiguration) return undefined;
     return {
       executeCommandConfiguration: this._executeCommandConfiguration && {
-        kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
-        logConfiguration: this._executeCommandConfiguration?.logConfiguration && this.renderExecuteCommandLogConfiguration(),
-        logging: this._executeCommandConfiguration?.logging,
+        kmsKeyId: this._executeCommandConfiguration.kmsKey?.keyArn,
+        logConfiguration: this._executeCommandConfiguration.logConfiguration && this.renderExecuteCommandLogConfiguration(),
+        logging: this._executeCommandConfiguration.logging,
       },
       managedStorageConfiguration: this._managedStorageConfiguration && {
-        fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration?.fargateEphemeralStorageKmsKey?.keyId,
+        fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
       },
     };
   }
