@@ -463,73 +463,40 @@ class SessionTagsStack extends cdk.Stack {
   }
 }
 
-class CustomSynthesizer extends cdk.StackSynthesizer {
-  assetManifest = new AssetManifestBuilder();
-  fileAssetPublishingRoleArn;
-  bucketName = 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}'
-  bucketPrefix = '';
-  bootstrapStackVersionSsmParameter = '/cdk-bootstrap/hnb659fds/version';
-  qualifier = '';
-  props;
+MIN_BOOTSTRAP_STACK_VERSION = 6;
+MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 6;
+class CustomSynthesizer extends cdk.DefaultStackSynthesizer {
 
-  DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
-  BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
-  DEFAULT_DEPLOY_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}';
-  DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}';
-
-  DEFAULT_QUALIFIER = 'hnb659fds';
-
-  constructor(props) {
-    super();
-    this.props = props;
-  }
-
-  bind(stack) {
-    super.bind(stack);
-
-    const qualifier = stack.node.tryGetContext(this.BOOTSTRAP_QUALIFIER_CONTEXT) ?? this.DEFAULT_QUALIFIER;
-    this.qualifier = qualifier;
-
-    this.fileAssetPublishingRoleArn = this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN;
-  }
-
-  addFileAsset(asset) {
-    const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
-      bucketName: this.bucketName,
-      bucketPrefix: this.bucketPrefix,
-      role: this.fileAssetPublishingRoleArn ? {
-        assumeRoleArn: this.fileAssetPublishingRoleArn,
-        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
-        assumeRoleSessionTags: this.props.fileAssetPublishingRoleSessionTags,
-      } : undefined,
-    });
-    return this.cloudFormationLocationFromFileAsset(location);
-  }
-
+  // This CustomSynthesizer is the same as the Default synthesizer, except that it passes
+  // undefined for the CloudFormationExecutionRole, since we want it to use the Deploy role instead.
   synthesize(session) {
+    if (this.props.generateBootstrapVersionRule ?? true) {
+      this.addBootstrapVersionRule(MIN_BOOTSTRAP_STACK_VERSION, this.bootstrapStackVersionSsmParameter);
+    }
+
     const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
-      requiresBootstrapStackVersion: 6,
-      bootstrapStackVersionSsmParameter: '/cdk-bootstrap/hnb659fds/version',
+      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
     });
 
     this.emitArtifact(session, {
       assumeRoleExternalId: this.props.deployRoleExternalId,
-      assumeRoleArn: this.deployRoleArn,
+      assumeRoleArn: this._deployRoleArn,
       assumeRoleSessionTags: this.props.deployRoleSessionTags,
-      // Pass in undefined for the CFN exec role:
+      // Pass in UNDEFINED for the CFN Execution Role Arn:
       cloudFormationExecutionRoleArn: undefined,
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      requiresBootstrapStackVersion: 6,
-      bootstrapStackVersionSsmParameter: '/cdk-bootstrap/hnb659fds/version',
+      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [assetManifestId],
       lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
         arn: this.lookupRoleArn,
         assumeRoleExternalId: this.props.lookupRoleExternalId,
         assumeRoleSessionTags: this.props.lookupRoleSessionTags,
-        requiresBootstrapStackVersion: 6,
+        requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,
     });
