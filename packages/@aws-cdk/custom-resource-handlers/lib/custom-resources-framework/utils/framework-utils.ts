@@ -16,11 +16,8 @@ export function toLambdaRuntime(runtime: Runtime) {
     case Runtime.NODEJS_18_X: {
       return 'lambda.Runtime.NODEJS_18_X';
     }
-    case Runtime.PYTHON_3_9: {
-      return 'lambda.Runtime.PYTHON_3_9';
-    }
-    case Runtime.PYTHON_3_10: {
-      return 'lambda.Runtime.PYTHON_3_10';
+    case Runtime.PYTHON_3_11: {
+      return 'lambda.Runtime.PYTHON_3_11';
     }
     case Runtime.PYTHON_3_11: {
       return 'lambda.Runtime.PYTHON_3_11';
