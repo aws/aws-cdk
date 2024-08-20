@@ -46,15 +46,11 @@
                         {
                           "Action": [
                             "kms:Decrypt",
-                            "kms:DescribeKey",
                             "kms:GenerateDataKey"
                           ],
                           "Condition": {
                             "StringEquals": {
-                              "aws:SourceAccount": {
-                                "Ref": "AWS::AccountId"
-                              },
-                              "aws:SourceArn": {
+                              "kms:EncryptionContext:aws:states:stateMachineArn": {
                                 "Fn::Join": [
                                   "",
                                   [
@@ -73,8 +69,23 @@
                                     ":stateMachine/StateMachineWithCMKEncryptionConfiguration"
                                   ]
                                 ]
-                              },
-                              "kms:EncryptionContext:aws:states:stateMachineArn": {
+                              }
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "states.amazonaws.com"
+                          },
+                          "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:Decrypt",
+                            "kms:GenerateDataKey"
+                          ],
+                          "Condition": {
+                            "StringEquals": {
+                              "kms:EncryptionContext:aws:states:activityArn": {
                                 "Fn::Join": [
                                   "",
                                   [
@@ -90,7 +101,7 @@
                                     {
                                       "Ref": "AWS::AccountId"
                                     },
-                                    ":stateMachine/StateMachineWithCMKEncryptionConfiguration"
+                                    ":activity/ActivityWithCMKEncryptionConfiguration"
                                   ]
                                 ]
                               }
@@ -164,6 +175,53 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "kms:Decrypt",
+                                    "kms:GenerateDataKey"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Key961B73FD",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }

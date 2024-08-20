@@ -139,19 +139,6 @@
                         },
                         {
                           "Action": [
-                            "kms:Decrypt",
-                            "kms:Encrypt",
-                            "kms:GenerateDataKey*",
-                            "kms:ReEncrypt*"
-                          ],
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "logs.amazonaws.com"
-                          },
-                          "Resource": "*"
-                        },
-                        {
-                          "Action": [
                             "kms:Decrypt*",
                             "kms:Describe*",
                             "kms:Encrypt*",
@@ -176,7 +163,7 @@
                                     {
                                       "Ref": "AWS::AccountId"
                                     },
-                                    ":log-group:MyLogGroup"
+                                    ":log-group:/aws/vendedlogs/states/MyLogGroup"
                                   ]
                                 ]
                               }

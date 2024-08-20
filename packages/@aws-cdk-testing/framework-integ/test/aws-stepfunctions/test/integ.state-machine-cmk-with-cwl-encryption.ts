@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class KMSStateMachine extends cdk.Stack {
@@ -22,13 +21,6 @@ class KMSStateMachine extends cdk.Stack {
       encryptionKey: this.logGroupKey,
     });
 
-    /**
-     * We need to grant the service principal encrypt and decrypt permissions since passing
-     *  a KMS key when creating a LogGroup doesn't automatically grant the service principal encrypt/decrypt permissions
-     *  see: https://github.com/aws/aws-cdk/issues/28304
-     */
-    this.logGroupKey.grantEncryptDecrypt(new iam.ServicePrincipal('logs.amazonaws.com'));
-
     this.logGroupKey.addToResourcePolicy(new cdk.aws_iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
@@ -39,7 +31,7 @@ class KMSStateMachine extends cdk.Stack {
             service: 'logs',
             resource: 'log-group',
             sep: ':',
-            resourceName: 'MyLogGroup', // Cannot use this.logGroup.logGroupName since this will cause a circular dependency
+            resourceName: '/aws/vendedlogs/states/MyLogGroup', // Cannot use this.logGroup.logGroupName since this will cause a circular dependency
           }),
         },
       },

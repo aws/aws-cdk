@@ -31,15 +31,11 @@
       {
        "Action": [
         "kms:Decrypt",
-        "kms:DescribeKey",
         "kms:GenerateDataKey"
        ],
        "Condition": {
         "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         },
-         "aws:SourceArn": {
+         "kms:EncryptionContext:aws:states:stateMachineArn": {
           "Fn::Join": [
            "",
            [
@@ -58,8 +54,23 @@
             ":stateMachine/StateMachineWithCMKEncryptionConfiguration"
            ]
           ]
-         },
-         "kms:EncryptionContext:aws:states:stateMachineArn": {
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "kms:EncryptionContext:aws:states:activityArn": {
           "Fn::Join": [
            "",
            [
@@ -75,7 +86,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":stateMachine/StateMachineWithCMKEncryptionConfiguration"
+            ":activity/ActivityWithCMKEncryptionConfiguration"
            ]
           ]
          }
@@ -111,6 +122,35 @@
     }
    }
   },
+  "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35",
+    "Roles": [
+     {
+      "Ref": "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18"
+     }
+    ]
+   }
+  },
   "StateMachineWithCMKEncryptionConfiguration10773462": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
@@ -135,6 +175,7 @@
     "StateMachineType": "STANDARD"
    },
    "DependsOn": [
+    "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35",
     "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18"
    ],
    "UpdateReplacePolicy": "Delete",

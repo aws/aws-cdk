@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "f276547be771588b65a3e423bb443306ece79eae64bf1899619ff300f7f60eef": {
+    "964312885f6659dbeaaf2d2985268655f6f025f381865badf0a5366a2574a428": {
       "source": {
         "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f276547be771588b65a3e423bb443306ece79eae64bf1899619ff300f7f60eef.json",
+          "objectKey": "964312885f6659dbeaaf2d2985268655f6f025f381865badf0a5366a2574a428.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

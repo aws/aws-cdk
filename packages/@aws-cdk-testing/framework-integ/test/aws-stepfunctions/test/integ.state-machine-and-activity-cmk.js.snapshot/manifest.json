@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/73e6ad59415a12f1fd7cee5139e3d29802d28177e6c2582c66f0c11a2403bb48.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f56f03ebec6aacf5cb23c7e33e520e17bc02acdc5425dfc18587b23b1c998ecf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,6 +44,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18"
+          }
+        ],
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35"
           }
         ],
         "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Resource": [
