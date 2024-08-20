@@ -18,6 +18,7 @@ export interface ClientOptions {
   region?: string;
   assumeRoleArn?: string;
   assumeRoleExternalId?: string;
+  assumeRoleSessionTags?: { [key: string]: string };
   quiet?: boolean;
 }
 
