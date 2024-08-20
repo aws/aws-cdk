@@ -12,6 +12,7 @@ export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resour
 
 /**
  * Manages AWS-vended Custom Resources
+ * This feature is currently experimental.
  */
 export class CustomResourceConfig {
   /**

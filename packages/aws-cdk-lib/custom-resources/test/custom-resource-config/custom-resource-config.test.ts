@@ -201,7 +201,7 @@ test('addLogRetentionLifetime modifies the retention period of the custom resour
   });
 });
 
-describe('when custom resource logGroup removalPolicy is undefined', () => {
+describe('when custom resource logGroup removalPolicy is Retain', () => {
   test('addRemovalPolicy modifies custom resource logGroup to Delete', () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
@@ -212,7 +212,7 @@ describe('when custom resource logGroup removalPolicy is undefined', () => {
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
       logGroup: new logs.LogGroup(stack, 'LogGroup', {
-        removalPolicy: cdk.RemovalPolicy.RETAIN, /* Explicitly set to the default value `RETAIN` */
+        removalPolicy: cdk.RemovalPolicy.RETAIN, // Explicitly set to the default value `RETAIN`
       }),
     });
 
@@ -228,7 +228,7 @@ describe('when custom resource logGroup removalPolicy is undefined', () => {
     });
   });
 
-  test('addLogRetentionLifetime creates new logGroup and addRemovalPolicy modify the logGroup to removalPolicy Delete', () => {
+  test('addLogRetentionLifetime creates a new logGroup and addRemovalPolicy can set its removal policy to destroy', () => {
     // GIVEN
     const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
     const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
@@ -253,7 +253,7 @@ describe('when custom resource logGroup removalPolicy is undefined', () => {
     });
   });
 
-  test('addRemovalPolicy keeps custom resource logGroup to Retain', () => {
+  test('addRemovalPolicy can see a custom resource logGroup\'s removal policy to Retain', () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.RETAIN;
     const app = new cdk.App();
@@ -277,7 +277,7 @@ describe('when custom resource logGroup removalPolicy is undefined', () => {
     });
   });
 
-  test('addRemovalPolicy modifies custom resource logGroup to Delete and non-custom resource logGroup unmodified at Retain', () => {
+  test('addRemovalPolicy only affects custom resource log groups', () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
     const app = new cdk.App();

@@ -907,7 +907,8 @@ new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
 });
 ```
 
-The following example configures custom resource log groups removal policy to `DESTROY`:
+The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a logGroup with the lambda. The `dropSpam` lambda stops processing messages that have at least one spam indicator.
+The `addRemovalPolicy` method will configure the log groups removal policy to `DESTROY`.
 ```ts
 import * as cdk from 'aws-cdk-lib';
 import * as ses from 'aws-cdk-lib/aws-ses';
