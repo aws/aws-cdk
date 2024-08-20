@@ -3582,6 +3582,67 @@ describe('function', () => {
     });
   });
 
+  describe('Recursive Loop', () => {
+    test('with recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.TERMINATE,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Terminate',
+        },
+      });
+    });
+
+    test('without recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.ALLOW,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Allow',
+        },
+      });
+    });
+
+    test('default recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          // for default, if the property is not set up in stack it doesn't show up in the template.
+        },
+      });
+    });
+  });
+
   test('called twice for the same service principal but with different conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
