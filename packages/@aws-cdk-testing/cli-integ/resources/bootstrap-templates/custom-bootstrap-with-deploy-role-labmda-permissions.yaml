@@ -11,11 +11,11 @@ Parameters:
       environment
     Default: ''
     Type: CommaDelimitedList
-  # CloudFormationExecutionPolicies:
-  #   Description: List of the ManagedPolicy ARN(s) to attach to the CloudFormation
-  #     deployment role
-  #   Default: ''
-  #   Type: CommaDelimitedList
+  CloudFormationExecutionPolicies:
+    Description: List of the ManagedPolicy ARN(s) to attach to the CloudFormation
+      deployment role
+    Default: ''
+    Type: CommaDelimitedList
   FileAssetsBucketName:
     Description: The name of the S3 bucket used for file assets
     Default: ''
@@ -71,13 +71,13 @@ Conditions:
           - Fn::Join:
               - ''
               - Ref: TrustedAccountsForLookup
-  # HasCloudFormationExecutionPolicies:
-  #   Fn::Not:
-  #     - Fn::Equals:
-  #         - ''
-  #         - Fn::Join:
-  #             - ''
-  #             - Ref: CloudFormationExecutionPolicies
+  HasCloudFormationExecutionPolicies:
+    Fn::Not:
+      - Fn::Equals:
+          - ''
+          - Fn::Join:
+              - ''
+              - Ref: CloudFormationExecutionPolicies
   HasCustomFileAssetsBucketName:
     Fn::Not:
       - Fn::Equals:
@@ -491,9 +491,9 @@ Resources:
                   StringEquals:
                     kms:ViaService:
                       Fn::Sub: s3.${AWS::Region}.amazonaws.com
-              # - Action: iam:PassRole
-              #   Resource:
-              #     Fn::Sub: "${CloudFormationExecutionRole.Arn}"
+              - Action: iam:PassRole
+                Resource:
+                  Fn::Sub: "${CloudFormationExecutionRole.Arn}"
               #   Effect: Allow
               # - Action: lambda:CreateFunction
               #   Effect: Allow
@@ -506,7 +506,7 @@ Resources:
                 Resource: "*"
                 Condition:
                   StringNotEquals:
-                    "aws:PrincipalTag/Hello": "true"
+                    aws:PrincipalTag/Department: "Engineering"
               - Sid: CliPermissions
                 Action:
                   # Permissions needed by the CLI when doing `cdk deploy`.
@@ -545,33 +545,33 @@ Resources:
       Tags:
         - Key: aws-cdk:bootstrap-role
           Value: deploy
-  # CloudFormationExecutionRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Statement:
-  #         - Action: sts:AssumeRole
-  #           Effect: Allow
-  #           Principal:
-  #             Service: cloudformation.amazonaws.com
-  #       Version: '2012-10-17'
-  #     ManagedPolicyArns:
-  #       Fn::If:
-  #         - HasCloudFormationExecutionPolicies
-  #         - Ref: CloudFormationExecutionPolicies
-  #         - Fn::If:
-  #           - HasTrustedAccounts
-  #           # The CLI will prevent this case from occurring
-  #           - Ref: AWS::NoValue
-  #           # The CLI will advertise that we picked this implicitly
-  #           - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
-  #     RoleName:
-  #       Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
-  #     PermissionsBoundary:
-  #       Fn::If:
-  #         - PermissionsBoundarySet
-  #         - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
-  #         - Ref: AWS::NoValue
+  CloudFormationExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+        Fn::If:
+          - HasCloudFormationExecutionPolicies
+          - Ref: CloudFormationExecutionPolicies
+          - Fn::If:
+            - HasTrustedAccounts
+            # The CLI will prevent this case from occurring
+            - Ref: AWS::NoValue
+            # The CLI will advertise that we picked this implicitly
+            - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
+      RoleName:
+        Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
+      PermissionsBoundary:
+        Fn::If:
+          - PermissionsBoundarySet
+          - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
+          - Ref: AWS::NoValue
   CdkBoostrapPermissionsBoundaryPolicy:
     # Edit the template prior to boostrap in order to have this example policy created
     Condition: ShouldCreatePermissionsBoundary

@@ -106,7 +106,7 @@ integTest('can deploy with session tags using custom synthesizer', withoutBootst
 
   await fixture.cdkBootstrapModern({
     toolkitStackName: bootstrapStackName,
-    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-with-session-tags.yaml'),
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-with-deploy-role-labmda-permissions.yaml'),
   });
 
   await fixture.cdkDeploy('session-tags-with-custom-synthesizer', {
