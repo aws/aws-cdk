@@ -495,7 +495,7 @@ Resources:
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
                 Effect: Allow
-              - Sid: ExtraIamPermissionsFromCFNRole
+              - Sid: IamPermissions # Need this since we no don't use the CloudFormationExecutionRole here
                 Action: iam:*
                 Resource: "*"
                 Effect: Allow
@@ -503,6 +503,9 @@ Resources:
                 Action: lambda:*
                 Resource: "*"
                 Effect: Allow
+                Condition:
+                  StringEquals:
+                    aws:PrincipalTag/Department: "Engineering"
               - Sid: CliPermissions
                 Action:
                   # Permissions needed by the CLI when doing `cdk deploy`.
