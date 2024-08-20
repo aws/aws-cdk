@@ -109,18 +109,18 @@ describe('new style synthesis', () => {
     // GIVEN
     stack = new Stack(app, 'SessionTagsStack', {
       synthesizer: new DefaultStackSynthesizer({
-        // deployRoleExternalId: 'WOWOW0',
         deployRoleSessionTags: {
           Department: 'Engineering-DeployRoleTag',
         },
-        // fileAssetPublishingExternalId: 'WOWOW1',
         fileAssetPublishingRoleSessionTags: {
           Department: 'Engineering-FileAssetTag',
         },
-        // imageAssetPublishingExternalId: 'WOWOW2',
         imageAssetPublishingRoleSessionTags: {
           Department: 'Engineering-ImageAssetTag',
         },
+        lookupRoleSessionTags: {
+          Department: 'Engineering-LookupRoleTag',
+        }
       }),
     });
 
@@ -138,8 +138,9 @@ describe('new style synthesis', () => {
     // THEN
     const asm = app.synth();
     const manifest = app.synth().getStackByName('SessionTagsStack').manifest;
-    // Validates that the deploy role session tags were set in the Manifest:
+    // Validates that the deploy and lookup role session tags were set in the Manifest:
     expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).assumeRoleSessionTags).toEqual({ Department: 'Engineering-DeployRoleTag' });
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).lookupRole?.assumeRoleSessionTags).toEqual({ Department: 'Engineering-LookupRoleTag' });
 
     const assetManifest = getAssetManifest(asm);
     const assetManifestJSON = readAssetManifest(assetManifest);
