@@ -105,6 +105,50 @@ describe('new style synthesis', () => {
 
   });
 
+  test('can set session tags on default stack synthesizer', () => {
+    // GIVEN
+    stack = new Stack(app, 'SessionTagsStack', {
+      synthesizer: new DefaultStackSynthesizer({
+        // deployRoleExternalId: 'WOWOW0',
+        deployRoleSessionTags: {
+          Department: 'Engineering-DeployRoleTag',
+        },
+        // fileAssetPublishingExternalId: 'WOWOW1',
+        fileAssetPublishingRoleSessionTags: {
+          Department: 'Engineering-FileAssetTag',
+        },
+        // imageAssetPublishingExternalId: 'WOWOW2',
+        imageAssetPublishingRoleSessionTags: {
+          Department: 'Engineering-ImageAssetTag',
+        },
+      }),
+    });
+
+    stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'fileHash',
+    });
+
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'dockerHash',
+    });
+
+    // THEN
+    const asm = app.synth();
+    const manifest = app.synth().getStackByName('SessionTagsStack').manifest;
+    // Validates that the deploy role session tags were set in the Manifest:
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).assumeRoleSessionTags).toEqual({ Department: 'Engineering-DeployRoleTag' });
+
+    const assetManifest = getAssetManifest(asm);
+    const assetManifestJSON = readAssetManifest(assetManifest);
+
+    // Validates that the image and file asset session tags were set in the asset manifest:
+    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['current_account-current_region'].assumeRoleSessionTags).toEqual({ Department: 'Engineering-ImageAssetTag' });
+    expect(assetManifestJSON.files?.fileHash.destinations['current_account-current_region'].assumeRoleSessionTags).toEqual({ Department: 'Engineering-FileAssetTag' });
+  });
+
   test('customize version parameter', () => {
     // GIVEN
     const myapp = new App();
