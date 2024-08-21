@@ -115,6 +115,16 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+#### Moving an alternate domain name to a different distribution
+
+When you try to add an alternate domain name to a distribution but the alternate domain name is already in use on a different distribution, you get a `CNAMEAlreadyExists` error (One or more of the CNAMEs you provided are already associated with a different resource).
+
+In that case, you might want to move the existing alternate domain name from one distribution (the source distribution) to another (the target distribution). The following steps are an overview of the process. For more information, see [Moving an alternate domain name to a different distribution](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/alternate-domain-names-move.html).
+
+1. Deploy the stack with the target distribution. The `certificate` property must be specified but the `domainNames` should be absent.
+2. Move the alternate domain name by running CloudFront `associate-alias` command. For the example and preconditions, see the AWS documentation above.
+3. Specify the `domainNames` property with the alternative domain name, then deploy the stack again to resolve the drift at the alternative domain name.
+
 #### Cross Region Certificates
 
 > **This feature is currently experimental**

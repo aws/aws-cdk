@@ -129,7 +129,10 @@ export interface DistributionProps {
    *
    * If you want to use your own domain name, such as www.example.com, instead of the cloudfront.net domain name,
    * you can add an alternate domain name to your distribution. If you attach a certificate to the distribution,
-   * you must add (at least one of) the domain names of the certificate to this list.
+   * you should add (at least one of) the domain names of the certificate to this list.
+   *
+   * When you want to move a domain name between distributions, you can associate a certificate without specifying any domain names.
+   * For more information, see the _Moving an alternate domain name to a different distribution_ section in the README.
    *
    * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
    */
@@ -317,10 +320,6 @@ export class Distribution extends Resource implements IDistribution {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
-      }
-
-      if ((props.domainNames ?? []).length === 0) {
-        throw new Error('Must specify at least one domain name to use a certificate with a distribution');
       }
     }
 
