@@ -836,7 +836,6 @@ CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEAR
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
 
 The following example configures every custom resource in this CDK app to retain its logs for ten years:
-
 ```ts
 import * as cdk from 'aws-cdk-lib';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
@@ -922,4 +921,21 @@ CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 new ses.ReceiptRuleSet(app, 'RuleSet', {
   dropSpam: true,
 });    
+```
+
+The following example configures the custom resource lambda runtime to `PYTHON_3_12`:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLambdaRuntime(lambda.Runtime.PYTHON_3_12);
+
+let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+new s3deploy.BucketDeployment(stack, 's3deploy', {
+  sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+  destinationBucket: websiteBucket,
+}); // Update lambda runtime from python3.9 to `PYTHON_3_12` set by `CustomResourceConfig`.
 ```
