@@ -880,6 +880,9 @@ export class Function extends FunctionBase {
   /** @internal */
   public readonly _layers: ILayerVersion[] = [];
 
+  /** @internal */
+  public _logRetention?: logs.LogRetention;
+
   private _logGroup?: logs.ILogGroup;
 
   /**
@@ -932,6 +935,14 @@ export class Function extends FunctionBase {
     // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
+      if (!Token.isUnresolved(config.localMountPath)) {
+        if (!/^\/mnt\/[a-zA-Z0-9-_.]+$/.test(config.localMountPath)) {
+          throw new Error(`Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`);
+        }
+        if (config.localMountPath.length > 160) {
+          throw new Error(`Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`);
+        }
+      }
       if (config.policies) {
         config.policies.forEach(p => {
           this.role?.addToPrincipalPolicy(p);
@@ -1092,6 +1103,7 @@ export class Function extends FunctionBase {
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
+      this._logRetention = logRetention;
     }
 
     props.code.bindToResource(resource);

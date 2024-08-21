@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.154.0](https://github.com/aws/aws-cdk/compare/v2.153.0...v2.154.0) (2024-08-21)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#31145](https://github.com/aws/aws-cdk/issues/31145)) ([5387605](https://github.com/aws/aws-cdk/commit/53876051da7fac7398cbfdc87f991f5b009d2e3a))
+* **batch:** add ECS_AL2023 ([#30928](https://github.com/aws/aws-cdk/issues/30928)) ([d45bf08](https://github.com/aws/aws-cdk/commit/d45bf08c3fa6d342cf06fe26b748b5e367c3e5e3))
+* **CLI:** synth displays "AssertDescription: CDK bootstrap stack version 6 required" ([#31092](https://github.com/aws/aws-cdk/issues/31092)) ([751a922](https://github.com/aws/aws-cdk/commit/751a922de30e88a1faa7a20fb7b29cb43856d522)), closes [#17942](https://github.com/aws/aws-cdk/issues/17942)
+* **core:** configure SNS topics to receive stack events on the Stack construct ([#30551](https://github.com/aws/aws-cdk/issues/30551)) ([0cdce20](https://github.com/aws/aws-cdk/commit/0cdce20a8688bb233930542d01358e26e5ba8a61)), closes [#8581](https://github.com/aws/aws-cdk/issues/8581)
+* **dynamodb:** adding on-demand-throughput to table ([#30725](https://github.com/aws/aws-cdk/issues/30725)) ([d5a19bb](https://github.com/aws/aws-cdk/commit/d5a19bb3eeda50a7b08e2b814dfcf76e6ac21fdc)), closes [#30091](https://github.com/aws/aws-cdk/issues/30091)
+* **elasticloadbalancingv2:** connection logs for ALB ([#30599](https://github.com/aws/aws-cdk/issues/30599)) ([7c4f423](https://github.com/aws/aws-cdk/commit/7c4f423bf14af996203b090429b8c59bd32f50d8))
+* **elasticloadbalancingv2:** support Mutual Authentication with TLS for Application Load Balancer ([#30784](https://github.com/aws/aws-cdk/issues/30784)) ([7eae4d1](https://github.com/aws/aws-cdk/commit/7eae4d1358762d72d96b08c6cd020628d3cb77f2)), closes [#28206](https://github.com/aws/aws-cdk/issues/28206)
+* **region-info:** update Metadata regions ([#31044](https://github.com/aws/aws-cdk/issues/31044)) ([ae7d181](https://github.com/aws/aws-cdk/commit/ae7d1814900fc10ab489bc7a4cfe8ccd1694e8f8))
+* **region-info:** update Metadata regions ([#31046](https://github.com/aws/aws-cdk/issues/31046)) ([6ec69b9](https://github.com/aws/aws-cdk/commit/6ec69b9184417c7fb5d4df808b57ae59c546753c))
+* **region-info:** update Metadata regions ([#31047](https://github.com/aws/aws-cdk/issues/31047)) ([9025635](https://github.com/aws/aws-cdk/commit/9025635e7401388a4192d34b9fbe2ae28d849587))
+* **s3:** add skip destination validation property ([#30916](https://github.com/aws/aws-cdk/issues/30916)) ([ffc40e5](https://github.com/aws/aws-cdk/commit/ffc40e537d03a6fea4bfb36e3b94c7525629e907)), closes [#30914](https://github.com/aws/aws-cdk/issues/30914) [#30914](https://github.com/aws/aws-cdk/issues/30914)
+* **ssm:** support cross-account sharing ([#30646](https://github.com/aws/aws-cdk/issues/30646)) ([1eb1ea6](https://github.com/aws/aws-cdk/commit/1eb1ea6ba64f41ba040d9470156d566c9ce6c3e0)), closes [#29292](https://github.com/aws/aws-cdk/issues/29292)
+* set log retention of all CDK-vended custom resources with CustomResourceConfig ([#31041](https://github.com/aws/aws-cdk/issues/31041)) ([f2babd9](https://github.com/aws/aws-cdk/commit/f2babd9373523cc3d5708349db5c3c270e99ae1a))
+* update L1 CloudFormation resource definitions ([#31025](https://github.com/aws/aws-cdk/issues/31025)) ([5414932](https://github.com/aws/aws-cdk/commit/541493297dd996725b060c84d23651a69e239750))
+* update L1 CloudFormation resource definitions ([#31086](https://github.com/aws/aws-cdk/issues/31086)) ([62a641c](https://github.com/aws/aws-cdk/commit/62a641c1ff77270ead66113716545d415a3b18e1))
+* update L1 CloudFormation resource definitions ([#31120](https://github.com/aws/aws-cdk/issues/31120)) ([931ebba](https://github.com/aws/aws-cdk/commit/931ebba02ca43b173cb7770e9cb703f05646683b))
+* **vpc:** support custom route and subnet ([#30538](https://github.com/aws/aws-cdk/issues/30538)) ([e17fdd7](https://github.com/aws/aws-cdk/commit/e17fdd76959e8aafd07cfa1db34325f1c24b3acf)), closes [RFC#507](https://github.com/aws/RFC/issues/507)
+
+
+### Bug Fixes
+
+* **elasticloadbalancingv2-targets:** add AlbListenerTarget for NLBs, deprecate AlbTarget due to ALB listener race conditions ([#17208](https://github.com/aws/aws-cdk/issues/17208)) ([#30396](https://github.com/aws/aws-cdk/issues/30396)) ([1fca1e5](https://github.com/aws/aws-cdk/commit/1fca1e5b92ba760a33652f39c2345f6aa1eaa9f7)), closes [/github.com/aws/aws-cdk/issues/17208#issuecomment-1681475590](https://github.com/aws//github.com/aws/aws-cdk/issues/17208/issues/issuecomment-1681475590)
+* **lambda:** validate localMountPath format and length ([#31019](https://github.com/aws/aws-cdk/issues/31019)) ([c159e77](https://github.com/aws/aws-cdk/commit/c159e77ab34701fc6780b9501f1692fbf2366b04))
+* **vpc-v2:** fixing default scope id ([#31102](https://github.com/aws/aws-cdk/issues/31102)) ([0007a29](https://github.com/aws/aws-cdk/commit/0007a29714cf04abb307845874dde27c813d45dd))
+
+
+### Reverts
+
+* feat(core): configure SNS topics to receive stack events on the Stack construct ([#31100](https://github.com/aws/aws-cdk/issues/31100)) ([5f30aa5](https://github.com/aws/aws-cdk/commit/5f30aa5f81ef823422e994563cefc9e8a15e82f8)), closes [aws/aws-cdk#30551](https://github.com/aws/aws-cdk/issues/30551)
+* feat(ec2): security group lookup via filters ([#31065](https://github.com/aws/aws-cdk/issues/31065)) ([79b5cd2](https://github.com/aws/aws-cdk/commit/79b5cd2390508e7b5c3d5c93001e30387bf88a4e)), closes [aws/aws-cdk#30625](https://github.com/aws/aws-cdk/issues/30625)
+* feat(ecs): add validation checks to memory cpu combinations of FARGATE compatible task definitions ([#31110](https://github.com/aws/aws-cdk/issues/31110)) ([ffba5b1](https://github.com/aws/aws-cdk/commit/ffba5b1d0a8dfece02a9d5ad8a989955a7f4a812))
+
 ## [2.153.0](https://github.com/aws/aws-cdk/compare/v2.152.0...v2.153.0) (2024-08-19)
 
 

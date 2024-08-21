@@ -1,0 +1,339 @@
+{
+ "Resources": {
+  "IpamTestIpam6C9298EF": {
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": "eu-central-1"
+     }
+    ]
+   }
+  },
+  "IpamTestPrivatePool039C763DC": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "Locale": "eu-central-1",
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "10.2.0.0/16"
+     }
+    ]
+   }
+  },
+  "IpamTestPublicPool0C44B7C49": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv6",
+    "AwsService": "ec2",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IpamTestIpam6C9298EF",
+      "PublicDefaultScopeId"
+     ]
+    },
+    "Locale": "eu-central-1",
+    "PublicIpSource": "amazon"
+   }
+  },
+  "IpamTestPublicPool0PublicPool0CidrC57CE00C": {
+   "Type": "AWS::EC2::IPAMPoolCidr",
+   "Properties": {
+    "IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "NetmaskLength": 52
+   }
+  },
+  "VPCintegtest1EBA1CB75": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "VPCintegtest1ipv4IpamCidr8105B4E4": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv4IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPrivatePool039C763DC",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv4NetmaskLength": 20,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCintegtest1AmazonProvidedE0445E5C": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "Vpcintegtest20DAD8F9D": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "Vpcintegtest2Ipv6IpamCidrFF84EC2B": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv6IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPublicPool0C44B7C49",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv6NetmaskLength": 60,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamTestPublicPool0PublicPool0CidrC57CE00C"
+   ]
+  },
+  "Vpcintegtest2SecondaryAddress2A96C0AF8": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "10.2.0.0/16",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "Vpcintegtest2SecondaryAddress36FC60BBC": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "10.3.0.0/16",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testsbubnetSubnet77337845": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "eu-central-1a",
+    "CidrBlock": "10.1.0.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "testsbubnetRouteTableF40F025B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "testsbubnetRouteTableAssociationD6D083FA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "testsbubnetRouteTableF40F025B"
+    },
+    "SubnetId": {
+     "Ref": "testsbubnetSubnet77337845"
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "testsubnetSubnetDD417829": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "eu-central-1b",
+    "CidrBlock": "10.2.0.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "testsubnetRouteTable55223C61": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "testsubnetRouteTableAssociationC106676D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "testsubnetRouteTable55223C61"
+    },
+    "SubnetId": {
+     "Ref": "testsubnetSubnetDD417829"
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "validateIpv6Subnet07BD40AE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "eu-central-1b",
+    "CidrBlock": "10.3.0.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "validateIpv6RouteTable10861B00": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpcintegtest20DAD8F9D",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  },
+  "validateIpv6RouteTableAssociationD6330457": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "validateIpv6RouteTable10861B00"
+    },
+    "SubnetId": {
+     "Ref": "validateIpv6Subnet07BD40AE"
+    }
+   },
+   "DependsOn": [
+    "Vpcintegtest2Ipv6IpamCidrFF84EC2B",
+    "Vpcintegtest2SecondaryAddress2A96C0AF8",
+    "Vpcintegtest2SecondaryAddress36FC60BBC"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-alb-log-imported-bucket-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/d102d01a93a63d71a570164bdea30b0eca472ac745027643a4a1b0adb9b0640b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/7bcbcac4ed21e823d8252892771a6da060dd1d6110cdf42e73693f1e5c831046.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -178,10 +178,10 @@
             "data": "Bucket83908E77"
           }
         ],
-        "/aws-cdk-alb-log-imported-bucket-integ/ImportedBucket/Policy/Resource": [
+        "/aws-cdk-alb-log-imported-bucket-integ/ImportedBucketPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ImportedBucketPolicy71C80354"
+            "data": "ImportedBucketPolicyAE50CA2C"
           }
         ],
         "/aws-cdk-alb-log-imported-bucket-integ/LB/Resource": [

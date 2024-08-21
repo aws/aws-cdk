@@ -199,7 +199,10 @@
         "/integ-init/Instance2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Instance255F3526574cbd507dfce8b71"
+            "data": "Instance255F3526574cbd507dfce8b71",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/integ-init/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -218,15 +221,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "Instance255F35265a0c5f577d761edb0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Instance255F35265a0c5f577d761edb0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

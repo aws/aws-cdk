@@ -11,6 +11,9 @@ export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
       "handler": "index.handler",
       "runtime": (props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope))
     });
+    this.addMetadata('aws:cdk:is-custom-resource-handler-singleton', true);
+    if (props?.logGroup) { this.logGroup.node.addMetadata('aws:cdk:is-custom-resource-handler-logGroup', true) };
+    if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('aws:cdk:is-custom-resource-handler-logRetention', true) };
   }
 }
 
