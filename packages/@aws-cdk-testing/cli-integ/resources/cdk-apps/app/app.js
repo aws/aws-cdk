@@ -508,9 +508,9 @@ class SessionTagsWithCustomSynthesizerStack extends cdk.Stack {
     super(parent, id, {
       ...props,
       synthesizer: new CustomSynthesizer({
-        // deployRoleSessionTags: {
-        //   'Department' : 'Engineering',
-        // },
+        deployRoleSessionTags: {
+          'Department' : 'Engineering',
+        },
       })
     });
 
