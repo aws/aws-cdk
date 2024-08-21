@@ -1,4 +1,5 @@
 import { Template } from '../../../assertions';
+import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as s3deploy from '../../../aws-s3-deployment';
@@ -307,6 +308,50 @@ describe('when custom resource logGroup removalPolicy is Retain', () => {
     template.hasResource('AWS::Logs::LogGroup', {
       UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Retain',
+    });
+  });
+});
+
+describe('when custom resource lambda runtime is modified by addLambdaRuntime', () => {
+  test('addLambdaRuntime modifies custom resource lambda runtime to python3.12', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: customResourceRuntime.toString(),
+    });
+  });
+
+  test('addLambdaRuntime does not modify custom resource lambda runtime in a different runtime family', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.NODEJS_20_X;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: 'python3.9',
     });
   });
 });
