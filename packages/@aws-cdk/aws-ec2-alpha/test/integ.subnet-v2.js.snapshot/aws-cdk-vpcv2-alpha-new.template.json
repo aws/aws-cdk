@@ -1,0 +1,284 @@
+{
+ "Resources": {
+  "Ipam50346F82": {
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": "eu-west-2"
+     }
+    ]
+   }
+  },
+  "IpamPublicPool050D6AA6C": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv6",
+    "AwsService": "ec2",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "Ipam50346F82",
+      "PublicDefaultScopeId"
+     ]
+    },
+    "Locale": "eu-west-2",
+    "PublicIpSource": "amazon"
+   }
+  },
+  "IpamPublicPool0PublicPool0CidrAC7F711E": {
+   "Type": "AWS::EC2::IPAMPoolCidr",
+   "Properties": {
+    "IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamPublicPool050D6AA6C",
+      "IpamPoolId"
+     ]
+    },
+    "NetmaskLength": 52
+   }
+  },
+  "VPCTestFB735C86": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "VPCTestIpv6IpamCidrD5C271DD": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv6IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamPublicPool050D6AA6C",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv6NetmaskLength": 56,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamPublicPool0PublicPool0CidrAC7F711E"
+   ]
+  },
+  "VPCTestVpnGateway51EEED38": {
+   "Type": "AWS::EC2::VPNGateway",
+   "Properties": {
+    "Type": "ipsec.1"
+   }
+  },
+  "VPCTestVPCVPNGW0A869280": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    },
+    "VpnGatewayId": {
+     "Ref": "VPCTestVpnGateway51EEED38"
+    }
+   }
+  },
+  "VPCTestRoutePropagationFEA3011A": {
+   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "testsbubnetRouteTableF40F025B"
+     }
+    ],
+    "VpnGatewayId": {
+     "Ref": "VPCTestVpnGateway51EEED38"
+    }
+   },
+   "DependsOn": [
+    "VPCTestVPCVPNGW0A869280"
+   ]
+  },
+  "testsbubnetSubnet77337845": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "eu-west-2a",
+    "CidrBlock": "10.0.0.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCTestIpv6IpamCidrD5C271DD"
+   ]
+  },
+  "testsbubnetRouteTableF40F025B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCTestIpv6IpamCidrD5C271DD"
+   ]
+  },
+  "testsbubnetRouteTableAssociationD6D083FA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "testsbubnetRouteTableF40F025B"
+    },
+    "SubnetId": {
+     "Ref": "testsbubnetSubnet77337845"
+    }
+   },
+   "DependsOn": [
+    "VPCTestIpv6IpamCidrD5C271DD"
+   ]
+  },
+  "InstanceInstanceSecurityGroupF0E2D5BE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-vpcv2-alpha-new/Instance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha-new/Instance"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "InstanceInstanceRoleE9785DE5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha-new/Instance"
+     }
+    ]
+   }
+  },
+  "InstanceInstanceProfileAB5AEF02": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "InstanceInstanceRoleE9785DE5"
+     }
+    ]
+   }
+  },
+  "InstanceC1063A87": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": "eu-west-2a",
+    "IamInstanceProfile": {
+     "Ref": "InstanceInstanceProfileAB5AEF02"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.micro",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "InstanceInstanceSecurityGroupF0E2D5BE",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "testsbubnetSubnet77337845"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha-new/Instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "InstanceInstanceRoleE9785DE5"
+   ]
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -105,7 +105,7 @@ export class CdkToolkit {
 
   public async metadata(stackName: string, json: boolean) {
     const stacks = await this.selectSingleStackByName(stackName);
-    data(serializeStructure(stacks.firstStack.manifest.metadata ?? {}, json));
+    printSerializedObject(stacks.firstStack.manifest.metadata ?? {}, json);
   }
 
   public async acknowledge(noticeId: string) {
@@ -632,7 +632,7 @@ export class CdkToolkit {
     });
 
     if (options.long && options.showDeps) {
-      data(serializeStructure(stacks, options.json ?? false));
+      printSerializedObject(stacks, options.json ?? false);
       return 0;
     }
 
@@ -646,7 +646,7 @@ export class CdkToolkit {
         });
       }
 
-      data(serializeStructure(stackDeps, options.json ?? false));
+      printSerializedObject(stackDeps, options.json ?? false);
       return 0;
     }
 
@@ -660,7 +660,7 @@ export class CdkToolkit {
           environment: stack.environment,
         });
       }
-      data(serializeStructure(long, options.json ?? false));
+      printSerializedObject(long, options.json ?? false);
       return 0;
     }
 
@@ -687,7 +687,7 @@ export class CdkToolkit {
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
       if (!quiet) {
-        data(serializeStructure(stacks.firstStack.template, json ?? false));
+        printSerializedObject(obscureTemplate(stacks.firstStack.template), json ?? false);
       }
       return undefined;
     }
@@ -701,7 +701,7 @@ export class CdkToolkit {
     // behind an environment variable.
     const isIntegMode = process.env.CDK_INTEG_MODE === '1';
     if (isIntegMode) {
-      data(serializeStructure(stacks.stackArtifacts.map(s => s.template), json ?? false));
+      printSerializedObject(stacks.stackArtifacts.map(s => obscureTemplate(s.template)), json ?? false);
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...
@@ -1043,6 +1043,13 @@ export class CdkToolkit {
 
     return undefined;
   }
+}
+
+/**
+ * Print a serialized object (YAML or JSON) to stdout.
+ */
+function printSerializedObject(obj: any, json: boolean) {
+  data(serializeStructure(obj, json));
 }
 
 export interface DiffOptions {
@@ -1525,4 +1532,22 @@ function buildParameterMap(parameters: {
   }
 
   return parameterMap;
+}
+
+/**
+ * Remove any template elements that we don't want to show users.
+ */
+function obscureTemplate(template: any = {}) {
+  if (template.Rules) {
+    // see https://github.com/aws/aws-cdk/issues/17942
+    if (template.Rules.CheckBootstrapVersion) {
+      if (Object.keys(template.Rules).length > 1) {
+        delete template.Rules.CheckBootstrapVersion;
+      } else {
+        delete template.Rules;
+      }
+    }
+  }
+
+  return template;
 }
