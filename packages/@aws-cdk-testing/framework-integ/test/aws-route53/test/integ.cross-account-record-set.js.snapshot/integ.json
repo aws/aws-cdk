@@ -1,0 +1,18 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "CARS-Test/DefaultTest": {
+      "stacks": [
+        "ApexHostedZone",
+        "Api1Stack"
+      ],
+      "regions": [
+        "us-east-1",
+        "us-west-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CARS-Test/DefaultTest/DeployAssert",
+      "assertionStackName": "CARSTestDefaultTestDeployAssert7D002991"
+    }
+  }
+}

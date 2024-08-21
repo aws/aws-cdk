@@ -1,0 +1,197 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "CrossAccountRoleStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossAccountRoleStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossAccountRoleStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://786703845953/us-east-1",
+      "properties": {
+        "templateFile": "CrossAccountRoleStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::786703845953:role/cdk-hnb659fds-deploy-role-786703845953-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::786703845953:role/cdk-hnb659fds-cfn-exec-role-786703845953-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-786703845953-us-east-1/23e8fa04be613eb16339e0164284b54c9988146e1cb6dc9f13e5acc6b1dddd37.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossAccountRoleStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::786703845953:role/cdk-hnb659fds-lookup-role-786703845953-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossAccountRoleStack.assets"
+      ],
+      "metadata": {
+        "/CrossAccountRoleStack/CrossAccountRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrossAccountRoleFACE29D1"
+          }
+        ],
+        "/CrossAccountRoleStack/Allow-RecordSet-Read-Write/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllowRecordSetReadWriteC5B9AFE5"
+          }
+        ],
+        "/CrossAccountRoleStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossAccountRoleStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossAccountRoleStack"
+    },
+    "AppStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AppStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://453872816227/us-west-1",
+      "properties": {
+        "templateFile": "AppStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::453872816227:role/cdk-hnb659fds-deploy-role-453872816227-us-west-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::453872816227:role/cdk-hnb659fds-cfn-exec-role-453872816227-us-west-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-453872816227-us-west-1/fe878bf58c11b9d7b800c373a14409cfceeabb00a74766a2935a1c35c0e53c4b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::453872816227:role/cdk-hnb659fds-lookup-role-453872816227-us-west-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppStack.assets"
+      ],
+      "metadata": {
+        "/AppStack/SimpleRecordSet/cross-account-record-set-handler-role/PolicyAppStackSimpleRecordSetcrossaccountrecordsethandlerrole9BA32FFD/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SimpleRecordSetcrossaccountrecordsethandlerrolePolicyAppStackSimpleRecordSetcrossaccountrecordsethandlerrole9BA32FFD0FF56BE4"
+          }
+        ],
+        "/AppStack/SimpleRecordSet/CrossAccountRecordSetCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SimpleRecordSetCrossAccountRecordSetCustomResourceDCDB1F47"
+          }
+        ],
+        "/AppStack/Custom::CrossAccountRecordSetCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/AppStack/Custom::CrossAccountRecordSetCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossAccountRecordSetCustomResourceProviderRoleCC110A9E"
+          }
+        ],
+        "/AppStack/Custom::CrossAccountRecordSetCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossAccountRecordSetCustomResourceProviderHandlerDCAC57CF"
+          }
+        ],
+        "/AppStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AppStack"
+    },
+    "SimpleExampleDefaultTestDeployAssertFC61A324.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SimpleExampleDefaultTestDeployAssertFC61A324.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SimpleExampleDefaultTestDeployAssertFC61A324": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SimpleExampleDefaultTestDeployAssertFC61A324.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SimpleExampleDefaultTestDeployAssertFC61A324.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SimpleExampleDefaultTestDeployAssertFC61A324.assets"
+      ],
+      "metadata": {
+        "/SimpleExample/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SimpleExample/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SimpleExample/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

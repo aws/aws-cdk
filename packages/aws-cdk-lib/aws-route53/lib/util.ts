@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { IHostedZone } from './hosted-zone-ref';
+import { RecordSetProps } from './record-set';
 import * as iam from '../../aws-iam';
 import { Stack } from '../../core';
 
@@ -90,4 +91,28 @@ export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: stri
   });
 
   return g1.combine(g2);
+}
+
+export function validateRecordSetProps(props: RecordSetProps): void {
+  if (props.weight && (props.weight < 0 || props.weight > 255)) {
+    throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
+  }
+  if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
+    throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
+  }
+  if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
+    throw new Error('setIdentifier can only be specified for non-simple routing policies');
+  }
+  if (props.multiValueAnswer && props.target.aliasTarget) {
+    throw new Error('multiValueAnswer cannot be specified for alias record');
+  }
+  const nonSimpleRoutingPolicies = [
+    props.geoLocation,
+    props.region,
+    props.weight,
+    props.multiValueAnswer,
+  ].filter((variable) => variable !== undefined).length;
+  if (nonSimpleRoutingPolicies > 1) {
+    throw new Error('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+  }
 }

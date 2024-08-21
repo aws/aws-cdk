@@ -1,0 +1,20 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "23e8fa04be613eb16339e0164284b54c9988146e1cb6dc9f13e5acc6b1dddd37": {
+      "source": {
+        "path": "CrossAccountRoleStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "786703845953-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-786703845953-us-east-1",
+          "objectKey": "23e8fa04be613eb16339e0164284b54c9988146e1cb6dc9f13e5acc6b1dddd37.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::786703845953:role/cdk-hnb659fds-file-publishing-role-786703845953-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

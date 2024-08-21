@@ -359,6 +359,48 @@ new route53.PublicHostedZone(this, 'HostedZone', {
 });
 ```
 
+### Cross Account Record Set
+
+The `CrossAccountRecordSet` expands upon the capabilities of the `CrossAccountzoneDelegationRecord`, and allows you to create RecordSets with **any [RecordType](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html)**.
+
+Cross Account Record Sets will create a Route53 RecordSet in another AWS account. Simply provide the same [RecordSetProps](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53.RecordSetProps.html) of a regular [RecordSet](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53.RecordSet.html), along with a `crossAccountRole` that has `route53:ChangeResourceRecordSets` and `route53:ListResourceRecordSets` permissions for the Hostedzone where the RecordSet will be created.
+
+To create a CrossAccountRecordSet with a least principle privilege `crossAccountRole`:
+
+[Example simple CrossAccountRecordSet with least principal IAM role](test/integ.cross-account-record-set-simple-example.lit.ts)
+
+
+#### Non Simple Routing Policy RecordSets
+
+The primary use case for the `CrossAccountRecordSet` is when you have a multi AWS account setup where your APEX HostedZone exists in one account, and your [AliasTarget](https://docs.aws.amazon.com/Route53/latest/APIReference/API_AliasTarget.html) values exist in another account. **The `CrossAccountRecordSet` allows you to create A records with a [non-simple routing policy](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html) in the APEX HostedZone**.
+
+To create a RecordSet with a non-simple routing policy:
+
+```ts fixture=default
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+
+declare const crossAccountRole: iam.IRole;
+declare const apexHostedZone: route53.IHostedZone;
+declare const api: apigateway.RestApiBase;
+
+new route53.CrossAccountRecordSet(this, "LatencyWeightedRecord", {
+    crossAccountRole: crossAccountRole,
+    zone: apexHostedZone,
+    region: "us-east-1",
+    setIdentifier: "us-east-1",
+    target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api)),
+    recordType: route53.RecordType.A
+})
+```
+
+In general, the `CrossAccountRecordSet` will create/update/delete the RecordSet like you would expect it to, as long as it doesn't violate internal Route53 rules. If there is a violation, the construct will provide you with the exact InvalidChangeBatch error that caused the violation.
+
+One major InvalidChangeBatch error that is worth calling out, is that you can't change the routing policy of the RecordSet after more than one RecordSet has been created with the same `recordName` and `recordType`. For example, assume you created two cross account RecordSets with [Latency-based Routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html). Later you decided that the RecordSets should have a [Weighted Routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html) policy. When updating the CrossAcocuntRecordSet, the CloudFormation update would fail with an InvalidChangeBatch error. RecordSets can only have the same `recordName` and `recordType` as long as they have the same routing policies, and the `setIdentifier` set in order to uniquely identify the RecordSet. Changing the routing policy of a single RecordSet would create an invalid state where two RecordSets with the same `recordName` and `recordType` have different routing policies.
+
+Astute readers may wonder why the `CrossAccountRecordSet` construct wouldn't just accept an array of RecordSetProps, since it is possible to make a fully atomic transactional ChangeResourceRecordSets API call for all of the RecordSets that consist of a non-simple routing policy. The critical flaw with this approach is that you will only ever know one AliasTarget value within a Cloudformation stack at a time. If you're using this construct, then all your AliasTargets are spread out in different AWS accounts. you would only ever have programmatic access to one AliasTarget, meaning you would only be passing in an array with a size of 1, rendering the array useless.
+
+When creating a non-simple routing policy in your APEX HostedZone, think carefully about which routing policy you choose. Updating the routing policy would require a custom script outside the control of CDK.
+
 ## Enabling DNSSEC
 
 DNSSEC can be enabled for Hosted Zones. For detailed information, see
