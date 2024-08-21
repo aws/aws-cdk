@@ -617,7 +617,7 @@ describe('role mappings', () => {
       ],
     });
     const temp = Template.fromStack(stack);
-    temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 2);
+    temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 1);
     temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
         Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',

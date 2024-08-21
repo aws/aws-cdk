@@ -8,6 +8,7 @@ import {
   Resource,
   IResource,
   Token,
+  IResolvable,
 } from 'aws-cdk-lib/core';
 import {
   Construct,
@@ -155,6 +156,13 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
    */
   public readonly identityPoolId: string
 
+  /**
+   * The CloudFormation resource of the attachment
+   */
+  public readonly resource: CfnIdentityPoolRoleAttachment;
+
+  private roleMappings: { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty };
+
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
     super(scope, id);
     this.identityPoolId = props.identityPool.identityPoolId;
@@ -168,11 +176,57 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
     if (mappings) {
       roleMappings = this.configureRoleMappings(...mappings);
     }
-    new CfnIdentityPoolRoleAttachment(this, 'Resource', {
-      identityPoolId: this.identityPoolId,
+    this.roleMappings = roleMappings || null;
+    this.resource = new CfnIdentityPoolRoleAttachment(this, 'Resource', {
+      identityPoolId: props.identityPool.identityPoolId,
       roles,
       roleMappings,
     });
+  }
+
+  /**
+   * Update the role mappings of the Identity Pool Role Attachment
+   * @param roleMappings The new role mappings for the Identity Pool
+   */
+  public updateRoleMappings(...roleMappings: IdentityPoolRoleMapping[]) {
+    const newMappings = this.configureRoleMappings(...roleMappings);
+    let updatedMappings: any = {};
+    for (const mapping in newMappings) {
+      const properties: CfnIdentityPoolRoleAttachment.RoleMappingProperty = newMappings[mapping];
+      this.roleMappings[mapping] = properties;
+
+      // If overriding, properties need to be capitalized
+      let revisedProperties: {[name:string]: string | IResolvable | {[name:string]: {[name:string]: string}}} = {};
+      revisedProperties.Type = properties.type;
+      if (properties.ambiguousRoleResolution) {
+        revisedProperties.AmbiguousRoleResolution = properties.ambiguousRoleResolution;
+      }
+      if (properties.identityProvider) {
+        revisedProperties.IdentityProvider = properties.identityProvider;
+      }
+      if (properties.rulesConfiguration) {
+        if ('rules' in properties.rulesConfiguration) {
+          let rules: {[index: string]: string} = {};
+          if ('claim' in properties.rulesConfiguration.rules) {
+            rules['Claim'] = properties.rulesConfiguration.rules.claim as string;
+          }
+          if ('matchType' in properties.rulesConfiguration.rules) {
+            rules['MatchType'] = properties.rulesConfiguration.rules.matchType as string;
+          }
+          if ('roleArn' in properties.rulesConfiguration.rules) {
+            rules['RoleARN'] = properties.rulesConfiguration.rules.roleArn as string;
+          }
+          if ('value' in properties.rulesConfiguration.rules) {
+            rules['Value'] = properties.rulesConfiguration.rules.value as string;
+          }
+          revisedProperties.RulesConfiguration = {'Rules': rules};
+        } else {
+          revisedProperties.RulesConfiguration = properties.rulesConfiguration;
+        }
+      }
+      updatedMappings[mapping] = revisedProperties;
+    }
+    this.resource.addPropertyOverride('RoleMappings', updatedMappings);
   }
 
   /**

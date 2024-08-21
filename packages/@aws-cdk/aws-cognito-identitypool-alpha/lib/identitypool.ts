@@ -388,9 +388,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
 
   /**
-   * Running count of added role attachments
+   * Role attachment for the Identity Pool
    */
-  private roleAttachmentCount: number = 0;
+  private roleAttachment: IdentityPoolRoleAttachment;
 
   constructor(scope: Construct, id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
@@ -449,6 +449,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     // no complaints come from this, we're probably safe to remove it altogether.
     // attachment.node.addDependency(this);
     Array.isArray(attachment);
+    this.roleAttachment = attachment;
   }
 
   /**
@@ -463,21 +464,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Adds Role Mappings to Identity Pool
   */
   public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]): void {
-    if (!roleMappings || !roleMappings.length) return;
-    this.roleAttachmentCount++;
-    const name = 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
-    const attachment = new IdentityPoolRoleAttachment(this, name, {
-      identityPool: this,
-      authenticatedRole: this.authenticatedRole,
-      unauthenticatedRole: this.unauthenticatedRole,
-      roleMappings,
-    });
-
-    // This added by the original author, but it's causing cyclic dependencies.
-    // Don't know why this was added in the first place, but I'm disabling it for now and if
-    // no complaints come from this, we're probably safe to remove it altogether.
-    // attachment.node.addDependency(this);
-    Array.isArray(attachment);
+    if (!roleMappings || !roleMappings.length || !this.roleAttachment) return;
+    this.roleAttachment.updateRoleMappings(...roleMappings);
   }
 
   /**

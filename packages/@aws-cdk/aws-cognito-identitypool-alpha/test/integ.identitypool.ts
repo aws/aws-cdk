@@ -10,6 +10,7 @@ import {
 } from 'aws-cdk-lib/aws-iam';
 import {
   App,
+  SecretValue,
   Stack,
 } from 'aws-cdk-lib';
 import {
@@ -19,6 +20,8 @@ import {
 import {
   UserPoolAuthenticationProvider,
 } from '../lib/identitypool-user-pool-authentication-provider';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 const stack = new Stack(app, 'integ-identitypool');
@@ -27,7 +30,7 @@ const userPool = new UserPool(stack, 'Pool');
 new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
   userPool,
   clientId: 'google-client-id',
-  clientSecret: 'google-client-secret',
+  clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
   attributeMapping: {
     givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
     familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
@@ -69,6 +72,16 @@ const idPool = new IdentityPool(stack, 'identitypool', {
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
 });
+idPool.addRoleMappings({
+  providerUrl: IdentityPoolProviderUrl.GOOGLE,
+  rules: [
+    {
+      claim: 'sub',
+      claimValue: '12345678012',
+      mappedRole: idPool.authenticatedRole,
+    },
+  ],
+});
 idPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   effect: Effect.ALLOW,
   actions: ['dynamodb:*'],
@@ -80,4 +93,9 @@ idPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   resources: ['*'],
 }));
 idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
+
+new IntegTest(app, 'IdentityPool', {
+  testCases: [stack],
+});
+
 app.synth();
