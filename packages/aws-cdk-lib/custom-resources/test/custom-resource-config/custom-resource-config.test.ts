@@ -253,7 +253,7 @@ describe('when custom resource logGroup removalPolicy is Retain', () => {
     });
   });
 
-  test('addRemovalPolicy can see a custom resource logGroup\'s removal policy to Retain', () => {
+  test("addRemovalPolicy can set a custom resource logGroup's removal policy to Retain", () => {
     // GIVEN
     const customResourceRemovalPolicy = cdk.RemovalPolicy.RETAIN;
     const app = new cdk.App();

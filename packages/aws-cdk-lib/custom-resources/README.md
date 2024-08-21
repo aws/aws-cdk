@@ -907,8 +907,8 @@ new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
 });
 ```
 
-The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a logGroup with the lambda. The `dropSpam` lambda stops processing messages that have at least one spam indicator.
-The `addRemovalPolicy` method will configure the log groups removal policy to `DESTROY`.
+The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with a AWS-vended custom resource lambda. The ses `dropSpam` lambda stops processing messages that have at least one spam indicator.
+The `addRemovalPolicy` method will configure the custom resource lambda log group removal policy to `DESTROY`.
 ```ts
 import * as cdk from 'aws-cdk-lib';
 import * as ses from 'aws-cdk-lib/aws-ses';
@@ -916,10 +916,10 @@ import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'Stack');
-CustomResourceConfig.of(this).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-new ses.ReceiptRuleSet(this, 'RuleSet', {
+new ses.ReceiptRuleSet(app, 'RuleSet', {
   dropSpam: true,
 });    
 ```
