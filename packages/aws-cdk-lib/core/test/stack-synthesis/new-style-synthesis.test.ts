@@ -120,7 +120,7 @@ describe('new style synthesis', () => {
         },
         lookupRoleSessionTags: {
           Department: 'Engineering-LookupRoleTag',
-        }
+        },
       }),
     });
 
