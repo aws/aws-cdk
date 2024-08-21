@@ -208,16 +208,16 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
         if ('rules' in properties.rulesConfiguration) {
           let rules: {[index: string]: string} = {};
           if ('claim' in properties.rulesConfiguration.rules) {
-            rules['Claim'] = properties.rulesConfiguration.rules.claim as string;
+            rules.Claim = properties.rulesConfiguration.rules.claim as string;
           }
           if ('matchType' in properties.rulesConfiguration.rules) {
-            rules['MatchType'] = properties.rulesConfiguration.rules.matchType as string;
+            rules.MatchType = properties.rulesConfiguration.rules.matchType as string;
           }
           if ('roleArn' in properties.rulesConfiguration.rules) {
-            rules['RoleARN'] = properties.rulesConfiguration.rules.roleArn as string;
+            rules.RoleARN = properties.rulesConfiguration.rules.roleArn as string;
           }
           if ('value' in properties.rulesConfiguration.rules) {
-            rules['Value'] = properties.rulesConfiguration.rules.value as string;
+            rules.Value = properties.rulesConfiguration.rules.value as string;
           }
           revisedProperties.RulesConfiguration = {'Rules': rules};
         } else {
