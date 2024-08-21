@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.153.0](https://github.com/aws/aws-cdk/compare/v2.152.0...v2.153.0) (2024-08-19)
+
+
+### Features
+
+* **lambda:** support Recursive Loop Protection property ([572fe0a](https://github.com/aws/aws-cdk/commit/572fe0a68f18724f5b43460c1858634b5aff45e5))
+
 ## [2.152.0](https://github.com/aws/aws-cdk/compare/v2.151.1...v2.152.0) (2024-08-14)
 
 
