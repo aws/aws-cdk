@@ -219,7 +219,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
           if ('value' in properties.rulesConfiguration.rules) {
             rules.Value = properties.rulesConfiguration.rules.value as string;
           }
-          revisedProperties.RulesConfiguration = {'Rules': rules};
+          revisedProperties.RulesConfiguration = { Rules: rules };
         } else {
           revisedProperties.RulesConfiguration = properties.rulesConfiguration;
         }
