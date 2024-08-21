@@ -664,8 +664,6 @@ export class TableV2 extends TableBaseV2 {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
-    //const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
-    //const resourcePolicy = props.resourcePolicy;
     const resourcePolicy = (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined;
     return {
       region: props.region,
