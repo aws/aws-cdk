@@ -42,7 +42,12 @@
                       "aws:cdk:cloudformation:props": {
                         "addressFamily": "ipv6",
                         "awsService": "ec2",
-                        "ipamScopeId": "DefaultPublicScope",
+                        "ipamScopeId": {
+                          "Fn::GetAtt": [
+                            "Ipam50346F82",
+                            "PublicDefaultScopeId"
+                          ]
+                        },
                         "locale": "eu-west-2",
                         "publicIpSource": "amazon"
                       }
@@ -80,7 +85,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Ipam",
+              "fqn": "@aws-cdk/aws-ec2-alpha.Ipam",
               "version": "0.0.0"
             }
           },
@@ -200,7 +205,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -278,7 +283,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
