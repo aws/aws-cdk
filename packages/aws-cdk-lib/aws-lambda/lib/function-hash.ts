@@ -62,6 +62,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   Layers: true,
   MemorySize: true,
   PackageType: true,
+  RecursiveLoop: true,
   Role: true,
   Runtime: true,
   RuntimeManagementConfig: true,
