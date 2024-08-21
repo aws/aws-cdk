@@ -1092,18 +1092,6 @@
     "Release": "s3-chart",
     "Chart": "s3-chart",
     "Version": "v0.1.0",
-    "Values": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"aws\":{\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\"}}"
-      ]
-     ]
-    },
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/s3-chart",
     "CreateNamespace": true
@@ -1135,18 +1123,6 @@
     "Release": "lambda-chart-release",
     "Chart": "lambda-chart",
     "Version": "v0.1.4",
-    "Values": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"aws\":{\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\"}}"
-      ]
-     ]
-    },
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/lambda-chart",
     "CreateNamespace": true
@@ -1177,19 +1153,7 @@
     },
     "Release": "rds-chart-release",
     "Chart": "rds-chart",
-    "Version": "1.4.1",
-    "Values": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"aws\":{\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\"}}"
-      ]
-     ]
-    },
+    "Version": "v1.1.2",
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
     "CreateNamespace": true,
@@ -1219,23 +1183,11 @@
       "Arn"
      ]
     },
-    "Release": "ec2-chart-release",
-    "Chart": "ec2-chart",
-    "Version": "1.2.13",
-    "Values": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"aws\":{\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\"}}"
-      ]
-     ]
-    },
+    "Release": "rds-chart-release",
+    "Chart": "rds-chart",
+    "Version": "v1.1.2",
     "Namespace": "ack-system",
-    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/ec2-chart",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
     "CreateNamespace": true,
     "SkipCrds": true,
     "Atomic": true
@@ -1296,7 +1248,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9ac823c72b7ac430b79431d67249d01a4ebab3aafcd306c2b69c528a119a8867.json"
+       "/0b8ba04d8bd9d760e0a86266afa34b5949a1d1898d0e2b020901dd9d4a1e89f7.json"
       ]
      ]
     }
@@ -1346,7 +1298,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/103a1c2a2539a9843f062d1d618f1fbd8483ea496405f34f6aca5ae90f507af8.json"
+       "/0c524d56077119a57cc17bbeb9b8c75b1950076929210e56952e8d95322652da.json"
       ]
      ]
     }
