@@ -79,7 +79,8 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         // Failed to update bucket policy, assume using imported bucket
         if (!bucketPolicyResult.statementAdded) {
           Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy',
-            'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.');
+            'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.\n' +
+            'See the "Using pre-existing S3 buckets" section of module\'s README for more info.');
         }
 
         if (bucket.encryptionKey) {
