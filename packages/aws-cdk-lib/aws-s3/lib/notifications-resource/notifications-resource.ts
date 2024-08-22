@@ -120,18 +120,18 @@ export class BucketNotifications extends Construct {
 
       let managed = this.bucket instanceof Bucket;
 
+      // We should treat buckets as unmanaged because it will not remove notifications added somewhere else 
+      // Ading a feature flag to prevent it brings unexpected changes to customers
+      // Put it here because we still need to create the permission if it's unmanaged bucket.
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET)) {
+        managed = false;
+      }
+
       if (!managed) {
         handler.addToRolePolicy(new iam.PolicyStatement({
           actions: ['s3:GetBucketNotification'],
           resources: ['*'],
         }));
-      }
-
-      // The customer resource handles unmanaged bucket is the right way so setting the managed flag to false
-      // Ading a feature flag to prevent it brings unexpected changes to customers
-      // Put it here because we still need to create the permission if it's unmanaged bucket.
-      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET)) {
-        managed = false;
       }
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
