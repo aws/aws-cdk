@@ -919,12 +919,9 @@ to an existing graphQL API resource.
 const api = new appsync.GraphqlApi(this, 'api', {
   name: 'api',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
-  environmentVariables: {
-    EnvKey1: 'non-empty-1',
-  },
 });
 
-const cache = new appsync.ApiCache(stack, 'ApiCache', {
+const cache = new appsync.ApiCache(this, 'ApiCache', {
   apiId: api.apiId,
   apiCachingBehavior: appsync.CacheBehavior.FULL_REQUEST_CACHING,
   type: appsync.CacheType.LARGE,
