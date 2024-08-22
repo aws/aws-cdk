@@ -334,6 +334,37 @@ describe('when custom resource lambda runtime is modified by addLambdaRuntime', 
     });
   });
 
+  test('addLambdaRuntime modifies custom resource lambda runtime to python3.12 and does not modify non custom resource lambda', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+    new lambda.Function(stack, 'LambdaFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      code: lambda.Code.fromInline('helloWorld'),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Function', 2);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: customResourceRuntime.toString(),
+    });
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: lambda.Runtime.PYTHON_3_11.toString(),
+    });
+
+  });
+
   test('addLambdaRuntime does not modify custom resource lambda runtime in a different runtime family', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.NODEJS_20_X;

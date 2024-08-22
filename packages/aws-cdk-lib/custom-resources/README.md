@@ -835,6 +835,8 @@ Note that `CustomResourceConfig` uses Aspects to modify your constructs. There i
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
 
+### Setting Log Retention Lifetime
+
 The following example configures every custom resource in this CDK app to retain its logs for ten years:
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -906,6 +908,8 @@ new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
 });
 ```
 
+### Setting Log Group Removal Policy
+
 The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with a AWS-vended custom resource lambda.
 The `addRemovalPolicy` method will configure the custom resource lambda log group removal policy to `DESTROY`.
 ```ts
@@ -923,6 +927,8 @@ new ses.ReceiptRuleSet(app, 'RuleSet', {
 });    
 ```
 
+### Setting Lambda Runtimes
+
 The following example configures the custom resource lambda runtime to `PYTHON_3_12`:
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -937,5 +943,5 @@ let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
 new s3deploy.BucketDeployment(stack, 's3deploy', {
   sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
   destinationBucket: websiteBucket,
-}); // Update lambda runtime from python3.9 to `PYTHON_3_12` set by `CustomResourceConfig`.
+});
 ```
