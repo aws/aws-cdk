@@ -55,8 +55,7 @@
           "/*"
          ]
         ]
-       },
-       "Sid": "GrantCloudFrontOACAccessToS3Origin"
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -67,7 +66,7 @@
    "Type": "AWS::CloudFront::OriginAccessControl",
    "Properties": {
     "OriginAccessControlConfig": {
-     "Name": "cloudfronts3originoacDistribOrigin1S3OriginAccessControl48F3BA9D",
+     "Name": "cloudfronts3bucketoriginoacDOrigin1S3OriginAccessControl0DA5BA6A",
      "OriginAccessControlOriginType": "s3",
      "SigningBehavior": "always",
      "SigningProtocol": "sigv4"
@@ -81,7 +80,7 @@
      "DefaultCacheBehavior": {
       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
-      "TargetOriginId": "cloudfronts3originoacDistributionOrigin12695E2FC",
+      "TargetOriginId": "cloudfronts3bucketoriginoacDistributionOrigin190AA3711",
       "ViewerProtocolPolicy": "allow-all"
      },
      "Enabled": true,
@@ -95,7 +94,7 @@
          "RegionalDomainName"
         ]
        },
-       "Id": "cloudfronts3originoacDistributionOrigin12695E2FC",
+       "Id": "cloudfronts3bucketoriginoacDistributionOrigin190AA3711",
        "OriginAccessControlId": {
         "Fn::GetAtt": [
          "DistributionOrigin1S3OriginAccessControlEB606076",
@@ -117,7 +116,7 @@
     "Ref": "Distribution830FAC52"
    },
    "Export": {
-    "Name": "cloudfront-s3-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
+    "Name": "cloudfront-s3-bucket-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
    }
   }
  },

@@ -11,7 +11,18 @@
     },
     "service": "CloudFront",
     "api": "getDistributionConfig",
-    "expected": "{\"$ObjectLike\":{\"DistributionConfig\":{\"$ObjectLike\":{\"Origins\":{\"Quantity\":1,\"Items\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"S3OriginConfig\":{\"OriginAccessIdentity\":\"\"},\"OriginAccessControlId\":{\"$StringLike\":\"^[A-Z0-9]+$\"}}}]}}}}}}",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"DistributionConfig\":{\"$ObjectLike\":{\"Origins\":{\"Quantity\":1,\"Items\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"S3OriginConfig\":{\"OriginAccessIdentity\":\"origin-access-identity/cloudfront/",
+       {
+        "Fn::ImportValue": "cloudfront-s3-bucket-origin-oai:ExportsOutputRefOriginAccessIdentityDF1E3CACED2A657F"
+       },
+       "\"}}}]}}}}}}"
+      ]
+     ]
+    },
     "parameters": {
      "Id": {
       "Fn::Join": [
@@ -19,7 +30,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cloudfront-s3-bucket-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
+         "Fn::ImportValue": "cloudfront-s3-bucket-origin-oai:ExportsOutputRefDistribution830FAC524DF81588"
         },
         "\""
        ]
@@ -27,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1724309362820"
+    "salt": "1724303935200"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -69,16 +80,7 @@
         },
         {
          "Action": [
-          "cloudfront:GetDistributionConfig"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "cloudfront:GetOriginAccessControlConfig"
+          "cloudfront:GetCloudFrontOriginAccessIdentity"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -119,8 +121,8 @@
     }
    }
   },
-  "AwsApiCallCloudFrontgetDistributionConfig79bf50e1496bccffb5e8c50edf1784261": {
-   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistributionConfig",
+  "AwsApiCallCloudFrontgetCloudFrontOriginAccessIdentity826e68ba420cc116b5713124b039f6af": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetCloudFrontOriginAcc",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -129,7 +131,8 @@
      ]
     },
     "service": "CloudFront",
-    "api": "getDistributionConfig",
+    "api": "getCloudFrontOriginAccessIdentity",
+    "expected": "{\"$ObjectLike\":{\"CloudFrontOriginAccessIdentity\":{\"Id\":{\"$StringLike\":\"^[A-Z0-9]+$\"},\"S3CanonicalUserId\":{\"$StringLike\":\"^[A-Za-z0-9]+$\"},\"CloudFrontOriginAccessIdentityConfig\":{\"CallerReference\":{\"$StringLike\":\"^[A-Za-z0-9-]+$\"},\"Comment\":\"OAI for my awesome test s3 origin\"}}}}",
     "parameters": {
      "Id": {
       "Fn::Join": [
@@ -137,45 +140,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cloudfront-s3-bucket-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "DistributionConfig.Origins.Items.0.OriginAccessControlId"
-    ],
-    "salt": "1724309362821"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallCloudFrontgetOriginAccessControlConfig56a7e5cef1aef611fe864ba9fac7fd53": {
-   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetOriginAccessControl",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "CloudFront",
-    "api": "getOriginAccessControlConfig",
-    "expected": "{\"$ObjectLike\":{\"OriginAccessControlConfig\":{\"SigningProtocol\":\"sigv4\",\"SigningBehavior\":\"always\",\"OriginAccessControlOriginType\":\"s3\"}}}",
-    "parameters": {
-     "Id": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::GetAtt": [
-          "AwsApiCallCloudFrontgetDistributionConfig79bf50e1496bccffb5e8c50edf1784261",
-          "apiCallResponse.DistributionConfig.Origins.Items.0.OriginAccessControlId"
-         ]
+         "Fn::ImportValue": "cloudfront-s3-bucket-origin-oai:ExportsOutputRefOriginAccessIdentityDF1E3CACED2A657F"
         },
         "\""
        ]
@@ -183,7 +148,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1724309362821"
+    "salt": "1724303935200"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -198,10 +163,10 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallCloudFrontgetOriginAccessControlConfig56a7e5cef1aef611fe864ba9fac7fd53": {
+  "AssertionResultsAwsApiCallCloudFrontgetCloudFrontOriginAccessIdentity826e68ba420cc116b5713124b039f6af": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudFrontgetOriginAccessControlConfig56a7e5cef1aef611fe864ba9fac7fd53",
+     "AwsApiCallCloudFrontgetCloudFrontOriginAccessIdentity826e68ba420cc116b5713124b039f6af",
      "assertion"
     ]
    }
