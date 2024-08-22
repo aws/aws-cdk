@@ -50,6 +50,19 @@ test('support tags for AccessPoint', () => {
   });
 });
 
+test('allow client token to be set for AccessPoint', () => {
+  // WHEN
+  new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+    clientToken: 'client-token',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::AccessPoint', {
+    ClientToken: 'client-token',
+  });
+});
+
 test('import an AccessPoint using fromAccessPointId', () => {
   // WHEN
   const ap = new AccessPoint(stack, 'MyAccessPoint', {

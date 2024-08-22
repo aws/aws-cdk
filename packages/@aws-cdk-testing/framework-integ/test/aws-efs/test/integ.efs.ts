@@ -24,6 +24,7 @@ fileSystem.addAccessPoint('AccessPoint', {
     gid: '1000',
     uid: '1000',
   },
+  clientToken: 'client-token',
 });
 
 new integ.IntegTest(app, 'test-efs-integ-test', {

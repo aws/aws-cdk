@@ -102,6 +102,15 @@ export interface AccessPointOptions {
    * @default - user identity not enforced
    */
   readonly posixUser?: PosixUser;
+
+  /**
+   * The opaque string specified in the request to ensure idempotent creation.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-accesspoint.html#cfn-efs-accesspoint-clienttoken
+   *
+   * @default - No client token.
+   */
+  readonly clientToken?: string;
 }
 
 /**
@@ -216,6 +225,7 @@ export class AccessPoint extends AccessPointBase {
         gid: props.posixUser.gid,
         secondaryGids: props.posixUser.secondaryGids,
       } : undefined,
+      clientToken: props.clientToken,
     });
 
     Tags.of(this).add('Name', this.node.path);
