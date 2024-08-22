@@ -79,25 +79,24 @@ export interface ApiCacheBaseProps {
   /**
    * At-rest encryption flag for cache
    *
-   * @default - idk
+   * @default - at rest encryption is disabled
    */
   readonly atRestEncryptionEnabled?: boolean;
   /**
    * Controls how cache health metrics will be emitted to CloudWatch
    * Metrics will be recorded by API ID
    *
-   * @default - idk
+   * @default - health metrics are disabled
    */
   readonly healthMetricsConfig?: HealthMetrics;
   /**
    * Transit encryption flag when connecting to cache
    *
-   * @default - idk
+   * @default - transit encryption is disabled
    */
   readonly transitEncryptionEnabled?: boolean;
   /**
    * TTL in seconds for cache entries. Valid values are 1–3,600 seconds.
-   *
    */
   readonly ttl: number;
   /**
