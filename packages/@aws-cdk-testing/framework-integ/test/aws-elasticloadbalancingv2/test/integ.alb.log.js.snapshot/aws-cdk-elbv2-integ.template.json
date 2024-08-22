@@ -487,24 +487,44 @@
        "Principal": {
         "Service": "delivery.logs.amazonaws.com"
        },
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          {
-           "Fn::GetAtt": [
-            "Bucket83908E77",
-            "Arn"
-           ]
-          },
-          "/prefix/AWSLogs/",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          "/*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/prefix-connection-log/AWSLogs/",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "/*"
+          ]
          ]
-        ]
-       }
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/prefix/AWSLogs/",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": "s3:GetBucketAcl",
@@ -516,6 +536,31 @@
         "Fn::GetAtt": [
          "Bucket83908E77",
          "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::797873946194:root"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "Bucket83908E77",
+            "Arn"
+           ]
+          },
+          "/prefix-connection-log/AWSLogs/",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          "/*"
+         ]
         ]
        }
       }
@@ -622,6 +667,20 @@
      {
       "Key": "access_logs.s3.prefix",
       "Value": "prefix"
+     },
+     {
+      "Key": "connection_logs.s3.enabled",
+      "Value": "true"
+     },
+     {
+      "Key": "connection_logs.s3.bucket",
+      "Value": {
+       "Ref": "Bucket83908E77"
+      }
+     },
+     {
+      "Key": "connection_logs.s3.prefix",
+      "Value": "prefix-connection-log"
      }
     ],
     "Scheme": "internet-facing",
