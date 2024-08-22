@@ -2,13 +2,19 @@ import { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
 import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
-import { Annotations, Aws, Names, Stack } from '../../core';
+import { Annotations, Aws, DefaultTokenResolver, Names, Stack, StringConcat, Token, Tokenization } from '../../core';
 
-const BUCKET_ACTIONS = {
+const BUCKET_ACTIONS: Record<string, string[]> = {
   READ: ['s3:GetObject'],
   WRITE: ['s3:PutObject'],
   DELETE: ['s3:DeleteObject'],
+};
+
+const KEY_ACTIONS: Record<string, string[]> = {
+  READ: ['kms:Decrypt'],
+  WRITE: ['kms:Encrypt', 'kms:GenerateDataKey*'],
 };
 
 /**
@@ -67,19 +73,36 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         const distributionId = options.distributionId;
-        const actions = this.getActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
-        const result = this.grantDistributionAccessToBucket(distributionId, actions);
+        const bucketPolicyActions = this.getBucketPolicyActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+        const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
 
         // Failed to update bucket policy, assume using imported bucket
-        if (!result.statementAdded) {
-          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateBucketPolicy',
-            'Cannot update bucket policy of an imported bucket. Set overrideImportedBucketPolicy to true or update the policy manually instead.');
+        if (!bucketPolicyResult.statementAdded) {
+          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy',
+            'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.');
         }
 
         if (bucket.encryptionKey) {
-          // TODO: update this warning
-          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateKeyPolicy',
-            'If you run into a circular dependency issue during deployment, please refer to README for instructions.');
+          let bucketName = bucket.bucketName;
+          if (Token.isUnresolved(bucket.bucketName)) {
+            bucketName = JSON.stringify(Tokenization.resolve(bucket.bucketName, {
+              scope,
+              resolver: new DefaultTokenResolver(new StringConcat()),
+            }));
+          }
+          Annotations.of(scope).addInfo(
+            `Granting OAC permissions to access KMS key for S3 bucket origin ${bucketName} may cause a circular dependency error when this stack deploys.\n` +
+            'The key policy references the distribution\'s id, the distribution references the bucket, and the bucket references the key.\n'+
+            'See the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README for more details.\n',
+          );
+
+          const keyPolicyActions = this.getKeyPolicyActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+          const keyPolicyResult = this.grantDistributionAccessToKey(distributionId!, keyPolicyActions, bucket.encryptionKey);
+          // Failed to update key policy, assume using imported key
+          if (!keyPolicyResult.statementAdded) {
+            Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicy',
+              'Cannot update key policy of an imported key. You may need to update the policy manually instead.');
+          }
         }
 
         const originBindConfig = this._bind(scope, options);
@@ -94,7 +117,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         };
       }
 
-      getActions(accessLevels: cloudfront.AccessLevel[]) {
+      getBucketPolicyActions(accessLevels: cloudfront.AccessLevel[]) {
         let actions: string[] = [];
         for (const accessLevel of new Set(accessLevels)) {
           actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
@@ -102,10 +125,19 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return actions;
       }
 
+      getKeyPolicyActions(accessLevels: cloudfront.AccessLevel[]) {
+        let actions: string[] = [];
+        // Remove duplicates and filters out DELETE since delete permissions are not applicable to KMS key actions
+        const keyAccessLevels = [...new Set(accessLevels.filter(level => level !== AccessLevel.DELETE))];
+        for (const accessLevel of new Set(keyAccessLevels)) {
+          actions = actions.concat(KEY_ACTIONS[accessLevel]);
+        }
+        return actions;
+      }
+
       grantDistributionAccessToBucket(distributionId: string, actions: string[]): iam.AddToResourcePolicyResult {
-        const oacReadOnlyBucketPolicyStatement = new iam.PolicyStatement(
+        const oacBucketPolicyStatement = new iam.PolicyStatement(
           {
-            sid: 'GrantCloudFrontOACAccessToS3Origin',
             effect: iam.Effect.ALLOW,
             principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
             actions,
@@ -117,7 +149,25 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
             },
           },
         );
-        const result = bucket.addToResourcePolicy(oacReadOnlyBucketPolicyStatement);
+        const result = bucket.addToResourcePolicy(oacBucketPolicyStatement);
+        return result;
+      }
+
+      grantDistributionAccessToKey(distributionId: string, actions: string[], key: IKey): iam.AddToResourcePolicyResult {
+        const oacKeyPolicyStatement = new iam.PolicyStatement(
+          {
+            effect: iam.Effect.ALLOW,
+            principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
+            actions,
+            resources: ['*'],
+            conditions: {
+              StringEquals: {
+                'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
+              },
+            },
+          },
+        );
+        const result = key.addToResourcePolicy(oacKeyPolicyStatement);
         return result;
       }
     }();
