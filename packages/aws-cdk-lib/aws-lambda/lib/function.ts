@@ -1,4 +1,4 @@
-import { Construct, IConstruct } from 'constructs';
+import { Construct, IConstruct, MetadataOptions } from 'constructs';
 import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers';
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
@@ -1155,6 +1155,14 @@ export class Function extends FunctionBase {
     this.configureParamsAndSecretsExtension(props);
   }
 
+  /**
+   * Use this method to write to the construct tree.
+   * The metadata entries are written to the Cloud Assembly Manifest if the `treeMetadata` property is specified in the props of the App that contains this Construct.
+   */
+  /** @internal */
+  public _addMetadata(type: string, data: any, options?: MetadataOptions) {
+    this.node.addMetadata(type, data, options);
+  }
   /**
    * Adds an environment variable to this Lambda function.
    * If this is a ref to a Lambda function, this operation results in a no-op.
