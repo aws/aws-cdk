@@ -5,7 +5,7 @@ import { CfnApiCache } from './appsync.generated';
  * enum with all Api Caching Behavior values
  */
 export enum CacheBehavior {
-  /*
+  /**
    * FULL_REQUEST_CACHING: All requests are fully cached.
    */
   FULL_REQUEST_CACHING = 'FULL_REQUEST_CACHING',
