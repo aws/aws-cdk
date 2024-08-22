@@ -121,8 +121,9 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
     });
 ```
 
-### Creating a StateMachine with CWL Encryption using a Customer Managed Key,
-You can encrypt data sent to CloudWatch Logs. To use encrypted logging, you must set `enableEncryptedLogging` to `true` and provide the `logs?` prop.
+### Encrypting CloudWatch logs with a customer managed key
+
+If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. To encrypt the logs with your own KMS key you must encrypt the `LogGroup` used by the state machine with a KMS key.
 ```
 const stateMachineKmsKey = new kms.Key(this, 'StateMachineKey');
 const logGroupKmsKey = new kms.Key(this, 'LogGroupKmsKey');
