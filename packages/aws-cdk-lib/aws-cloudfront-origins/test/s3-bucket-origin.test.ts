@@ -95,7 +95,6 @@ describe('S3BucketOrigin', () => {
                         ],
                       ],
                     },
-                    Sid: 'GrantCloudFrontOACAccessToS3Origin',
                   },
                 ],
                 Version: '2012-10-17',
@@ -245,7 +244,6 @@ describe('S3BucketOrigin', () => {
                         ],
                       ],
                     },
-                    Sid: 'GrantCloudFrontOACAccessToS3Origin',
                   },
                   {
                     Action: 's3:GetObject',
@@ -290,7 +288,6 @@ describe('S3BucketOrigin', () => {
                         ],
                       ],
                     },
-                    Sid: 'GrantCloudFrontOACAccessToS3Origin',
                   },
                 ],
                 Version: '2012-10-17',
@@ -404,7 +401,8 @@ describe('S3BucketOrigin', () => {
 
       it('should warn user bucket policy is not updated', () => {
         Annotations.fromStack(stack).hasWarning('/Default/MyDistributionA/Origin1',
-          'Cannot update bucket policy of an imported bucket. Set overrideImportedBucketPolicy to true or update the policy manually instead. [ack: @aws-cdk/aws-cloudfront-origins:updateBucketPolicy]');
+          'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.\n' +
+          'See the "Using pre-existing S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy]');
       });
 
       it('should match expected template resources', () => {
