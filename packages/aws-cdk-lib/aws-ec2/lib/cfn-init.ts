@@ -311,10 +311,17 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
       if (target[key] && !Array.isArray(target[key])) {
         throw new Error(`Trying to merge array [${value}] into a non-array '${target[key]}'`);
       }
-      target[key] = Array.from(new Set([
-        ...target[key] ?? [],
-        ...value,
-      ]));
+      if (key === 'command') { // don't deduplicate command arguments
+        target[key] = new Array(
+          ...target[key] ?? [],
+          ...value,
+        );
+      } else {
+        target[key] = Array.from(new Set([
+          ...target[key] ?? [],
+          ...value,
+        ]));
+      }
       continue;
     }
     if (typeof value === 'object' && value) {

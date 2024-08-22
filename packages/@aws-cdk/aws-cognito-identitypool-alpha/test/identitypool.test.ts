@@ -19,6 +19,7 @@ import {
 } from 'aws-cdk-lib/aws-iam';
 import {
   Fn,
+  Lazy,
   Stack,
 } from 'aws-cdk-lib';
 import {
@@ -203,12 +204,26 @@ describe('identity pool', () => {
         account: '1234567891011',
       },
     });
-    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdError', 'idPool')).toThrowError('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
-    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'idPoolArnError', 'arn:aws:cognito-identity:my-region:1234567891011:identitypool\/your-region:idPool/')).toThrowError('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdError', 'idPool')).toThrow('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
+    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdRegionError', 'your-region:idPool')).toThrow('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'idPoolArnError', 'arn:aws:cognito-identity:my-region:1234567891011:identitypool\/your-region:idPool/')).toThrow('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
     const idPool = IdentityPool.fromIdentityPoolId(stack, 'staticIdPool', 'my-region:idPool');
 
     expect(idPool.identityPoolId).toEqual('my-region:idPool');
     expect(idPool.identityPoolArn).toMatch(/cognito-identity:my-region:1234567891011:identitypool\/my-region:idPool/);
+  });
+
+  test('fromIdentityPoolId accept token', () => {
+    const stack = new Stack();
+    expect(() => IdentityPool.fromIdentityPoolId(stack, 'IdPool1', Lazy.string({ produce: () => 'lazy-id' }))).not.toThrow();
+    expect(() => IdentityPool.fromIdentityPoolId(stack, 'IdPool2', 'id-region:pool-id')).not.toThrow();
+  });
+
+  test('fromIdentityPoolArn accepts token', () => {
+    const stack = new Stack();
+    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'IdPool1', Lazy.string({ produce: () => 'lazy-arn' }))).not.toThrow();
+    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'IdPool2', `arn:aws:cognito-identity:${stack.region}:${stack.account}:identitypool/id-region:pool-id`)).not.toThrow();
+    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'IdPool3', `arn:aws:cognito-identity:arn-region:${stack.account}:identitypool/${Lazy.string({ produce: () => 'lazy-region' })}:pool-id`)).not.toThrow();
   });
 
   test('user pools are properly configured', () => {
