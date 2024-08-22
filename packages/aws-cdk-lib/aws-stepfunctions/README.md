@@ -149,8 +149,8 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncry
   enableEncryptedLogging: true,
   logs: {
     destination: logGroup,
-    level: sfn.LogLevel.FATAL,
-    includeExecutionData: false,
+    level: sfn.LogLevel.ALL,
+    includeExecutionData: true,
   },
 });
 ```
