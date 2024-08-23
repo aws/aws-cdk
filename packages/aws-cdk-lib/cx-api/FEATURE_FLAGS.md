@@ -38,7 +38,6 @@ Flags come in three types:
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) |
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
-| [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
@@ -100,7 +99,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
-    "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
@@ -738,22 +736,6 @@ This is a feature flag as the new behavior provides a better default experience 
 This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
 from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
 always apply, regardless of the value of this flag.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.51.0 | `false` | `true` |
-
-
-### @aws-cdk/aws-iam:standardizedServicePrincipals
-
-*Use standardized (global) service principals everywhere* (fix)
-
-We used to maintain a database of exceptions to Service Principal names in various regions. This database
-is no longer necessary: all service principals names have been standardized to their global form (`SERVICE.amazonaws.com`).
-
-This flag disables use of that exceptions database and always uses the global service principal.
 
 
 | Since | Default | Recommended |

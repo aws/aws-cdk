@@ -248,7 +248,7 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
 ### Cross-region AWS API call
 
 You can call AWS API in a different region from your state machine by using the `CallAwsServiceCrossRegion` construct. In addition to the properties for `CallAwsService` construct, you have to set `region` property to call the API.
- 
+
 ```ts
 declare const myBucket: s3.Bucket;
 const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
@@ -289,6 +289,28 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
     },
   },
   executionParameters: ['param1', 'param2'],
+});
+```
+
+You can reuse the query results by setting the `resultReuseConfigurationMaxAge` property.
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start Athena Query', {
+  queryString: sfn.JsonPath.stringAt('$.queryString'),
+  queryExecutionContext: {
+    databaseName: 'mydatabase',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'query-results-bucket',
+      objectKey: 'folder',
+    },
+  },
+  executionParameters: ['param1', 'param2'],
+  resultReuseConfigurationMaxAge: Duration.minutes(100),
 });
 ```
 
@@ -372,6 +394,56 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
       },
     },
   ),
+  resultSelector: {
+    names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+});
+```
+### Using Input Path
+
+Provide S3 URI as an input or output path to invoke a model
+
+```ts
+
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  inputPath: sfn.JsonPath.stringAt('$.prompt'),
+  outputPath: sfn.JsonPath.stringAt('$.prompt'),
+});
+
+```
+
+You can apply a guardrail to the invocation by setting `guardrail`.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'Generate a list of five first names.',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  guardrail: tasks.Guardrail.enable('guardrailId', 1),
   resultSelector: {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },
@@ -628,6 +700,39 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
   propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
+
+#### Override CPU and Memory Parameter
+
+By setting the property cpu or memoryMiB, you can override the Fargate or EC2 task instance size at runtime.
+
+see: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+const cluster = new ecs.Cluster(this, 'ECSCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  compatibility: ecs.Compatibility.FARGATE,
+  cpu: '256',
+  memoryMiB: '512'
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+});
+
+const runTask = new tasks.EcsRunTask(this, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
+  cpu: '1024',
+  memoryMiB: '1048'
+});
+```
+
 
 #### ECS enable Exec
 
