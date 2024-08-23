@@ -813,7 +813,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       // The storage class to use for the destination bucket.
       storageClass: s3.StorageClass.INFREQUENT_ACCESS,
       // Whether to replicate objects with SSE-KMS encryption.
-      sseKmsEncryptedObjects: true,
+      sseKmsEncryptedObjects: false,
       // Whether to replicate modifications on replicas.
       replicaModifications: true,
       // Whether to replicate delete markers.
@@ -821,15 +821,18 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       deleteMarkerReplication: false,
       // The ID of the rule.
       id: 'full-settings-rule',
-      // The prefix filter for the rule.
-      prefixFilter: 'prefix',
-      // The tag filter for the rule.
-      tagFilter: [
-        {
-          key: 'tagKey',
-          value: 'tagValue',
-        },
-      ],
+      // The object filter for the rule.
+      filter: {
+        // The prefix filter for the rule.
+        prefix: 'prefix',
+        // The tag filter for the rule.
+        tags: [
+          {
+            key: 'tagKey',
+            value: 'tagValue',
+          },
+        ],
+      }
     },
   ],
 });

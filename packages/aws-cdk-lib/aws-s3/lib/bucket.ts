@@ -1498,6 +1498,9 @@ export interface ReplicationRule {
   readonly filter?: Filter;
 }
 
+/**
+ * A filter that identifies the subset of objects to which the replication rule applies.
+ */
 export interface Filter {
   /**
    * An object key name prefix that identifies the object or objects to which the rule applies.
