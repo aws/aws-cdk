@@ -39,7 +39,9 @@ const sourceBucket = new s3.Bucket(stack, 'SourceBucket', {
       priority: 1,
       deleteMarkerReplication: true,
       id: 'full-settings-rule',
-      prefixFilter: 'prefix',
+      filter: {
+        prefix: 'prefix',
+      },
     },
   ],
 });
