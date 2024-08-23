@@ -403,7 +403,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Role attachment L2 construct for the Identity Pool
    */
-  private roleAttachment: IdentityPoolRoleAttachment | null = null;
+  private roleAttachment?: IdentityPoolRoleAttachment;
 
   constructor(scope: Construct, id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
