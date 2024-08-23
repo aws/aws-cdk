@@ -2330,10 +2330,6 @@ export class MacBuildImage implements IBuildImage {
       errors.push('Mac images do not support Lambda compute types');
     }
 
-    if (buildEnvironment.computeType != ComputeType.MEDIUM) {
-      errors.push('Mac images only support medium compute type');
-    }
-
     if (!buildEnvironment.fleet) {
       errors.push('Mac images must be used with a fleet');
     }
