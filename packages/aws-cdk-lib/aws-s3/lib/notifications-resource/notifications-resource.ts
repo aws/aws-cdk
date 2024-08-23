@@ -15,6 +15,11 @@ interface NotificationsProps {
    * The role to be used by the lambda handler
    */
   handlerRole?: iam.IRole;
+
+  /**
+   * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
+   */
+  skipDestinationValidation: boolean;
 }
 
 /**
@@ -40,11 +45,13 @@ export class BucketNotifications extends Construct {
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;
+  private readonly skipDestinationValidation: boolean;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
     this.handlerRole = props.handlerRole;
+    this.skipDestinationValidation = props.skipDestinationValidation;
   }
 
   /**
@@ -133,6 +140,7 @@ export class BucketNotifications extends Construct {
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
+          SkipDestinationValidation: this.skipDestinationValidation,
         },
       });
 
