@@ -193,7 +193,7 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
-**Note**: `path` parameter must be started with `/`.
+**Note**: The `path` parameter must start with a `/`.
 
 ### Application Load Balancer attributes
 
