@@ -3990,8 +3990,10 @@ describe('bucket', () => {
             id: 'rule1',
             priority: 1,
             deleteMarkerReplication: false,
-            prefixFilter: 'filterWord',
-            tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
+            filter: {
+              prefix: 'filterWord',
+              tags: [{ key: 'filterKey', value: 'filterValue' }],
+            },
           },
         ],
       });
@@ -4349,7 +4351,7 @@ describe('bucket', () => {
           replicationRules: [
             {
               destination: s3.ReplicationDestination.sameAccount(dstBucket),
-              prefixFilter: 'filterWord',
+              filter: { prefix: 'filterWord' },
             },
           ],
         });
@@ -4390,7 +4392,9 @@ describe('bucket', () => {
           replicationRules: [
             {
               destination: s3.ReplicationDestination.sameAccount(dstBucket),
-              tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
+              filter: {
+                tags: [{ key: 'filterKey', value: 'filterValue' }],
+              },
             },
           ],
         });
@@ -4434,10 +4438,12 @@ describe('bucket', () => {
           replicationRules: [
             {
               destination: s3.ReplicationDestination.sameAccount(dstBucket),
-              tagFilter: [
-                { key: 'filterKey1', value: 'filterValue1' },
-                { key: 'filterKey2', value: 'filterValue2' },
-              ],
+              filter: {
+                tags: [
+                  { key: 'filterKey1', value: 'filterValue1' },
+                  { key: 'filterKey2', value: 'filterValue2' },
+                ],
+              },
             },
           ],
         });
@@ -4484,8 +4490,10 @@ describe('bucket', () => {
           replicationRules: [
             {
               destination: s3.ReplicationDestination.sameAccount(dstBucket),
-              prefixFilter: 'filterWord',
-              tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
+              filter: {
+                prefix: 'filterWord',
+                tags: [{ key: 'filterKey', value: 'filterValue' }],
+              },
             },
           ],
         });
@@ -4531,11 +4539,13 @@ describe('bucket', () => {
               {
                 destination: s3.ReplicationDestination.sameAccount(dstBucket),
                 deleteMarkerReplication: true,
-                tagFilter: [{ key: 'filterKey', value: 'filterValue' }],
+                filter: {
+                  tags: [{ key: 'filterKey', value: 'filterValue' }],
+                },
               },
             ],
           });
-        }).toThrow('\'tagFilter\' cannot be specified when \'deleteMarkerReplication\' is enabled.');
+        }).toThrow('tag filter cannot be specified when \'deleteMarkerReplication\' is enabled.');
       });
     });
   });

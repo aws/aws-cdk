@@ -1491,11 +1491,20 @@ export interface ReplicationRule {
   readonly id?: string;
 
   /**
+   * A filter that identifies the subset of objects to which the replication rule applies.
+   *
+   * @default - applies to all objects
+   */
+  readonly filter?: Filter;
+}
+
+export interface Filter {
+  /**
    * An object key name prefix that identifies the object or objects to which the rule applies.
    *
    * @default - applies to all objects
    */
-  readonly prefixFilter?: string;
+  readonly prefix?: string;
 
   /**
    * The tag array used for tag filters.
@@ -1504,7 +1513,7 @@ export interface ReplicationRule {
    *
    * @default - applies to all objects
    */
-  readonly tagFilter?: Tag[];
+  readonly tags?: Tag[];
 }
 
 /**
@@ -2626,8 +2635,8 @@ export class Bucket extends BucketBase {
       if (rule.replicationTimeControl && !rule.metrics) {
         throw new Error('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.');
       }
-      if (rule.deleteMarkerReplication && rule.tagFilter) {
-        throw new Error('\'tagFilter\' cannot be specified when \'deleteMarkerReplication\' is enabled.');
+      if (rule.deleteMarkerReplication && rule.filter?.tags) {
+        throw new Error('tag filter cannot be specified when \'deleteMarkerReplication\' is enabled.');
       }
     });
 
@@ -2677,14 +2686,14 @@ export class Bucket extends BucketBase {
         } : undefined;
 
         // Whether to configure filter settings by And property.
-        const isAndFilter = rule.tagFilter && rule.tagFilter.length > 0;
+        const isAndFilter = rule.filter?.tags && rule.filter.tags.length > 0;
         // To avoid deploy error when there are multiple replication rules with undefined prefix,
         // CDK set the prefix to an empty string if it is undefined.
-        const prefix = rule.prefixFilter ?? '';
+        const prefix = rule.filter?.prefix ?? '';
         const filter = isAndFilter ? {
           and: {
             prefix,
-            tagFilters: rule.tagFilter,
+            tagFilters: rule.filter?.tags,
           },
         } : {
           prefix,
