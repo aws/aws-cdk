@@ -972,7 +972,7 @@ describe('role mappings', () => {
             claimValue: 'admin',
             mappedRole: idPool.authenticatedRole,
           },
-        ]
+        ],
       });
     }).toThrow(Error);
   });

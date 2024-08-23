@@ -488,6 +488,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Assigns an IdentityPoolRoleAttachment to the IdentityPool, if it does not
    * already have one assigned. In order to be assigned, the attachment must have
    * the same Identity Pool ID.
+   * @internal
    * @param roleAttachment The new IdentityPoolRoleAttachment object to assign to
    * the IdentityPool.
    */
