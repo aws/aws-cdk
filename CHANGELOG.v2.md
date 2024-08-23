@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.154.1](https://github.com/aws/aws-cdk/compare/v2.154.0...v2.154.1) (2024-08-23)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#31193](https://github.com/aws/aws-cdk/issues/31193)) ([aa97525](https://github.com/aws/aws-cdk/commit/aa975253fe7f21f20c1d0a92f0b9c4fd28ed3236))
+* update L1 CloudFormation resource definitions ([#31194](https://github.com/aws/aws-cdk/issues/31194)) ([2191264](https://github.com/aws/aws-cdk/commit/2191264491dbf373c0678f6984a1beab7d913d5f))
+
+
+### Bug Fixes
+
+* **cloudfront:** requirement of domainNames prevents moving a domain name between distributions ([#31001](https://github.com/aws/aws-cdk/issues/31001)) ([1255ce3](https://github.com/aws/aws-cdk/commit/1255ce3b68341755f1bd8f44d68d0da8558a1a5e)), closes [#29960](https://github.com/aws/aws-cdk/issues/29960) [#29329](https://github.com/aws/aws-cdk/issues/29329)
+
 ## [2.154.0](https://github.com/aws/aws-cdk/compare/v2.153.0...v2.154.0) (2024-08-22)
 
 
@@ -28,7 +41,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **cloudfront:** requirement of domainNames prevents moving a domain name between distributions ([#31001](https://github.com/aws/aws-cdk/issues/31001)) ([acdf7d3](https://github.com/aws/aws-cdk/commit/acdf7d3a1ffe2cbc8239cd0b788dc47b99e35184)), closes [#29960](https://github.com/aws/aws-cdk/issues/29960) [#29329](https://github.com/aws/aws-cdk/issues/29329)
 * **elasticloadbalancingv2-targets:** add AlbListenerTarget for NLBs, deprecate AlbTarget due to ALB listener race conditions ([#17208](https://github.com/aws/aws-cdk/issues/17208)) ([#30396](https://github.com/aws/aws-cdk/issues/30396)) ([1fca1e5](https://github.com/aws/aws-cdk/commit/1fca1e5b92ba760a33652f39c2345f6aa1eaa9f7)), closes [/github.com/aws/aws-cdk/issues/17208#issuecomment-1681475590](https://github.com/aws//github.com/aws/aws-cdk/issues/17208/issues/issuecomment-1681475590)
 * **lambda:** validate localMountPath format and length ([#31019](https://github.com/aws/aws-cdk/issues/31019)) ([c159e77](https://github.com/aws/aws-cdk/commit/c159e77ab34701fc6780b9501f1692fbf2366b04))
 * **vpc-v2:** fixing default scope id ([#31102](https://github.com/aws/aws-cdk/issues/31102)) ([0007a29](https://github.com/aws/aws-cdk/commit/0007a29714cf04abb307845874dde27c813d45dd))
