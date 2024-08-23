@@ -100,8 +100,8 @@ export interface IdentityPoolProps {
 
   /**
    * Whether or not to create a default Identity Pool Role Attachment. If set
-   * to false, an Identity Pool Role Attachment must be manually created to
-   * connect this Identity Pool.
+   * to false, an Identity Pool Role Attachment must be manually created and
+   * connected to this Identity Pool.
    * @default true
    */
   readonly createDefaultRoleAttachment?: boolean;
