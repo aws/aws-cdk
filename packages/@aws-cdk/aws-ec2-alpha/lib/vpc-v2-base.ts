@@ -2,6 +2,17 @@ import { Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct } from 'constructs';
+import { EgressOnlyInternetGateway, Route } from './route';
+
+/**
+ * Options to define EgressOnlyInternetGateway for VPC
+ */
+export interface EgressOnlyInternetGatewayOptions{
+  /**
+   * List of subnets where route to EGW will be added
+   */
+  readonly subnets?: SubnetSelection[];
+}
 
 /**
  * Placeholder to see what extra props we might need,
@@ -22,6 +33,12 @@ export interface IVpcV2 extends IVpc {
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
    */
   readonly ipv4CidrBlock: string;
+
+  /**
+   * Add an Egress only Internet Gateway to current VPC
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway-basics.html}.
+   */
+  addEgressOnlyInternetGateway(options: EgressOnlyInternetGatewayOptions): void;
 
 }
 
@@ -193,6 +210,34 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     return new GatewayVpcEndpoint(this, id, {
       vpc: this,
       ...options,
+    });
+  }
+
+  /**
+   * Adds a new Egress Only Internet Gateway to this VPC and adds route
+   * to the route table of given subnets
+   * @default in case of no input subnets, no route is defined.
+   */
+  public addEgressOnlyInternetGateway(options: EgressOnlyInternetGatewayOptions): void {
+    const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
+      vpc: this,
+    });
+    if (options.subnets) {
+      const subnets = flatten(options.subnets.map(s => this.selectSubnets(s).subnets));
+      subnets.forEach((subnet) => {
+        this.createEgressRoute(subnet, egw);
+      });
+    }
+  }
+
+  /**
+ * Creates a route for EGW with destination set to outbound IPv6('::/0').
+ */
+  private createEgressRoute(subnet: ISubnet, egw: EgressOnlyInternetGateway): void {
+    new Route(this, `${subnet.node.id}-EgressRoute`, {
+      routeTable: subnet.routeTable,
+      destination: '::/0', // IPv6 default route
+      target: { gateway: egw },
     });
   }
 

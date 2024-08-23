@@ -80,7 +80,7 @@ const igw = new InternetGateway(stack, 'testIGW', {
   vpc,
 });
 
-const routeTable = new RouteTable(stack, 'TestRoottable', {
+const routeTable = new RouteTable(stack, 'TestRoutetable', {
   vpc,
 });
 

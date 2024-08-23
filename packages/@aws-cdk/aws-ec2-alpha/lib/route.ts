@@ -409,7 +409,7 @@ export class RouteTargetType {
 /**
  * Interface to define a route.
  */
-interface IRoute {
+export interface IRoute {
   /**
    * The ID of the route table for the route.
    * @attribute routeTable
@@ -433,7 +433,7 @@ interface IRoute {
 /**
  * Properties to define a route.
  */
-interface RouteProps {
+export interface RouteProps {
   /**
    * The ID of the route table for the route.
    * @attribute routeTable
@@ -463,7 +463,7 @@ interface RouteProps {
  * Creates a new route with added functionality.
  * @resource AWS::EC2::Route
  */
-class Route extends Resource implements IRoute {
+export class Route extends Resource implements IRoute {
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
    *

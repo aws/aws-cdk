@@ -12,7 +12,7 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { GatewayVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, IpCidr } from '../lib/subnet-v2';
 
 const app = new cdk.App();
@@ -98,8 +98,18 @@ new SubnetV2(stack, 'validateIpv6', {
   ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
   availabilityZone: 'ap-south-1b',
   //Test secondary ipv6 address after IPAM pool creation
-  //ipv6CidrBlock: new Ipv6Cidr('2001:db8::/48'),
-  subnetType: SubnetType.PRIVATE_ISOLATED,
+  ipv6CidrBlock: new IpCidr('2001:db8::/48'),
+  subnetType: SubnetType.PUBLIC,
+});
+
+vpc.addGatewayEndpoint('TestGWendpoint', {
+  service: GatewayVpcEndpointAwsService.S3,
+  subnets: [{ subnetType: SubnetType.PRIVATE_ISOLATED }],
+});
+
+//Add an Egress only Internet Gateway
+vpc.addEgressOnlyInternetGateway({
+  subnets: [{ subnetType: SubnetType.PUBLIC }],
 });
 
 new IntegTest(app, 'integtest-model', {
