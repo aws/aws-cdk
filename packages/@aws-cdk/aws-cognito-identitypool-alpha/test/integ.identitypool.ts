@@ -20,6 +20,7 @@ import {
 import {
   UserPoolAuthenticationProvider,
 } from '../lib/identitypool-user-pool-authentication-provider';
+import { IdentityPoolRoleAttachment } from '../lib/identitypool-role-attachment';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -81,6 +82,12 @@ idPool.addRoleMappings({
       mappedRole: idPool.authenticatedRole,
     },
   ],
+});
+new IdentityPoolRoleAttachment(stack, 'testAttachment', {
+  identityPool: idPool,
+  authenticatedRole: idPool.authenticatedRole,
+  unauthenticatedRole: idPool.unauthenticatedRole,
+  roleMappings: idPool.roleMappings,
 });
 idPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   effect: Effect.ALLOW,

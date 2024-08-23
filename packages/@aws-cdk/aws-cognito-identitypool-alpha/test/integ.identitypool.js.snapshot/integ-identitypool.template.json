@@ -34,6 +34,9 @@
   "PooltestClientFE8D4935": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
+    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -54,15 +57,17 @@
       "Ref": "PoolProviderGoogle76A1E8D0"
      },
      "COGNITO"
-    ],
-    "UserPoolId": {
-     "Ref": "PoolD3F588B8"
-    }
+    ]
    }
   },
   "PoolProviderGoogle76A1E8D0": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
+    "ProviderName": "Google",
+    "ProviderType": "Google",
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
+    },
     "AttributeMapping": {
      "given_name": "given_name",
      "family_name": "family_name",
@@ -74,11 +79,6 @@
      "client_id": "google-client-id",
      "client_secret": "google-client-secret",
      "authorize_scopes": "profile"
-    },
-    "ProviderName": "Google",
-    "ProviderType": "Google",
-    "UserPoolId": {
-     "Ref": "PoolD3F588B8"
     }
    }
   },
@@ -116,6 +116,9 @@
   "OtherPoolUserPoolAuthenticationProviderClient08F670F8": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
+    "UserPoolId": {
+     "Ref": "OtherPool7DA7F2F7"
+    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -136,15 +139,17 @@
       "Ref": "OtherPoolProviderAmazon4EB0592F"
      },
      "COGNITO"
-    ],
-    "UserPoolId": {
-     "Ref": "OtherPool7DA7F2F7"
-    }
+    ]
    }
   },
   "OtherPoolProviderAmazon4EB0592F": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
+    "ProviderName": "LoginWithAmazon",
+    "ProviderType": "LoginWithAmazon",
+    "UserPoolId": {
+     "Ref": "OtherPool7DA7F2F7"
+    },
     "AttributeMapping": {
      "given_name": "name",
      "email": "email",
@@ -154,19 +159,14 @@
      "client_id": "amzn-client-id",
      "client_secret": "amzn-client-secret",
      "authorize_scopes": "profile"
-    },
-    "ProviderName": "LoginWithAmazon",
-    "ProviderType": "LoginWithAmazon",
-    "UserPoolId": {
-     "Ref": "OtherPool7DA7F2F7"
     }
    }
   },
   "identitypoolE2A6D099": {
    "Type": "AWS::Cognito::IdentityPool",
    "Properties": {
-    "AllowClassicFlow": true,
     "AllowUnauthenticatedIdentities": false,
+    "AllowClassicFlow": true,
     "CognitoIdentityProviders": [
      {
       "ClientId": {
@@ -407,26 +407,6 @@
        ]
       },
       "Type": "Token"
-     },
-     "accounts.google.com": {
-      "AmbiguousRoleResolution": "Deny",
-      "IdentityProvider": "accounts.google.com",
-      "RulesConfiguration": {
-       "Rules": [
-        {
-         "Claim": "sub",
-         "MatchType": "Equals",
-         "RoleARN": {
-          "Fn::GetAtt": [
-           "identitypoolAuthenticatedRoleB074B49D",
-           "Arn"
-          ]
-         },
-         "Value": "12345678012"
-        }
-       ]
-      },
-      "Type": "Rules"
      }
     },
     "Roles": {

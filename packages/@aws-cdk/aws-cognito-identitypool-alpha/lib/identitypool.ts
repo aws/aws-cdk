@@ -97,6 +97,14 @@ export interface IdentityPoolProps {
    * @default - No Authentication Providers passed directly to Identity Pool
    */
   readonly authenticationProviders?: IdentityPoolAuthenticationProviders;
+
+  /**
+   * Whether or not to create a default Identity Pool Role Attachment. If set
+   * to false, an Identity Pool Role Attachment must be manually created to
+   * connect this Identity Pool.
+   * @default true
+   */
+  readonly createDefaultRoleAttachment?: boolean;
 }
 
 /**
@@ -388,9 +396,14 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
 
   /**
-   * Role attachment for the Identity Pool
+   * The list of role mappings for the Identity Pool
    */
-  private roleAttachment: IdentityPoolRoleAttachment;
+  public roleMappings: IdentityPoolRoleMapping[];
+
+  /**
+   * Role attachment L2 construct for the Identity Pool
+   */
+  private roleAttachment: IdentityPoolRoleAttachment | null = null;
 
   constructor(scope: Construct, id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
@@ -437,19 +450,21 @@ export class IdentityPool extends Resource implements IIdentityPool {
     });
     this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated');
     this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
-    const attachment = new IdentityPoolRoleAttachment(this, 'DefaultRoleAttachment', {
-      identityPool: this,
-      authenticatedRole: this.authenticatedRole,
-      unauthenticatedRole: this.unauthenticatedRole,
-      roleMappings: props.roleMappings,
-    });
-
-    // This added by the original author, but it's causing cyclic dependencies.
-    // Don't know why this was added in the first place, but I'm disabling it for now and if
-    // no complaints come from this, we're probably safe to remove it altogether.
-    // attachment.node.addDependency(this);
-    Array.isArray(attachment);
-    this.roleAttachment = attachment;
+    this.roleMappings = props.roleMappings || [];
+    if (props.createDefaultRoleAttachment !== false) {
+      const attachment = new IdentityPoolRoleAttachment(this, 'DefaultRoleAttachment', {
+        identityPool: this,
+        authenticatedRole: this.authenticatedRole,
+        unauthenticatedRole: this.unauthenticatedRole,
+        roleMappings: props.roleMappings,
+      });
+      // This added by the original author, but it's causing cyclic dependencies.
+      // Don't know why this was added in the first place, but I'm disabling it for now and if
+      // no complaints come from this, we're probably safe to remove it altogether.
+      // attachment.node.addDependency(this);
+      Array.isArray(attachment);
+      this.roleAttachment = attachment;
+    }
   }
 
   /**
@@ -464,8 +479,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Adds Role Mappings to Identity Pool
   */
   public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]): void {
-    if (!roleMappings || !roleMappings.length || !this.roleAttachment) return;
-    this.roleAttachment.updateRoleMappings(...roleMappings);
+    if (!roleMappings || !roleMappings.length) return;
+    if (this.roleAttachment) throw Error('Cannot add role mappings after IdentityPoolRoleAttachment has been created. Set `createDefaultRoleAttachment` to false and create an `IdentityPoolRoleAttachment` later in execution.');
+    this.roleMappings.push(...roleMappings);
   }
 
   /**

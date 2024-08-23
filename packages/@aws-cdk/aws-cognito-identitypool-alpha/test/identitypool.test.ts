@@ -27,6 +27,7 @@ import {
   IdentityPoolProviderUrl,
 } from '../lib/identitypool';
 import {
+  IdentityPoolRoleAttachment,
   RoleMappingMatchType,
 } from '../lib/identitypool-role-attachment';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
@@ -572,7 +573,185 @@ describe('role mappings', () => {
     const customRole = new Role(stack, 'customRole', {
       assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/CustomUser'),
     });
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+      roleMappings: [{
+        mappingKey: 'cognito',
+        providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
+        useToken: true,
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.AMAZON,
+        resolveAmbiguousRoles: true,
+        rules: [
+          {
+            claim: 'custom:admin',
+            claimValue: 'admin',
+            mappedRole: adminRole,
+          },
+          {
+            claim: 'custom:admin',
+            claimValue: 'admin',
+            matchType: RoleMappingMatchType.NOTEQUAL,
+            mappedRole: nonAdminRole,
+          },
+        ],
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.FACEBOOK,
+        rules: [
+          {
+            claim: 'iss',
+            claimValue: 'https://graph.facebook.com',
+            mappedRole: facebookRole,
+          },
+        ],
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.custom('example.com'),
+        rules: [
+          {
+            claim: 'iss',
+            claimValue: 'https://example.com',
+            mappedRole: customRole,
+          },
+        ],
+      }],
+    });
+    const temp = Template.fromStack(stack);
+    temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 1);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
+      },
+      RoleMappings: {
+        'cognito': {
+          IdentityProvider: {
+            'Fn::Join': ['', [
+              { 'Fn::GetAtt': ['PoolD3F588B8', 'ProviderName'] },
+              ':',
+              { Ref: 'PoolClient8A3E5EB7' },
+            ]],
+          },
+          Type: 'Token',
+        },
+        'www.amazon.com': {
+          AmbiguousRoleResolution: 'AuthenticatedRole',
+          IdentityProvider: 'www.amazon.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'custom:admin',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'adminRoleC345D70B',
+                    'Arn',
+                  ],
+                },
+                Value: 'admin',
+              },
+              {
+                Claim: 'custom:admin',
+                MatchType: 'NotEqual',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'nonAdminRole43C19D5C',
+                    'Arn',
+                  ],
+                },
+                Value: 'admin',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+        'graph.facebook.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'graph.facebook.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'iss',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'facebookRole9D649CD8',
+                    'Arn',
+                  ],
+                },
+                Value: 'https://graph.facebook.com',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+        'example.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'example.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'iss',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'customRole4C920FF0',
+                    'Arn',
+                  ],
+                },
+                Value: 'https://example.com',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+      },
+      Roles: {
+        authenticated: {
+          'Fn::GetAtt': [
+            'TestIdentityPoolRoleMappingRulesAuthenticatedRole14D102C7',
+            'Arn',
+          ],
+        },
+        unauthenticated: {
+          'Fn::GetAtt': [
+            'TestIdentityPoolRoleMappingRulesUnauthenticatedRole79A7AF99',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
+
+  test('role mapping without default role attachment', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const client = pool.addClient('Client');
+    const adminRole = new Role(stack, 'adminRole', {
+      assumedBy: new ServicePrincipal('admin.amazonaws.com'),
+    });
+    const nonAdminRole = new Role(stack, 'nonAdminRole', {
+      assumedBy: new AnyPrincipal(),
+      inlinePolicies: {
+        DenyAll: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              effect: Effect.DENY,
+              actions: ['update:*', 'put:*', 'delete:*'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      },
+    });
+    const facebookRole = new Role(stack, 'facebookRole', {
+      assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/FacebookUser'),
+    });
+    const customRole = new Role(stack, 'customRole', {
+      assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/CustomUser'),
+    });
     const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+      createDefaultRoleAttachment: false,
       roleMappings: [{
         mappingKey: 'cognito',
         providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
@@ -615,6 +794,12 @@ describe('role mappings', () => {
           mappedRole: customRole,
         },
       ],
+    });
+    new IdentityPoolRoleAttachment(stack, 'TestIDPoolRoleAttachment', {
+      identityPool: idPool,
+      authenticatedRole: idPool.authenticatedRole,
+      unauthenticatedRole: idPool.unauthenticatedRole,
+      roleMappings: idPool.roleMappings,
     });
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 1);
