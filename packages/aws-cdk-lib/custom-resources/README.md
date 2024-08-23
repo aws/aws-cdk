@@ -827,6 +827,8 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
 
 #### Custom Resource Config
 
+**This feature is currently experimental**
+
 You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
 
 Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:  
@@ -903,4 +905,21 @@ new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
     destinationBucket: websiteBucketB,
     logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
 });
+```
+
+The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with a AWS-vended custom resource lambda.
+The `addRemovalPolicy` method will configure the custom resource lambda log group removal policy to `DESTROY`.
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as ses from 'aws-cdk-lib/aws-ses';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+new ses.ReceiptRuleSet(app, 'RuleSet', {
+  dropSpam: true,
+});    
 ```
