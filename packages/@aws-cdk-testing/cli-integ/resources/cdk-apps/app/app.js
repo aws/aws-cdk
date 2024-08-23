@@ -17,10 +17,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var cdk = require('aws-cdk-lib');
   var {
     DefaultStackSynthesizer,
-    StackSynthesizer,
     LegacyStackSynthesizer,
-    AssetManifestBuilder,
-    assertBound,
     aws_ec2: ec2,
     aws_ecs: ecs,
     aws_sso: sso,
