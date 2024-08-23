@@ -282,6 +282,11 @@ Resources:
             Principal:
               AWS:
                 Ref: AWS::AccountId
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Fn::If:
               - HasTrustedAccounts
               - Action: sts:AssumeRole
@@ -305,6 +310,11 @@ Resources:
             Principal:
               AWS:
                 Ref: AWS::AccountId
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Fn::If:
               - HasTrustedAccounts
               - Action: sts:AssumeRole
@@ -324,6 +334,11 @@ Resources:
       AssumeRolePolicyDocument:
         Statement:
           - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -436,6 +451,11 @@ Resources:
       AssumeRolePolicyDocument:
         Statement:
           - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:

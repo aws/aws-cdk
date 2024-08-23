@@ -514,13 +514,7 @@ class SessionTagsWithCustomSynthesizerStack extends cdk.Stack {
       })
     });
 
-    const fn = new lambda.Function(this, 'my-function', {
-      code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler'
-    });
-
-    new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
+    new sqs.Queue(this, 'sessionTagsQueue');
   }
 }
 class LambdaHotswapStack extends cdk.Stack {

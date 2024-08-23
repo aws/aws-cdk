@@ -277,6 +277,11 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -300,6 +305,11 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -324,6 +334,11 @@ Resources:
       AssumeRolePolicyDocument:
         Statement:
           - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -436,6 +451,11 @@ Resources:
             Principal:
               AWS:
                 Ref: AWS::AccountId
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Fn::If:
               - HasTrustedAccounts
               - Action: sts:AssumeRole
@@ -495,12 +515,8 @@ Resources:
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
                 Effect: Allow
-              - Sid: IamPermissions # Need this since we no don't use the CloudFormationExecutionRole here
-                Action: iam:*
-                Resource: "*"
-                Effect: Allow
-              - Sid: LambdaPermissions
-                Action: lambda:*
+              - Sid: SQSPermissions
+                Action: sqs:*
                 Resource: "*"
                 Effect: Allow
                 Condition:
