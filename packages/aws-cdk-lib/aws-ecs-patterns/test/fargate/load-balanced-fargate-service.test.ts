@@ -1581,6 +1581,26 @@ describe('ApplicationLoadBalancedFargateService', () => {
       });
     }).toThrow('containerMemoryLimitMiB must be a positive integer; received 0.5');
   });
+
+  test('throw when containerMemoryLimitMiB is 0', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        memoryLimitMiB: 256,
+        loadBalancerName: 'alb-test-load-balancer',
+        containerMemoryLimitMiB: 0,
+      });
+    }).toThrow('containerMemoryLimitMiB must be a positive integer; received 0');
+  });
 });
 
 describe('NetworkLoadBalancedFargateService', () => {
