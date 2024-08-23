@@ -733,4 +733,51 @@ describe('cors', () => {
       HttpMethod: 'OPTIONS',
     });
   });
+
+  test('CORS resource with passthroughBehavior set to NEVER', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    const resource = api.root.addResource('MyResource');
+
+    // WHEN
+    resource.addCorsPreflight({
+      allowOrigins: ['https://amazon.com'],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'OPTIONS',
+      ResourceId: { Ref: 'apiMyResourceD5CDB490' },
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
+            },
+            StatusCode: '204',
+          },
+        ],
+        PassthroughBehavior: 'NEVER',
+        RequestTemplates: {
+          'application/json': '{ statusCode: 200 }',
+        },
+        Type: 'MOCK',
+      },
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+          },
+          StatusCode: '204',
+        },
+      ],
+    });
+  });
 });
