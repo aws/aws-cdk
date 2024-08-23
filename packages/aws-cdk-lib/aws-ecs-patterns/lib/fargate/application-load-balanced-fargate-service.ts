@@ -87,9 +87,6 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
-      this.validateContainerCpu(props.containerCpu, props.cpu);
-      this.validateContainerMemoryLimitMiB(props.containerMemoryLimitMiB, props.memoryLimitMiB);
-
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
         memoryLimitMiB: props.memoryLimitMiB,
@@ -106,6 +103,9 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       const logDriver = taskImageOptions.logDriver !== undefined
         ? taskImageOptions.logDriver : enableLogging
           ? this.createAWSLogDriver(this.node.id) : undefined;
+
+      this.validateContainerCpu(props.containerCpu, props.cpu);
+      this.validateContainerMemoryLimitMiB(props.containerMemoryLimitMiB, props.memoryLimitMiB);
 
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
