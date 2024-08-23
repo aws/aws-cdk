@@ -194,8 +194,8 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     if (containerMemoryLimitMiB > memoryLimitMiB) {
       throw new Error(`containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`);
     }
-    if (containerMemoryLimitMiB < 0 || !Number.isInteger(containerMemoryLimitMiB)) {
-      throw new Error(`containerMemoryLimitMiB must be a non-negative integer; received ${containerMemoryLimitMiB}`);
+    if (containerMemoryLimitMiB <= 0 || !Number.isInteger(containerMemoryLimitMiB)) {
+      throw new Error(`containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`);
     }
   }
 }
