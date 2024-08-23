@@ -175,7 +175,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     }
   }
 
-  private validateContainerCpu(containerCpu?: number, cpu: number = 256) {
+  private validateContainerCpu(containerCpu?: number, cpu: number = 256) { // default value for cpu is 256
     if (containerCpu === undefined || Token.isUnresolved(containerCpu) || Token.isUnresolved(cpu)) {
       return;
     }
@@ -187,7 +187,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     }
   }
 
-  private validateContainerMemoryLimitMiB(containerMemoryLimitMiB?: number, memoryLimitMiB: number = 512) {
+  private validateContainerMemoryLimitMiB(containerMemoryLimitMiB?: number, memoryLimitMiB: number = 512) { // default value for memoryLimitMiB is 512
     if (containerMemoryLimitMiB === undefined || Token.isUnresolved(containerMemoryLimitMiB) || Token.isUnresolved(memoryLimitMiB)) {
       return;
     }
