@@ -1479,7 +1479,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
         loadBalancerName: 'alb-test-load-balancer',
         containerCpu: 512,
       });
-    }).toThrow('containerCpu must be less than to cpu');
+    }).toThrow('containerCpu must be less than to cpu; received containerCpu: 512, cpu: 256');
   });
 
   describe('errors when containerCpu is not positive integer', () => {
@@ -1500,7 +1500,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerCpu: -1,
         });
-      }).toThrow('containerCpu must be positive integer');
+      }).toThrow('containerCpu must be a non-negative integer; received -1');
     });
 
     test('when containerCpu is float', () => {
@@ -1520,7 +1520,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerCpu: 0.5,
         });
-      }).toThrow('containerCpu must be positive integer');
+      }).toThrow('containerCpu must be a non-negative integer; received 0.5');
     });
   });
 
@@ -1541,7 +1541,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
         loadBalancerName: 'alb-test-load-balancer',
         containerMemoryLimitMiB: 512,
       });
-    }).toThrow('containerMemoryLimitMiB must be less than to memoryLimitMiB');
+    }).toThrow('containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: 512, memoryLimitMiB: 256');
   });
 
   describe('errors when containerMemoryLimitMiB is not positive integer', () => {
@@ -1562,7 +1562,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerMemoryLimitMiB: -1,
         });
-      }).toThrow('containerMemoryLimitMiB must be positive integer');
+      }).toThrow('containerMemoryLimitMiB must be a non-negative integer; received -1');
     });
 
     test('when containerMemoryLimitMiB is float', () => {
@@ -1582,7 +1582,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
           loadBalancerName: 'alb-test-load-balancer',
           containerMemoryLimitMiB: 0.5,
         });
-      }).toThrow('containerMemoryLimitMiB must be positive integer');
+      }).toThrow('containerMemoryLimitMiB must be a non-negative integer; received 0.5');
     });
   });
 });

@@ -180,10 +180,10 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerCpu > cpu) {
-      throw new Error('containerCpu must be less than to cpu');
+      throw new Error(`containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`);
     }
     if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
-      throw new Error('containerCpu must be positive integer');
+      throw new Error(`containerCpu must be a non-negative integer; received ${containerCpu}`);
     }
   }
 
@@ -192,10 +192,10 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerMemoryLimitMiB > memoryLimitMiB) {
-      throw new Error('containerMemoryLimitMiB must be less than to memoryLimitMiB');
+      throw new Error(`containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`);
     }
     if (containerMemoryLimitMiB < 0 || !Number.isInteger(containerMemoryLimitMiB)) {
-      throw new Error('containerMemoryLimitMiB must be positive integer');
+      throw new Error(`containerMemoryLimitMiB must be a non-negative integer; received ${containerMemoryLimitMiB}`);
     }
   }
 }
