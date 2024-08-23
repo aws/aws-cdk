@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
+  Annotations,
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   ContextProvider, Fn, IResource, Resource, Stack, Token,
   Tokenization,
@@ -401,6 +402,7 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
    * @default false
    */
   readonly forceDynamicReference?: boolean;
+
 }
 
 /**
@@ -470,6 +472,43 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterName(scope: Construct, id: string, stringParameterName: string): IStringParameter {
     return this.fromStringParameterAttributes(scope, id, { parameterName: stringParameterName });
+  }
+
+  /**
+   * Imports an external string parameter by ARN.
+   */
+  public static fromStringParameterArn(scope: Construct, id: string, stringParameterArn: string): IStringParameter {
+    if (Token.isUnresolved(stringParameterArn)) {
+      throw new Error('stringParameterArn cannot be an unresolved token');
+    }
+
+    // has to be the same region
+    // split the arn string to get the region string
+    // arn sample: arn:aws:ssm:us-east-1:123456789012:parameter/dummyName
+    const arnParts = stringParameterArn.split(':');
+    const stackRegion = Stack.of(scope).region;
+    if (arnParts.length !== 6) {
+      throw new Error('unexpected StringParameterArn format');
+    } else if (Token.isUnresolved(stackRegion)) {
+      // Region is unknown during synthesis, emit a warning for visibility
+      Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion', 'Cross-account references will only work within the same region');
+    } else if (!Token.isUnresolved(stackRegion) && arnParts[3] !== stackRegion) {
+      // If the region is known, it must match the region specified in the ARN string
+      throw new Error('stringParameterArn must be in the same region as the stack');
+    }
+
+    const parameterType = ParameterValueType.STRING;
+
+    let stringValue: string;
+    stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${parameterType}>`, default: stringParameterArn }).valueAsString;
+    class Import extends ParameterBase {
+      public readonly parameterName = stringParameterArn.split('/').pop()?.replace(/parameter\/$/, '') ?? '';
+      public readonly parameterArn = stringParameterArn;
+      public readonly parameterType = parameterType;
+      public readonly stringValue = stringValue;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
