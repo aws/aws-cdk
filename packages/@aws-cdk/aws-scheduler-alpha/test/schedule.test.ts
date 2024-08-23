@@ -214,5 +214,16 @@ describe('Schedule', () => {
         });
       }).toThrow('The provided duration must be between 1 minute and 1440 minutes, got 0');
     });
+
+    test('throw error when schedule name exceeds 64', () => {
+      const name = 'an-extremely-unnecessarily-long-name-exceeding-64-characters-in-length';
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          scheduleName: name,
+        });
+      }).toThrow(`schedule name '${name}' exceeds 64 characters in length`);
+    });
   });
 });
