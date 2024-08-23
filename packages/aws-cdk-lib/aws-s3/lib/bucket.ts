@@ -1532,6 +1532,10 @@ export class ReplicationDestination {
   /**
    * Replicate to another bucket in a different account.
    *
+   * In the bucket policy of the destination bucket, it is necessary to grant access permissions to the replication role.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   *
    * @param bucket the destination bucket
    * @param account the account to replicate to
    * @param accessControlTransition whether to want to change replica ownership to the AWS account that owns the destination bucket. The replicas are owned by same AWS account that owns the source object by default.
