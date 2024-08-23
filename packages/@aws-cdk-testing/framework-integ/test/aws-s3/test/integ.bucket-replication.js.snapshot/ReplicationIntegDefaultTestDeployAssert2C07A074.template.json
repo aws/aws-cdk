@@ -32,7 +32,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1723991172429"
+    "salt": "1724417638302"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -340,10 +340,28 @@
          ]
         },
         {
+         "Effect": "Allow",
+         "Action": [
+          "kms:*"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
          "Action": [
           "s3:PutObject"
          ],
          "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "kms:*"
+         ],
          "Resource": [
           "*"
          ]
@@ -491,7 +509,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1723991172431"
+    "salt": "1724417638303"
    },
    "DependsOn": [
     "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b",
@@ -676,7 +694,7 @@
      "Key": "\"test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1723991172432"
+    "salt": "1724417638304"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e",
@@ -861,7 +879,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1723991172432"
+    "salt": "1724417638304"
    },
    "DependsOn": [
     "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904",
@@ -1046,7 +1064,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1723991172432"
+    "salt": "1724417638304"
    },
    "DependsOn": [
     "AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905",

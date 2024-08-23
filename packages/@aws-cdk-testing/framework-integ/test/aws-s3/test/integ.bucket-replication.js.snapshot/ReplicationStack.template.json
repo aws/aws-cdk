@@ -55,6 +55,41 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "SourceKmsKeyFE472F1C": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "SourceBucketReplicationRole9043C65F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -164,6 +199,16 @@
          "Arn"
         ]
        }
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceKmsKeyFE472F1C",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -179,6 +224,21 @@
   "SourceBucketDDD2130A": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "SourceKmsKeyFE472F1C",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
     "ReplicationConfiguration": {
      "Role": {
       "Fn::GetAtt": [
@@ -197,12 +257,25 @@
           "DestinationBucket1590C2E3A",
           "Arn"
          ]
+        },
+        "EncryptionConfiguration": {
+         "ReplicaKmsKeyID": {
+          "Fn::GetAtt": [
+           "DestinationKmsKey0D94AA3C",
+           "Arn"
+          ]
+         }
         }
        },
        "Filter": {
         "Prefix": ""
        },
        "Priority": 2,
+       "SourceSelectionCriteria": {
+        "SseKmsEncryptedObjects": {
+         "Status": "Enabled"
+        }
+       },
        "Status": "Enabled"
       },
       {

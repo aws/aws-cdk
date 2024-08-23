@@ -1,5 +1,5 @@
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { AwsApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
@@ -19,14 +19,20 @@ const destinationBucket2 = new s3.Bucket(stack, 'DestinationBucket2', {
 const destinationKmsKey = new kms.Key(stack, 'DestinationKmsKey', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
+const sourceKmsKey = new kms.Key(stack, 'SourceKmsKey', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 
 const sourceBucket = new s3.Bucket(stack, 'SourceBucket', {
   removalPolicy: RemovalPolicy.DESTROY,
   versioned: true,
+  encryptionKey: sourceKmsKey,
   replicationRules: [
     {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket1),
       priority: 2,
+      sseKmsEncryptedObjects: true,
+      kmsKey: destinationKmsKey,
     },
     {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
@@ -59,7 +65,12 @@ const firstAssertion = integ.assertions
   })
   .waitForAssertions({
     totalTimeout: Duration.minutes(5),
-  });
+  }) as AwsApiCall;
+firstAssertion.waiterProvider?.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['kms:*'],
+  Resource: ['*'],
+});
 
 const secondAssertion = integ.assertions
   .awsApiCall('S3', 'putObject', {
@@ -70,7 +81,12 @@ const secondAssertion = integ.assertions
   })
   .waitForAssertions({
     totalTimeout: Duration.minutes(5),
-  });
+  }) as AwsApiCall;
+secondAssertion.waiterProvider?.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['kms:*'],
+  Resource: ['*'],
+});
 
 const thirdAssertion = integ.assertions
   .awsApiCall('S3', 'getObject', {
