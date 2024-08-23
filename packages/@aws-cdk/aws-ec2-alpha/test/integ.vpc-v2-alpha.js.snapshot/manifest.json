@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-cdk-vpcv2-alpha.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6af0c32b7b4dcf4566eda1afa97ddb6dc00a4597f5633e0d826df8642bc069f4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a7489230071452bf2d95e6aff482ada8c6c5139402293c5aadfaa9821bd931a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -164,51 +164,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "VPCintegtest1SecondaryIp684795D0A306": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryIp684795D0A306",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCintegtest1SecondaryIp757851A2E166": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryIp757851A2E166",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Vpcintegtest2SecondaryIp4840275314DC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIp4840275314DC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Vpcintegtest2SecondaryIp58F23280A479": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIp58F23280A479",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Vpcintegtest2SecondaryIpD363CCF2FF57": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpcintegtest2SecondaryIpD363CCF2FF57",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
