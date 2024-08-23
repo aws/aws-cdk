@@ -51,10 +51,10 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.3.tgz#9b5d213b5ce5ad4461f6a4720195ff8de72e6523"
   integrity sha512-twhuEG+JPOYCYPx/xy5uH2+VUsIEhPTzDY0F1KuB+ocjWWB/KEDiOVL19nHvbPCB6fhWnkykXEMJ4HHcKvjtvg==
 
-"@aws-cdk/aws-service-spec@^0.1.19":
-  version "0.1.19"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.19.tgz#f5bb7fc64c2626aa7e2ea4ba4a1878633238be09"
-  integrity sha512-hjAhbTQDM8tdHSXwxoM91o7uk/ZyG9kL/BebkFMlcmMpLAaMB+sXsMNidUZ2cDh+kv7NKmnk2LOMHM5U1UYSTg==
+"@aws-cdk/aws-service-spec@^0.1.20":
+  version "0.1.20"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.20.tgz#324e94006566b526135ecffad9a9c6ad38917763"
+  integrity sha512-vxPXsFNGpQK7px2EzK2Q6CHuz0JXVI54P88vSiKpyYFdqKoFkjZodYgALQ93qLnYSK+vACsaaVHEutvuopaymg==
   dependencies:
     "@aws-cdk/service-spec-types" "^0.0.87"
     "@cdklabs/tskb" "^0.0.3"
