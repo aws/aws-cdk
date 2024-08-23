@@ -205,11 +205,16 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         // Only GetObject is needed to retrieve objects for the distribution.
         // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
         // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
-        bucket.addToResourcePolicy(new iam.PolicyStatement({
+        const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
           resources: [bucket.arnForObjects('*')],
           actions: ['s3:GetObject'],
           principals: [this.originAccessIdentity.grantPrincipal],
         }));
+        if (!result.statementAdded) {
+          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy',
+            'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.\n' +
+            'See the "Using pre-existing S3 buckets" section of module\'s README for more info.');
+        }
         return this._bind(scope, options);
       }
 
