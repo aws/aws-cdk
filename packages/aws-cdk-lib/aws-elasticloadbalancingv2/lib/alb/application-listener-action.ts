@@ -115,6 +115,9 @@ export class ListenerAction implements IListenerAction {
     if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
       throw new Error('To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
     }
+    if (options.path && !options.path.startsWith('/')) {
+      throw new Error('Redirect path must start with a \'/\'');
+    }
 
     return new ListenerAction({
       type: 'redirect',
