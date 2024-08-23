@@ -1,4 +1,43 @@
+
+## Anomaly Detection Alarms
+
+CloudWatch supports creating alarms based on anomaly detection. You can create an anomaly detection alarm using the `createAnomalyDetectionAlarm` method on a `Metric` object. Here's an example:
+
+```typescript
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/EC2',
+  metricName: 'CPUUtilization',
+  dimensions: { InstanceId: 'i-1234567890abcdef0' },
+});
+
+const anomalyAlarm = metric.createAnomalyDetectionAlarm(this, 'AnomalyAlarm', {
+  evaluationPeriods: 3,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+});
+```
+
+This creates an alarm that triggers when the metric exceeds the upper threshold of the anomaly detection band for 3 consecutive evaluation periods. The anomaly detection band is automatically calculated by CloudWatch based on the metric's historical data.
+
+Note that anomaly detection alarms don't require a threshold value, as the threshold is dynamically determined by the anomaly detection algorithm. The `createAnomalyDetectionAlarm` method handles the necessary configuration, including setting the `thresholdMetricId` to the appropriate value.
 # Amazon CloudWatch Construct Library
+
+## Anomaly Detection Alarms
+
+To create an alarm based on anomaly detection, you can use the `createAnomalyDetectionAlarm` method on a `Metric` object:
+
+```typescript
+const queue = new sqs.Queue(this, 'Queue');
+const alarm = queue.metricNumberOfMessagesSent().createAnomalyDetectionAlarm(this, 'AnomalyAlarm', {
+  evaluationPeriods: 1,
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+});
+```
+
+This method automatically sets up the necessary ANOMALY_DETECTION_BAND expression and configures the alarm correctly for anomaly detection.
+
+For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
 
 
 ## Metric objects
