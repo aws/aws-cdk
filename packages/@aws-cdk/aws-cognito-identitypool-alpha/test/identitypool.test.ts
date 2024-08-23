@@ -913,4 +913,67 @@ describe('role mappings', () => {
       },
     });
   });
+
+  test('role attachment fails since it already exists', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const client = pool.addClient('Client');
+    const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+      roleMappings: [{
+        mappingKey: 'cognito',
+        providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
+        useToken: true,
+      }],
+    });
+    expect(() => {
+      new IdentityPoolRoleAttachment(stack, 'TestIDPoolRoleAttachment', {
+        identityPool: idPool,
+        authenticatedRole: idPool.authenticatedRole,
+        unauthenticatedRole: idPool.unauthenticatedRole,
+        roleMappings: idPool.roleMappings,
+      });
+    }).toThrow(Error);
+  });
+
+  test('role mapping after attachment creation gives error', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const client = pool.addClient('Client');
+    const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+      createDefaultRoleAttachment: false,
+      roleMappings: [{
+        mappingKey: 'cognito',
+        providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
+        useToken: true,
+      }],
+    });
+    idPool.addRoleMappings({
+      providerUrl: IdentityPoolProviderUrl.AMAZON,
+      rules: [
+        {
+          claim: 'custom:admin',
+          claimValue: 'admin',
+          mappedRole: idPool.authenticatedRole,
+        },
+      ],
+    });
+    new IdentityPoolRoleAttachment(stack, 'TestIDPoolRoleAttachment', {
+      identityPool: idPool,
+      authenticatedRole: idPool.authenticatedRole,
+      unauthenticatedRole: idPool.unauthenticatedRole,
+      roleMappings: idPool.roleMappings,
+    });
+    expect(() => {
+      idPool.addRoleMappings({
+        providerUrl: IdentityPoolProviderUrl.GOOGLE,
+        rules: [
+          {
+            claim: 'custom:admin',
+            claimValue: 'admin',
+            mappedRole: idPool.authenticatedRole,
+          },
+        ]
+      });
+    }).toThrow(Error);
+  });
 });

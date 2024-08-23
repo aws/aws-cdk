@@ -485,6 +485,23 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
+   * Assigns an IdentityPoolRoleAttachment to the IdentityPool, if it does not
+   * already have one assigned. In order to be assigned, the attachment must have
+   * the same Identity Pool ID.
+   * @param roleAttachment The new IdentityPoolRoleAttachment object to assign to
+   * the IdentityPool.
+   */
+  public _setRoleAttachment(roleAttachment: IdentityPoolRoleAttachment): void {
+    if (this.roleAttachment) {
+      throw Error(`Cannot set Role Attachment ${roleAttachment.node.id} to Identity Pool ${this.identityPoolId}, as Role Attachment already exists: ${this.roleAttachment.node.id}`);
+    }
+    if (roleAttachment.identityPoolId !== this.identityPoolId) {
+      throw Error(`Cannot set Role Attachment ${roleAttachment.node.id} to Identity Pool ${this.identityPoolId}, as Identity Pool IDs do not match`);
+    }
+    this.roleAttachment = roleAttachment;
+  }
+
+  /**
    * Configure Default Roles For Identity Pool
    */
   private configureDefaultRole(type: string): IRole {

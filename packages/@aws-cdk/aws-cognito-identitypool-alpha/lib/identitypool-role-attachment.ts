@@ -14,6 +14,7 @@ import {
 } from 'constructs';
 import {
   IIdentityPool,
+  IdentityPool,
   IdentityPoolProviderUrl,
 } from './identitypool';
 
@@ -178,6 +179,9 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
       roles,
       roleMappings,
     });
+    if (typeof(props.identityPool, IdentityPool)) {
+      (props.identityPool as IdentityPool)._setRoleAttachment(this);
+    }
   }
 
   /**
