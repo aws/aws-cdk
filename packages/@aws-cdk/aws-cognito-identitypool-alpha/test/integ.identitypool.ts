@@ -58,6 +58,7 @@ new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
 const client = userPool.addClient('testClient');
 const provider = new UserPoolAuthenticationProvider({ userPool, userPoolClient: client });
 const idPool = new IdentityPool(stack, 'identitypool', {
+  createDefaultRoleAttachment: false,
   authenticationProviders: {
     userPools: [provider],
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
