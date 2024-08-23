@@ -140,6 +140,17 @@ export enum LoggingFormat {
   JSON = 'JSON',
 }
 
+export enum RecursiveLoop {
+  /**
+   * Allows the recursive loop to happen and does not terminate it.
+  */
+  ALLOW = 'Allow',
+  /**
+   * Terminates the recursive loop.
+   */
+  TERMINATE = 'Terminate',
+}
+
 /**
  * Non runtime options
  */
@@ -534,6 +545,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default LoggingFormat.TEXT
    */
   readonly loggingFormat?: LoggingFormat;
+
+  /**
+  * Sets the Recursive Loop Protection for Lambda Function.
+  * It lets Lambda detect and terminate unintended recusrive loops.
+  *
+  * @default RecursiveLoop.Terminate
+  */
+  readonly recursiveLoop?: RecursiveLoop;
 
   /**
    * Sets the application log level for the function.
@@ -1036,6 +1055,7 @@ export class Function extends FunctionBase {
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
+      recursiveLoop: props.recursiveLoop,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
