@@ -307,6 +307,16 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
+If you do not want for S3 to validate permissions of Amazon SQS, Amazon SNS, and Lambda destinations you can use the `notificationsSkipDestinationValidation` flag:
+
+```ts
+declare const myQueue: sqs.Queue;
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  notificationsSkipDestinationValidation: true,
+});
+bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SqsDestination(myQueue));
+```
+
 When you add an event notification to a bucket, a custom resource is created to
 manage the notifications. By default, a new role is created for the Lambda
 function that implements this feature. If you want to use your own role instead,
