@@ -203,7 +203,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         };
         // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
         // Only GetObject is needed to retrieve objects for the distribution.
-        // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+        // This also excludes KMS permissions; OAI only supports SSE-S3 for buckets.
         // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
         const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
           resources: [bucket.arnForObjects('*')],
