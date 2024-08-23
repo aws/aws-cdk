@@ -175,11 +175,6 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     }
   }
 
-  /**
-   * Throws an error if containerCpu is greater than cpu or is a not positive integer.
-   * @param containerCpu The minimum number of CPU units to reserve for the container.
-   * @param cpu The number of cpu units used by the task. (default: 256)
-   */
   private validateContainerCpu(containerCpu?: number, cpu: number = 256) {
     if (containerCpu === undefined || Token.isUnresolved(containerCpu) || Token.isUnresolved(cpu)) {
       return;
@@ -192,11 +187,6 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     }
   }
 
-  /**
-   * Throws an error if containerMemoryLimitMiB is greater than memoryLimitMiB or is a not positive integer.
-   * @param containerMemoryLimitMiB The amount (in MiB) of memory to present to the container.
-   * @param memoryLimitMiB The amount (in MiB) of memory used by the task. (default: 512)
-   */
   private validateContainerMemoryLimitMiB(containerMemoryLimitMiB?: number, memoryLimitMiB: number = 512) {
     if (containerMemoryLimitMiB === undefined || Token.isUnresolved(containerMemoryLimitMiB) || Token.isUnresolved(memoryLimitMiB)) {
       return;
