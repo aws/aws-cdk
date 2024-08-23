@@ -93,14 +93,14 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
 
   /**
    * Cpu setting override
-   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
    * @default - No override
    */
   readonly cpu?: string;
 
   /**
    * Memory setting override
-   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
    * @default - No override
    */
   readonly memoryMiB?: string;
