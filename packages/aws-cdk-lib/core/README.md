@@ -176,30 +176,7 @@ class MyStack extends cdk.Stack {
 }
 ```
 
-The same applies for custom synthesizers. For example, if you have a custom bootstrap stack that does not use the `CloudFormationExecutionRole` but instead want to use the `DeploymentActionRole`, you could define a custom synthesizer like so:
-
-```ts
-class CustomSynthesizer extends DefaultStackSynthesizer {
-  // This custom synthesizer does not use a CFN Exec Role
-  // It will use the Deploy Role by default instead
-  get cloudFormationExecutionRoleArn() {
-    return undefined
-  }
-}
-
-class MyStack extends cdk.Stack {
-  constructor(parent, id, props) {
-    super(parent, id, {
-      ...props,
-      synthesizer: new CustomSynthesizer({
-        deployRoleSessionTags: {
-          'Department' : 'Engineering',
-        },
-      })
-    });
-  }
-}
-```
+You can also do the same with a custom stack synthesizer.
 
 For more information on Session Tags see [Define permissions based on attributes with ABAC authorization](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html).
 
