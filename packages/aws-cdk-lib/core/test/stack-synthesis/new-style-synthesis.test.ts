@@ -1,8 +1,9 @@
 import * as fs from 'fs';
+import { CustomSynthesizer } from './custom-synthesizer.ts';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack, DefaultStackSynthesizerProps, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, AssetManifestBuilder, CfnParameter } from '../../lib';
 import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
@@ -138,6 +139,51 @@ describe('new style synthesis', () => {
     // THEN
     const asm = app.synth();
     const manifest = app.synth().getStackByName('SessionTagsStack').manifest;
+    // Validates that the deploy and lookup role session tags were set in the Manifest:
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).assumeRoleSessionTags).toEqual({ Department: 'Engineering-DeployRoleTag' });
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).lookupRole?.assumeRoleSessionTags).toEqual({ Department: 'Engineering-LookupRoleTag' });
+
+    const assetManifest = getAssetManifest(asm);
+    const assetManifestJSON = readAssetManifest(assetManifest);
+
+    // Validates that the image and file asset session tags were set in the asset manifest:
+    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['current_account-current_region'].assumeRoleSessionTags).toEqual({ Department: 'Engineering-ImageAssetTag' });
+    expect(assetManifestJSON.files?.fileHash.destinations['current_account-current_region'].assumeRoleSessionTags).toEqual({ Department: 'Engineering-FileAssetTag' });
+  });
+
+  test('can set session tags on a custom stack synthesizer', () => {
+    // GIVEN
+    stack = new Stack(app, 'SessionTagsCustomSynthesizerStack', {
+      synthesizer: new CustomSynthesizer({
+        deployRoleSessionTags: {
+          Department: 'Engineering-DeployRoleTag',
+        },
+        fileAssetPublishingRoleSessionTags: {
+          Department: 'Engineering-FileAssetTag',
+        },
+        imageAssetPublishingRoleSessionTags: {
+          Department: 'Engineering-ImageAssetTag',
+        },
+        lookupRoleSessionTags: {
+          Department: 'Engineering-LookupRoleTag',
+        },
+      }),
+    });
+
+    stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'fileHash',
+    });
+
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'dockerHash',
+    });
+
+    // THEN
+    const asm = app.synth();
+    const manifest = app.synth().getStackByName('SessionTagsCustomSynthesizerStack').manifest;
     // Validates that the deploy and lookup role session tags were set in the Manifest:
     expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).assumeRoleSessionTags).toEqual({ Department: 'Engineering-DeployRoleTag' });
     expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).lookupRole?.assumeRoleSessionTags).toEqual({ Department: 'Engineering-LookupRoleTag' });
