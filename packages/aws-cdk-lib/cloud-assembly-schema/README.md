@@ -52,4 +52,5 @@ cannot be guaranteed because some instructions will be ignored.
 
 The source code for this file has been moved to CDKLabs.
 
+
 See [Contribution Guide](https://github.com/cdklabs/cloud-assembly-schema/blob/main/CONTRIBUTING.md)

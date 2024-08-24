@@ -21,10 +21,9 @@ on the VPC being created. `VpcV2` implements the existing [`IVpc`](https://docs.
 To create a VPC with both IPv4 and IPv6 support:
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
 
-const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
-new vpc_v2.VpcV2(stack, 'Vpc', {
+const stack = new Stack();
+new vpc_v2.VpcV2(this, 'Vpc', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.amazonProvidedIpv6({cidrBlockName: 'AmazonProvidedIpv6'}),
@@ -42,22 +41,19 @@ Importing existing VPC in an account into CDK as a `VpcV2` is not yet supported.
 This new construct can be used to add subnets to a `VpcV2` instance:
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
-const vpc = new vpc_v2.VpcV2(stack, 'Vpc', {
+const stack = new Stack();
+const myVpc = new vpc_v2.VpcV2(this, 'Vpc', {
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvidedIp'}),
   ],
 });
-const vpcFirstIpV6Cidr = Fn.select(0, vpc.ipv6CidrBlocks);
-const subCidrs = Fn.cidr(vpcFirstIpV6Cidr, 3, 32);
-new vpc_v2.SubnetV2(stack, 'subnetA', {
-  vpc,
+
+new vpc_v2.SubnetV2(this, 'subnetA', {
+  vpc: myVpc,
   availabilityZone: 'us-east-1a',
-  cidrBlock: new vpc_v2.IpCidr('10.0.0.0/24'),
-  ipv6CidrBlock: new vpc_v2.IpCidr(Fn.select(0, subCidrs)),
+  ipv4CidrBlock: new vpc_v2.IpCidr('10.0.0.0/24'),
+  ipv6CidrBlock: new vpc_v2.IpCidr('2a05:d02c:25:4000::/60'),
   subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 })
 ```
@@ -71,15 +67,14 @@ Additional CIDRs can be adding to the VPC via the `secondaryAddressBlocks` prop.
 The following example illustrates the different options of defining the address blocks:
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
 
-const stack = new cdk.Stack(app, 'aws-cdk-vpcv2');
-const ipam = new Ipam(stack, 'Ipam', {
+const stack = new Stack();
+const ipam = new Ipam(this, 'Ipam', {
   operatingRegion: ['us-west-1']
 });
 const ipamPublicPool = ipam.publicScope.addPool('PublicPoolA', {
   addressFamily: vpc_v2.AddressFamily.IP_V6,
-  awsService: 'ec2',
+  awsService: AwsServiceName.EC2,
   locale: 'us-west-1',
   publicIpSource: vpc_v2.IpamPoolPublicIpSource.AMAZON,
 });
@@ -90,18 +85,18 @@ const ipamPrivatePool = ipam.privateScope.addPool('PrivatePoolA', {
 });
 ipamPrivatePool.provisionCidr('PrivatePoolACidrA', { netmaskLength: 8 } );
 
-new vpc_v2.VpcV2(stack, 'Vpc', {
+new vpc_v2.VpcV2(this, 'Vpc', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonIpv6' }),
     vpc_v2.IpAddresses.ipv6Ipam({
-      ipv6IpamPool: ipamPublicPool,
-      ipv6NetmaskLength: 52,
+      ipamPool: ipamPublicPool,
+      netmaskLength: 52,
       cidrBlockName: 'ipv6Ipam',
     }),
     vpc_v2.IpAddresses.ipv4Ipam({
-      ipv6IpamPool: ipamPrivatePool,
-      ipv6NetmaskLength: 8,
+      ipamPool: ipamPrivatePool,
+      netmaskLength: 8,
       cidrBlockName: 'ipv4Ipam',
     }),
   ],
@@ -116,84 +111,93 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 `RouteTable` is a new construct that allows for route tables to be customized in a variety of ways. For instance, the following example shows how a custom route table can be created and appended to a subnet:
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
 
-const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
-const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
+const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
+const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
   vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {
-  vpc,
+const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {
+  vpc: myVpc,
   routeTable,
-  ...,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 });
 ```
 
 `Route`s can be created to link subnets to various different AWS services via gateways and endpoints. Each unique route target has its own dedicated construct that can be routed to a given subnet via the `Route` construct. An example using the `InternetGateway` construct can be seen below:
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
-
-const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
-const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
-  vpc: vpc.myVpc,
+const stack = new Stack();
+const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
+const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+  vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
+const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
 
-const igw = new vpc_v2.InternetGateway(stack, 'IGW', {
-  vpcId: vpc.myVpc,
+const igw = new vpc_v2.InternetGateway(this, 'IGW', {
+  vpc: myVpc,
 });
-new vpc_v2.Route(stack, 'IgwRoute', {
+new vpc_v2.Route(this, 'IgwRoute', {
   routeTable,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: igw,
+  destination: '0.0.0.0/0',
+  target:  { gateway: igw },
 });
 ```
 
 Other route targets may require a deeper set of parameters to set up properly. For instance, the example below illustrates how to set up a `NatGateway`:
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
 
-const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
-const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
-  vpcId: vpc.myVpc,
+const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
+const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+  vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
+const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
 
-const natgw = new vpc_v2.NatGateway(stack, 'NatGW', {
+const natgw = new vpc_v2.NatGateway(this, 'NatGW', {
   subnet: subnet,
-  vpcId: vpc.myVpc,
-  connectivityType: 'private',
+  vpc: myVpc,
+  connectivityType: NatConnectivityType.PRIVATE,
   privateIpAddress: '10.0.0.42',
 });
-new vpc_v2.Route(stack, 'NatGwRoute', {
+new vpc_v2.Route(this, 'NatGwRoute', {
   routeTable,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: natgw,
+  destination: '0.0.0.0/0',
+  target: { gateway: natgw },
 });
 ```
 
 It is also possible to set up endpoints connecting other AWS services. For instance, the example below illustrates the linking of a Dynamo DB endpoint via the existing `ec2.GatewayVpcEndpoint` construct as a route target:
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
-const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
-  vpcId: vpc.myVpc,
+const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
+const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+  vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
+const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: ec2.SubnetType.PRIVATE });
 
-const dynamoEndpoint = new GatewayVpcEndpoint(stack, 'DynamoEndpoint', {
+const dynamoEndpoint = new ec2.GatewayVpcEndpoint(this, 'DynamoEndpoint', {
   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
-  vpc: vpc,
+  vpc: myVpc,
   subnets: [subnet],
 });
-new vpc_v2.Route(stack, 'DynamoDBRoute', {
+new vpc_v2.Route(this, 'DynamoDBRoute', {
   routeTable,
-  destination: vpc_v2.IpAddresses.ipv4('0.0.0.0/0'),
-  target: dynamoEndpoint,
+  destination: '0.0.0.0/0',
+  target: { endpoint: dynamoEndpoint },
 });
 ```
