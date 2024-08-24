@@ -628,7 +628,7 @@ export async function installNpmPackages(fixture: TestFixture, packages: Record<
   }, undefined, 2), { encoding: 'utf-8' });
 
   // Now install that `package.json` using NPM7
-  await fixture.shell(['node', '/Users/sumughan/Developer/aws-cdk/packages/@aws-cdk-testing/cli-integ/lib/package-sources/repo-tools/npm', 'install']);
+  await fixture.shell(['node', require.resolve('npm'), 'install']);
 }
 
 const ALREADY_BOOTSTRAPPED_IN_THIS_RUN = new Set();
