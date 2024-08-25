@@ -1,4 +1,4 @@
-import { Match, Template } from '../../assertions';
+import { Match, Template, Annotations } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
@@ -52,6 +52,130 @@ describe('notification', () => {
       Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
       Role: 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch',
     });
+  });
+
+  test('add service-role permission if no Roles are provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+    });
+
+    // WHEN
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'lambda.amazonaws.com',
+          },
+        }],
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:PutBucketNotification',
+          Effect: 'Allow',
+          Resource: '*',
+        }, {
+          Action: 's3:GetBucketNotification',
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+      },
+    });
+  });
+
+  test('service-role permission it not added if Roles are provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const importedRole = iam.Role.fromRoleArn(stack, 'role', 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch');
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsHandlerRole: importedRole,
+    });
+
+    // WHEN
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    // THEN
+    const serviceRole = Template.fromStack(stack).findResources('AWS::IAM::Role');
+    expect(serviceRole).toEqual({});
+  });
+
+  test('even role is provided, PutBucketNotification, GetBucketNotification will be added to handler', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const importedRole = iam.Role.fromRoleArn(stack, 'role', 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch');
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsHandlerRole: importedRole,
+    });
+
+    // WHEN
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:PutBucketNotification',
+          Effect: 'Allow',
+          Resource: '*',
+        }, {
+          Action: 's3:GetBucketNotification',
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+      },
+    });
+  });
+
+  test('if role is provided, warning is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const importedRole = iam.Role.fromRoleArn(stack, 'role', 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch');
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsHandlerRole: importedRole,
+    });
+
+    // WHEN
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    // THEN
+    const warning = Annotations.fromStack(stack).findWarning('*', 'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided, Make Sure Imported Role have AWSLambdaBasicExecutionRole added [ack: @aws-cdk-lib/aws-s3:missingLambdaExecutionRole]');
+    expect(warning).toBeDefined();
   });
 
   test('can specify prefix and suffix filter rules', () => {
