@@ -929,7 +929,7 @@ new ses.ReceiptRuleSet(app, 'RuleSet', {
 
 ### Setting Lambda Runtimes
 
-The following example configures the custom resource lambda runtime to `PYTHON_3_12`:
+The `addLambdaRuntime` method of `CustomResourceConfig` will set every AWS-vended custom resource to the specified lambda runtime, provided that the custom resource lambda is in the same runtime family as the one you specified. The S3 BucketDeployment construct uses lambda runtime Python 3.9. The following example sets the custom resource lambda runtime to `PYTHON_3_12`:
 ```ts
 import * as cdk from 'aws-cdk-lib';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';

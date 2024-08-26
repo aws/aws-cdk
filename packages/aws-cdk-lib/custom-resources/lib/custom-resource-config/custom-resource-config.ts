@@ -28,6 +28,8 @@ export class CustomResourceConfig {
 
   /**
    * Set the log retention of AWS-vended custom resource lambdas.
+   *
+   * This feature is current experimental.
    */
   public addLogRetentionLifetime(rentention: logs.RetentionDays) {
     Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention));
@@ -35,6 +37,8 @@ export class CustomResourceConfig {
 
   /**
    * Set the removal policy of AWS-vended custom resource logGroup.
+   *
+   * This feature is current experimental.
    */
   public addRemovalPolicy(removalPolicy: RemovalPolicy) {
     Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy));
@@ -42,6 +46,8 @@ export class CustomResourceConfig {
 
   /**
    * Set the runtime version on AWS-vended custom resources lambdas.
+   *
+   * This feature is current experimental.
    */
   public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
     Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime));

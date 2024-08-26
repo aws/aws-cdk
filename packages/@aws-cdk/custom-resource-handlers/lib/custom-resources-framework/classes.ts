@@ -134,7 +134,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
         const metadataStatements: Statement[] = [
-          expr.directCode(`this._addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
+          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
         ];
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,

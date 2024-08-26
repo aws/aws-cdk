@@ -316,14 +316,14 @@ describe('when custom resource logGroup removalPolicy is Retain', () => {
   });
 });
 
-describe('when custom resource lambda runtime is modified by addLambdaRuntime', () => {
-  test('addLambdaRuntime modifies custom resource lambda runtime to python3.12', () => {
+describe('when custom resource lambda runtime is set by addLambdaRuntime', () => {
+  test('addLambdaRuntime sets custom resource lambda runtime to python3.12', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses python3.9
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
     });
@@ -338,7 +338,7 @@ describe('when custom resource lambda runtime is modified by addLambdaRuntime', 
     });
   });
 
-  test('addLambdaRuntime modifies custom resource lambda runtime to python3.12 and does not modify non custom resource lambda', () => {
+  test('addLambdaRuntime sets custom resource lambda runtime and does not modify non custom resource lambda', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
     const app = new cdk.App();
@@ -369,13 +369,13 @@ describe('when custom resource lambda runtime is modified by addLambdaRuntime', 
 
   });
 
-  test('addLambdaRuntime does not modify custom resource lambda runtime in a different runtime family', () => {
+  test('addLambdaRuntime does not set custom resource lambda runtime in a different runtime family', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.NODEJS_20_X;
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses Python, not node
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
     });
@@ -390,7 +390,7 @@ describe('when custom resource lambda runtime is modified by addLambdaRuntime', 
     });
   });
 
-  test('addLambdaRuntime modifies custom resource lambda runtime to nodejs18.x', () => {
+  test('addLambdaRuntime sets custom resource lambda runtime to nodejs18.x', () => {
     // GIVEN
     const customResourceRuntime = lambda.Runtime.NODEJS_18_X;
     const app = new cdk.App();
@@ -417,7 +417,49 @@ describe('when custom resource lambda runtime is modified by addLambdaRuntime', 
     const nestedTemplate = JSON.parse(readFileSync(path.join(assembly.directory, `${replicaArtifactId}.nested.template.json`), 'utf8'));
     const template = Template.fromJSON(nestedTemplate);
     template.resourcePropertiesCountIs('AWS::Lambda::Function', {
-      Runtime: lambda.Runtime.NODEJS_18_X.toString(),
+      Runtime: customResourceRuntime.toString(),
+    }, 2);
+  });
+
+  test('addLambdaRuntime sets two custom resource lambda runtime in their specified runtime family', () => {
+    // GIVEN
+    const dynamodbReplicaCustomResourceRuntime = lambda.Runtime.NODEJS_18_X;
+    const s3BucketDeploymentCustomResourceRuntime = lambda.Runtime.PYTHON_3_12;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const table = new dynamodb.Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      replicationRegions: [
+        'us-east-2',
+      ],
+    });
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(dynamodbReplicaCustomResourceRuntime);
+    CustomResourceConfig.of(app).addLambdaRuntime(s3BucketDeploymentCustomResourceRuntime);
+
+    // THEN
+    const template1 = Template.fromStack(stack);
+    template1.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: s3BucketDeploymentCustomResourceRuntime.toString(),
+    });
+    const assembly = app.synth();
+    const replicaArtifactId = ReplicaProvider.getOrCreate(stack, {
+      regions: ['us-east-2'],
+      tableName: table.tableName,
+    }).artifactId;
+    const nestedTemplate = JSON.parse(readFileSync(path.join(assembly.directory, `${replicaArtifactId}.nested.template.json`), 'utf8'));
+    const template2 = Template.fromJSON(nestedTemplate);
+    template2.resourcePropertiesCountIs('AWS::Lambda::Function', {
+      Runtime: dynamodbReplicaCustomResourceRuntime.toString(),
     }, 2);
   });
 });
