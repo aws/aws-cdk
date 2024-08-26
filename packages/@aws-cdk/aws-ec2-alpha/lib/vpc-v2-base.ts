@@ -10,6 +10,7 @@ import { EgressOnlyInternetGateway, Route } from './route';
 export interface EgressOnlyInternetGatewayOptions{
   /**
    * List of subnets where route to EGW will be added
+   * @default no route created
    */
   readonly subnets?: SubnetSelection[];
 }
@@ -222,6 +223,14 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
       vpc: this,
     });
+
+    const useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
+    secondaryAddress.ipv6IpamPoolId != undefined))? true : false;
+
+    if (!useIpv6) {
+      throw new Error('Egress only IGW can only be added to Ipv6 enabled VPC');
+    };
+
     if (options.subnets) {
       const subnets = flatten(options.subnets.map(s => this.selectSubnets(s).subnets));
       subnets.forEach((subnet) => {

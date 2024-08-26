@@ -1,6 +1,6 @@
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
-import { Construct, IDependable } from 'constructs';
-import { Duration, Resource } from 'aws-cdk-lib/core';
+import { Construct, IConstruct, IDependable } from 'constructs';
+import { Duration, IResource, Resource } from 'aws-cdk-lib/core';
 import { IVpcV2 } from './vpc-v2-base';
 import { NetworkUtils } from './util';
 
@@ -409,7 +409,7 @@ export class RouteTargetType {
 /**
  * Interface to define a route.
  */
-export interface IRoute {
+export interface IRoute extends IConstruct, IResource{
   /**
    * The ID of the route table for the route.
    * @attribute routeTable
