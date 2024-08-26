@@ -248,21 +248,21 @@ describe('notification', () => {
       Managed: false,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
-         {
-          "Action": "s3:PutBucketNotification",
-          "Effect": "Allow",
-          "Resource": "*"
-         },
-         {
-          "Action": "s3:GetBucketNotification",
-          "Effect": "Allow",
-          "Resource": "*"
-         },
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:PutBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 's3:GetBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
         ],
-        "Version": "2012-10-17"
-       },
+        Version: '2012-10-17',
+      },
     });
   });
 
