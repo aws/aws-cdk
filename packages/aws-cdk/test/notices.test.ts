@@ -381,6 +381,19 @@ describe('cli notices', () => {
       expect(result).toEqual('');
     });
 
+    test('does not show anything when there are no notices with unread flag', async () => {
+      const dataSource = createDataSource();
+      dataSource.fetch.mockResolvedValue([]);
+
+      const result = await generateMessage(dataSource, {
+        acknowledgedIssueNumbers: [],
+        outdir: '/tmp',
+        unread: true,
+      });
+
+      expect(result).toEqual('\n\nThere are 0 unacknowledged notice(s).');
+    });
+
     test('shows notices that pass the filter', async () => {
       const dataSource = createDataSource();
       dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
@@ -406,6 +419,36 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
+    });
+
+    test('shows notices that pass the filter with unread flag', async () => {
+      const dataSource = createDataSource();
+      dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+
+      const result = await generateMessage(dataSource, {
+        acknowledgedIssueNumbers: [17061],
+        outdir: '/tmp',
+        unread: true,
+      });
+
+      expect(result).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+16603	Toggling off auto_delete_objects for Bucket empties the bucket
+
+	Overview: If a stack is deployed with an S3 bucket with
+	          auto_delete_objects=True, and then re-deployed with
+	          auto_delete_objects=False, all the objects in the bucket
+	          will be deleted.
+
+	Affected versions: cli: <=1.126.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/16603
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
+
+There are 1 unacknowledged notice(s).`);
     });
 
     function createDataSource() {
