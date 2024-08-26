@@ -331,5 +331,4 @@ describe('Subnet V2 with custom IP and routing', () => {
       },
     }));
   });
-
 });

@@ -493,9 +493,14 @@ export class Route extends Resource implements IRoute {
   public readonly resource?: CfnRoute;
 
   /**
-   * Destination cidr block for ipv4 or ipv6
+   * Destination cidr block for ipv6
    */
   private destinationIpv6Cidr?: string;
+
+  /**
+   * Destination cidr block for ipv4
+   */
+  private destinationIpv4Cidr?: string;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
@@ -507,6 +512,8 @@ export class Route extends Resource implements IRoute {
     if (!isDestinationIpv4) {
       //TODO Validate for IPv6 CIDR range
       this.destinationIpv6Cidr = props.destination;
+    } else {
+      this.destinationIpv4Cidr = props.destination;
     }
 
     if (this.target.gateway?.routerType == RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
@@ -518,7 +525,7 @@ export class Route extends Resource implements IRoute {
     if (!(this.target.endpoint instanceof GatewayVpcEndpoint)) {
       this.resource = new CfnRoute(this, 'Route', {
         routeTableId: this.routeTable.routeTableId,
-        destinationCidrBlock: this.destination,
+        destinationCidrBlock: this.destinationIpv4Cidr,
         destinationIpv6CidrBlock: this.destinationIpv6Cidr,
         [routerTypeToPropName(this.targetRouterType)]: this.target.gateway ? this.target.gateway.routerTargetId :
           this.target.endpoint ? this.target.endpoint.vpcEndpointId : null,

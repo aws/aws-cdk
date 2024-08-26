@@ -13,6 +13,12 @@ export interface EgressOnlyInternetGatewayOptions{
    * @default no route created
    */
   readonly subnets?: SubnetSelection[];
+
+  /**
+   * Destination Ipv6 address for EGW route
+   * @default '::/0' all Ipv6 traffic
+   */
+  readonly destination?: string;
 }
 
 /**
@@ -234,7 +240,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     if (options.subnets) {
       const subnets = flatten(options.subnets.map(s => this.selectSubnets(s).subnets));
       subnets.forEach((subnet) => {
-        this.createEgressRoute(subnet, egw);
+        this.createEgressRoute(subnet, egw, options.destination);
       });
     }
   }
@@ -242,10 +248,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   /**
  * Creates a route for EGW with destination set to outbound IPv6('::/0').
  */
-  private createEgressRoute(subnet: ISubnet, egw: EgressOnlyInternetGateway): void {
+  private createEgressRoute(subnet: ISubnet, egw: EgressOnlyInternetGateway, destination?: string): void {
+    const destinationIpv6 = destination ?? '::/0';
     new Route(this, `${subnet.node.id}-EgressRoute`, {
       routeTable: subnet.routeTable,
-      destination: '::/0', // IPv6 default route
+      destination: destinationIpv6, // IPv6 default route
       target: { gateway: egw },
     });
   }

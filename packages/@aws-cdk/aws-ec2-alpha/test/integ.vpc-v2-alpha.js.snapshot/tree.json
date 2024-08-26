@@ -20,7 +20,7 @@
                   "aws:cdk:cloudformation:props": {
                     "operatingRegions": [
                       {
-                        "regionName": "ap-south-1"
+                        "regionName": "eu-central-1"
                       }
                     ]
                   }
@@ -47,7 +47,7 @@
                             "PrivateDefaultScopeId"
                           ]
                         },
-                        "locale": "ap-south-1",
+                        "locale": "eu-central-1",
                         "provisionedCidrs": [
                           {
                             "cidr": "10.2.0.0/16"
@@ -84,7 +84,7 @@
                             "PublicDefaultScopeId"
                           ]
                         },
-                        "locale": "ap-south-1",
+                        "locale": "eu-central-1",
                         "publicIpSource": "amazon"
                       }
                     },
@@ -302,7 +302,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "ap-south-1a",
+                    "availabilityZone": "eu-central-1a",
                     "cidrBlock": "10.1.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
@@ -328,29 +328,19 @@
               "RouteTable": {
                 "id": "RouteTable",
                 "path": "aws-cdk-vpcv2-alpha/testsbubnet/RouteTable",
-                "children": {
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "aws-cdk-vpcv2-alpha/testsbubnet/RouteTable/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "Vpcintegtest20DAD8F9D",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "Vpcintegtest20DAD8F9D",
+                        "VpcId"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
               },
@@ -361,10 +351,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                   "aws:cdk:cloudformation:props": {
                     "routeTableId": {
-                      "Fn::GetAtt": [
-                        "testsbubnetRouteTableD0136BEA",
-                        "RouteTableId"
-                      ]
+                      "Ref": "testsbubnetRouteTableF40F025B"
                     },
                     "subnetId": {
                       "Ref": "testsbubnetSubnet77337845"
@@ -393,7 +380,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "ap-south-1b",
+                    "availabilityZone": "eu-central-1b",
                     "cidrBlock": "10.2.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
@@ -419,29 +406,19 @@
               "RouteTable": {
                 "id": "RouteTable",
                 "path": "aws-cdk-vpcv2-alpha/testsubnet/RouteTable",
-                "children": {
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "aws-cdk-vpcv2-alpha/testsubnet/RouteTable/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "Vpcintegtest20DAD8F9D",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "Vpcintegtest20DAD8F9D",
+                        "VpcId"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
               },
@@ -452,10 +429,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                   "aws:cdk:cloudformation:props": {
                     "routeTableId": {
-                      "Fn::GetAtt": [
-                        "testsubnetRouteTable682580B2",
-                        "RouteTableId"
-                      ]
+                      "Ref": "testsubnetRouteTable55223C61"
                     },
                     "subnetId": {
                       "Ref": "testsubnetSubnetDD417829"
@@ -484,7 +458,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "ap-south-1b",
+                    "availabilityZone": "eu-central-1b",
                     "cidrBlock": "10.3.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
@@ -510,29 +484,19 @@
               "RouteTable": {
                 "id": "RouteTable",
                 "path": "aws-cdk-vpcv2-alpha/validateIpv6/RouteTable",
-                "children": {
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "aws-cdk-vpcv2-alpha/validateIpv6/RouteTable/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "Vpcintegtest20DAD8F9D",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "Vpcintegtest20DAD8F9D",
+                        "VpcId"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
               },
@@ -543,10 +507,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                   "aws:cdk:cloudformation:props": {
                     "routeTableId": {
-                      "Fn::GetAtt": [
-                        "validateIpv6RouteTable09389F8D",
-                        "RouteTableId"
-                      ]
+                      "Ref": "validateIpv6RouteTable10861B00"
                     },
                     "subnetId": {
                       "Ref": "validateIpv6Subnet07BD40AE"
