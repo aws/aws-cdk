@@ -260,7 +260,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources or mangled non-ASCII characters', default: false })
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources, mangled non-ASCII characters, or the CheckBootstrapVersionRule', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })

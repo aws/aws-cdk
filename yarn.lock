@@ -51,12 +51,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.3.tgz#9b5d213b5ce5ad4461f6a4720195ff8de72e6523"
   integrity sha512-twhuEG+JPOYCYPx/xy5uH2+VUsIEhPTzDY0F1KuB+ocjWWB/KEDiOVL19nHvbPCB6fhWnkykXEMJ4HHcKvjtvg==
 
-"@aws-cdk/aws-service-spec@^0.1.17":
-  version "0.1.17"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.17.tgz#8d3cf28223e8d43caf37cb28b96e1185c190bfbe"
-  integrity sha512-QCrkR16/gbWoQJiDdP8JhnMWcRCHkhslnRXMg8q3GfEFZ9p0SD3dqrXBCjT4imQQJUn1jrfWWufo5yz4KpbP7w==
+"@aws-cdk/aws-service-spec@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.21.tgz#8635f673787f498568251a3f61c0b355ab8be193"
+  integrity sha512-6wi6nzrR6n0n1pLIDQ2cpo1zRA/NkOEH22VkH6zIJviZnFRkx8vXt6C24Qismd9CKxaNgvPPv/H5gSOfYmgciA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.85"
+    "@aws-cdk/service-spec-types" "^0.0.88"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^36.0.0":
@@ -97,12 +97,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v30/-/lambda-layer-kubectl-v30-2.0.0.tgz#97c40d31e5350ce7170be5d188361118b1e39231"
   integrity sha512-yES6NfrJ3QV1372lAZ2FLXp/no4bqDWBXeSREJdrpWjQzD0wvL/hCpHEyjZrzHhOi27YbMxFTQ3g9isKAul8+A==
 
-"@aws-cdk/service-spec-importers@^0.0.44":
-  version "0.0.44"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.44.tgz#8a2c55e69f1fd33ff19877e7eb82d87cf35cd229"
-  integrity sha512-Oo5qbamIPx/YOeZlmxNJsenPvNkyaofgieWhZavqhAgk0H5VCis4/stxnUwZzsu3Bc7SCg/vQRILDt4oGt981Q==
+"@aws-cdk/service-spec-importers@^0.0.46":
+  version "0.0.46"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.46.tgz#5bd54c562491255eb0c03ba755e2202372267ab3"
+  integrity sha512-iiQW4o8gS5ni4Zg/9chS+UxUuTgaDMSHZR5L/bxrhHhUj6Nmw6jVw0dJuYH+cWBjCigbAghBlmQgIIaiUoc1BA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.84"
+    "@aws-cdk/service-spec-types" "^0.0.87"
     "@cdklabs/tskb" "^0.0.3"
     ajv "^6"
     canonicalize "^2.0.0"
@@ -113,17 +113,17 @@
     glob "^8"
     sort-json "^2.0.1"
 
-"@aws-cdk/service-spec-types@^0.0.84":
-  version "0.0.84"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.84.tgz#b6fa7429bb556d26eb39c18a2ee9802079bdb234"
-  integrity sha512-AM3ghRsd9cZlpW+nuVRRdQiPuGV9iWDyHnR/Vjd9xKQEf+Qmh9vnRmB205rFncAIlbFjHXxgapII+lujHCGDmQ==
+"@aws-cdk/service-spec-types@^0.0.87":
+  version "0.0.87"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.87.tgz#67c105096d66c2fe42bf49585e9cd382ba4a3a9d"
+  integrity sha512-HPFgxslPkL4idg4UCbaVWXaeVGzq9XEiUji6uUQdrYpe5K54O5k9rvNDA77FDMomxwnfQRTDTFlVlXC9291B4A==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.85":
-  version "0.0.85"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.85.tgz#6d1d8d6720c50d44f0519a50b519dbcb33962203"
-  integrity sha512-cqTOKSy4ASJISezk4c3dv4AxGt1C8UfUdux9r58jmuNwNROjPfVTuAnSweACbmG18A1/rVvfyTUt5E72otYqgQ==
+"@aws-cdk/service-spec-types@^0.0.88":
+  version "0.0.88"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.88.tgz#aa3ae69221ffc27e19f1a72f889034e4000c4310"
+  integrity sha512-Wk1UdXBT3QbVHouMl3eIYWx/0Mku4LM9DfEq5flwmqbSCCmXVFO8CAA2bClKznYy5WhiV7Zz7rviXBO5gdfW5w==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -12686,9 +12686,9 @@ merge2@^1.3.0, merge2@^1.4.1:
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
 micromatch@^4.0.2, micromatch@^4.0.4:
-  version "4.0.7"
-  resolved "https://registry.npmjs.org/micromatch/-/micromatch-4.0.7.tgz#33e8190d9fe474a9895525f5618eee136d46c2e5"
-  integrity sha512-LPP/3KorzCwBxfeUuZmaR6bG2kdeHSbe0P2tY3FLRU4vYrjYz5hI4QZwV0njUx3jeuKe67YukQ1LSPZBKDqO/Q==
+  version "4.0.8"
+  resolved "https://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz#d66fa18f3a47076789320b9b1af32bd86d9fa202"
+  integrity sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==
   dependencies:
     braces "^3.0.3"
     picomatch "^2.3.1"
