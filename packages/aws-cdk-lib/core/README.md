@@ -157,9 +157,9 @@ see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/l
 
 ## Session Tags
 
-Stack Synthesizers also support passing Session Tags to the different [IAM roles created by CDK during bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles): 
+CDK also supports attribute-based access control (ABAC) by allowing you to pass session tags on the different [IAM roles created by CDK during bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles). For more information on Session Tags see [Define permissions based on attributes with ABAC authorization](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html).
 
-Here is an example of passing a session tag to the `DeploymentActionRole`:
+Here is an example of passing session tags using the `DefaultStackSynthesizer`:
 
 ```ts
 class MyStack extends cdk.Stack {
@@ -170,15 +170,22 @@ class MyStack extends cdk.Stack {
         deployRoleSessionTags: {
           'Department' : 'Engineering',
         },
+        fileAssetPublishingRoleSessionTags: {
+          Department: 'Engineering-FileAssetTag',
+        },
+        imageAssetPublishingRoleSessionTags: {
+          Department: 'Engineering-ImageAssetTag',
+        },
+        lookupRoleSessionTags: {
+          Department: 'Engineering-LookupRoleTag',
+        },
       })
     });
   }
 }
 ```
 
-You can also do the same with a custom stack synthesizer.
-
-For more information on Session Tags see [Define permissions based on attributes with ABAC authorization](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html).
+You can also do the same with a custom stack synthesizer by extending the `DefaultStackSynthesizer` or `StackSynthesizer` base class.
 
 ## Nested Stacks
 
