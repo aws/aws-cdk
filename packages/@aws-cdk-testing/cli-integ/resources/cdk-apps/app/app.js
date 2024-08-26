@@ -30,9 +30,6 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_ecr_assets: docker,
     Stack
   } = require('aws-cdk-lib');
-  var {
-    StringSpecializer
-  } = require('aws-cdk-lib/core/lib/helpers-internal');
 }
 
 const { Annotations } = cdk;
@@ -448,14 +445,10 @@ class SessionTagsStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler'
     });
-    new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
 
     // DockerImageAsset to test ImageAssetPublishingRole
     new docker.DockerImageAsset(this, 'image', {
       directory: path.join(__dirname, 'docker')
-    });
-    new cdk.CfnResource(this, 'Handle', {
-      type: 'AWS::CloudFormation::WaitConditionHandle'
     });
   }
 }
