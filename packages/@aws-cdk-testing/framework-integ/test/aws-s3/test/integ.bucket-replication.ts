@@ -99,7 +99,7 @@ const thirdAssertion = integ.assertions
 
 const fourthAssertion = integ.assertions
   .awsApiCall('S3', 'getObject', {
-    Bucket: destinationBucket2.bucketName,
+    Bucket: destinationBucket1.bucketName,
     Key: 'prefix-test-object',
   })
   .waitForAssertions({
