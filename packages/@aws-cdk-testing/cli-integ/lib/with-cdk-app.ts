@@ -232,6 +232,8 @@ export async function cloneDirectory(source: string, target: string, output?: No
 
 interface CommonCdkBootstrapCommandOptions {
   /**
+   * Path to a custom bootstrap template.
+   *
    * @default - the default CDK bootstrap template.
    */
   readonly bootstrapTemplate?: string;
