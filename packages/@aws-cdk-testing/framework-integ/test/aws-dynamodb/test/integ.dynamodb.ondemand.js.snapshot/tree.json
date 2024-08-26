@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-dynamodb": {
         "id": "aws-cdk-dynamodb",
         "path": "aws-cdk-dynamodb",
@@ -26,23 +18,27 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
-                    "keySchema": [
-                      {
-                        "attributeName": "hashKey",
-                        "keyType": "HASH"
-                      }
-                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "hashKey",
                         "attributeType": "S"
                       }
                     ],
-                    "billingMode": "PAY_PER_REQUEST"
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "onDemandThroughput": {
+                      "maxReadRequestUnits": 100,
+                      "maxWriteRequestUnits": 200
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -50,13 +46,13 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
               "version": "0.0.0"
             }
           },
@@ -70,16 +66,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
-                    "keySchema": [
-                      {
-                        "attributeName": "hashKey",
-                        "keyType": "HASH"
-                      },
-                      {
-                        "attributeName": "sortKey",
-                        "keyType": "RANGE"
-                      }
-                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "hashKey",
@@ -114,6 +100,10 @@
                         ],
                         "projection": {
                           "projectionType": "ALL"
+                        },
+                        "onDemandThroughput": {
+                          "maxReadRequestUnits": 100,
+                          "maxWriteRequestUnits": 100
                         }
                       },
                       {
@@ -191,6 +181,16 @@
                         "projection": {
                           "projectionType": "ALL"
                         }
+                      }
+                    ],
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
                       }
                     ],
                     "localSecondaryIndexes": [
@@ -293,7 +293,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -301,13 +301,13 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
               "version": "0.0.0"
             }
           },
@@ -321,12 +321,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
-                    "keySchema": [
-                      {
-                        "attributeName": "hashKey",
-                        "keyType": "HASH"
-                      }
-                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "hashKey",
@@ -351,11 +345,17 @@
                           "projectionType": "ALL"
                         }
                       }
+                    ],
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -363,13 +363,13 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
               "version": "0.0.0"
             }
           },
@@ -383,16 +383,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
-                    "keySchema": [
-                      {
-                        "attributeName": "hashKey",
-                        "keyType": "HASH"
-                      },
-                      {
-                        "attributeName": "sortKey",
-                        "keyType": "RANGE"
-                      }
-                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "hashKey",
@@ -408,6 +398,16 @@
                       }
                     ],
                     "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
+                      }
+                    ],
                     "localSecondaryIndexes": [
                       {
                         "indexName": "LSI-PartitionAndSortKey",
@@ -429,7 +429,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -437,26 +437,50 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-dynamodb/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-dynamodb/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
