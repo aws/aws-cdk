@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { CustomSynthesizer } from './custom-synthesizer.ts';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
@@ -152,6 +151,40 @@ describe('new style synthesis', () => {
   });
 
   test('can set session tags on a custom stack synthesizer', () => {
+    class CustomSynthesizer extends DefaultStackSynthesizer {
+      public static readonly MIN_BOOTSTRAP_STACK_VERSION = 6;
+      private myAssetManifest = new AssetManifestBuilder();
+
+      public synthesize(session) {
+        const templateAssetSource = this.synthesizeTemplate(session, DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
+        const templateAsset = this.addFileAsset(templateAssetSource);
+
+        const assetManifestId = this.myAssetManifest.emitManifest(this.boundStack, session, {
+          requiresBootstrapStackVersion: CustomSynthesizer.MIN_BOOTSTRAP_STACK_VERSION,
+          bootstrapStackVersionSsmParameter: DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
+        });
+
+        this.emitArtifact(session, {
+          assumeRoleExternalId: this.props.deployRoleExternalId,
+          assumeRoleArn: DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN,
+          assumeRoleSessionTags: this.props.deployRoleSessionTags,
+          // Pass in UNDEFINED for the CFN Execution Role Arn:
+          cloudFormationExecutionRoleArn: undefined,
+          stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
+          requiresBootstrapStackVersion: CustomSynthesizer.MIN_BOOTSTRAP_STACK_VERSION,
+          bootstrapStackVersionSsmParameter: DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
+          additionalDependencies: [assetManifestId],
+          lookupRole: {
+            arn: DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN,
+            assumeRoleExternalId: this.props.lookupRoleExternalId,
+            assumeRoleSessionTags: this.props.lookupRoleSessionTags,
+            requiresBootstrapStackVersion: CustomSynthesizer.MIN_BOOTSTRAP_STACK_VERSION,
+            bootstrapStackVersionSsmParameter: DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
+          },
+        });
+      }
+    }
+
     // GIVEN
     stack = new Stack(app, 'SessionTagsCustomSynthesizerStack', {
       synthesizer: new CustomSynthesizer({

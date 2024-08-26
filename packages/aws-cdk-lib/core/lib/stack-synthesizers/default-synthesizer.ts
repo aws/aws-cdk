@@ -330,7 +330,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   private bootstrapStackVersionSsmParameter?: string;
   private assetManifest = new AssetManifestBuilder();
 
-  constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
+  constructor(protected readonly props: DefaultStackSynthesizerProps = {}) {
     super();
     this.useLookupRoleForStackOperations = props.useLookupRoleForStackOperations ?? true;
 
