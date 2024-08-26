@@ -11,7 +11,7 @@
 import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { GatewayVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, IpCidr } from '../lib/subnet-v2';
 
 const app = new cdk.App();
@@ -63,9 +63,16 @@ new SubnetV2(stack, 'validateIpv6', {
   subnetType: SubnetType.PUBLIC,
 });
 
+//Test to add Gateway Endpoint
 vpc.addGatewayEndpoint('TestGWendpoint', {
   service: GatewayVpcEndpointAwsService.S3,
   subnets: [{ subnetType: SubnetType.PUBLIC }],
+});
+
+//Test to add Interface Endpoint
+vpc.addInterfaceEndpoint('TestInterfaceEndpoint', {
+  service: InterfaceVpcEndpointAwsService.SNS,
+  subnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
 });
 
 //Add an Egress only Internet Gateway

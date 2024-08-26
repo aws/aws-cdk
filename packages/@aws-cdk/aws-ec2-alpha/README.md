@@ -219,3 +219,30 @@ new vpc_v2.Route(this, 'DynamoDBRoute', {
   target: { endpoint: dynamoEndpoint },
 });
 ```
+## Adding Egress-Only Internet Gateway to VPC
+
+An egress-only internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows outbound communication over IPv6 from instances in your VPC to the internet, and prevents the internet from initiating an IPv6 connection with your instances. For more information see@ https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html
+
+VPCv2 supports adding an egress only internet gateway to VPC with the help of `addEgressOnlyInternetGateway` method as well.
+
+By Default, it sets up a route to all outbound IPv6 Address ranges unless specified to a specific destination by the user. It can only be set up for IPv6 enabled VPCs.
+`Subnets` takes in value of `SubnetFilter` which can be based on a SubnetType in VPCV2. A new route will be added to route tables of all subnets filtered out with this property.
+
+```ts
+
+const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
+const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+  vpc: myVpc,
+});
+const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: ec2.SubnetType.PRIVATE });
+
+myVpc.addEgressOnlyInternetGateway({
+  subnets: [{SubnetType.PUBLIC}],
+  destination: '::/60',
+})
+
+```
