@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/964312885f6659dbeaaf2d2985268655f6f025f381865badf0a5366a2574a428.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3751604c2d305d2fbd8c37d2215aef6533224233be64b86361a6ea743bf3b064.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,12 +38,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Keyusedforencryption980FC81C"
-          }
-        ],
-        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/LogGroup Key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogGroupKey8CEFE130"
           }
         ],
         "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/MyLogGroup/Resource": [
@@ -74,12 +68,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefStateMachineWithCMKWithCWLEncryptionE07EB79120D5D42D"
-          }
-        ],
-        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"LogGroupKey8CEFE130\",\"Arn\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttLogGroupKey8CEFE130Arn81724116"
           }
         ],
         "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"MyLogGroup5C0DAD85\"}": [
@@ -120,7 +108,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cbbf98e2a031c80f7c06d42f8b02c08436ffd47ce9de60b2119e6335246ce31c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/758823fb4f7d2a3e01b6b73b88197d291a7b6e888a5efd564e6ca918f1077162.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -221,16 +209,40 @@
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
           }
         ],
-        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogStreamsd6fa0cb7f14a5035e1a98aef442a8279/Default/Default": [
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchLogsdescribeLogStreamsd6fa0cb7f14a5035e1a98aef442a8279"
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c"
           }
         ],
-        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogStreamsd6fa0cb7f14a5035e1a98aef442a8279/AssertionResults": [
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeLogStreamsd6fa0cb7f14a5035e1a98aef442a8279"
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466cWaitForIsCompleteProviderInvokeE4BCB191"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466cWaitForTimeoutProviderInvoke9B1BE171"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466cWaitForRole05A069B7"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466cWaitForDBB7FF03"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEventsef6e24c6866eaab50c9f68e8754e466c"
           }
         ],
         "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/BootstrapVersion": [

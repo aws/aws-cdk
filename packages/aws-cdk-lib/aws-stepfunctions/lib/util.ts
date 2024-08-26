@@ -11,15 +11,23 @@ function isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: Dur
 }
 
 function validateEncryptionConfiguration(kmsKey: IKey | undefined, kmsDataKeyReusePeriodSeconds: Duration | undefined) {
-  if ( kmsKey !== undefined && kmsDataKeyReusePeriodSeconds !== undefined && isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds)) {
+  if (!kmsKey && kmsDataKeyReusePeriodSeconds) {
+    throw new Error('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
+  }
+  if (kmsKey && kmsDataKeyReusePeriodSeconds && isInValidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds)) {
     throw new Error('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   }
 }
 
-export function constructEncryptionConfiguration(kmsKey: IKey, kmsDataKeyReusePeriodSeconds: Duration | undefined) {
+export function constructEncryptionConfiguration(kmsKey: IKey | undefined, kmsDataKeyReusePeriodSeconds: Duration | undefined) {
+  validateEncryptionConfiguration(kmsKey, kmsDataKeyReusePeriodSeconds);
+
+  if (!kmsKey) {
+    return undefined;
+  }
+
   // Default value for `kmsDataKeyReusePeriodSeconds`, see: https://docs.aws.amazon.com/step-functions/latest/dg/encryption-at-rest.html#cfn-resources-for-encryption-configuration
   const DEFAULT_KMS_DATA_KEY_REUSE_PERIOD_SECONDS = 300;
-  validateEncryptionConfiguration(kmsKey, kmsDataKeyReusePeriodSeconds);
   return {
     kmsKeyId: kmsKey.keyArn,
     kmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds ? kmsDataKeyReusePeriodSeconds.toSeconds() : DEFAULT_KMS_DATA_KEY_REUSE_PERIOD_SECONDS,

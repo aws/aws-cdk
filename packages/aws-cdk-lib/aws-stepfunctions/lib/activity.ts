@@ -48,7 +48,6 @@ export class Activity extends Resource implements IActivity {
    */
   public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
     class Imported extends Resource implements IActivity {
-      kmsKey: kms.IKey | undefined;
       public get activityArn() { return activityArn; }
       public get activityName() {
         return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
@@ -83,7 +82,7 @@ export class Activity extends Resource implements IActivity {
   /**
    * @attribute
    */
-  public readonly kmsKey: kms.IKey | undefined;
+  public readonly kmsKey?: kms.IKey;
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
@@ -91,7 +90,7 @@ export class Activity extends Resource implements IActivity {
         Lazy.string({ produce: () => this.generateName() }),
     });
 
-    if (props?.kmsKey) {
+    if (props.kmsKey) {
       this.kmsKey = props.kmsKey;
       props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
@@ -102,6 +101,7 @@ export class Activity extends Resource implements IActivity {
             'kms:EncryptionContext:aws:states:activityArn': Stack.of(this).formatArn({
               service: 'states',
               resource: 'activity',
+              sep: ':',
               resourceName: this.physicalName,
             }),
           },
@@ -111,7 +111,7 @@ export class Activity extends Resource implements IActivity {
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
-      encryptionConfiguration: props.kmsKey ? constructEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds) : undefined,
+      encryptionConfiguration: constructEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds),
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
@@ -275,5 +275,5 @@ export interface IActivity extends IResource {
    *
    * @attribute
    */
-  readonly kmsKey: kms.IKey | undefined;
+  readonly kmsKey?: kms.IKey;
 }

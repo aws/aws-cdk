@@ -4,50 +4,39 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
+const executionOutput = 'Hello World';
+
 class KMSStateMachine extends cdk.Stack {
   readonly stateMachine: sfn.StateMachine;
   readonly kmsKey: kms.Key;
-  readonly logGroupKey: kms.Key;
   readonly logGroup: logs.LogGroup;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    this.kmsKey = new kms.Key(this, 'Key used for encryption');
-    this.logGroupKey = new kms.Key(this, 'LogGroup Key');
+    this.kmsKey = new kms.Key(this, 'Key used for encryption', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
 
     this.logGroup = new logs.LogGroup(this, 'MyLogGroup', {
       logGroupName: '/aws/vendedlogs/states/MyLogGroup',
-      encryptionKey: this.logGroupKey,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-
-    this.logGroupKey.addToResourcePolicy(new cdk.aws_iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
-      principals: [new cdk.aws_iam.ServicePrincipal(`logs.${cdk.Stack.of(this).region}.amazonaws.com`)],
-      conditions: {
-        ArnEquals: {
-          'kms:EncryptionContext:aws:logs:arn': cdk.Stack.of(this).formatArn({
-            service: 'logs',
-            resource: 'log-group',
-            sep: ':',
-            resourceName: '/aws/vendedlogs/states/MyLogGroup', // Cannot use this.logGroup.logGroupName since this will cause a circular dependency
-          }),
-        },
-      },
-    }));
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
       stateMachineName: 'StateMachineWithCMKWithCWLEncryption',
-      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'PassState'))),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'PassState', {
+        result: sfn.Result.fromString(executionOutput),
+      }))),
       stateMachineType: sfn.StateMachineType.STANDARD,
       kmsKey: this.kmsKey,
       kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(300),
       logs: {
         destination: this.logGroup,
         level: sfn.LogLevel.ALL,
-        includeExecutionData: false,
+        includeExecutionData: true,
       },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
   }
 }
@@ -62,6 +51,7 @@ const testCase = new IntegTest(app, 'StateMachineAndActivityWithCMKEncryptionCon
 const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: stack.stateMachine.stateMachineArn,
 });
+
 // describe the results of the execution
 const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   executionArn: start.getAttString('executionArn'),
@@ -75,23 +65,19 @@ describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 })).waitForAssertions({
   interval: cdk.Duration.seconds(10),
-  totalTimeout: cdk.Duration.minutes(5),
+  totalTimeout: cdk.Duration.minutes(2),
 });
 
-const logStreamNamePrefix = 'states/StateMachineWithCMKWithCWLEncryption';
-
-const describeLogStream = testCase.assertions.awsApiCall('CloudWatchLogs', 'describeLogStreams', {
+const filterLogEvents = testCase.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
   logGroupName: stack.logGroup.logGroupName,
-  logStreamNamePrefix: logStreamNamePrefix,
+  filterPattern: executionOutput,
 });
 
-describeLogStream.provider.addToRolePolicy({
-  Effect: 'Allow',
-  Action: ['kms:Decrypt'],
-  Resource: [stack.logGroupKey.keyArn],
-});
+describe.next(filterLogEvents);
 
-describe.next(describeLogStream);
-describeLogStream.assertAtPath('logStreams.0.logStreamName', ExpectedResult.stringLikeRegexp(logStreamNamePrefix));
+filterLogEvents.assertAtPath('events.0.message.details.output', ExpectedResult.stringLikeRegexp(executionOutput)).waitForAssertions({
+  interval: cdk.Duration.seconds(10),
+  totalTimeout: cdk.Duration.minutes(2),
+});
 
 app.synth();

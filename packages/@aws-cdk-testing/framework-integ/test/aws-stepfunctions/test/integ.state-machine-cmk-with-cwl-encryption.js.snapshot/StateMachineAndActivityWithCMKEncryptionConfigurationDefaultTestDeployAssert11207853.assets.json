@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "files": {
     "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "cbbf98e2a031c80f7c06d42f8b02c08436ffd47ce9de60b2119e6335246ce31c": {
+    "758823fb4f7d2a3e01b6b73b88197d291a7b6e888a5efd564e6ca918f1077162": {
       "source": {
         "path": "StateMachineAndActivityWithCMKEncryptionConfigurationDefaultTestDeployAssert11207853.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cbbf98e2a031c80f7c06d42f8b02c08436ffd47ce9de60b2119e6335246ce31c.json",
+          "objectKey": "758823fb4f7d2a3e01b6b73b88197d291a7b6e888a5efd564e6ca918f1077162.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

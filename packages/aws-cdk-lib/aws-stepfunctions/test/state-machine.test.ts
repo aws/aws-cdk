@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import * as task from '../../aws-stepfunctions-tasks';
 import * as cdk from '../../core';
 import * as sfn from '../lib';
 
@@ -743,6 +744,153 @@ describe('State Machine', () => {
       }),
     });
 
+    // StateMachine execution IAM policy allows only executions of MyStateMachine to use key
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:states:stateMachineArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':stateMachine:MyStateMachine',
+                    ],
+                  ],
+                },
+              },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  }),
+
+  test('StateMachine with CWL Encryption generates the correct iam and key policies', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+    const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+      logGroupName: '/aws/vendedlogs/states/MyLogGroup',
+    });
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      kmsKey: kmsKey,
+      logs: {
+        destination: logGroup,
+        level: sfn.LogLevel.ALL,
+        includeExecutionData: false,
+      },
+    });
+
+    // Ensure execution role has policy that includes kms actions and encryption context for logging
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:states:stateMachineArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':stateMachine:MyStateMachine',
+                    ],
+                  ],
+                },
+              },
+            },
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':*',
+                    ],
+                  ],
+                },
+              },
+            },
+          },
+          {
+            Action: [
+              'logs:CreateLogDelivery',
+              'logs:GetLogDelivery',
+              'logs:UpdateLogDelivery',
+              'logs:DeleteLogDelivery',
+              'logs:ListLogDeliveries',
+              'logs:PutResourcePolicy',
+              'logs:DescribeResourcePolicies',
+              'logs:DescribeLogGroups',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    // Ensure log service delivery policy statement is set for kms key
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
@@ -770,10 +918,63 @@ describe('State Machine', () => {
             Resource: '*',
           },
           {
+            Action: 'kms:Decrypt*',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  }),
+
+  test('StateMachine execution role is granted permissions when activity uses KMS key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stateMachineKey = new kms.Key(stack, 'Key used for encryption');
+    const activityKey = new kms.Key(stack, 'Activity Key');
+
+    // WHEN
+    const activity = new sfn.Activity(stack, 'TestActivity', {
+      activityName: 'TestActivity',
+      kmsKey: activityKey,
+    });
+
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new task.StepFunctionsInvokeActivity(stack, 'Activity', {
+        activity: activity,
+      }))),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      kmsKey: stateMachineKey,
+      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(300),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
             Action: [
               'kms:Decrypt',
               'kms:GenerateDataKey',
             ],
+            Resource: { 'Fn::GetAtt': ['ActivityKey371097A6', 'Arn'] },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:states:activityArn': { Ref: 'TestActivity37A985C9' },
+              },
+            },
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Resource: { 'Fn::GetAtt': ['Keyusedforencryption980FC81C', 'Arn'] },
             Condition: {
               StringEquals: {
                 'kms:EncryptionContext:aws:states:stateMachineArn': {
@@ -792,17 +993,12 @@ describe('State Machine', () => {
                       {
                         Ref: 'AWS::AccountId',
                       },
-                      ':stateMachine/MyStateMachine',
+                      ':stateMachine:MyStateMachine',
                     ],
                   ],
                 },
               },
             },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'states.amazonaws.com',
-            },
-            Resource: '*',
           },
         ],
         Version: '2012-10-17',
@@ -834,72 +1030,6 @@ describe('State Machine', () => {
         Type: 'CUSTOMER_MANAGED_KMS_KEY',
       }),
     });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-      KeyPolicy: {
-        Statement: [
-          {
-            Action: 'kms:*',
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':iam::',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':root',
-                  ],
-                ],
-              },
-            },
-            Resource: '*',
-          },
-          {
-            Action: [
-              'kms:Decrypt',
-              'kms:GenerateDataKey',
-            ],
-            Condition: {
-              StringEquals: {
-                'kms:EncryptionContext:aws:states:stateMachineArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':states:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':stateMachine/MyStateMachine',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'states.amazonaws.com',
-            },
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-    });
   }),
 
   test('Instantiate StateMachine with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
@@ -919,4 +1049,20 @@ describe('State Machine', () => {
       });
     }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   });
+
+  test('Instantiate StateMachine with no kms key and kmsDataKeyReusePeriodSeconds throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    // FAIL
+    expect(() => {
+      // WHEN
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+        stateMachineType: sfn.StateMachineType.STANDARD,
+        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
+      });
+    }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
+  });
+
 });

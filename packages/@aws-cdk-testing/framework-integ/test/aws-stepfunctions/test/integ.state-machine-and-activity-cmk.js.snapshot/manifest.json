@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f56f03ebec6aacf5cb23c7e33e520e17bc02acdc5425dfc18587b23b1c998ecf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd49248244a3fab2ba376326d15a3d1078a5488d136cb7bec90fb93d50649d69.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,19 @@
         "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig.assets"
       ],
       "metadata": {
-        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Key/Resource": [
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Key used for encryption/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD"
+            "data": "Keyusedforencryption980FC81C"
+          }
+        ],
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActivityWithCMKEncryptionConfiguration3D01813A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/Resource": [
@@ -58,10 +67,22 @@
             "data": "StateMachineWithCMKEncryptionConfiguration10773462"
           }
         ],
-        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration/Resource": [
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"StateMachineWithCMKEncryptionConfiguration10773462\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ActivityWithCMKEncryptionConfiguration3D01813A"
+            "data": "ExportsOutputRefStateMachineWithCMKEncryptionConfiguration107734624DC890C0"
+          }
+        ],
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"Keyusedforencryption980FC81C\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttKeyusedforencryption980FC81CArn9E9413FF"
+          }
+        ],
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"ActivityWithCMKEncryptionConfiguration3D01813A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefActivityWithCMKEncryptionConfiguration3D01813A4B9ECB48"
           }
         ],
         "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/BootstrapVersion": [
@@ -74,6 +95,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "Key961B73FD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -96,7 +126,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/85db294fb7f7f9e8c24ec4ee6bba2c11554850031f4c3d0692fcfc5f50d83b0c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -109,9 +139,52 @@
         }
       },
       "dependencies": [
+        "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig",
         "StateMachineAndActivityWithCMKEncryptionConfigurationDefaultTestDeployAssert11207853.assets"
       ],
       "metadata": {
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578"
+          }
+        ],
+        "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1"
+          }
+        ],
         "/StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

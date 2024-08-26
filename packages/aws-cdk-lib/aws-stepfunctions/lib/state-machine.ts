@@ -476,31 +476,42 @@ export class StateMachine extends StateMachineBase {
       }
     }
 
-    if (props?.kmsKey) {
+    if (props.kmsKey) {
       this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: [
           'kms:Decrypt', 'kms:GenerateDataKey',
         ],
         resources: [`${props.kmsKey.keyArn}`],
-      }));
-
-      props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
-        principals: [new iam.ServicePrincipal('states.amazonaws.com')],
         conditions: {
           StringEquals: {
             'kms:EncryptionContext:aws:states:stateMachineArn': Stack.of(this).formatArn({
               service: 'states',
               resource: 'stateMachine',
+              sep: ':',
               resourceName: this.physicalName,
             }),
           },
         },
       }));
 
-      if (props?.logs) {
+      if (props.logs && props.logs.level !== LogLevel.OFF) {
+        this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: [
+            'kms:Decrypt', 'kms:GenerateDataKey',
+          ],
+          resources: [`${props.kmsKey.keyArn}`],
+          conditions: {
+            StringEquals: {
+              'kms:EncryptionContext:SourceArn': Stack.of(this).formatArn({
+                service: 'logs',
+                resource: '*',
+                sep: ':',
+              }),
+            },
+          },
+        }));
         props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
           resources: ['*'],
           actions: ['kms:Decrypt*'],
@@ -517,8 +528,7 @@ export class StateMachine extends StateMachineBase {
       tracingConfiguration: this.buildTracingConfiguration(props.tracingEnabled),
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
-      // eslint-disable-next-line max-len
-      encryptionConfiguration: props.kmsKey ? constructEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds) : undefined,
+      encryptionConfiguration: constructEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds),
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 

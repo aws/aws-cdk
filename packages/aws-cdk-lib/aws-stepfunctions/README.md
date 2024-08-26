@@ -108,53 +108,6 @@ new sfn.StateMachine(this, 'StateMachineFromFile', {
 });
 ```
 
-### Creating a StateMachine with Encryption using a Customer Managed Key
-You can provide a symmetric KMS key to encrypt the state machine definition and execution history:
-```
-const kmsKey = new kms.Key(stack, 'Key');
-const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionConfiguration', {
-      stateMachineName: 'StateMachineWithCMKEncryptionConfiguration',
-      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
-      stateMachineType: sfn.StateMachineType.STANDARD,
-      kmsKey: kmsKey,
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(60)
-    });
-```
-
-### Encrypting CloudWatch logs with a customer managed key
-
-If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. To encrypt the logs with your own KMS key you must encrypt the `LogGroup` used by the state machine with a KMS key.
-```
-const stateMachineKmsKey = new kms.Key(this, 'StateMachineKey');
-const logGroupKmsKey = new kms.Key(this, 'LogGroupKmsKey');
-
-/**
-     * We need to grant the service principal encrypt and decrypt permissions since passing
-     *  a KMS key when creating a LogGroup doesn't automatically grant the service principal encrypt/decrypt permissions
-     *  see: https://github.com/aws/aws-cdk/issues/28304
-     * 
-*/
-logGroupKmsKey.grantEncryptDecrypt(new iam.ServicePrincipal('logs.amazonaws.com'));
-const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
-  logGroupName: '/aws/vendedlogs/states/MyLogGroup',
-  encryptionKey: logGroupKmsKey,
-});
-
-const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
-  stateMachineName: 'StateMachineWithCMKWithCWLEncryption',
-  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
-  stateMachineType: sfn.StateMachineType.STANDARD,
-  kmsKey: stateMachineKmsKey,
-  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
-  enableEncryptedLogging: true,
-  logs: {
-    destination: logGroup,
-    level: sfn.LogLevel.ALL,
-    includeExecutionData: true,
-  },
-});
-```
-
 ## State Machine Data
 
 An Execution represents each time the State Machine is run. Every Execution has [State Machine
@@ -934,17 +887,6 @@ const activity = new sfn.Activity(this, 'Activity');
 new CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 ```
 
-### Creating an Activity with Encryption using a Customer Managed Key
-When you provide a symmetric KMS key, all inputs/ outputs from the Step Functions Activity will be encrypted using the provided KMS key:
-```
-const kmsKey = new kms.Key(stack, 'Key');
-const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
-      activityName: 'ActivityWithCMKEncryptionConfiguration',
-      kmsKey: kmsKey,
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
-    });
-```
-
 ### Activity-Level Permissions
 
 Granting IAM permissions to an activity can be achieved by calling the `grant(principal, actions)` API:
@@ -1031,6 +973,77 @@ new sfn.StateMachine(this, 'MyStateMachine', {
     level: sfn.LogLevel.ALL,
   },
 });
+```
+
+## Encryption 
+You can encrypt your data using a customer-managed key for AWS Step Functions state machines and activities. You can configure a symmetric AWS KMS key and data key reuse period when creating or updating a State Machine, and when creating an Activity. The execution history and state machine definition will be encrypted with the key applied to the State Machine. Activity inputs will be encrypted with the key applied to the Activity.
+
+### Encrypting state machines 
+You can provide a symmetric KMS key to encrypt the state machine definition and execution history:
+```
+const kmsKey = new kms.Key(this, 'Key');
+const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionConfiguration', {
+  stateMachineName: 'StateMachineWithCMKEncryptionConfiguration',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  kmsKey: kmsKey,
+  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(60),
+});
+```
+
+### Creating a StateMachine with CWL Encryption using a Customer Managed Key,
+If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. To encrypt the logs with your own KMS key you must encrypt the `LogGroup` used by the state machine with a KMS key.
+```
+const stateMachineKmsKey = new kms.Key(this, 'StateMachine Key');
+const logGroupKey = new kms.Key(this, 'LogGroup Key');
+
+// To enable encrypted CloudWatch log integration for a state machine, you must add the following to your log group key policy
+logGroupKey.addToResourcePolicy(new cdk.aws_iam.PolicyStatement({
+  resources: ['*'],
+  actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
+  principals: [new cdk.aws_iam.ServicePrincipal(`logs.${cdk.Stack.of(this).region}.amazonaws.com`)],
+  conditions: {
+    ArnEquals: {
+      'kms:EncryptionContext:aws:logs:arn': cdk.Stack.of(this).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        sep: ':',
+        resourceName: '/aws/vendedlogs/states/MyLogGroup',
+      }),
+    },
+  },
+}));
+
+const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
+  logGroupName: '/aws/vendedlogs/states/MyLogGroup',
+  encryptionKey: logGroupKey,
+});
+
+const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
+  stateMachineName: 'StateMachineWithCMKWithCWLEncryption',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'PassState', {
+    result: sfn.Result.fromString('Hello World'),
+  }))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  kmsKey: stateMachineKmsKey,
+  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(300),
+  logs: {
+    destination: logGroup,
+    level: sfn.LogLevel.ALL,
+    includeExecutionData: true,
+  },
+});
+```
+
+### Encrypting activity inputs
+When you provide a symmetric KMS key, all inputs from the Step Functions Activity will be encrypted using the provided KMS key:
+```
+const kmsKey = new kms.Key(this, 'Key');
+const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
+      activityName: 'ActivityWithCMKEncryptionConfiguration',
+      kmsKey: kmsKey,
+      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+    });
 ```
 
 ## X-Ray tracing

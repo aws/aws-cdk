@@ -92,6 +92,72 @@ describe('Activity', () => {
         Type: 'CUSTOMER_MANAGED_KMS_KEY',
       }),
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':root',
+                  ],
+                ],
+              },
+            },
+            Resource: '*',
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:states:activityArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':activity:Activity',
+                    ],
+                  ],
+                },
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Service: 'states.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 
   test('Instantiate Activity with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
@@ -108,4 +174,16 @@ describe('Activity', () => {
       });
     }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   });
+});
+
+test('Instantiate Activity with no kms key and kmsDataKeyReusePeriodSeconds throws error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  // FAIL
+  expect(() => {
+    // WHEN
+    new stepfunctions.Activity(stack, 'Activity', {
+      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+    });
+  }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
 });

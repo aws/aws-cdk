@@ -30,13 +30,13 @@ export interface StepFunctionsInvokeActivityProps extends sfn.TaskStateBaseProps
  */
 export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  // No IAM permissions necessary, execution role implicitly has Activity permissions.
+  // No IAM permissions necessary unless the Activity uses a customer managed KMS key
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   constructor(scope: Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
     super(scope, id, props);
 
-    if (this.props.activity?.kmsKey) {
+    if (this.props.activity.kmsKey) {
       this.taskPolicies = this.createPolicyStatements(this.props.activity.kmsKey);
     }
     this.taskMetrics = {
@@ -56,6 +56,7 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
     };
   }
 
+  // IAM policy for the State Machine execution role to use the Activity KMS key when encrypting inputs
   private createPolicyStatements(kmskey: IKey): iam.PolicyStatement[] {
     return [
       new iam.PolicyStatement({
@@ -63,6 +64,11 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
           'kms:Decrypt', 'kms:GenerateDataKey',
         ],
         resources: [`${kmskey.keyArn}`],
+        conditions: {
+          StringEquals: {
+            'kms:EncryptionContext:aws:states:activityArn': this.props.activity.activityArn,
+          },
+        },
       }),
     ];
   }
