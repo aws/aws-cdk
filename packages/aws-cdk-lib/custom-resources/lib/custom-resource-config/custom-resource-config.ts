@@ -121,6 +121,8 @@ export class CustomResourceRemovalPolicy implements IAspect {
 
 /**
  * Manages lambda runtime for AWS-vended custom resources.
+ *
+ * This feature is currently experimental.
  */
 export class CustomResourceLambdaRuntime implements IAspect {
   private readonly lambdaRuntime: lambda.Runtime;
