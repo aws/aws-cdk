@@ -1,4 +1,8 @@
+import { readFileSync } from 'fs';
+import * as path from 'path';
 import { Template } from '../../../assertions';
+import * as dynamodb from '../../../aws-dynamodb';
+import { ReplicaProvider } from '../../../aws-dynamodb/lib/replica-provider';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
@@ -384,5 +388,36 @@ describe('when custom resource lambda runtime is modified by addLambdaRuntime', 
     template.hasResourceProperties('AWS::Lambda::Function', {
       Runtime: 'python3.9',
     });
+  });
+
+  test('addLambdaRuntime modifies custom resource lambda runtime to nodejs18.x', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.NODEJS_18_X;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const table = new dynamodb.Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      replicationRegions: [
+        'us-east-2',
+      ],
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const assembly = app.synth();
+    const replicaArtifactId = ReplicaProvider.getOrCreate(stack, {
+      regions: ['us-east-2'],
+      tableName: table.tableName,
+    }).artifactId;
+    const nestedTemplate = JSON.parse(readFileSync(path.join(assembly.directory, `${replicaArtifactId}.nested.template.json`), 'utf8'));
+    const template = Template.fromJSON(nestedTemplate);
+    template.resourcePropertiesCountIs('AWS::Lambda::Function', {
+      Runtime: lambda.Runtime.NODEJS_18_X.toString(),
+    }, 2);
   });
 });
