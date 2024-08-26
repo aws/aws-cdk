@@ -101,7 +101,7 @@ integTest('can deploy with session tags on the deploy, file asset, and image ass
 }));
 
 // Custom Bootstrap test without CloudFormationExecutionRole and Session Tags on the DeployRole
-integTest('can deploy with session tags using custom synthesizer', withoutBootstrap(async (fixture) => {
+integTest('can deploy without execution role and with session tags on deploy role', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
   await fixture.cdkBootstrapModern({
