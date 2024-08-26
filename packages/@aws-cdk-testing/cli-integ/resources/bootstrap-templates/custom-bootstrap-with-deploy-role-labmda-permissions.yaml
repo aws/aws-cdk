@@ -277,6 +277,8 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
           - Action: sts:TagSession
             Effect: Allow
             Principal:
@@ -305,6 +307,8 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
           - Action: sts:TagSession
             Effect: Allow
             Principal:
@@ -338,6 +342,8 @@ Resources:
             Principal:
               AWS:
                 Ref: AWS::AccountId
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
           - Action: sts:TagSession
             Effect: Allow
             Principal:
@@ -451,6 +457,8 @@ Resources:
             Principal:
               AWS:
                 Ref: AWS::AccountId
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
           - Action: sts:TagSession
             Effect: Allow
             Principal:
@@ -515,10 +523,17 @@ Resources:
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
                 Effect: Allow
+              # Permissions to allow the Deploy Role to perform SQS Actions.
+              # Users of this bootstrap template intend to uses the Deploy Role
+              # instead of the CFN ExecutionRole, so the deploy role needs permissions
+              # to perform CFN actions; in this simple case, we only permit SQS Actions.
               - Sid: SQSPermissions
                 Action: sqs:*
                 Resource: "*"
                 Effect: Allow
+                # This condition requires that the Deploy Role is assumed with the session tags
+                # 'Department: Engineering'; if these tags are not passed in, the DeployRole will
+                # not be able to perform SQS actions.
                 Condition:
                   StringEquals:
                     aws:PrincipalTag/Department: "Engineering"
