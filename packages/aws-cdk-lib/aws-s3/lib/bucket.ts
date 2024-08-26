@@ -1404,6 +1404,21 @@ export abstract class TargetObjectKeyFormat {
 }
 
 /**
+ * The replication time value used for S3 Replication Time Control (S3 RTC).
+ */
+export class ReplicationTimeValue {
+  /**
+   * Fifteen minutes.
+   */
+  public static readonly FIFTEEN_MINUTES = new ReplicationTimeValue(15);
+
+  /**
+   * @param minutes the time in minutes
+   */
+  private constructor(public readonly minutes: number) {};
+}
+
+/**
  * Specifies which Amazon S3 objects to replicate and where to store the replicas.
  */
 export interface ReplicationRule {
@@ -1420,14 +1435,14 @@ export interface ReplicationRule {
    *
    * @default - S3 Replication Time Control is not enabled
    */
-  readonly replicationTimeControl?: boolean;
+  readonly replicationTimeControl?: ReplicationTimeValue;
 
   /**
    * A container specifying replication metrics-related settings enabling replication metrics and events.
    *
    * @default - Replication metrics are not enabled
    */
-  readonly metrics?: boolean;
+  readonly metrics?: ReplicationTimeValue;
 
   /**
    * The customer managed AWS KMS key stored in AWS Key Management Service (KMS) for the destination bucket.
@@ -2738,15 +2753,15 @@ export class Bucket extends BucketBase {
               replicaKmsKeyId: rule.kmsKey.keyArn,
             } : undefined,
             replicationTime: rule.replicationTimeControl !== undefined ? {
-              status: rule.replicationTimeControl ? 'Enabled' : 'Disabled',
+              status: 'Enabled',
               time: {
-                minutes: 15,
+                minutes: rule.replicationTimeControl.minutes,
               },
             } : undefined,
             metrics: rule.metrics !== undefined ? {
-              status: rule.metrics ? 'Enabled' : 'Disabled',
+              status: 'Enabled',
               eventThreshold: {
-                minutes: 15,
+                minutes: rule.metrics.minutes,
               },
             } : undefined,
           },
