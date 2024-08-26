@@ -815,9 +815,9 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
       priority: 2,
       // Whether to specify S3 Replication Time Control (S3 RTC).
-      replicationTimeControl: true,
+      replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       // Wherther to enable replication metrics.
-      metrics: true,
+      metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       // The kms key to use for the destination bucket.
       kmsKey,
       // The storage class to use for the destination bucket.
