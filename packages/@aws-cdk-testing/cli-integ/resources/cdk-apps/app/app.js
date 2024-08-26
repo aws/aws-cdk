@@ -455,9 +455,9 @@ class SessionTagsStack extends cdk.Stack {
 
 MIN_BOOTSTRAP_STACK_VERSION = 6;
 MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 6;
-class NoExecutionRoleCustomSynthesizer extends cdk.DefaultStackSynthesizer {
+class NoExecutionRoleNoExecutionRoleCustomSynthesizer extends cdk.DefaultStackSynthesizer {
 
-  // This CustomSynthesizer is the same as the Default synthesizer, except that it passes
+  // This Custom Synthesizer is the same as the Default synthesizer, except that it passes
   // undefined for the CloudFormationExecutionRole, since we want it to use the Deploy role instead.
   synthesize(session) {
     if (this.props.generateBootstrapVersionRule ?? true) {
@@ -493,11 +493,11 @@ class NoExecutionRoleCustomSynthesizer extends cdk.DefaultStackSynthesizer {
   }
 }
 
-class SessionTagsWithCustomSynthesizerStack extends cdk.Stack {
+class SessionTagsWithNoExecutionRoleCustomSynthesizerStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, {
       ...props,
-      synthesizer: new CustomSynthesizer({
+      synthesizer: new NoExecutionRoleCustomSynthesizer({
         deployRoleSessionTags: {
           'Department' : 'Engineering',
         },
@@ -758,7 +758,7 @@ switch (stackSet) {
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
     new SessionTagsStack(app, `${stackPrefix}-session-tags`);
-    new SessionTagsWithCustomSynthesizerStack(app, `${stackPrefix}-session-tags-with-custom-synthesizer`);
+    new SessionTagsWithNoExecutionRoleCustomSynthesizerStack(app, `${stackPrefix}-session-tags-with-custom-synthesizer`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
