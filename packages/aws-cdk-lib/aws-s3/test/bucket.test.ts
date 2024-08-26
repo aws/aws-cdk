@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
+import { ReplicationTimeValue } from '../lib/bucket';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
@@ -3981,8 +3982,8 @@ describe('bucket', () => {
         replicationRules: [
           {
             destination: s3.ReplicationDestination.sameAccount(dstBucket),
-            replicationTimeControl: true,
-            metrics: true,
+            replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+            metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
             kmsKey,
             storageClass: s3.StorageClass.GLACIER,
             sseKmsEncryptedObjects: true,
