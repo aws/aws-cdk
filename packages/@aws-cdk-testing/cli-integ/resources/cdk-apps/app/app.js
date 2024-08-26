@@ -462,7 +462,7 @@ class SessionTagsStack extends cdk.Stack {
 
 MIN_BOOTSTRAP_STACK_VERSION = 6;
 MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 6;
-class CustomSynthesizer extends cdk.DefaultStackSynthesizer {
+class NoExecutionRoleCustomSynthesizer extends cdk.DefaultStackSynthesizer {
 
   // This CustomSynthesizer is the same as the Default synthesizer, except that it passes
   // undefined for the CloudFormationExecutionRole, since we want it to use the Deploy role instead.
