@@ -254,17 +254,33 @@ For more information, see [Load balancer attributes](https://docs.aws.amazon.com
 The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
 Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
 
-```ts 
+```ts
 
 declare const vpc: ec2.Vpc;
 
-const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{ 
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{
   encryption: s3.BucketEncryption.S3_MANAGED,
   });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
 lb.logAccessLogs(bucket);
 
+```
+
+### Setting up Connection Log Bucket on Application Load Balancer
+
+Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
+Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
+
+```ts 
+declare const vpc: ec2.Vpc;
+
+const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{ 
+  encryption: s3.BucketEncryption.S3_MANAGED,
+});
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
+lb.logConnectionLogs(bucket);
 ```
 
 ## Defining a Network Load Balancer
@@ -301,7 +317,7 @@ listener.addTargets('AppFleet', {
 
 ### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
 
-You can indicate whether to evaluate inbound security group rules for traffic 
+You can indicate whether to evaluate inbound security group rules for traffic
 sent to a Network Load Balancer through AWS PrivateLink.
 The evaluation is enabled by default.
 
@@ -458,6 +474,26 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
 });
 ```
 
+### Weighted random routing algorithms and automatic target weights for your Application Load Balancer
+
+You can use the `weighted_random` routing algorithms by setting the `loadBalancingAlgorithmType` property.
+
+When using this algorithm, Automatic Target Weights (ATW) anomaly mitigation can be used by setting `enableAnomalyMitigation` to `true`.
+
+Also you can't use this algorithm with slow start mode.
+
+For more information, see [Routing algorithms](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#modify-routing-algorithm) and [Automatic Target Weights (ATW)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+  enableAnomalyMitigation: true,
+});
+```
+
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the
@@ -517,7 +553,7 @@ const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
 const listener = nlb.addListener('listener', { port: 80 });
 
 listener.addTargets('Targets', {
-  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  targets: [new targets.AlbListenerTarget(svc.listener)],
   port: 80,
 });
 
@@ -778,3 +814,56 @@ then you will need to enable the `removeRuleSuffixFromLogicalId: true` property 
 
 `ListenerRule`s have a unique `priority` for a given `Listener`.
 Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.
+
+## Configuring Mutual authentication with TLS in Application Load Balancer
+
+You can configure Mutual authentication with TLS (mTLS) for Application Load Balancer.
+
+To set mTLS, you must create an instance of `TrustStore` and set it to `ApplicationListener`.
+
+For more information, see [Mutual authentication with TLS in Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html)
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.Certificate;
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const bucket: s3.Bucket;
+
+const trustStore = new elbv2.TrustStore(this, 'Store', {
+  bucket,
+  key: 'rootCA_cert.pem',
+});
+
+lb.addListener('Listener', {
+  port: 443,
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  certificates: [certificate],
+  // mTLS settings
+  mutualAuthentication: {
+    ignoreClientCertificateExpiry: false,
+    mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+    trustStore,
+  },
+  defaultAction: elbv2.ListenerAction.fixedResponse(200,
+    { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+});
+```
+
+Optionally, you can create a certificate revocation list for a trust store by creating an instance of `TrustStoreRevocation`.
+
+```ts
+declare const trustStore: elbv2.TrustStore;
+declare const bucket: s3.Bucket;
+
+new elbv2.TrustStoreRevocation(this, 'Revocation', {
+  trustStore,
+  revocationContents: [
+    {
+      revocationType: elbv2.RevocationType.CRL,
+      bucket,
+      key: 'crl.pem',
+    },
+  ],
+});
+```

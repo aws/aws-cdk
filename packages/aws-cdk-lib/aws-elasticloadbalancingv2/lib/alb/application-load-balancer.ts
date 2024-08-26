@@ -313,6 +313,68 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   }
 
   /**
+   * Enable connection logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks.
+   *
+   * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   */
+  public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
+    /**
+    * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
+    */
+    if (bucket.encryptionKey) {
+      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+    }
+
+    prefix = prefix || '';
+    this.setAttribute('connection_logs.s3.enabled', 'true');
+    this.setAttribute('connection_logs.s3.bucket', bucket.bucketName.toString());
+    this.setAttribute('connection_logs.s3.prefix', prefix);
+
+    // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+    bucket.addToResourcePolicy(new PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [this.resourcePolicyPrincipal()],
+      resources: [
+        bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+      ],
+    }));
+    // We still need this policy for the bucket using the ACL
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+        ],
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
+      }),
+    );
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetBucketAcl'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [bucket.bucketArn],
+      }),
+    );
+
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
+    // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528
+    // and https://github.com/aws/aws-cdk/issues/27928)
+    const lb = this.node.defaultChild;
+    const bucketPolicy = bucket.policy?.node.defaultChild;
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+      lb.addDependency(bucketPolicy);
+    }
+  }
+
+  /**
    * Add a security group to this load balancer
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
@@ -753,6 +815,26 @@ export enum HttpCodeElb {
    * The number of HTTP 5XX server error codes that originate from the load balancer.
    */
   ELB_5XX_COUNT = 'HTTPCode_ELB_5XX_Count',
+
+  /**
+   * The number of HTTP 500 server error codes that originate from the load balancer.
+   */
+  ELB_500_COUNT = 'HTTPCode_ELB_500_Count',
+
+  /**
+   * The number of HTTP 502 server error codes that originate from the load balancer.
+   */
+  ELB_502_COUNT = 'HTTPCode_ELB_502_Count',
+
+  /**
+   * The number of HTTP 503 server error codes that originate from the load balancer.
+   */
+  ELB_503_COUNT = 'HTTPCode_ELB_503_Count',
+
+  /**
+   * The number of HTTP 504 server error codes that originate from the load balancer.
+   */
+  ELB_504_COUNT = 'HTTPCode_ELB_504_Count',
 }
 
 /**

@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.101.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.101.0 | Apache-2.0
+** @jsii/check-node@1.102.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.102.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -287,6 +287,16 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 ----------------
 
 ** aws-sdk@2.1653.0 - https://www.npmjs.com/package/aws-sdk/v/2.1653.0 | Apache-2.0
+AWS SDK for JavaScript
+Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+This product includes software developed at
+Amazon Web Services, Inc. (http://aws.amazon.com/).
+
+
+----------------
+
+** aws-sdk@2.1675.0 - https://www.npmjs.com/package/aws-sdk/v/2.1675.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -2937,6 +2947,26 @@ Copyright (c) 2010-2024 Mathias Bynens <https://mathiasbynens.be/>
 ----------------
 
 ** semver@7.6.2 - https://www.npmjs.com/package/semver/v/7.6.2 | ISC
+The ISC License
+
+Copyright (c) Isaac Z. Schlueter and Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+----------------
+
+** semver@7.6.3 - https://www.npmjs.com/package/semver/v/7.6.3 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors

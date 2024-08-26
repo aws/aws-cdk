@@ -1,6 +1,7 @@
 import { TestFunction } from './test-function';
 import { Template, Match } from '../../assertions';
 import { SecurityGroup, SubnetType, Vpc } from '../../aws-ec2';
+import { Key } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Bucket } from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
@@ -173,6 +174,110 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('adding filter criteria encryption', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const myKey = Key.fromKeyArn(
+        stack,
+        'SourceBucketEncryptionKey',
+        'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+      );
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+          filterEncryption: myKey,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+            },
+            {
+              Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+            },
+          ],
+        },
+        KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+      });
+    });
+
+    test('adding filter criteria encryption with stack key', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      const myKey = new Key(stack, 'fc-test-key-name', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        pendingWindow: cdk.Duration.days(7),
+        description: 'KMS key for test fc encryption',
+      });
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+          filterEncryption: myKey,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+              Resource: '*',
+            },
+          ],
+        },
+      });
+    });
+
     test('with s3 onfailure destination', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -312,6 +417,54 @@ describe('KafkaEventSource', () => {
             },
           ],
         },
+      });
+    });
+
+    test('adding filter criteria encryption', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const myKey = Key.fromKeyArn(
+        stack,
+        'SourceBucketEncryptionKey',
+        'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+      );
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+          filterEncryption: myKey,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+            },
+            {
+              Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+            },
+          ],
+        },
+        KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
       });
     });
 
