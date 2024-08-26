@@ -36,8 +36,8 @@ const sourceBucket = new s3.Bucket(stack, 'SourceBucket', {
     },
     {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
-      replicationTimeControl: true,
-      metrics: true,
+      replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+      metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       kmsKey: destinationKmsKey,
       storageClass: s3.StorageClass.INFREQUENT_ACCESS,
       sseKmsEncryptedObjects: true,
