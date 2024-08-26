@@ -21,6 +21,8 @@ interface AssumedRole {
   readonly serialNumber: string;
   readonly tokenCode: string;
   readonly roleSessionName: string;
+  readonly sessionTags?: { [key: string]: string };
+  readonly transitiveTagKeys?: string[];
 }
 
 /**
@@ -158,14 +160,43 @@ export class FakeSts {
     };
   }
 
+  /**
+   * This function parses session tags from the STS mock request into a dictionary. This is necessary because
+   * the STS request body writes these dictionary values in the format Tags.member.X.Key and Tags.member.X.Value.
+   *
+   * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
+   * @param body - the parsed body of the mockRequest
+   * @returns session tags dictionary
+   */
+  private parseSessionTagsFromRequestBody(body: Record<string, string>): { [key: string]: string } {
+    const tags: { [key: string]: string } = {};
+
+    for (const key in body) {
+      if (key.startsWith('Tags.member.') && key.endsWith('.Key')) {
+        const tagIndex = key.split('.')[2];
+        const tagKey = body[key];
+        const tagValueKey = `Tags.member.${tagIndex}.Value`;
+        if (tagValueKey in body) {
+          tags[tagKey] = body[tagValueKey];
+        }
+      }
+    }
+
+    return tags;
+  }
+
   private handleAssumeRole(identity: RegisteredIdentity, mockRequest: MockRequest): Record<string, any> {
     this.checkForFailure(mockRequest.parsedBody.RoleArn);
+
+    const parsedSessionTags = this.parseSessionTagsFromRequestBody(mockRequest.parsedBody);
 
     this.assumedRoles.push({
       roleArn: mockRequest.parsedBody.RoleArn,
       roleSessionName: mockRequest.parsedBody.RoleSessionName,
       serialNumber: mockRequest.parsedBody.SerialNumber,
       tokenCode: mockRequest.parsedBody.TokenCode,
+      sessionTags: parsedSessionTags,
+      transitiveTagKeys: Object.keys(parsedSessionTags),
     });
 
     const roleArn = mockRequest.parsedBody.RoleArn;
@@ -255,6 +286,7 @@ interface MockRequest {
   readonly uri: string;
   readonly headers: Record<string, string>;
   readonly parsedBody: Record<string, string>;
+  readonly sessionTags?: { [key: string]: string };
 }
 
 function urldecode(body: string): Record<string, string> {
