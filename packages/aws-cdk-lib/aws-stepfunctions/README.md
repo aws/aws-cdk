@@ -1050,10 +1050,10 @@ import * as cdk from 'aws-cdk-lib';
 
 const kmsKey = new kms.Key(this, 'Key');
 const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
-      activityName: 'ActivityWithCMKEncryptionConfiguration',
-      kmsKey: kmsKey,
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
-    });
+  activityName: 'ActivityWithCMKEncryptionConfiguration',
+  kmsKey: kmsKey,
+  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+});
 ```
 
 ## X-Ray tracing
