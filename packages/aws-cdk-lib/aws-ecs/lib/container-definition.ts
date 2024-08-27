@@ -384,6 +384,16 @@ export interface ContainerDefinitionOptions {
    * An array of ulimits to set in the container.
    */
   readonly ulimits?: Ulimit[];
+
+  /**
+   * The restart policy for a container.
+   *
+   * When you set up a restart policy, Amazon ECS can restart the container without needing to replace the task.
+   *
+   * @default - No restart policy.
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html
+   */
+  readonly restartPolicy?: RestartPolicy;
 }
 
 /**
@@ -873,6 +883,7 @@ export class ContainerDefinition extends Construct {
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
+      restartPolicy: this.props.restartPolicy && renderRestartPolicy(this.props.restartPolicy),
     };
   }
 }
@@ -1494,4 +1505,39 @@ function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinitio
     namespace: sc.namespace,
     value: sc.value,
   }));
+}
+
+/**
+ * The restart policy for a container
+ */
+export interface RestartPolicy {
+  /**
+   * A list of exit codes that Amazon ECS will ignore and not attempt a restart on.
+   *
+   * You can specify a maximum of 50 container exit codes.
+   *
+   * @default - No exit codes are ignored.
+   */
+  readonly ignoredExitCodes?: number[];
+
+  /**
+   * A period of time that the container must run for before a restart can be attempted.
+   *
+   * A container can be restarted only once every `restartAttemptPeriod` seconds.
+   * If a container isn't able to run for this time period and exits early, it will not be restarted.
+   *
+   * You can set a minimum `restartAttemptPeriod` of 60 seconds and a maximum `restartAttemptPeriod`
+   * of 1800 seconds.
+   *
+   * @default Duration.seconds(300)
+   */
+  readonly restartAttemptPeriod?: cdk.Duration;
+}
+
+function renderRestartPolicy(restartPolicy: RestartPolicy): CfnTaskDefinition.RestartPolicy[] {
+  return {
+    Enabled: true,
+    IgnoredExitCodes: restartPolicy.ignoredExitCodes,
+    RestartAttemptPeriod: restartPolicy.restartAttemptPeriod?.toSeconds(),
+  };
 }
