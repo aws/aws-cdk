@@ -993,7 +993,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
 
 ### Encrypting state machine logs in Cloud Watch Logs
 If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. To encrypt the logs with your own KMS key you must encrypt the `LogGroup` used by the state machine with a KMS key.
-```
+```ts
 const stateMachineKmsKey = new kms.Key(this, 'StateMachine Key');
 const logGroupKey = new kms.Key(this, 'LogGroup Key');
 
@@ -1037,7 +1037,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncry
 
 ### Encrypting activity inputs
 When you provide a symmetric KMS key, all inputs from the Step Functions Activity will be encrypted using the provided KMS key:
-```
+```ts
 const kmsKey = new kms.Key(this, 'Key');
 const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
       activityName: 'ActivityWithCMKEncryptionConfiguration',

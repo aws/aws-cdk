@@ -7,18 +7,23 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 class KMSStateMachine extends cdk.Stack {
   readonly stateMachine: sfn.StateMachine;
   readonly activity: sfn.Activity;
-  readonly kmsKey: kms.Key;
+  readonly stateMachineKmsKey: kms.Key;
+  readonly activityKmsKey: kms.Key;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    this.kmsKey = new kms.Key(this, 'Key used for encryption', {
+    this.stateMachineKmsKey = new kms.Key(this, 'StateMachine Key', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    this.activityKmsKey = new kms.Key(this, 'Activity Key', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     this.activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
       activityName: 'ActivityWithCMKEncryptionConfiguration',
-      kmsKey: this.kmsKey,
+      kmsKey: this.activityKmsKey,
       kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
     });
 
@@ -31,7 +36,7 @@ class KMSStateMachine extends cdk.Stack {
         },
       }))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      kmsKey: this.kmsKey,
+      kmsKey: this.stateMachineKmsKey,
       kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -56,7 +61,7 @@ const getActivityTask = testCase.assertions.awsApiCall('StepFunctions', 'getActi
 getActivityTask.provider.addToRolePolicy({
   Effect: 'Allow',
   Action: 'kms:Decrypt',
-  Resource: `${stack.kmsKey.keyArn}`,
+  Resource: `${stack.activityKmsKey.keyArn}`,
 });
 
 const sendTaskSuccess = testCase.assertions.awsApiCall('StepFunctions', 'sendTaskSuccess', {
@@ -69,7 +74,7 @@ const sendTaskSuccess = testCase.assertions.awsApiCall('StepFunctions', 'sendTas
 sendTaskSuccess.provider.addToRolePolicy({
   Effect: 'Allow',
   Action: 'kms:Decrypt',
-  Resource: `${stack.kmsKey.keyArn}`,
+  Resource: `${stack.activityKmsKey.keyArn}`,
 });
 
 start.next(getActivityTask);

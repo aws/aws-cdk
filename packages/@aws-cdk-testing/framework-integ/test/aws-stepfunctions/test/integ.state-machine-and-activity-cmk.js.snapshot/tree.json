@@ -8,13 +8,64 @@
         "id": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig",
         "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig",
         "children": {
-          "Key used for encryption": {
-            "id": "Key used for encryption",
-            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Key used for encryption",
+          "StateMachine Key": {
+            "id": "StateMachine Key",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Key used for encryption/Resource",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "Activity Key": {
+            "id": "Activity Key",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -107,7 +158,7 @@
                     "encryptionConfiguration": {
                       "kmsKeyId": {
                         "Fn::GetAtt": [
-                          "Keyusedforencryption980FC81C",
+                          "ActivityKey371097A6",
                           "Arn"
                         ]
                       },
@@ -204,7 +255,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "Keyusedforencryption980FC81C",
+                                      "ActivityKey371097A6",
                                       "Arn"
                                     ]
                                   }
@@ -241,7 +292,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "Keyusedforencryption980FC81C",
+                                      "StateMachineKeyE4B4725B",
                                       "Arn"
                                     ]
                                   }
@@ -295,7 +346,7 @@
                     "encryptionConfiguration": {
                       "kmsKeyId": {
                         "Fn::GetAtt": [
-                          "Keyusedforencryption980FC81C",
+                          "StateMachineKeyE4B4725B",
                           "Arn"
                         ]
                       },
@@ -335,9 +386,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Output{\"Fn::GetAtt\":[\"Keyusedforencryption980FC81C\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"Keyusedforencryption980FC81C\",\"Arn\"]}",
-                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"Keyusedforencryption980FC81C\",\"Arn\"]}",
+              "Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"

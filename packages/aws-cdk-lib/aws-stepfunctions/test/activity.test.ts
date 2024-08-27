@@ -160,6 +160,27 @@ describe('Activity', () => {
     });
   });
 
+  test('Instantiate Activity with EncryptionConfiguration using Customer Managed Key - defaults to 300 secs for KmsDataKeyReusePeriodSeconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new stepfunctions.Activity(stack, 'Activity', {
+      kmsKey: kmsKey,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
+      Name: 'Activity',
+      EncryptionConfiguration: Match.objectLike({
+        KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        KmsDataKeyReusePeriodSeconds: 300,
+        Type: 'CUSTOMER_MANAGED_KMS_KEY',
+      }),
+    });
+  });
+
   test('Instantiate Activity with invalid KmsDataKeyReusePeriodSeconds throws error', () => {
     // GIVEN
     const stack = new cdk.Stack();

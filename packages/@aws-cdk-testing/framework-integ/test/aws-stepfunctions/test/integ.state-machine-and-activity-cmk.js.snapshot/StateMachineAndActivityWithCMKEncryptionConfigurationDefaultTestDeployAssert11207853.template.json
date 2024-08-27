@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1724698449152"
+    "salt": "1724800071895"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -79,7 +79,7 @@
          "Effect": "Allow",
          "Action": "kms:Decrypt",
          "Resource": {
-          "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputFnGetAttKeyusedforencryption980FC81CArn9E9413FF"
+          "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputFnGetAttActivityKey371097A6ArnD0599452"
          }
         },
         {
@@ -95,7 +95,7 @@
          "Effect": "Allow",
          "Action": "kms:Decrypt",
          "Resource": {
-          "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputFnGetAttKeyusedforencryption980FC81CArn9E9413FF"
+          "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputFnGetAttActivityKey371097A6ArnD0599452"
          }
         }
        ]
@@ -164,7 +164,7 @@
      "taskToken",
      "input.Hello"
     ],
-    "salt": "1724698449152"
+    "salt": "1724800071896"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2"
@@ -202,7 +202,7 @@
      "output": "\"{\\\"hello\\\":\\\"world\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1724698449153"
+    "salt": "1724800071896"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578"

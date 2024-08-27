@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd49248244a3fab2ba376326d15a3d1078a5488d136cb7bec90fb93d50649d69.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c90004c06ea55b80615adcee62503527387532611c46abf829c3fb5713d940f6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,16 @@
         "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig.assets"
       ],
       "metadata": {
-        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Key used for encryption/Resource": [
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Keyusedforencryption980FC81C"
+            "data": "StateMachineKeyE4B4725B"
+          }
+        ],
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActivityKey371097A6"
           }
         ],
         "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration/Resource": [
@@ -73,10 +79,10 @@
             "data": "ExportsOutputRefStateMachineWithCMKEncryptionConfiguration107734624DC890C0"
           }
         ],
-        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"Keyusedforencryption980FC81C\",\"Arn\"]}": [
+        "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttKeyusedforencryption980FC81CArn9E9413FF"
+            "data": "ExportsOutputFnGetAttActivityKey371097A6ArnD0599452"
           }
         ],
         "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"ActivityWithCMKEncryptionConfiguration3D01813A\"}": [
@@ -97,10 +103,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "Key961B73FD": [
+        "Keyusedforencryption980FC81C": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD",
+            "data": "Keyusedforencryption980FC81C",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -126,7 +132,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/85db294fb7f7f9e8c24ec4ee6bba2c11554850031f4c3d0692fcfc5f50d83b0c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/25adf350bdae5961ee7850a7b54b546751ac1cf2726651e9633e0d39fb0ed4ef.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
