@@ -1541,7 +1541,7 @@ function renderRestartPolicy(restartPolicy: RestartPolicy): CfnTaskDefinition.Re
   if (restartPolicy.restartAttemptPeriod
     && (restartPolicy.restartAttemptPeriod.toSeconds() < 60 || restartPolicy.restartAttemptPeriod.toSeconds() > 1800)
   ) {
-    throw new Error('The restartAttemptPeriod must be between 60 seconds and 1800 seconds');
+    throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartPolicy.restartAttemptPeriod.toSeconds()} seconds`);
   }
   return {
     Enabled: true,
