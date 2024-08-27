@@ -883,7 +883,7 @@ export class ContainerDefinition extends Construct {
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
-      restartPolicy: this.props.restartPolicy && renderRestartPolicy(this.props.restartPoli),
+      restartPolicy: this.props.restartPolicy && renderRestartPolicy(this.props.restartPolicy),
     };
   }
 }
