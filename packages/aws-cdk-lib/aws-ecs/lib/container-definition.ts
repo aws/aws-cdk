@@ -883,7 +883,7 @@ export class ContainerDefinition extends Construct {
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
-      restartPolicy: this.props.restartPolicy && renderRestartPolicy(this.props.restartPolicy),
+      restartPolicy: this.props.restartPolicy && renderRestartPolicy(this.props.restartPoli),
     };
   }
 }
@@ -1534,7 +1534,7 @@ export interface RestartPolicy {
   readonly restartAttemptPeriod?: cdk.Duration;
 }
 
-function renderRestartPolicy(restartPolicy: RestartPolicy): CfnTaskDefinition.RestartPolicy[] {
+function renderRestartPolicy(restartPolicy: RestartPolicy): CfnTaskDefinition.RestartPolicy {
   if (restartPolicy.ignoredExitCodes && restartPolicy.ignoredExitCodes.length > 50) {
     throw new Error(`You can specify a maximum of 50 container exit codes, got: ${restartPolicy.ignoredExitCodes.length}`);
   }
