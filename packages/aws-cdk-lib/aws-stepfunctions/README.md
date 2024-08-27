@@ -991,7 +991,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
 });
 ```
 
-### Creating a StateMachine with CWL Encryption using a Customer Managed Key,
+### Encrypting state machine logs in Cloud Watch Logs
 If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. To encrypt the logs with your own KMS key you must encrypt the `LogGroup` used by the state machine with a KMS key.
 ```
 const stateMachineKmsKey = new kms.Key(this, 'StateMachine Key');
