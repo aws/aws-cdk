@@ -637,6 +637,29 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
+class HighBootstrapVersionSynthesizer extends DefaultStackSynthesizer {
+
+  emitArtifact(session, options) {
+    // override the required bootstrap version
+    super.emitArtifact(session, {
+      ...options,
+      requiresBootstrapStackVersion: 99999
+    });
+  }
+}
+
+class HighBootstrapVersionStack extends cdk.Stack {
+  constructor(parent, id, props) {
+
+    super(parent, id, {
+      ...props,
+      synthesizer: new HighBootstrapVersionSynthesizer()
+    });
+
+    new sqs.Queue(this, 'Queue');
+  }
+}
+
 const app = new cdk.App({
   context: {
     '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
@@ -672,6 +695,7 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+    new HighBootstrapVersionStack(app, `${stackPrefix}-high-bootstrap-version`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);

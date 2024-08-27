@@ -350,6 +350,7 @@ export class CdkToolkit {
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,
+          skipBootstrapVersionCheck: options.skipBootstrapVersionCheck,
         });
 
         const message = result.noOp
@@ -1346,6 +1347,13 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly ignoreNoStacks?: boolean;
+
+  /**
+   * Skip validating that the deployed bootstrap version satisfies the requirement advertised by the stack
+   *
+   * @default false
+   */
+  readonly skipBootstrapVersionCheck?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {

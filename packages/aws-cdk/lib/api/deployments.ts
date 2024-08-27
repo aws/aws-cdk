@@ -206,6 +206,14 @@ export interface DeployStackOptions {
    * @default false
    */
   ignoreNoStacks?: boolean;
+
+  /**
+   * Skip validating that the deployed bootstrap version satisfies the requirement advertised by the stack
+   *
+   * @default false
+   */
+  readonly skipBootstrapVersionCheck?: boolean;
+
 }
 
 interface AssetOptions {
@@ -239,6 +247,14 @@ export interface BuildStackAssetsOptions extends AssetOptions {
    * Stack name this asset is for
    */
   readonly stackName?: string;
+
+  /**
+   * Skip validating that the deployed bootstrap version satisfies the requirement advertised by the stack
+   *
+   * @default false
+   */
+  readonly skipBootstrapVersionCheck?: boolean;
+
 }
 
 interface PublishStackAssetsOptions extends AssetOptions {
@@ -386,6 +402,7 @@ export class Deployments {
     // Do a verification of the bootstrap stack version
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
+      options.skipBootstrapVersionCheck ?? false,
       options.stack.requiresBootstrapStackVersion,
       options.stack.bootstrapStackVersionSsmParameter,
       envResources);
@@ -570,11 +587,12 @@ export class Deployments {
     }
   }
 
-  private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
+  private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: BuildStackAssetsOptions) {
     const { envResources } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
+      options.skipBootstrapVersionCheck ?? false,
       asset.requiresBootstrapStackVersion,
       asset.bootstrapStackVersionSsmParameter,
       envResources);
@@ -613,6 +631,7 @@ export class Deployments {
 
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
+      options.skipBootstrapVersionCheck ?? false,
       assetArtifact.requiresBootstrapStackVersion,
       assetArtifact.bootstrapStackVersionSsmParameter,
       envResources);
@@ -655,9 +674,14 @@ export class Deployments {
    */
   private async validateBootstrapStackVersion(
     stackName: string,
+    skip: boolean,
     requiresBootstrapStackVersion: number | undefined,
     bootstrapStackVersionSsmParameter: string | undefined,
     envResources: EnvironmentResources) {
+
+    if (skip) {
+      return;
+    }
 
     try {
       await envResources.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);

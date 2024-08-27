@@ -1829,6 +1829,18 @@ integTest('hotswap deployment for ecs service detects failed deployment and erro
   expect(deployOutput).not.toContain('hotswapped!');
 }));
 
+integTest('deploy can ignore bootstrap version check', withDefaultFixture(async (fixture) => {
+
+  // deploy a stack that defines a higher bootstrap version than what we support
+  // and tell the CLI to ignore the version check. we expect a successful deployment
+  await fixture.cdkDeploy('high-bootstrap-version', {
+    options: [
+      '--skip-bootstrap-version-check',
+    ],
+  });
+
+}));
+
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
