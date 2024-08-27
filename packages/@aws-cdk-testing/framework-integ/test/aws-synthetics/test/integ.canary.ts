@@ -103,6 +103,7 @@ const puppeteer80 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_8
 
 const selenium21 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1);
 const selenium30 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0);
+const selenium40 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0);
 
 const test = new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
@@ -120,6 +121,7 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   puppeteer80,
   selenium21,
   selenium30,
+  selenium40,
 ].forEach((canary) => test.assertions
   .awsApiCall('Synthetics', 'getCanaryRuns', {
     Name: canary.canaryName,
