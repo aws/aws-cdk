@@ -3,7 +3,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { IBucket } from '../../aws-s3';
+import { CfnBucket, IBucket } from '../../aws-s3';
 import { Annotations, Aws, DefaultTokenResolver, Names, Stack, StringConcat, Token, Tokenization } from '../../core';
 
 const BUCKET_ACTIONS: Record<string, string[]> = {
@@ -38,6 +38,15 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
    * @default AccessLevel.READ
    */
   readonly originAccessLevels?: AccessLevel[];
+
+  /**
+   * This flag only works with bucket with the bucketName set.
+   * Setting this flag to `true` will cause the code to assemble the origin DomainName using static values (i.e. without
+   * referencing the bucket resource.). This provides a workaround to circular dependency error when bucket is encrypted
+   * with a KMS key.
+   * @default false
+   */
+  readonly assembleDomainName?: boolean;
 }
 
 /**
@@ -61,10 +70,27 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   public static withOriginAccessControl(bucket: IBucket, props?: S3BucketOriginWithOACProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
       private originAccessControl?: cloudfront.IOriginAccessControl;
+      private assembleDomainName?: boolean
 
       constructor() {
         super(bucket, { ...props });
         this.originAccessControl = props?.originAccessControl;
+        this.assembleDomainName = props?.assembleDomainName ?? false;
+
+        if (this.assembleDomainName) {
+          let bucketName: string | undefined = undefined;
+          if (!Token.isUnresolved(bucket.bucketName)) {
+            // this is the case when bucket is from Bucket.fromBucketName
+            bucketName = bucket.bucketName;
+          } else if (!Token.isUnresolved((bucket.node.defaultChild as CfnBucket)?.bucketName)) {
+            // this is the case when bucket is a L2 bucket with bucketName set
+            bucketName = (bucket.node.defaultChild as CfnBucket)?.bucketName;
+          }
+
+          if (!bucketName) {
+            throw new Error(`Cannot assemble static DomainName as bucket ${bucket.node.id} has no bucketName set.`);
+          }
+        }
       }
 
       public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
@@ -84,15 +110,8 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         if (bucket.encryptionKey) {
-          let bucketName = bucket.bucketName;
-          if (Token.isUnresolved(bucket.bucketName)) {
-            bucketName = JSON.stringify(Tokenization.resolve(bucket.bucketName, {
-              scope,
-              resolver: new DefaultTokenResolver(new StringConcat()),
-            }));
-          }
           Annotations.of(scope).addInfo(
-            `Granting OAC permissions to access KMS key for S3 bucket origin ${bucketName} may cause a circular dependency error when this stack deploys.\n` +
+            `Granting OAC permissions to access KMS key for S3 bucket origin ${bucket.node.id} may cause a circular dependency error when this stack deploys.\n` +
             'The key policy references the distribution\'s id, the distribution references the bucket, and the bucket references the key.\n'+
             'See the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README for more details.\n',
           );
@@ -108,12 +127,18 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
 
         const originBindConfig = this._bind(scope, options);
 
+        const bucketStack = Stack.of(bucket);
+        const domainName = this.assembleDomainName ?
+          `${(bucket.node.defaultChild as CfnBucket).bucketName}.s3.${bucketStack.region}.${bucketStack.urlSuffix}` :
+          bucket.bucketRegionalDomainName;
+
         // Update configuration to set OriginControlAccessId property
         return {
           ...originBindConfig,
           originProperty: {
             ...originBindConfig.originProperty!,
             originAccessControlId: this.originAccessControl.originAccessControlId,
+            domainName,
           },
         };
       }
