@@ -23,10 +23,10 @@ To create a VPC with both IPv4 and IPv6 support:
 ```ts
 
 const stack = new Stack();
-new vpc_v2.VpcV2(this, 'Vpc', {
-  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
+new VpcV2(this, 'Vpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/24'),
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.amazonProvidedIpv6({cidrBlockName: 'AmazonProvidedIpv6'}),
+    IpAddresses.amazonProvidedIpv6({cidrBlockName: 'AmazonProvidedIpv6'}),
   ],
 });
 ```
@@ -43,17 +43,17 @@ This new construct can be used to add subnets to a `VpcV2` instance:
 ```ts
 
 const stack = new Stack();
-const myVpc = new vpc_v2.VpcV2(this, 'Vpc', {
+const myVpc = new VpcV2(this, 'Vpc', {
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvidedIp'}),
+    IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvidedIp'}),
   ],
 });
 
-new vpc_v2.SubnetV2(this, 'subnetA', {
+new SubnetV2(this, 'subnetA', {
   vpc: myVpc,
   availabilityZone: 'us-east-1a',
-  ipv4CidrBlock: new vpc_v2.IpCidr('10.0.0.0/24'),
-  ipv6CidrBlock: new vpc_v2.IpCidr('2a05:d02c:25:4000::/60'),
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  ipv6CidrBlock: new IpCidr('2a05:d02c:25:4000::/60'),
   subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 })
 ```
@@ -73,28 +73,28 @@ const ipam = new Ipam(this, 'Ipam', {
   operatingRegion: ['us-west-1']
 });
 const ipamPublicPool = ipam.publicScope.addPool('PublicPoolA', {
-  addressFamily: vpc_v2.AddressFamily.IP_V6,
+  addressFamily: AddressFamily.IP_V6,
   awsService: AwsServiceName.EC2,
   locale: 'us-west-1',
-  publicIpSource: vpc_v2.IpamPoolPublicIpSource.AMAZON,
+  publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
 ipamPublicPool.provisionCidr('PublicPoolACidrA', { netmaskLength: 52 } );
 
 const ipamPrivatePool = ipam.privateScope.addPool('PrivatePoolA', {
-  addressFamily: vpc_v2.AddressFamily.IP_V4,
+  addressFamily: AddressFamily.IP_V4,
 });
 ipamPrivatePool.provisionCidr('PrivatePoolACidrA', { netmaskLength: 8 } );
 
-new vpc_v2.VpcV2(this, 'Vpc', {
-  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/24'),
+new VpcV2(this, 'Vpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/24'),
   secondaryAddressBlocks: [
-    vpc_v2.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonIpv6' }),
-    vpc_v2.IpAddresses.ipv6Ipam({
+    IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonIpv6' }),
+    IpAddresses.ipv6Ipam({
       ipamPool: ipamPublicPool,
       netmaskLength: 52,
       cidrBlockName: 'ipv6Ipam',
     }),
-    vpc_v2.IpAddresses.ipv4Ipam({
+    IpAddresses.ipv4Ipam({
       ipamPool: ipamPrivatePool,
       netmaskLength: 8,
       cidrBlockName: 'ipv4Ipam',
@@ -112,11 +112,11 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 
 ```ts
 
-const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
-const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+const myVpc = new VpcV2(this, 'Vpc');
+const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {
+const subnet = new SubnetV2(this, 'Subnet', {
   vpc: myVpc,
   routeTable,
   availabilityZone: 'eu-west-2a',
@@ -129,20 +129,20 @@ const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {
 
 ```ts
 const stack = new Stack();
-const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
-const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+const myVpc = new VpcV2(this, 'Vpc');
+const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {
+const subnet = new SubnetV2(this, 'Subnet', {
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
 
-const igw = new vpc_v2.InternetGateway(this, 'IGW', {
+const igw = new InternetGateway(this, 'IGW', {
   vpc: myVpc,
 });
-new vpc_v2.Route(this, 'IgwRoute', {
+new Route(this, 'IgwRoute', {
   routeTable,
   destination: '0.0.0.0/0',
   target:  { gateway: igw },
@@ -155,13 +155,13 @@ Note: `EgressOnlyInternetGateway` can only be used to set up outbound IPv6 routi
 ```ts
 import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
 
-const myVpc = new vpc_v2.VpcV2(stack, 'Vpc', {...});
-const routeTable = new vpc_v2.RouteTable(stack, 'RouteTable', {
+const myVpc = new VpcV2(stack, 'Vpc', {...});
+const routeTable = new RouteTable(stack, 'RouteTable', {
   vpc: vpc.myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(stack, 'Subnet', {...});
+const subnet = new SubnetV2(stack, 'Subnet', {...});
 
-const eigw = new vpc_v2.EgressOnlyInternetGateway(stack, 'EIGW', {
+const eigw = new EgressOnlyInternetGateway(stack, 'EIGW', {
   vpcId: vpc.myVpc,
 });
 routeTable.addRoute('::/0', { gateway: eigw });
@@ -171,23 +171,23 @@ Other route targets may require a deeper set of parameters to set up properly. F
 
 ```ts
 
-const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
-const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+const myVpc = new VpcV2(this, 'Vpc');
+const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {
+const subnet = new SubnetV2(this, 'Subnet', {
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
 
-const natgw = new vpc_v2.NatGateway(this, 'NatGW', {
+const natgw = new NatGateway(this, 'NatGW', {
   subnet: subnet,
   vpc: myVpc,
   connectivityType: NatConnectivityType.PRIVATE,
   privateIpAddress: '10.0.0.42',
 });
-new vpc_v2.Route(this, 'NatGwRoute', {
+new Route(this, 'NatGwRoute', {
   routeTable,
   destination: '0.0.0.0/0',
   target: { gateway: natgw },
@@ -198,11 +198,11 @@ It is also possible to set up endpoints connecting other AWS services. For insta
 
 ```ts
 
-const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
-const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+const myVpc = new VpcV2(this, 'Vpc');
+const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {  
+const subnet = new SubnetV2(this, 'Subnet', {  
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
@@ -213,12 +213,13 @@ const dynamoEndpoint = new ec2.GatewayVpcEndpoint(this, 'DynamoEndpoint', {
   vpc: myVpc,
   subnets: [subnet],
 });
-new vpc_v2.Route(this, 'DynamoDBRoute', {
+new Route(this, 'DynamoDBRoute', {
   routeTable,
   destination: '0.0.0.0/0',
   target: { endpoint: dynamoEndpoint },
 });
 ```
+
 ## Adding Egress-Only Internet Gateway to VPC
 
 An egress-only internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows outbound communication over IPv6 from instances in your VPC to the internet, and prevents the internet from initiating an IPv6 connection with your instances. For more information see@ https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html
@@ -230,11 +231,11 @@ By Default, it sets up a route to all outbound IPv6 Address ranges unless specif
 
 ```ts
 
-const myVpc = new vpc_v2.VpcV2(this, 'Vpc');
-const routeTable = new vpc_v2.RouteTable(this, 'RouteTable', {
+const myVpc = new VpcV2(this, 'Vpc');
+const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
 });
-const subnet = new vpc_v2.SubnetV2(this, 'Subnet', {  
+const subnet = new SubnetV2(this, 'Subnet', {  
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),

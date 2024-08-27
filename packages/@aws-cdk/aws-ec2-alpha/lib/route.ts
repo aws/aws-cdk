@@ -280,6 +280,7 @@ export class VPNGateway extends Resource implements IRouteTarget {
    */
   public readonly resource: CfnVPNGateway;
 
+
   constructor(scope: Construct, id: string, props: VPNGatewayProps) {
     super(scope, id);
 
@@ -293,6 +294,11 @@ export class VPNGateway extends Resource implements IRouteTarget {
 
     this.routerTargetId = this.resource.attrVpnGatewayId;
     this.vpcId = props.vpc.vpcId;
+
+    new CfnVPCGatewayAttachment(this, 'GWAttachment', {
+      vpcId: this.vpcId,
+      vpnGatewayId: this.routerTargetId,
+    });
   }
 }
 
