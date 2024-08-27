@@ -997,7 +997,7 @@ If a state machine is encrypted with a customer managed key and has logging enab
 const stateMachineKmsKey = new kms.Key(this, 'StateMachine Key');
 const logGroupKey = new kms.Key(this, 'LogGroup Key');
 
-// To enable encrypted CloudWatch log integration for a state machine, you must add the following to your log group key policy
+// Required KMS key policy to enrypt the CloudWatch log group
 logGroupKey.addToResourcePolicy(new cdk.aws_iam.PolicyStatement({
   resources: ['*'],
   actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
