@@ -1,0 +1,288 @@
+{
+ "Resources": {
+  "TableCD117FA1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableSourceTableAttachedManagedPolicyMyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD593864897023A5A": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "DynamoDB replication managed policy for table ",
+       {
+        "Ref": "TableCD117FA1"
+       }
+      ]
+     ]
+    },
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:*",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TableCD117FA1",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dynamodb:us-east-2:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "TableCD117FA1"
+           }
+          ]
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Roles": [
+     {
+      "Fn::GetAtt": [
+       "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
+       "Outputs.MyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole4467C87ARef"
+      ]
+     }
+    ]
+   }
+  },
+  "TableSourceTableAttachedManagedPolicyMyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole16B7E1B480CD9B37": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "DynamoDB replication managed policy for table ",
+       {
+        "Ref": "TableCD117FA1"
+       }
+      ]
+     ]
+    },
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:DescribeTable",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TableCD117FA1",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Roles": [
+     {
+      "Fn::GetAtt": [
+       "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
+       "Outputs.MyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE7639AB2Ref"
+      ]
+     }
+    ]
+   }
+  },
+  "TableReplicauseast28A15C236": {
+   "Type": "Custom::DynamoDBReplica",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
+      "Outputs.MyStackawscdkawsdynamodbReplicaProviderframeworkonEvent53643CD7Arn"
+     ]
+    },
+    "TableName": {
+     "Ref": "TableCD117FA1"
+    },
+    "Region": "us-east-2"
+   },
+   "DependsOn": [
+    "TableSourceTableAttachedManagedPolicyMyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole16B7E1B480CD9B37",
+    "TableSourceTableAttachedManagedPolicyMyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD593864897023A5A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Condition": "TableStackRegionNotEqualsuseast2D20A1E77"
+  },
+  "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "Parameters": {
+     "referencetoMyStackTableA7B7AF97Ref": {
+      "Ref": "TableCD117FA1"
+     }
+    },
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/0c3131b847d4db816ed04a49102018fd29194df41b6799fefafa137e44121d44.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "nonCrLambdaServiceRole10AF9D14": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "nonCrLambda31AAECAA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "helloWorld"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "nonCrLambdaServiceRole10AF9D14",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "nonCrLambdaServiceRole10AF9D14"
+   ]
+  }
+ },
+ "Conditions": {
+  "TableStackRegionNotEqualsuseast2D20A1E77": {
+   "Fn::Not": [
+    {
+     "Fn::Equals": [
+      "us-east-2",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "integ-test-custom-resource-config-lambda-node-runtime/DefaultTest": {
+      "stacks": [
+        "MyStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-custom-resource-config-lambda-node-runtime/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D"
+    }
+  }
+}
