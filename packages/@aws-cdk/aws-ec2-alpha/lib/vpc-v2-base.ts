@@ -2,7 +2,7 @@ import { Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct } from 'constructs';
-import { EgressOnlyInternetGateway, NatGateway, NatGatewayOptions, Route } from './route';
+import { EgressOnlyInternetGateway, NatGateway, NatGatewayOptions, Route, VPNGateway } from './route';
 import { ISubnetV2 } from './subnet-v2';
 
 /**
@@ -180,6 +180,52 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
     routePropagation.node.addDependency(attachment);
   }
+
+  /**
+   * Adds VPNGAtewayV2 to the VPC
+   */
+    /**
+  * Adds a VPN Gateway to this VPC
+  */
+    public enableVpnGatewayV2(options: EnableVpnGatewayOptions): VPNGateway {
+      if (this.vpnGatewayId) {
+        throw new Error('The VPN Gateway has already been enabled.');
+      }
+  
+      const vpnGateway = new VPNGateway(this, 'VpnGateway', {
+        amazonSideAsn: options.amazonSideAsn,
+        type: VpnConnectionType.IPSEC_1,
+        vpc: this,
+      });
+  
+      this._vpnGatewayId = vpnGateway.routerTargetId;
+  
+      const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
+        vpcId: this.vpcId,
+        vpnGatewayId: this._vpnGatewayId,
+      });
+  
+      // Propagate routes on route tables associated with the right subnets
+      const vpnRoutePropagation = options.vpnRoutePropagation ?? [{}];
+      const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
+  
+      if (routeTableIds.length === 0) {
+        Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      }
+  
+      const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
+        routeTableIds,
+        vpnGatewayId: this._vpnGatewayId,
+      });
+        // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
+        // until it has successfully attached to the VPC.
+        // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+      routePropagation.node.addDependency(attachment);
+
+
+      return vpnGateway;
+    }
+
 
   /**
   * Adds a new VPN connection to this VPC
