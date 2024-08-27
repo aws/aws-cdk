@@ -70,7 +70,8 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   public static withOriginAccessControl(bucket: IBucket, props?: S3BucketOriginWithOACProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
       private originAccessControl?: cloudfront.IOriginAccessControl;
-      private assembleDomainName?: boolean
+      private readonly assembleDomainName?: boolean
+      private readonly bucketName?: string
 
       constructor() {
         super(bucket, { ...props });
@@ -78,16 +79,15 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         this.assembleDomainName = props?.assembleDomainName ?? false;
 
         if (this.assembleDomainName) {
-          let bucketName: string | undefined = undefined;
           if (!Token.isUnresolved(bucket.bucketName)) {
             // this is the case when bucket is from Bucket.fromBucketName
-            bucketName = bucket.bucketName;
+            this.bucketName = bucket.bucketName;
           } else if (!Token.isUnresolved((bucket.node.defaultChild as CfnBucket)?.bucketName)) {
             // this is the case when bucket is a L2 bucket with bucketName set
-            bucketName = (bucket.node.defaultChild as CfnBucket)?.bucketName;
+            this.bucketName = (bucket.node.defaultChild as CfnBucket)?.bucketName;
           }
 
-          if (!bucketName) {
+          if (!this.bucketName) {
             throw new Error(`Cannot assemble static DomainName as bucket ${bucket.node.id} has no bucketName set.`);
           }
         }
@@ -129,7 +129,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
 
         const bucketStack = Stack.of(bucket);
         const domainName = this.assembleDomainName ?
-          `${(bucket.node.defaultChild as CfnBucket).bucketName}.s3.${bucketStack.region}.${bucketStack.urlSuffix}` :
+          `${this.bucketName}.s3.${bucketStack.region}.${bucketStack.urlSuffix}` :
           bucket.bucketRegionalDomainName;
 
         // Update configuration to set OriginControlAccessId property

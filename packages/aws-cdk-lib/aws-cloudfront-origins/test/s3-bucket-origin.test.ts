@@ -613,6 +613,77 @@ describe('S3BucketOrigin', () => {
           });
         });
 
+        it('should not throw if bucket is imported with Bucket.fromBucketName', () => {
+          const stack = new Stack();
+          const bucketName = '7e036c5f-9bdc-43cc-a1e7-95756401dc20';
+          new cloudfront.Distribution(stack, 'MyDistributionA', {
+            defaultBehavior: {
+              origin: origins.S3BucketOrigin.withOriginAccessControl(
+                s3.Bucket.fromBucketName(stack, 'my-bucket', bucketName), { assembleDomainName: true },
+              ),
+            },
+          });
+          const template = Template.fromStack(stack);
+          expect(template.toJSON().Resources).toEqual({
+            MyDistributionAOrigin1S3OriginAccessControlE2649D73: {
+              Type: 'AWS::CloudFront::OriginAccessControl',
+              Properties: {
+                OriginAccessControlConfig: {
+                  Name: 'MyDistributionAOrigin1S3OriginAccessControl2859DD54',
+                  OriginAccessControlOriginType: 's3',
+                  SigningBehavior: 'always',
+                  SigningProtocol: 'sigv4',
+                },
+              },
+            },
+            MyDistributionA2150CE0F: {
+              Type: 'AWS::CloudFront::Distribution',
+              Properties: {
+                DistributionConfig: {
+                  DefaultCacheBehavior: {
+                    CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+                    Compress: true,
+                    TargetOriginId: 'MyDistributionAOrigin11BE8FF8C',
+                    ViewerProtocolPolicy: 'allow-all',
+                  },
+                  Enabled: true,
+                  HttpVersion: 'http2',
+                  IPV6Enabled: true,
+                  Origins: [
+                    {
+                      DomainName: {
+                        'Fn::Join': [
+                          '',
+                          [
+                            '7e036c5f-9bdc-43cc-a1e7-95756401dc20.s3.',
+                            {
+                              Ref: 'AWS::Region',
+                            },
+                            '.',
+                            {
+                              Ref: 'AWS::URLSuffix',
+                            },
+                          ],
+                        ],
+                      },
+                      Id: 'MyDistributionAOrigin11BE8FF8C',
+                      OriginAccessControlId: {
+                        'Fn::GetAtt': [
+                          'MyDistributionAOrigin1S3OriginAccessControlE2649D73',
+                          'Id',
+                        ],
+                      },
+                      S3OriginConfig: {
+                        OriginAccessIdentity: '',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        });
+
         it('should throw error if the bucket does not have a bucketName set', () => {
           const bucketConstructId = 'SomeBucket';
           expect(() => {
