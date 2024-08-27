@@ -628,7 +628,6 @@ declare const taskDefinition: ecs.TaskDefinition;
 
 taskDefinition.addContainer('container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  memoryLimitMiB: 1024,
   restartPolicy: {
     ignoredExitCodes: [1, 2, 3],
     restartAttemptPeriod: cdk.Duration.seconds(360),
