@@ -1535,6 +1535,14 @@ export interface RestartPolicy {
 }
 
 function renderRestartPolicy(restartPolicy: RestartPolicy): CfnTaskDefinition.RestartPolicy[] {
+  if (restartPolicy.ignoredExitCodes && restartPolicy.ignoredExitCodes.length > 50) {
+    throw new Error(`You can specify a maximum of 50 container exit codes, got: ${restartPolicy.ignoredExitCodes.length}`);
+  }
+  if (restartPolicy.restartAttemptPeriod
+    && (restartPolicy.restartAttemptPeriod.toSeconds() < 60 || restartPolicy.restartAttemptPeriod.toSeconds() > 1800)
+  ) {
+    throw new Error('The restartAttemptPeriod must be between 60 seconds and 1800 seconds');
+  }
   return {
     Enabled: true,
     IgnoredExitCodes: restartPolicy.ignoredExitCodes,
