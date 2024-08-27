@@ -39,7 +39,6 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
     [feats.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
     // Add new disabling feature flags below this line
-    [feats.S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET]: false,
   });
 });
 
