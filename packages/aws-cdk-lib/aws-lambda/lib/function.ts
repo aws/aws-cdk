@@ -140,6 +140,17 @@ export enum LoggingFormat {
   JSON = 'JSON',
 }
 
+export enum RecursiveLoop {
+  /**
+   * Allows the recursive loop to happen and does not terminate it.
+  */
+  ALLOW = 'Allow',
+  /**
+   * Terminates the recursive loop.
+   */
+  TERMINATE = 'Terminate',
+}
+
 /**
  * Non runtime options
  */
@@ -536,6 +547,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly loggingFormat?: LoggingFormat;
 
   /**
+  * Sets the Recursive Loop Protection for Lambda Function.
+  * It lets Lambda detect and terminate unintended recusrive loops.
+  *
+  * @default RecursiveLoop.Terminate
+  */
+  readonly recursiveLoop?: RecursiveLoop;
+
+  /**
    * Sets the application log level for the function.
    * @deprecated Use `applicationLogLevelV2` as a property instead.
    * @default "INFO"
@@ -861,6 +880,9 @@ export class Function extends FunctionBase {
   /** @internal */
   public readonly _layers: ILayerVersion[] = [];
 
+  /** @internal */
+  public _logRetention?: logs.LogRetention;
+
   private _logGroup?: logs.ILogGroup;
 
   /**
@@ -913,6 +935,14 @@ export class Function extends FunctionBase {
     // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
+      if (!Token.isUnresolved(config.localMountPath)) {
+        if (!/^\/mnt\/[a-zA-Z0-9-_.]+$/.test(config.localMountPath)) {
+          throw new Error(`Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`);
+        }
+        if (config.localMountPath.length > 160) {
+          throw new Error(`Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`);
+        }
+      }
       if (config.policies) {
         config.policies.forEach(p => {
           this.role?.addToPrincipalPolicy(p);
@@ -1025,6 +1055,7 @@ export class Function extends FunctionBase {
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
+      recursiveLoop: props.recursiveLoop,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
@@ -1072,6 +1103,7 @@ export class Function extends FunctionBase {
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
+      this._logRetention = logRetention;
     }
 
     props.code.bindToResource(resource);
@@ -1554,7 +1586,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-    // SnapStart does not support arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart does not support Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
     // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
     // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
@@ -1563,10 +1595,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (!props.runtime.supportsSnapStart) {
       throw new Error(`SnapStart currently not supported by runtime ${props.runtime.name}`);
-    }
-
-    if (props.architecture == Architecture.ARM_64) {
-      throw new Error('SnapStart is currently not supported on Arm_64');
     }
 
     if (props.filesystem) {
