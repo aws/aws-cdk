@@ -2758,4 +2758,117 @@ describe('container definition', () => {
     // THEN
     expect(() => new ecs.ContainerDefinition(stack, 'Container', containerDefinitionProps)).toThrow(/Only one credential spec is allowed per container definition/);
   });
+
+  test('can specify restart policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      restartPolicy: {
+        ignoredExitCodes: [1, 2, 3],
+        restartAttemptPeriod: cdk.Duration.seconds(360),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: '/aws/aws-example-app',
+          Name: 'Container',
+          RestartPolicy: {
+            Enabled: true,
+            IgnoredExitCodes: [1, 2, 3],
+            RestartAttemptPeriod: 360,
+          },
+        },
+      ],
+    });
+  });
+
+  test('can specify restart policy with an empty object', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      restartPolicy: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: '/aws/aws-example-app',
+          Name: 'Container',
+          RestartPolicy: {
+            Enabled: true,
+          },
+        },
+      ],
+    });
+  });
+
+  test('throws when there are more than 50 in ignoredExitCodes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const ignoredExitCodes = Array.from({ length: 51 }, (_, i) => i);
+
+    // THEN
+    expect(() => {
+      new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        restartPolicy: {
+          ignoredExitCodes,
+        },
+      });
+    }).toThrow(/You can specify a maximum of 50 container exit codes, got: 51/);
+  });
+
+  test('throws when restartAttemptPeriod is greater than 1800 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // THEN
+    expect(() => {
+      new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        restartPolicy: {
+          restartAttemptPeriod: cdk.Duration.seconds(1801),
+        },
+      });
+    }).toThrow(/The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got 1801 seconds/);
+  });
+
+  test('throws when restartAttemptPeriod is less than 60 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // THEN
+    expect(() => {
+      new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        restartPolicy: {
+          restartAttemptPeriod: cdk.Duration.seconds(59),
+        },
+      });
+    }).toThrow(/The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got 59 seconds/);
+  });
 });
