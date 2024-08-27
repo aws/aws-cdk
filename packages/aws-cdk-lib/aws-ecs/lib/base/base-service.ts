@@ -1464,7 +1464,7 @@ export abstract class BaseService extends Resource
   /**
    * Associate Service Discovery (Cloud Map) service
    */
-  private addServiceRegistry(registry: ServiceRegistry) {
+  public addServiceRegistry(registry: ServiceRegistry) {
     if (this.serviceRegistries.length >= 1) {
       throw new Error('Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.');
     }
