@@ -271,7 +271,7 @@ export interface IActivity extends IResource {
   readonly activityName: string;
 
   /**
-   * The kms key used by the activity
+   * The symmetric customer managed KMS key for server-side encryption of the activity inputs.
    *
    * @attribute
    */
