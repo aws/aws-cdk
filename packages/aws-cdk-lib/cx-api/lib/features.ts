@@ -1105,8 +1105,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Other notifications that are not managed by this stack will be kept.
     `,
     introducedIn: { v2: 'V2NEXT' },
-    defaults: { v2: false },
-    recommendedValue: true,
+    recommendedValue: false,
   },
 };
 
