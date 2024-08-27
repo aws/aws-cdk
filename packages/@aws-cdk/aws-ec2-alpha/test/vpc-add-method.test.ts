@@ -81,7 +81,6 @@ describe('Vpc V2 with full control', () => {
       subnets: [{ subnetType: SubnetType.PUBLIC }],
       destination: '::/48',
     });
-    console.log(Template.fromStack(stack).toJSON());
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
       DestinationIpv6CidrBlock: '::/48',
     });
