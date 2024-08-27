@@ -2,7 +2,8 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import * as route from '../lib/route';
+import { CfnEIP, SubnetType } from 'aws-cdk-lib/aws-ec2';
 /* eslint-disable no-console */
 
 describe('Vpc V2 with full control', () => {
@@ -108,4 +109,235 @@ describe('Vpc V2 with full control', () => {
       });
     }).toThrow("There are no 'Public' subnet groups in this VPC. Available types: Isolated,Deprecated_Isolated");
   });
+
+
+  test('addNatGateway defines a private gateway', () => {
+    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PRIVATE_ISOLATED,
+    });
+    myVpc.addNatGateway('TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: route.NatConnectivityType.PRIVATE,
+      privateIpAddress: '10.0.0.42',
+    });
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'private',
+        PrivateIpAddress: '10.0.0.42',
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+  });
+
+  test('addNatGateway defines private gateway with secondary IP addresses', () => {
+    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PRIVATE_ISOLATED,
+    });
+    myVpc.addNatGateway('TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: route.NatConnectivityType.PRIVATE,
+      privateIpAddress: '10.0.0.42',
+      secondaryPrivateIpAddresses: [
+        '10.0.1.0/28',
+        '10.0.2.0/28',
+      ],
+    });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'private',
+        PrivateIpAddress: '10.0.0.42',
+        SecondaryPrivateIpAddresses: [
+          '10.0.1.0/28',
+          '10.0.2.0/28',
+        ],
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+  });
+
+  test('addNatGateway defines private gateway with secondary IP address count', () => {
+    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PRIVATE_ISOLATED,
+    });
+    myVpc.addNatGateway('TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: route.NatConnectivityType.PRIVATE,
+      privateIpAddress: '10.0.0.42',
+      secondaryPrivateIpAddressCount: 2,
+    });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'private',
+        PrivateIpAddress: '10.0.0.42',
+        SecondaryPrivateIpAddressCount: 2,
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+  });
+
+  test('addNatGateway defines public gateway', () => {
+    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PRIVATE_ISOLATED,
+    });
+    myVpc.addNatGateway('TestNATGW', {
+      subnet: mySubnet,
+    });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+    // EIP should be created when not provided
+    template.hasResource('AWS::EC2::EIP', {
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+  });
+
+  test('addNatGateway defines public gateway with provided EIP', () => {
+    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PRIVATE_ISOLATED,
+    });
+    const eip = new CfnEIP(stack, 'MyEIP', {
+      domain: myVpc.vpcId,
+    });
+    myVpc.addNatGateway('TestNATGW', {
+      subnet: mySubnet,
+      allocationId: eip.attrAllocationId,
+    });
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+    // EIP should be in stack
+    template.hasResourceProperties('AWS::EC2::EIP', {
+      Domain: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+    });
+  });
+
+  test('addNatGateway defines public gateway with many parameters', () => {
+    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PRIVATE_ISOLATED,
+    });
+    myVpc.addNatGateway('TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: route.NatConnectivityType.PUBLIC,
+      maxDrainDuration: cdk.Duration.seconds(2001),
+    });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'public',
+        MaxDrainDurationSeconds: 2001,
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+    // EIP should be created when not provided
+    template.hasResource('AWS::EC2::EIP', {
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+  });
+
 });

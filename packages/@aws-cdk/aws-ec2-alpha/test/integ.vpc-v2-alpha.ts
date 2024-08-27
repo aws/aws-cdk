@@ -37,7 +37,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   enableDnsSupport: true,
 });
 
-new SubnetV2(stack, 'testsbubnet', {
+const subnet = new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'us-west-1a',
   ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
@@ -78,6 +78,11 @@ vpc.addInterfaceEndpoint('TestInterfaceEndpoint', {
 //Add an Egress only Internet Gateway
 vpc.addEgressOnlyInternetGateway({
   subnets: [{ subnetType: SubnetType.PUBLIC }],
+});
+
+//Add a NAT Gateway
+vpc.addNatGateway('TestNATGateway', {
+  subnet: subnet,
 });
 
 new IntegTest(app, 'integtest-model', {

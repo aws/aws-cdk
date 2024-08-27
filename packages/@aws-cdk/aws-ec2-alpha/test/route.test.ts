@@ -56,7 +56,7 @@ describe('EC2 Routing', () => {
     });
     // Route linking IP to EIGW should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
-      DestinationCidrBlock: '::/0',
+      DestinationIpv6CidrBlock: '::/0',
       EgressOnlyInternetGatewayId: {
         'Fn::GetAtt': [
           'TestEIGW4E4CDA8D', 'Id',

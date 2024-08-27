@@ -2,7 +2,8 @@ import { Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct } from 'constructs';
-import { EgressOnlyInternetGateway, Route } from './route';
+import { EgressOnlyInternetGateway, NatGateway, NatGatewayOptions, Route } from './route';
+import { ISubnetV2 } from './subnet-v2';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -248,12 +249,26 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   /**
  * Creates a route for EGW with destination set to outbound IPv6('::/0').
  */
-  private createEgressRoute(subnet: ISubnet, egw: EgressOnlyInternetGateway, destination?: string): void {
+  private createEgressRoute(subnet: ISubnetV2, egw: EgressOnlyInternetGateway, destination?: string): void {
     const destinationIpv6 = destination ?? '::/0';
     new Route(this, `${subnet.node.id}-EgressRoute`, {
       routeTable: subnet.routeTable,
       destination: destinationIpv6, // IPv6 default route
       target: { gateway: egw },
+    });
+  }
+
+  /**
+   * Adds a new NAT Gateway to this VPC and adds a route to the route table
+   * of given subnets.
+   * @param id The ID of the NAT Gateway construct
+   * @param options The options for the NAT Gateway to be created
+   * @returns - The newly-created NAT Gateway
+   */
+  public addNatGateway(id: string, options: NatGatewayOptions): NatGateway {
+    return new NatGateway(this, id, {
+      vpc: this,
+      ...options,
     });
   }
 

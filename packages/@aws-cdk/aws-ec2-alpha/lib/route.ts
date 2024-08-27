@@ -1,8 +1,9 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, ISubnet, IVpcEndpoint, RouterType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IConstruct, IDependable } from 'constructs';
 import { Duration, IResource, Resource } from 'aws-cdk-lib/core';
 import { IVpcV2 } from './vpc-v2-base';
 import { NetworkUtils } from './util';
+import { ISubnetV2 } from './subnet-v2';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -98,19 +99,13 @@ export interface VPNGatewayProps {
 }
 
 /**
- * Properties to define a NAT gateway.
+ * Options to define a NAT gateway.
  */
-export interface NatGatewayProps {
+export interface NatGatewayOptions {
   /**
    * The subnet in which the NAT gateway is located.
    */
-  readonly subnet: ISubnet;
-
-  /**
-   * The ID of the VPC in which the NAT gateway is located.
-   * @default none
-   */
-  readonly vpc?: IVpcV2;
+  readonly subnet: ISubnetV2;
 
   /**
    * AllocationID of Elastic IP address that's associated with the NAT gateway. This property is required for a public NAT
@@ -175,7 +170,17 @@ export interface NatGatewayProps {
    * @default none
    */
   readonly natGatewayName?: string;
+}
 
+/**
+ * Properties to define a NAT gateway.
+ */
+export interface NatGatewayProps extends NatGatewayOptions {
+  /**
+   * The ID of the VPC in which the NAT gateway is located.
+   * @default none
+   */
+  readonly vpc?: IVpcV2;
 }
 
 /**

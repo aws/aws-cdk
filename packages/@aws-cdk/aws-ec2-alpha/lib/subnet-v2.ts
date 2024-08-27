@@ -96,6 +96,12 @@ export interface ISubnetV2 extends ISubnet {
    */
   readonly ipv6CidrBlock?: string;
 
+  /**
+   * The type of subnet (public or private) that this subnet represents.
+   * @attribute SubnetType
+   */
+  readonly subnetType?: SubnetType;
+
 }
 
 /**
