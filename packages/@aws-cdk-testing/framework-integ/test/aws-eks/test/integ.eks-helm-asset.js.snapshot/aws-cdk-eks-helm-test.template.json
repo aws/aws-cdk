@@ -1092,6 +1092,18 @@
     "Release": "s3-chart",
     "Chart": "s3-chart",
     "Version": "v0.1.0",
+    "Values": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"aws\":{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\"}}"
+      ]
+     ]
+    },
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/s3-chart",
     "CreateNamespace": true
@@ -1123,6 +1135,18 @@
     "Release": "lambda-chart-release",
     "Chart": "lambda-chart",
     "Version": "v0.1.4",
+    "Values": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"aws\":{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\"}}"
+      ]
+     ]
+    },
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/lambda-chart",
     "CreateNamespace": true
@@ -1153,7 +1177,19 @@
     },
     "Release": "rds-chart-release",
     "Chart": "rds-chart",
-    "Version": "v1.1.2",
+    "Version": "1.4.1",
+    "Values": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"aws\":{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\"}}"
+      ]
+     ]
+    },
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
     "CreateNamespace": true,
@@ -1183,11 +1219,23 @@
       "Arn"
      ]
     },
-    "Release": "rds-chart-release",
-    "Chart": "rds-chart",
-    "Version": "v1.1.2",
+    "Release": "ec2-chart-release",
+    "Chart": "ec2-chart",
+    "Version": "1.2.13",
+    "Values": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"aws\":{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\"}}"
+      ]
+     ]
+    },
     "Namespace": "ack-system",
-    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/ec2-chart",
     "CreateNamespace": true,
     "SkipCrds": true,
     "Atomic": true
