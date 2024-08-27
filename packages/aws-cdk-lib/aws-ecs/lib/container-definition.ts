@@ -1536,7 +1536,7 @@ export interface RestartPolicy {
 
 function renderRestartPolicy(restartPolicy: RestartPolicy): CfnTaskDefinition.RestartPolicy {
   if (restartPolicy.ignoredExitCodes && restartPolicy.ignoredExitCodes.length > 50) {
-    throw new Error(`You can specify a maximum of 50 container exit codes, got: ${restartPolicy.ignoredExitCodes.length}`);
+    throw new Error(`Only up to 50 can be specified for ignoredExitCodes, got: ${restartPolicy.ignoredExitCodes.length}`);
   }
   if (restartPolicy.restartAttemptPeriod
     && (restartPolicy.restartAttemptPeriod.toSeconds() < 60 || restartPolicy.restartAttemptPeriod.toSeconds() > 1800)

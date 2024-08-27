@@ -2835,7 +2835,7 @@ describe('container definition', () => {
           ignoredExitCodes,
         },
       });
-    }).toThrow(/You can specify a maximum of 50 container exit codes, got: 51/);
+    }).toThrow(/Only up to 50 can be specified for ignoredExitCodes, got: 51/);
   });
 
   test('throws when restartAttemptPeriod is greater than 1800 seconds', () => {
