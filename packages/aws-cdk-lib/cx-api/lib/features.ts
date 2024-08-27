@@ -105,6 +105,7 @@ export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
+export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1090,6 +1091,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       property from the event object.
     `,
     introducedIn: { v2: '2.145.0' },
+    recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.',
+    detailsMd: `
+      Currently, adding notifications to a bucket where it was created by ourselves will override notification added where it is imported.
+
+      When this feature flag is enabled, adding notifications to a bucket in the current stack will only update notification defined in this stack.
+      Other notifications that are not managed by this stack will be kept.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: false,
   },
 };

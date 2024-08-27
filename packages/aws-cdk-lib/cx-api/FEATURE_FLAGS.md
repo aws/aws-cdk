@@ -71,6 +71,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
+| [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1336,6 +1337,22 @@ property from the event object.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.145.0 | `false` | `false` |
+
+
+### @aws-cdk/aws-s3:keepNotificationInImportedBucket
+
+*When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.* (fix)
+
+Currently, adding notifications to a bucket where it was created by ourselves will override notification added where it is imported.
+
+When this feature flag is enabled, adding notifications to a bucket in the current stack will only update notification defined in this stack.
+Other notifications that are not managed by this stack will be kept.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `false` |
 
 
 <!-- END details -->
