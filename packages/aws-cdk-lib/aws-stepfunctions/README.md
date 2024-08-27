@@ -980,7 +980,7 @@ You can encrypt your data using a customer-managed key for AWS Step Functions st
 
 ### Encrypting state machines 
 You can provide a symmetric KMS key to encrypt the state machine definition and execution history:
-```
+```ts
 const kmsKey = new kms.Key(this, 'Key');
 const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionConfiguration', {
   stateMachineName: 'StateMachineWithCMKEncryptionConfiguration',
