@@ -936,8 +936,6 @@ export interface CreateAnomalyDetectionAlarmProps extends CreateAlarmOptionsBase
 
   /**
    * Comparison to use to check if metric is breaching
-   *
-   * @default GreaterThanOrEqualToThreshold
    */
   readonly comparisonOperator: ComparisonOperator;
 }
