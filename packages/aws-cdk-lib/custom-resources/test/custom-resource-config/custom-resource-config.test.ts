@@ -344,7 +344,7 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // python3.9
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
     });
@@ -375,7 +375,7 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses Python, not node
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses Python3.9, not node
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
     });
@@ -402,7 +402,7 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
       },
       replicationRegions: [
         'us-east-2',
-      ],
+      ], // latestNodeJS at least Node20
     });
 
     // WHEN
@@ -434,10 +434,10 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
       },
       replicationRegions: [
         'us-east-2',
-      ],
+      ], // latestNodeJS at least Node20
     });
     const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
-    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // python3.9
       sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
       destinationBucket: websiteBucket,
     });
