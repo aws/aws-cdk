@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.154.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.154.0-alpha.0...v2.154.1-alpha.0) (2024-08-23)
+
+## [2.154.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.153.0-alpha.0...v2.154.0-alpha.0) (2024-08-22)
+
+
+### Features
+
+* **amplify:** support custom certificate ([#30791](https://github.com/aws/aws-cdk/issues/30791)) ([8d76778](https://github.com/aws/aws-cdk/commit/8d767786fe88d0ed60104ea6f48176e8981dd0fa)), closes [#30594](https://github.com/aws/aws-cdk/issues/30594)
+* **ec2:** security group lookup via filters ([#30625](https://github.com/aws/aws-cdk/issues/30625)) ([abc78bf](https://github.com/aws/aws-cdk/commit/abc78bfa613453185e59d5d9a17e5c5cfb5437b3)), closes [#30331](https://github.com/aws/aws-cdk/issues/30331)
+* **sagemaker:** network isolation for a model ([#30657](https://github.com/aws/aws-cdk/issues/30657)) ([f1af7fc](https://github.com/aws/aws-cdk/commit/f1af7fc66b5ca5b3a4780ed695045d2da65df3ba))
+
+
+### Bug Fixes
+
+* **cli-lib-alpha:** bootstrap fails with "bad argument name" error for trust and trustForLookup ([#31159](https://github.com/aws/aws-cdk/issues/31159)) ([b11ca4a](https://github.com/aws/aws-cdk/commit/b11ca4ae27753e33f5c44baedf1529489c4e081a)), closes [#30404](https://github.com/aws/aws-cdk/issues/30404)
+* **cognito-identitypool-alpha:** validation error if provided id is a token ([#30882](https://github.com/aws/aws-cdk/issues/30882)) ([ad1b797](https://github.com/aws/aws-cdk/commit/ad1b7977768430da0ce262103e8a91f0e632ffe2)), closes [#29780](https://github.com/aws/aws-cdk/issues/29780) [#28184](https://github.com/aws/aws-cdk/issues/28184)
+* **ec2:** prevent deduplication of init command args ([#30821](https://github.com/aws/aws-cdk/issues/30821)) ([1e7c690](https://github.com/aws/aws-cdk/commit/1e7c690f5ec404d7c620dc54692999fee67b3eaf)), closes [#26221](https://github.com/aws/aws-cdk/issues/26221)
+
+## [2.153.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.152.0-alpha.0...v2.153.0-alpha.0) (2024-08-19)
+
+## [2.152.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.151.1-alpha.0...v2.152.0-alpha.0) (2024-08-14)
+
+## [2.151.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.151.0-alpha.0...v2.151.1-alpha.0) (2024-08-14)
+
+## [2.151.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.150.0-alpha.0...v2.151.0-alpha.0) (2024-08-01)
+
+
+### Features
+
+* **kinesisanalytics-flink:** add support for Flink 1.19 ([#30723](https://github.com/aws/aws-cdk/issues/30723)) ([c185194](https://github.com/aws/aws-cdk/commit/c185194e2bc5bb538672df51482e1bfb134698b5)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html#aws-resource-kinesisanalyticsv2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html/issues/aws-resource-kinesisanalyticsv2)
+
 ## [2.150.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.149.0-alpha.0...v2.150.0-alpha.0) (2024-07-22)
 
 ## [2.149.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.1-alpha.0...v2.149.0-alpha.0) (2024-07-12)
