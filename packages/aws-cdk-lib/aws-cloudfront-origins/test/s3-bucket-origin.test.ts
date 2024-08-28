@@ -380,7 +380,7 @@ describe('S3BucketOrigin', () => {
         });
         Annotations.fromStack(stack).hasWarning('/Default',
           'Using wildcard to match all Distribution IDs in Key policy condition.\n' +
-          'To further scope down the policy, see the "Using pre-existing S3 buckets" section of module\'s README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicy]');
+          'To further scope down the policy, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicy]');
       });
     });
 

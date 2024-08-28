@@ -163,7 +163,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         );
         Annotations.of(key.node.scope!).addWarningV2('@aws-cdk/aws-cloudfront-origins:wildcardKeyPolicy',
           'Using wildcard to match all Distribution IDs in Key policy condition.\n' +
-          'To further scope down the policy, see the "Using pre-existing S3 buckets" section of module\'s README.');
+          'To further scope down the policy, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.');
         const result = key.addToResourcePolicy(oacKeyPolicyStatement);
         return result;
       }
