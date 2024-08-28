@@ -1,5 +1,6 @@
 import { Template } from '../../../assertions';
 import * as events from '../../../aws-events';
+import * as secretsmanager from '../../../aws-secretsmanager';
 import { Stack } from '../../../core';
 import * as targets from '../../lib';
 
@@ -140,6 +141,62 @@ describe('RedshiftQuery event target', () => {
             ],
             Version: '2012-10-17',
           },
+        });
+      });
+    });
+
+    describe('with secrets manager', () => {
+      test('adding a secrets manager secret to the target', () => {
+        // GIVEN
+        const secret = new secretsmanager.Secret(stack, 'Secret');
+
+        // WHEN
+        rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+          database: 'dev',
+          sql: 'SELECT * FROM foo',
+          secret,
+        }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+          Targets: [
+            {
+              Arn: clusterArn,
+              Id: 'Target0',
+              RedshiftDataParameters: {
+                Database: 'dev',
+                Sql: 'SELECT * FROM foo',
+                SecretManagerArn: { Ref: 'SecretA720EF05' },
+              },
+            },
+          ],
+        });
+      });
+
+      test('adding an imported secrets manager secret to the target, that does not have `secretFullArn` set', () => {
+        // GIVEN
+        const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'my-secret');
+
+        // WHEN
+        rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+          database: 'dev',
+          sql: 'SELECT * FROM foo',
+          secret,
+        }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+          Targets: [
+            {
+              Arn: clusterArn,
+              Id: 'Target0',
+              RedshiftDataParameters: {
+                Database: 'dev',
+                Sql: 'SELECT * FROM foo',
+                SecretManagerArn: 'my-secret',
+              },
+            },
+          ],
         });
       });
     });
