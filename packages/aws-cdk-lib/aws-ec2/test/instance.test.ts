@@ -1024,3 +1024,44 @@ test('throw if both enclaveEnabled and hibernationEnabled are set to true', () =
     });
   }).toThrow('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
 });
+
+test('instance with ipv6 address count', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: new InstanceType('t2.micro'),
+    ipv6AddressCount: 2,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't2.micro',
+    Ipv6AddressCount: 2,
+  });
+});
+
+test.each([-1, 0.1, 1.1])('throws if ipv6AddressCount is not a positive integer', (ipv6AddressCount: number) => {
+  // THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      ipv6AddressCount: ipv6AddressCount,
+    });
+  }).toThrow(`\'ipv6AddressCount\' must be a non-negative integer, got: ${ipv6AddressCount}`);
+});
+
+test.each([true, false])('throw error for specifying ipv6AddressCount with associatePublicIpAddress', (associatePublicIpAddress) => {
+  // THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      ipv6AddressCount: 2,
+      associatePublicIpAddress,
+    });
+  }).toThrow('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+});

@@ -1882,6 +1882,23 @@ Note to set `mapPublicIpOnLaunch` to true in the `subnetConfiguration`.
 
 Additionally, IPv6 support varies by instance type. Most instance types have IPv6 support with exception of m1-m3, c1, g2, and t1.micro. A full list can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI.
 
+#### Specifying the IPv6 Address
+
+If you want to specify [the number of IPv6 addresses](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html#assign-multiple-ipv6) to assign to the instance, you can use the `ipv6AddresseCount` property:
+
+```ts
+// dual stack VPC
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'MyInstance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  // Assign 2 IPv6 addresses to the instance
+  ipv6AddressCount: 2,
+});
+```
 
 ### Credit configuration modes for burstable instances
 

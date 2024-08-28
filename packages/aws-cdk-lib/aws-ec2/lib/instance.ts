@@ -15,7 +15,7 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
+import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
@@ -294,6 +294,8 @@ export interface InstanceProps {
   /**
    * Whether to associate a public IP address to the primary network interface attached to this instance.
    *
+   * You cannot specify this property and `ipv6AddressCount` at the same time.
+   *
    * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
@@ -359,6 +361,17 @@ export interface InstanceProps {
    * @default - false
    */
   readonly hibernationEnabled?: boolean;
+
+  /**
+   * The number of IPv6 addresses to associate with the primary network interface.
+   *
+   * Amazon EC2 chooses the IPv6 addresses from the range of your subnet.
+   *
+   * You cannot specify this property and `associatePublicIpAddress` at the same time.
+   *
+   * @default - For instances associated with an IPv6 subnet, use 1; otherwise, use 0.
+   */
+  readonly ipv6AddressCount?: number;
 }
 
 /**
@@ -514,6 +527,20 @@ export class Instance extends Resource implements IInstance {
       throw new Error('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
     }
 
+    if (
+      props.ipv6AddressCount !== undefined &&
+      !Token.isUnresolved(props.ipv6AddressCount) &&
+      (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
+    ) {
+      throw new Error(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`);
+    }
+
+    if (
+      props.ipv6AddressCount !== undefined &&
+      props.associatePublicIpAddress !== undefined) {
+      throw new Error('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+    }
+
     // if network interfaces array is configured then subnetId, securityGroupIds,
     // and privateIpAddress are configured on the network interface level and
     // there is no need to configure them on the instance level
@@ -538,6 +565,7 @@ export class Instance extends Resource implements IInstance {
       placementGroupName: props.placementGroup?.placementGroupName,
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
       hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
+      ipv6AddressCount: props.ipv6AddressCount,
     });
     this.instance.node.addDependency(this.role);
 
