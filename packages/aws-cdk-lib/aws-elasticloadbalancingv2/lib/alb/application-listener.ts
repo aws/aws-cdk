@@ -234,6 +234,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public readonly loadBalancer: IApplicationLoadBalancer;
 
   /**
+   * The port of the listener.
+  */
+  public readonly port: number;
+
+  /**
    * ARNs of certificates added to this listener
    */
   private readonly certificateArns: string[];
@@ -266,6 +271,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
+    this.port = port;
     this.certificateArns = [];
 
     // Attach certificates
