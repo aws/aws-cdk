@@ -1,10 +1,18 @@
-import * as AWS from 'aws-sdk';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
+import { UpdateProjectCommand, UpdateProjectCommandInput } from '@aws-sdk/client-codebuild';
+import {
+  ChangeHotswapResult,
+  classifyChanges,
+  HotswappableChangeCandidate,
+  lowerCaseFirstCharacter,
+  transformObjectKeys,
+} from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableCodeBuildProjectChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   if (change.newValue.Type !== 'AWS::CodeBuild::Project') {
     return [];
@@ -15,10 +23,13 @@ export async function isHotswappableCodeBuildProjectChange(
   const classifiedChanges = classifyChanges(change, ['Source', 'Environment', 'SourceVersion']);
   classifiedChanges.reportNonHotswappablePropertyChanges(ret);
   if (classifiedChanges.namesOfHotswappableProps.length > 0) {
-    const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
+    const updateProjectInput: UpdateProjectCommandInput = {
       name: '',
     };
-    const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
+    const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(
+      logicalId,
+      change.newValue.Properties?.Name,
+    );
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
@@ -51,8 +62,8 @@ export async function isHotswappableCodeBuildProjectChange(
               break;
           }
         }
-
-        await sdk.codeBuild().updateProject(updateProjectInput).promise();
+        const command = new UpdateProjectCommand(updateProjectInput);
+        await sdk.codeBuild().send(command);
       },
     });
   }

@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import { Stack } from '@aws-sdk/client-cloudformation';
 
 /**
  * A utility class to inspect CloudFormation stack statuses.
@@ -6,15 +6,17 @@ import * as AWS from 'aws-sdk';
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-describing-stacks.html
  */
 export class StackStatus {
-  public static fromStackDescription(description: AWS.CloudFormation.Stack) {
-    return new StackStatus(description.StackStatus, description.StackStatusReason);
+  public static fromStackDescription(description: Stack) {
+    return new StackStatus(description.StackStatus!, description.StackStatusReason);
   }
 
-  constructor(public readonly name: string, public readonly reason?: string) {}
+  constructor(
+    public readonly name: string,
+    public readonly reason?: string,
+  ) {}
 
   get isCreationFailure(): boolean {
-    return this.name === 'ROLLBACK_COMPLETE'
-      || this.name === 'ROLLBACK_FAILED';
+    return this.name === 'ROLLBACK_COMPLETE' || this.name === 'ROLLBACK_FAILED';
   }
 
   get isDeleted(): boolean {
@@ -38,12 +40,14 @@ export class StackStatus {
   }
 
   get isDeploySuccess(): boolean {
-    return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE' || this.name === 'IMPORT_COMPLETE');
+    return (
+      !this.isNotFound &&
+      (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE' || this.name === 'IMPORT_COMPLETE')
+    );
   }
 
   get isRollbackSuccess(): boolean {
-    return this.name === 'ROLLBACK_COMPLETE'
-      || this.name === 'UPDATE_ROLLBACK_COMPLETE';
+    return this.name === 'ROLLBACK_COMPLETE' || this.name === 'UPDATE_ROLLBACK_COMPLETE';
   }
 
   public toString(): string {

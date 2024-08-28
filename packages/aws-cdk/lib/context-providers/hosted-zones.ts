@@ -1,14 +1,17 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Mode } from '../api/aws-auth/credentials';
+import {
+  GetHostedZoneCommand,
+  HostedZone,
+  ListHostedZonesByNameCommand,
+  Route53Client,
+} from '@aws-sdk/client-route-53';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { ContextProviderPlugin } from '../api/plugin';
+import { ContextProviderPlugin, Mode } from '../api/plugin';
 import { debug } from '../logging';
 
 export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
-
-  constructor(private readonly aws: SdkProvider) {
-  }
+  constructor(private readonly aws: SdkProvider) {}
 
   public async getValue(args: cxschema.HostedZoneContextQuery): Promise<object> {
     const account = args.account;
@@ -19,8 +22,11 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     const domainName = args.domainName;
     debug(`Reading hosted zone ${account}:${region}:${domainName}`);
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const r53 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.route53();
-    const response = await r53.listHostedZonesByName({ DNSName: domainName }).promise();
+    const r53 = (
+      await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)
+    ).route53();
+    const command = new ListHostedZonesByNameCommand({ DNSName: domainName });
+    const response = await r53.send(command);
     if (!response.HostedZones) {
       throw new Error(`Hosted Zone not found in account ${account}, region ${region}: ${domainName}`);
     }
@@ -37,28 +43,30 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
   }
 
   private async filterZones(
-    r53: AWS.Route53, zones: AWS.Route53.HostedZone[],
-    props: cxschema.HostedZoneContextQuery): Promise<AWS.Route53.HostedZone[]> {
-
-    let candidates: AWS.Route53.HostedZone[] = [];
+    r53: Route53Client,
+    zones: HostedZone[],
+    props: cxschema.HostedZoneContextQuery,
+  ): Promise<HostedZone[]> {
+    let candidates: HostedZone[] = [];
     const domainName = props.domainName.endsWith('.') ? props.domainName : `${props.domainName}.`;
     debug(`Found the following zones ${JSON.stringify(zones)}`);
-    candidates = zones.filter( zone => zone.Name === domainName);
+    candidates = zones.filter((zone) => zone.Name === domainName);
     debug(`Found the following matched name zones ${JSON.stringify(candidates)}`);
     if (props.privateZone) {
-      candidates = candidates.filter(zone => zone.Config && zone.Config.PrivateZone);
+      candidates = candidates.filter((zone) => zone.Config && zone.Config.PrivateZone);
     } else {
-      candidates = candidates.filter(zone => !zone.Config || !zone.Config.PrivateZone);
+      candidates = candidates.filter((zone) => !zone.Config || !zone.Config.PrivateZone);
     }
     if (props.vpcId) {
-      const vpcZones: AWS.Route53.HostedZone[] = [];
+      const vpcZones: HostedZone[] = [];
       for (const zone of candidates) {
-        const data = await r53.getHostedZone({ Id: zone. Id }).promise();
+        const command = new GetHostedZoneCommand({ Id: zone.Id });
+        const data = await r53.send(command);
         if (!data.VPCs) {
           debug(`Expected VPC for private zone but no VPC found ${zone.Id}`);
           continue;
         }
-        if (data.VPCs.map(vpc => vpc.VPCId).includes(props.vpcId)) {
+        if (data.VPCs.map((vpc) => vpc.VPCId).includes(props.vpcId)) {
           vpcZones.push(zone);
         }
       }

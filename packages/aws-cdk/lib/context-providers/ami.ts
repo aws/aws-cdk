@@ -1,16 +1,15 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Mode } from '../api/aws-auth/credentials';
+import { DescribeImagesCommand } from '@aws-sdk/client-ec2';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { ContextProviderPlugin } from '../api/plugin';
+import { ContextProviderPlugin, Mode } from '../api/plugin';
 import { debug, print } from '../logging';
 
 /**
  * Plugin to search AMIs for the current account
  */
 export class AmiContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
-  }
+  constructor(private readonly aws: SdkProvider) {}
 
   public async getValue(args: cxschema.AmiContextQuery) {
     const region = args.region;
@@ -22,16 +21,19 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     debug(`AMI search parameters: ${JSON.stringify(args)}`);
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
-    const response = await ec2.describeImages({
+    const ec2 = (
+      await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)
+    ).ec2();
+    const command = new DescribeImagesCommand({
       Owners: args.owners,
       Filters: Object.entries(args.filters).map(([key, values]) => ({
         Name: key,
         Values: values,
       })),
-    }).promise();
+    });
+    const response = await ec2.send(command);
 
-    const images = [...response.Images || []].filter(i => i.ImageId !== undefined);
+    const images = [...(response.Images || [])].filter((i) => i.ImageId !== undefined);
 
     if (images.length === 0) {
       throw new Error('No AMI found that matched the search criteria');
@@ -40,7 +42,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     // Return the most recent one
     // Note: Date.parse() is not going to respect the timezone of the string,
     // but since we only care about the relative values that is okay.
-    images.sort(descending(i => Date.parse(i.CreationDate || '1970')));
+    images.sort(descending((i) => Date.parse(i.CreationDate || '1970')));
 
     debug(`Selected image '${images[0].ImageId}' created at '${images[0].CreationDate}'`);
     return images[0].ImageId!;

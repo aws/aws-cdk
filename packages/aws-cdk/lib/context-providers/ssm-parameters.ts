@@ -1,17 +1,15 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
-import { Mode } from '../api/aws-auth/credentials';
+import { GetParameterCommand, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { ContextProviderPlugin } from '../api/plugin';
+import { ContextProviderPlugin, Mode } from '../api/plugin';
 import { debug } from '../logging';
 
 /**
  * Plugin to read arbitrary SSM parameter names
  */
 export class SSMContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
-  }
+  constructor(private readonly aws: SdkProvider) {}
 
   public async getValue(args: cxschema.SSMParameterContextQuery) {
     const region = args.region;
@@ -40,15 +38,24 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
    *
    * @throws Error if a service error (other than ``ParameterNotFound``) occurs.
    */
-  private async getSsmParameterValue(account: string, region: string, parameterName: string, lookupRoleArn?: string)
-    : Promise<AWS.SSM.GetParameterResult> {
+  private async getSsmParameterValue(
+    account: string,
+    region: string,
+    parameterName: string,
+    lookupRoleArn?: string,
+  ): Promise<GetParameterCommandOutput> {
     const options = { assumeRoleArn: lookupRoleArn };
-    const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ssm();
+    const ssm = (
+      await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)
+    ).ssm();
     try {
-      return await ssm.getParameter({ Name: parameterName }).promise();
+      const command = new GetParameterCommand({
+        Name: parameterName,
+      });
+      return await ssm.send(command);
     } catch (e: any) {
-      if (e.code === 'ParameterNotFound') {
-        return {};
+      if (e.name === 'ParameterNotFound') {
+        return { $metadata: {} };
       }
       throw e;
     }

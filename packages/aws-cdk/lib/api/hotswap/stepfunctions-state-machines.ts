@@ -1,9 +1,12 @@
+import { UpdateStateMachineCommand } from '@aws-sdk/client-sfn';
 import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   if (change.newValue.Type !== 'AWS::StepFunctions::StateMachine') {
     return [];
@@ -17,7 +20,9 @@ export async function isHotswappableStateMachineChange(
     const stateMachineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
     const stateMachineArn = stateMachineNameInCfnTemplate
       ? await evaluateCfnTemplate.evaluateCfnExpression({
-        'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + stateMachineNameInCfnTemplate,
+        'Fn::Sub':
+            'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' +
+            stateMachineNameInCfnTemplate,
       })
       : await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
     ret.push({
@@ -32,10 +37,14 @@ export async function isHotswappableStateMachineChange(
         }
 
         // not passing the optional properties leaves them unchanged
-        await sdk.stepFunctions().updateStateMachine({
-          stateMachineArn,
-          definition: await evaluateCfnTemplate.evaluateCfnExpression(change.propertyUpdates.DefinitionString.newValue),
-        }).promise();
+        await sdk.stepFunctions().send(
+          new UpdateStateMachineCommand({
+            stateMachineArn,
+            definition: await evaluateCfnTemplate.evaluateCfnExpression(
+              change.propertyUpdates.DefinitionString.newValue,
+            ),
+          }),
+        );
       },
     });
   }

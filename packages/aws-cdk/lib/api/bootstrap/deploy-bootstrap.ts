@@ -3,11 +3,18 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE, BOOTSTRAP_VARIANT_PARAMETER, DEFAULT_BOOTSTRAP_VARIANT } from './bootstrap-props';
+import {
+  BOOTSTRAP_VERSION_OUTPUT,
+  BootstrapEnvironmentOptions,
+  BOOTSTRAP_VERSION_RESOURCE,
+  BOOTSTRAP_VARIANT_PARAMETER,
+  DEFAULT_BOOTSTRAP_VARIANT,
+} from './bootstrap-props';
 import * as logging from '../../logging';
-import { Mode, SdkProvider, ISDK } from '../aws-auth';
+import { SdkProvider, ISDK } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
+import { Mode } from '../plugin';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 
 /**
@@ -29,7 +36,7 @@ export class BootstrapStack {
     toolkitStackName = toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
     const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment);
-    const sdk = (await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting)).sdk;
+    const sdk = await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting);
 
     const currentToolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
 
@@ -41,8 +48,8 @@ export class BootstrapStack {
     private readonly sdk: ISDK,
     private readonly resolvedEnvironment: cxapi.Environment,
     private readonly toolkitStackName: string,
-    private readonly currentToolkitInfo: ToolkitInfo) {
-  }
+    private readonly currentToolkitInfo: ToolkitInfo,
+  ) {}
 
   public get parameters(): Record<string, string> {
     return this.currentToolkitInfo.found ? this.currentToolkitInfo.bootstrapStack.parameters : {};
@@ -76,7 +83,9 @@ export class BootstrapStack {
       const currentVariant = this.currentToolkitInfo.variant;
       const newVariant = bootstrapVariantFromTemplate(template);
       if (currentVariant !== newVariant) {
-        logging.warning(`Bootstrap stack already exists, containing '${currentVariant}'. Not overwriting it with a template containing '${newVariant}' (use --force if you intend to overwrite)`);
+        logging.warning(
+          `Bootstrap stack already exists, containing '${currentVariant}'. Not overwriting it with a template containing '${newVariant}' (use --force if you intend to overwrite)`,
+        );
         return abortResponse;
       }
 
@@ -84,11 +93,13 @@ export class BootstrapStack {
       const newVersion = bootstrapVersionFromTemplate(template);
       const currentVersion = this.currentToolkitInfo.version;
       if (newVersion < currentVersion) {
-        logging.warning(`Bootstrap stack already at version ${currentVersion}. Not downgrading it to version ${newVersion} (use --force if you intend to downgrade)`);
+        logging.warning(
+          `Bootstrap stack already at version ${currentVersion}. Not downgrading it to version ${newVersion} (use --force if you intend to downgrade)`,
+        );
         if (newVersion === 0) {
           // A downgrade with 0 as target version means we probably have a new-style bootstrap in the account,
           // and an old-style bootstrap as current target, which means the user probably forgot to put this flag in.
-          logging.warning('(Did you set the \'@aws-cdk/core:newStyleStackSynthesis\' feature flag in cdk.json?)');
+          logging.warning("(Did you set the '@aws-cdk/core:newStyleStackSynthesis' feature flag in cdk.json?)");
         }
         return abortResponse;
       }
@@ -134,7 +145,9 @@ export function bootstrapVersionFromTemplate(template: any): number {
   ];
 
   for (const vs of versionSources) {
-    if (typeof vs === 'number') { return vs; }
+    if (typeof vs === 'number') {
+      return vs;
+    }
     if (typeof vs === 'string' && !isNaN(parseInt(vs, 10))) {
       return parseInt(vs, 10);
     }

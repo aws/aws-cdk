@@ -1,20 +1,31 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
-import { Mode } from '../api/aws-auth/credentials';
+import {
+  DescribeListenersCommand,
+  DescribeListenersCommandOutput,
+  DescribeLoadBalancersCommand,
+  DescribeLoadBalancersCommandInput,
+  DescribeLoadBalancersCommandOutput,
+  DescribeTagsCommand,
+  ElasticLoadBalancingV2Client,
+  Listener,
+  LoadBalancer,
+  TagDescription,
+} from '@aws-sdk/client-elastic-load-balancing-v2';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { ContextProviderPlugin } from '../api/plugin';
+import { ContextProviderPlugin, Mode } from '../api/plugin';
 
 /**
  * Provides load balancer context information.
  */
 export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
-  }
+  constructor(private readonly aws: SdkProvider) {}
 
   async getValue(query: cxschema.LoadBalancerContextQuery): Promise<cxapi.LoadBalancerContextResponse> {
     const options = { assumeRoleArn: query.lookupRoleArn };
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)).sdk.elbv2();
+    const elbv2 = (
+      await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)
+    ).elbv2();
 
     if (!query.loadBalancerArn && !query.loadBalancerTags) {
       throw new Error('The load balancer lookup query must specify either `loadBalancerArn` or `loadBalancerTags`');
@@ -27,14 +38,17 @@ export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin 
     }
 
     if (loadBalancers.length > 1) {
-      throw new Error(`Multiple load balancers found matching ${JSON.stringify(query)} - please provide more specific criteria`);
+      throw new Error(
+        `Multiple load balancers found matching ${JSON.stringify(query)} - please provide more specific criteria`,
+      );
     }
 
     const loadBalancer = loadBalancers[0];
 
-    const ipAddressType = loadBalancer.IpAddressType === 'ipv4'
-      ? cxapi.LoadBalancerIpAddressType.IPV4
-      : cxapi.LoadBalancerIpAddressType.DUAL_STACK;
+    const ipAddressType =
+      loadBalancer.IpAddressType === 'ipv4'
+        ? cxapi.LoadBalancerIpAddressType.IPV4
+        : cxapi.LoadBalancerIpAddressType.DUAL_STACK;
 
     return {
       loadBalancerArn: loadBalancer.LoadBalancerArn!,
@@ -55,28 +69,36 @@ type LoadBalancerListenerResponse = cxapi.LoadBalancerListenerContextResponse;
  * Provides load balancer listener context information
  */
 export class LoadBalancerListenerContextProviderPlugin implements ContextProviderPlugin {
-  constructor(private readonly aws: SdkProvider) {
-  }
+  constructor(private readonly aws: SdkProvider) {}
 
   async getValue(query: LoadBalancerListenerQuery): Promise<LoadBalancerListenerResponse> {
     const options = { assumeRoleArn: query.lookupRoleArn };
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)).sdk.elbv2();
+    const elbv2 = (
+      await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading, options)
+    ).elbv2();
 
     if (!query.listenerArn && !query.loadBalancerArn && !query.loadBalancerTags) {
-      throw new Error('The load balancer listener query must specify at least one of: `listenerArn`, `loadBalancerArn` or `loadBalancerTags`');
+      throw new Error(
+        'The load balancer listener query must specify at least one of: `listenerArn`, `loadBalancerArn` or `loadBalancerTags`',
+      );
     }
 
-    return query.listenerArn ? this.getListenerByArn(elbv2, query) : this.getListenerByFilteringLoadBalancers(elbv2, query);
+    return query.listenerArn
+      ? this.getListenerByArn(elbv2, query)
+      : this.getListenerByFilteringLoadBalancers(elbv2, query);
   }
 
   /**
    * Look up a listener by querying listeners for query's listener arn and then
    * resolve its load balancer for the security group information.
    */
-  private async getListenerByArn(elbv2: AWS.ELBv2, query: LoadBalancerListenerQuery) {
+  private async getListenerByArn(elbv2: ElasticLoadBalancingV2Client, query: LoadBalancerListenerQuery) {
     const listenerArn = query.listenerArn!;
-    const listenerResults = await elbv2.describeListeners({ ListenerArns: [listenerArn] }).promise();
-    const listeners = (listenerResults.Listeners ?? []);
+    const command = new DescribeListenersCommand({
+      ListenerArns: [listenerArn],
+    });
+    const listenerResults = await elbv2.send(command);
+    const listeners = listenerResults.Listeners ?? [];
 
     if (listeners.length === 0) {
       throw new Error(`No load balancer listeners found matching arn ${listenerArn}`);
@@ -107,7 +129,10 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
    * unmatching load balancers, and then by querying the listeners of each load
    * balancer and filtering out unmatching listeners.
    */
-  private async getListenerByFilteringLoadBalancers(elbv2: AWS.ELBv2, args: LoadBalancerListenerQuery) {
+  private async getListenerByFilteringLoadBalancers(
+    elbv2: ElasticLoadBalancingV2Client,
+    args: LoadBalancerListenerQuery,
+  ) {
     // Find matching load balancers
     const loadBalancers = await findLoadBalancers(elbv2, args);
 
@@ -124,7 +149,11 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
    * provide more specific criteria rather than us providing a nondeterministic
    * result.
    */
-  private async findMatchingListener(elbv2: AWS.ELBv2, loadBalancers: AWS.ELBv2.LoadBalancers, query: LoadBalancerListenerQuery) {
+  private async findMatchingListener(
+    elbv2: ElasticLoadBalancingV2Client,
+    loadBalancers: LoadBalancer[],
+    query: LoadBalancerListenerQuery,
+  ) {
     const loadBalancersByArn = indexLoadBalancersByArn(loadBalancers);
     const loadBalancerArns = Object.keys(loadBalancersByArn);
 
@@ -146,7 +175,9 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
     }
 
     if (matches.length > 1) {
-      throw new Error(`Multiple load balancer listeners found matching ${JSON.stringify(query)} - please provide more specific criteria`);
+      throw new Error(
+        `Multiple load balancer listeners found matching ${JSON.stringify(query)} - please provide more specific criteria`,
+      );
     }
 
     return matches[0];
@@ -156,14 +187,17 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
 /**
  * Find load balancers by the given filter args.
  */
-async function findLoadBalancers(elbv2: AWS.ELBv2, args: cxschema.LoadBalancerFilter) {
+async function findLoadBalancers(
+  elbv2: ElasticLoadBalancingV2Client,
+  args: cxschema.LoadBalancerFilter,
+): Promise<LoadBalancer[]> {
   // List load balancers
   let loadBalancers = await describeLoadBalancers(elbv2, {
     LoadBalancerArns: args.loadBalancerArn ? [args.loadBalancerArn] : undefined,
   });
 
   // Filter by load balancer type
-  loadBalancers = loadBalancers.filter(lb => lb.Type === args.loadBalancerType);
+  loadBalancers = loadBalancers.filter((lb) => lb.Type === args.loadBalancerType);
 
   // Filter by load balancer tags
   if (args.loadBalancerTags) {
@@ -177,14 +211,18 @@ async function findLoadBalancers(elbv2: AWS.ELBv2, args: cxschema.LoadBalancerFi
  * Helper to paginate over describeLoadBalancers
  * @internal
  */
-export async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2.DescribeLoadBalancersInput) {
-  const loadBalancers = Array<AWS.ELBv2.LoadBalancer>();
-  let page: AWS.ELBv2.DescribeLoadBalancersOutput | undefined;
+export async function describeLoadBalancers(
+  elbv2: ElasticLoadBalancingV2Client,
+  request: DescribeLoadBalancersCommandInput,
+) {
+  const loadBalancers = Array<LoadBalancer>();
+  let page: DescribeLoadBalancersCommandOutput | undefined;
   do {
-    page = await elbv2.describeLoadBalancers({
+    const command = new DescribeLoadBalancersCommand({
       ...request,
       Marker: page?.NextMarker,
-    }).promise();
+    });
+    page = await elbv2.send(command);
 
     loadBalancers.push(...Array.from(page.LoadBalancers ?? []));
   } while (page.NextMarker);
@@ -196,10 +234,14 @@ export async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2
  * Describes the tags of each load balancer and returns the load balancers that
  * match the given tags.
  */
-async function filterLoadBalancersByTags(elbv2: AWS.ELBv2, loadBalancers: AWS.ELBv2.LoadBalancers, loadBalancerTags: cxschema.Tag[]) {
+async function filterLoadBalancersByTags(
+  elbv2: ElasticLoadBalancingV2Client,
+  loadBalancers: LoadBalancer[],
+  loadBalancerTags: cxschema.Tag[],
+) {
   const loadBalancersByArn = indexLoadBalancersByArn(loadBalancers);
   const loadBalancerArns = Object.keys(loadBalancersByArn);
-  const matchingLoadBalancers = Array<AWS.ELBv2.LoadBalancer>();
+  const matchingLoadBalancers = Array<LoadBalancer>();
 
   // Consume the items of async generator.
   for await (const tags of describeTags(elbv2, loadBalancerArns)) {
@@ -217,14 +259,15 @@ async function filterLoadBalancersByTags(elbv2: AWS.ELBv2, loadBalancers: AWS.EL
  * the appropriate requests, yielding each tag description as it receives it.
  * @internal
  */
-export async function* describeTags(elbv2: AWS.ELBv2, resourceArns: string[]) {
+export async function* describeTags(elbv2: ElasticLoadBalancingV2Client, resourceArns: string[]) {
   // Max of 20 resource arns per request.
   const chunkSize = 20;
   for (let i = 0; i < resourceArns.length; i += chunkSize) {
     const chunk = resourceArns.slice(i, Math.min(i + chunkSize, resourceArns.length));
-    const chunkTags = await elbv2.describeTags({
+    const command = new DescribeTagsCommand({
       ResourceArns: chunk,
-    }).promise();
+    });
+    const chunkTags = await elbv2.send(command);
 
     for (const tag of chunkTags.TagDescriptions ?? []) {
       yield tag;
@@ -236,7 +279,7 @@ export async function* describeTags(elbv2: AWS.ELBv2, resourceArns: string[]) {
  * Determines if the given TagDescription matches the required tags.
  * @internal
  */
-export function tagsMatch(tagDescription: AWS.ELBv2.TagDescription, requiredTags: cxschema.Tag[]) {
+export function tagsMatch(tagDescription: TagDescription, requiredTags: cxschema.Tag[]) {
   const tagsByName: Record<string, string | undefined> = {};
   for (const tag of tagDescription.Tags ?? []) {
     tagsByName[tag.Key!] = tag.Value;
@@ -258,14 +301,18 @@ export function tagsMatch(tagDescription: AWS.ELBv2.TagDescription, requiredTags
  * as they come in.
  * @internal
  */
-export async function* describeListenersByLoadBalancerArn(elbv2: AWS.ELBv2, loadBalancerArns: string[]) {
+export async function* describeListenersByLoadBalancerArn(
+  elbv2: ElasticLoadBalancingV2Client,
+  loadBalancerArns: string[],
+) {
   for (const loadBalancerArn of loadBalancerArns) {
-    let page: AWS.ELBv2.DescribeListenersOutput | undefined;
+    let page: DescribeListenersCommandOutput | undefined;
     do {
-      page = await elbv2.describeListeners({
+      const command = new DescribeListenersCommand({
         LoadBalancerArn: loadBalancerArn,
         Marker: page?.NextMarker,
-      }).promise();
+      });
+      page = await elbv2.send(command);
 
       for (const listener of page.Listeners ?? []) {
         yield listener;
@@ -277,7 +324,7 @@ export async function* describeListenersByLoadBalancerArn(elbv2: AWS.ELBv2, load
 /**
  * Determines if a listener matches the query filters.
  */
-function listenerMatchesQueryFilter(listener: AWS.ELBv2.Listener, args: cxschema.LoadBalancerListenerContextQuery): boolean {
+function listenerMatchesQueryFilter(listener: Listener, args: cxschema.LoadBalancerListenerContextQuery): boolean {
   if (args.listenerPort && listener.Port !== args.listenerPort) {
     // No match.
     return false;
@@ -294,8 +341,8 @@ function listenerMatchesQueryFilter(listener: AWS.ELBv2.Listener, args: cxschema
 /**
  * Returns a record of load balancers indexed by their arns
  */
-function indexLoadBalancersByArn(loadBalancers: AWS.ELBv2.LoadBalancer[]): Record<string, AWS.ELBv2.LoadBalancer> {
-  const loadBalancersByArn: Record<string, AWS.ELBv2.LoadBalancer> = {};
+function indexLoadBalancersByArn(loadBalancers: LoadBalancer[]): Record<string, LoadBalancer> {
+  const loadBalancersByArn: Record<string, LoadBalancer> = {};
 
   for (const loadBalancer of loadBalancers) {
     loadBalancersByArn[loadBalancer.LoadBalancerArn!] = loadBalancer;
