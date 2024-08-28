@@ -466,6 +466,72 @@ describe('S3BucketOrigin', () => {
         });
       });
     });
+    describe('when specifying READ, WRITE, and DELETE origin access levels', () => {
+      it('should add the correct permissions to bucket policy', () => {
+        const stack = new Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket');
+        const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
+          originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
+        });
+        const distribution = new cloudfront.Distribution(stack, 'MyDistribution', {
+          defaultBehavior: { origin },
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  's3:GetObject',
+                  's3:PutObject',
+                  's3:DeleteObject',
+                ],
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'cloudfront.amazonaws.com',
+                },
+                Condition: {
+                  StringEquals: {
+                    'AWS:SourceArn': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':cloudfront::',
+                          {
+                            Ref: 'AWS::AccountId',
+                          },
+                          ':distribution/',
+                          {
+                            Ref: 'MyDistribution6271DFB5',
+                          },
+                        ],
+                      ],
+                    },
+                  },
+                },
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'MyBucketF68F3FF0',
+                          'Arn',
+                        ],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        });
+      })
+    })
   });
 
   describe('withOriginAccessIdentity', () => {
