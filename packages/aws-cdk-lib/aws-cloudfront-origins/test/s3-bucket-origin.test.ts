@@ -1,8 +1,9 @@
 import { Annotations, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront/index';
 import * as origins from '../../aws-cloudfront-origins';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3/index';
-import { App, Duration, Stack } from '../../core';
+import { App, Duration, Fn, Stack } from '../../core';
 
 describe('S3BucketOrigin', () => {
   describe('withOriginAccessControl', () => {
@@ -162,6 +163,225 @@ describe('S3BucketOrigin', () => {
             },
           },
         });
+      });
+    });
+
+    describe('when using bucket with KMS Customer Managed key', () => {
+      it('should match expected template resource and warn user about wildcard key policy', () => {
+        const stack = new Stack();
+        const kmsKey = new kms.Key(stack, 'myKey');
+        const bucket = new s3.Bucket(stack, 'myEncryptedBucket', {
+          encryption: s3.BucketEncryption.KMS,
+          encryptionKey: kmsKey,
+          objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+        });
+        new cloudfront.Distribution(stack, 'MyDistributionA', {
+          defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(bucket) },
+        });
+        const template = Template.fromStack(stack);
+
+        expect(template.toJSON().Resources).toEqual({
+          myKey441A1E73: {
+            Type: 'AWS::KMS::Key',
+            Properties: {
+              KeyPolicy: {
+                Statement: [
+                  {
+                    Action: 'kms:*',
+                    Effect: 'Allow',
+                    Principal: {
+                      AWS: {
+                        'Fn::Join': [
+                          '',
+                          [
+                            'arn:',
+                            {
+                              Ref: 'AWS::Partition',
+                            },
+                            ':iam::',
+                            {
+                              Ref: 'AWS::AccountId',
+                            },
+                            ':root',
+                          ],
+                        ],
+                      },
+                    },
+                    Resource: '*',
+                  },
+                  {
+                    Action: 'kms:Decrypt',
+                    Condition: {
+                      ArnLike: {
+                        'AWS:SourceArn': {
+                          'Fn::Join': [
+                            '',
+                            [
+                              'arn:',
+                              {
+                                Ref: 'AWS::Partition',
+                              },
+                              ':cloudfront::',
+                              {
+                                Ref: 'AWS::AccountId',
+                              },
+                              ':distribution/*',
+                            ],
+                          ],
+                        },
+                      },
+                    },
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: 'cloudfront.amazonaws.com',
+                    },
+                    Resource: '*',
+                  },
+                ],
+                Version: '2012-10-17',
+              },
+            },
+            UpdateReplacePolicy: 'Retain',
+            DeletionPolicy: 'Retain',
+          },
+          myEncryptedBucket939A51C0: {
+            Type: 'AWS::S3::Bucket',
+            Properties: {
+              BucketEncryption: {
+                ServerSideEncryptionConfiguration: [
+                  {
+                    ServerSideEncryptionByDefault: {
+                      KMSMasterKeyID: {
+                        'Fn::GetAtt': [
+                          'myKey441A1E73',
+                          'Arn',
+                        ],
+                      },
+                      SSEAlgorithm: 'aws:kms',
+                    },
+                  },
+                ],
+              },
+              OwnershipControls: {
+                Rules: [
+                  {
+                    ObjectOwnership: 'BucketOwnerEnforced',
+                  },
+                ],
+              },
+            },
+            UpdateReplacePolicy: 'Retain',
+            DeletionPolicy: 'Retain',
+          },
+          myEncryptedBucketPolicyF516140B: {
+            Type: 'AWS::S3::BucketPolicy',
+            Properties: {
+              Bucket: {
+                Ref: 'myEncryptedBucket939A51C0',
+              },
+              PolicyDocument: {
+                Statement: [
+                  {
+                    Action: 's3:GetObject',
+                    Condition: {
+                      StringEquals: {
+                        'AWS:SourceArn': {
+                          'Fn::Join': [
+                            '',
+                            [
+                              'arn:',
+                              {
+                                Ref: 'AWS::Partition',
+                              },
+                              ':cloudfront::',
+                              {
+                                Ref: 'AWS::AccountId',
+                              },
+                              ':distribution/',
+                              {
+                                Ref: 'MyDistributionA2150CE0F',
+                              },
+                            ],
+                          ],
+                        },
+                      },
+                    },
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: 'cloudfront.amazonaws.com',
+                    },
+                    Resource: {
+                      'Fn::Join': [
+                        '',
+                        [
+                          {
+                            'Fn::GetAtt': [
+                              'myEncryptedBucket939A51C0',
+                              'Arn',
+                            ],
+                          },
+                          '/*',
+                        ],
+                      ],
+                    },
+                  },
+                ],
+                Version: '2012-10-17',
+              },
+            },
+          },
+          MyDistributionAOrigin1S3OriginAccessControlE2649D73: {
+            Type: 'AWS::CloudFront::OriginAccessControl',
+            Properties: {
+              OriginAccessControlConfig: {
+                Name: 'MyDistributionAOrigin1S3OriginAccessControl2859DD54',
+                OriginAccessControlOriginType: 's3',
+                SigningBehavior: 'always',
+                SigningProtocol: 'sigv4',
+              },
+            },
+          },
+          MyDistributionA2150CE0F: {
+            Type: 'AWS::CloudFront::Distribution',
+            Properties: {
+              DistributionConfig: {
+                DefaultCacheBehavior: {
+                  CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+                  Compress: true,
+                  TargetOriginId: 'MyDistributionAOrigin11BE8FF8C',
+                  ViewerProtocolPolicy: 'allow-all',
+                },
+                Enabled: true,
+                HttpVersion: 'http2',
+                IPV6Enabled: true,
+                Origins: [
+                  {
+                    DomainName: {
+                      'Fn::GetAtt': [
+                        'myEncryptedBucket939A51C0',
+                        'RegionalDomainName',
+                      ],
+                    },
+                    Id: 'MyDistributionAOrigin11BE8FF8C',
+                    OriginAccessControlId: {
+                      'Fn::GetAtt': [
+                        'MyDistributionAOrigin1S3OriginAccessControlE2649D73',
+                        'Id',
+                      ],
+                    },
+                    S3OriginConfig: {
+                      OriginAccessIdentity: '',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        });
+        Annotations.fromStack(stack).hasWarning('/Default',
+          'To avoid circular dependency between the KMS key, Bucket, and Distribution,' +
+          'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
+          'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]');
       });
     });
 

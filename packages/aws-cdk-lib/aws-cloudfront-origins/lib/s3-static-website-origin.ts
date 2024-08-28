@@ -18,7 +18,8 @@ export interface S3StaticWebsiteOriginProps extends HttpOriginProps {
 export class S3StaticWebsiteOrigin extends HttpOrigin {
   constructor(props: S3StaticWebsiteOriginProps) {
     super(props.bucket.bucketWebsiteDomainName, {
-      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
+      // S3 only supports HTTP for website buckets. See https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteEndpoints.html
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
       ...props,
     });
   }

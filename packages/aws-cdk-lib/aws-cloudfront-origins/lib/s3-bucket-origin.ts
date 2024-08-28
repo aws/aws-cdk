@@ -4,7 +4,7 @@ import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
-import { Annotations, Aws, DefaultTokenResolver, Names, Stack, StringConcat, Token, Tokenization } from '../../core';
+import { Annotations, Aws, Names, Stack } from '../../core';
 
 const BUCKET_ACTIONS: Record<string, string[]> = {
   READ: ['s3:GetObject'],
@@ -84,21 +84,8 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         if (bucket.encryptionKey) {
-          let bucketName = bucket.bucketName;
-          if (Token.isUnresolved(bucket.bucketName)) {
-            bucketName = JSON.stringify(Tokenization.resolve(bucket.bucketName, {
-              scope,
-              resolver: new DefaultTokenResolver(new StringConcat()),
-            }));
-          }
-          Annotations.of(scope).addInfo(
-            `Granting OAC permissions to access KMS key for S3 bucket origin ${bucketName} may cause a circular dependency error when this stack deploys.\n` +
-            'The key policy references the distribution\'s id, the distribution references the bucket, and the bucket references the key.\n'+
-            'See the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README for more details.\n',
-          );
-
           const keyPolicyActions = this.getKeyPolicyActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
-          const keyPolicyResult = this.grantDistributionAccessToKey(distributionId!, keyPolicyActions, bucket.encryptionKey);
+          const keyPolicyResult = this.grantDistributionAccessToKey(keyPolicyActions, bucket.encryptionKey);
           // Failed to update key policy, assume using imported key
           if (!keyPolicyResult.statementAdded) {
             Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicy',
@@ -154,7 +141,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return result;
       }
 
-      grantDistributionAccessToKey(distributionId: string, actions: string[], key: IKey): iam.AddToResourcePolicyResult {
+      grantDistributionAccessToKey(actions: string[], key: IKey): iam.AddToResourcePolicyResult {
         const oacKeyPolicyStatement = new iam.PolicyStatement(
           {
             effect: iam.Effect.ALLOW,
@@ -162,12 +149,16 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
             actions,
             resources: ['*'],
             conditions: {
-              StringEquals: {
-                'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
+              ArnLike: {
+                'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/*`,
               },
             },
           },
         );
+        Annotations.of(key.node.scope!).addWarningV2('@aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac',
+          'To avoid circular dependency between the KMS key, Bucket, and Distribution,' +
+          'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
+          'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.');
         const result = key.addToResourcePolicy(oacKeyPolicyStatement);
         return result;
       }
