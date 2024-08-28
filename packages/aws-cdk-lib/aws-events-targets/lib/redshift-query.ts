@@ -54,9 +54,9 @@ export interface RedshiftQueryProps {
   /**
    * Should an event be sent back to Event Bridge when the SQL statement is executed.
    *
-   * @default - false
+   * @default false
    */
-  readonly withEvent?: boolean;
+  readonly sendEventBridgeEvent?: boolean;
 
   /**
    * The queue to be used as dead letter queue.
@@ -117,7 +117,7 @@ export class RedshiftQuery implements events.IRuleTarget {
         sql: this.props.sql,
         sqls: this.props.batchSQL,
         statementName: this.props.statementName,
-        withEvent: this.props.withEvent,
+        withEvent: this.props.sendEventBridgeEvent,
       },
     };
   }
