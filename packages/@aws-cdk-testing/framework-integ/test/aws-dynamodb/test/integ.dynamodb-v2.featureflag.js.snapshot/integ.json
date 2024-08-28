@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "table-v2-feature-flag/DefaultTest": {
+      "stacks": [
+        "ResourcePolicyTest-v2-ff"
+      ],
+      "assertionStack": "table-v2-feature-flag/DefaultTest/DeployAssert",
+      "assertionStackName": "tablev2featureflagDefaultTestDeployAssertB12000F0"
+    }
+  }
+}
