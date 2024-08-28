@@ -92,7 +92,7 @@ new SubnetV2(stack, 'testsubnet', {
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-//validate ipv6
+//Validate ipv6 IPAM
 new SubnetV2(stack, 'validateIpv6', {
   vpc,
   ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
