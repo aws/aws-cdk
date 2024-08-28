@@ -455,7 +455,7 @@ describe('S3BucketOrigin', () => {
           Version: '2012-10-17',
         };
         (kmsKey.node.defaultChild as kms.CfnKey).keyPolicy = finalKeyPolicy;
-        
+
         Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           KeyPolicy: finalKeyPolicy,
         });
