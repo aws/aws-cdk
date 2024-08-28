@@ -3,8 +3,8 @@ import * as cloudfront from '../../aws-cloudfront';
 import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { CfnBucket, IBucket } from '../../aws-s3';
-import { Annotations, Aws, DefaultTokenResolver, Names, Stack, StringConcat, Token, Tokenization } from '../../core';
+import { IBucket } from '../../aws-s3';
+import { Annotations, Aws, Names, Stack } from '../../core';
 
 const BUCKET_ACTIONS: Record<string, string[]> = {
   READ: ['s3:GetObject'],
@@ -38,15 +38,6 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
    * @default AccessLevel.READ
    */
   readonly originAccessLevels?: AccessLevel[];
-
-  /**
-   * This flag only works with bucket with the bucketName set.
-   * Setting this flag to `true` will cause the code to assemble the origin DomainName using static values (i.e. without
-   * referencing the bucket resource.). This provides a workaround to circular dependency error when bucket is encrypted
-   * with a KMS key.
-   * @default false
-   */
-  readonly assembleDomainName?: boolean;
 }
 
 /**
@@ -70,27 +61,10 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   public static withOriginAccessControl(bucket: IBucket, props?: S3BucketOriginWithOACProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
       private originAccessControl?: cloudfront.IOriginAccessControl;
-      private readonly assembleDomainName?: boolean
-      private readonly bucketName?: string
 
       constructor() {
         super(bucket, { ...props });
         this.originAccessControl = props?.originAccessControl;
-        this.assembleDomainName = props?.assembleDomainName ?? false;
-
-        if (this.assembleDomainName) {
-          if (!Token.isUnresolved(bucket.bucketName)) {
-            // this is the case when bucket is from Bucket.fromBucketName
-            this.bucketName = bucket.bucketName;
-          } else if (!Token.isUnresolved((bucket.node.defaultChild as CfnBucket)?.bucketName)) {
-            // this is the case when bucket is a L2 bucket with bucketName set
-            this.bucketName = (bucket.node.defaultChild as CfnBucket)?.bucketName;
-          }
-
-          if (!this.bucketName) {
-            throw new Error(`Cannot assemble static DomainName as bucket ${bucket.node.id} has no bucketName set.`);
-          }
-        }
       }
 
       public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
@@ -117,7 +91,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
           );
 
           const keyPolicyActions = this.getKeyPolicyActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
-          const keyPolicyResult = this.grantDistributionAccessToKey(distributionId!, keyPolicyActions, bucket.encryptionKey);
+          const keyPolicyResult = this.grantDistributionAccessToKey(keyPolicyActions, bucket.encryptionKey);
           // Failed to update key policy, assume using imported key
           if (!keyPolicyResult.statementAdded) {
             Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicy',
@@ -127,18 +101,12 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
 
         const originBindConfig = this._bind(scope, options);
 
-        const bucketStack = Stack.of(bucket);
-        const domainName = this.assembleDomainName ?
-          `${this.bucketName}.s3.${bucketStack.region}.${bucketStack.urlSuffix}` :
-          bucket.bucketRegionalDomainName;
-
         // Update configuration to set OriginControlAccessId property
         return {
           ...originBindConfig,
           originProperty: {
             ...originBindConfig.originProperty!,
             originAccessControlId: this.originAccessControl.originAccessControlId,
-            domainName,
           },
         };
       }
@@ -179,7 +147,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return result;
       }
 
-      grantDistributionAccessToKey(distributionId: string, actions: string[], key: IKey): iam.AddToResourcePolicyResult {
+      grantDistributionAccessToKey(actions: string[], key: IKey): iam.AddToResourcePolicyResult {
         const oacKeyPolicyStatement = new iam.PolicyStatement(
           {
             effect: iam.Effect.ALLOW,
@@ -187,8 +155,8 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
             actions,
             resources: ['*'],
             conditions: {
-              StringEquals: {
-                'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
+              ArnLike: {
+                'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/*`,
               },
             },
           },
