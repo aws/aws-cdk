@@ -3380,4 +3380,36 @@ describe('cluster', () => {
 
   });
 
+  describe('ITaggableV2', () => {
+    test('cluster isTaggableV2', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+      });
+      // THEN
+      expect(cdk.TagManager.isTaggableV2(cluster)).toBeTruthy();
+    });
+    test('cluster can be tagged with Tags.of', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+      });
+      cdk.Tags.of(cluster).add('TagsOf', '1');
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          tags: [{ Key: 'TagsOf', Value: '1' }],
+        },
+      });
+    });
+
+  });
+
 });

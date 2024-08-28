@@ -26,7 +26,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ITaggableV2, TagManager, TagType } from '../../core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1306,7 +1306,7 @@ export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAd
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
  */
-export class Cluster extends ClusterBase {
+export class Cluster extends ClusterBase implements ITaggableV2 {
   /**
    * Import an existing cluster
    *
@@ -1521,6 +1521,11 @@ export class Cluster extends ClusterBase {
   public readonly authenticationMode?: AuthenticationMode;
 
   /**
+   * `TagManager` for `ITaggableV2` implementation.
+   */
+  public readonly cdkTagManager: TagManager;
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -1569,6 +1574,7 @@ export class Cluster extends ClusterBase {
 
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
+    this.cdkTagManager = new TagManager(TagType.KEY_VALUE, 'AWS::EKS::Cluster', props.tags);
 
     const kubectlVersion = new semver.SemVer(`${props.version.version}.0`);
     if (semver.gte(kubectlVersion, '1.22.0') && !props.kubectlLayer) {
@@ -1694,7 +1700,7 @@ export class Cluster extends ClusterBase {
       subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
       clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
       onEventLayer: this.onEventLayer,
-      tags: props.tags,
+      tags: this.cdkTagManager.renderedTags as unknown as { [key:string]: string},
       logging: this.logging,
     });
 
