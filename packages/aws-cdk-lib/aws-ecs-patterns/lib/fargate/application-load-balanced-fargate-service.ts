@@ -182,6 +182,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     if (containerCpu > cpu) {
       throw new Error(`containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`);
     }
+    // If containerCPU is 0, it is not an error.
     if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
       throw new Error(`containerCpu must be a non-negative integer; received ${containerCpu}`);
     }
