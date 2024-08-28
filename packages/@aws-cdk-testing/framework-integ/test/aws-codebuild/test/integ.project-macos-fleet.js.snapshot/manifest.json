@@ -1,0 +1,240 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "aws-cdk-project-macos.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-project-macos.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-project-macos": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-project-macos.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0331ad420638c756e355489b9b045f05f0759321546243c13b4d24976d4cbb79.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-project-macos.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-project-macos.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-project-macos/MacOsFleet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MacOsFleet804A3B5D"
+          }
+        ],
+        "/aws-cdk-project-macos/MacOsProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MacOsProjectRole1708711E"
+          }
+        ],
+        "/aws-cdk-project-macos/MacOsProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MacOsProjectRoleDefaultPolicy76A4A56E"
+          }
+        ],
+        "/aws-cdk-project-macos/MacOsProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MacOsProjectCFCE4F6B"
+          }
+        ],
+        "/aws-cdk-project-macos/Exports/Output{\"Fn::GetAtt\":[\"MacOsFleet804A3B5D\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttMacOsFleet804A3B5DArn01D9C584"
+          }
+        ],
+        "/aws-cdk-project-macos/Exports/Output{\"Ref\":\"MacOsProjectCFCE4F6B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMacOsProjectCFCE4F6BC768DECD"
+          }
+        ],
+        "/aws-cdk-project-macos/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-project-macos/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-project-macos"
+    },
+    "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d1f41d8e58cd0344b19831d6215819b58917f57dee36fb9458ba121800dc1cb.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-project-macos",
+        "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets"
+      ],
+      "metadata": {
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodebuildlistFleets"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodebuildlistFleets"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildcbfff4de4622af655217157205222fac/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodebuildstartBuildcbfff4de4622af655217157205222fac"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForIsCompleteProviderInvoke4A953737"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForTimeoutProviderInvoke43A4EB35"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForRole9199F2C8"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForA46C07AC"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MacOsProjectIntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
