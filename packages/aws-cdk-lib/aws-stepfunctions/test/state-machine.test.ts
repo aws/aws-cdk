@@ -737,7 +737,7 @@ describe('State Machine', () => {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
-      EncryptionConfiguration: Match.objectLike({
+      EncryptionConfiguration: Match.objectEquals({
         KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
         KmsDataKeyReusePeriodSeconds: 75,
         Type: 'CUSTOMER_MANAGED_KMS_KEY',
@@ -842,10 +842,7 @@ describe('State Machine', () => {
             },
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:GenerateDataKey',
-            ],
+            Action: 'kms:GenerateDataKey',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
             Condition: {
               StringEquals: {
@@ -1024,7 +1021,7 @@ describe('State Machine', () => {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
-      EncryptionConfiguration: Match.objectLike({
+      EncryptionConfiguration: Match.objectEquals({
         KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
         KmsDataKeyReusePeriodSeconds: 300,
         Type: 'CUSTOMER_MANAGED_KMS_KEY',
@@ -1062,7 +1059,7 @@ describe('State Machine', () => {
         stateMachineType: sfn.StateMachineType.STANDARD,
         kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
       });
-    }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
+    }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a value for kmsKey');
   });
 
 });

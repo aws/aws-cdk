@@ -86,7 +86,7 @@ describe('Activity', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
       Name: 'Activity',
-      EncryptionConfiguration: Match.objectLike({
+      EncryptionConfiguration: Match.objectEquals({
         KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
         KmsDataKeyReusePeriodSeconds: 75,
         Type: 'CUSTOMER_MANAGED_KMS_KEY',
@@ -173,7 +173,7 @@ describe('Activity', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
       Name: 'Activity',
-      EncryptionConfiguration: Match.objectLike({
+      EncryptionConfiguration: Match.objectEquals({
         KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
         KmsDataKeyReusePeriodSeconds: 300,
         Type: 'CUSTOMER_MANAGED_KMS_KEY',
@@ -206,5 +206,5 @@ test('Instantiate Activity with no kms key and kmsDataKeyReusePeriodSeconds thro
     new stepfunctions.Activity(stack, 'Activity', {
       kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
     });
-  }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a kms key');
+  }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a value for kmsKey');
 });
