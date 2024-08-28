@@ -105,6 +105,7 @@ export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
+export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1091,6 +1092,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.145.0' },
     recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`TableV2\` is to use
+      the source regions \`resourcePolicy\` for all replicas. 
+      
+      If this flag is set, the default behavior is that each replica defines it's own \`resourcePolicy\` independently.
+
+      This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 

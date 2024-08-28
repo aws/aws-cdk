@@ -13,7 +13,7 @@ import { PolicyDocument } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
 import { ArnFormat, CfnTag, FeatureFlags, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
-import * as cxapi from '../../../@aws-cdk/cx-api';
+import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';

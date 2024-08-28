@@ -376,3 +376,21 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-dynamodb:resourcePolicyPerReplica`
+
+When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas.
+
+- If this flag is not set, the default behavior for \`TableV2\` is to use the source regions \`resourcePolicy\` for all replicas. 
+- If this flag is set to `true`, the default behavior is that each replica defines it's own \`resourcePolicy\` independently.
+- This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": true
+  }
+}
+```
