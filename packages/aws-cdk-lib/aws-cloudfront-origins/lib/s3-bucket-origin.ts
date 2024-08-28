@@ -84,12 +84,6 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         if (bucket.encryptionKey) {
-          Annotations.of(scope).addInfo(
-            `Granting OAC permissions to access KMS key for S3 bucket origin ${bucket.node.id} may cause a circular dependency error when this stack deploys.\n` +
-            'The key policy references the distribution\'s id, the distribution references the bucket, and the bucket references the key.\n'+
-            'See the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README for more details.\n',
-          );
-
           const keyPolicyActions = this.getKeyPolicyActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
           const keyPolicyResult = this.grantDistributionAccessToKey(keyPolicyActions, bucket.encryptionKey);
           // Failed to update key policy, assume using imported key
@@ -161,9 +155,10 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
             },
           },
         );
-        Annotations.of(key.node.scope!).addWarningV2('@aws-cdk/aws-cloudfront-origins:wildcardKeyPolicy',
-          'Using wildcard to match all Distribution IDs in Key policy condition.\n' +
-          'To further scope down the policy, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.');
+        Annotations.of(key.node.scope!).addWarningV2('@aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac',
+          'To avoid circular dependency between the KMS key, Bucket, and Distribution,' +
+          'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
+          'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.');
         const result = key.addToResourcePolicy(oacKeyPolicyStatement);
         return result;
       }
