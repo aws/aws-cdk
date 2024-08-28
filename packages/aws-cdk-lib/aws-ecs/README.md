@@ -621,28 +621,17 @@ taskDefinition.addContainer('container', {
 
 ### Restart policy
 
-To set a restart policy for the container, use the `restartPolicy`.
+To enable a restart policy for the container, set `enableRestartPolicy` to true and also specify
+`restartIgnoredExitCodes` and `restartAttemptPeriod` if necessary.
 
 ```ts
 declare const taskDefinition: ecs.TaskDefinition;
 
 taskDefinition.addContainer('container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  restartPolicy: {
-    ignoredExitCodes: [1, 2, 3],
-    restartAttemptPeriod: cdk.Duration.seconds(360),
-  },
-});
-```
-
-You can also just enable the restart policy with default settings.
-
-```ts
-declare const taskDefinition: ecs.TaskDefinition;
-
-taskDefinition.addContainer('container', {
-  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  restartPolicy: {},
+  enableRestartPolicy: true,
+  restartIgnoredExitCodes: [1, 2, 3],
+  restartAttemptPeriod: cdk.Duration.seconds(360),
 });
 ```
 

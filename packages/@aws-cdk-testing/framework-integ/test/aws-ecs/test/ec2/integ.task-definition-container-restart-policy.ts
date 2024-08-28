@@ -9,10 +9,9 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {});
 
 taskDefinition.addContainer('Container', {
   image: ecs.ContainerImage.fromRegistry('public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest'),
-  restartPolicy: {
-    ignoredExitCodes: [1, 2, 3],
-    restartAttemptPeriod: cdk.Duration.seconds(360),
-  },
+  enableRestartPolicy: true,
+  restartIgnoredExitCodes: [1, 2, 3],
+  restartAttemptPeriod: cdk.Duration.seconds(360),
 });
 
 new IntegTest(app, 'TaskDefinitionContainerRestartPolicy', {

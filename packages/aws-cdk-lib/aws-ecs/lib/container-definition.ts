@@ -386,16 +386,42 @@ export interface ContainerDefinitionOptions {
   readonly ulimits?: Ulimit[];
 
   /**
-   * The restart policy for a container.
+   * Enable a restart policy for a container.
    *
    * When you set up a restart policy, Amazon ECS can restart the container without needing to replace the task.
    *
    * You can't enable a restart policy for a Firelens log router container.
    *
-   * @default - No restart policy.
+   * @default false
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html
    */
-  readonly restartPolicy?: RestartPolicy;
+  readonly enableRestartPolicy?: boolean;
+
+  /**
+   * A list of exit codes that Amazon ECS will ignore and not attempt a restart on.
+   *
+   * This property is only used if `enableRestartPolicy` is set to true.
+   *
+   * You can specify a maximum of 50 container exit codes.
+   *
+   * @default - No exit codes are ignored.
+   */
+  readonly restartIgnoredExitCodes?: number[];
+
+  /**
+   * A period of time that the container must run for before a restart can be attempted.
+   *
+   * A container can be restarted only once every `restartAttemptPeriod` seconds.
+   * If a container isn't able to run for this time period and exits early, it will not be restarted.
+   *
+   * This property is only used if `enableRestartPolicy` is set to true.
+   *
+   * You can set a minimum `restartAttemptPeriod` of 60 seconds and a maximum `restartAttemptPeriod`
+   * of 1800 seconds.
+   *
+   * @default - Duration.seconds(300) if `enableRestartPolicy` is true, otherwise no period.
+   */
+  readonly restartAttemptPeriod?: cdk.Duration;
 }
 
 /**
@@ -885,7 +911,8 @@ export class ContainerDefinition extends Construct {
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
-      restartPolicy: this.props.restartPolicy && renderRestartPolicy(this.props.restartPolicy),
+      restartPolicy: this.props.enableRestartPolicy ?
+        renderRestartPolicy(this.props.restartIgnoredExitCodes, this.props.restartAttemptPeriod) : undefined,
     };
   }
 }
@@ -1509,45 +1536,16 @@ function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinitio
   }));
 }
 
-/**
- * The restart policy for a container
- */
-export interface RestartPolicy {
-  /**
-   * A list of exit codes that Amazon ECS will ignore and not attempt a restart on.
-   *
-   * You can specify a maximum of 50 container exit codes.
-   *
-   * @default - No exit codes are ignored.
-   */
-  readonly ignoredExitCodes?: number[];
-
-  /**
-   * A period of time that the container must run for before a restart can be attempted.
-   *
-   * A container can be restarted only once every `restartAttemptPeriod` seconds.
-   * If a container isn't able to run for this time period and exits early, it will not be restarted.
-   *
-   * You can set a minimum `restartAttemptPeriod` of 60 seconds and a maximum `restartAttemptPeriod`
-   * of 1800 seconds.
-   *
-   * @default Duration.seconds(300)
-   */
-  readonly restartAttemptPeriod?: cdk.Duration;
-}
-
-function renderRestartPolicy(restartPolicy: RestartPolicy): CfnTaskDefinition.RestartPolicy {
-  if (restartPolicy.ignoredExitCodes && restartPolicy.ignoredExitCodes.length > 50) {
-    throw new Error(`Only up to 50 can be specified for ignoredExitCodes, got: ${restartPolicy.ignoredExitCodes.length}`);
+function renderRestartPolicy(restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration): CfnTaskDefinition.RestartPolicy {
+  if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
+    throw new Error(`Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`);
   }
-  if (restartPolicy.restartAttemptPeriod
-    && (restartPolicy.restartAttemptPeriod.toSeconds() < 60 || restartPolicy.restartAttemptPeriod.toSeconds() > 1800)
-  ) {
-    throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartPolicy.restartAttemptPeriod.toSeconds()} seconds`);
+  if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
+    throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`);
   }
   return {
     Enabled: true,
-    IgnoredExitCodes: restartPolicy.ignoredExitCodes,
-    RestartAttemptPeriod: restartPolicy.restartAttemptPeriod?.toSeconds(),
+    IgnoredExitCodes: restartIgnoredExitCodes,
+    RestartAttemptPeriod: restartAttemptPeriod?.toSeconds(),
   };
 }

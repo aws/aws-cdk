@@ -223,8 +223,8 @@ export class FirelensLogRouter extends ContainerDefinition {
   constructor(scope: Construct, id: string, props: FirelensLogRouterProps) {
     super(scope, id, props);
 
-    if (props.restartPolicy) {
-      throw new Error('Firelens log router container cannot have restartPolicy');
+    if (props.enableRestartPolicy) {
+      throw new Error('Firelens log router container cannot enable restart policy');
     }
 
     const options = props.firelensConfig.options;
