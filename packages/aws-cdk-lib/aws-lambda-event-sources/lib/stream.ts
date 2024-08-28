@@ -1,4 +1,5 @@
 import { S3OnFailureDestination } from './s3-onfailuire-destination';
+import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Duration } from '../../core';
 
@@ -125,6 +126,17 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * @default - None
    */
   readonly filters?: Array<{[key: string]: any}>;
+
+  /**
+   * Add Customer managed KMS key to encrypt Filter Criteria.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * By default, Lambda will encrypt Filter Criteria using AWS managed keys
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk
+   *
+   * @default - none
+   */
+  readonly filterEncryption?: IKey;
+
 }
 
 /**
@@ -155,6 +167,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
       filters: this.props.filters,
+      filterEncryption: this.props.filterEncryption,
     };
   }
 }
