@@ -24,6 +24,14 @@ const MIN_BOOTSTRAP_STACK_VERSION = 6;
 const MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 8;
 
 /**
+ * Session tags require `sts:TagSession` permissions on roles during bootstrap.
+ * This is the first version of the bootstrap templates that adds these permissions.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+ */
+const MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION = 22;
+
+/**
  * Configuration properties for DefaultStackSynthesizer
  */
 export interface DefaultStackSynthesizerProps {
@@ -213,29 +221,57 @@ export interface DefaultStackSynthesizerProps {
   readonly bootstrapStackVersionSsmParameter?: string;
 
   /**
-   * Session tags to be used for the deploy role
+   * Session tags to be used when assuming the deploy role.
+   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
    *
+   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   *
+   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
+   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
    * @default - No Session Tags
    */
   readonly deployRoleSessionTags?: { [key: string]: string };
 
   /**
    * Session tags to be used for the lookup role
+   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
    *
+   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   *
+   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
+   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
    * @default - No Session Tags
    */
   readonly lookupRoleSessionTags?: { [key: string]: string };
 
   /**
    * Session tags to be used for the file asset publishing role
+   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
    *
+   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   *
+   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
+   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
    * @default - No Session Tags
    */
   readonly fileAssetPublishingRoleSessionTags?: { [key: string]: string };
 
   /**
    * Session tags to be used for the image asset publishing role
+   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
    *
+   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   *
+   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
+   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
    * @default - No Session Tags
    */
   readonly imageAssetPublishingRoleSessionTags?: { [key: string]: string };
@@ -459,14 +495,14 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      this.addBootstrapVersionRule(MIN_BOOTSTRAP_STACK_VERSION, this.bootstrapStackVersionSsmParameter!);
+      this.addBootstrapVersionRule(this._requiredBootstrapVersionForDeployment, this.bootstrapStackVersionSsmParameter!);
     }
 
     const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
-      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      requiresBootstrapStackVersion: this._requiredBoostrapVersionForAssets,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
     });
 
@@ -476,17 +512,49 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       assumeRoleSessionTags: this.props.deployRoleSessionTags,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      requiresBootstrapStackVersion: this._requiredBootstrapVersionForDeployment,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [assetManifestId],
       lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
         arn: this.lookupRoleArn,
         assumeRoleExternalId: this.props.lookupRoleExternalId,
         assumeRoleSessionTags: this.props.lookupRoleSessionTags,
-        requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
+        requiresBootstrapStackVersion: this._requiredBootstrapVersionForLookup,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,
     });
+  }
+
+  private get _requiredBoostrapVersionForAssets() {
+    return Math.max(this._requiredBootstrapVersionForFileAssets, this._requiredBootstrapVersionForImageAssets);
+  }
+
+  private get _requiredBootstrapVersionForDeployment() {
+    if (this.props.deployRoleSessionTags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_BOOTSTRAP_STACK_VERSION;
+  }
+
+  private get _requiredBootstrapVersionForLookup() {
+    if (this.props.lookupRoleSessionTags && this.props.lookupRoleSessionTags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION;
+  }
+
+  private get _requiredBootstrapVersionForFileAssets() {
+    if (this.assetManifest.hasFileAssets && this.props.fileAssetPublishingRoleSessionTags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_BOOTSTRAP_STACK_VERSION;
+  }
+
+  private get _requiredBootstrapVersionForImageAssets() {
+    if (this.assetManifest.hasImageAssets && this.props.imageAssetPublishingRoleSessionTags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_BOOTSTRAP_STACK_VERSION;
   }
 
   /**

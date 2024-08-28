@@ -283,6 +283,108 @@ describe('synthesis', () => {
 
     jest.restoreAllMocks();
   });
+
+  test('when deploy role session tags are configured, required stack bootstrap version is 22', () => {
+
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {
+      synthesizer: new cdk.DefaultStackSynthesizer({
+        deployRoleSessionTags: {
+          Departement: 'Engineering',
+        },
+      }),
+    });
+
+    const assembly = app.synth();
+    const stackArtifact = assembly.getStackByName('stack');
+
+    expect(stackArtifact.requiresBootstrapStackVersion).toEqual(22);
+
+    const versionRule = stack.node.findChild('CheckBootstrapVersion') as cdk.CfnRule;
+
+    // ugly - but no more than using the snapshot of the resource...
+    const bootstrapVersions = (versionRule._toCloudFormation() as any).Rules[versionRule.logicalId].Assertions[0].Assert['Fn::Not'][0]['Fn::Contains'][0];
+    expect(bootstrapVersions).toContain('21');
+
+  });
+
+  test('when lookup role session tags are configured, required lookup bootstrap version is 22', () => {
+
+    const app = new cdk.App();
+    new cdk.Stack(app, 'stack', {
+      synthesizer: new cdk.DefaultStackSynthesizer({
+        lookupRoleSessionTags: {
+          Departement: 'Engineering',
+        },
+      }),
+    });
+
+    const assembly = app.synth();
+    const stackArtifact = assembly.getStackByName('stack');
+
+    expect(stackArtifact.lookupRole?.requiresBootstrapStackVersion).toEqual(22);
+
+  });
+
+  test('when file asset role session tags are configured, required assets bootstrap version is 22', () => {
+
+    const app = new cdk.App();
+    new cdk.Stack(app, 'stack', {
+      synthesizer: new cdk.DefaultStackSynthesizer({
+        fileAssetPublishingRoleSessionTags: {
+          Departement: 'Engineering',
+        },
+      }),
+    });
+
+    const assembly = app.synth();
+    const assetsArtifact = assembly.tryGetArtifact('stack.assets') as cxapi.AssetManifestArtifact;
+
+    expect(assetsArtifact.requiresBootstrapStackVersion).toEqual(22);
+
+  });
+
+  test('when image asset role session tags are configured without a docker image asset, required assets bootstrap version is 6', () => {
+
+    const app = new cdk.App();
+    new cdk.Stack(app, 'stack', {
+      synthesizer: new cdk.DefaultStackSynthesizer({
+        imageAssetPublishingRoleSessionTags: {
+          Departement: 'Engineering',
+        },
+      }),
+    });
+
+    const assembly = app.synth();
+    const assetsArtifact = assembly.tryGetArtifact('stack.assets') as cxapi.AssetManifestArtifact;
+
+    expect(assetsArtifact.requiresBootstrapStackVersion).toEqual(6);
+
+  });
+
+  test('when image asset role session tags are configured with a docker image asset, required assets bootstrap version is 22', () => {
+
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {
+      synthesizer: new cdk.DefaultStackSynthesizer({
+        imageAssetPublishingRoleSessionTags: {
+          Departement: 'Engineering',
+        },
+      }),
+    });
+
+    stack.synthesizer.addDockerImageAsset({
+      sourceHash: 'hash',
+      executable: ['echo', 'hello mock image'],
+    });
+
+    const assembly = app.synth();
+    const assetsArtifact = assembly.tryGetArtifact('stack.assets') as cxapi.AssetManifestArtifact;
+
+    expect(assetsArtifact.requiresBootstrapStackVersion).toEqual(22);
+
+  });
+
 });
 
 function list(outdir: string) {

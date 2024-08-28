@@ -155,11 +155,13 @@ new MyStack(app, 'MyStack', {
 For more information on bootstrapping accounts and customizing synthesis,
 see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
-## Session Tags
+### STS Session Tags
 
-CDK also supports attribute-based access control (ABAC) by allowing you to pass session tags on the different [IAM roles created by CDK during bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles). For more information on Session Tags see [Define permissions based on attributes with ABAC authorization](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html).
+STS session tags are used to implement [Attribute-Based Access Control](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html) (ABAC).
 
-Here is an example of passing session tags using the `DefaultStackSynthesizer`:
+> See [IAM tutorial: Define permissions to access AWS resources based on tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_attribute-based-access-control.html)
+
+You can pass session tags for each [role created during bootstrap](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles) via the `DefaultStackSynthesizer`:
 
 ```ts
 class MyStack extends cdk.Stack {
@@ -168,16 +170,16 @@ class MyStack extends cdk.Stack {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
         deployRoleSessionTags: {
-          'Department' : 'Engineering',
+          Department : 'Engineering',
         },
         fileAssetPublishingRoleSessionTags: {
-          Department: 'Engineering-FileAssetTag',
+          Department: 'Engineering',
         },
         imageAssetPublishingRoleSessionTags: {
-          Department: 'Engineering-ImageAssetTag',
+          Department: 'Engineering',
         },
         lookupRoleSessionTags: {
-          Department: 'Engineering-LookupRoleTag',
+          Department: 'Engineering',
         },
       })
     });
@@ -185,60 +187,13 @@ class MyStack extends cdk.Stack {
 }
 ```
 
-You can also do the same with a custom stack synthesizer by extending the `DefaultStackSynthesizer` or `StackSynthesizer` base class.
+This will cause the CDK CLI to include session tags when assuming each of these roles during deployment. Note that the trust policy of the role 
+must contain permissions for the `sts:TagSession` action.
 
-Here is an example of a custom synthesizer that extends the `DefaultStackSynthesizer` class, and sets the the `CloudFormationExecutionRoleArn` to `undefined` within the synthesize method; doing this will mean that CDK uses the `DeploymentActionRole` for CFN execution instead of the `CloudFormationExecutionRole`.
+> See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
 
-```ts
-class CustomSynthesizer extends DefaultStackSynthesizer {
-  public static readonly MIN_BOOTSTRAP_STACK_VERSION = 6;
-  private myAssetManifest = new AssetManifestBuilder();
-
-  public synthesize(session) {
-    const templateAssetSource = this.synthesizeTemplate(session, DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
-    const templateAsset = this.addFileAsset(templateAssetSource);
-
-    const assetManifestId = this.myAssetManifest.emitManifest(this.boundStack, session, {
-      requiresBootstrapStackVersion: CustomSynthesizer.MIN_BOOTSTRAP_STACK_VERSION,
-      bootstrapStackVersionSsmParameter: DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
-    });
-
-    this.emitArtifact(session, {
-      assumeRoleExternalId: this.props.deployRoleExternalId,
-      assumeRoleArn: DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN,
-      assumeRoleSessionTags: this.props.deployRoleSessionTags,
-      // Pass in UNDEFINED for the CFN Execution Role Arn:
-      cloudFormationExecutionRoleArn: undefined,
-      stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      requiresBootstrapStackVersion: CustomSynthesizer.MIN_BOOTSTRAP_STACK_VERSION,
-      bootstrapStackVersionSsmParameter: DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
-      additionalDependencies: [assetManifestId],
-      lookupRole: {
-        arn: DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN,
-        assumeRoleExternalId: this.props.lookupRoleExternalId,
-        assumeRoleSessionTags: this.props.lookupRoleSessionTags,
-        requiresBootstrapStackVersion: CustomSynthesizer.MIN_BOOTSTRAP_STACK_VERSION,
-        bootstrapStackVersionSsmParameter: DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
-      },
-    });
-  }
-}
-
-// Then, passing session tags to the CustomSynthesizer is the same as in the
-// DefaultStackSynthesizer above.
-class MyOtherStack extends cdk.Stack {
-  constructor(parent, id, props) {
-    super(parent, id, {
-      ...props,
-      synthesizer: new CustomSynthesizer({
-        deployRoleSessionTags: {
-          'Department' : 'Engineering',
-        },
-      })
-    });
-  }
-}
-```
+- If you are using a custom bootstrap template, make sure the template includes these permissions.
+- If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
 
 ## Nested Stacks
 
