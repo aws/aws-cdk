@@ -391,8 +391,9 @@ calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
 
 To create an alarm based on anomaly detection, you can use the `createAnomalyDetectionAlarm` method on a `Metric` or `MathExpression` object:
 
-```typescript
-const queue = new sqs.Queue(this, 'Queue');
+```ts
+declare const queue: sqs.Queue;
+
 const alarm = queue.metricNumberOfMessagesSent().createAnomalyDetectionAlarm(this, 'AnomalyAlarm', {
   bounds: 2,
   evaluationPeriods: 1,
