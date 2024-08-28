@@ -499,7 +499,7 @@ export class StateMachine extends StateMachineBase {
         this.role.addToPrincipalPolicy(new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: [
-            'kms:Decrypt', 'kms:GenerateDataKey',
+            'kms:GenerateDataKey',
           ],
           resources: [`${props.kmsKey.keyArn}`],
           conditions: {

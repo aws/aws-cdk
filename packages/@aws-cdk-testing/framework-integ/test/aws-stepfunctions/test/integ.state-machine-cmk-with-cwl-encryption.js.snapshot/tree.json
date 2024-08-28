@@ -191,10 +191,7 @@
                                   }
                                 },
                                 {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:GenerateDataKey"
-                                  ],
+                                  "Action": "kms:GenerateDataKey",
                                   "Condition": {
                                     "StringEquals": {
                                       "kms:EncryptionContext:SourceArn": {
