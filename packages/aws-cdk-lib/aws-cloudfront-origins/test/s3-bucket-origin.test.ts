@@ -383,6 +383,83 @@ describe('S3BucketOrigin', () => {
           'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
           'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]');
       });
+
+      it('should allow users to use escape hatch to scope down KMS key policy to specific distribution id', () => {
+        const stack = new Stack();
+        const kmsKey = new kms.Key(stack, 'myKey');
+        const bucket = new s3.Bucket(stack, 'myEncryptedBucket', {
+          encryption: s3.BucketEncryption.KMS,
+          encryptionKey: kmsKey,
+          objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+        });
+        new cloudfront.Distribution(stack, 'MyDistributionA', {
+          defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(bucket) },
+        });
+
+        // assuming user now know the Distribution ID and want to use escape hatch to scope down the key policy
+        const distributionId = 'SomeDistributionId';
+        const finalKeyPolicy = {
+          Statement: [
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: 'kms:Decrypt',
+              Condition: {
+                StringLike: {
+                  'AWS:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':cloudfront::',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        `:distribution/${distributionId}`,
+                      ],
+                    ],
+                  },
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudfront.amazonaws.com',
+              },
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        };
+        (kmsKey.node.defaultChild as kms.CfnKey).keyPolicy = finalKeyPolicy;
+        
+        Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+          KeyPolicy: finalKeyPolicy,
+        });
+      });
     });
 
     describe('when attaching to a multiple distribution', () => {
@@ -686,6 +763,7 @@ describe('S3BucketOrigin', () => {
         });
       });
     });
+
     describe('when specifying READ, WRITE, and DELETE origin access levels', () => {
       it('should add the correct permissions to bucket policy', () => {
         const stack = new Stack();
@@ -693,7 +771,7 @@ describe('S3BucketOrigin', () => {
         const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
           originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
         });
-        const distribution = new cloudfront.Distribution(stack, 'MyDistribution', {
+        new cloudfront.Distribution(stack, 'MyDistribution', {
           defaultBehavior: { origin },
         });
         Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -750,8 +828,8 @@ describe('S3BucketOrigin', () => {
             ],
           },
         });
-      })
-    })
+      });
+    });
   });
 
   describe('withOriginAccessIdentity', () => {
