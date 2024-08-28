@@ -167,7 +167,7 @@ describe('S3BucketOrigin', () => {
     });
 
     describe('when using bucket with KMS Customer Managed key', () => {
-      it('should match expected template resource', () => {
+      it('should match expected template resource and warn user about wildcard key policy', () => {
         const stack = new Stack();
         const kmsKey = new kms.Key(stack, 'myKey');
         const bucket = new s3.Bucket(stack, 'myEncryptedBucket', {
@@ -378,6 +378,9 @@ describe('S3BucketOrigin', () => {
             },
           },
         });
+        Annotations.fromStack(stack).hasWarning('/Default',
+          'Using wildcard to match all Distribution IDs in Key policy condition.\n' +
+          'To further scope down the policy, see the "Using pre-existing S3 buckets" section of module\'s README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicy]');
       });
     });
 
