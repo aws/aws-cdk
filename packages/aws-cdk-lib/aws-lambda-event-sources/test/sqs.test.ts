@@ -1,6 +1,7 @@
 import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
+import { Key } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
@@ -433,6 +434,92 @@ describe('SQSEventSource', () => {
         'Filters': [
           {
             'Pattern': '{"body":{"id":[{"exists":true}]}}',
+          },
+        ],
+      },
+    });
+  });
+
+  test('adding filter criteria encryption', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    const myKey = Key.fromKeyArn(
+      stack,
+      'SourceBucketEncryptionKey',
+      'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    );
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      filters: [
+        lambda.FilterCriteria.filter({
+          body: {
+            id: lambda.FilterRule.exists(),
+          },
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"body":{"id":[{"exists":true}]}}',
+          },
+        ],
+      },
+      KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    });
+  });
+
+  test('adding filter criteria encryption with stack key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    const myKey = new Key(stack, 'fc-test-key-name', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pendingWindow: cdk.Duration.days(7),
+      description: 'KMS key for test fc encryption',
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      filters: [
+        lambda.FilterCriteria.filter({
+          body: {
+            id: lambda.FilterRule.exists(),
+          },
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
+            Resource: '*',
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+            Resource: '*',
           },
         ],
       },
