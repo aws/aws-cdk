@@ -78,6 +78,10 @@ configurations as well as choosing a specific tag or digest. See their docs for 
 To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
 
+With that being said, if you are bundling `DockerImageFunction` for Lambda `amd64` architecture from a `arm64` machine like a Macbook with `arm64` CPU, you would 
+need to specify `architecture: lambda.Architecture.X86_64` as well. This ensures the `--platform` argument is passed to the image assets
+bundling process so you can bundle up `X86_64` images from the `arm64` machine.
+
 ```ts
 new lambda.DockerImageFunction(this, 'AssetFunction', {
   code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
