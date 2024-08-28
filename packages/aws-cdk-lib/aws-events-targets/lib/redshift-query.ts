@@ -45,7 +45,7 @@ export interface RedshiftQueryProps {
   readonly batchSQL?: string[];
 
   /**
-   * The name of the SQL statement. You can name the SQL statement for identitfication purposes. It is recommended to append a `QS2-` prefix to the statement name, to allow Amazon Redshift to identify the Event Bridge rule, and present it in the Amazon Redshift console.
+   * The name of the SQL statement. You can name the SQL statement for identitfication purposes. If you would like Amazon Redshift to identify the Event Bridge rule, and present it in the Amazon Redshift console, append a `QS2-` prefix to the statement name.
    *
    * @default - No statement name is specified
    */
