@@ -37,7 +37,7 @@ export interface RedshiftQueryProps {
   readonly sql?: string;
 
   /**
-   * The SQL queries to run. All statements are executed as a single transaction. They each run serially, as appeared in the array; the next sql statement will not run until the previous statement completes.
+   * The SQL queries to be executed. Each query is run sequentially within a single transaction; the next query in the array will only execute after the previous one has successfully completed.
    * If any statement fails, the entire transaction is rolled back. This will use the `batchExecuteStatement` API.
    *
    * @default - No SQL queries are specified
