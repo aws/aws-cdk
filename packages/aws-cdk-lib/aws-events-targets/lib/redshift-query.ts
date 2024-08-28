@@ -32,6 +32,8 @@ export interface RedshiftQueryProps {
   /**
    * The SQL query to run. This will use the `executeStatement` API.
    *
+   * Either this or `batchSQL` must be specified, but not both.
+   *
    * @default - No SQL query is specified
    */
   readonly sql?: string;
@@ -39,6 +41,8 @@ export interface RedshiftQueryProps {
   /**
    * The SQL queries to be executed. Each query is run sequentially within a single transaction; the next query in the array will only execute after the previous one has successfully completed.
    * If any statement fails, the entire transaction is rolled back. This will use the `batchExecuteStatement` API.
+   *
+   * Either this or `sql` must be specified, but not both.
    *
    * @default - No SQL queries are specified
    */
@@ -75,7 +79,7 @@ export interface RedshiftQueryProps {
   /**
    * The input to the state machine execution
    *
-   * @default the entire EventBridge event
+   * @default - the entire EventBridge event
    */
   readonly input?: events.RuleTargetInput;
 }
