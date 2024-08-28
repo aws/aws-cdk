@@ -71,12 +71,6 @@ const sendTaskSuccess = testCase.assertions.awsApiCall('StepFunctions', 'sendTas
   }),
 });
 
-sendTaskSuccess.provider.addToRolePolicy({
-  Effect: 'Allow',
-  Action: 'kms:Decrypt',
-  Resource: `${stack.activityKmsKey.keyArn}`,
-});
-
 start.next(getActivityTask);
 getActivityTask.next(sendTaskSuccess);
 
