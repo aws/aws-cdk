@@ -2769,7 +2769,7 @@ describe('container definition', () => {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       taskDefinition,
       enableRestartPolicy: true,
-      restartIgnoredExitCodes: [1, 2, 3],
+      restartIgnoredExitCodes: [0, 127],
       restartAttemptPeriod: cdk.Duration.seconds(360),
     });
 
@@ -2781,7 +2781,7 @@ describe('container definition', () => {
           Name: 'Container',
           RestartPolicy: {
             Enabled: true,
-            IgnoredExitCodes: [1, 2, 3],
+            IgnoredExitCodes: [0, 127],
             RestartAttemptPeriod: 360,
           },
         },
@@ -2799,7 +2799,7 @@ describe('container definition', () => {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       taskDefinition,
       enableRestartPolicy: false,
-      restartIgnoredExitCodes: [1, 2, 3],
+      restartIgnoredExitCodes: [0, 127],
       restartAttemptPeriod: cdk.Duration.seconds(360),
     });
 
@@ -2824,7 +2824,7 @@ describe('container definition', () => {
     new ecs.ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       taskDefinition,
-      restartIgnoredExitCodes: [1, 2, 3],
+      restartIgnoredExitCodes: [0, 127],
       restartAttemptPeriod: cdk.Duration.seconds(360),
     });
 

@@ -630,7 +630,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 taskDefinition.addContainer('container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   enableRestartPolicy: true,
-  restartIgnoredExitCodes: [1, 2, 3],
+  restartIgnoredExitCodes: [0, 127],
   restartAttemptPeriod: cdk.Duration.seconds(360),
 });
 ```
