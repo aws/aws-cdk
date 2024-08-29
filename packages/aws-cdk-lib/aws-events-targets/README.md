@@ -584,10 +584,6 @@ const dlq = new sqs.Queue(this, 'DeadLetterQueue');
 rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
   deadLetterQueue: dlq,
-  batchSQL: [
-    'SELECT * FROM foo',
-    'SELECT * FROM bar',
-  ],
-  sql: 'SELECT * FROM baz',
+  sql: ['SELECT * FROM foo','SELECT * FROM baz'],
 }));
 ```
