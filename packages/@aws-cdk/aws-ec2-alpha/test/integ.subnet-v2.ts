@@ -51,20 +51,13 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
  * can assign IPv6 address only after the allocation
  * uncomment ipv6CidrBlock and provide valid IPv6 range
  */
-const mySubnet = new SubnetV2(stack, 'testsbubnet', {
+new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   //defined on the basis of allocation done in IPAM console
   //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
-});
-
-vpc.enableVpnGateway({
-  vpnRoutePropagation: [{
-    subnetType: SubnetType.PRIVATE_ISOLATED, // optional, defaults to "PUBLIC"
-  }],
-  type: 'ipsec.1',
 });
 
 /**Test compatibility with existing construct */
@@ -85,7 +78,6 @@ const routeTable = new RouteTable(stack, 'TestRoutetable', {
 });
 
 routeTable.addRoute('eigwRoute', '0.0.0.0/0', { gateway: igw });
-mySubnet.associateRouteTable(routeTable);
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],

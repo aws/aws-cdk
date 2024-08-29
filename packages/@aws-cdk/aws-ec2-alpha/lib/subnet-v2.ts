@@ -162,8 +162,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
   private _routeTable: IRouteTable;
 
-  private routeTableAssociation: CfnSubnetRouteTableAssociation;
-
   /**
    * Constructs a new SubnetV2 instance.
    * @param scope The parent Construct that this resource will be part of.
@@ -233,7 +231,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       routeTableId: this._routeTable.routeTableId,
     });
 
-    this.routeTableAssociation = routeAssoc;
     this._internetConnectivityEstablished.add(routeAssoc);
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
@@ -265,15 +262,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    */
   public get routeTable(): IRouteTable {
     return this._routeTable;
-  }
-
-  /**
-   * Associate a Route Table with this subnet.
-   * @param routeTableProps The Route Table to associate with this subnet.
-   */
-  public associateRouteTable(routeTableProps: IRouteTable) {
-    this._routeTable = routeTableProps;
-    this.routeTableAssociation.addPropertyOverride('RouteTableId', routeTableProps.routeTableId);
   }
 
   /**

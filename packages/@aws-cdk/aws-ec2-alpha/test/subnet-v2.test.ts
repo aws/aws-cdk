@@ -5,7 +5,6 @@ import * as subnet from '../lib/subnet-v2';
 import { NetworkAcl, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
 import { createTestSubnet } from './util';
-import { RouteTable } from '../lib';
 
 /**
  * Test suite for the SubnetV2 class.
@@ -301,34 +300,5 @@ describe('Subnet V2 with custom IP and routing', () => {
     testsubnet.associateNetworkAcl('TestAssociation', networkAcl);
 
     expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetNetworkAclAssociation', {}));
-  });
-
-  test('should associate a RouteTable with the subnet', () => {
-    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-    });
-    const subnetConfig = {
-      vpcV2: testVpc,
-      availabilityZone: 'us-east-1a',
-      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
-      subnetType: SubnetType.PUBLIC,
-    };
-    const testsubnet = createTestSubnet(stack, subnetConfig);
-
-    const routeTable = new RouteTable(stack, 'TestNewRouteTable', {
-      vpc: testVpc,
-    });
-
-    testsubnet.associateRouteTable(routeTable);
-
-    expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetRouteTableAssociation', {
-      Properties: {
-        RouteTableId: {
-          'Fn::GetAtt': [
-            'TestNewRouteTable240E1177', 'RouteTableId',
-          ],
-        },
-      },
-    }));
   });
 });
