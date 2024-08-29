@@ -167,6 +167,8 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
 
   /**
    * Create a S3 Origin with Origin Access Identity (OAI) configured
+   * OAI is a legacy feature and we **strongly** recommend you to use OAC via `withOriginAccessControl()`
+   * unless it is not supported in your required region (e.g. China regions).
    */
   public static withOriginAccessIdentity(bucket: IBucket, props?: S3BucketOriginWithOAIProps): cloudfront.IOrigin {
     return new class extends S3BucketOrigin {
