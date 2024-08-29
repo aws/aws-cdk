@@ -2112,3 +2112,17 @@ async function listChildren(parent: string, pred: (x: string) => Promise<boolean
 async function listChildDirs(parent: string) {
   return listChildren(parent, async (fullPath: string) => (await fs.stat(fullPath)).isDirectory());
 }
+
+integTest(
+  'cdk with unread flag',
+  withDefaultFixture(async (fixture) => {
+    const version = await fixture.cdk(['version'], { verbose: false });
+    const noticesUnread = await fixture.cdk(['notices', '--unread'], { verbose: false });
+    // regex greaterThan 2.154.1 but not including 3.x.x
+    const regexVersionGreaterThan = /^2\.(154\.[2-9]|154\.1\d{1,}|15[5-9]{1}\.|1[6-9].{1,}|[2-9]\d{2}\.)/;
+    if (regexVersionGreaterThan.test(version)) {
+      // test runs if cdk version greaterThan 2.154.1
+      expect(noticesUnread).toEqual(expect.stringMatching(/There are \d{1,} unacknowledged notice\(s\)./));
+    }
+  }),
+);
