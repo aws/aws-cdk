@@ -526,7 +526,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   }
 
   private get _requiredBoostrapVersionForAssets() {
-    return Math.max(this._requiredBootstrapVersionForFileAssets, this._requiredBootstrapVersionForImageAssets);
+    if (this.props.fileAssetPublishingRoleSessionTags || this.props.imageAssetPublishingRoleSessionTags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_BOOTSTRAP_STACK_VERSION;
   }
 
   private get _requiredBootstrapVersionForDeployment() {
@@ -541,20 +544,6 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
     }
     return MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION;
-  }
-
-  private get _requiredBootstrapVersionForFileAssets() {
-    if (this.assetManifest.hasFileAssets && this.props.fileAssetPublishingRoleSessionTags) {
-      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
-    }
-    return MIN_BOOTSTRAP_STACK_VERSION;
-  }
-
-  private get _requiredBootstrapVersionForImageAssets() {
-    if (this.assetManifest.hasImageAssets && this.props.imageAssetPublishingRoleSessionTags) {
-      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
-    }
-    return MIN_BOOTSTRAP_STACK_VERSION;
   }
 
   /**

@@ -123,21 +123,7 @@ export class AssetManifestBuilder {
    * Whether there are any assets registered in the manifest
    */
   public get hasAssets() {
-    return this.hasFileAssets || this.hasImageAssets;
-  }
-
-  /**
-   * Whether there are any file assets registered in the manifest
-   */
-  public get hasFileAssets() {
-    return Object.keys(this.files).length > 0;
-  }
-
-  /**
-   * Whether there are any image assets registered in the manifest
-   */
-  public get hasImageAssets() {
-    return Object.keys(this.dockerImages).length > 0;
+    return Object.keys(this.files).length + Object.keys(this.dockerImages).length > 0;
   }
 
   /**

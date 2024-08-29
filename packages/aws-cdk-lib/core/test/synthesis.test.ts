@@ -344,7 +344,7 @@ describe('synthesis', () => {
 
   });
 
-  test('when image asset role session tags are configured without a docker image asset, required assets bootstrap version is 6', () => {
+  test('when image asset role session tags are configured, required assets bootstrap version is 22', () => {
 
     const app = new cdk.App();
     new cdk.Stack(app, 'stack', {
@@ -353,29 +353,6 @@ describe('synthesis', () => {
           Departement: 'Engineering',
         },
       }),
-    });
-
-    const assembly = app.synth();
-    const assetsArtifact = assembly.tryGetArtifact('stack.assets') as cxapi.AssetManifestArtifact;
-
-    expect(assetsArtifact.requiresBootstrapStackVersion).toEqual(6);
-
-  });
-
-  test('when image asset role session tags are configured with a docker image asset, required assets bootstrap version is 22', () => {
-
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', {
-      synthesizer: new cdk.DefaultStackSynthesizer({
-        imageAssetPublishingRoleSessionTags: {
-          Departement: 'Engineering',
-        },
-      }),
-    });
-
-    stack.synthesizer.addDockerImageAsset({
-      sourceHash: 'hash',
-      executable: ['echo', 'hello mock image'],
     });
 
     const assembly = app.synth();
