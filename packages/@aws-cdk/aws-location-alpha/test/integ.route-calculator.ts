@@ -1,13 +1,16 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { RouteCalculator } from '../lib';
+import { DataSource } from '../lib';
+import { RouteCalculator } from '../lib/route-calculator';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new RouteCalculator(this, 'RouteCalculator');
+    new RouteCalculator(this, 'RouteCalculator', {
+      dataSource: DataSource.ESRI,
+    });
   }
 }
 

@@ -1,7 +1,8 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stack } from 'aws-cdk-lib';
-import { DataSource, RouteCalculator } from '../lib';
+import { DataSource } from '../lib';
+import { RouteCalculator } from '../lib/route-calculator';
 
 let stack: Stack;
 beforeEach(() => {
@@ -9,7 +10,9 @@ beforeEach(() => {
 });
 
 test('create a route calculator', () => {
-  new RouteCalculator(stack, 'RouteCalculator');
+  new RouteCalculator(stack, 'RouteCalculator', {
+    dataSource: DataSource.ESRI,
+  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::RouteCalculator', {
     DataSource: 'Esri',
@@ -18,7 +21,10 @@ test('create a route calculator', () => {
 });
 
 test('creates a route calculator with empty description', () => {
-  new RouteCalculator(stack, 'RouteCalculator', { description: '' });
+  new RouteCalculator(stack, 'RouteCalculator', {
+    description: '',
+    dataSource: DataSource.ESRI,
+  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::RouteCalculator', {
     Description: '',
@@ -28,6 +34,7 @@ test('creates a route calculator with empty description', () => {
 test('throws with invalid description', () => {
   expect(() => new RouteCalculator(stack, 'RouteCalculator', {
     description: 'a'.repeat(1001),
+    dataSource: DataSource.ESRI,
   })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 

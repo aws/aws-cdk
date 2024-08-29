@@ -40,10 +40,8 @@ export interface RouteCalculatorProps {
 
   /**
    * Data source for the route calculator
-   *
-   * @default DataSource.ESRI
    */
-  readonly dataSource?: DataSource;
+  readonly dataSource: DataSource;
 
   /**
    * A description for the route calculator
@@ -53,39 +51,12 @@ export interface RouteCalculatorProps {
   readonly description?: string;
 }
 
-abstract class RouteCalculatorBase extends Resource implements IRouteCalculator {
-  public abstract readonly routeCalculatorName: string;
-  public abstract readonly routeCalculatorArn: string;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this route calculator.
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: grantee,
-      actions: actions,
-      resourceArns: [this.routeCalculatorArn],
-    });
-  }
-
-  /**
-   * Grant the given identity permissions to access to a route calculator resource to calculate a route.
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
-   */
-  public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:CalculateRoute',
-    );
-  }
-}
-
 /**
  * A Route Calculator
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/places-concepts.html
  */
-export class RouteCalculator extends RouteCalculatorBase {
+export class RouteCalculator extends Resource implements IRouteCalculator {
   /**
    * Use an existing route calculator by name
    */
@@ -109,7 +80,7 @@ export class RouteCalculator extends RouteCalculatorBase {
       throw new Error(`Route Calculator Arn ${routeCalculatorArn} does not have a resource name.`);
     }
 
-    class Import extends RouteCalculatorBase {
+    class Import extends Resource implements IRouteCalculator {
       public readonly routeCalculatorName = parsedArn.resourceName!;
       public readonly routeCalculatorArn = routeCalculatorArn;
     }
@@ -138,7 +109,7 @@ export class RouteCalculator extends RouteCalculatorBase {
    */
   public readonly routeCalculatorUpdateTime: string;
 
-  constructor(scope: Construct, id: string, props: RouteCalculatorProps = {}) {
+  constructor(scope: Construct, id: string, props: RouteCalculatorProps) {
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
@@ -162,5 +133,27 @@ export class RouteCalculator extends RouteCalculatorBase {
     this.routeCalculatorArn = routeCalculator.attrArn;
     this.routeCalculatorCreateTime = routeCalculator.attrCreateTime;
     this.routeCalculatorUpdateTime = routeCalculator.attrUpdateTime;
+  }
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this route calculator.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.routeCalculatorArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to access to a route calculator resource to calculate a route.
+   *
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
+   */
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'geo:CalculateRoute',
+    );
   }
 }
