@@ -1,8 +1,8 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType, SubnetSelection, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IConstruct, IDependable } from 'constructs';
-import { Duration, IResource, Resource } from 'aws-cdk-lib/core';
+import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib/core';
 import { IVpcV2 } from './vpc-v2-base';
-import { NetworkUtils } from './util';
+import { NetworkUtils, allRouteTableIds, flatten } from './util';
 import { ISubnetV2 } from './subnet-v2';
 
 /**
@@ -96,6 +96,12 @@ export interface VPNGatewayV2Props {
    * @default none
    */
   readonly vpnGatewayName?: string;
+
+  /**
+   * Provide an array of subnets where the route propagation should be added.
+   * @default noPropagation
+   */
+  readonly vpnRoutePropagation?: SubnetSelection[];
 }
 
 /**
@@ -178,6 +184,7 @@ export interface NatGatewayOptions {
 export interface NatGatewayProps extends NatGatewayOptions {
   /**
    * The ID of the VPC in which the NAT gateway is located.
+   * Required in case of public connectivity if allocation id is not defined
    * @default none
    */
   readonly vpc?: IVpcV2;
@@ -288,7 +295,12 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
   /**
    * The VPN Gateway Attachment
    */
-  public readonly attachment: CfnVPCGatewayAttachment;
+  private readonly _attachment: CfnVPCGatewayAttachment;
+
+  /**
+   * The VPN Gateway Route Propogation
+   */
+  private readonly _routePropagation: CfnVPNGatewayRoutePropagation;
 
   constructor(scope: Construct, id: string, props: VPNGatewayV2Props) {
     super(scope, id);
@@ -304,10 +316,28 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
     this.routerTargetId = this.resource.attrVpnGatewayId;
 
     this.vpcId = props.vpc.vpcId;
-    this.attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
+    this._attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
       vpcId: this.vpcId,
       vpnGatewayId: this.resource.attrVpnGatewayId,
     });
+
+    // Propagate routes on route tables associated with the right subnets
+    const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
+    const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => props.vpc.selectSubnets(s).subnets)));
+
+    if (routeTableIds.length === 0) {
+      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+    }
+
+    this._routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
+      routeTableIds,
+      vpnGatewayId: this.routerTargetId,
+    });
+    // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
+    // until it has successfully attached to the VPC.
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+    this._routePropagation.node.addDependency(this._attachment);
+
   }
 }
 
@@ -351,6 +381,12 @@ export class NatGateway extends Resource implements IRouteTarget {
 
     this.connectivityType = props.connectivityType || NatConnectivityType.PUBLIC;
     this.maxDrainDuration = props.maxDrainDuration || Duration.seconds(350);
+
+    if (this.connectivityType == NatConnectivityType.PUBLIC) {
+      if (!props.vpc && !props.allocationId) {
+        throw new Error('Either provide vpc or allocationId');
+      }
+    }
 
     // If user does not provide EIP, generate one for them
     var aId: string | undefined;

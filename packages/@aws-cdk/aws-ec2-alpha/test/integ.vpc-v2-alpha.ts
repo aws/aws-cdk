@@ -93,10 +93,10 @@ new Route(stack, 'route', {
 });
 
 //Add Internet Gateway
-vpc.addInternetGateway('TestIGW');
+vpc.addInternetGateway();
 
 //Add a NAT Gateway
-vpc.addNatGateway('TestNATGateway', {
+vpc.addNatGateway({
   subnet: subnet,
   connectivityType: NatConnectivityType.PRIVATE,
 }).node.addDependency(vpnGateway);

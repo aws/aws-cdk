@@ -273,6 +273,7 @@ describe('EC2 Routing', () => {
   test('Route to public NAT Gateway', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
       subnet: mySubnet,
+      vpc: myVpc,
     });
     routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
     const template = Template.fromStack(stack);
@@ -363,6 +364,7 @@ describe('EC2 Routing', () => {
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PUBLIC,
       maxDrainDuration: cdk.Duration.seconds(2001),
+      vpc: myVpc,
     });
     routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
     const template = Template.fromStack(stack);

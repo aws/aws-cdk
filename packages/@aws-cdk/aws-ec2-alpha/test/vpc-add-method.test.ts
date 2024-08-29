@@ -122,7 +122,7 @@ describe('Vpc V2 with full control', () => {
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
-    myVpc.addNatGateway('TestNATGW', {
+    myVpc.addNatGateway({
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
@@ -155,7 +155,7 @@ describe('Vpc V2 with full control', () => {
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
-    myVpc.addNatGateway('TestNATGW', {
+    myVpc.addNatGateway({
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
@@ -197,7 +197,7 @@ describe('Vpc V2 with full control', () => {
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
-    myVpc.addNatGateway('TestNATGW', {
+    myVpc.addNatGateway({
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
@@ -233,7 +233,7 @@ describe('Vpc V2 with full control', () => {
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
-    myVpc.addNatGateway('TestNATGW', {
+    myVpc.addNatGateway({
       subnet: mySubnet,
     });
     const template = Template.fromStack(stack);
@@ -272,7 +272,7 @@ describe('Vpc V2 with full control', () => {
     const eip = new CfnEIP(stack, 'MyEIP', {
       domain: myVpc.vpcId,
     });
-    myVpc.addNatGateway('TestNATGW', {
+    myVpc.addNatGateway({
       subnet: mySubnet,
       allocationId: eip.attrAllocationId,
     });
@@ -311,8 +311,8 @@ describe('Vpc V2 with full control', () => {
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
-    myVpc.addInternetGateway('TestIGW');
-    myVpc.addNatGateway('TestNATGW', {
+    myVpc.addInternetGateway();
+    myVpc.addNatGateway({
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PUBLIC,
       maxDrainDuration: cdk.Duration.seconds(2001),
