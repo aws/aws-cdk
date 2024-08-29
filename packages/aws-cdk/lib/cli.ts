@@ -269,7 +269,7 @@ async function parseCommandLineArguments(args: string[]) {
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices', (yargs: Argv) => yargs
-      .option('unread', { type: 'boolean', default: false, desc: 'Returns a list of unacknowledged notices' }),
+      .option('unacknowledged', { type: 'boolean', alias: 'u', default: false, desc: 'Returns a list of unacknowledged notices' }),
     )
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
@@ -441,12 +441,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     await version.displayVersionMessage();
 
     if (shouldDisplayNotices()) {
-      if (cmd === 'notices' && argv.unread === true) {
+      if (cmd === 'notices' && argv.unacknowledged === true) {
         await displayNotices({
           outdir: configuration.settings.get(['output']) ?? 'cdk.out',
           acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
           ignoreCache: true,
-          unread: true,
+          unacknowledged: true,
         });
       } else if (cmd === 'notices') {
         await displayNotices({

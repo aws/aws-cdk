@@ -32,11 +32,11 @@ export interface DisplayNoticesProps {
   readonly ignoreCache?: boolean;
 
   /**
-   * Print the number of unacknowledged notices.
+   * Whether to append the number of unacknowledged notices to the display.
    *
    * @default false
    */
-  readonly unread?: boolean;
+  readonly unacknowledged?: boolean;
 }
 
 export async function refreshNotices() {
@@ -61,7 +61,7 @@ export async function generateMessage(dataSource: NoticeDataSource, props: Displ
   if (filteredNotices.length > 0) {
     messageString = getFilteredMessages(filteredNotices);
   }
-  if (props.unread) {
+  if (props.unacknowledged) {
     messageString = [messageString, `There are ${filteredNotices.length} unacknowledged notice(s).`].join('\n\n');
   }
   return messageString;

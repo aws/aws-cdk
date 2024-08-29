@@ -381,14 +381,14 @@ describe('cli notices', () => {
       expect(result).toEqual('');
     });
 
-    test('does not show anything when there are no notices with unread flag', async () => {
+    test('Shows no notices when there are no notices with --unacknowledged', async () => {
       const dataSource = createDataSource();
       dataSource.fetch.mockResolvedValue([]);
 
       const result = await generateMessage(dataSource, {
         acknowledgedIssueNumbers: [],
         outdir: '/tmp',
-        unread: true,
+        unacknowledged: true,
       });
 
       expect(result).toEqual('\n\nThere are 0 unacknowledged notice(s).');
@@ -421,14 +421,14 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
     });
 
-    test('shows notices that pass the filter with unread flag', async () => {
+    test('Shows notices that pass the filter with --unacknowledged', async () => {
       const dataSource = createDataSource();
       dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
 
       const result = await generateMessage(dataSource, {
         acknowledgedIssueNumbers: [17061],
         outdir: '/tmp',
-        unread: true,
+        unacknowledged: true,
       });
 
       expect(result).toEqual(`
