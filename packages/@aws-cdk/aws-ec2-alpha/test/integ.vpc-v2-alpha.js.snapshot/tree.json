@@ -345,35 +345,35 @@
                       "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGateway",
                       "version": "0.0.0"
                     }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.VPNGatewayV2",
-                  "version": "0.0.0"
-                }
-              },
-              "VPCVPNGW": {
-                "id": "VPCVPNGW",
-                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/VPCVPNGW",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
-                  "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCintegtest1EBA1CB75",
-                        "VpcId"
-                      ]
+                  },
+                  "VPCVPNGW": {
+                    "id": "VPCVPNGW",
+                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/VpnGateway/VPCVPNGW",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1EBA1CB75",
+                            "VpcId"
+                          ]
+                        },
+                        "vpnGatewayId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1VpnGatewayIGWBC493574",
+                            "VPNGatewayId"
+                          ]
+                        }
+                      }
                     },
-                    "vpnGatewayId": {
-                      "Fn::GetAtt": [
-                        "VPCintegtest1VpnGatewayIGWBC493574",
-                        "VPNGatewayId"
-                      ]
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.VPNGatewayV2",
                   "version": "0.0.0"
                 }
               },
@@ -404,160 +404,17 @@
                   "version": "0.0.0"
                 }
               },
-              "TestIGW": {
-                "id": "TestIGW",
-                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/TestIGW",
-                "children": {
-                  "IGW": {
-                    "id": "IGW",
-                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/TestIGW/IGW",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
-                      "aws:cdk:cloudformation:props": {}
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "GWAttachment": {
-                    "id": "GWAttachment",
-                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/TestIGW/GWAttachment",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
-                      "aws:cdk:cloudformation:props": {
-                        "internetGatewayId": {
-                          "Fn::GetAtt": [
-                            "VPCintegtest1TestIGW604D0664",
-                            "InternetGatewayId"
-                          ]
-                        },
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "VPCintegtest1EBA1CB75",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.InternetGateway",
-                  "version": "0.0.0"
-                }
-              },
-              "validateIpv6-DefaultIPv6Route": {
-                "id": "validateIpv6-DefaultIPv6Route",
-                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/validateIpv6-DefaultIPv6Route",
-                "children": {
-                  "Route": {
-                    "id": "Route",
-                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/validateIpv6-DefaultIPv6Route/Route",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationIpv6CidrBlock": "::/0",
-                        "gatewayId": {
-                          "Fn::GetAtt": [
-                            "VPCintegtest1TestIGW604D0664",
-                            "InternetGatewayId"
-                          ]
-                        },
-                        "routeTableId": {
-                          "Fn::GetAtt": [
-                            "validateIpv6RouteTable09389F8D",
-                            "RouteTableId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
-                  "version": "0.0.0"
-                }
-              },
-              "validateIpv6-DefaultRoute": {
-                "id": "validateIpv6-DefaultRoute",
-                "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/validateIpv6-DefaultRoute",
-                "children": {
-                  "Route": {
-                    "id": "Route",
-                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/validateIpv6-DefaultRoute/Route",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationCidrBlock": "0.0.0.0/0",
-                        "gatewayId": {
-                          "Fn::GetAtt": [
-                            "VPCintegtest1TestIGW604D0664",
-                            "InternetGatewayId"
-                          ]
-                        },
-                        "routeTableId": {
-                          "Fn::GetAtt": [
-                            "validateIpv6RouteTable09389F8D",
-                            "RouteTableId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
-                  "version": "0.0.0"
-                }
-              },
               "TestNATGateway": {
                 "id": "TestNATGateway",
                 "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/TestNATGateway",
                 "children": {
-                  "EIP": {
-                    "id": "EIP",
-                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/TestNATGateway/EIP",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
-                      "aws:cdk:cloudformation:props": {
-                        "domain": {
-                          "Fn::GetAtt": [
-                            "VPCintegtest1EBA1CB75",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
-                    }
-                  },
                   "NATGateway": {
                     "id": "NATGateway",
                     "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/TestNATGateway/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "allocationId": {
-                          "Fn::GetAtt": [
-                            "VPCintegtest1TestNATGatewayEIP444375D7",
-                            "AllocationId"
-                          ]
-                        },
+                        "connectivityType": "private",
                         "subnetId": {
                           "Ref": "testsbubnetSubnet77337845"
                         }
@@ -775,7 +632,6 @@
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2b",
                     "cidrBlock": "10.3.0.0/24",
-                    "ipv6CidrBlock": "2600:1f14:3283:9501::/64",
                     "vpcId": {
                       "Fn::GetAtt": [
                         "VPCintegtest1EBA1CB75",

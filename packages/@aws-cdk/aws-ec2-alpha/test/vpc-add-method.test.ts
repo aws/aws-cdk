@@ -311,6 +311,7 @@ describe('Vpc V2 with full control', () => {
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
+    myVpc.addInternetGateway('TestIGW');
     myVpc.addNatGateway('TestNATGW', {
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PUBLIC,

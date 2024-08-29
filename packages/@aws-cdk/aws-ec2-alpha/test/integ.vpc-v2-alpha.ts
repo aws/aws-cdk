@@ -13,7 +13,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, IpCidr } from '../lib/subnet-v2';
-import { Route, RouteTable } from '../lib';
+import { NatConnectivityType, Route, RouteTable } from '../lib';
 
 const app = new cdk.App();
 
@@ -60,7 +60,7 @@ new SubnetV2(stack, 'validateIpv6', {
   ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
   availabilityZone: 'us-west-2b',
   //Test secondary ipv6 address after Amazon Provided ipv6 allocation
-  ipv6CidrBlock: new IpCidr('2600:1f14:3283:9501::/64'),
+  //ipv6CidrBlock: new IpCidr('2600:1f14:3283:9501::/64'),
   subnetType: SubnetType.PUBLIC,
 });
 
@@ -98,7 +98,8 @@ vpc.addInternetGateway('TestIGW');
 //Add a NAT Gateway
 vpc.addNatGateway('TestNATGateway', {
   subnet: subnet,
-});
+  connectivityType: NatConnectivityType.PRIVATE,
+}).node.addDependency(vpnGateway);
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
