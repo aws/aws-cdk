@@ -26,6 +26,9 @@ export interface CachePolicyProps {
 
   /**
    * A comment to describe the cache policy.
+   *
+   * The comment cannot be longer than 128 characters.
+   *
    * @default - no comment
    */
   readonly comment?: string;
@@ -147,6 +150,10 @@ export class CachePolicy extends Resource implements ICachePolicy {
 
     if (cachePolicyName.length > 128) {
       throw new Error(`'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`);
+    }
+
+    if (props.comment && !Token.isUnresolved(props.comment) && props.comment.length > 128) {
+      throw new Error(`'comment' cannot be longer than 128 characters, got: ${props.comment.length}`);
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();
