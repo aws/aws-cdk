@@ -63,8 +63,18 @@ Setup an S3 origin with origin access control as follows:
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket) // Automatically creates an OAC
+    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket) // Automatically creates a S3OriginAccessControl construct
   },
+});
+```
+
+When creating a S3 origin using `origins.S3BucketOrigin.withOriginAccessControl()`, an [Origin Access Control resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html) is automatically created with the origin type set to `s3` and signing behavior set to `always`.
+
+You can grant read, write or delete access to the OAC using the `originAccessLevels` property:
+
+```ts
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
+  originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
 });
 ```
 
@@ -161,7 +171,6 @@ will update the KMS key policy by appending the following policy statement to al
 ```json
 {
     "Statement": {
-        "Sid": "GrantOACAccessToKMS",
         "Effect": "Allow",
         "Principal": {
             "Service": "cloudfront.amazonaws.com"
@@ -169,8 +178,8 @@ will update the KMS key policy by appending the following policy statement to al
         "Action": "kms:Decrypt",
         "Resource": "arn:aws:kms:::key/<key ID>",
         "Condition": {
-            "StringEquals": {
-                "AWS:SourceArn": "arn:aws:cloudfront::<account ID>:distribution/<CloudFront distribution ID>"
+            "ArnLike": {
+                "AWS:SourceArn": "arn:aws:cloudfront::<account ID>:distribution/*"
             }
         }
     }
