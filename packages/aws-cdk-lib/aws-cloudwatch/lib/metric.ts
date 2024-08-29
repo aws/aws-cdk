@@ -259,6 +259,33 @@ export class Metric implements IMetric {
     });
   }
 
+  /**
+ * Make a new Alarm for this metric using anomaly detection
+ *
+ * @param scope The scope in which to create the alarm
+ * @param id The ID of the alarm
+ * @param props Alarm creation properties for anomaly detection
+ * @param metric The metric to create the alarm for
+ * @returns The newly created Alarm
+ */
+  public static createAnomalyDetectionAlarmFromMetric(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps, metric: IMetric): Alarm {
+    if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
+      throw new Error(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`);
+    }
+    const anomalyDetectionExpression = new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(m0, ${props.bounds ?? 1})`,
+      usingMetrics: { m0: metric },
+      period: props.period,
+    });
+
+    return new Alarm(scope, id, {
+      ...props,
+      metric: anomalyDetectionExpression,
+      threshold: 0, // This value will be ignored for anomaly detection alarms
+      thresholdMetricId: 'expr_1',
+    });
+  }
+
   /** Dimensions of this metric */
   public readonly dimensions?: DimensionHash;
   /** Namespace of this metric */
@@ -492,21 +519,7 @@ export class Metric implements IMetric {
    * @param props Alarm creation properties for anomaly detection
    */
   public createAnomalyDetectionAlarm(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps): Alarm {
-    if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
-      throw new Error(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`);
-    }
-    const anomalyDetectionExpression = new MathExpression({
-      expression: `ANOMALY_DETECTION_BAND(m0, ${props.bounds ?? 1})`,
-      usingMetrics: { m0: this },
-      period: props.period,
-    });
-
-    return new Alarm(scope, id, {
-      ...props,
-      metric: anomalyDetectionExpression,
-      threshold: 0, // This value will be ignored for anomaly detection alarms
-      thresholdMetricId: 'expr_1',
-    });
+    return Metric.createAnomalyDetectionAlarmFromMetric(scope, id, props, this);
   }
 
   public toString() {
@@ -756,21 +769,7 @@ export class MathExpression implements IMetric {
    * @param props Alarm creation properties for anomaly detection
    */
   public createAnomalyDetectionAlarm(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps): Alarm {
-    if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
-      throw new Error(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`);
-    }
-    const anomalyDetectionExpression = new MathExpression({
-      expression: `ANOMALY_DETECTION_BAND(m0, ${props.bounds ?? 1})`,
-      usingMetrics: { m0: this },
-      period: props.period,
-    });
-
-    return new Alarm(scope, id, {
-      ...props,
-      metric: anomalyDetectionExpression,
-      threshold: 0, // This value will be ignored for anomaly detection alarms
-      thresholdMetricId: 'expr_1',
-    });
+    return Metric.createAnomalyDetectionAlarmFromMetric(scope, id, props, this);
   }
 
   public toString() {
