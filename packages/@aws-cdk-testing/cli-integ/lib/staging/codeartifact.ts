@@ -365,7 +365,7 @@ async function retryThrottled<A>(block: () => Promise<A>) {
     } catch (e: any) {
       // eslint-disable-next-line no-console
       console.debug(e.message);
-      if (e.code !== 'ThrottlingException') {
+      if (e.name !== 'ThrottlingException') {
         throw e;
       }
       if (attempts-- === 0) {
