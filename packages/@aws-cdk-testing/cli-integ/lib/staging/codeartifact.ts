@@ -287,7 +287,7 @@ export class TestRepository {
       await this.codeArtifact.send(new DescribeDomainCommand({ domain: this.domain }));
       return true;
     } catch (e: any) {
-      if (e.code !== 'ResourceNotFoundException') {
+      if (e.name !== 'ResourceNotFoundException') {
         throw e;
       }
       return false;
