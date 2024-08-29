@@ -214,41 +214,12 @@ export enum PoliticalView {
   INDIA = 'IND',
 }
 
-abstract class MapBase extends Resource implements IMap {
-  public abstract readonly mapName: string;
-  public abstract readonly mapArn: string;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this map.
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: grantee,
-      actions: actions,
-      resourceArns: [this.mapArn],
-    });
-  }
-
-  /**
-   * Grant the given identity permissions to rendering a map resource
-   * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
-   */
-  public grantRendering(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:GetMapTile',
-      'geo:GetMapSprites',
-      'geo:GetMapGlyphs',
-      'geo:GetMapStyleDescriptor',
-    );
-  }
-}
-
 /**
  * The Amazon Location Service Map
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/map-concepts.html
  */
-export class Map extends MapBase {
+export class Map extends Resource implements IMap {
   /**
    * Use an existing map by name
    */
@@ -272,7 +243,7 @@ export class Map extends MapBase {
       throw new Error(`Map Arn ${mapArn} does not have a resource name.`);
     }
 
-    class Import extends MapBase {
+    class Import extends Resource implements IMap {
       public readonly mapName = parsedArn.resourceName!;
       public readonly mapArn = mapArn;
     }
@@ -330,4 +301,27 @@ export class Map extends MapBase {
     this.mapUpdateTime = map.attrUpdateTime;
   }
 
+  /**
+   * Grant the given principal identity permissions to perform the actions on this map.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.mapArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to rendering a map resource
+   * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
+   */
+  public grantRendering(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'geo:GetMapTile',
+      'geo:GetMapSprites',
+      'geo:GetMapGlyphs',
+      'geo:GetMapStyleDescriptor',
+    );
+  }
 }
