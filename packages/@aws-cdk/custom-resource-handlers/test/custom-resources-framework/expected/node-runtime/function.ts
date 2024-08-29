@@ -11,5 +11,6 @@ export class TestFunction extends lambda.Function {
       "handler": "index.handler",
       "runtime": lambda.determineLatestNodeRuntime(scope)
     });
+    this.node.addMetadata('aws:cdk:is-custom-resource-handler-runtime-family', this.runtime.family);
   }
 }

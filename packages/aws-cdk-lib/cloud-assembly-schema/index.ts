@@ -1,1 +1,1 @@
-export * from './lib';
+export * from '@aws-cdk/cloud-assembly-schema';

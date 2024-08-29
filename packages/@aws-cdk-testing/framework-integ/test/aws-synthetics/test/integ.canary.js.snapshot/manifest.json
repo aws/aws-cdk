@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10bd361dd68440cb9e995cff511c50c3dedb3b1f8738d33d617124c232bfe370.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/abbca33119998bb65d25c306135d90426911fa5590664eeecd4656429619259d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -400,6 +400,36 @@
             "data": "SynPythonSelenium30AutoDeleteUnderlyingResourcesCustomResource175FDAC3"
           }
         ],
+        "/canary-one/SynPythonSelenium40/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SynPythonSelenium40ArtifactsBucketE0BB1A15"
+          }
+        ],
+        "/canary-one/SynPythonSelenium40/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SynPythonSelenium40ArtifactsBucketPolicy8A526829"
+          }
+        ],
+        "/canary-one/SynPythonSelenium40/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SynPythonSelenium40ServiceRole48784551"
+          }
+        ],
+        "/canary-one/SynPythonSelenium40/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SynPythonSelenium40B722B964"
+          }
+        ],
+        "/canary-one/SynPythonSelenium40/AutoDeleteUnderlyingResourcesCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SynPythonSelenium40AutoDeleteUnderlyingResourcesCustomResource69B197D0"
+          }
+        ],
         "/canary-one/Exports/Output{\"Ref\":\"InlineAsset5EAEB9B5\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -460,6 +490,12 @@
             "data": "ExportsOutputRefSynPythonSelenium30F6137007049602B8"
           }
         ],
+        "/canary-one/Exports/Output{\"Ref\":\"SynPythonSelenium40B722B964\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefSynPythonSelenium40B722B964C2C6F4B8"
+          }
+        ],
         "/canary-one/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -492,7 +528,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8c0bb05c9b4d0f76f702a52227e1b8ee8733db1a5ec5642188fc88c634a57091.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bcff890e2c622fc43304e9895d19264d7efd1d511125fcbab04d4463cb503cb5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -909,6 +945,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983"
+          }
+        ],
+        "/IntegCanaryTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c"
+          }
+        ],
+        "/IntegCanaryTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9cWaitForIsCompleteProviderInvoke01E7DCC8"
+          }
+        ],
+        "/IntegCanaryTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9cWaitForTimeoutProviderInvoke75F47081"
+          }
+        ],
+        "/IntegCanaryTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9cWaitForRole5879A1E5"
+          }
+        ],
+        "/IntegCanaryTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9cWaitFor05E3431D"
+          }
+        ],
+        "/IntegCanaryTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSyntheticsgetCanaryRunsb217581b3c2b9adcdbff5018eb672c9c"
           }
         ],
         "/IntegCanaryTest/DefaultTest/DeployAssert/BootstrapVersion": [
