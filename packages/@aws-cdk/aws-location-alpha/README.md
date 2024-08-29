@@ -49,3 +49,31 @@ declare const role: iam.Role;
 const placeIndex = new location.PlaceIndex(this, 'PlaceIndex');
 placeIndex.grantSearch(role);
 ```
+
+## Geofence Collection
+
+Geofence collection resources allow you to store and manage geofences—virtual boundaries on a map.
+You can evaluate locations against a geofence collection resource and get notifications when the location
+update crosses the boundary of any of the geofences in the geofence collection.
+
+```ts
+declare const key: kms.Key;
+
+new location.GeofenceCollection(this, 'GeofenceCollection', {
+  geofenceCollectionName: 'MyGeofenceCollection', // optional, defaults to a generated name
+  kmsKey: key, // optional, defaults to use an AWS managed key
+});
+```
+
+Use the `grant()` or `grantRead()` method to grant the given identity permissions to perform actions
+on the geofence collection:
+
+```ts
+declare const role: iam.Role;
+
+const geofenceCollection = new location.GeofenceCollection(this, 'GeofenceCollection', {
+  geofenceCollectionName: 'MyGeofenceCollection',
+});
+
+geofenceCollection.grantRead(role);
+```

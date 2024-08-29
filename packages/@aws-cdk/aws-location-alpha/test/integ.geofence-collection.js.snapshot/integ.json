@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "GeofenceCollectionTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-location-geofence-collection"
+      ],
+      "assertionStack": "GeofenceCollectionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GeofenceCollectionTestDefaultTestDeployAssert44609017"
+    }
+  }
+}
