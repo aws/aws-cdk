@@ -53,16 +53,9 @@ export enum AccessLevel {
 }
 
 /**
- * Properties for creating a Origin Access Control resource.
+ * Properties for creating a S3 Origin Access Control resource.
  */
-export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps {
-  /**
-   * The level of permissions granted in the bucket policy and key policy (if applicable)
-   * to the CloudFront distribution.
-   * @default AccessLevel.READ
-   */
-  readonly originAccessLevels?: AccessLevel[];
-}
+export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps {}
 
 /**
  * Origin types supported by Origin Access Control.

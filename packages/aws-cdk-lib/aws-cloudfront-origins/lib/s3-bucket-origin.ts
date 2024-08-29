@@ -78,9 +78,9 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
 
         // Failed to update bucket policy, assume using imported bucket
         if (!bucketPolicyResult.statementAdded) {
-          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy',
-            'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.\n' +
-            'See the "Using pre-existing S3 buckets" section of module\'s README for more info.');
+          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac',
+            'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
+            'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info.');
         }
 
         if (bucket.encryptionKey) {
@@ -204,9 +204,9 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
           principals: [this.originAccessIdentity.grantPrincipal],
         }));
         if (!result.statementAdded) {
-          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy',
-            'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.\n' +
-            'See the "Using pre-existing S3 buckets" section of module\'s README for more info.');
+          Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOai',
+            'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
+            'See the "Setting up OAI with imported S3 buckets (legacy)" section of module\'s README for more info.');
         }
         return this._bind(scope, options);
       }
