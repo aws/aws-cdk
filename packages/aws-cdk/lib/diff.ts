@@ -19,7 +19,7 @@ import { print, warning } from './logging';
  *
  * @param oldTemplate the old/current state of the stack.
  * @param newTemplate the new/target state of the stack.
- * @param strict      do not filter out AWS::CDK::Metadata
+ * @param strict      do not filter out AWS::CDK::Metadata or Rules
  * @param context     lines of context to use in arbitrary JSON diff
  * @param quiet       silences \'There were no differences\' messages
  *
@@ -50,13 +50,9 @@ export function printStackDiff(
   }
 
   // filter out 'AWS::CDK::Metadata' resources from the template
-  if (diff.resources && !strict) {
-    diff.resources = diff.resources.filter(change => {
-      if (!change) { return true; }
-      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
-      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
-      return true;
-    });
+  // filter out 'CheckBootstrapVersion' rules from the template
+  if (!strict) {
+    obscureDiff(diff);
   }
 
   let stackDiffCount = 0;
@@ -164,4 +160,31 @@ function logicalIdMapFromTemplate(template: any) {
     }
   }
   return ret;
+}
+
+/**
+ * Remove any template elements that we don't want to show users.
+ * This is currently:
+ * - AWS::CDK::Metadata resource
+ * - CheckBootstrapVersion Rule
+ */
+function obscureDiff(diff: TemplateDiff) {
+  if (diff.unknown) {
+    // see https://github.com/aws/aws-cdk/issues/17942
+    diff.unknown = diff.unknown.filter(change => {
+      if (!change) { return true; }
+      if (change.newValue?.CheckBootstrapVersion) { return false; }
+      if (change.oldValue?.CheckBootstrapVersion) { return false; }
+      return true;
+    });
+  }
+
+  if (diff.resources) {
+    diff.resources = diff.resources.filter(change => {
+      if (!change) { return true; }
+      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      return true;
+    });
+  }
 }
