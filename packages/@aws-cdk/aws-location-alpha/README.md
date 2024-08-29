@@ -61,7 +61,7 @@ To create a route calculator, define a `RouteCalculator`:
 ```ts
 new location.RouteCalculator(this, 'RouteCalculator', {
   routeCalculatorName: 'MyRouteCalculator', // optional, defaults to a generated name
-  dataSource: location.DataSource.HERE, // optional, defaults to Esri
+  dataSource: location.DataSource.ESRI,
 });
 ```
 
@@ -71,6 +71,8 @@ on the route calculator:
 ```ts
 declare const role: iam.Role;
 
-const routeCalculator = new location.RouteCalculator(this, 'RouteCalculator');
+const routeCalculator = new location.RouteCalculator(this, 'RouteCalculator', {
+  dataSource: location.DataSource.ESRI,
+});
 routeCalculator.grantRead(role);
 ```

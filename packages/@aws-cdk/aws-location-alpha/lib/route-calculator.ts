@@ -2,8 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnRouteCalculator } from 'aws-cdk-lib/aws-location';
-import { DataSource } from './place-index';
-import { generateUniqueId } from './util';
+import { generateUniqueId, DataSource } from './util';
 
 /**
  * A Route Calculator
