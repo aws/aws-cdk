@@ -2678,6 +2678,253 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "SynPythonSelenium40ArtifactsBucketE0BB1A15": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "SynPythonSelenium40ArtifactsBucketPolicy8A526829": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "SynPythonSelenium40ArtifactsBucketE0BB1A15"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SynPythonSelenium40ArtifactsBucketE0BB1A15",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SynPythonSelenium40ArtifactsBucketE0BB1A15",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SynPythonSelenium40ServiceRole48784551": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "s3:ListAllMyBuckets",
+         "Effect": "Allow",
+         "Resource": "*"
+        },
+        {
+         "Action": "s3:GetBucketLocation",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "SynPythonSelenium40ArtifactsBucketE0BB1A15",
+           "Arn"
+          ]
+         }
+        },
+        {
+         "Action": "s3:PutObject",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "SynPythonSelenium40ArtifactsBucketE0BB1A15",
+              "Arn"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": "cloudwatch:PutMetricData",
+         "Condition": {
+          "StringEquals": {
+           "cloudwatch:namespace": "CloudWatchSynthetics"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "*"
+        },
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":logs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":log-group:/aws/lambda/cwsyn-*"
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "canaryPolicy"
+     }
+    ]
+   }
+  },
+  "SynPythonSelenium40B722B964": {
+   "Type": "AWS::Synthetics::Canary",
+   "Properties": {
+    "ArtifactS3Location": {
+     "Fn::Join": [
+      "",
+      [
+       "s3://",
+       {
+        "Ref": "SynPythonSelenium40ArtifactsBucketE0BB1A15"
+       }
+      ]
+     ]
+    },
+    "Code": {
+     "Handler": "canary.handler",
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "d6b51cbdd22d449b9e57c20ef9d0977e1cfbf06806f8008ce376101a2ad432a8.zip"
+    },
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "SynPythonSelenium40ServiceRole48784551",
+      "Arn"
+     ]
+    },
+    "Name": "canaryonesynpyt322b51",
+    "RunConfig": {
+     "EnvironmentVariables": {
+      "URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Ref": "ApiGateway11E7F47B"
+         },
+         ".execute-api.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "ApiGatewayDeploymentStageprod1C6D5CD6"
+         },
+         "/"
+        ]
+       ]
+      }
+     }
+    },
+    "RuntimeVersion": "syn-python-selenium-4.0",
+    "Schedule": {
+     "DurationInSeconds": "0",
+     "Expression": "rate(5 minutes)"
+    },
+    "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ]
+   }
+  },
+  "SynPythonSelenium40AutoDeleteUnderlyingResourcesCustomResource69B197D0": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "SynPythonSelenium40B722B964"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Mappings": {
@@ -2909,6 +3156,14 @@
    },
    "Export": {
     "Name": "canary-one:ExportsOutputRefSynPythonSelenium30F6137007049602B8"
+   }
+  },
+  "ExportsOutputRefSynPythonSelenium40B722B964C2C6F4B8": {
+   "Value": {
+    "Ref": "SynPythonSelenium40B722B964"
+   },
+   "Export": {
+    "Name": "canary-one:ExportsOutputRefSynPythonSelenium40B722B964C2C6F4B8"
    }
   }
  },
