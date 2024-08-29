@@ -4,6 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws';
 import { TestContext } from './integ-test';
+import { findYarnPackages } from './package-sources/repo-source';
 import { IPackageSource } from './package-sources/source';
 import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
@@ -612,6 +613,17 @@ function defined<A>(x: A): x is NonNullable<A> {
  * for Node's dependency lookup mechanism).
  */
 export async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+  if (process.env.REPO_ROOT) {
+    const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
+
+    // Replace the install target with the physical location of this package
+    for (const key of Object.keys(packages)) {
+      if (key in monoRepo) {
+        packages[key] = monoRepo[key];
+      }
+    }
+  }
+
   fs.writeFileSync(path.join(fixture.integTestDir, 'package.json'), JSON.stringify({
     name: 'cdk-integ-tests',
     private: true,
