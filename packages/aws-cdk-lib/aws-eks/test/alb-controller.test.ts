@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { testFixture } from './util';
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
+import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart, KubernetesManifest, AuthenticationMode } from '../lib';
 
 test('all vended policies are valid', () => {
   const addOnsDir = path.join(__dirname, '..', 'lib', 'addons');
@@ -113,6 +113,74 @@ test('correct helm chart version is set for selected alb controller version', ()
             Ref: 'ClusterDefaultVpcFA9F2722',
           },
           '","image":{"repository":"custom","tag":"v2.6.2"}}',
+        ],
+      ],
+    },
+  });
+});
+
+test('will not create AwsAuth when the authenticationMode is API', () => {
+  const { stack } = testFixture();
+
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    authenticationMode: AuthenticationMode.API,
+  });
+
+  AlbController.create(stack, {
+    cluster,
+    version: AlbControllerVersion.V2_6_2,
+  });
+
+  Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, Match.not({
+    Manifest: {
+      'Fn::Join': [
+        '',
+        [
+          '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+          {
+            'Fn::GetAtt': [
+              'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
+              'Arn',
+            ],
+          },
+          '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+        ],
+      ],
+    },
+  }));
+});
+
+test.each([
+  AuthenticationMode.API_AND_CONFIG_MAP,
+  AuthenticationMode.CONFIG_MAP,
+  undefined,
+])('will create AwsAuth when the authenticationMode is %p', (authenticationMode) => {
+  const { stack } = testFixture();
+
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+    authenticationMode,
+  });
+
+  AlbController.create(stack, {
+    cluster,
+    version: AlbControllerVersion.V2_6_2,
+  });
+
+  Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
+    Manifest: {
+      'Fn::Join': [
+        '',
+        [
+          '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+          {
+            'Fn::GetAtt': [
+              'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
+              'Arn',
+            ],
+          },
+          '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
         ],
       ],
     },
