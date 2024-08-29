@@ -13,7 +13,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 });
 const s3Origin = origins.S3BucketOrigin.withBucketDefaults(bucket);
 const distribution = new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { origin: s3Origin},
+  defaultBehavior: { origin: s3Origin },
 });
 
 const integ = new IntegTest(app, 's3-origin-oac', {

@@ -14,7 +14,7 @@ const originAccessIdentity = new cloudfront.OriginAccessIdentity(stack, 'OriginA
 });
 const s3Origin = origins.S3BucketOrigin.withOriginAccessIdentity(bucket, { originAccessIdentity });
 const distribution = new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { origin: s3Origin},
+  defaultBehavior: { origin: s3Origin },
 });
 
 const integ = new IntegTest(app, 's3-origin-oac', {
@@ -48,6 +48,6 @@ integ.assertions.awsApiCall('CloudFront', 'getCloudFrontOriginAccessIdentity', {
     CloudFrontOriginAccessIdentityConfig: {
       CallerReference: Match.stringLikeRegexp('^[A-Za-z0-9-]+$'),
       Comment: 'OAI for my awesome test s3 origin',
-    }
-  }
+    },
+  },
 }));
