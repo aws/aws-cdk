@@ -1,28 +1,28 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
-    "aws-cdk-ec2-lt-metadata-1.assets": {
+    "codebuild-project-arm.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-ec2-lt-metadata-1.assets.json",
+        "file": "codebuild-project-arm.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-ec2-lt-metadata-1": {
+    "codebuild-project-arm": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-ec2-lt-metadata-1.template.json",
+        "templateFile": "codebuild-project-arm.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dda69b9afcec994df7f53332da5d81f218d4a807b31eab3bc506b1de934caa47.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fb14db2f3f849c96db420afc9fd158b99550fa4ffa602209cd78e471a282fc4a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-ec2-lt-metadata-1.assets"
+          "codebuild-project-arm.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,97 +31,91 @@
         }
       },
       "dependencies": [
-        "aws-cdk-ec2-lt-metadata-1.assets"
+        "codebuild-project-arm.assets"
       ],
       "metadata": {
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc/Resource": [
+        "/codebuild-project-arm/MyProjectMedium/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcF9F0CA6F"
+            "data": "MyProjectMediumRole1F3769C8"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/codebuild-project-arm/MyProjectMedium/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62"
+            "data": "MyProjectMediumRoleDefaultPolicy08D66D98"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/LatestNodeRuntimeMap": [
+        "/codebuild-project-arm/MyProjectMedium/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
+            "data": "MyProjectMediumE40D9677"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/codebuild-project-arm/MyProjectXLarge/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+            "data": "MyProjectXLargeRoleC17867F7"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/codebuild-project-arm/MyProjectXLarge/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+            "data": "MyProjectXLargeRoleDefaultPolicyACC3F91E"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/sg1/Resource": [
+        "/codebuild-project-arm/MyProjectXLarge/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "sg15CEFF4E3"
+            "data": "MyProjectXLarge21A68AC6"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/LT/Resource": [
+        "/codebuild-project-arm/MyProjectX2Large/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LTC4631592"
+            "data": "MyProjectX2LargeRole65F64577"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/sg2/Resource": [
+        "/codebuild-project-arm/MyProjectX2Large/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "sg2860DD91F"
+            "data": "MyProjectX2LargeRoleDefaultPolicy241428C8"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/LTWithMachineImage/Resource": [
+        "/codebuild-project-arm/MyProjectX2Large/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LTWithMachineImageAAC227A5"
+            "data": "MyProjectX2Large715B77CC"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [
+        "/codebuild-project-arm/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/CheckBootstrapVersion": [
+        "/codebuild-project-arm/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-ec2-lt-metadata-1"
+      "displayName": "codebuild-project-arm"
     },
-    "LambdaTestDefaultTestDeployAssert1AF2B360.assets": {
+    "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "LambdaTestDefaultTestDeployAssert1AF2B360.assets.json",
+        "file": "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "LambdaTestDefaultTestDeployAssert1AF2B360": {
+    "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "LambdaTestDefaultTestDeployAssert1AF2B360.template.json",
+        "templateFile": "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -130,7 +124,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "LambdaTestDefaultTestDeployAssert1AF2B360.assets"
+          "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -139,23 +133,23 @@
         }
       },
       "dependencies": [
-        "LambdaTestDefaultTestDeployAssert1AF2B360.assets"
+        "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337.assets"
       ],
       "metadata": {
-        "/LambdaTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/integ-test-codebuild-project-arm/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/integ-test-codebuild-project-arm/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "LambdaTest/DefaultTest/DeployAssert"
+      "displayName": "integ-test-codebuild-project-arm/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
