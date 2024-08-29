@@ -5,7 +5,7 @@ import {
 } from 'aws-cdk-lib';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha'
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
