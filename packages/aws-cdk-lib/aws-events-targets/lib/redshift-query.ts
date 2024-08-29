@@ -35,8 +35,6 @@ export interface RedshiftQueryProps {
    * - When multiple sql queries are included, this will use the `batchExecuteStatement` API. Therefore, if any statement fails, the entire transaction is rolled back.
    * - If a single SQL statement is to be executed, this will use the `executeStatement` API.
    *
-   * Either this or `batchSQL` must be specified, but not both.
-   *
    * @default - No SQL query is specified
    */
   readonly sql: string[];
