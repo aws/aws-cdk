@@ -1449,6 +1449,10 @@ export class PostgresEngineVersion {
    * Version "11.22-rds.20240509"
    */
   public static readonly VER_11_22_RDS_20240509 = PostgresEngineVersion.of('11.22-rds.20240509', '11', { s3Import: true, s3Export: true });
+  /**
+   * Version "11.22-rds.20240808"
+   */
+  public static readonly VER_11_22_RDS_20240808 = PostgresEngineVersion.of('11.22-RDS.20240808', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
