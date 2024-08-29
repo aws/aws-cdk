@@ -12,7 +12,7 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, RouteTable, VPNGateway } from '../lib/route';
+import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, RouteTable, VPNGatewayV2 } from '../lib/route';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { Fn } from 'aws-cdk-lib';
 
@@ -85,7 +85,7 @@ const igw = new InternetGateway(stacks.igw, 'testIGW', {
 });
 routeTables.igw.addRoute('igwRoute', '0.0.0.0/0', { gateway: igw });
 
-const vpgw = new VPNGateway(stacks.vpgw, 'testVPGW', {
+const vpgw = new VPNGatewayV2(stacks.vpgw, 'testVPGW', {
   type: VpnConnectionType.IPSEC_1,
   vpc: vpcs.vpgw,
 });

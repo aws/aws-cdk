@@ -1,6 +1,6 @@
 import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet } from 'aws-cdk-lib/aws-ec2';
 import { Arn, CfnResource, Lazy, Names } from 'aws-cdk-lib/core';
-import { Construct, DependencyGroup, IDependable } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
 
@@ -248,11 +248,6 @@ export class VpcV2 extends VpcV2Base {
    * To define dependency on internet connectivity
    */
   public readonly internetConnectivityEstablished: IDependable;
-
-  /**
-   * To define dependency on internet connectivity
-   */
-  private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   /**
  * reference to all secondary blocks attached

@@ -86,7 +86,7 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('should not associate a route to an incorrect subnet', () => {
+  test('addEIGW should not associate a route to an incorrect subnet', () => {
     const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
@@ -108,7 +108,6 @@ describe('Vpc V2 with full control', () => {
       });
     }).toThrow("There are no 'Public' subnet groups in this VPC. Available types: Isolated,Deprecated_Isolated");
   });
-
 
   test('addNatGateway defines a private gateway', () => {
     const myVpc = new vpc.VpcV2(stack, 'TestVpc', {

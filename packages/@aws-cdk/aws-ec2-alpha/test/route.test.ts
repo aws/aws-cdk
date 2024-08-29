@@ -71,7 +71,7 @@ describe('EC2 Routing', () => {
   });
 
   test('Route to VPN Gateway', () => {
-    const vpngw = new route.VPNGateway(stack, 'TestVpnGw', {
+    const vpngw = new route.VPNGatewayV2(stack, 'TestVpnGw', {
       type: VpnConnectionType.IPSEC_1,
       vpc: myVpc,
     });
@@ -111,7 +111,7 @@ describe('EC2 Routing', () => {
   }),
 
   test('Route to VPN Gateway with optional properties', () => {
-    new route.VPNGateway(stack, 'TestVpnGw', {
+    new route.VPNGatewayV2(stack, 'TestVpnGw', {
       type: VpnConnectionType.IPSEC_1,
       vpc: myVpc,
       amazonSideAsn: 12345678,

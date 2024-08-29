@@ -25,7 +25,7 @@ export enum NatConnectivityType {
  * Interface to define a routing target, such as an
  * egress-only internet gateway or VPC endpoint.
  */
-export interface IRouteTarget {
+export interface IRouteTarget extends IDependable{
   /**
    * The type of router used in the route.
    */
@@ -73,7 +73,7 @@ export interface InternetGatewayProps {
 /**
  * Properties to define a VPN gateway.
  */
-export interface VPNGatewayProps {
+export interface VPNGatewayV2Props {
   /**
    * The type of VPN connection the virtual private gateway supports.
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
@@ -252,6 +252,11 @@ export class InternetGateway extends Resource implements IRouteTarget {
 
     this.routerTargetId = this.resource.attrInternetGatewayId;
     this.vpcId = props.vpc.vpcId;
+
+    new CfnVPCGatewayAttachment(this, 'GWAttachment', {
+      vpcId: this.vpcId,
+      internetGatewayId: this.routerTargetId,
+    });
   }
 }
 
@@ -259,7 +264,7 @@ export class InternetGateway extends Resource implements IRouteTarget {
  * Creates a virtual private gateway
  * @resource AWS::EC2::VPNGateway
  */
-export class VPNGateway extends Resource implements IRouteTarget {
+export class VPNGatewayV2 extends Resource implements IRouteTarget {
   /**
    * The type of router used in the route.
    */
@@ -280,8 +285,12 @@ export class VPNGateway extends Resource implements IRouteTarget {
    */
   public readonly resource: CfnVPNGateway;
 
+  /**
+   * The VPN Gateway Attachment
+   */
+  public readonly attachment: CfnVPCGatewayAttachment;
 
-  constructor(scope: Construct, id: string, props: VPNGatewayProps) {
+  constructor(scope: Construct, id: string, props: VPNGatewayV2Props) {
     super(scope, id);
 
     this.routerType = RouterType.GATEWAY;
@@ -293,11 +302,11 @@ export class VPNGateway extends Resource implements IRouteTarget {
     this.node.defaultChild = this.resource;
 
     this.routerTargetId = this.resource.attrVpnGatewayId;
-    this.vpcId = props.vpc.vpcId;
 
-    new CfnVPCGatewayAttachment(this, 'GWAttachment', {
+    this.vpcId = props.vpc.vpcId;
+    this.attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
       vpcId: this.vpcId,
-      vpnGatewayId: this.routerTargetId,
+      vpnGatewayId: this.resource.attrVpnGatewayId,
     });
   }
 }
@@ -474,7 +483,7 @@ export interface RouteProps {
  * Creates a new route with added functionality.
  * @resource AWS::EC2::Route
  */
-export class Route extends Resource implements IRoute {
+export class Route extends Resource implements IRoute, IDependable {
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
    *
@@ -544,18 +553,12 @@ export class Route extends Resource implements IRoute {
     }
     this.node.defaultChild = this.resource;
 
-    if (this.targetRouterType == RouterType.GATEWAY) {
-      if (this.target.gateway instanceof InternetGateway) {
-        new CfnVPCGatewayAttachment(this, 'GWAttachment', {
-          vpcId: this.target.gateway.vpcId,
-          internetGatewayId: this.target.gateway.routerTargetId,
-        });
-      } else if (this.target.gateway instanceof VPNGateway) {
-        new CfnVPCGatewayAttachment(this, 'GWAttachment', {
-          vpcId: this.target.gateway.vpcId,
-          vpnGatewayId: this.target.gateway.routerTargetId,
-        });
-      }
+    //Create a route only after target gateway or endpoint is created
+    if (this.target.gateway) {
+      this.node.addDependency(this.target.gateway);
+    }
+    if (this.target.endpoint) {
+      this.node.addDependency(this.target.endpoint);
     }
   }
 }
@@ -580,7 +583,7 @@ export interface RouteTableProps {
  * Creates a route table for the specified VPC
  * @resource AWS::EC2::RouteTable
  */
-export class RouteTable extends Resource implements IRouteTable, IDependable {
+export class RouteTable extends Resource implements IRouteTable {
   /**
    * The ID of the route table.
    */

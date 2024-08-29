@@ -1,8 +1,8 @@
 import { Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
-import { IDependable, Dependable, IConstruct } from 'constructs';
-import { EgressOnlyInternetGateway, NatGateway, NatGatewayOptions, Route, VPNGateway } from './route';
+import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
+import { EgressOnlyInternetGateway, InternetGateway, NatGateway, NatGatewayOptions, Route, VPNGatewayV2 } from './route';
 import { ISubnetV2 } from './subnet-v2';
 
 /**
@@ -43,10 +43,33 @@ export interface IVpcV2 extends IVpc {
   readonly ipv4CidrBlock: string;
 
   /**
-   * Add an Egress only Internet Gateway to current VPC
+   * Add an Egress only Internet Gateway to current VPC.
+   * Can only be used for ipv6 enabled VPCs.
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway-basics.html}.
    */
-  addEgressOnlyInternetGateway(options: EgressOnlyInternetGatewayOptions): void;
+  addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void;
+
+  /**
+   * Adds an Internet Gateway to current VPC.
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-igw-internet-access.html}.
+   * @default defines route for all ipv4('0.0.0.0') and ipv6 addresses('::/0')
+   */
+  addInternetGateway(id: string, destination?: string): InternetGateway;
+
+  /**
+   * Adds VPN Gateway to VPC and set route propogation.
+   * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html}.
+   * @default no route propogation
+   */
+  enableVpnGatewayV2(options: EnableVpnGatewayOptions): VPNGatewayV2;
+
+  /**
+   * Adds a new NAT Gateway to VPC
+   * A NAT gateway is a Network Address Translation (NAT) service. NAT Gateway Connectivity can be of type `Public` or `Private`
+   * @default ConnectivityType.Public
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html}.
+   */
+  addNatGateway(id: string, options: NatGatewayOptions): NatGateway;
 
 }
 
@@ -98,6 +121,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public abstract readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   * Add igw to this if its a public subnet
+   * @internal
+   */
+  protected readonly _internetConnectivityEstablished = new DependencyGroup();
+
+  /**
    * Secondary IPs for the VPC, can be multiple Ipv4 or Ipv6
    * Ipv4 should be within RFC#1918 range
    */
@@ -118,10 +148,15 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
   /**
    * Mutable private field for the vpnGatewayId
-   *
    * @internal
    */
   protected _vpnGatewayId?: string;
+
+  /**
+   * Mutable private field for the internetGatewayId
+   * @internal
+   */
+  protected _internetGatewayId?: string;
 
   /**
   * Return information on the subnets appropriate for the given selection strategy
@@ -145,6 +180,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
   /**
   * Adds a VPN Gateway to this VPC
+  * @deprecated use enableVpnGatewayV2 for compatibility with VPCV2.Route
   */
   public enableVpnGateway(options: EnableVpnGatewayOptions): void {
     if (this.vpnGatewayId) {
@@ -182,50 +218,41 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-   * Adds VPNGAtewayV2 to the VPC
+   * Adds VPNGAtewayV2 to this VPC
    */
-    /**
-  * Adds a VPN Gateway to this VPC
-  */
-    public enableVpnGatewayV2(options: EnableVpnGatewayOptions): VPNGateway {
-      if (this.vpnGatewayId) {
-        throw new Error('The VPN Gateway has already been enabled.');
-      }
-  
-      const vpnGateway = new VPNGateway(this, 'VpnGateway', {
-        amazonSideAsn: options.amazonSideAsn,
-        type: VpnConnectionType.IPSEC_1,
-        vpc: this,
-      });
-  
-      this._vpnGatewayId = vpnGateway.routerTargetId;
-  
-      const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
-        vpcId: this.vpcId,
-        vpnGatewayId: this._vpnGatewayId,
-      });
-  
-      // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = options.vpnRoutePropagation ?? [{}];
-      const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
-  
-      if (routeTableIds.length === 0) {
-        Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
-      }
-  
-      const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
-        routeTableIds,
-        vpnGatewayId: this._vpnGatewayId,
-      });
-        // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
-        // until it has successfully attached to the VPC.
-        // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
-      routePropagation.node.addDependency(attachment);
-
-
-      return vpnGateway;
+  public enableVpnGatewayV2(options: EnableVpnGatewayOptions): VPNGatewayV2 {
+    if (this.vpnGatewayId) {
+      throw new Error('The VPN Gateway has already been enabled.');
     }
 
+    const vpnGateway = new VPNGatewayV2(this, 'VpnGateway', {
+      amazonSideAsn: options.amazonSideAsn,
+      type: VpnConnectionType.IPSEC_1,
+      vpc: this,
+    });
+
+    this._internetConnectivityEstablished.add(vpnGateway);
+    this._vpnGatewayId = vpnGateway.routerTargetId;
+
+    // Propagate routes on route tables associated with the right subnets
+    const vpnRoutePropagation = options.vpnRoutePropagation ?? [{}];
+    const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
+
+    if (routeTableIds.length === 0) {
+      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+    }
+
+    const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
+      routeTableIds,
+      vpnGatewayId: this._vpnGatewayId,
+    });
+    // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
+    // until it has successfully attached to the VPC.
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+    routePropagation.node.addDependency(vpnGateway.attachment);
+
+    return vpnGateway;
+  }
 
   /**
   * Adds a new VPN connection to this VPC
@@ -268,11 +295,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-   * Adds a new Egress Only Internet Gateway to this VPC and adds route
+   * Adds a new Egress Only Internet Gateway to this VPC and defines a new route
    * to the route table of given subnets
-   * @default in case of no input subnets, no route is defined.
+   * @default in case of no input subnets, no route is created.
    */
-  public addEgressOnlyInternetGateway(options: EgressOnlyInternetGatewayOptions): void {
+  public addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void {
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
       vpc: this,
     });
@@ -284,7 +311,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       throw new Error('Egress only IGW can only be added to Ipv6 enabled VPC');
     };
 
-    if (options.subnets) {
+    if (options?.subnets) {
       const subnets = flatten(options.subnets.map(s => this.selectSubnets(s).subnets));
       subnets.forEach((subnet) => {
         this.createEgressRoute(subnet, egw, options.destination);
@@ -293,8 +320,9 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
- * Creates a route for EGW with destination set to outbound IPv6('::/0').
- */
+   * Creates a route for EGW with destination set to outbound IPv6('::/0') or custom ipv6 address.
+   * @internal
+   */
   private createEgressRoute(subnet: ISubnetV2, egw: EgressOnlyInternetGateway, destination?: string): void {
     const destinationIpv6 = destination ?? '::/0';
     new Route(this, `${subnet.node.id}-EgressRoute`, {
@@ -305,13 +333,62 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
-   * Adds a new NAT Gateway to this VPC and adds a route to the route table
+   * Adds a new Internet Gateway to this VPC
+   * @default creates a new route for public subnets(with all outbound access) to the Internet Gateway.
+   */
+  public addInternetGateway(id: string, destination?: string): InternetGateway {
+    if (this._internetGatewayId) {
+      throw new Error('The Internet Gateway has already been enabled.');
+    }
+
+    const igw = new InternetGateway(this, id, {
+      vpc: this,
+    });
+
+    this._internetConnectivityEstablished.add(igw);
+    this._internetGatewayId = igw.routerTargetId;
+    this.publicSubnets.forEach( (s) => this.addDefaultInternetRoute(s, igw, destination));
+
+    return igw;
+  }
+
+  /**
+   * Adds default route for the internet gateway
+   * @internal
+   */
+  private addDefaultInternetRoute(subnet: ISubnetV2, igw: InternetGateway, destination?: string): void {
+
+    if (subnet.subnetType !== SubnetType.PUBLIC) {
+      throw new Error('Internet Gateway is to be added to public subnets');
+    }
+
+    //Add deffault route to IGW for IPv6
+    if (subnet.ipv6CidrBlock) {
+      new Route(this, `${subnet.node.id}-DefaultIPv6Route`, {
+        routeTable: subnet.routeTable,
+        destination: destination ?? '::/0',
+        target: { gateway: igw },
+      });
+    }
+    //Add default route to IGW for IPv4
+    new Route(this, `${subnet.node.id}-DefaultRoute`, {
+      routeTable: subnet.routeTable,
+      destination: destination ?? '0.0.0.0/0',
+      target: { gateway: igw },
+    });
+  }
+
+  /**
+   * Adds a new NAT Gateway to the given subnet of this VPC
    * of given subnets.
    * @param id The ID of the NAT Gateway construct
    * @param options The options for the NAT Gateway to be created
    * @returns - The newly-created NAT Gateway
    */
   public addNatGateway(id: string, options: NatGatewayOptions): NatGateway {
+    if (this._internetGatewayId === undefined) {
+      throw new Error('Cannot add a NAT Gateway without an Internet Gateway enabled on VPC');
+    }
     return new NatGateway(this, id, {
       vpc: this,
       ...options,
@@ -333,6 +410,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   */
   public get vpnGatewayId(): string | undefined {
     return this._vpnGatewayId;
+  }
+
+  /**
+  * Returns the id of the Internet Gateway (if enabled)
+  */
+  public get interntetGatewayId(): string | undefined {
+    return this._internetGatewayId;
   }
 
   /**

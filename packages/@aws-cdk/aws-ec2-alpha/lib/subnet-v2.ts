@@ -156,7 +156,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * The type of subnet (public or private) that this subnet represents.
    * @attribute SubnetType
    */
-  public readonly subnetType: SubnetType;
+  public readonly subnetType?: SubnetType;
 
   private _networkAcl: INetworkAcl;
 
