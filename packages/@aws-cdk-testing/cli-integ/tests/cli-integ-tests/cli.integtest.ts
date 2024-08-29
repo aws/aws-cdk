@@ -1,7 +1,6 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as chalk from 'chalk';
 import {
   CreateStackCommand,
   DescribeStackResourcesCommand,
@@ -20,6 +19,7 @@ import {
 import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import * as chalk from 'chalk';
 import {
   integTest,
   cloneDirectory,
@@ -2168,10 +2168,10 @@ integTest(
       allowErrExit: true,
     });
 
-    // THEN
-    expect(deployOutput).toContain(
-      `❌  ${fixture.stackNamePrefix}-ecs-hotswap failed: ResourceNotReady: Resource is not in the state deploymentCompleted`,
-    );
+    const stackName = `${fixture.stackNamePrefix}-ecs-hotswap`;
+    const expectedSubstring = `❌  ${chalk.bold(stackName)} failed: ResourceNotReady: Resource is not in the state deploymentCompleted`;
+
+    expect(deployOutput).toContain(expectedSubstring);
     expect(deployOutput).not.toContain('hotswapped!');
   }),
 );
