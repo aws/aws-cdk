@@ -37,6 +37,32 @@ const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
   schemaVersion: '1',
 };
 
+const NOTICE_29420 = {
+  title: '(cli): List stack output change issue.',
+  issueNumber: 29420,
+  overview: 'v2.132.0 introduced functionality to the cdk list command to display stack dependencies. This feature introduced a change that displays stack ids over displayName altering the existing list functionality',
+  components: [
+    {
+      name: 'cli',
+      version: '2.132.0',
+    },
+  ],
+  schemaVersion: '1',
+};
+
+const NOTICE_29483 = {
+  title: '(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality',
+  issueNumber: 29483,
+  overview: 'cdk diff functionality used to rely on assuming lookup-role. With a recent change present in v2.132.0 and v2.132.1, it is now trying to assume deploy-role with the lookup-role. This leads to an authorization error if permissions were not defined to assume deploy-role.',
+  components: [
+    {
+      name: 'cli',
+      version: '>=2.132.0 <=2.132.1',
+    },
+  ],
+  schemaVersion: '1',
+};
+
 const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
   title: 'Regression on module foobar',
   issueNumber: 1234,
@@ -421,40 +447,107 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
     });
 
-    test('Shows notices that pass the filter with --unacknowledged', async () => {
-      const dataSource = createDataSource();
-      dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-
-      const result = await generateMessage(dataSource, {
-        acknowledgedIssueNumbers: [17061],
-        outdir: '/tmp',
-        unacknowledged: true,
-      });
-
-      expect(result).toEqual(`
-NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-16603	Toggling off auto_delete_objects for Bucket empties the bucket
-
-	Overview: If a stack is deployed with an S3 bucket with
-	          auto_delete_objects=True, and then re-deployed with
-	          auto_delete_objects=False, all the objects in the bucket
-	          will be deleted.
-
-	Affected versions: cli: <=1.126.0
-
-	More information at: https://github.com/aws/aws-cdk/issues/16603
-
-
-If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
-
-There are 1 unacknowledged notice(s).`);
-    });
-
     function createDataSource() {
       return {
         fetch: jest.fn(),
       };
     }
   });
+});
+
+describe('mock cdk version 2.132.0', () => {
+  beforeAll(() => {
+    jest
+      .spyOn(version, 'versionNumber')
+      .mockImplementation(() => '2.132.0');
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('Shows notices that pass the filter with --unacknowledged', async () => {
+    const dataSource = createDataSource();
+    dataSource.fetch.mockResolvedValue([NOTICE_29420, NOTICE_29483]);
+
+    const allNotices = await generateMessage(dataSource, {
+      acknowledgedIssueNumbers: [],
+      outdir: '/tmp',
+      unacknowledged: true,
+    });
+
+    expect(allNotices).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+29420	(cli): List stack output change issue.
+
+	Overview: v2.132.0 introduced functionality to the cdk list command to
+	          display stack dependencies. This feature introduced a change
+	          that displays stack ids over displayName altering the
+	          existing list functionality
+
+	Affected versions: cli: 2.132.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/29420
+
+
+29483	(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality
+
+	Overview: cdk diff functionality used to rely on assuming lookup-role.
+	          With a recent change present in v2.132.0 and v2.132.1, it is
+	          now trying to assume deploy-role with the lookup-role. This
+	          leads to an authorization error if permissions were not
+	          defined to assume deploy-role.
+
+	Affected versions: cli: >=2.132.0 <=2.132.1
+
+	More information at: https://github.com/aws/aws-cdk/issues/29483
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29420".
+
+There are 2 unacknowledged notice(s).`);
+
+    const acknowledgeNotice29420 = await generateMessage(dataSource, {
+      acknowledgedIssueNumbers: [29420],
+      outdir: '/tmp',
+      unacknowledged: true,
+    });
+
+    expect(acknowledgeNotice29420).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+29483	(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality
+
+	Overview: cdk diff functionality used to rely on assuming lookup-role.
+	          With a recent change present in v2.132.0 and v2.132.1, it is
+	          now trying to assume deploy-role with the lookup-role. This
+	          leads to an authorization error if permissions were not
+	          defined to assume deploy-role.
+
+	Affected versions: cli: >=2.132.0 <=2.132.1
+
+	More information at: https://github.com/aws/aws-cdk/issues/29483
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29483".
+
+There are 1 unacknowledged notice(s).`);
+
+    const allAcknowledgedNotices = await generateMessage(dataSource, {
+      acknowledgedIssueNumbers: [29420, 29483],
+      outdir: '/tmp',
+      unacknowledged: true,
+    });
+
+    expect(allAcknowledgedNotices).toEqual('\n\nThere are 0 unacknowledged notice(s).');
+
+    function createDataSource() {
+      return {
+        fetch: jest.fn(),
+      };
+    }
+
+  });
+
 });
