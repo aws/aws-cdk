@@ -351,6 +351,6 @@ describe('tests', () => {
           path: 'example',
         }),
       });
-    }).toThrow('Redirect path must start with a \'/\'');
+    }).toThrow('Redirect path must start with a \'/\', got: example');
   });
 });
