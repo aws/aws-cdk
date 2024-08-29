@@ -401,8 +401,8 @@ describe('S3BucketOrigin', () => {
 
       it('should warn user bucket policy is not updated', () => {
         Annotations.fromStack(stack).hasWarning('/Default/MyDistributionA/Origin1',
-          'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.\n' +
-          'See the "Using pre-existing S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy]');
+        'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
+        'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac]');
       });
 
       it('should match expected template resources', () => {
@@ -786,8 +786,8 @@ describe('S3BucketOrigin', () => {
 
       it('should warn user bucket policy is not updated', () => {
         Annotations.fromStack(distributionStack).hasWarning('/distributionStack/MyDistributionA/Origin1',
-          'Cannot update bucket policy of an imported bucket. You may need to update the policy manually instead.\n' +
-          'See the "Using pre-existing S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicy]');
+        'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
+        'See the "Setting up OAI with imported S3 buckets (legacy)" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOai]');
       });
 
       it('should create OAI in bucket stack and output it, then reference the output in the distribution stack', () => {
