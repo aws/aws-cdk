@@ -26,7 +26,7 @@ describe('RedshiftQuery event target', () => {
       beforeEach(() => {
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
           database: 'dev',
-          sql: 'SELECT * FROM foo',
+          sql: ['SELECT * FROM foo'],
         }));
       });
 
@@ -60,7 +60,7 @@ describe('RedshiftQuery event target', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
           database: 'dev',
-          sql: 'SELECT * FROM foo',
+          sql: ['SELECT * FROM foo'],
         }));
 
         // THEN
@@ -82,7 +82,7 @@ describe('RedshiftQuery event target', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
           database: 'dev',
-          batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
+          sql: ['SELECT * FROM foo', 'SELECT * FROM bar'],
         }));
 
         // THEN
@@ -104,7 +104,7 @@ describe('RedshiftQuery event target', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
           database: 'dev',
-          sql: 'SELECT * FROM foo',
+          sql: ['SELECT * FROM foo'],
         }));
 
         // THEN
@@ -126,7 +126,7 @@ describe('RedshiftQuery event target', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
           database: 'dev',
-          batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
+          sql: ['SELECT * FROM foo', 'SELECT * FROM bar'],
         }));
 
         // THEN
@@ -153,7 +153,7 @@ describe('RedshiftQuery event target', () => {
         // WHEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
           database: 'dev',
-          sql: 'SELECT * FROM foo',
+          sql: ['SELECT * FROM foo'],
           secret,
         }));
 
@@ -180,7 +180,7 @@ describe('RedshiftQuery event target', () => {
         // WHEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
           database: 'dev',
-          sql: 'SELECT * FROM foo',
+          sql: ['SELECT * FROM foo'],
           secret,
         }));
 
@@ -202,23 +202,17 @@ describe('RedshiftQuery event target', () => {
     });
 
     describe('failures', () => {
-      test('throws an error if neither sql nor batchSQL is specified', () => {
+      test('throws an error if there are no elements in the sql array', () => {
+        // WHEN
         expect(() => {
           rule.addTarget(new targets.RedshiftQuery(clusterArn, {
             database: 'dev',
+            sql: [],
           }));
-        }).toThrow(/One of `sql` or `batchSQL` must be specified./);
-      });
+        })
 
-      test('throws an error if both sql and batchSQL are specified', () => {
         // THEN
-        expect(() => {
-          rule.addTarget(new targets.RedshiftQuery(clusterArn, {
-            database: 'dev',
-            sql: 'SELECT * FROM foo',
-            batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
-          }));
-        }).toThrow(/Only one of `sql` or `batchSQL` can be specified, not both./);
+          .toThrow(/At least one SQL statement must be specified./);
       });
     });
   });

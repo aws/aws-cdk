@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "files": {
-    "7ae2ee445e978867abfce3409f39ab0c59a7a93ed20d17d3d83884fd26092dea": {
+    "97ed69e0c6a3717cdba2853084a186e0bfd33216748d11445a14282087c0b2e9": {
       "source": {
         "path": "redshift-query-events.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7ae2ee445e978867abfce3409f39ab0c59a7a93ed20d17d3d83884fd26092dea.json",
+          "objectKey": "97ed69e0c6a3717cdba2853084a186e0bfd33216748d11445a14282087c0b2e9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

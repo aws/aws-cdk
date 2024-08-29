@@ -30,23 +30,16 @@ export interface RedshiftQueryProps {
   readonly secret?: secretsmanager.ISecret;
 
   /**
-   * The SQL query to run. This will use the `executeStatement` API.
+   * The SQL queries to be executed. Each query is run sequentially within a single transaction; the next query in the array will only execute after the previous one has successfully completed.
+   *
+   * - When multiple sql queries are included, this will use the `batchExecuteStatement` API. Therefore, if any statement fails, the entire transaction is rolled back.
+   * - If a single SQL statement is to be executed, this will use the `executeStatement` API.
    *
    * Either this or `batchSQL` must be specified, but not both.
    *
    * @default - No SQL query is specified
    */
-  readonly sql?: string;
-
-  /**
-   * The SQL queries to be executed. Each query is run sequentially within a single transaction; the next query in the array will only execute after the previous one has successfully completed.
-   * If any statement fails, the entire transaction is rolled back. This will use the `batchExecuteStatement` API.
-   *
-   * Either this or `sql` must be specified, but not both.
-   *
-   * @default - No SQL queries are specified
-   */
-  readonly batchSQL?: string[];
+  readonly sql: string[];
 
   /**
    * The name of the SQL statement. You can name the SQL statement for identitfication purposes. If you would like Amazon Redshift to identify the Event Bridge rule, and present it in the Amazon Redshift console, append a `QS2-` prefix to the statement name.
@@ -86,27 +79,32 @@ export interface RedshiftQueryProps {
 
 /**
  * Schedule an Amazon Redshift Query to be run, using the Redshift Data API.
- * It is recommended to append a `QS2-` prefix to both `statementName` and `ruleName`, to allow Amazon Redshift to identify the Event Bridge rule, and present it in the Amazon Redshift console.
+ *
+ * If you would like Amazon Redshift to identify the Event Bridge rule, and present it in the Amazon Redshift console, append a `QS2-` prefix to both `statementName` and `ruleName`.
  */
 export class RedshiftQuery implements events.IRuleTarget {
   constructor(
+    /**
+     * The ARN of the Amazon Redshift cluster
+     */
     private readonly clusterArn: string,
-    private readonly props: RedshiftQueryProps) {
-  }
+
+    /**
+     * The properties of the Redshift Query event
+     */
+    private readonly props: RedshiftQueryProps,
+  ) {}
 
   bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = this.props.role ?? singletonEventRole(rule);
-    if (this.props.sql) {
+    if (this.props.sql.length < 1) {
+      throw new Error('At least one SQL statement must be specified.');
+    }
+    if (this.props.sql.length === 1) {
       role.addToPrincipalPolicy(this.putEventStatement());
     }
-    if (this.props.batchSQL) {
+    if (this.props.sql.length > 1) {
       role.addToPrincipalPolicy(this.putBatchEventStatement());
-    }
-    if (this.props.sql && this.props.batchSQL) {
-      throw new Error('Only one of `sql` or `batchSQL` can be specified, not both.');
-    }
-    if (!this.props.sql && !this.props.batchSQL) {
-      throw new Error('One of `sql` or `batchSQL` must be specified.');
     }
 
     return {
@@ -118,8 +116,8 @@ export class RedshiftQuery implements events.IRuleTarget {
         database: this.props.database,
         dbUser: this.props.dbUser,
         secretManagerArn: this.props.secret?.secretFullArn ?? this.props.secret?.secretName,
-        sql: this.props.sql,
-        sqls: this.props.batchSQL,
+        sql: this.props.sql.length === 1 ? this.props.sql[0] : undefined,
+        sqls: this.props.sql.length > 1 ? this.props.sql : undefined,
         statementName: this.props.statementName,
         withEvent: this.props.sendEventBridgeEvent,
       },

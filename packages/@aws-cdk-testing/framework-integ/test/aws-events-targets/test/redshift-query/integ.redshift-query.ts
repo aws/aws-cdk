@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as redshiftserverless from 'aws-cdk-lib/aws-redshiftserverless';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 const app = new cdk.App();
 
@@ -23,13 +24,23 @@ workGroup.addDependency(namespace);
 
 const queue = new sqs.Queue(stack, 'dlq');
 
+const secret = new secretsmanager.Secret(stack, 'Secret');
+
 const timer3 = new events.Rule(stack, 'Timer3', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
 timer3.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
   deadLetterQueue: queue,
-  sql: 'SELECT * FROM baz',
+  sql: ['SELECT * FROM baz'],
+  secret,
+}));
+
+timer3.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, {
+  database: 'dev',
+  deadLetterQueue: queue,
+  sql: ['SELECT * FROM foo', 'SELECT * FROM bar'],
+  secret,
 }));
 
 new IntegTest(app, 'LogGroup', {

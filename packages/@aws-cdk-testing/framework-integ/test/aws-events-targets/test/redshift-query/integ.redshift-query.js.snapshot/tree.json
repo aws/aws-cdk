@@ -67,6 +67,30 @@
               "version": "0.0.0"
             }
           },
+          "Secret": {
+            "id": "Secret",
+            "path": "redshift-query-events/Secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "redshift-query-events/Secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
           "Timer3": {
             "id": "Timer3",
             "path": "redshift-query-events/Timer3",
@@ -104,7 +128,43 @@
                         },
                         "redshiftDataParameters": {
                           "database": "dev",
+                          "secretManagerArn": {
+                            "Ref": "SecretA720EF05"
+                          },
                           "sql": "SELECT * FROM baz"
+                        }
+                      },
+                      {
+                        "id": "Target1",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "WorkGroup",
+                            "Workgroup.WorkgroupArn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "Timer3EventsRole909B99A1",
+                            "Arn"
+                          ]
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "dlq09C78ACC",
+                              "Arn"
+                            ]
+                          }
+                        },
+                        "redshiftDataParameters": {
+                          "database": "dev",
+                          "secretManagerArn": {
+                            "Ref": "SecretA720EF05"
+                          },
+                          "sqls": [
+                            "SELECT * FROM foo",
+                            "SELECT * FROM bar"
+                          ]
                         }
                       }
                     ]
@@ -165,7 +225,10 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "redshift-data:ExecuteStatement",
+                                  "Action": [
+                                    "redshift-data:BatchExecuteStatement",
+                                    "redshift-data:ExecuteStatement"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
