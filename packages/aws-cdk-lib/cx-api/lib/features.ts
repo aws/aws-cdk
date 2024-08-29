@@ -1104,7 +1104,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, adding notifications to a bucket in the current stack will only update notification defined in this stack.
       Other notifications that are not managed by this stack will be kept.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.155.0' },
     recommendedValue: false,
   },
 };
