@@ -323,6 +323,19 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_3_0 = new Runtime('syn-python-selenium-3.0', RuntimeFamily.PYTHON);
 
   /**
+   * `syn-python-selenium-4.0` includes the following:
+   * - Lambda runtime Python 3.9
+   * - Selenium version 4.15.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** for errors in HAR parser logging.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
+
+  /**
     * @param name The name of the runtime version
     * @param family The Lambda runtime family
     */

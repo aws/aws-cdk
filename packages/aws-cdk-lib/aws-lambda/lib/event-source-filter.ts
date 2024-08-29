@@ -19,7 +19,7 @@ export class FilterRule {
   /**
    * Equals comparison operator
    */
-  public static isEqual(item: string | number): any {
+  public static isEqual(item: string | number | boolean): any {
     if (typeof item === 'number') {
       return [{ numeric: ['=', item] }];
     }

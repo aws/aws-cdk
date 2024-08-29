@@ -136,7 +136,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.20",
+    "@aws-cdk/aws-service-spec": "^0.1.21",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",

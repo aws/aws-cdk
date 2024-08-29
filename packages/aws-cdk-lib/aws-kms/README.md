@@ -41,6 +41,15 @@ const key = new kms.Key(this, 'MyKey', {
 });
 ```
 
+
+Create a multi-Region primary key:
+
+```ts
+const key = new kms.Key(this, 'MyKey', {
+  multiRegion: true, // Default is false
+});
+```
+
 ## Sharing keys between stacks
 
 To use a KMS key in a different stack in the same CDK application,

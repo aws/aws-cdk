@@ -949,4 +949,53 @@ describe('DynamoEventSource', () => {
     }).toThrowError('S3 onFailure Destination is not supported for this event source');
 
   });
+
+  test('filter on boolean', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      filters: [
+        lambda.FilterCriteria.filter({
+          eventName: lambda.FilterRule.isEqual('INSERT'),
+          dynamodb: {
+            NewImage: {
+              id: { BOOL: lambda.FilterRule.isEqual(true) },
+            },
+          },
+        }),
+      ],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"eventName":["INSERT"],"dynamodb":{"NewImage":{"id":{"BOOL":[true]}}}}',
+          },
+        ],
+      },
+      'StartingPosition': 'LATEST',
+    });
+  });
 });

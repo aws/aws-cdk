@@ -835,8 +835,9 @@ Note that `CustomResourceConfig` uses Aspects to modify your constructs. There i
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
 
-The following example configures every custom resource in this CDK app to retain its logs for ten years:
+### Setting Log Retention Lifetime
 
+The following example configures every custom resource in this CDK app to retain its logs for ten years:
 ```ts
 import * as cdk from 'aws-cdk-lib';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
@@ -907,6 +908,8 @@ new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
 });
 ```
 
+### Setting Log Group Removal Policy
+
 The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with a AWS-vended custom resource lambda.
 The `addRemovalPolicy` method will configure the custom resource lambda log group removal policy to `DESTROY`.
 ```ts
@@ -922,4 +925,23 @@ CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 new ses.ReceiptRuleSet(app, 'RuleSet', {
   dropSpam: true,
 });    
+```
+
+### Setting Lambda Runtimes
+
+The `addLambdaRuntime` method of `CustomResourceConfig` will set every AWS-vended custom resource to the specified lambda runtime, provided that the custom resource lambda is in the same runtime family as the one you specified. The S3 BucketDeployment construct uses lambda runtime Python 3.9. The following example sets the custom resource lambda runtime to `PYTHON_3_12`:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLambdaRuntime(lambda.Runtime.PYTHON_3_12);
+
+let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+new s3deploy.BucketDeployment(stack, 's3deploy', {
+  sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+  destinationBucket: websiteBucket,
+});
 ```

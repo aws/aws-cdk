@@ -11,5 +11,6 @@ export class TestFunction extends lambda.Function {
       "handler": "index.handler",
       "runtime": lambda.Runtime.PYTHON_3_10
     });
+    this.node.addMetadata('aws:cdk:is-custom-resource-handler-runtime-family', this.runtime.family);
   }
 }
