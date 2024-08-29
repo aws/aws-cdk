@@ -81,6 +81,11 @@ const OPERATOR_SYMBOLS: { [key: string]: string } = {
   LessThanOrEqualToThreshold: '<=',
 };
 
+const ANOMALY_DETECTION_OPERATORS: ComparisonOperator[] = [
+  ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+  ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+  ComparisonOperator.LESS_THAN_LOWER_THRESHOLD,
+];
 /**
  * Specify how missing data points are treated during alarm evaluation
  */
@@ -151,9 +156,7 @@ export class Alarm extends AlarmBase {
    * @returns true if the operator is an anomaly detection operator, false otherwise.
    */
   public static isAnomalyDetectionOperator(operator: ComparisonOperator): boolean {
-    return operator === ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
-      || operator === ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD
-      || operator === ComparisonOperator.LESS_THAN_LOWER_THRESHOLD;
+    return ANOMALY_DETECTION_OPERATORS.includes(operator);
   }
 
   /**
