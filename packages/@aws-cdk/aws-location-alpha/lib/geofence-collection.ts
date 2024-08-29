@@ -54,40 +54,12 @@ export interface GeofenceCollectionProps {
   readonly kmsKey?: kms.IKey;
 }
 
-abstract class GeofenceCollectionBase extends Resource implements IGeofenceCollection {
-  public abstract readonly geofenceCollectionName: string;
-  public abstract readonly geofenceCollectionArn: string;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this geofence collection.
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: grantee,
-      actions: actions,
-      resourceArns: [this.geofenceCollectionArn],
-    });
-  }
-
-  /**
-   * Grant the given identity permissions to read this geofence collection
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
-   */
-  public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:ListGeofences',
-      'geo:GetGeofence',
-    );
-  }
-}
-
 /**
  * A Geofence Collection
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/geofence-tracker-concepts.html#geofence-overview
  */
-export class GeofenceCollection extends GeofenceCollectionBase {
+export class GeofenceCollection extends Resource implements IGeofenceCollection {
   /**
    * Use an existing geofence collection by name
    */
@@ -111,7 +83,7 @@ export class GeofenceCollection extends GeofenceCollectionBase {
       throw new Error(`Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`);
     }
 
-    class Import extends GeofenceCollectionBase {
+    class Import extends Resource implements IGeofenceCollection {
       public readonly geofenceCollectionName = parsedArn.resourceName!;
       public readonly geofenceCollectionArn = geofenceCollectionArn;
     }
@@ -164,5 +136,28 @@ export class GeofenceCollection extends GeofenceCollectionBase {
     this.geofenceCollectionArn = geofenceCollection.attrArn;
     this.geofenceCollectionCreateTime = geofenceCollection.attrCreateTime;
     this.geofenceCollectionUpdateTime = geofenceCollection.attrUpdateTime;
+  }
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this geofence collection.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.geofenceCollectionArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to read this geofence collection
+   *
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
+   */
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'geo:ListGeofences',
+      'geo:GetGeofence',
+    );
   }
 }
