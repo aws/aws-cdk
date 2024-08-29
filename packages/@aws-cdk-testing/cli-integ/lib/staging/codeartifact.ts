@@ -179,7 +179,7 @@ export class TestRepository {
       // eslint-disable-next-line no-console
       console.log('Deleted', this.repositoryName);
     } catch (e: any) {
-      if (e.code !== 'ResourceNotFoundException') {
+      if (e.name !== 'ResourceNotFoundException') {
         throw e;
       }
       // Okay
