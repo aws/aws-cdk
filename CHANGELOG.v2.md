@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.155.0](https://github.com/aws/aws-cdk/compare/v2.154.1...v2.155.0) (2024-08-29)
+
+
+### Features
+
+* **codebuild:** macOS codebuild support ([#31203](https://github.com/aws/aws-cdk/issues/31203)) ([823ff6e](https://github.com/aws/aws-cdk/commit/823ff6e03899f790a4cb1c43f92a02cc906ac356)), closes [#31170](https://github.com/aws/aws-cdk/issues/31170)
+* **eks:** `preserveOnDelete` for EKS addon ([#30776](https://github.com/aws/aws-cdk/issues/30776)) ([23fba1c](https://github.com/aws/aws-cdk/commit/23fba1c7ea49def9fc5c0f558246d8ec1879c91e))
+* **kms:** add `multiRegion` property to a `Key` ([#31125](https://github.com/aws/aws-cdk/issues/31125)) ([3dc4c50](https://github.com/aws/aws-cdk/commit/3dc4c502340610c573125a3d44d74bf2dfd944a9))
+* **stepfunctions-tasks:** add cpu and memory parameters to EcsRunTask ([#30140](https://github.com/aws/aws-cdk/issues/30140)) ([986e378](https://github.com/aws/aws-cdk/commit/986e378a27b19271695f735ad01603a4c1386d25)), closes [#30027](https://github.com/aws/aws-cdk/issues/30027)
+* **synthetics:** add syn-python-selenium-4.0 runtime ([#31101](https://github.com/aws/aws-cdk/issues/31101)) ([cc75ded](https://github.com/aws/aws-cdk/commit/cc75dedcb35850250dcf27bc06ba2c08a7f9bfff)), closes [#30137](https://github.com/aws/aws-cdk/issues/30137) [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html/issues/CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4)
+* update L1 CloudFormation resource definitions ([#31193](https://github.com/aws/aws-cdk/issues/31193)) ([e942b67](https://github.com/aws/aws-cdk/commit/e942b67a64bcd78abf6029e501bc6ca260441bf0))
+* update L1 CloudFormation resource definitions ([#31194](https://github.com/aws/aws-cdk/issues/31194)) ([5468983](https://github.com/aws/aws-cdk/commit/5468983944fa3e2783c39813e0bcb47a5fb82811))
+* update L1 CloudFormation resource definitions ([#31221](https://github.com/aws/aws-cdk/issues/31221)) ([b754353](https://github.com/aws/aws-cdk/commit/b7543532fb9c80bf69e197242bd55febafcd84f5))
+
+
+### Bug Fixes
+
+* **cloudfront:** requirement of domainNames prevents moving a domain name between distributions ([#31001](https://github.com/aws/aws-cdk/issues/31001)) ([acdf7d3](https://github.com/aws/aws-cdk/commit/acdf7d3a1ffe2cbc8239cd0b788dc47b99e35184)), closes [#29960](https://github.com/aws/aws-cdk/issues/29960) [#29329](https://github.com/aws/aws-cdk/issues/29329)
+* **eks:** can't update authMode with the same mode ([#31043](https://github.com/aws/aws-cdk/issues/31043)) ([64df08b](https://github.com/aws/aws-cdk/commit/64df08b80ad8c69c99c9e0178ccd58bd177fbd78))
+* **lambda-event-source:** allow dynamodb filtering on boolean value ([#31011](https://github.com/aws/aws-cdk/issues/31011)) ([9946ab0](https://github.com/aws/aws-cdk/commit/9946ab03672bf6664e8ec95a81ddb67c3bb2f63b)), closes [#30734](https://github.com/aws/aws-cdk/issues/30734)
+* **s3:** bucket notifications in owning stack deletes bucket notifications from other stacks ([#31091](https://github.com/aws/aws-cdk/issues/31091)) ([0b09e52](https://github.com/aws/aws-cdk/commit/0b09e528b4565d4e4cce9a965578a537aac96b1f))
+
 ## [2.154.1](https://github.com/aws/aws-cdk/compare/v2.154.0...v2.154.1) (2024-08-23)
 
 
