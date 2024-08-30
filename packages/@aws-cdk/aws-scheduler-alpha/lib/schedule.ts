@@ -325,7 +325,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.validateTimeFrame(props.start, props.end);
     if (props.scheduleName && !Token.isUnresolved(props.scheduleName) && props.scheduleName.length > 64) {
-      throw new Error(`schedule name '${props.scheduleName}' exceeds 64 characters in length`);
+      throw new Error(`scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`);
     }
 
     const resource = new CfnSchedule(this, 'Resource', {
