@@ -104,3 +104,45 @@ const routeCalculator = new location.RouteCalculator(this, 'RouteCalculator', {
 });
 routeCalculator.grantRead(role);
 ```
+
+## Tracker
+
+A tracker stores position updates for a collection of devices. The tracker can be used to query the devices' current location or location history. It stores the updates, but reduces storage space and visual noise by filtering the locations before storing them.
+
+For more information, see [Trackers](https://docs.aws.amazon.com/location/latest/developerguide/geofence-tracker-concepts.html#tracking-overview).
+
+To create a tracker, define a `Tracker`:
+
+```ts
+declare const key: kms.Key;
+
+new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker', // optional, defaults to a generated name
+  kmsKey: key, // optional, defaults to use an AWS managed key
+});
+```
+
+Use the `grant()`, `grantUpdateDevicePositions` or `grantRead()` method to grant the given identity permissions to perform actions
+on the geofence collection:
+
+```ts
+declare const role: iam.Role;
+
+const tracker = new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker',
+});
+
+tracker.grantRead(role);
+```
+
+If you want to associate a tracker with a geofence collection, define a `TrackerConsumer`.
+
+```ts
+declare const geofenceCollection: location.GeofenceCollection;
+declare const tracker: location.Tracker;
+
+new location.TrackerConsumer(this, 'TrackerConsumer', {
+  consumer: geofenceCollection,
+  tracker: tracker,
+});
+```

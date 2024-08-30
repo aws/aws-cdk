@@ -1,0 +1,243 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-location-tracker": {
+        "id": "cdk-integ-location-tracker",
+        "path": "cdk-integ-location-tracker",
+        "children": {
+          "GeofenceCollection": {
+            "id": "GeofenceCollection",
+            "path": "cdk-integ-location-tracker/GeofenceCollection",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-tracker/GeofenceCollection/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::GeofenceCollection",
+                  "aws:cdk:cloudformation:props": {
+                    "collectionName": "MyGeofenceCollection",
+                    "description": "test"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Key": {
+            "id": "Key",
+            "path": "cdk-integ-location-tracker/Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-tracker/Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Tracker": {
+            "id": "Tracker",
+            "path": "cdk-integ-location-tracker/Tracker",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-tracker/Tracker/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::Tracker",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "test tracker",
+                    "eventBridgeEnabled": true,
+                    "kmsKeyEnableGeospatialQueries": true,
+                    "kmsKeyId": {
+                      "Fn::GetAtt": [
+                        "Key961B73FD",
+                        "Arn"
+                      ]
+                    },
+                    "positionFiltering": "AccuracyBased",
+                    "trackerName": "MyTracker"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "TrackerConsumer": {
+            "id": "TrackerConsumer",
+            "path": "cdk-integ-location-tracker/TrackerConsumer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-tracker/TrackerConsumer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::TrackerConsumer",
+                  "aws:cdk:cloudformation:props": {
+                    "consumerArn": {
+                      "Fn::GetAtt": [
+                        "GeofenceCollection6FAC681F",
+                        "Arn"
+                      ]
+                    },
+                    "trackerName": {
+                      "Ref": "TrackerAF5FC55F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-location-tracker/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-location-tracker/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "TrackerTest": {
+        "id": "TrackerTest",
+        "path": "TrackerTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "TrackerTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TrackerTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "TrackerTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "TrackerTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "TrackerTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}
