@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
 import * as route from '../lib/route';
-import { CfnEIP, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 /* eslint-disable no-console */
 
 describe('Vpc V2 with full control', () => {
@@ -330,4 +330,63 @@ describe('Vpc V2 with full control', () => {
       DestinationIpv6CidrBlock: '2001:db8::/48',
     });
   });
+
+  //Tests for VPNGatewayV2
+  test('enableVpnGatewayV2 defines a new VPNGateway with attachment', () => {
+    myVpc.enableVpnGatewayV2({
+      type: VpnConnectionType.IPSEC_1,
+    });
+    Template.fromStack(stack).hasResource('AWS::EC2::VPNGateway', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
+      VpnGatewayId: {
+        'Fn::GetAtt': ['TestVpcVpnGatewayIGWF1052317', 'VPNGatewayId'],
+      },
+      VpcId: {
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
+      },
+    });
+  });
+
+  test('check vpngateway has correct connection type', () => {
+    myVpc.enableVpnGatewayV2({
+      type: VpnConnectionType.IPSEC_1,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNGateway', {
+      Type: 'ipsec.1',
+    });
+  });
+
+  test('Check vpngateway has routePropogation for input subnets', () => {
+    myVpc.enableVpnGatewayV2({
+      type: VpnConnectionType.IPSEC_1,
+      vpnRoutePropagation: [{ subnetType: SubnetType.PUBLIC }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNGatewayRoutePropagation', {
+      VpnGatewayId: {
+        'Fn::GetAtt': ['TestVpcVpnGatewayIGWF1052317', 'VPNGatewayId'],
+      },
+      RouteTableIds: [
+        {
+          'Fn::GetAtt': ['TestSubnetRouteTable5AF4379E', 'RouteTableId'],
+        },
+      ],
+    });
+  });
+
+  test('Throws error when no subnet identified for route propogation', () => {
+    expect(() => {
+      myVpc.enableVpnGatewayV2({
+        type: VpnConnectionType.IPSEC_1,
+        vpnRoutePropagation: [{ subnetType: SubnetType.PRIVATE_ISOLATED }],
+      });
+    }).toThrow("There are no 'Isolated' subnet groups in this VPC. Available types: Public");
+  });
+
+  test('Throws error when VPN GW is already enabled', () => {
+    myVpc.enableVpnGatewayV2({ type: VpnConnectionType.IPSEC_1 });
+    expect(() => {
+      myVpc.enableVpnGatewayV2({ type: VpnConnectionType.IPSEC_1 });
+    }).toThrow('The VPN Gateway has already been enabled.');
+  });
+
 });

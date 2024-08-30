@@ -11,7 +11,7 @@
 import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, IpCidr } from '../lib/subnet-v2';
 import { NatConnectivityType, Route, RouteTable } from '../lib';
 
@@ -83,7 +83,7 @@ vpc.addEgressOnlyInternetGateway({
 
 const vpnGateway = vpc.enableVpnGatewayV2({
   vpnRoutePropagation: [{ subnetType: SubnetType.PUBLIC }],
-  type: 'ipsec.1',
+  type: VpnConnectionType.IPSEC_1,
 });
 
 new Route(stack, 'route', {

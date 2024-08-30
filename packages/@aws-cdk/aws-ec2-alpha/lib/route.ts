@@ -1,7 +1,7 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType, SubnetSelection, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IConstruct, IDependable } from 'constructs';
 import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib/core';
-import { IVpcV2 } from './vpc-v2-base';
+import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 import { NetworkUtils, allRouteTableIds, flatten } from './util';
 import { ISubnetV2 } from './subnet-v2';
 
@@ -73,35 +73,12 @@ export interface InternetGatewayProps {
 /**
  * Properties to define a VPN gateway.
  */
-export interface VPNGatewayV2Props {
-  /**
-   * The type of VPN connection the virtual private gateway supports.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
-   */
-  readonly type: VpnConnectionType;
+export interface VPNGatewayV2Props extends VPNGatewayV2Options{
 
   /**
    * The ID of the VPC for which to create the VPN gateway.
    */
   readonly vpc: IVpcV2;
-
-  /**
-   * The private Autonomous System Number (ASN) for the Amazon side of a BGP session.
-   * @default none
-   */
-  readonly amazonSideAsn?: number;
-
-  /**
-   * The resource name of the VPN gateway.
-   * @default none
-   */
-  readonly vpnGatewayName?: string;
-
-  /**
-   * Provide an array of subnets where the route propagation should be added.
-   * @default noPropagation
-   */
-  readonly vpnRoutePropagation?: SubnetSelection[];
 }
 
 /**

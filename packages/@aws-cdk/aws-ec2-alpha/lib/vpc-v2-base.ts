@@ -41,6 +41,35 @@ export interface InternetGatewayOptions{
 }
 
 /**
+ * Options to define VPNGatewayV2 for VPC
+ */
+export interface VPNGatewayV2Options {
+  /**
+   * The type of VPN connection the virtual private gateway supports.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
+   */
+  readonly type: VpnConnectionType;
+
+  /**
+   * The private Autonomous System Number (ASN) for the Amazon side of a BGP session.
+   * @default none
+   */
+  readonly amazonSideAsn?: number;
+
+  /**
+     * The resource name of the VPN gateway.
+     * @default none
+     */
+  readonly vpnGatewayName?: string;
+
+  /**
+     * Provide an array of subnets where the route propagation should be added.
+     * @default noPropagation
+     */
+  readonly vpnRoutePropagation?: SubnetSelection[];
+}
+
+/**
  * Placeholder to see what extra props we might need,
  * will be added to original IVPC
  */
@@ -79,7 +108,7 @@ export interface IVpcV2 extends IVpc {
    * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html}.
    * @default no route propogation
    */
-  enableVpnGatewayV2(options: EnableVpnGatewayOptions): VPNGatewayV2;
+  enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2;
 
   /**
    * Adds a new NAT Gateway to VPC
@@ -238,15 +267,14 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   /**
    * Adds VPNGAtewayV2 to this VPC
    */
-  public enableVpnGatewayV2(options: EnableVpnGatewayOptions): VPNGatewayV2 {
+  public enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2 {
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
     }
 
     const vpnGateway = new VPNGatewayV2(this, 'VpnGateway', {
-      amazonSideAsn: options.amazonSideAsn,
-      type: VpnConnectionType.IPSEC_1,
       vpc: this,
+      ...options,
     });
 
     this._internetConnectivityEstablished.add(vpnGateway);
