@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "RouteCalculatorTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-location-route-calculator"
+      ],
+      "assertionStack": "RouteCalculatorTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RouteCalculatorTestDefaultTestDeployAssert5893D6F4"
+    }
+  }
+}
