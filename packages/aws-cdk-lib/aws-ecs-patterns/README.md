@@ -1131,7 +1131,7 @@ To use dualstack IP address type, you must have associated IPv6 CIDR blocks with
 
 ### Application Load Balancer
 
-You can use dualstack IP address type for Application Load Balancer.
+You can use dualstack Application Load Balancer for Fargate and EC2 services.
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
@@ -1161,7 +1161,7 @@ const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalance
 
 ### Network Load Balancer
 
-You can use dualstack IP address type for Network Load Balancer.
+You can use dualstack Network Load Balancer for Fargate and EC2 services.
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
