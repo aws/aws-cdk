@@ -1142,6 +1142,8 @@ You can disable granting the cluster admin permissions to the cluster creator ro
 
 > **Note** - Switching `bootstrapClusterCreatorAdminPermissions` on an existing cluster would cause cluster replacement and should be avoided in production.
 
+When a `FargateCluster` is created with `AuthenticationMode.API`, Amazon EKS creates an `AccessEntry` for the Fargate `podExecutionRole` automatically. No ConfigMap would be required.
+
 
 ### Access Entry
 
