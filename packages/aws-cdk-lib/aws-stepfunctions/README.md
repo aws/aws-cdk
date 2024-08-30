@@ -1031,7 +1031,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncry
     result: sfn.Result.fromString('Hello World'),
   }))),
   stateMachineType: sfn.StateMachineType.STANDARD,
-  encryptionConfiguration: new sfn.EncryptionConfiguration(stateMachineKmsKey)
+  encryptionConfiguration: new sfn.EncryptionConfiguration(stateMachineKmsKey),
   logs: {
     destination: logGroup,
     level: sfn.LogLevel.ALL,
