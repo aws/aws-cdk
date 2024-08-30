@@ -108,6 +108,11 @@ describe('CachePolicy', () => {
     })).not.toThrow();
   });
 
+  test('throws on long comment over 128 characters', () => {
+    const errorMessage = /'comment' cannot be longer than 128 characters, got: 129/;
+    expect(() => new CachePolicy(stack, 'CachePolicy1', { comment: 'a'.repeat(129) })).toThrow(errorMessage);
+  });
+
   describe('TTLs', () => {
     test('default TTLs', () => {
       new CachePolicy(stack, 'CachePolicy', { cachePolicyName: 'MyPolicy' });
