@@ -21,7 +21,6 @@ import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../help
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { CachedFnSub } from '../private/cached-fnsub';
-import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../private/default-codebuild-image';
 import { toPosixPath } from '../private/fs';
@@ -388,7 +387,7 @@ export class CodePipeline extends PipelineBase {
     this.selfMutationEnabled = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
-    this.cliVersion = props.cliVersion ?? preferredCliVersion();
+    this.cliVersion = props.cliVersion ?? 'latest';
     this.useChangeSets = props.useChangeSets ?? true;
     this.stackOutputs = new StackOutputsMap(this);
   }
@@ -817,8 +816,6 @@ export class CodePipeline extends PipelineBase {
   }
 
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
-    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
-
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
       return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
@@ -840,7 +837,7 @@ export class CodePipeline extends PipelineBase {
     const script = new CodeBuildStep(node.id, {
       commands,
       installCommands: [
-        `npm install -g cdk-assets${installSuffix}`,
+        'npm install -g cdk-assets@latest',
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {
