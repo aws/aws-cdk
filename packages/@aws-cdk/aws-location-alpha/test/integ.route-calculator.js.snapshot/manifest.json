@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-cdk-ec2-lt-metadata-1.assets": {
+    "cdk-integ-location-route-calculator.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-ec2-lt-metadata-1.assets.json",
+        "file": "cdk-integ-location-route-calculator.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-ec2-lt-metadata-1": {
+    "cdk-integ-location-route-calculator": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-ec2-lt-metadata-1.template.json",
+        "templateFile": "cdk-integ-location-route-calculator.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dda69b9afcec994df7f53332da5d81f218d4a807b31eab3bc506b1de934caa47.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c3ad46df5bdc598d0888e79b52076902e574e459c6c7be174d971890d175b88.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-ec2-lt-metadata-1.assets"
+          "cdk-integ-location-route-calculator.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,97 +31,43 @@
         }
       },
       "dependencies": [
-        "aws-cdk-ec2-lt-metadata-1.assets"
+        "cdk-integ-location-route-calculator.assets"
       ],
       "metadata": {
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc/Resource": [
+        "/cdk-integ-location-route-calculator/RouteCalculator/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcF9F0CA6F"
+            "data": "RouteCalculator0F2D109D"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/sg1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "sg15CEFF4E3"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LT/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LTC4631592"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/sg2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "sg2860DD91F"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LTWithMachineImage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LTWithMachineImageAAC227A5"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [
+        "/cdk-integ-location-route-calculator/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-ec2-lt-metadata-1/CheckBootstrapVersion": [
+        "/cdk-integ-location-route-calculator/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-ec2-lt-metadata-1"
+      "displayName": "cdk-integ-location-route-calculator"
     },
-    "LambdaTestDefaultTestDeployAssert1AF2B360.assets": {
+    "RouteCalculatorTestDefaultTestDeployAssert5893D6F4.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "LambdaTestDefaultTestDeployAssert1AF2B360.assets.json",
+        "file": "RouteCalculatorTestDefaultTestDeployAssert5893D6F4.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "LambdaTestDefaultTestDeployAssert1AF2B360": {
+    "RouteCalculatorTestDefaultTestDeployAssert5893D6F4": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "LambdaTestDefaultTestDeployAssert1AF2B360.template.json",
+        "templateFile": "RouteCalculatorTestDefaultTestDeployAssert5893D6F4.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -130,7 +76,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "LambdaTestDefaultTestDeployAssert1AF2B360.assets"
+          "RouteCalculatorTestDefaultTestDeployAssert5893D6F4.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -139,23 +85,23 @@
         }
       },
       "dependencies": [
-        "LambdaTestDefaultTestDeployAssert1AF2B360.assets"
+        "RouteCalculatorTestDefaultTestDeployAssert5893D6F4.assets"
       ],
       "metadata": {
-        "/LambdaTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/RouteCalculatorTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/RouteCalculatorTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "LambdaTest/DefaultTest/DeployAssert"
+      "displayName": "RouteCalculatorTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
