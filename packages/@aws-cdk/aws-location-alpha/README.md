@@ -77,3 +77,30 @@ const geofenceCollection = new location.GeofenceCollection(this, 'GeofenceCollec
 
 geofenceCollection.grantRead(role);
 ```
+
+## Route Calculator
+
+Route calculator resources allow you to find routes and estimate travel time based on up-to-date road network and live traffic information from your chosen data provider.
+
+For more information, see [Routes](https://docs.aws.amazon.com/location/latest/developerguide/route-concepts.html).
+
+To create a route calculator, define a `RouteCalculator`:
+
+```ts
+new location.RouteCalculator(this, 'RouteCalculator', {
+  routeCalculatorName: 'MyRouteCalculator', // optional, defaults to a generated name
+  dataSource: location.DataSource.ESRI,
+});
+```
+
+Use the `grant()` or `grantRead()` method to grant the given identity permissions to perform actions
+on the route calculator:
+
+```ts
+declare const role: iam.Role;
+
+const routeCalculator = new location.RouteCalculator(this, 'RouteCalculator', {
+  dataSource: location.DataSource.ESRI,
+});
+routeCalculator.grantRead(role);
+```

@@ -2,7 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
-import { generateUniqueId } from './util';
+import { DataSource, generateUniqueId } from './util';
 
 /**
  * A Place Index
@@ -57,25 +57,6 @@ export interface PlaceIndexProps {
    * @default - no description
    */
   readonly description?: string;
-}
-
-/**
- * Data source for a place index
- */
-export enum DataSource {
-  /**
-   * Esri
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/esri.html
-   */
-  ESRI = 'Esri',
-
-  /**
-   * HERE
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/HERE.html
-   */
-  HERE = 'Here',
 }
 
 /**
