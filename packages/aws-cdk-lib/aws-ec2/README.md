@@ -1603,6 +1603,33 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
+To specify the throughput value for `gp3` volumes, use the `throughput` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(100, {
+        volumeType: ec2.EbsDeviceVolumeType.GP3,
+        throughput: 250,
+      }),
+    },
+  ],
+});
+
+```
+
 #### EBS Optimized Instances
 
 An Amazon EBS–optimized instance uses an optimized configuration stack and provides additional, dedicated capacity for Amazon EBS I/O. This optimization provides the best performance for your EBS volumes by minimizing contention between Amazon EBS I/O and other traffic from your instance.
