@@ -8,3 +8,29 @@ export function generateUniqueId(context: IConstruct): string {
   }
   return name;
 }
+
+/**
+ * Data source for a place index
+ */
+export enum DataSource {
+  /**
+   * Esri
+   *
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/esri.html
+   */
+  ESRI = 'Esri',
+
+  /**
+   * Grab provides routing functionality for Southeast Asia.
+   *
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/grab.html
+   */
+  GRAB = 'Grab',
+
+  /**
+   * HERE
+   *
+   * @see https://docs.aws.amazon.com/location/latest/developerguide/HERE.html
+   */
+  HERE = 'Here',
+}
