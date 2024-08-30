@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.155.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.154.1-alpha.0...v2.155.0-alpha.0) (2024-08-29)
+
+
+### Features
+
+* **ec2:** `ipv6AddressCount` property for an instance ([#31076](https://github.com/aws/aws-cdk/issues/31076)) ([e3e5e1c](https://github.com/aws/aws-cdk/commit/e3e5e1c5a29a5da8759c2e821ef108eade8b87ea)), closes [#31075](https://github.com/aws/aws-cdk/issues/31075)
+* **ec2:** support throughput on LaunchTemplate EBS volumes ([#30716](https://github.com/aws/aws-cdk/issues/30716)) ([6ed0bed](https://github.com/aws/aws-cdk/commit/6ed0bed61088765b9f0aa736d7daea4cbea05b3d)), closes [#24341](https://github.com/aws/aws-cdk/issues/24341) [#22441](https://github.com/aws/aws-cdk/issues/22441)
+* **location:** support GeofenceCollection ([#30711](https://github.com/aws/aws-cdk/issues/30711)) ([04d73ac](https://github.com/aws/aws-cdk/commit/04d73acc5e95568bd410a714ef00e7edb192681a)), closes [#30710](https://github.com/aws/aws-cdk/issues/30710)
+
 ## [2.154.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.154.0-alpha.0...v2.154.1-alpha.0) (2024-08-23)
 
 ## [2.154.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.153.0-alpha.0...v2.154.0-alpha.0) (2024-08-22)
