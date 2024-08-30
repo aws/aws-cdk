@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -453,6 +453,49 @@ describe('fargate', () => {
             { enabled: true, types: ['api', 'authenticator', 'scheduler'] },
           ],
         },
+      },
+    });
+  });
+
+  test('will not create AwsAuth when the authenticationMode is API', () => {
+    const stack = new Stack();
+
+    new eks.FargateCluster(stack, 'Cluster', {
+      version: eks.KubernetesVersion.V1_27,
+      authenticationMode: eks.AuthenticationMode.API,
+    });
+
+    Template.fromStack(stack).resourceCountIs(eks.KubernetesManifest.RESOURCE_TYPE, 0);
+
+  });
+
+  test.each([
+    eks.AuthenticationMode.API_AND_CONFIG_MAP,
+    eks.AuthenticationMode.CONFIG_MAP,
+    undefined,
+  ])('will create AwsAuth when the authenticationMode is %p', (authenticationMode) => {
+    const stack = new Stack();
+
+    new eks.FargateCluster(stack, 'Cluster', {
+      version: eks.KubernetesVersion.V1_27,
+      authenticationMode,
+    });
+
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c89d3ef2163dfb30f38b127f20b71024bf7995ca21":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterfargateprofiledefaultPodExecutionRole09952CFF',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"system:node:{{SessionName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\",\\"system:node-proxier\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
+          ],
+        ],
       },
     });
   });
