@@ -20,7 +20,7 @@ const KEY_ACTIONS: Record<string, string[]> = {
 /**
  * Properties for configuring a origin using a standard S3 bucket
  */
-export interface S3BucketOriginBaseProps extends cloudfront.OriginProps {}
+export interface S3BucketOriginBaseProps extends cloudfront.OriginProps { }
 
 /**
  * Properties for configuring a S3 origin with OAC
@@ -156,7 +156,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
           },
         );
         Annotations.of(key.node.scope!).addWarningV2('@aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac',
-          'To avoid circular dependency between the KMS key, Bucket, and Distribution,' +
+          'To avoid circular dependency between the KMS key, Bucket, and Distribution, ' +
           'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
           'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.');
         const result = key.addToResourcePolicy(oacKeyPolicyStatement);

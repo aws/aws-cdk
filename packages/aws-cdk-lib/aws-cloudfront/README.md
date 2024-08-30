@@ -1,6 +1,5 @@
 # Amazon CloudFront Construct Library
 
-
 Amazon CloudFront is a web service that speeds up distribution of your static and dynamic web content, such as .html, .css, .js, and image files, to
 your users. CloudFront delivers your content through a worldwide network of data centers called edge locations. When a user requests content that
 you're serving with CloudFront, the user is routed to the edge location that provides the lowest latency, so that content is delivered with the best
@@ -25,141 +24,19 @@ among other settings.
 
 #### From an S3 Bucket
 
-An S3 bucket can be added as an origin. If the bucket is configured as a website endpoint, the distribution can use S3 redirects and S3 custom error
-documents.
+An S3 bucket can be added as an origin. An S3 bucket origin can either be configured as a standard bucket or as a website endpoint (see AWS docs for [Using an S3 Bucket](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html#using-s3-as-origin)).
 
 ```ts
-// Creates a distribution from an S3 bucket.
-const myBucket = new s3.Bucket(this, 'myBucket');
-new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
-});
-```
-
-The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
-treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
-CloudFront's redirect and error handling will be used.
-
-## Restricting access to an S3 origin
-
-CloudFront provides two ways to send authenticated requests to an Amazon S3 origin:
-origin access control (OAC) and origin access identity (OAI).
-OAI is considered legacy due to limited functionality and regional
-limitations, whereas OAC is recommended because it supports All Amazon S3
-buckets in all AWS Regions, Amazon S3 server-side encryption with AWS KMS (SSE-KMS), and dynamic requests (PUT and DELETE) to Amazon S3. Additionally,
-OAC provides stronger security posture with short term credentials,
-and more frequent credential rotations as compared to OAI.
-(see [Restricting access to an Amazon S3 Origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)).
-OAI and OAC can be used in conjunction with a bucket that is not public to
-require that your users access your content using CloudFront URLs and not S3 URLs directly.
-
-> Note: OAC and OAI can only be used with an regular S3 bucket origin (not a bucket configured as a website endpoint).
-
-The `S3BucketOrigin` class supports creating a S3 origin with OAC, OAI, and no access control (using your bucket access settings) via
-the `withOriginAccessControl()`, `withOriginAccessIdentity()`, and `withBucketDefaults()` methods respectively.
-
-To setup an S3 origin with OAC (recommended):
-
-```ts
+// Creates a distribution from an S3 bucket with origin access control
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket) // Automatically creates an OAC
+    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket) // Automatically creates a S3OriginAccessControl construct
   },
 });
 ```
 
-You can also pass in a custom S3 origin access control:
-
-```ts
-const myBucket = new s3.Bucket(this, 'myBucket');
-const oac = new cloudfront.S3OriginAccessControl(this, 'MyOAC', { signing: cloudfront.Signing.SIGV4_NO_OVERRIDE });
-const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(
-  bucket, { originAccessControl: oac }
-)
-new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: {
-    origin: s3Origin
-  },
-});
-```
-
-Depending on the types of HTTP requests you need to send to the S3 origin, you can set the `originAccessLevels` property to specify the level of permissions (READ, WRITE, or DELETE) to grant CloudFront OAC. The default is read-only permissions.
-
-```ts
-const myBucket = new s3.Bucket(this, 'myBucket');
-const oac = new cloudfront.S3OriginAccessControl(this, 'myS3OAC');
-const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
-  originAccessControl: oac,
-  originAccessLevels: [origins.AccessLevel.READ, origins.AccessLevel.WRITE, origins.AccessLevel.DELETE]
-});
-new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: {
-    origin: s3Origin
-  },
-});
-```
-
-## Migrating from OAI to OAC
-
-If you are currently using OAI for your S3 origin and wish to migrate to OAC,
-replace the `S3Origin` construct (now deprecated) with `S3BucketOrigin.withOriginAccessControl()` which automatically
-creates and sets up a OAC for you.
-The OAI will be deleted as part of the
-stack update. The logical IDs of the resources managed by
-the stack (i.e. distribution, bucket) will be unchanged. Run `cdk diff` before deploying to verify the
-changes to your stack.
-
-Existing setup using OAI and `S3Origin`:
-
-```ts
-const myBucket = new s3.Bucket(this, 'myBucket');
-new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
-});
-```
-
-Updated setup using `S3BucketOrigin.withOriginAccessControl()`:
-
-```ts
-const myBucket = new s3.Bucket(this, 'myBucket');
-new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket) },
-});
-```
-
-For more information, see [Migrating from origin access identity (OAI) to origin access control (OAC)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#migrate-from-oai-to-oac).
-
-### Using pre-existing S3 buckets
-
-If you are using an imported bucket for your S3 Origin and want to use OAC,
-you will need to update
-the S3 bucket policy manually. CDK apps **cannot** modify the configuration of imported constructs. After deploying the distribution, add the following
-policy statement to your
-S3 bucket to allow CloudFront read-only access
-(or additional permissions as required):
-
-```json
-{
-    "Statement": {
-        "Sid": "GrantOACAccessToS3",
-        "Effect": "Allow",
-        "Principal": {
-            "Service": "cloudfront.amazonaws.com"
-        },
-        "Action": "s3:GetObject",
-        "Resource": "arn:aws:s3:::<S3 bucket name>/*",
-        "Condition": {
-            "StringEquals": {
-                "AWS:SourceArn": "arn:aws:cloudfront::<account ID>:distribution/<CloudFront distribution ID>"
-            }
-        }
-    }
-}
-```
-
-> Note: If your bucket previously used OAI, you will need to manually remove the policy statement
-that gives the OAI access to your bucket from your bucket policy.
+See the README of the [`aws-cdk-lib/aws-cloudfront-origins`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudfront-origins/README.md) module for more information on setting up S3 origins and origin access control (OAC).
 
 #### ELBv2 Load Balancer
 
@@ -346,7 +223,7 @@ You can use a cache policy to improve your cache hit ratio by controlling the va
 that are included in the cache key, and/or adjusting how long items remain in the cache via the time-to-live (TTL) settings.
 CloudFront provides some predefined cache policies, known as managed policies, for common use cases. You can use these managed policies,
 or you can create your own cache policy that’s specific to your needs.
-See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html for more details.
+See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html> for more details.
 
 ```ts
 // Using an existing cache policy for a Distribution
@@ -389,7 +266,7 @@ Other information from the viewer request, such as URL query strings, HTTP heade
 You can use an origin request policy to control the information that’s included in an origin request.
 CloudFront provides some predefined origin request policies, known as managed policies, for common use cases. You can use these managed policies,
 or you can create your own origin request policy that’s specific to your needs.
-See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html for more details.
+See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html> for more details.
 
 ```ts
 // Using an existing origin request policy for a Distribution
@@ -425,7 +302,7 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 
 You can configure CloudFront to add one or more HTTP headers to the responses that it sends to viewers (web browsers or other clients), without making any changes to the origin or writing any code.
 To specify the headers that CloudFront adds to HTTP responses, you use a response headers policy. CloudFront adds the headers regardless of whether it serves the object from the cache or has to retrieve the object from the origin. If the origin response includes one or more of the headers that’s in a response headers policy, the policy can specify whether CloudFront uses the header it received from the origin or overwrites it with the one in the policy.
-See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html
+See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html>
 
 ```ts
 // Using an existing managed response headers policy
@@ -547,7 +424,7 @@ new cloudfront.Distribution(this, 'myDist', {
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
 > `EdgeFunction` has the same interface as `Function` and can be created and used interchangeably.
 > Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
-> See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
+> See <https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html> for more about bootstrapping regions.
 
 If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
 
@@ -687,7 +564,7 @@ To create an empty Key Value Store:
 const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
 ```
 
-To also include an initial set of values, the `source` property can be specified, either from a 
+To also include an initial set of values, the `source` property can be specified, either from a
 local file or an inline string. For the structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
 
 ```ts
@@ -1306,5 +1183,5 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
 
 See:
 
-* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
-* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html
+- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html>
+- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html>

@@ -379,7 +379,7 @@ describe('S3BucketOrigin', () => {
           },
         });
         Annotations.fromStack(stack).hasWarning('/Default',
-          'To avoid circular dependency between the KMS key, Bucket, and Distribution,' +
+          'To avoid circular dependency between the KMS key, Bucket, and Distribution, ' +
           'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
           'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]');
       });
@@ -699,7 +699,7 @@ describe('S3BucketOrigin', () => {
       it('should warn user bucket policy is not updated', () => {
         Annotations.fromStack(stack).hasWarning('/Default/MyDistributionA/Origin1',
           'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
-        'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac]');
+          'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac]');
       });
 
       it('should match expected template resources', () => {
@@ -1151,7 +1151,7 @@ describe('S3BucketOrigin', () => {
       it('should warn user bucket policy is not updated', () => {
         Annotations.fromStack(distributionStack).hasWarning('/distributionStack/MyDistributionA/Origin1',
           'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
-        'See the "Setting up OAI with imported S3 buckets (legacy)" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOai]');
+          'See the "Setting up OAI with imported S3 buckets (legacy)" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOai]');
       });
 
       it('should create OAI in bucket stack and output it, then reference the output in the distribution stack', () => {
