@@ -71,7 +71,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
-| [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | V2NEXT | (fix) |
+| [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 
 <!-- END table -->
 
@@ -132,7 +132,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
-    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false
+    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
   }
 }
 ```
@@ -1352,7 +1353,7 @@ Other notifications that are not managed by this stack will be kept.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `false` |
+| 2.155.0 | `false` | `false` |
 
 
 <!-- END details -->
