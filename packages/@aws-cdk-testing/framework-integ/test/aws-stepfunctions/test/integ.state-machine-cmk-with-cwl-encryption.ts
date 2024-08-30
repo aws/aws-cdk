@@ -29,8 +29,7 @@ class KMSStateMachine extends cdk.Stack {
         result: sfn.Result.fromString(executionOutput),
       }))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      kmsKey: this.kmsKey,
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(300),
+      encryptionConfiguration: new sfn.EncryptionConfiguration(this.kmsKey, cdk.Duration.seconds(300)),
       logs: {
         destination: this.logGroup,
         level: sfn.LogLevel.ALL,

@@ -1,12 +1,11 @@
 import { Construct } from 'constructs';
+import { EncryptionConfiguration } from './encryptionconfiguration';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
 import { constructEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack } from '../../core';
-
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 /**
  * Properties for defining a new Step Functions Activity
  */
@@ -19,24 +18,11 @@ export interface ActivityProps {
   readonly activityName?: string;
 
   /**
-   * Specifies a symmetric customer managed KMS key for server-side encryption of the activity inputs.
-   * Step Functions will reuse the key for a maximum of `kmsDataKeyReusePeriodSeconds`.
+   * The encryptionConfiguration object used for server-side encryption of the activity inputs.
    *
    * @default - data is transparently encrypted using an AWS owned key
    */
-  readonly kmsKey?: kms.IKey;
-
-  /**
-   * Maximum duration that Step Functions will reuse customer managed data keys.
-   * When the period expires, Step Functions will call GenerateDataKey.
-   *
-   * You can only provide a value if `kmsKey` is set.
-   *
-   * Must be between 60 and 900 seconds.
-   *
-   * @default Duration.seconds(300)
-   */
-  readonly kmsDataKeyReusePeriodSeconds?: Duration;
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
 
 /**
@@ -82,7 +68,7 @@ export class Activity extends Resource implements IActivity {
   /**
    * @attribute
    */
-  public readonly kmsKey?: kms.IKey;
+  public readonly encryptionConfiguration?: EncryptionConfiguration;
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
@@ -90,9 +76,9 @@ export class Activity extends Resource implements IActivity {
         Lazy.string({ produce: () => this.generateName() }),
     });
 
-    if (props.kmsKey) {
-      this.kmsKey = props.kmsKey;
-      props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+    if (props.encryptionConfiguration) {
+      this.encryptionConfiguration = props.encryptionConfiguration;
+      props.encryptionConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [new iam.ServicePrincipal('states.amazonaws.com')],
@@ -111,7 +97,7 @@ export class Activity extends Resource implements IActivity {
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
-      encryptionConfiguration: constructEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds),
+      encryptionConfiguration: constructEncryptionConfiguration(props.encryptionConfiguration),
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
@@ -271,9 +257,9 @@ export interface IActivity extends IResource {
   readonly activityName: string;
 
   /**
-   * The symmetric customer managed KMS key for server-side encryption of the activity inputs.
+   * The encryptionConfiguration object used for server-side encryption of the activity inputs
    *
    * @attribute
    */
-  readonly kmsKey?: kms.IKey;
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }

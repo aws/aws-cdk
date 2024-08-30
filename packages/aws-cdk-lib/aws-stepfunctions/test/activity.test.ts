@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
+import { EncryptionConfiguration } from '../lib/encryptionconfiguration';
 
 describe('Activity', () => {
   test('instantiate Activity', () => {
@@ -79,8 +80,7 @@ describe('Activity', () => {
 
     // WHEN
     new stepfunctions.Activity(stack, 'Activity', {
-      kmsKey: kmsKey,
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+      encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(75)),
     });
 
     // THEN
@@ -167,7 +167,7 @@ describe('Activity', () => {
 
     // WHEN
     new stepfunctions.Activity(stack, 'Activity', {
-      kmsKey: kmsKey,
+      encryptionConfiguration: new EncryptionConfiguration(kmsKey),
     });
 
     // THEN
@@ -190,21 +190,8 @@ describe('Activity', () => {
     expect(() => {
       // WHEN
       new stepfunctions.Activity(stack, 'Activity', {
-        kmsKey: kmsKey,
-        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(5),
+        encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(5)),
       });
     }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   });
-});
-
-test('Instantiate Activity with no kms key and kmsDataKeyReusePeriodSeconds throws error', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  // FAIL
-  expect(() => {
-    // WHEN
-    new stepfunctions.Activity(stack, 'Activity', {
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
-    });
-  }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a value for kmsKey');
 });

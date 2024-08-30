@@ -7,6 +7,7 @@ import * as s3 from '../../aws-s3';
 import * as task from '../../aws-stepfunctions-tasks';
 import * as cdk from '../../core';
 import * as sfn from '../lib';
+import { EncryptionConfiguration } from '../lib/encryptionconfiguration';
 
 describe('State Machine', () => {
   test('Instantiate Default State Machine with deprecated definition', () => {
@@ -728,8 +729,7 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      kmsKey: kmsKey,
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+      encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(75)),
     });
 
     // THEN
@@ -798,7 +798,7 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      kmsKey: kmsKey,
+      encryptionConfiguration: new EncryptionConfiguration(kmsKey),
       logs: {
         destination: logGroup,
         level: sfn.LogLevel.ALL,
@@ -937,7 +937,7 @@ describe('State Machine', () => {
     // WHEN
     const activity = new sfn.Activity(stack, 'TestActivity', {
       activityName: 'TestActivity',
-      kmsKey: activityKey,
+      encryptionConfiguration: new EncryptionConfiguration(activityKey),
     });
 
     const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
@@ -946,8 +946,7 @@ describe('State Machine', () => {
         activity: activity,
       }))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      kmsKey: stateMachineKey,
-      kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(300),
+      encryptionConfiguration: new EncryptionConfiguration(stateMachineKey, cdk.Duration.seconds(300)),
     });
 
     // THEN
@@ -1013,7 +1012,7 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      kmsKey: kmsKey,
+      encryptionConfiguration: new EncryptionConfiguration(kmsKey),
     });
 
     // THEN
@@ -1041,25 +1040,8 @@ describe('State Machine', () => {
         stateMachineName: 'MyStateMachine',
         definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
         stateMachineType: sfn.StateMachineType.STANDARD,
-        kmsKey: kmsKey,
-        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
+        encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(20)),
       });
     }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   });
-
-  test('Instantiate StateMachine with no kms key and kmsDataKeyReusePeriodSeconds throws error', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    // FAIL
-    expect(() => {
-      // WHEN
-      new sfn.StateMachine(stack, 'MyStateMachine', {
-        stateMachineName: 'MyStateMachine',
-        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
-        stateMachineType: sfn.StateMachineType.STANDARD,
-        kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(20),
-      });
-    }).toThrow('You cannot set kmsDataKeyReusePeriodSeconds without providing a value for kmsKey');
-  });
-
 });

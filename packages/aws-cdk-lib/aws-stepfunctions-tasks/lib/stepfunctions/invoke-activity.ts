@@ -36,8 +36,8 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
     super(scope, id, props);
 
-    if (this.props.activity.kmsKey) {
-      this.taskPolicies = this.createPolicyStatements(this.props.activity.kmsKey);
+    if (this.props.activity.encryptionConfiguration) {
+      this.taskPolicies = this.createPolicyStatements(this.props.activity.encryptionConfiguration.kmsKey);
     }
     this.taskMetrics = {
       metricDimensions: { ActivityArn: this.props.activity.activityArn },

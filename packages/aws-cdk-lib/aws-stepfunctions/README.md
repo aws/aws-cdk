@@ -989,8 +989,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
   stateMachineName: 'StateMachineWithCMKEncryptionConfiguration',
   definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
   stateMachineType: sfn.StateMachineType.STANDARD,
-  kmsKey: kmsKey,
-  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(60),
+  encryptionConfiguration: new sfn.EncryptionConfiguration(kmsKey, cdk.Duration.seconds(60)),
 });
 ```
 
@@ -1032,8 +1031,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncry
     result: sfn.Result.fromString('Hello World'),
   }))),
   stateMachineType: sfn.StateMachineType.STANDARD,
-  kmsKey: stateMachineKmsKey,
-  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(300),
+  encryptionConfiguration: new sfn.EncryptionConfiguration(stateMachineKmsKey)
   logs: {
     destination: logGroup,
     level: sfn.LogLevel.ALL,
@@ -1051,8 +1049,7 @@ import * as cdk from 'aws-cdk-lib';
 const kmsKey = new kms.Key(this, 'Key');
 const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
   activityName: 'ActivityWithCMKEncryptionConfiguration',
-  kmsKey: kmsKey,
-  kmsDataKeyReusePeriodSeconds: cdk.Duration.seconds(75),
+  encryptionConfiguration: new sfn.EncryptionConfiguration(kmsKey, cdk.Duration.seconds(75))
 });
 ```
 

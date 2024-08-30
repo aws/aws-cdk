@@ -6,11 +6,10 @@ import { IChainable } from './types';
 import { constructEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
-
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { EncryptionConfiguration } from '../lib/encryptionconfiguration';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -158,25 +157,11 @@ export interface StateMachineProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * Specifies a symmetric customer managed KMS key for server-side encryption of the state machine definition and execution history.
-   * Step Functions will reuse the key for a maximum of `kmsDataKeyReusePeriodSeconds`.
+   * The encryptionConfiguration object used for server-side encryption of the state machine definition and execution history.
    *
    * @default - data is transparently encrypted using an AWS owned key
    */
-  readonly kmsKey?: kms.IKey;
-
-  /**
-   * Maximum duration that Step Functions will reuse customer managed data keys.
-   * When the period expires, Step Functions will call GenerateDataKey.
-   *
-   * You can only provide a value if `kmsKey` is set.
-   *
-   * Must be between 60 and 900 seconds.
-   *
-   * @default Duration.seconds(300)
-   */
-  readonly kmsDataKeyReusePeriodSeconds?: Duration;
-
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
 
 /**
@@ -476,13 +461,13 @@ export class StateMachine extends StateMachineBase {
       }
     }
 
-    if (props.kmsKey) {
+    if (props.encryptionConfiguration) {
       this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: [
           'kms:Decrypt', 'kms:GenerateDataKey',
         ],
-        resources: [`${props.kmsKey.keyArn}`],
+        resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
         conditions: {
           StringEquals: {
             'kms:EncryptionContext:aws:states:stateMachineArn': Stack.of(this).formatArn({
@@ -501,7 +486,7 @@ export class StateMachine extends StateMachineBase {
           actions: [
             'kms:GenerateDataKey',
           ],
-          resources: [`${props.kmsKey.keyArn}`],
+          resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
           conditions: {
             StringEquals: {
               'kms:EncryptionContext:SourceArn': Stack.of(this).formatArn({
@@ -512,7 +497,7 @@ export class StateMachine extends StateMachineBase {
             },
           },
         }));
-        props.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        props.encryptionConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
           resources: ['*'],
           actions: ['kms:Decrypt*'],
           principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
@@ -528,7 +513,7 @@ export class StateMachine extends StateMachineBase {
       tracingConfiguration: this.buildTracingConfiguration(props.tracingEnabled),
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
-      encryptionConfiguration: constructEncryptionConfiguration(props.kmsKey, props.kmsDataKeyReusePeriodSeconds),
+      encryptionConfiguration: constructEncryptionConfiguration(props.encryptionConfiguration),
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
