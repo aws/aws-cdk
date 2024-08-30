@@ -1,0 +1,149 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "redshift-query-events.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "redshift-query-events.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "redshift-query-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "redshift-query-events.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97ed69e0c6a3717cdba2853084a186e0bfd33216748d11445a14282087c0b2e9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "redshift-query-events.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "redshift-query-events.assets"
+      ],
+      "metadata": {
+        "/redshift-query-events/Namespace": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Namespace"
+          }
+        ],
+        "/redshift-query-events/WorkGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkGroup"
+          }
+        ],
+        "/redshift-query-events/dlq/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dlq09C78ACC"
+          }
+        ],
+        "/redshift-query-events/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ],
+        "/redshift-query-events/Timer3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer30894E3BB"
+          }
+        ],
+        "/redshift-query-events/Timer3/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer3EventsRole909B99A1"
+          }
+        ],
+        "/redshift-query-events/Timer3/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Timer3EventsRoleDefaultPolicy3A2ECE32"
+          }
+        ],
+        "/redshift-query-events/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/redshift-query-events/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "redshift-query-events"
+    },
+    "LogGroupDefaultTestDeployAssert353EE07A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LogGroupDefaultTestDeployAssert353EE07A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LogGroupDefaultTestDeployAssert353EE07A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LogGroupDefaultTestDeployAssert353EE07A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LogGroupDefaultTestDeployAssert353EE07A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LogGroupDefaultTestDeployAssert353EE07A.assets"
+      ],
+      "metadata": {
+        "/LogGroup/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LogGroup/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LogGroup/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

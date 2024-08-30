@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "EksClusterwithAddon/DefaultTest": {
+      "stacks": [
+        "EksClusterWithAddonStack"
+      ],
+      "assertionStack": "EksClusterwithAddon/DefaultTest/DeployAssert",
+      "assertionStackName": "EksClusterwithAddonDefaultTestDeployAssert82CE7357"
+    }
+  }
+}
