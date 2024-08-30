@@ -8,6 +8,8 @@ import { CfnEIP, SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;
+  let myVpc: vpc.VpcV2;
+  let mySubnet: SubnetV2;
 
   beforeEach(() => {
     const app = new cdk.App({
@@ -16,44 +18,35 @@ describe('Vpc V2 with full control', () => {
       },
     });
     stack = new cdk.Stack(app);
-  });
-  test('Method to add a new Egress-Only IGW', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+    myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
-    },
-    );
+    });
+    mySubnet = new SubnetV2(stack, 'TestSubnet', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PUBLIC,
+      ipv6CidrBlock: new IpCidr('2001:db8::/48'),
+    });
+  });
+  test('Method to add a new Egress-Only IGW', () => {
     myVpc.addEgressOnlyInternetGateway({});
     Template.fromStack(stack).hasResource('AWS::EC2::EgressOnlyInternetGateway', 1);
   });
 
   test('addEIGW throws error if VPC does not have IPv6', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+    const vpc1 = new vpc.VpcV2(stack, 'TestIpv4Vpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
     });
     expect(() => {
-      myVpc.addEgressOnlyInternetGateway({});
+      vpc1.addEgressOnlyInternetGateway({});
     }).toThrow('Egress only IGW can only be added to Ipv6 enabled VPC');
   });
 
   test('addEIGW defines a route under subnet to default destination', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    new SubnetV2(stack, 'validateIpv6', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      ipv6CidrBlock: new IpCidr('2001:db8::/48'),
-      subnetType: SubnetType.PUBLIC,
-    });
     myVpc.addEgressOnlyInternetGateway({
       subnets: [{ subnetType: SubnetType.PUBLIC }],
     });
@@ -63,20 +56,6 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addEIGW defines a route under subnet to given destination', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    new SubnetV2(stack, 'validateIpv6', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      //Test secondary ipv6 address after IPAM pool creation
-      ipv6CidrBlock: new IpCidr('2001:db8::/48'),
-      subnetType: SubnetType.PUBLIC,
-    });
     myVpc.addEgressOnlyInternetGateway({
       subnets: [{ subnetType: SubnetType.PUBLIC }],
       destination: '::/48',
@@ -87,22 +66,20 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addEIGW should not associate a route to an incorrect subnet', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
+    const vpc1 = new vpc.VpcV2(stack, 'TestPrivateVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
     });
     new SubnetV2(stack, 'validateIpv6', {
-      vpc: myVpc,
+      vpc: vpc1,
       ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
       availabilityZone: 'ap-south-1b',
       //Test secondary ipv6 address after IPAM pool creation
       ipv6CidrBlock: new IpCidr('2001:db8::/48'),
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
-    expect( () => {
-      myVpc.addEgressOnlyInternetGateway({
+    expect(() => {
+      vpc1.addEgressOnlyInternetGateway({
         subnets: [{ subnetType: SubnetType.PUBLIC }],
         destination: '::/48',
       });
@@ -110,18 +87,6 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addNatGateway defines a private gateway', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      subnetType: SubnetType.PRIVATE_ISOLATED,
-    });
     myVpc.addNatGateway({
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
@@ -143,18 +108,6 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addNatGateway defines private gateway with secondary IP addresses', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      subnetType: SubnetType.PRIVATE_ISOLATED,
-    });
     myVpc.addNatGateway({
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
@@ -185,18 +138,6 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addNatGateway defines private gateway with secondary IP address count', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      subnetType: SubnetType.PRIVATE_ISOLATED,
-    });
     myVpc.addNatGateway({
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
@@ -221,18 +162,6 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addNatGateway defines public gateway', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      subnetType: SubnetType.PRIVATE_ISOLATED,
-    });
     myVpc.addNatGateway({
       subnet: mySubnet,
     });
@@ -257,18 +186,6 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addNatGateway defines public gateway with provided EIP', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      subnetType: SubnetType.PRIVATE_ISOLATED,
-    });
     const eip = new CfnEIP(stack, 'MyEIP', {
       domain: myVpc.vpcId,
     });
@@ -299,18 +216,6 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('addNatGateway defines public gateway with many parameters', () => {
-    const myVpc = new vpc.VpcV2(stack, 'TestVpc', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
-      enableDnsHostnames: true,
-      enableDnsSupport: true,
-    });
-    const mySubnet = new SubnetV2(stack, 'TestSubnet', {
-      vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
-      availabilityZone: 'ap-south-1b',
-      subnetType: SubnetType.PRIVATE_ISOLATED,
-    });
     myVpc.addInternetGateway();
     myVpc.addNatGateway({
       subnet: mySubnet,
@@ -339,4 +244,90 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
+  test('addinternetGateway defines a new internet gateway with attachment and no route', () => {
+    const vpc2 = new vpc.VpcV2(stack, 'TestVpcNoSubnet', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    vpc2.addInternetGateway();
+    const template = Template.fromStack(stack);
+    // Internet Gateway should be in stack
+    template.hasResource('AWS::EC2::InternetGateway', {});
+    template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
+      InternetGatewayId: {
+        'Fn::GetAtt': ['TestVpcNoSubnetInternetGatewayIGWC957CF52', 'InternetGatewayId'],
+      },
+      VpcId: {
+        'Fn::GetAtt': ['TestVpcNoSubnetF2A028F4', 'VpcId'],
+      },
+    });
+    template.resourceCountIs('AWS::EC2::Route', 0);
+  });
+
+  test('addinternetGateway defines a new internet gateway with new route in case of public subnet', () => {
+    myVpc.addInternetGateway();
+    const template = Template.fromStack(stack);
+    // Internet Gateway should be in stack
+    template.hasResource('AWS::EC2::InternetGateway', {});
+    template.hasResourceProperties('AWS::EC2::Route', {
+      GatewayId: {
+        'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['TestSubnetRouteTable5AF4379E', 'RouteTableId'],
+      },
+      DestinationCidrBlock: '0.0.0.0/0',
+    });
+  });
+
+  test('addinternetGateway defines a new internet gateway with Ipv6 route in case of ipv6 enabled subnet', () => {
+    myVpc.addInternetGateway();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::EC2::Route', {
+      GatewayId: {
+        'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['TestSubnetRouteTable5AF4379E', 'RouteTableId'],
+      },
+      DestinationIpv6CidrBlock: '::/0',
+    });
+  });
+
+  test('Throws error if there is already an IGW attached', () => {
+    myVpc.addInternetGateway();
+    expect(() => {
+      myVpc.addInternetGateway();
+    }).toThrow('The Internet Gateway has already been enabled.');
+  });
+
+  test('addinternetGateway defines a new route in case of input destination', () => {
+    myVpc.addInternetGateway({
+      ipv4Destination: '203.0.113.25',
+      ipv6Destination: '2001:db8::/48',
+    });
+    const template = Template.fromStack(stack);
+    //Route for custom IPv4 destination
+    template.hasResourceProperties('AWS::EC2::Route', {
+      GatewayId: {
+        'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['TestSubnetRouteTable5AF4379E', 'RouteTableId'],
+      },
+      DestinationCidrBlock: '203.0.113.25',
+    });
+    //Route for custom IPv6 destination
+    template.hasResourceProperties('AWS::EC2::Route', {
+      GatewayId: {
+        'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['TestSubnetRouteTable5AF4379E', 'RouteTableId'],
+      },
+      DestinationIpv6CidrBlock: '2001:db8::/48',
+    });
+  });
 });

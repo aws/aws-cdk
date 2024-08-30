@@ -2,7 +2,7 @@ import { Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
-import { EgressOnlyInternetGateway, InternetGateway, NatGateway, NatGatewayOptions, Route, VPNGatewayV2 } from './route';
+import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPNGatewayV2 } from './route';
 import { ISubnetV2 } from './subnet-v2';
 
 /**
@@ -386,6 +386,9 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * of given subnets.
    */
   public addNatGateway(options: NatGatewayOptions): NatGateway {
+    if (options.connectivityType === NatConnectivityType.PUBLIC && !this._internetGatewayId) {
+      throw new Error('Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC');
+    }
     return new NatGateway(this, 'NATGateway', {
       vpc: this,
       ...options,

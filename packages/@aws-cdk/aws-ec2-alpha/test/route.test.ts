@@ -26,7 +26,6 @@ describe('EC2 Routing', () => {
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });
-    myVpc.addInternetGateway(); //Required for Public NATGW
     routeTable = new route.RouteTable(stack, 'TestRouteTable', {
       vpc: myVpc,
     });
