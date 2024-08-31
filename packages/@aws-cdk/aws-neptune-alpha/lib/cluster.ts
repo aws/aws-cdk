@@ -334,7 +334,7 @@ export interface DatabaseClusterProps {
   readonly copyTagsToSnapshot?: boolean;
 
   /**
-   * The port number
+   * The port number on which the DB instances in the DB cluster accept connections.
    *
    * @default 8182
    */
