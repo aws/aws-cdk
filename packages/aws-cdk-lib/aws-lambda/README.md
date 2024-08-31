@@ -78,6 +78,10 @@ configurations as well as choosing a specific tag or digest. See their docs for 
 To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
 
+With that being said, if you are bundling `DockerImageFunction` for Lambda `amd64` architecture from a `arm64` machine like a Macbook with `arm64` CPU, you would 
+need to specify `architecture: lambda.Architecture.X86_64` as well. This ensures the `--platform` argument is passed to the image assets
+bundling process so you can bundle up `X86_64` images from the `arm64` machine.
+
 ```ts
 new lambda.DockerImageFunction(this, 'AssetFunction', {
   code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
@@ -1009,8 +1013,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
-See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
-managing concurrency.
+https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html
 
 ## Lambda with SnapStart
 
@@ -1085,6 +1088,26 @@ new lambda.Function(this, 'Lambda', {
 
 Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
 If you are deploying to another type of region, please check regional availability first.
+
+## Lambda with Recursive Loop protection
+
+Recursive loop protection is to stop unintended loops. The customers are opted in by default for Lambda to detect and terminate unintended loops between Lambda and other AWS Services.
+The property can be assigned two values here, "Allow" and "Terminate". 
+
+The default value is set to "Terminate", which lets the Lambda to detect and terminate the recursive loops. 
+
+When the value is set to "Allow", the customers opt out of recursive loop detection and Lambda does not terminate recursive loops if any. 
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html) to learn more about AWS Lambda Recusrive Loop Detection
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+  runtime: lambda.Runtime.JAVA_11,
+  handler: 'example.Handler::handleRequest',
+  recursiveLoop: lambda.RecursiveLoop.TERMINATE,
+  });
+```
 
 ### Legacy Log Retention
 

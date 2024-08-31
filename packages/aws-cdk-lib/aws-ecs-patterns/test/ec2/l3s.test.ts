@@ -40,10 +40,16 @@ describe('ApplicationLoadBalancedEc2Service', () => {
         command: ['/bin/bash'],
       },
       desiredCount: 2,
+      ipAddressType: IpAddressType.DUAL_STACK,
     });
 
     // THEN - stack contains a load balancer and a service
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Type: 'application',
+      IpAddressType: 'dualstack',
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 2,
