@@ -1795,5 +1795,5 @@ test.each([0, 604801])('Task throws if autoTerminationPolicyIdleTimeout is set t
       autoScalingRole,
       autoTerminationPolicyIdleTimeout: cdk.Duration.seconds(idletimeOutSeconds),
     });
-  }).toThrow(`\`autoTerminationPolicyIdleTimeout\` must either be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
+  }).toThrow(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
 });
