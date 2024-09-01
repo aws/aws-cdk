@@ -352,6 +352,7 @@ export class Schedule extends Resource implements ISchedule {
       },
       startDate: props.start?.toISOString(),
       endDate: props.end?.toISOString(),
+      description: props.description,
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
