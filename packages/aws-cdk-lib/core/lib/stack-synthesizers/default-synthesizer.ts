@@ -221,60 +221,52 @@ export interface DefaultStackSynthesizerProps {
   readonly bootstrapStackVersionSsmParameter?: string;
 
   /**
-   * Session tags to be used when assuming the deploy role.
-   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
+   * Additional options to pass to STS when assuming the deploy role.
    *
-   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   * - `RoleArn` should not be used. Use the dedicated `deployRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `deployRoleExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transtive by default.
    *
-   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
-   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
-   *
-   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-   * @default - No Session Tags
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
    */
-  readonly deployRoleSessionTags?: { [key: string]: string };
+  readonly deployRoleAdditionalOptions?: { [key: string]: any };
 
   /**
-   * Session tags to be used for the lookup role
-   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
+   * Additional options to pass to STS when assuming the lookup role.
    *
-   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   * - `RoleArn` should not be used. Use the dedicated `lookupRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `lookupRoleExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transtive by default.
    *
-   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
-   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
-   *
-   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-   * @default - No Session Tags
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
    */
-  readonly lookupRoleSessionTags?: { [key: string]: string };
+  readonly lookupRoleAdditionalOptions?: { [key: string]: any };
 
   /**
-   * Session tags to be used for the file asset publishing role
-   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
+   * Additional options to pass to STS when assuming the file asset publishing.
    *
-   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   * - `RoleArn` should not be used. Use the dedicated `fileAssetPublishingRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `fileAssetPublishingExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transtive by default.
    *
-   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
-   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
-   *
-   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-   * @default - No Session Tags
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
    */
-  readonly fileAssetPublishingRoleSessionTags?: { [key: string]: string };
+  readonly fileAssetPublishingRoleAdditionalOptions?: { [key: string]: any };
 
   /**
-   * Session tags to be used for the image asset publishing role
-   * This will cause the CDK CLI to include session tags when assuming this role during deployment.
+   * Additional options to pass to STS when assuming the image asset publishing.
    *
-   * Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+   * - `RoleArn` should not be used. Use the dedicated `imageAssetPublishingRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `imageAssetPublishingExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transtive by default.
    *
-   * - If you are using a custom bootstrap template, make sure the template includes these permissions.
-   * - If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
-   *
-   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-   * @default - No Session Tags
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
    */
-  readonly imageAssetPublishingRoleSessionTags?: { [key: string]: string };
+  readonly imageAssetPublishingRoleAdditionalOptions?: { [key: string]: any };
 }
 
 /**
@@ -446,7 +438,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       role: this.fileAssetPublishingRoleArn ? {
         assumeRoleArn: this.fileAssetPublishingRoleArn,
         assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
-        assumeRoleSessionTags: this.props.fileAssetPublishingRoleSessionTags,
+        assumeRoleAdditionalOptions: this.props.fileAssetPublishingRoleAdditionalOptions,
       } : undefined,
     });
     return this.cloudFormationLocationFromFileAsset(location);
@@ -461,7 +453,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       role: this.imageAssetPublishingRoleArn ? {
         assumeRoleArn: this.imageAssetPublishingRoleArn,
         assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
-        assumeRoleSessionTags: this.props.imageAssetPublishingRoleSessionTags,
+        assumeRoleAdditionalOptions: this.props.imageAssetPublishingRoleAdditionalOptions,
       } : undefined,
     });
     return this.cloudFormationLocationFromDockerImageAsset(location);
@@ -509,7 +501,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     this.emitArtifact(session, {
       assumeRoleExternalId: this.props.deployRoleExternalId,
       assumeRoleArn: this._deployRoleArn,
-      assumeRoleSessionTags: this.props.deployRoleSessionTags,
+      assumeRoleAdditionalOptions: this.props.deployRoleAdditionalOptions,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
       requiresBootstrapStackVersion: this._requiredBootstrapVersionForDeployment,
@@ -518,7 +510,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
         arn: this.lookupRoleArn,
         assumeRoleExternalId: this.props.lookupRoleExternalId,
-        assumeRoleSessionTags: this.props.lookupRoleSessionTags,
+        assumeRoleAdditionalOptions: this.props.lookupRoleAdditionalOptions,
         requiresBootstrapStackVersion: this._requiredBootstrapVersionForLookup,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,
@@ -526,21 +518,21 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   }
 
   private get _requiredBoostrapVersionForAssets() {
-    if (this.props.fileAssetPublishingRoleSessionTags || this.props.imageAssetPublishingRoleSessionTags) {
+    if (this.props.fileAssetPublishingRoleAdditionalOptions?.Tags || this.props.imageAssetPublishingRoleAdditionalOptions?.Tags) {
       return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
     }
     return MIN_BOOTSTRAP_STACK_VERSION;
   }
 
   private get _requiredBootstrapVersionForDeployment() {
-    if (this.props.deployRoleSessionTags) {
+    if (this.props.deployRoleAdditionalOptions?.Tags) {
       return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
     }
     return MIN_BOOTSTRAP_STACK_VERSION;
   }
 
   private get _requiredBootstrapVersionForLookup() {
-    if (this.props.lookupRoleSessionTags && this.props.lookupRoleSessionTags) {
+    if (this.props.lookupRoleAdditionalOptions?.Tags) {
       return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
     }
     return MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION;

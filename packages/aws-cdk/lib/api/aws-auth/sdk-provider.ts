@@ -13,6 +13,12 @@ import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
 import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
 
+// Partial because `RoleSessionName` is required in STS, but we have a default value for it.
+export type AssumeRoleAdditionalOptions = Partial<
+// cloud-assembly-schema validates that `ExternalId` and `RoleArn` are not configured
+Omit<AWS.STS.Types.AssumeRoleRequest, 'ExternalId' | 'RoleArn'>
+>;
+
 // Some configuration that can only be achieved by setting
 // environment variables.
 process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
@@ -195,7 +201,8 @@ export class SdkProvider {
     }
 
     // We will proceed to AssumeRole using whatever we've been given.
-    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, options.assumeRoleSessionTags, env.region);
+    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn,
+      options.assumeRoleExternalId, options.assumeRoleAdditionalOptions, env.region);
 
     // Exercise the AssumeRoleCredentialsProvider we've gotten at least once so
     // we can determine whether the AssumeRole call succeeds or not.
@@ -358,26 +365,26 @@ export class SdkProvider {
     masterCredentials: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>,
     roleArn: string,
     externalId: string | undefined,
-    sessionTags: { [key: string]: string } | undefined,
+    additionalOptions: AssumeRoleAdditionalOptions | undefined,
     region: string | undefined) {
     debug(`Assuming role '${roleArn}'.`);
+
+    if (
+      additionalOptions &&
+      additionalOptions.Tags &&
+      additionalOptions.Tags.length > 0 &&
+      additionalOptions.TransitiveTagKeys === undefined
+    ) {
+      additionalOptions.TransitiveTagKeys = additionalOptions.Tags?.map((t) => t.Key);
+    }
 
     region = region ?? this.defaultRegion;
     const creds = new AWS.ChainableTemporaryCredentials({
       params: {
         RoleArn: roleArn,
-        ...externalId ? { ExternalId: externalId } : {},
-        ...sessionTags ? {
-          Tags: Object.entries(sessionTags).map(([key, value]) => ({
-            Key: key,
-            Value: value,
-          })),
-        } : {},
-        // We pass in the all Session Tags keys as TransitiveTagKeys so that
-        // they persist during role chaining. For more information, see:
-        // https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_role-chaining
-        ...sessionTags ? { TransitiveTagKeys: Object.keys(sessionTags) } : {},
+        ExternalId: externalId,
         RoleSessionName: `aws-cdk-${safeUsername()}`,
+        ...additionalOptions,
       },
       stsConfig: {
         region,
@@ -527,7 +534,7 @@ export interface CredentialsOptions {
   /**
    * Session tags required to assume the given role.
    */
-  readonly assumeRoleSessionTags?: { [key: string]: string };
+  readonly assumeRoleAdditionalOptions?: AssumeRoleAdditionalOptions;
 }
 
 /**

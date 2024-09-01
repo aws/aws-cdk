@@ -2,6 +2,7 @@
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
+import type { AssumeRoleAdditionalOptions } from '../../lib/api/aws-auth/sdk-provider';
 
 interface RegisteredIdentity {
   readonly account: string;
@@ -21,8 +22,7 @@ interface AssumedRole {
   readonly serialNumber: string;
   readonly tokenCode: string;
   readonly roleSessionName: string;
-  readonly sessionTags?: { [key: string]: string };
-  readonly transitiveTagKeys?: string[];
+  readonly assumeRoleAdditionalOptions?: AssumeRoleAdditionalOptions;
 }
 
 /**
@@ -168,8 +168,8 @@ export class FakeSts {
    * @param body - the parsed body of the mockRequest
    * @returns session tags dictionary
    */
-  private parseSessionTagsFromRequestBody(body: Record<string, string>): { [key: string]: string } {
-    const tags: { [key: string]: string } = {};
+  private decodeTagsFromRequestBody(body: Record<string, string>): AWS.STS.Tag[] {
+    const tags: AWS.STS.Tag[] = [];
 
     for (const key in body) {
       if (key.startsWith('Tags.member.') && key.endsWith('.Key')) {
@@ -177,8 +177,29 @@ export class FakeSts {
         const tagKey = body[key];
         const tagValueKey = `Tags.member.${tagIndex}.Value`;
         if (tagValueKey in body) {
-          tags[tagKey] = body[tagValueKey];
+          tags.push({ Key: tagKey, Value: body[tagValueKey] });
         }
+      }
+    }
+
+    return tags;
+  }
+
+  /**
+   * This function parses session tags from the STS mock request into a dictionary. This is necessary because
+   * the STS request body writes these dictionary values in the format Tags.member.X.Key and Tags.member.X.Value.
+   *
+   * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
+   * @param body - the parsed body of the mockRequest
+   * @returns session tags dictionary
+   */
+  private decodeTransitiveTagKeysFromRequestBody(body: Record<string, string>): string[] {
+    const tags: string[] = [];
+
+    for (const key in body) {
+      if (key.startsWith('TransitiveTagKeys.member.')) {
+        const transtiveTagKey = key.split('.')[2];
+        tags.push(transtiveTagKey);
       }
     }
 
@@ -188,15 +209,18 @@ export class FakeSts {
   private handleAssumeRole(identity: RegisteredIdentity, mockRequest: MockRequest): Record<string, any> {
     this.checkForFailure(mockRequest.parsedBody.RoleArn);
 
-    const parsedSessionTags = this.parseSessionTagsFromRequestBody(mockRequest.parsedBody);
+    const tags = this.decodeTagsFromRequestBody(mockRequest.parsedBody);
+    const transitiveTagKeys = this.decodeTransitiveTagKeysFromRequestBody(mockRequest.parsedBody);
 
     this.assumedRoles.push({
       roleArn: mockRequest.parsedBody.RoleArn,
       roleSessionName: mockRequest.parsedBody.RoleSessionName,
       serialNumber: mockRequest.parsedBody.SerialNumber,
       tokenCode: mockRequest.parsedBody.TokenCode,
-      sessionTags: parsedSessionTags,
-      transitiveTagKeys: Object.keys(parsedSessionTags),
+      assumeRoleAdditionalOptions: {
+        Tags: tags,
+        TransitiveTagKeys: transitiveTagKeys,
+      },
     });
 
     const roleArn = mockRequest.parsedBody.RoleArn;

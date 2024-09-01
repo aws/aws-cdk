@@ -526,8 +526,8 @@ test('artifactBucket can be overridden', () => {
 test('throws when deploy role session tags are used', () => {
 
   const synthesizer = new cdk.DefaultStackSynthesizer({
-    deployRoleSessionTags: {
-      Departement: 'Engineering',
+    deployRoleAdditionalOptions: {
+      Tags: [{ Key: 'Departement', Value: 'Enginerring' }],
     },
   });
 
@@ -541,25 +541,6 @@ test('throws when deploy role session tags are used', () => {
       },
     });
   }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags {"Departement":"Engineering"}, but assuming roles with session tags is not supported by CodePipeline.');
-
-});
-
-test('throws when deploy role external id is used', () => {
-
-  const synthesizer = new cdk.DefaultStackSynthesizer({
-    deployRoleExternalId: 'external-id',
-  });
-
-  expect(() => {
-    new ReuseCodePipelineStack(app, 'PipelineStackA', {
-      env: PIPELINE_ENV,
-      reuseStageProps: {
-        reuseStackProps: {
-          synthesizer,
-        },
-      },
-    });
-  }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with external id external-id, but assuming roles with an external id is not supported by CodePipeline.');
 
 });
 

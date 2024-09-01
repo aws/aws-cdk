@@ -427,14 +427,14 @@ class SessionTagsStack extends cdk.Stack {
     super(parent, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
-        deployRoleSessionTags: {
-          'Department' : 'Engineering',
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
         },
-        fileAssetPublishingRoleSessionTags: {
-          'Department' : 'Engineering',
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
         },
-        imageAssetPublishingRoleSessionTags: {
-          'Department' : 'Engineering',
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
         },
       })
     });
@@ -453,43 +453,13 @@ class SessionTagsStack extends cdk.Stack {
   }
 }
 
-MIN_BOOTSTRAP_STACK_VERSION = 6;
-MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 6;
-class NoExecutionRoleNoExecutionRoleCustomSynthesizer extends cdk.DefaultStackSynthesizer {
+class NoExecutionRoleCustomSynthesizer extends cdk.DefaultStackSynthesizer {
 
-  // This Custom Synthesizer is the same as the Default synthesizer, except that it passes
-  // undefined for the CloudFormationExecutionRole, since we want it to use the Deploy role instead.
-  synthesize(session) {
-    if (this.props.generateBootstrapVersionRule ?? true) {
-      this.addBootstrapVersionRule(MIN_BOOTSTRAP_STACK_VERSION, this.bootstrapStackVersionSsmParameter);
-    }
-
-    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
-    const templateAsset = this.addFileAsset(templateAssetSource);
-
-    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
-      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-      bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
-    });
-
-    this.emitArtifact(session, {
-      assumeRoleExternalId: this.props.deployRoleExternalId,
-      assumeRoleArn: this._deployRoleArn,
-      assumeRoleSessionTags: this.props.deployRoleSessionTags,
-      // Pass in UNDEFINED for the CFN Execution Role Arn:
+  emitArtifact(session, options) {
+    super.emitArtifact(session, {
+      ...options,
       cloudFormationExecutionRoleArn: undefined,
-      stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-      bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
-      additionalDependencies: [assetManifestId],
-      lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
-        arn: this.lookupRoleArn,
-        assumeRoleExternalId: this.props.lookupRoleExternalId,
-        assumeRoleSessionTags: this.props.lookupRoleSessionTags,
-        requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
-        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
-      } : undefined,
-    });
+    })
   }
 }
 

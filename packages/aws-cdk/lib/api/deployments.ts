@@ -492,7 +492,7 @@ export class Deployments {
     const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
       assumeRoleExternalId: stack.assumeRoleExternalId,
-      assumeRoleSessionTags: stack.assumeRoleSessionTags,
+      assumeRoleAdditionalOptions: stack.assumeRoleAdditionalOptions,
     });
 
     return {
@@ -539,7 +539,7 @@ export class Deployments {
       const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
-        assumeRoleSessionTags: stack.lookupRole?.assumeRoleSessionTags,
+        assumeRoleAdditionalOptions: stack.lookupRole?.assumeRoleAdditionalOptions,
       });
 
       const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
@@ -673,14 +673,19 @@ export class Deployments {
     mode: Mode,
     options?: CredentialsOptions,
   ) {
-    const cacheKey = [
+    const cacheKeyElements = [
       environment.account,
       environment.region,
       `${mode}`,
       options?.assumeRoleArn ?? '',
       options?.assumeRoleExternalId ?? '',
-      options?.assumeRoleSessionTags ?? '',
-    ].join(':');
+    ];
+
+    if (options?.assumeRoleAdditionalOptions) {
+      cacheKeyElements.push(JSON.stringify(options.assumeRoleAdditionalOptions));
+    }
+
+    const cacheKey = cacheKeyElements.join(':');
     const existing = this.sdkCache.get(cacheKey);
     if (existing) {
       return existing;

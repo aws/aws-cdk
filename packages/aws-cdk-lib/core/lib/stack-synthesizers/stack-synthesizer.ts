@@ -241,11 +241,16 @@ export interface SynthesizeStackArtifactOptions {
   readonly assumeRoleExternalId?: string;
 
   /**
-   * Session tags to be used on the assume role
+   * Additional options to pass to STS when assuming the role for cloudformation deployments.
    *
-   * @default - No session tags
+   * - `RoleArn` should not be used. Use the dedicated `assumeRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `assumeRoleExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transtive by default.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
    */
-  readonly assumeRoleSessionTags?: { [key: string]: string};
+  readonly assumeRoleAdditionalOptions?: { [key: string]: any };
 
   /**
    * The role that is passed to CloudFormation to execute the change set

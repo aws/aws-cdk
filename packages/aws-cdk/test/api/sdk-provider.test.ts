@@ -361,8 +361,8 @@ describe('with intercepted network calls', () => {
           {
             assumeRoleArn: 'arn:aws:role',
             assumeRoleExternalId: 'bruh',
-            assumeRoleSessionTags: {
-              Department: 'Engineering',
+            assumeRoleAdditionalOptions: {
+              Tags: [{ Key: 'Department', Value: 'Engineering' }],
             },
           })).sdk as SDK;
         await sdk.currentAccount();
