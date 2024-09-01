@@ -469,6 +469,20 @@ export interface KeyProps {
   readonly keyUsage?: KeyUsage;
 
   /**
+   * Creates a multi-Region primary key that you can replicate in other AWS Regions.
+   *
+   * You can't change the `multiRegion` value after the KMS key is created.
+   *
+   * IMPORTANT: If you change the value of the `multiRegion` property on an existing KMS key, the update request fails,
+   * regardless of the value of the UpdateReplacePolicy attribute.
+   * This prevents you from accidentally deleting a KMS key by changing an immutable property value.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html
+   */
+  readonly multiRegion?: boolean;
+
+  /**
    * Custom policy document to attach to the KMS key.
    *
    * NOTE - If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
@@ -783,6 +797,7 @@ export class Key extends KeyBase {
       keySpec: props.keySpec,
       keyUsage: props.keyUsage,
       keyPolicy: this.policy,
+      multiRegion: props.multiRegion,
       pendingWindowInDays: pendingWindowInDays,
     });
 

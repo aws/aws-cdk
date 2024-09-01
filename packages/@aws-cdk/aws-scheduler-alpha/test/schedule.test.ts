@@ -225,5 +225,19 @@ describe('Schedule', () => {
         });
       }).toThrow(`scheduleName cannot be longer than 64 characters, got: ${name.length}`);
     });
+
+    test('schedule with description', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        description: 'test description',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        Description: 'test description',
+      });
+    });
   });
 });
