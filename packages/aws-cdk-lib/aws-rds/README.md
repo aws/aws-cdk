@@ -1198,7 +1198,7 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
 cluster.grantDataApiAccess(fn);
 
 // Import an Aurora cluster
-const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(stack, 'ImportedCluster', {
+const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(this, 'ImportedCluster', {
   clusterIdentifier: 'clusterIdentifier',
   secret,
   dataApiEnabled: true,
