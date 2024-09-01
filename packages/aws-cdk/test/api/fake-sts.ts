@@ -186,12 +186,12 @@ export class FakeSts {
   }
 
   /**
-   * This function parses session tags from the STS mock request into a dictionary. This is necessary because
-   * the STS request body writes these dictionary values in the format Tags.member.X.Key and Tags.member.X.Value.
+   * This function parses transitive session tags keys from the STS mock request into an array. This is necessary because
+   * the STS request body writes these array values in the format TransitiveTagKeys.member.N
    *
    * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
    * @param body - the parsed body of the mockRequest
-   * @returns session tags dictionary
+   * @returns transitive session tags keys array
    */
   private decodeTransitiveTagKeysFromRequestBody(body: Record<string, string>): string[] {
     const tags: string[] = [];

@@ -82,13 +82,12 @@ integTest('can and deploy if omitting execution policies', withoutBootstrap(asyn
   });
 }));
 
-// Custom Bootstrap test with Session Tags on the Deploy, FileAssetPublishing and ImageAssetPublishing Roles
 integTest('can deploy with session tags on the deploy, file asset, and image asset publishing roles', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
   await fixture.cdkBootstrapModern({
     toolkitStackName: bootstrapStackName,
-    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-with-session-tags.yaml'),
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.all-roles-deny-all.yaml'),
   });
 
   await fixture.cdkDeploy('session-tags', {
@@ -100,13 +99,12 @@ integTest('can deploy with session tags on the deploy, file asset, and image ass
   });
 }));
 
-// Custom Bootstrap test without CloudFormationExecutionRole and Session Tags on the DeployRole
 integTest('can deploy without execution role and with session tags on deploy role', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
   await fixture.cdkBootstrapModern({
     toolkitStackName: bootstrapStackName,
-    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'custom-bootstrap-with-deploy-role-labmda-permissions.yaml'),
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.deploy-role-deny-sqs.yaml'),
   });
 
   await fixture.cdkDeploy('session-tags-with-custom-synthesizer', {

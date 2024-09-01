@@ -109,17 +109,17 @@ describe('new style synthesis', () => {
     // GIVEN
     stack = new Stack(app, 'SessionTagsStack', {
       synthesizer: new DefaultStackSynthesizer({
-        deployRoleSessionTags: {
-          Department: 'Engineering-DeployRoleTag',
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-DeployRoleTag' }],
         },
-        fileAssetPublishingRoleSessionTags: {
-          Department: 'Engineering-FileAssetTag',
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-FileAssetTag' }],
         },
-        imageAssetPublishingRoleSessionTags: {
-          Department: 'Engineering-ImageAssetTag',
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }],
         },
-        lookupRoleSessionTags: {
-          Department: 'Engineering-LookupRoleTag',
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-LookupRoleTag' }],
         },
       }),
     });
@@ -139,15 +139,15 @@ describe('new style synthesis', () => {
     const asm = app.synth();
     const manifest = app.synth().getStackByName('SessionTagsStack').manifest;
     // Validates that the deploy and lookup role session tags were set in the Manifest:
-    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).assumeRoleSessionTags).toEqual({ Department: 'Engineering-DeployRoleTag' });
-    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).lookupRole?.assumeRoleSessionTags).toEqual({ Department: 'Engineering-LookupRoleTag' });
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-DeployRoleTag' }]);
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).lookupRole?.assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-LookupRoleTag' }]);
 
     const assetManifest = getAssetManifest(asm);
     const assetManifestJSON = readAssetManifest(assetManifest);
 
     // Validates that the image and file asset session tags were set in the asset manifest:
-    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['current_account-current_region'].assumeRoleSessionTags).toEqual({ Department: 'Engineering-ImageAssetTag' });
-    expect(assetManifestJSON.files?.fileHash.destinations['current_account-current_region'].assumeRoleSessionTags).toEqual({ Department: 'Engineering-FileAssetTag' });
+    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['current_account-current_region'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }]);
+    expect(assetManifestJSON.files?.fileHash.destinations['current_account-current_region'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-FileAssetTag' }]);
   });
 
   test('customize version parameter', () => {

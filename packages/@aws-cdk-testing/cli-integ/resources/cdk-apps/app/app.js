@@ -468,8 +468,8 @@ class SessionTagsWithNoExecutionRoleCustomSynthesizerStack extends cdk.Stack {
     super(parent, id, {
       ...props,
       synthesizer: new NoExecutionRoleCustomSynthesizer({
-        deployRoleSessionTags: {
-          'Department' : 'Engineering',
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
         },
       })
     });

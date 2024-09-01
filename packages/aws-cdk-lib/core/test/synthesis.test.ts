@@ -289,8 +289,8 @@ describe('synthesis', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
-        deployRoleSessionTags: {
-          Departement: 'Engineering',
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }],
         },
       }),
     });
@@ -313,8 +313,8 @@ describe('synthesis', () => {
     const app = new cdk.App();
     new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
-        lookupRoleSessionTags: {
-          Departement: 'Engineering',
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }],
         },
       }),
     });
@@ -331,8 +331,8 @@ describe('synthesis', () => {
     const app = new cdk.App();
     new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
-        fileAssetPublishingRoleSessionTags: {
-          Departement: 'Engineering',
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }],
         },
       }),
     });
@@ -349,8 +349,8 @@ describe('synthesis', () => {
     const app = new cdk.App();
     new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
-        imageAssetPublishingRoleSessionTags: {
-          Departement: 'Engineering',
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Departement', Value: 'Engineering' }],
         },
       }),
     });
