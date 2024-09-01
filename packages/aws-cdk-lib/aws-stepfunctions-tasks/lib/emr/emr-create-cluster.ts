@@ -156,7 +156,7 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   readonly visibleToAllUsers?: boolean;
 
   /**
-   * The amount of idle time in seconds after which the cluster automatically terminates.
+   * The amount of idle time after which the cluster automatically terminates.
    * You can specify a minimum of 60 seconds and a maximum of 604800 seconds (seven days).
    *
    * @default - No timeout
