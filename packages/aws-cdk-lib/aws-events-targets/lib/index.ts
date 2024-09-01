@@ -16,3 +16,4 @@ export * from './api-gateway';
 export * from './api-destination';
 export * from './appsync';
 export * from './util';
+export * from './redshift-query';
