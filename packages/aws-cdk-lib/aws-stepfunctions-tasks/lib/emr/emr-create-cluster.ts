@@ -241,7 +241,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       const idletimeOutSeconds = this.props.autoTerminationPolicyIdleTimeout.toSeconds();
 
       if (idletimeOutSeconds < 60 || idletimeOutSeconds > 604800) {
-        throw new Error(`\`autoTerminationPolicyIdleTimeout\` must either be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
+        throw new Error(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
       }
     }
   }
