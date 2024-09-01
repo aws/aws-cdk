@@ -980,7 +980,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   private readonly _instanceIdentifiers?: string[];
   private readonly _instanceEndpoints?: Endpoint[];
 
-  protected readonly enableDataApi = false;
+  protected readonly enableDataApi: boolean;
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
@@ -995,6 +995,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     });
     this.engine = attrs.engine;
     this.secret = attrs.secret;
+
+    this.enableDataApi = attrs.dataApiEnabled ?? false;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;

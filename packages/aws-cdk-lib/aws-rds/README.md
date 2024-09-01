@@ -1195,6 +1195,13 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
+
+// Import an Aurora cluster
+const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(stack, 'ImportedCluster', {
+  clusterIdentifier: 'clusterIdentifier',
+  dataApiEnabled: true,
+});
+importedCluster.grantDataApiAccess(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
