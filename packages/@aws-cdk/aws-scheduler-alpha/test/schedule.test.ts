@@ -214,5 +214,19 @@ describe('Schedule', () => {
         });
       }).toThrow('The provided duration must be between 1 minute and 1440 minutes, got 0');
     });
+
+    test('schedule with description', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        description: 'test description',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        Description: 'test description',
+      });
+    });
   });
 });
