@@ -74,39 +74,12 @@ export enum IntendedUse {
   STORAGE = 'Storage',
 }
 
-abstract class PlaceIndexBase extends Resource implements IPlaceIndex {
-  public abstract readonly placeIndexName: string;
-  public abstract readonly placeIndexArn: string;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this place index.
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: grantee,
-      actions: actions,
-      resourceArns: [this.placeIndexArn],
-    });
-  }
-
-  /**
-   * Grant the given identity permissions to search using this index
-   */
-  public grantSearch(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:SearchPlaceIndexForPosition',
-      'geo:SearchPlaceIndexForSuggestions',
-      'geo:SearchPlaceIndexForText',
-    );
-  }
-}
-
 /**
  * A Place Index
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/places-concepts.html
  */
-export class PlaceIndex extends PlaceIndexBase {
+export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Use an existing place index by name
    */
@@ -130,7 +103,7 @@ export class PlaceIndex extends PlaceIndexBase {
       throw new Error(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
     }
 
-    class Import extends PlaceIndexBase {
+    class Import extends Resource implements IPlaceIndex {
       public readonly placeIndexName = parsedArn.resourceName!;
       public readonly placeIndexArn = placeIndexArn;
     }
@@ -187,4 +160,25 @@ export class PlaceIndex extends PlaceIndexBase {
     this.placeIndexUpdateTime = placeIndex.attrUpdateTime;
   }
 
+  /**
+   * Grant the given principal identity permissions to perform the actions on this place index.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.placeIndexArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to search using this index
+   */
+  public grantSearch(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'geo:SearchPlaceIndexForPosition',
+      'geo:SearchPlaceIndexForSuggestions',
+      'geo:SearchPlaceIndexForText',
+    );
+  }
 }
