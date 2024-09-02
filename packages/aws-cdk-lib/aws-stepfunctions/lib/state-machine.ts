@@ -157,7 +157,7 @@ export interface StateMachineProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * The encryptionConfiguration object used for server-side encryption of the state machine definition and execution history.
+   * Configures server-side encryption of the state machine definition and execution history.
    *
    * @default - data is transparently encrypted using an AWS owned key
    */
