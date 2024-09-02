@@ -895,6 +895,17 @@ export class Cluster extends ClusterBase {
   }
 
   /**
+   * Get the list of brokers that a SASL/IAM authenticated client application can use to bootstrap
+   *
+   * Uses a Custom Resource to make an API call to `getBootstrapBrokers` using the Javascript SDK
+   *
+   * @returns - A string containing one or more DNS names (or IP) and TLS port pairs.
+   */
+  public get bootstrapBrokersPublicSaslIam() {
+    return this._bootstrapBrokers('BootstrapBrokerStringPublicSaslIam');
+  }
+
+  /**
    * A list of usersnames to register with the cluster. The password will automatically be generated using Secrets
    * Manager and the { username, password } JSON object stored in Secrets Manager as `AmazonMSK_username`.
    *

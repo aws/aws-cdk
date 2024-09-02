@@ -195,7 +195,7 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers9', { value: cluster7.bootstrapBrokersTls });
-
+    new cdk.CfnOutput(this, 'BootstrapBrokers10', { value: cluster3.bootstrapBrokersPublicSaslIam });
   }
 }
 
