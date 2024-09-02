@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a693892833d1db459f9a5d8ee4598abad52bd2cc7d72cb86c0c1943bb029bcc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef7061115e98ba6f0acd0111a051ef90e571f3296b8897efb16bdd2efd0fe426.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -172,40 +172,100 @@
             "data": "myVpcAutoVPCGWEC42CD12"
           }
         ],
-        "/integ-health-checks/ASG/InstanceSecurityGroup/Resource": [
+        "/integ-health-checks/EC2HealthChecks/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceSecurityGroup0525485D"
+            "data": "EC2HealthChecksInstanceSecurityGroupB5E28934"
           }
         ],
-        "/integ-health-checks/ASG/InstanceRole/Resource": [
+        "/integ-health-checks/EC2HealthChecks/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceRoleE263A41B"
+            "data": "EC2HealthChecksInstanceRole330231BD"
           }
         ],
-        "/integ-health-checks/ASG/InstanceProfile": [
+        "/integ-health-checks/EC2HealthChecks/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceProfile0A2834D7"
+            "data": "EC2HealthChecksInstanceProfile0F3A6CD0"
           }
         ],
-        "/integ-health-checks/ASG/LaunchTemplate/Resource": [
+        "/integ-health-checks/EC2HealthChecks/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchTemplate0CA92847"
+            "data": "EC2HealthChecksLaunchTemplate1F05DB09"
           }
         ],
-        "/integ-health-checks/ASG/ASG": [
+        "/integ-health-checks/EC2HealthChecks/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASG46ED3070"
+            "data": "EC2HealthChecksASG86AE6FB7"
           }
         ],
         "/integ-health-checks/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksInstanceSecurityGroup7ABFD032"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksInstanceRole8F52F51E"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksInstanceProfile71F64498"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksLaunchTemplateCCCFDD89"
+          }
+        ],
+        "/integ-health-checks/AdditionalHealthChecks/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdditionalHealthChecksASG30451BBE"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceInstanceSecurityGroup9496DAB2"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceInstanceRole253C2D6A"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceInstanceProfileE1C43D1C"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceLaunchTemplate907174BB"
+          }
+        ],
+        "/integ-health-checks/HealthChecksWithoutGrace/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthChecksWithoutGraceASG4A11A476"
           }
         ],
         "/integ-health-checks/BootstrapVersion": [

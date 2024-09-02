@@ -1,7 +1,7 @@
 {
   "version": "36.0.5",
   "files": {
-    "6a693892833d1db459f9a5d8ee4598abad52bd2cc7d72cb86c0c1943bb029bcc": {
+    "ef7061115e98ba6f0acd0111a051ef90e571f3296b8897efb16bdd2efd0fe426": {
       "source": {
         "path": "integ-health-checks.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6a693892833d1db459f9a5d8ee4598abad52bd2cc7d72cb86c0c1943bb029bcc.json",
+          "objectKey": "ef7061115e98ba6f0acd0111a051ef90e571f3296b8897efb16bdd2efd0fe426.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

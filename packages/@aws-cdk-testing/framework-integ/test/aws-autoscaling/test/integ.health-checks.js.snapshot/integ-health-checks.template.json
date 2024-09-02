@@ -391,10 +391,10 @@
     }
    }
   },
-  "ASGInstanceSecurityGroup0525485D": {
+  "EC2HealthChecksInstanceSecurityGroupB5E28934": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-health-checks/ASG/InstanceSecurityGroup",
+    "GroupDescription": "integ-health-checks/EC2HealthChecks/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -405,7 +405,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-health-checks/ASG"
+      "Value": "integ-health-checks/EC2HealthChecks"
      }
     ],
     "VpcId": {
@@ -413,7 +413,7 @@
     }
    }
   },
-  "ASGInstanceRoleE263A41B": {
+  "EC2HealthChecksInstanceRole330231BD": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -431,29 +431,29 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-health-checks/ASG"
+      "Value": "integ-health-checks/EC2HealthChecks"
      }
     ]
    }
   },
-  "ASGInstanceProfile0A2834D7": {
+  "EC2HealthChecksInstanceProfile0F3A6CD0": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "ASGInstanceRoleE263A41B"
+      "Ref": "EC2HealthChecksInstanceRole330231BD"
      }
     ]
    }
   },
-  "ASGLaunchTemplate0CA92847": {
+  "EC2HealthChecksLaunchTemplate1F05DB09": {
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "ASGInstanceProfile0A2834D7",
+        "EC2HealthChecksInstanceProfile0F3A6CD0",
         "Arn"
        ]
       }
@@ -468,7 +468,7 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "ASGInstanceSecurityGroup0525485D",
+        "EC2HealthChecksInstanceSecurityGroupB5E28934",
         "GroupId"
        ]
       }
@@ -479,7 +479,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "integ-health-checks/ASG/LaunchTemplate"
+         "Value": "integ-health-checks/EC2HealthChecks/LaunchTemplate"
         }
        ]
       },
@@ -488,7 +488,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "integ-health-checks/ASG/LaunchTemplate"
+         "Value": "integ-health-checks/EC2HealthChecks/LaunchTemplate"
         }
        ]
       }
@@ -503,28 +503,28 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "integ-health-checks/ASG/LaunchTemplate"
+        "Value": "integ-health-checks/EC2HealthChecks/LaunchTemplate"
        }
       ]
      }
     ]
    },
    "DependsOn": [
-    "ASGInstanceRoleE263A41B"
+    "EC2HealthChecksInstanceRole330231BD"
    ]
   },
-  "ASG46ED3070": {
+  "EC2HealthChecksASG86AE6FB7": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "HealthCheckGracePeriod": 100,
-    "HealthCheckType": "EBS,ELB,VPC_LATTICE",
+    "HealthCheckType": "EC2",
     "LaunchTemplate": {
      "LaunchTemplateId": {
-      "Ref": "ASGLaunchTemplate0CA92847"
+      "Ref": "EC2HealthChecksLaunchTemplate1F05DB09"
      },
      "Version": {
       "Fn::GetAtt": [
-       "ASGLaunchTemplate0CA92847",
+       "EC2HealthChecksLaunchTemplate1F05DB09",
        "LatestVersionNumber"
       ]
      }
@@ -535,7 +535,330 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "integ-health-checks/ASG"
+      "Value": "integ-health-checks/EC2HealthChecks"
+     }
+    ],
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+     },
+     {
+      "Ref": "myVpcAutoPrivateSubnet2Subnet592674AC"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "AdditionalHealthChecksInstanceSecurityGroup7ABFD032": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-health-checks/AdditionalHealthChecks/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-health-checks/AdditionalHealthChecks"
+     }
+    ],
+    "VpcId": {
+     "Ref": "myVpcAuto1A4B61E2"
+    }
+   }
+  },
+  "AdditionalHealthChecksInstanceRole8F52F51E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-health-checks/AdditionalHealthChecks"
+     }
+    ]
+   }
+  },
+  "AdditionalHealthChecksInstanceProfile71F64498": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "AdditionalHealthChecksInstanceRole8F52F51E"
+     }
+    ]
+   }
+  },
+  "AdditionalHealthChecksLaunchTemplateCCCFDD89": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AdditionalHealthChecksInstanceProfile71F64498",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "AdditionalHealthChecksInstanceSecurityGroup7ABFD032",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate"
+       }
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "AdditionalHealthChecksInstanceRole8F52F51E"
+   ]
+  },
+  "AdditionalHealthChecksASG30451BBE": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "HealthCheckGracePeriod": 100,
+    "HealthCheckType": "EBS,ELB,VPC_LATTICE",
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "AdditionalHealthChecksLaunchTemplateCCCFDD89"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "AdditionalHealthChecksLaunchTemplateCCCFDD89",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "MaxSize": "1",
+    "MinSize": "1",
+    "Tags": [
+     {
+      "Key": "Name",
+      "PropagateAtLaunch": true,
+      "Value": "integ-health-checks/AdditionalHealthChecks"
+     }
+    ],
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+     },
+     {
+      "Ref": "myVpcAutoPrivateSubnet2Subnet592674AC"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "HealthChecksWithoutGraceInstanceSecurityGroup9496DAB2": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-health-checks/HealthChecksWithoutGrace/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-health-checks/HealthChecksWithoutGrace"
+     }
+    ],
+    "VpcId": {
+     "Ref": "myVpcAuto1A4B61E2"
+    }
+   }
+  },
+  "HealthChecksWithoutGraceInstanceRole253C2D6A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-health-checks/HealthChecksWithoutGrace"
+     }
+    ]
+   }
+  },
+  "HealthChecksWithoutGraceInstanceProfileE1C43D1C": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "HealthChecksWithoutGraceInstanceRole253C2D6A"
+     }
+    ]
+   }
+  },
+  "HealthChecksWithoutGraceLaunchTemplate907174BB": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "HealthChecksWithoutGraceInstanceProfileE1C43D1C",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "HealthChecksWithoutGraceInstanceSecurityGroup9496DAB2",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate"
+       }
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "HealthChecksWithoutGraceInstanceRole253C2D6A"
+   ]
+  },
+  "HealthChecksWithoutGraceASG4A11A476": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "HealthCheckType": "ELB",
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "HealthChecksWithoutGraceLaunchTemplate907174BB"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "HealthChecksWithoutGraceLaunchTemplate907174BB",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "MaxSize": "1",
+    "MinSize": "1",
+    "Tags": [
+     {
+      "Key": "Name",
+      "PropagateAtLaunch": true,
+      "Value": "integ-health-checks/HealthChecksWithoutGrace"
      }
     ],
     "VPCZoneIdentifier": [

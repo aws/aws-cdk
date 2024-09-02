@@ -9,7 +9,18 @@ export class TestStack extends cdk.Stack {
 
     let vpc = new ec2.Vpc(this, 'myVpcAuto', { restrictDefaultSecurityGroup: false });
 
-    new autoscaling.AutoScalingGroup(this, 'ASG', {
+    new autoscaling.AutoScalingGroup(this, 'EC2HealthChecks', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
+      healthChecks: autoscaling.HealthChecks.ec2(
+        {
+          grace: cdk.Duration.seconds(100),
+        },
+      ),
+    });
+
+    new autoscaling.AutoScalingGroup(this, 'AdditionalHealthChecks', {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
@@ -19,6 +30,17 @@ export class TestStack extends cdk.Stack {
           autoscaling.AdditionalHealthCheckType.EBS,
           autoscaling.AdditionalHealthCheckType.ELB,
           autoscaling.AdditionalHealthCheckType.VPC_LATTICE,
+        ],
+      }),
+    });
+
+    new autoscaling.AutoScalingGroup(this, 'HealthChecksWithoutGrace', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
+      healthChecks: autoscaling.HealthChecks.addition({
+        additionalTypes: [
+          autoscaling.AdditionalHealthCheckType.ELB,
         ],
       }),
     });

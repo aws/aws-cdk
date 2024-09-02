@@ -651,21 +651,21 @@
               "version": "10.3.0"
             }
           },
-          "ASG": {
-            "id": "ASG",
-            "path": "integ-health-checks/ASG",
+          "EC2HealthChecks": {
+            "id": "EC2HealthChecks",
+            "path": "integ-health-checks/EC2HealthChecks",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "integ-health-checks/ASG/InstanceSecurityGroup",
+                "path": "integ-health-checks/EC2HealthChecks/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-health-checks/ASG/InstanceSecurityGroup/Resource",
+                    "path": "integ-health-checks/EC2HealthChecks/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "integ-health-checks/ASG/InstanceSecurityGroup",
+                        "groupDescription": "integ-health-checks/EC2HealthChecks/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -676,7 +676,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-health-checks/ASG"
+                            "value": "integ-health-checks/EC2HealthChecks"
                           }
                         ],
                         "vpcId": {
@@ -697,11 +697,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "integ-health-checks/ASG/InstanceRole",
+                "path": "integ-health-checks/EC2HealthChecks/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "integ-health-checks/ASG/InstanceRole/ImportInstanceRole",
+                    "path": "integ-health-checks/EC2HealthChecks/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -709,7 +709,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-health-checks/ASG/InstanceRole/Resource",
+                    "path": "integ-health-checks/EC2HealthChecks/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -728,7 +728,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-health-checks/ASG"
+                            "value": "integ-health-checks/EC2HealthChecks"
                           }
                         ]
                       }
@@ -746,13 +746,13 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "integ-health-checks/ASG/InstanceProfile",
+                "path": "integ-health-checks/EC2HealthChecks/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
                     "roles": [
                       {
-                        "Ref": "ASGInstanceRoleE263A41B"
+                        "Ref": "EC2HealthChecksInstanceRole330231BD"
                       }
                     ]
                   }
@@ -764,7 +764,7 @@
               },
               "ImportedInstanceProfile": {
                 "id": "ImportedInstanceProfile",
-                "path": "integ-health-checks/ASG/ImportedInstanceProfile",
+                "path": "integ-health-checks/EC2HealthChecks/ImportedInstanceProfile",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -772,11 +772,11 @@
               },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
-                "path": "integ-health-checks/ASG/LaunchTemplate",
+                "path": "integ-health-checks/EC2HealthChecks/LaunchTemplate",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-health-checks/ASG/LaunchTemplate/Resource",
+                    "path": "integ-health-checks/EC2HealthChecks/LaunchTemplate/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                       "aws:cdk:cloudformation:props": {
@@ -784,7 +784,7 @@
                           "iamInstanceProfile": {
                             "arn": {
                               "Fn::GetAtt": [
-                                "ASGInstanceProfile0A2834D7",
+                                "EC2HealthChecksInstanceProfile0F3A6CD0",
                                 "Arn"
                               ]
                             }
@@ -799,7 +799,7 @@
                           "securityGroupIds": [
                             {
                               "Fn::GetAtt": [
-                                "ASGInstanceSecurityGroup0525485D",
+                                "EC2HealthChecksInstanceSecurityGroupB5E28934",
                                 "GroupId"
                               ]
                             }
@@ -810,7 +810,7 @@
                               "tags": [
                                 {
                                   "key": "Name",
-                                  "value": "integ-health-checks/ASG/LaunchTemplate"
+                                  "value": "integ-health-checks/EC2HealthChecks/LaunchTemplate"
                                 }
                               ]
                             },
@@ -819,7 +819,7 @@
                               "tags": [
                                 {
                                   "key": "Name",
-                                  "value": "integ-health-checks/ASG/LaunchTemplate"
+                                  "value": "integ-health-checks/EC2HealthChecks/LaunchTemplate"
                                 }
                               ]
                             }
@@ -834,7 +834,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "integ-health-checks/ASG/LaunchTemplate"
+                                "value": "integ-health-checks/EC2HealthChecks/LaunchTemplate"
                               }
                             ]
                           }
@@ -854,19 +854,19 @@
               },
               "ASG": {
                 "id": "ASG",
-                "path": "integ-health-checks/ASG/ASG",
+                "path": "integ-health-checks/EC2HealthChecks/ASG",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
                     "healthCheckGracePeriod": 100,
-                    "healthCheckType": "EBS,ELB,VPC_LATTICE",
+                    "healthCheckType": "EC2",
                     "launchTemplate": {
                       "launchTemplateId": {
-                        "Ref": "ASGLaunchTemplate0CA92847"
+                        "Ref": "EC2HealthChecksLaunchTemplate1F05DB09"
                       },
                       "version": {
                         "Fn::GetAtt": [
-                          "ASGLaunchTemplate0CA92847",
+                          "EC2HealthChecksLaunchTemplate1F05DB09",
                           "LatestVersionNumber"
                         ]
                       }
@@ -876,7 +876,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-health-checks/ASG",
+                        "value": "integ-health-checks/EC2HealthChecks",
                         "propagateAtLaunch": true
                       }
                     ],
@@ -912,6 +912,505 @@
           "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "path": "integ-health-checks/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "AdditionalHealthChecks": {
+            "id": "AdditionalHealthChecks",
+            "path": "integ-health-checks/AdditionalHealthChecks",
+            "children": {
+              "InstanceSecurityGroup": {
+                "id": "InstanceSecurityGroup",
+                "path": "integ-health-checks/AdditionalHealthChecks/InstanceSecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-health-checks/AdditionalHealthChecks/InstanceSecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "integ-health-checks/AdditionalHealthChecks/InstanceSecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "integ-health-checks/AdditionalHealthChecks"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "myVpcAuto1A4B61E2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-health-checks/AdditionalHealthChecks/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-health-checks/AdditionalHealthChecks/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-health-checks/AdditionalHealthChecks/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "integ-health-checks/AdditionalHealthChecks"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "InstanceProfile": {
+                "id": "InstanceProfile",
+                "path": "integ-health-checks/AdditionalHealthChecks/InstanceProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "AdditionalHealthChecksInstanceRole8F52F51E"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "integ-health-checks/AdditionalHealthChecks/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "AdditionalHealthChecksInstanceProfile71F64498",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "AdditionalHealthChecksInstanceSecurityGroup7ABFD032",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate"
+                                }
+                              ]
+                            },
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": "#!/bin/bash"
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "integ-health-checks/AdditionalHealthChecks/LaunchTemplate"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ASG": {
+                "id": "ASG",
+                "path": "integ-health-checks/AdditionalHealthChecks/ASG",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckGracePeriod": 100,
+                    "healthCheckType": "EBS,ELB,VPC_LATTICE",
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "AdditionalHealthChecksLaunchTemplateCCCFDD89"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "AdditionalHealthChecksLaunchTemplateCCCFDD89",
+                          "LatestVersionNumber"
+                        ]
+                      }
+                    },
+                    "maxSize": "1",
+                    "minSize": "1",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "integ-health-checks/AdditionalHealthChecks",
+                        "propagateAtLaunch": true
+                      }
+                    ],
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+                      },
+                      {
+                        "Ref": "myVpcAutoPrivateSubnet2Subnet592674AC"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "HealthChecksWithoutGrace": {
+            "id": "HealthChecksWithoutGrace",
+            "path": "integ-health-checks/HealthChecksWithoutGrace",
+            "children": {
+              "InstanceSecurityGroup": {
+                "id": "InstanceSecurityGroup",
+                "path": "integ-health-checks/HealthChecksWithoutGrace/InstanceSecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-health-checks/HealthChecksWithoutGrace/InstanceSecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "integ-health-checks/HealthChecksWithoutGrace/InstanceSecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "integ-health-checks/HealthChecksWithoutGrace"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "myVpcAuto1A4B61E2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-health-checks/HealthChecksWithoutGrace/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-health-checks/HealthChecksWithoutGrace/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-health-checks/HealthChecksWithoutGrace/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "integ-health-checks/HealthChecksWithoutGrace"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "InstanceProfile": {
+                "id": "InstanceProfile",
+                "path": "integ-health-checks/HealthChecksWithoutGrace/InstanceProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "HealthChecksWithoutGraceInstanceRole253C2D6A"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "integ-health-checks/HealthChecksWithoutGrace/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "HealthChecksWithoutGraceInstanceProfileE1C43D1C",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "HealthChecksWithoutGraceInstanceSecurityGroup9496DAB2",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate"
+                                }
+                              ]
+                            },
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": "#!/bin/bash"
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "integ-health-checks/HealthChecksWithoutGrace/LaunchTemplate"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ASG": {
+                "id": "ASG",
+                "path": "integ-health-checks/HealthChecksWithoutGrace/ASG",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckType": "ELB",
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "HealthChecksWithoutGraceLaunchTemplate907174BB"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "HealthChecksWithoutGraceLaunchTemplate907174BB",
+                          "LatestVersionNumber"
+                        ]
+                      }
+                    },
+                    "maxSize": "1",
+                    "minSize": "1",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "integ-health-checks/HealthChecksWithoutGrace",
+                        "propagateAtLaunch": true
+                      }
+                    ],
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "myVpcAutoPrivateSubnet1SubnetCF0D49B2"
+                      },
+                      {
+                        "Ref": "myVpcAutoPrivateSubnet2Subnet592674AC"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
