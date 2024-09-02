@@ -13,10 +13,14 @@ export class TestStack extends cdk.Stack {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
-      healthChecks: {
-        healthCheckTypes: [autoscaling.HealthCheckType.ELB, autoscaling.HealthCheckType.EBS, autoscaling.HealthCheckType.VPC_LATTICE],
-        // grace: cdk.Duration.seconds(100),
-      },
+      healthChecks: autoscaling.HealthChecks.addition({
+        grace: cdk.Duration.seconds(100),
+        additionalTypes: [
+          autoscaling.AdditionalHealthCheckType.EBS,
+          autoscaling.AdditionalHealthCheckType.ELB,
+          autoscaling.AdditionalHealthCheckType.VPC_LATTICE,
+        ],
+      }),
     });
   }
 }

@@ -2356,8 +2356,17 @@ enum HealthCheckType {
  * Additional Health Check Type
  */
 export enum AdditionalHealthCheckType {
+  /**
+   * ELB Health Check
+   */
   ELB = 'ELB',
+  /**
+   * EBS Health Check
+   */
   EBS = 'EBS',
+  /**
+   * VPC LATTICE Health Check
+   */
   VPC_LATTICE = 'VPC_LATTICE',
 }
 
