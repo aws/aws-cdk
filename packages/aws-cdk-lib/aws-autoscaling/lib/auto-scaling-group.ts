@@ -2330,7 +2330,7 @@ export class HealthChecks {
   /**
    * Use additional health checks other than EC2.
    *
-   * Specify types other than EC2, as EC2 is automatically enabled.
+   * Specify types other than EC2, as EC2 is always enabled.
    * It considers the instance unhealthy if it fails either the EC2 status checks or the additional health checks.
    *
    * @param options Additional health checks options
