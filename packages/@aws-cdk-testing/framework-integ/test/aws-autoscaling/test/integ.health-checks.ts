@@ -7,7 +7,7 @@ export class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    let vpc = new ec2.Vpc(this, 'myVpcAuto', { restrictDefaultSecurityGroup: false });
+    const vpc = new ec2.Vpc(this, 'myVpcAuto', { restrictDefaultSecurityGroup: false });
 
     new autoscaling.AutoScalingGroup(this, 'EC2HealthChecks', {
       vpc,
