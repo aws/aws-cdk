@@ -330,7 +330,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
   healthChecks: autoscaling.HealthChecks.ec2({
-    grace: cdk.Duration.seconds(100),
+    grace: Duration.seconds(100),
   }),
 });
 ```
@@ -345,7 +345,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
   healthChecks: autoscaling.HealthChecks.addition({
-    grace: cdk.Duration.seconds(100),
+    grace: Duration.seconds(100),
     additionalTypes: [
       autoscaling.AdditionalHealthCheckType.EBS,
       autoscaling.AdditionalHealthCheckType.ELB,
