@@ -119,20 +119,21 @@ test('correct helm chart version is set for selected alb controller version', ()
   });
 });
 
-test('will not create AwsAuth when the authenticationMode is API', () => {
-  const { stack } = testFixture();
+describe('AlbController AwsAuth creation', () => {
+  const setupTest = (authenticationMode?: AuthenticationMode) => {
+    const { stack } = testFixture();
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: KubernetesVersion.V1_27,
+      authenticationMode,
+    });
+    AlbController.create(stack, {
+      cluster,
+      version: AlbControllerVersion.V2_6_2,
+    });
+    return stack;
+  };
 
-  const cluster = new Cluster(stack, 'Cluster', {
-    version: KubernetesVersion.V1_27,
-    authenticationMode: AuthenticationMode.API,
-  });
-
-  AlbController.create(stack, {
-    cluster,
-    version: AlbControllerVersion.V2_6_2,
-  });
-
-  Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, Match.not({
+  const awsAuthManifest = {
     Manifest: {
       'Fn::Join': [
         '',
@@ -148,41 +149,19 @@ test('will not create AwsAuth when the authenticationMode is API', () => {
         ],
       ],
     },
-  }));
-});
+  };
 
-test.each([
-  AuthenticationMode.API_AND_CONFIG_MAP,
-  AuthenticationMode.CONFIG_MAP,
-  undefined,
-])('will create AwsAuth when the authenticationMode is %p', (authenticationMode) => {
-  const { stack } = testFixture();
-
-  const cluster = new Cluster(stack, 'Cluster', {
-    version: KubernetesVersion.V1_27,
-    authenticationMode,
+  test('will not create AwsAuth when the authenticationMode is API', () => {
+    const stack = setupTest(AuthenticationMode.API);
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, Match.not(awsAuthManifest));
   });
 
-  AlbController.create(stack, {
-    cluster,
-    version: AlbControllerVersion.V2_6_2,
-  });
-
-  Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
-    Manifest: {
-      'Fn::Join': [
-        '',
-        [
-          '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-          {
-            'Fn::GetAtt': [
-              'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
-              'Arn',
-            ],
-          },
-          '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-        ],
-      ],
-    },
+  test.each([
+    AuthenticationMode.API_AND_CONFIG_MAP,
+    AuthenticationMode.CONFIG_MAP,
+    undefined,
+  ])('will create AwsAuth when the authenticationMode is %p', (authenticationMode) => {
+    const stack = setupTest(authenticationMode);
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, awsAuthManifest);
   });
 });
