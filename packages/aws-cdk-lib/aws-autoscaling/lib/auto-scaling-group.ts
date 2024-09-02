@@ -2319,7 +2319,7 @@ export interface AdditionalHealthChecksOptions extends HealthChecksBaseOptions {
  */
 export class HealthChecks {
   /**
-   * Use EC2 for health checks
+   * Use EC2 only for health checks.
    *
    * @param options EC2 health checks options
    */
@@ -2328,7 +2328,9 @@ export class HealthChecks {
   }
 
   /**
-   * Use additional health checks.
+   * Use additional health checks other than EC2.
+   *
+   * Specify types other than EC2, as EC2 is automatically enabled.
    * It considers the instance unhealthy if it fails either the EC2 status checks or the additional health checks.
    *
    * @param options Additional health checks options
