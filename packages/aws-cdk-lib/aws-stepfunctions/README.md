@@ -976,7 +976,7 @@ new sfn.StateMachine(this, 'MyStateMachine', {
 ```
 
 ## Encryption 
-You can encrypt your data using a customer-managed key for AWS Step Functions state machines and activities. You can configure a symmetric AWS KMS key and data key reuse period when creating or updating a State Machine or when creating an Activity. The execution history and state machine definition will be encrypted with the key applied to the State Machine. Activity inputs will be encrypted with the key applied to the Activity.
+You can encrypt your data using a customer managed key for AWS Step Functions state machines and activities. You can configure a symmetric AWS KMS key and data key reuse period when creating or updating a State Machine or when creating an Activity. The execution history and state machine definition will be encrypted with the key applied to the State Machine. Activity inputs will be encrypted with the key applied to the Activity.
 
 ### Encrypting state machines 
 You can provide a symmetric KMS key to encrypt the state machine definition and execution history:
