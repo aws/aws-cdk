@@ -765,7 +765,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('throws when healthCheckTypes for additional health checks is empty', () => {
+  test('throws when additionalTypes array for additional health checks is empty', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
