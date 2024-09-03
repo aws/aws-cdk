@@ -584,10 +584,6 @@ export class PullRequestLinter {
       // also assess whether the PR needs review or not
       try {
         const state = await this.codeBuildJobSucceeded(sha);
-        console.log('=== test debug ===');
-        console.log('=== test debug ===');
-        console.log('=== test debug ===');
-        console.log('=== test debug ===');
         console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
         if (state) {
           console.log('Assessing if the PR needs a review now');
