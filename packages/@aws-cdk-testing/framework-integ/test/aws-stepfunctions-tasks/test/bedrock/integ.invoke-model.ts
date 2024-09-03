@@ -52,13 +52,32 @@ const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
   resultPath: '$',
 });
 
+/** Test for Bedrock Output Path */
 const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
   model,
-  inputPath: sfn.JsonPath.stringAt('$.names'),
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: sfn.JsonPath.format(
+        'Alphabetize this list of first names:\n{}',
+        sfn.JsonPath.stringAt('$.names'),
+      ),
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
   outputPath: sfn.JsonPath.stringAt('$.names'),
 });
 
-const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3);
+/** Test for Bedrock s3 URI Path */
+const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
+  model,
+  s3inputPath: sfn.JsonPath.stringAt('$.names'),
+  s3outputPath: sfn.JsonPath.stringAt('$.names'),
+});
+
+const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3).next(prompt4);
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),
