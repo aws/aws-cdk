@@ -670,7 +670,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  testDeprecated('can configure EBS health check', () => {
+  testDeprecated('can configure ELB health check', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
