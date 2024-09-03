@@ -415,6 +415,11 @@ class IpamScopeBase implements IIpamScopeBase {
     readonly scopeType?: IpamScopeType,
   ) {
     this.scopeType = IpamScopeType.DEFAULT;
+    if (!props.ipamScopeId) {
+      throw new Error('ipamScopeId is required');
+    } else {
+      this.scopeId = props.ipamScopeId;
+    }
   }
 
   /**
