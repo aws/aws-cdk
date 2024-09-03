@@ -1603,6 +1603,33 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
+To specify the throughput value for `gp3` volumes, use the `throughput` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(100, {
+        volumeType: ec2.EbsDeviceVolumeType.GP3,
+        throughput: 250,
+      }),
+    },
+  ],
+});
+
+```
+
 #### EBS Optimized Instances
 
 An Amazon EBS–optimized instance uses an optimized configuration stack and provides additional, dedicated capacity for Amazon EBS I/O. This optimization provides the best performance for your EBS volumes by minimizing contention between Amazon EBS I/O and other traffic from your instance.
@@ -1882,6 +1909,23 @@ Note to set `mapPublicIpOnLaunch` to true in the `subnetConfiguration`.
 
 Additionally, IPv6 support varies by instance type. Most instance types have IPv6 support with exception of m1-m3, c1, g2, and t1.micro. A full list can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI.
 
+#### Specifying the IPv6 Address
+
+If you want to specify [the number of IPv6 addresses](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html#assign-multiple-ipv6) to assign to the instance, you can use the `ipv6AddresseCount` property:
+
+```ts
+// dual stack VPC
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'MyInstance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  // Assign 2 IPv6 addresses to the instance
+  ipv6AddressCount: 2,
+});
+```
 
 ### Credit configuration modes for burstable instances
 
