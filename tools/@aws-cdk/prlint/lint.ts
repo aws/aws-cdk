@@ -373,12 +373,6 @@ export class PullRequestLinter {
   private async assessNeedsReview(
     pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number'>,
   ): Promise<void> {
-    // TODO: remove the following comment outs
-    // const iterator = this.client.paginate.iterator(this.client.pulls.listReviews, this.prParams);
-    // for await (const { data: reviews } of iterator) {
-    //   console.log('reviews: ', JSON.stringify(reviews));
-    // }
-    // TODO: tests
     const reviewsData = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
     console.log(JSON.stringify(reviewsData));
 
