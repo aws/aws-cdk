@@ -34,7 +34,7 @@ export async function isHotswappableEcsServiceChange(
     // hotswap is not possible in FALL_BACK mode
     reportNonHotswappableChange(ret, change, undefined, 'No ECS services reference the changed task definition', false);
   } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
-    // if something besides an ECS Service is rxeferencing the TaskDefinition,
+    // if something besides an ECS Service is referencing the TaskDefinition,
     // hotswap is not possible in FALL_BACK mode
     const nonEcsServiceTaskDefRefs = resourcesReferencingTaskDef.filter(r => r.Type !== 'AWS::ECS::Service');
     for (const taskRef of nonEcsServiceTaskDefRefs) {

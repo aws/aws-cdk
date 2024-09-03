@@ -126,6 +126,7 @@ export class EcsHotswapProperties {
     if (maximumHealthyPercent !== undefined && maximumHealthyPercent < 0 ) {
       throw new Error('hotswap-ecs-maximum-healthy-percent can\'t be a negative number');
     }
+    // In order to preserve the current behaviour, when minimumHealthyPercent is not defined, it will be set to the currently default value of 0
     if (minimumHealthyPercent == undefined) {
       this.minimumHealthyPercent = 0;
     } else {

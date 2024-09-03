@@ -641,7 +641,6 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 describe.each([
   new Configuration().settings.set(['hotswap'], { ecs: { minimumHealthyPercent: 10 } }),
   new Configuration().settings.set(['hotswap'], { ecs: { minimumHealthyPercent: 10, maximumHealthyPercent: 100 } }),
-  new Configuration().settings.set(['hotswap'], { ecs: { minimumHealthyPercent: 10, maximumHealthyPercent: 100 } }),
 ])('hotswap properties', (settings) => {
   test('should handle all possible hotswap properties', async () => {
     // GIVEN

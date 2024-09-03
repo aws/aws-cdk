@@ -456,7 +456,6 @@ You can optionally configure the behavior of your hotswap deployments in `cdk.js
 }
 ```
 
-
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
 **Never use this flag for your production deployments**!
