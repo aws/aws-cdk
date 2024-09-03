@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **stepfunctions-tasks:** Reverting the original PR will come with the following breaking changes
 * **stepfunctions-tasks:** The `BedrockInvokeModel.outputPath` parameter will no longer be an S3Uri
 
 ### Reverts
