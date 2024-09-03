@@ -210,8 +210,8 @@ describe('Invoke Model', () => {
 
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      inputPath: sfn.JsonPath.stringAt('$.prompt'),
-      outputPath: sfn.JsonPath.stringAt('$.prompt'),
+      s3InputUri: sfn.JsonPath.stringAt('$.prompt'),
+      s3OutputUri: sfn.JsonPath.stringAt('$.prompt'),
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
@@ -234,8 +234,6 @@ describe('Invoke Model', () => {
         ],
       },
       End: true,
-      InputPath: '$.prompt',
-      OutputPath: '$.prompt',
       Parameters: {
         ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
         Input: {
@@ -330,8 +328,8 @@ describe('Invoke Model', () => {
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      inputPath: sfn.JsonPath.stringAt('$.prompt'),
-      outputPath: sfn.JsonPath.stringAt('$.prompt'),
+      s3InputUri: sfn.JsonPath.stringAt('$.prompt'),
+      s3OutputUri: sfn.JsonPath.stringAt('$.prompt'),
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {

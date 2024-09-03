@@ -115,7 +115,7 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    *
    * @default - The API response body is returned in the result.
    */
-  readonly s3inputPath?: string;
+  readonly s3InputUri?: string;
 
   /**
    * The source location where the API response is written.
@@ -124,7 +124,7 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    *
    * @default - The API response body is returned in the result.
    */
-  readonly s3outputPath?: string;
+  readonly s3OutputUri?: string;
 
   /**
    * The guardrail is applied to the invocation
@@ -165,7 +165,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
 
     const isBodySpecified = props.body !== undefined;
     //Either specific props.input with bucket name and object key or input s3 path
-    const isInputSpecified = (props.input !== undefined && props.input.s3Location !== undefined) || (props.s3inputPath !== undefined);
+    const isInputSpecified = (props.input !== undefined && props.input.s3Location !== undefined) || (props.s3InputUri !== undefined);
 
     if (isBodySpecified && isInputSpecified) {
       throw new Error('Either `body` or `input` must be specified, but not both.');
@@ -191,7 +191,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       }),
     ];
 
-    if (this.props.s3inputPath !== undefined) {
+    if (this.props.s3InputUri !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:GetObject'],
@@ -222,7 +222,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    if (this.props.s3outputPath !== undefined) {
+    if (this.props.s3OutputUri !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:PutObject'],
@@ -289,10 +289,10 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Body: this.props.body?.value,
         Input: this.props.input?.s3Location ? {
           S3Uri: `s3://${this.props.input.s3Location.bucketName}/${this.props.input.s3Location.objectKey}`,
-        } : this.props.s3inputPath ? { S3Uri: this.props.s3inputPath } : undefined,
+        } : this.props.s3InputUri ? { S3Uri: this.props.s3InputUri } : undefined,
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
-        } : this.props.s3outputPath ? { S3Uri: this.props.s3outputPath }: undefined,
+        } : this.props.s3OutputUri ? { S3Uri: this.props.s3OutputUri }: undefined,
         GuardrailIdentifier: this.props.guardrail?.guardrailIdentifier,
         GuardrailVersion: this.props.guardrail?.guardrailVersion,
         Trace: this.props.traceEnabled === undefined
