@@ -244,6 +244,16 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
+  test('addNatGateway fails for public gateway without IGW attached', () => {
+    expect (() => {
+      myVpc.addNatGateway({
+        subnet: mySubnet,
+        connectivityType: route.NatConnectivityType.PUBLIC,
+        maxDrainDuration: cdk.Duration.seconds(2001),
+      });
+    }).toThrow('Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC');
+  });
+
   test('addinternetGateway defines a new internet gateway with attachment and no route', () => {
     const vpc2 = new vpc.VpcV2(stack, 'TestVpcNoSubnet', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),

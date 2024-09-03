@@ -86,20 +86,28 @@ const vpnGateway = vpc.enableVpnGatewayV2({
   type: VpnConnectionType.IPSEC_1,
 });
 
+//Can define a route with VPN gateway as a target
+const routeTable = new RouteTable(stack, 'routeTable', { vpc } );
+
 new Route(stack, 'route', {
   destination: '172.31.0.0/24',
   target: { gateway: vpnGateway },
-  routeTable: new RouteTable(stack, 'routeTable', { vpc } ),
+  routeTable: routeTable,
 });
 
-//Add Internet Gateway
-vpc.addInternetGateway();
+//Add Internet Gateway with routes set to custom IP range
+vpc.addInternetGateway({
+  ipv4Destination: '192.168.0.0/16',
+});
 
 //Add a NAT Gateway
 vpc.addNatGateway({
   subnet: subnet,
   connectivityType: NatConnectivityType.PRIVATE,
 }).node.addDependency(vpnGateway);
+
+//Can define a route with Nat gateway as a target
+routeTable.addRoute( 'NATGWRoute', '172.32.0.0/24', { gateway: vpnGateway });
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],

@@ -9,9 +9,10 @@
 //  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib';
+import { AddressFamily, AwsServiceName, IpCidr, Ipam, IpamPoolPublicIpSource, SubnetV2 } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * Integ test for VPC with IPAM pool to be run with --no-clean
@@ -22,7 +23,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
 const ipam = new Ipam(stack, 'IpamTest', {
-  operatingRegion: ['ap-south-1'],
+  operatingRegion: ['us-west-2'],
 });
 
 /**Test Ipam Pool Ipv4 */
@@ -30,19 +31,19 @@ const ipam = new Ipam(stack, 'IpamTest', {
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
   ipv4ProvisionedCidrs: ['10.2.0.0/16'],
-  locale: 'ap-south-1',
+  locale: 'us-west-2',
 });
 
 const pool2 = ipam.publicScope.addPool('PublicPool0', {
   addressFamily: AddressFamily.IP_V6,
   awsService: AwsServiceName.EC2,
-  locale: 'ap-south-1',
+  locale: 'us-west-2',
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
 pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );
 
 /** Test Ipv4 Primary and Secondary address IpvIPAM */
-new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
+const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.ipv4Ipam({
@@ -50,18 +51,28 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
       netmaskLength: 20,
       cidrBlockName: 'ipv4IpamCidr',
     }),
+    vpc_v2.IpAddresses.ipv6Ipam({
+      ipamPool: pool2,
+      netmaskLength: 60,
+      cidrBlockName: 'Ipv6IpamCidr',
+    }),
   ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
 });
 
-new vpc_v2.VpcV2(stack, 'Vpc-integ-test-2', {
-  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
-  secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv6Ipam({
-    ipamPool: pool2,
-    netmaskLength: 60,
-    cidrBlockName: 'Ipv6IpamCidr',
-  })],
+/**
+ * Since source for IPAM IPv6 is set to amazonProvidedIPAM CIDR,
+ * can assign IPv6 address only after the allocation
+ * uncomment ipv6CidrBlock and provide valid IPv6 range
+ */
+new SubnetV2(stack, 'testsbubnet', {
+  vpc,
+  availabilityZone: 'us-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  //defined on the basis of allocation done in IPAM console
+  //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
+  subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
 /**
