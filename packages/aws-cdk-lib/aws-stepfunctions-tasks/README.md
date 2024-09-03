@@ -415,8 +415,8 @@ const model = bedrock.FoundationModel.fromFoundationModelId(
 
 const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
   model,
-  inputPath: sfn.JsonPath.stringAt('$.prompt'),
-  outputPath: sfn.JsonPath.stringAt('$.prompt'),
+  s3InputUri: sfn.JsonPath.stringAt('$.prompt'),
+  s3OutputUri: sfn.JsonPath.stringAt('$.prompt'),
 });
 
 ```
