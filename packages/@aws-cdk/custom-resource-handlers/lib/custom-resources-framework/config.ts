@@ -11,6 +11,16 @@ export enum Runtime {
   NODEJS_18_X = 'nodejs18.x',
 
   /**
+ * The Python 3.9 runtime
+ */
+  PYTHON_3_9 = 'python3.9',
+
+  /**
+  * The Python 3.10 runtime
+  */
+  PYTHON_3_10 = 'python3.10',
+
+  /**
    * The Python 3.11 runtime
    */
   PYTHON_3_11 = 'python3.11',
