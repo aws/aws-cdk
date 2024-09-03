@@ -1,9 +1,9 @@
 /* eslint-disable import/order */
-import * as fs from 'fs-extra';
 import * as https from 'https';
-import * as nock from 'nock';
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as nock from 'nock';
 import * as logging from '../lib/logging';
 import {
   CachedDataSource,
