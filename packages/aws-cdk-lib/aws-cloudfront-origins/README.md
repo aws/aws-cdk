@@ -494,7 +494,8 @@ The following changes will take place:
 No, following the migration steps does not cause any replacement of the existing `AWS::CloudFront::Distribution`, `AWS::S3::Bucket` nor `AWS::S3::BucketPolicy` resources. It will modify the bucket policy, create a `AWS::CloudFront::OriginAccessControl` resource, and delete the existing `AWS::CloudFront::CloudFrontOriginAccessIdentity`.
 
 **Will migrating from OAI to OAC have any availability implications for my application?**
-While the above steps follow the order recommended by CloudFront, updates to CloudFront distributions and S3 bucket policies can take some time to propagate globally. Bucket configuration updates are eventually consistent. As such, you should be aware there is a possibility of downtime.
+
+Migrating from OAI to OAC following the steps above (requires a 2-step deployment) should not cause any downtime. However, if you decide to skip Step 1 and migrate to OAC in a single deployment, you should be aware there is a possibility of downtime.
 
 For more information, see [Migrating from origin access identity (OAI) to origin access control (OAC)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#migrate-from-oai-to-oac).
 
