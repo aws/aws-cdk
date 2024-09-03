@@ -22,6 +22,15 @@ export interface BedrockInvokeModelInputProps {
    * @default - Input data is retrieved from the `body` field
    */
   readonly s3Location?: s3.Location;
+
+  /**
+   * The source location where the API response is written.
+   *
+   * This field can be used to specify s3 URI in the form of token
+   *
+   * @default - The API response body is returned in the result.
+   */
+  readonly s3InputUri?: string;
 }
 
 /**
@@ -40,6 +49,15 @@ export interface BedrockInvokeModelOutputProps {
    * @default - Response body is returned in the task result
    */
   readonly s3Location?: s3.Location;
+
+  /**
+   * The destination location where the API response is written.
+   *
+   * This field can be used to specify s3 URI in the form of token
+   *
+   * @default - The API response body is returned in the result.
+   */
+  readonly s3OutputUri?: string;
 }
 
 /**
@@ -109,24 +127,6 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
   readonly output?: BedrockInvokeModelOutputProps;
 
   /**
-   * The destination location where the API response is written.
-   *
-   * This field can be used to specify s3 URI in the form of token
-   *
-   * @default - The API response body is returned in the result.
-   */
-  readonly s3InputUri?: string;
-
-  /**
-   * The source location where the API response is written.
-   *
-   * This field can be used to specify s3 URI in the form of token
-   *
-   * @default - The API response body is returned in the result.
-   */
-  readonly s3OutputUri?: string;
-
-  /**
    * The guardrail is applied to the invocation
    *
    * @default - No guardrail is applied to the invocation.
@@ -164,8 +164,9 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, BedrockInvokeModel.SUPPORTED_INTEGRATION_PATTERNS);
 
     const isBodySpecified = props.body !== undefined;
+
     //Either specific props.input with bucket name and object key or input s3 path
-    const isInputSpecified = (props.input !== undefined && props.input.s3Location !== undefined) || (props.s3InputUri !== undefined);
+    const isInputSpecified = props.input!==undefined ? props.input?.s3Location !== undefined || props.input?.s3InputUri !== undefined : false;
 
     if (isBodySpecified && isInputSpecified) {
       throw new Error('Either `body` or `input` must be specified, but not both.');
@@ -191,7 +192,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       }),
     ];
 
-    if (this.props.s3InputUri !== undefined) {
+    if (this.props.input?.s3InputUri !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:GetObject'],
@@ -222,7 +223,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    if (this.props.s3OutputUri !== undefined) {
+    if (this.props.output?.s3OutputUri !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:PutObject'],
@@ -289,10 +290,10 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Body: this.props.body?.value,
         Input: this.props.input?.s3Location ? {
           S3Uri: `s3://${this.props.input.s3Location.bucketName}/${this.props.input.s3Location.objectKey}`,
-        } : this.props.s3InputUri ? { S3Uri: this.props.s3InputUri } : undefined,
+        } : this.props.input?.s3InputUri ? { S3Uri: this.props.input?.s3InputUri } : undefined,
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
-        } : this.props.s3OutputUri ? { S3Uri: this.props.s3OutputUri }: undefined,
+        } : this.props.output?.s3OutputUri? { S3Uri: this.props.output.s3OutputUri }: undefined,
         GuardrailIdentifier: this.props.guardrail?.guardrailIdentifier,
         GuardrailVersion: this.props.guardrail?.guardrailVersion,
         Trace: this.props.traceEnabled === undefined

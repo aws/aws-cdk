@@ -73,8 +73,8 @@ const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
 /** Test for Bedrock s3 URI Path */
 const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
   model,
-  s3InputUri: sfn.JsonPath.stringAt('$.names'),
-  s3OutputUri: sfn.JsonPath.stringAt('$.names'),
+  input: { s3InputUri: sfn.JsonPath.stringAt('$.names') },
+  output: { s3OutputUri: sfn.JsonPath.stringAt('$.names') },
 });
 
 const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3).next(prompt4);
