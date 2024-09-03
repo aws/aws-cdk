@@ -1,9 +1,9 @@
 /* eslint-disable import/order */
+import * as fs from 'fs-extra';
 import * as https from 'https';
+import * as nock from 'nock';
 import * as os from 'os';
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as nock from 'nock';
 import * as logging from '../lib/logging';
 import {
   CachedDataSource,
@@ -37,10 +37,10 @@ const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
   schemaVersion: '1',
 };
 
-const NOTICE_29420 = {
-  title: '(cli): List stack output change issue.',
+const CLI_2_132_AFFECTED_NOTICE_1 = {
+  title: '(cli): Some bug affecting cdk deploy.',
   issueNumber: 29420,
-  overview: 'v2.132.0 introduced functionality to the cdk list command to display stack dependencies. This feature introduced a change that displays stack ids over displayName altering the existing list functionality',
+  overview: 'cdk deploy bug',
   components: [
     {
       name: 'cli',
@@ -50,10 +50,10 @@ const NOTICE_29420 = {
   schemaVersion: '1',
 };
 
-const NOTICE_29483 = {
-  title: '(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality',
+const CLI_2_132_AFFECTED_NOTICE_2 = {
+  title: '(cli): Some bug affecting cdk diff.',
   issueNumber: 29483,
-  overview: 'cdk diff functionality used to rely on assuming lookup-role. With a recent change present in v2.132.0 and v2.132.1, it is now trying to assume deploy-role with the lookup-role. This leads to an authorization error if permissions were not defined to assume deploy-role.',
+  overview: 'cdk diff bug',
   components: [
     {
       name: 'cli',
@@ -468,7 +468,7 @@ describe('mock cdk version 2.132.0', () => {
 
   test('Shows notices that pass the filter with --unacknowledged', async () => {
     const dataSource = createDataSource();
-    dataSource.fetch.mockResolvedValue([NOTICE_29420, NOTICE_29483]);
+    dataSource.fetch.mockResolvedValue([CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2]);
 
     const allNotices = await generateMessage(dataSource, {
       acknowledgedIssueNumbers: [],
@@ -479,25 +479,18 @@ describe('mock cdk version 2.132.0', () => {
     expect(allNotices).toEqual(`
 NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
-29420	(cli): List stack output change issue.
+29420	(cli): Some bug affecting cdk deploy.
 
-	Overview: v2.132.0 introduced functionality to the cdk list command to
-	          display stack dependencies. This feature introduced a change
-	          that displays stack ids over displayName altering the
-	          existing list functionality
+	Overview: cdk deploy bug
 
 	Affected versions: cli: 2.132.0
 
 	More information at: https://github.com/aws/aws-cdk/issues/29420
 
 
-29483	(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality
+29483	(cli): Some bug affecting cdk diff.
 
-	Overview: cdk diff functionality used to rely on assuming lookup-role.
-	          With a recent change present in v2.132.0 and v2.132.1, it is
-	          now trying to assume deploy-role with the lookup-role. This
-	          leads to an authorization error if permissions were not
-	          defined to assume deploy-role.
+	Overview: cdk diff bug
 
 	Affected versions: cli: >=2.132.0 <=2.132.1
 
@@ -517,13 +510,9 @@ There are 2 unacknowledged notice(s).`);
     expect(acknowledgeNotice29420).toEqual(`
 NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
-29483	(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality
+29483	(cli): Some bug affecting cdk diff.
 
-	Overview: cdk diff functionality used to rely on assuming lookup-role.
-	          With a recent change present in v2.132.0 and v2.132.1, it is
-	          now trying to assume deploy-role with the lookup-role. This
-	          leads to an authorization error if permissions were not
-	          defined to assume deploy-role.
+	Overview: cdk diff bug
 
 	Affected versions: cli: >=2.132.0 <=2.132.1
 
