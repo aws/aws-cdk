@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.155.1](https://github.com/aws/aws-cdk/compare/v2.155.0...v2.155.1) (2024-09-03)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **stepfunctions-tasks:** Reverting the original PR will come with the following breaking changes
+* **stepfunctions-tasks:** The `BedrockInvokeModel.outputPath` parameter will no longer be an S3Uri
+
+### Reverts
+
+* **stepfunctions-tasks:** "feat(stepfunctions-tasks): allow BedrockInvokeModel to use JsonPath" ([#31308](https://github.com/aws/aws-cdk/issues/31308)) ([d667c81](https://github.com/aws/aws-cdk/commit/d667c8162c9b0129821ea74e3ca83b4626f51f30))
+
 ## [2.155.0](https://github.com/aws/aws-cdk/compare/v2.154.1...v2.155.0) (2024-08-29)
 
 
