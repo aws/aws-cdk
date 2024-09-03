@@ -1,10 +1,27 @@
 {
  "Resources": {
-  "GeofenceCollection6FAC681F": {
+  "GeofenceCollection1D36FEE6D": {
    "Type": "AWS::Location::GeofenceCollection",
    "Properties": {
-    "CollectionName": "MyGeofenceCollection",
-    "Description": "test"
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollection10D13873F"
+   }
+  },
+  "GeofenceCollection2348D6DB5": {
+   "Type": "AWS::Location::GeofenceCollection",
+   "Properties": {
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollection262FB26D9"
+   }
+  },
+  "GeofenceCollectionForAdd131D6B4EA": {
+   "Type": "AWS::Location::GeofenceCollection",
+   "Properties": {
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollectionForAdd1449865F9"
+   }
+  },
+  "GeofenceCollectionForAdd21A9CA549": {
+   "Type": "AWS::Location::GeofenceCollection",
+   "Properties": {
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollectionForAdd22B418373"
    }
   },
   "Key961B73FD": {
@@ -58,12 +75,54 @@
     "TrackerName": "MyTracker"
    }
   },
-  "TrackerConsumer3AEB9150": {
+  "TrackerTrackerConsumerGeofenceCollection106C790AE": {
    "Type": "AWS::Location::TrackerConsumer",
    "Properties": {
     "ConsumerArn": {
      "Fn::GetAtt": [
-      "GeofenceCollection6FAC681F",
+      "GeofenceCollection1D36FEE6D",
+      "Arn"
+     ]
+    },
+    "TrackerName": {
+     "Ref": "TrackerAF5FC55F"
+    }
+   }
+  },
+  "TrackerTrackerConsumerGeofenceCollection2BA7E93DE": {
+   "Type": "AWS::Location::TrackerConsumer",
+   "Properties": {
+    "ConsumerArn": {
+     "Fn::GetAtt": [
+      "GeofenceCollection2348D6DB5",
+      "Arn"
+     ]
+    },
+    "TrackerName": {
+     "Ref": "TrackerAF5FC55F"
+    }
+   }
+  },
+  "TrackerTrackerConsumerGeofenceCollectionForAdd1BAA19E05": {
+   "Type": "AWS::Location::TrackerConsumer",
+   "Properties": {
+    "ConsumerArn": {
+     "Fn::GetAtt": [
+      "GeofenceCollectionForAdd131D6B4EA",
+      "Arn"
+     ]
+    },
+    "TrackerName": {
+     "Ref": "TrackerAF5FC55F"
+    }
+   }
+  },
+  "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE": {
+   "Type": "AWS::Location::TrackerConsumer",
+   "Properties": {
+    "ConsumerArn": {
+     "Fn::GetAtt": [
+      "GeofenceCollectionForAdd21A9CA549",
       "Arn"
      ]
     },

@@ -3,6 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Stack } from 'aws-cdk-lib';
 import { PositionFiltering, Tracker } from '../lib/tracker';
+import { GeofenceCollection } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -32,8 +33,7 @@ test('create a tracker', () => {
 });
 
 test('creates a tracker with empty description', () => {
-  new Tracker(stack, 'Tracker', {
-  });
+  new Tracker(stack, 'Tracker');
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::Tracker', {
   });
@@ -46,6 +46,32 @@ test('creates a tracker with empty description', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::Tracker', {
     Description: '',
+  });
+});
+
+test('creates a tracker with geofence collection', () => {
+  const geofenceCollection = new GeofenceCollection(stack, 'GeofenceCollection');
+
+  const tracker = new Tracker(stack, 'Tracker', {
+    geofenceCollections: [geofenceCollection],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::TrackerConsumer', {
+    ConsumerArn: stack.resolve(geofenceCollection.geofenceCollectionArn),
+    TrackerName: stack.resolve(tracker.trackerName),
+  });
+});
+
+test('add geofence collection after tracker is implemented', () => {
+  const tracker = new Tracker(stack, 'Tracker');
+
+  const geofenceCollection = new GeofenceCollection(stack, 'GeofenceCollection');
+
+  tracker.addGeofenceCollections(geofenceCollection);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::TrackerConsumer', {
+    ConsumerArn: stack.resolve(geofenceCollection.geofenceCollectionArn),
+    TrackerName: stack.resolve(tracker.trackerName),
   });
 });
 

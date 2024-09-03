@@ -1,5 +1,4 @@
 {
     "exclude": [
-        "props-physical-name:@aws-cdk/aws-location-alpha.TrackerConsumerProps"
     ]
 }

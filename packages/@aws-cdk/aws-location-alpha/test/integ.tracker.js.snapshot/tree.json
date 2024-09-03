@@ -8,29 +8,100 @@
         "id": "cdk-integ-location-tracker",
         "path": "cdk-integ-location-tracker",
         "children": {
-          "GeofenceCollection": {
-            "id": "GeofenceCollection",
-            "path": "cdk-integ-location-tracker/GeofenceCollection",
+          "GeofenceCollection1": {
+            "id": "GeofenceCollection1",
+            "path": "cdk-integ-location-tracker/GeofenceCollection1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-integ-location-tracker/GeofenceCollection/Resource",
+                "path": "cdk-integ-location-tracker/GeofenceCollection1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Location::GeofenceCollection",
                   "aws:cdk:cloudformation:props": {
-                    "collectionName": "MyGeofenceCollection",
-                    "description": "test"
+                    "collectionName": "cdkinteglocationtrackerGeofenceCollection10D13873F"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_location.CfnGeofenceCollection",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "GeofenceCollection2": {
+            "id": "GeofenceCollection2",
+            "path": "cdk-integ-location-tracker/GeofenceCollection2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-tracker/GeofenceCollection2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::GeofenceCollection",
+                  "aws:cdk:cloudformation:props": {
+                    "collectionName": "cdkinteglocationtrackerGeofenceCollection262FB26D9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnGeofenceCollection",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "GeofenceCollectionForAdd1": {
+            "id": "GeofenceCollectionForAdd1",
+            "path": "cdk-integ-location-tracker/GeofenceCollectionForAdd1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-tracker/GeofenceCollectionForAdd1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::GeofenceCollection",
+                  "aws:cdk:cloudformation:props": {
+                    "collectionName": "cdkinteglocationtrackerGeofenceCollectionForAdd1449865F9"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnGeofenceCollection",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "GeofenceCollectionForAdd2": {
+            "id": "GeofenceCollectionForAdd2",
+            "path": "cdk-integ-location-tracker/GeofenceCollectionForAdd2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-tracker/GeofenceCollectionForAdd2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::GeofenceCollection",
+                  "aws:cdk:cloudformation:props": {
+                    "collectionName": "cdkinteglocationtrackerGeofenceCollectionForAdd22B418373"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnGeofenceCollection",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
             }
           },
           "Key": {
@@ -74,14 +145,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
             }
           },
           "Tracker": {
@@ -108,29 +179,19 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_location.CfnTracker",
+                  "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "TrackerConsumer": {
-            "id": "TrackerConsumer",
-            "path": "cdk-integ-location-tracker/TrackerConsumer",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "cdk-integ-location-tracker/TrackerConsumer/Resource",
+              },
+              "TrackerConsumerGeofenceCollection1": {
+                "id": "TrackerConsumerGeofenceCollection1",
+                "path": "cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Location::TrackerConsumer",
                   "aws:cdk:cloudformation:props": {
                     "consumerArn": {
                       "Fn::GetAtt": [
-                        "GeofenceCollection6FAC681F",
+                        "GeofenceCollection1D36FEE6D",
                         "Arn"
                       ]
                     },
@@ -140,36 +201,102 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_location.CfnTrackerConsumer",
+                  "version": "0.0.0"
+                }
+              },
+              "TrackerConsumerGeofenceCollection2": {
+                "id": "TrackerConsumerGeofenceCollection2",
+                "path": "cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::TrackerConsumer",
+                  "aws:cdk:cloudformation:props": {
+                    "consumerArn": {
+                      "Fn::GetAtt": [
+                        "GeofenceCollection2348D6DB5",
+                        "Arn"
+                      ]
+                    },
+                    "trackerName": {
+                      "Ref": "TrackerAF5FC55F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnTrackerConsumer",
+                  "version": "0.0.0"
+                }
+              },
+              "TrackerConsumerGeofenceCollectionForAdd1": {
+                "id": "TrackerConsumerGeofenceCollectionForAdd1",
+                "path": "cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::TrackerConsumer",
+                  "aws:cdk:cloudformation:props": {
+                    "consumerArn": {
+                      "Fn::GetAtt": [
+                        "GeofenceCollectionForAdd131D6B4EA",
+                        "Arn"
+                      ]
+                    },
+                    "trackerName": {
+                      "Ref": "TrackerAF5FC55F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnTrackerConsumer",
+                  "version": "0.0.0"
+                }
+              },
+              "TrackerConsumerGeofenceCollectionForAdd2": {
+                "id": "TrackerConsumerGeofenceCollectionForAdd2",
+                "path": "cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::TrackerConsumer",
+                  "aws:cdk:cloudformation:props": {
+                    "consumerArn": {
+                      "Fn::GetAtt": [
+                        "GeofenceCollectionForAdd21A9CA549",
+                        "Arn"
+                      ]
+                    },
+                    "trackerName": {
+                      "Ref": "TrackerAF5FC55F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnTrackerConsumer",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-integ-location-tracker/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-integ-location-tracker/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "TrackerTest": {
@@ -196,22 +323,22 @@
                     "id": "BootstrapVersion",
                     "path": "TrackerTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "TrackerTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -236,8 +363,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

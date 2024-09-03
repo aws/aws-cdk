@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4caf9e99fbcddaf2e30f316b2ab8afcfa158595e3e5bff18dc8c6bae6299528e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/437504f2660eaa44637296cc23aea74d2b25a510150094631b5eba0be2d297a9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,28 @@
         "cdk-integ-location-tracker.assets"
       ],
       "metadata": {
-        "/cdk-integ-location-tracker/GeofenceCollection/Resource": [
+        "/cdk-integ-location-tracker/GeofenceCollection1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GeofenceCollection6FAC681F"
+            "data": "GeofenceCollection1D36FEE6D"
+          }
+        ],
+        "/cdk-integ-location-tracker/GeofenceCollection2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollection2348D6DB5"
+          }
+        ],
+        "/cdk-integ-location-tracker/GeofenceCollectionForAdd1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollectionForAdd131D6B4EA"
+          }
+        ],
+        "/cdk-integ-location-tracker/GeofenceCollectionForAdd2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollectionForAdd21A9CA549"
           }
         ],
         "/cdk-integ-location-tracker/Key/Resource": [
@@ -52,10 +70,28 @@
             "data": "TrackerAF5FC55F"
           }
         ],
-        "/cdk-integ-location-tracker/TrackerConsumer/Resource": [
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TrackerConsumer3AEB9150"
+            "data": "TrackerTrackerConsumerGeofenceCollection106C790AE"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerTrackerConsumerGeofenceCollection2BA7E93DE"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd1BAA19E05"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE"
           }
         ],
         "/cdk-integ-location-tracker/BootstrapVersion": [
@@ -68,6 +104,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "GeofenceCollection6FAC681F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollection6FAC681F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "TrackerConsumer3AEB9150": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerConsumer3AEB9150",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

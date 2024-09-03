@@ -4,16 +4,15 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import { PositionFiltering, Tracker } from '../lib/tracker';
 import { GeofenceCollection } from '../lib';
-import { TrackerConsumer } from '../lib/tracker-consumer';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const geofenceCollection = new GeofenceCollection(this, 'GeofenceCollection', {
-      geofenceCollectionName: 'MyGeofenceCollection',
-      description: 'test',
-    });
+    const geofenceCollection1 = new GeofenceCollection(this, 'GeofenceCollection1', {});
+    const geofenceCollection2 = new GeofenceCollection(this, 'GeofenceCollection2', {});
+    const geofenceCollectionForAdd1 = new GeofenceCollection(this, 'GeofenceCollectionForAdd1', {});
+    const geofenceCollectionForAdd2 = new GeofenceCollection(this, 'GeofenceCollectionForAdd2', {});
 
     const key = new kms.Key(this, 'Key', { removalPolicy: RemovalPolicy.DESTROY });
 
@@ -24,12 +23,10 @@ class TestStack extends Stack {
       kmsKeyEnableGeospatialQueries: true,
       kmsKey: key,
       positionFiltering: PositionFiltering.ACCURACY_BASED,
+      geofenceCollections: [geofenceCollection1, geofenceCollection2],
     });
 
-    new TrackerConsumer(this, 'TrackerConsumer', {
-      consumer: geofenceCollection,
-      tracker,
-    });
+    tracker.addGeofenceCollections(geofenceCollectionForAdd1, geofenceCollectionForAdd2);
   }
 }
 

@@ -2,8 +2,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { CfnTracker } from 'aws-cdk-lib/aws-location';
+import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
+import { IGeofenceCollection } from './geofence-collection';
 
 /**
  * A Tracker
@@ -74,6 +75,13 @@ export interface TrackerProps {
    * @default PositionFiltering.TIME_BASED
    */
   readonly positionFiltering?: PositionFiltering;
+
+  /**
+   * An optional list of geofence collections to associate with the tracker resource
+   *
+   * @default - no geofence collections are associated
+   */
+  readonly geofenceCollections?: IGeofenceCollection[];
 }
 
 /**
@@ -193,10 +201,29 @@ export class Tracker extends Resource implements ITracker {
       positionFiltering: props.positionFiltering,
     });
 
+    props.geofenceCollections?.forEach((collection) => {
+      new CfnTrackerConsumer(this, `TrackerConsumer${collection.node.id}`, {
+        consumerArn: collection.geofenceCollectionArn,
+        trackerName: Lazy.string({ produce: () => this.trackerName }),
+      });
+    });
+
     this.trackerName = tracker.ref;
     this.trackerArn = tracker.attrArn;
     this.trackerCreateTime = tracker.attrCreateTime;
     this.trackerUpdateTime = tracker.attrUpdateTime;
+  }
+
+  /**
+   * Add Geofence Collections which are associated to the tracker resource.
+   */
+  public addGeofenceCollections(...geofenceCollections: IGeofenceCollection[]) {
+    geofenceCollections.forEach((collection) => {
+      new CfnTrackerConsumer(this, `TrackerConsumer${collection.node.id}`, {
+        consumerArn: collection.geofenceCollectionArn,
+        trackerName: Lazy.string({ produce: () => this.trackerName }),
+      });
+    });
   }
 
   /**
