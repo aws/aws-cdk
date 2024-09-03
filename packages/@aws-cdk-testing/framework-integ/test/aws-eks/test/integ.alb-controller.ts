@@ -1,6 +1,6 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
@@ -8,10 +8,14 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
+interface EksClusterAlbControllerStackProps extends StackProps {
+  albControllerHelmChartValues?: {[key:string]: any};
+}
+
 class EksClusterAlbControllerStack extends Stack {
 
-  constructor(scope: App, id: string) {
-    super(scope, id);
+  constructor(scope: App, id: string, props: EksClusterAlbControllerStackProps = {}) {
+    super(scope, id, props);
 
     // just need one nat gateway to simplify the test
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
@@ -21,6 +25,7 @@ class EksClusterAlbControllerStack extends Stack {
       ...getClusterVersionConfig(this),
       albController: {
         version: eks.AlbControllerVersion.V2_6_2,
+        helmChartValues: props.albControllerHelmChartValues,
       },
     });
 
@@ -70,8 +75,9 @@ class EksClusterAlbControllerStack extends Stack {
 
 const app = new App();
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');
+const stackWithAlbControllerValues = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-values', { albControllerHelmChartValues: { enableWafv2: false } });
 new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller-integ', {
-  testCases: [stack],
+  testCases: [stack, stackWithAlbControllerValues],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
