@@ -379,7 +379,7 @@ describe('deprecated ServicePrincipal behavior', () => {
   test('Passing string with only letters in AccountPrincipal constructor should throw error', () => {
     expect(() => new iam.AccountPrincipal('test')).toThrowError('accountId should be composed of 12 digits');
   });
-  
+
 });
 
 describe('standardized Service Principal behavior', () => {
