@@ -201,7 +201,12 @@ export class FargateProfile extends Construct implements ITaggable {
       resource.node.addDependency(previousProfile);
     }
 
-    const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+    const supportConfigMap = [
+      undefined,
+      AuthenticationMode.CONFIG_MAP,
+      AuthenticationMode.API_AND_CONFIG_MAP
+    ].includes(props.cluster.authenticationMode);
+
     if (supportConfigMap) {
       // map the fargate pod execution role to the relevant groups in rbac
       // see https://github.com/aws/aws-cdk/issues/7981

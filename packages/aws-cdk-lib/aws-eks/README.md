@@ -1142,38 +1142,6 @@ You can disable granting the cluster admin permissions to the cluster creator ro
 
 > **Note** - Switching `bootstrapClusterCreatorAdminPermissions` on an existing cluster would cause cluster replacement and should be avoided in production.
 
-When a `FargateCluster` is created with `AuthenticationMode.API`, by default the cluster creator role would be added into the AccessEntry with `AmazonEKSClusterAdminPolicy` unless `bootstrapClusterCreatorAdminPermissions` is disabled.
-
-For example:
-
-```ts
-import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
-declare const vpc: ec2.Vpc;
-declare const myPrincipal: iam.IPrincipal
-
-const cluster = new eks.FargateCluster(this, 'FargateCluster', {
-  vpc,
-  version: eks.KubernetesVersion.V1_30,
-  authenticationMode: eks.AuthenticationMode.API
-});
-
-// allow custom principal to assume the cluster creator role
-cluster.adminRole.assumeRolePolicy?.addStatements(
-  new iam.PolicyStatement({
-    actions: ['sts:AssumeRole'],
-    principals: [myPrincipal],
-  }),
-);
-
-// generate the cluster config command that updates the kubeconfig using the cluster creator role
-new CfnOutput(this, 'ClusterConfigCommand', {
-      value:
-      `aws eks update-kubeconfig --name ${cluster.clusterName} --region ${Stack.of(cluster).region} --role-arn ${cluster.adminRole.roleArn}`,
-    });
-```
-
-Now, by running the cluster config command, your kubeconfig would be updated and `kubectl` would assume the cluster creator role for operations.
-
 ### Access Entry
 
 An access entry is a cluster identity—directly linked to an AWS IAM principal user or role that is used to authenticate to
