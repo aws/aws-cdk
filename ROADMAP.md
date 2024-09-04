@@ -1,6 +1,6 @@
 # AWS CDK Roadmap
 
-> Updated 6/14/2024
+> Updated 9/3/2024
 
 The roadmap priorities for the AWS CDK (Cloud Development Kit) are informed by what we hear from customers and interactions on Github, CDK.dev Slack, Stack Overflow, and Twitter. This document outlines the high level direction we are working towards, and for each project there is a tracking issue where you can leave feedback. We update this doc on a quarterly basis to reflect any changing priorities.
 
@@ -38,33 +38,29 @@ Over the course of the last few years, the CDK team has spent time speaking with
 
 The CDK team is committed to supporting our existing library of AWS L2 abstractions. We continue to solicit community feedback on where additional L2 coverage makes it simpler and more efficient to build with AWS. Current L2s that the team’s working on are listed below. Please be aware that this list will update throughout the year. If you have feedback on other L2s that should be prioritized by our team, feel free to submit a separate RFC.
 
-- 🚀 [DynamoDB TableV2 Construct](https://aws.amazon.com/blogs/devops/a-new-and-improved-aws-cdk-construct-for-amazon-dynamodb-tables/)
-- 🚀 [EKS AccessConfig Construct](https://github.com/aws/aws-cdk/pull/30016)
-- 🛠️ [CloudFront Origin Access Control L2](https://github.com/aws/aws-cdk-rfcs/issues/617)
-- 🚦️ [VPC Construct with Full Control](https://github.com/aws/aws-cdk/issues/5927)
-- 🔍 [Rewrite EKS L2](https://github.com/aws/aws-cdk-rfcs/issues/605)
-- 🔍 [Glue Alpha Construct Graduation](https://github.com/aws/aws-cdk-rfcs/issues/497)
-- 🔍 [Auto-generation of L2 constructs](https://github.com/aws/aws-cdk-rfcs/issues/611)
+* 🚀 [VPC Construct with Full Control](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-ec2-alpha)
+* 🚀 [AWS APIGateway_v2 graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2-readme.html) 
+* 🚀 [AWS Batch graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_batch-readme.html) 
+* 🚀 [AWS Synthetics graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_synthetics-readme.html)  
+* 🛠️ [CloudFront Origin Access Control L2](https://github.com/aws/aws-cdk-rfcs/issues/617)
+* 🛠️ [AWS Cognito_Identity_pool graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cognito-identitypool-alpha-readme.html)
+* 🛠️ [AWS Kinesis_firehose graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-kinesisfirehose-alpha-readme.html)
+* 🚦️ [Rewrite EKS L2](https://github.com/aws/aws-cdk-rfcs/issues/605)
+* 🔍 [aws-lambda-python graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-lambda-python-alpha-readme.html)
+* 🔍 [Auto-generation of L2 constructs](https://github.com/aws/aws-cdk-rfcs/issues/611) 
+* 🔍 [Glue Alpha Construct Graduation](https://github.com/aws/aws-cdk/issues/7534) 
+* 🔍 [aws-servicecatalogappregistry](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-servicecatalogappregistry-alpha-readme.html) 
 
 ### Updates/Enhancements
 
-- 🚀 [Lambda Code: New static method to support custom build commands](https://github.com/aws/aws-cdk/issues/18470)
-- 🚀 [API Gateway Rest API: deploy RestApi to an existing stage](https://github.com/aws/aws-cdk/pull/29486)
-- 🚀 [Route53 Alias Record Imports](https://github.com/aws/aws-cdk/pull/29565)
-- 🚀 [Secure CDK Deployments with IAM Permission Boundaries](https://aws.amazon.com/blogs/devops/secure-cdk-deployments-with-iam-permission-boundaries/)
+- 🚀 [Upgrade custom resources for managed lambda runtime from Node18 to Node20](https://github.com/aws/aws-cdk/issues/29786)
 - 🛠️ [Upgrade from the AWS SDK V2 to V3](https://github.com/aws/aws-cdk/issues/29694)
-- 🛠️ [Upgrade custom resources for managed lambda runtime from Node18 to Node20](https://github.com/aws/aws-cdk/issues/29786)
 
 ### User Experience
 
-- 🚀 [CDK Migrate](https://aws.amazon.com/blogs/devops/announcing-cdk-migrate-a-single-command-to-migrate-to-the-aws-cdk/)
-- 🚀 [CDK Watch: Support for Advanced Logging Controls with AWS Lambda](https://github.com/aws/aws-cdk/pull/29451)
+- 🛠️ [Garbage Collection for Assets](https://github.com/aws/aws-cdk-rfcs/issues/64)
 - 🚦️ [Programmatic Access of the AWS CDK CLI](https://github.com/aws/aws-cdk-rfcs/issues/300)
-- 🚦 [Garbage Collection for Assets](https://github.com/aws/aws-cdk-rfcs/issues/64)
 - 👂🏽 [CDK Refactoring](https://github.com/aws/aws-cdk-rfcs/issues/162)
-- 🚫 [Local application testing](https://github.com/aws/aws-cdk-rfcs/issues/585)
-- 🚫 [Upgrade deployment debugging experience](https://github.com/aws/aws-cdk-rfcs/issues/583)
-- ️🚫 [Understand deployment progress within CloudFormation](https://github.com/aws/aws-cdk-rfcs/issues/586)
 
 ### Community contribution call-outs
 
