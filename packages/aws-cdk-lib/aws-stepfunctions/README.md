@@ -989,7 +989,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
   stateMachineName: 'StateMachineWithCMKEncryptionConfiguration',
   definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
   stateMachineType: sfn.StateMachineType.STANDARD,
-  encryptionConfiguration: new sfn.EncryptionConfiguration(kmsKey, cdk.Duration.seconds(60)),
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(60)),
 });
 ```
 
@@ -1003,7 +1003,10 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 const stateMachineKmsKey = new kms.Key(this, 'StateMachine Key');
 const logGroupKey = new kms.Key(this, 'LogGroup Key');
 
-// Required KMS key policy to enrypt the CloudWatch log group
+/*
+  Required KMS key policy which allows the CloudWatchLogs service principal to encrypt the entire log group using the
+  customer managed kms key. See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html#cmk-permissions
+*/
 logGroupKey.addToResourcePolicy(new cdk.aws_iam.PolicyStatement({
   resources: ['*'],
   actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
@@ -1020,18 +1023,20 @@ logGroupKey.addToResourcePolicy(new cdk.aws_iam.PolicyStatement({
   },
 }));
 
+// Create logGroup and provding encryptionKey which will be used to encrypt the log group
 const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
   logGroupName: '/aws/vendedlogs/states/MyLogGroup',
   encryptionKey: logGroupKey,
 });
 
+// Create state machine with CustomerManagedEncryptionConfiguration
 const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
   stateMachineName: 'StateMachineWithCMKWithCWLEncryption',
   definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'PassState', {
     result: sfn.Result.fromString('Hello World'),
   }))),
   stateMachineType: sfn.StateMachineType.STANDARD,
-  encryptionConfiguration: new sfn.EncryptionConfiguration(stateMachineKmsKey),
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(stateMachineKmsKey),
   logs: {
     destination: logGroup,
     level: sfn.LogLevel.ALL,
@@ -1049,7 +1054,36 @@ import * as cdk from 'aws-cdk-lib';
 const kmsKey = new kms.Key(this, 'Key');
 const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
   activityName: 'ActivityWithCMKEncryptionConfiguration',
-  encryptionConfiguration: new sfn.EncryptionConfiguration(kmsKey, cdk.Duration.seconds(75))
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(75))
+});
+```
+
+### Changing Encryption
+If you want to switch encryption from a customer provided key to a Step Functions owned key or vice-versa you must explicitly provide `encryptionConfiguration?`
+
+#### Example: Switching from a customer managed key to a Step Functions owned key for StateMachine
+
+#### Before
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as cdk from 'aws-cdk-lib';
+
+const kmsKey = new kms.Key(this, 'Key');
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  stateMachineName: 'StateMachine',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(60)),
+});
+```
+
+#### After
+```ts
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  stateMachineName: 'StateMachine',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  encryptionConfiguration: new sfn.AwsOwnedEncryptionConfiguration(),
 });
 ```
 

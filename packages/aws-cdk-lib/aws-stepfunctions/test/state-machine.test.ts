@@ -7,7 +7,6 @@ import * as s3 from '../../aws-s3';
 import * as task from '../../aws-stepfunctions-tasks';
 import * as cdk from '../../core';
 import * as sfn from '../lib';
-import { EncryptionConfiguration } from '../lib/encryptionconfiguration';
 
 describe('State Machine', () => {
   test('Instantiate Default State Machine with deprecated definition', () => {
@@ -729,7 +728,7 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(75)),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(75)),
     });
 
     // THEN
@@ -798,7 +797,7 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      encryptionConfiguration: new EncryptionConfiguration(kmsKey),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey),
       logs: {
         destination: logGroup,
         level: sfn.LogLevel.ALL,
@@ -937,7 +936,7 @@ describe('State Machine', () => {
     // WHEN
     const activity = new sfn.Activity(stack, 'TestActivity', {
       activityName: 'TestActivity',
-      encryptionConfiguration: new EncryptionConfiguration(activityKey),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(activityKey),
     });
 
     const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
@@ -946,7 +945,7 @@ describe('State Machine', () => {
         activity: activity,
       }))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      encryptionConfiguration: new EncryptionConfiguration(stateMachineKey, cdk.Duration.seconds(300)),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(stateMachineKey, cdk.Duration.seconds(300)),
     });
 
     // THEN
@@ -1012,7 +1011,7 @@ describe('State Machine', () => {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      encryptionConfiguration: new EncryptionConfiguration(kmsKey),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey),
     });
 
     // THEN
@@ -1040,8 +1039,31 @@ describe('State Machine', () => {
         stateMachineName: 'MyStateMachine',
         definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
         stateMachineType: sfn.StateMachineType.STANDARD,
-        encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(20)),
+        encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(20)),
       });
     }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
+  }),
+
+  test('Instantiate StateMachine with EncryptionConfiguration using AwsOwnedEncryptionConfiguration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      encryptionConfiguration: new sfn.AwsOwnedEncryptionConfiguration(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      StateMachineType: 'STANDARD',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      EncryptionConfiguration: Match.objectLike({
+        Type: 'AWS_OWNED_KEY',
+      }),
+    });
   });
 });

@@ -3,7 +3,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
-import { EncryptionConfiguration } from '../lib/encryptionconfiguration';
 
 describe('Activity', () => {
   test('instantiate Activity', () => {
@@ -80,7 +79,7 @@ describe('Activity', () => {
 
     // WHEN
     new stepfunctions.Activity(stack, 'Activity', {
-      encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(75)),
+      encryptionConfiguration: new stepfunctions.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(75)),
     });
 
     // THEN
@@ -167,7 +166,7 @@ describe('Activity', () => {
 
     // WHEN
     new stepfunctions.Activity(stack, 'Activity', {
-      encryptionConfiguration: new EncryptionConfiguration(kmsKey),
+      encryptionConfiguration: new stepfunctions.CustomerManagedEncryptionConfiguration(kmsKey),
     });
 
     // THEN
@@ -190,8 +189,26 @@ describe('Activity', () => {
     expect(() => {
       // WHEN
       new stepfunctions.Activity(stack, 'Activity', {
-        encryptionConfiguration: new EncryptionConfiguration(kmsKey, cdk.Duration.seconds(5)),
+        encryptionConfiguration: new stepfunctions.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(5)),
       });
     }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
+  }),
+
+  test('Instantiate Activity with EncryptionConfiguration using AWS Owned Key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new stepfunctions.Activity(stack, 'Activity', {
+      encryptionConfiguration: new stepfunctions.AwsOwnedEncryptionConfiguration(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
+      Name: 'Activity',
+      EncryptionConfiguration: Match.objectLike({
+        Type: 'AWS_OWNED_KEY',
+      }),
+    });
   });
 });

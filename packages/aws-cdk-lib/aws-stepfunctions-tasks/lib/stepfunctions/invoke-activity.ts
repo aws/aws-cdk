@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import { IKey } from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
+import { CustomerManagedEncryptionConfiguration } from '../../../aws-stepfunctions/lib/cmkencryptionconfiguration';
 
 /**
  * Properties for invoking an Activity worker
@@ -36,7 +37,7 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
     super(scope, id, props);
 
-    if (this.props.activity.encryptionConfiguration) {
+    if (this.props.activity.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
       this.taskPolicies = this.createPolicyStatements(this.props.activity.encryptionConfiguration.kmsKey);
     }
     this.taskMetrics = {

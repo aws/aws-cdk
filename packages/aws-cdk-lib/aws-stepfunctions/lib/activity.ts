@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
+import { CustomerManagedEncryptionConfiguration } from './cmkencryptionconfiguration';
 import { EncryptionConfiguration } from './encryptionconfiguration';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
-import { constructEncryptionConfiguration } from './util';
+import { buildEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
@@ -76,8 +77,9 @@ export class Activity extends Resource implements IActivity {
         Lazy.string({ produce: () => this.generateName() }),
     });
 
-    if (props.encryptionConfiguration) {
-      this.encryptionConfiguration = props.encryptionConfiguration;
+    this.encryptionConfiguration = props.encryptionConfiguration;
+
+    if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
       props.encryptionConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
@@ -97,7 +99,7 @@ export class Activity extends Resource implements IActivity {
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
-      encryptionConfiguration: constructEncryptionConfiguration(props.encryptionConfiguration),
+      encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {

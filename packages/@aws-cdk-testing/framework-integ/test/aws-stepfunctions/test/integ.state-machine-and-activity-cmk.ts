@@ -23,7 +23,7 @@ class KMSStateMachine extends cdk.Stack {
 
     this.activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
       activityName: 'ActivityWithCMKEncryptionConfiguration',
-      encryptionConfiguration: new sfn.EncryptionConfiguration(this.activityKmsKey, cdk.Duration.seconds(75)),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(this.activityKmsKey, cdk.Duration.seconds(75)),
     });
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionConfiguration', {
@@ -35,7 +35,7 @@ class KMSStateMachine extends cdk.Stack {
         },
       }))),
       stateMachineType: sfn.StateMachineType.STANDARD,
-      encryptionConfiguration: new sfn.EncryptionConfiguration(this.stateMachineKmsKey, cdk.Duration.seconds(75)),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(this.stateMachineKmsKey, cdk.Duration.seconds(75)),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
   }

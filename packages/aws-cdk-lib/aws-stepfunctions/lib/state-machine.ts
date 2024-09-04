@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
+import { CustomerManagedEncryptionConfiguration } from './cmkencryptionconfiguration';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
-import { constructEncryptionConfiguration } from './util';
+import { buildEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -461,7 +462,7 @@ export class StateMachine extends StateMachineBase {
       }
     }
 
-    if (props.encryptionConfiguration) {
+    if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
       this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: [
@@ -513,7 +514,7 @@ export class StateMachine extends StateMachineBase {
       tracingConfiguration: this.buildTracingConfiguration(props.tracingEnabled),
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
-      encryptionConfiguration: constructEncryptionConfiguration(props.encryptionConfiguration),
+      encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
