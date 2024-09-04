@@ -52,13 +52,7 @@ const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
   resultPath: '$',
 });
 
-const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
-  model,
-  inputPath: sfn.JsonPath.stringAt('$.names'),
-  outputPath: sfn.JsonPath.stringAt('$.names'),
-});
-
-const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3);
+const chain = sfn.Chain.start(prompt1).next(prompt2);
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),
