@@ -308,7 +308,8 @@ You can configure CloudFront to add one or more HTTP headers to the responses th
 To specify the headers that CloudFront adds to HTTP responses, you use a response headers policy. CloudFront adds the headers regardless of whether it serves the object from the cache or has to retrieve the object from the origin. If the origin response includes one or more of the headers that’s in a response headers policy, the policy can specify whether CloudFront uses the header it received from the origin or overwrites it with the one in the policy.
 See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html
 
-Please note if property of xssProtection `reportUri` is specified, then `modeBlock` cannot be set to `true`.
+> [!NOTE]
+> If xssProtection `reportUri` is specified, then `modeBlock` cannot be set to `true`.
 
 ```ts
 // Using an existing managed response headers policy
