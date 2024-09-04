@@ -38,7 +38,7 @@ Over the course of the last few years, the CDK team has spent time speaking with
 
 The CDK team is committed to supporting our existing library of AWS L2 abstractions. We continue to solicit community feedback on where additional L2 coverage makes it simpler and more efficient to build with AWS. Current L2s that the team’s working on are listed below. Please be aware that this list will update throughout the year. If you have feedback on other L2s that should be prioritized by our team, feel free to submit a separate RFC.
 
-* 🚀 [VPC Construct with Full Control](https://github.com/aws/aws-cdk/issues/5927)
+* 🚀 [VPC Construct with Full Control](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-ec2-alpha)
 * 🚀 [AWS APIGateway_v2 graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2-readme.html) 
 * 🚀 [AWS Batch graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_batch-readme.html) 
 * 🚀 [AWS Synthetics graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_synthetics-readme.html)  
