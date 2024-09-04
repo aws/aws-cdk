@@ -306,15 +306,15 @@ a reserved capacity project. See [Fleet](#fleet) for more information.
 
 ## Images
 
-The CodeBuild library supports both Linux and Windows images via the
-`LinuxBuildImage` (or `LinuxArmBuildImage`), and `WindowsBuildImage` classes, respectively.
+The CodeBuild library supports Linux, Windows, and Mac images via the
+`LinuxBuildImage` (or `LinuxArmBuildImage`), `WindowsBuildImage`, and `MacBuildImage` classes, respectively.
 With the introduction of Lambda compute support, the `LinuxLambdaBuildImage ` (or `LinuxArmLambdaBuildImage`) class
 is available for specifying Lambda-compatible images.
 
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
 `WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`,
-`LinuxBuildImage.AMAZON_LINUX_2_5`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
+`LinuxBuildImage.AMAZON_LINUX_2_5`, `MacBuildImage.BASE_14`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
 `LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18` or `LinuxArmLambdaBuildImage.AMAZON_LINUX_2_NODE_18`.
 
 Alternatively, you can specify a custom image using one of the static methods on
@@ -332,6 +332,12 @@ or one of the corresponding methods on `WindowsBuildImage`:
 * `WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
 * `WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])`
 * `WindowsBuildImage.fromAsset(parent, id, props, [, imageType])`
+
+or one of the corresponding methods on `MacBuildImage`:
+
+* `MacBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
+* `MacBuildImage.fromEcrRepository(repo[, tag, imageType])`
+* `MacBuildImage.fromAsset(parent, id, props, [, imageType])`
 
 or one of the corresponding methods on `LinuxArmBuildImage`:
 
