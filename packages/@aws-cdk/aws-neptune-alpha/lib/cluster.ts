@@ -338,7 +338,7 @@ export interface DatabaseClusterProps {
    *
    * @default 8182
    */
-  readonly port? :number;
+  readonly port?: number;
 }
 
 /**
