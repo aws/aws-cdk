@@ -515,7 +515,7 @@ describe('rule', () => {
   test('in cross-account scenario, target role is only used in target account', () => {
     // GIVEN
     const app = new cdk.App();
-    const ruleStack = new cdk.Stack(app, 'RuleStack', { env: { account: '1234', region: 'us-east-1' } });
+    const ruleStack = new cdk.Stack(app, 'RuleStack', { env: { account: '123456789012', region: 'us-east-1' } });
     const targetStack = new cdk.Stack(app, 'TargeTStack', { env: { account: '5678', region: 'us-east-1' } });
 
     const rule = new Rule(ruleStack, 'EventRule', {

@@ -382,7 +382,7 @@ test('grantRead cross account', () => {
   // GIVEN
   const key = new kms.Key(stack, 'KMS');
   const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
-  const principal = new iam.AccountPrincipal('1234');
+  const principal = new iam.AccountPrincipal('123456789012');
 
   // WHEN
   secret.grantRead(principal, ['FOO', 'bar']).assertSuccess();
@@ -414,7 +414,7 @@ test('grantRead cross account', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':iam::1234:root',
+                  ':iam::123456789012:root',
                 ],
               ],
             },
@@ -461,7 +461,7 @@ test('grantRead cross account', () => {
                 {
                   Ref: 'AWS::Partition',
                 },
-                ':iam::1234:root',
+                ':iam::123456789012:root',
               ],
             ],
           },
@@ -1360,8 +1360,8 @@ describe('secretObjectValue', () => {
 
 test('cross-environment grant with direct object reference', () => {
   // GIVEN
-  const producerStack = new cdk.Stack(app, 'ProducerStack', { env: { region: 'foo', account: '1111111111' } });
-  const consumerStack = new cdk.Stack(app, 'ConsumerStack', { env: { region: 'bar', account: '1111111111' } });
+  const producerStack = new cdk.Stack(app, 'ProducerStack', { env: { region: 'foo', account: '111111111111' } });
+  const consumerStack = new cdk.Stack(app, 'ConsumerStack', { env: { region: 'bar', account: '111111111111' } });
   const secret = new secretsmanager.Secret(producerStack, 'Secret', { secretName: 'MySecret' });
   const role = new iam.Role(consumerStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
@@ -1382,7 +1382,7 @@ test('cross-environment grant with direct object reference', () => {
           'Fn::Join': ['', [
             'arn:',
             { Ref: 'AWS::Partition' },
-            ':secretsmanager:foo:1111111111:secret:MySecret-??????',
+            ':secretsmanager:foo:111111111111:secret:MySecret-??????',
           ]],
         },
       }],
@@ -1393,9 +1393,9 @@ test('cross-environment grant with direct object reference', () => {
 
 test('cross-environment grant with imported from completeArn', () => {
   // GIVEN
-  const secretCompleteArn = 'arn:aws:secretsmanager:foobar:1111111111:secret:secret-name-suffix';
-  const producerStack = new cdk.Stack(app, 'ProducerStack', { env: { region: 'foo', account: '1111111111' } });
-  const consumerStack = new cdk.Stack(app, 'ConsumerStack', { env: { region: 'bar', account: '1111111111' } });
+  const secretCompleteArn = 'arn:aws:secretsmanager:foobar:111111111111:secret:secret-name-suffix';
+  const producerStack = new cdk.Stack(app, 'ProducerStack', { env: { region: 'foo', account: '111111111111' } });
+  const consumerStack = new cdk.Stack(app, 'ConsumerStack', { env: { region: 'bar', account: '111111111111' } });
   const secret = secretsmanager.Secret.fromSecretCompleteArn(producerStack, 'Secret', secretCompleteArn);
   const role = new iam.Role(consumerStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
@@ -1421,9 +1421,9 @@ test('cross-environment grant with imported from completeArn', () => {
 
 test('cross-environment grant with imported from partialArn', () => {
   // GIVEN
-  const secretPartialArn = 'arn:aws:secretsmanager:foobar:1111111111:secret:secret-name';
-  const producerStack = new cdk.Stack(app, 'ProducerStack', { env: { region: 'foo', account: '1111111111' } });
-  const consumerStack = new cdk.Stack(app, 'ConsumerStack', { env: { region: 'bar', account: '1111111111' } });
+  const secretPartialArn = 'arn:aws:secretsmanager:foobar:111111111111:secret:secret-name';
+  const producerStack = new cdk.Stack(app, 'ProducerStack', { env: { region: 'foo', account: '111111111111' } });
+  const consumerStack = new cdk.Stack(app, 'ConsumerStack', { env: { region: 'bar', account: '111111111111' } });
   const secret = secretsmanager.Secret.fromSecretPartialArn(producerStack, 'Secret', secretPartialArn);
   const role = new iam.Role(consumerStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 

@@ -8,19 +8,19 @@ let stack: Stack;
 beforeEach(() => {
   app = new App();
   stack = new Stack(app, 'Stack', {
-    env: { account: '1234', region: 'testregion' },
+    env: { account: '123456789012', region: 'testregion' },
   });
 });
 
 test('can make and use a Linux image', () => {
   // WHEN
   const image = new ec2.GenericLinuxImage({
-    testregion: 'ami-1234',
+    testregion: 'ami-123456789012',
   });
 
   // THEN
   const details = image.getImage(stack);
-  expect(details.imageId).toEqual('ami-1234');
+  expect(details.imageId).toEqual('ami-123456789012');
   expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
 });
 
@@ -29,7 +29,7 @@ test('can make and use a Linux image in agnostic stack', () => {
   app = new App();
   stack = new Stack(app, 'Stack');
   const image = new ec2.GenericLinuxImage({
-    testregion: 'ami-1234',
+    testregion: 'ami-123456789012',
   });
 
   // THEN
@@ -38,7 +38,7 @@ test('can make and use a Linux image in agnostic stack', () => {
     Mappings: {
       AmiMap: {
         testregion: {
-          ami: 'ami-1234',
+          ami: 'ami-123456789012',
         },
       },
     },
@@ -52,12 +52,12 @@ test('can make and use a Linux image in agnostic stack', () => {
 test('can make and use a Windows image', () => {
   // WHEN
   const image = new ec2.GenericWindowsImage({
-    testregion: 'ami-1234',
+    testregion: 'ami-123456789012',
   });
 
   // THEN
   const details = image.getImage(stack);
-  expect(details.imageId).toEqual('ami-1234');
+  expect(details.imageId).toEqual('ami-123456789012');
   expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
 });
 
@@ -66,7 +66,7 @@ test('can make and use a Windows image in agnostic stack', () => {
   app = new App();
   stack = new Stack(app, 'Stack');
   const image = new ec2.GenericWindowsImage({
-    testregion: 'ami-1234',
+    testregion: 'ami-123456789012',
   });
 
   // THEN
@@ -75,7 +75,7 @@ test('can make and use a Windows image in agnostic stack', () => {
     Mappings: {
       AmiMap: {
         testregion: {
-          ami: 'ami-1234',
+          ami: 'ami-123456789012',
         },
       },
     },
@@ -129,7 +129,7 @@ test('WindowsImage retains userdata if given', () => {
   const ud = ec2.UserData.forWindows();
 
   const image = new ec2.GenericWindowsImage({
-    testregion: 'ami-1234',
+    testregion: 'ami-123456789012',
   }, {
     userData: ud,
   });
@@ -142,7 +142,7 @@ test('WindowsImage retains userdata if given', () => {
 test('WindowsImage creates UserData if not given', () => {
   // WHEN
   const image = new ec2.GenericWindowsImage({
-    testregion: 'ami-1234',
+    testregion: 'ami-123456789012',
   });
 
   // THEN
@@ -160,11 +160,11 @@ test('LookupMachineImage default search', () => {
   const missing = app.synth().manifest.missing || [];
   expect(missing).toEqual([
     {
-      key: 'ami:account=1234:filters.image-type.0=machine:filters.name.0=bla*:filters.state.0=available:owners.0=amazon:region=testregion',
+      key: 'ami:account=123456789012:filters.image-type.0=machine:filters.name.0=bla*:filters.state.0=available:owners.0=amazon:region=testregion',
       props: {
-        account: '1234',
+        account: '123456789012',
         region: 'testregion',
-        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
         owners: ['amazon'],
         filters: {
           'name': ['bla*'],
@@ -195,10 +195,10 @@ test('cached lookups of Amazon Linux', () => {
   expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2');
   expect(app.synth().manifest.missing).toEqual([
     {
-      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion',
+      key: 'ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion',
       props: {
-        account: '1234',
-        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        account: '123456789012',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
       },
@@ -218,10 +218,10 @@ test('cached lookups of Amazon Linux 2', () => {
   expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2');
   expect(app.synth().manifest.missing).toEqual([
     {
-      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=testregion',
+      key: 'ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=testregion',
       props: {
-        account: '1234',
-        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        account: '123456789012',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2',
       },
@@ -242,10 +242,10 @@ test('cached lookups of Amazon Linux 2 with kernel 5.x', () => {
   expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2');
   expect(app.synth().manifest.missing).toEqual([
     {
-      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2:region=testregion',
+      key: 'ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2:region=testregion',
       props: {
-        account: '1234',
-        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        account: '123456789012',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2',
       },
@@ -285,10 +285,10 @@ test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
   expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64');
   expect(app.synth().manifest.missing).toEqual([
     {
-      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64:region=testregion',
+      key: 'ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64:region=testregion',
       props: {
-        account: '1234',
-        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+        account: '123456789012',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64',
       },
@@ -323,10 +323,10 @@ describe('latest amazon linux', () => {
     expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs');
     expect(app.synth().manifest.missing).toEqual([
       {
-        key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs:region=testregion',
+        key: 'ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs:region=testregion',
         props: {
-          account: '1234',
-          lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+          account: '123456789012',
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
           region: 'testregion',
           parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs',
         },
@@ -358,10 +358,10 @@ describe('latest amazon linux', () => {
     expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64');
     expect(app.synth().manifest.missing).toEqual([
       {
-        key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64:region=testregion',
+        key: 'ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64:region=testregion',
         props: {
-          account: '1234',
-          lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+          account: '123456789012',
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
           region: 'testregion',
           parameterName: '/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64',
         },
@@ -393,10 +393,10 @@ describe('latest amazon linux', () => {
     expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64');
     expect(app.synth().manifest.missing).toEqual([
       {
-        key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64:region=testregion',
+        key: 'ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64:region=testregion',
         props: {
-          account: '1234',
-          lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+          account: '123456789012',
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-testregion',
           region: 'testregion',
           parameterName: '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64',
         },

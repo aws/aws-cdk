@@ -30,7 +30,7 @@ let stack: Stack;
 beforeEach(() => {
   app = new App();
   stack = new Stack(app, 'Stack', {
-    env: { account: '1234', region: 'testregion' },
+    env: { account: '123456789012', region: 'testregion' },
   });
 });
 
@@ -62,7 +62,7 @@ test('minimal example renders correctly', () => {
 
 test('exhaustive example of props renders correctly and SSL method sni-only', () => {
   const origin = defaultOrigin();
-  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012');
 
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
@@ -117,7 +117,7 @@ test('exhaustive example of props renders correctly and SSL method sni-only', ()
         },
       },
       ViewerCertificate: {
-        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012',
         SslSupportMethod: 'sni-only',
         MinimumProtocolVersion: 'TLSv1.2_2019',
       },
@@ -128,7 +128,7 @@ test('exhaustive example of props renders correctly and SSL method sni-only', ()
 
 test('exhaustive example of props renders correctly and SSL method vip', () => {
   const origin = defaultOrigin();
-  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012');
 
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
@@ -183,7 +183,7 @@ test('exhaustive example of props renders correctly and SSL method vip', () => {
         },
       },
       ViewerCertificate: {
-        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012',
         SslSupportMethod: 'vip',
         MinimumProtocolVersion: 'TLSv1.2_2019',
       },
@@ -194,7 +194,7 @@ test('exhaustive example of props renders correctly and SSL method vip', () => {
 
 test('exhaustive example of props renders correctly and SSL method default', () => {
   const origin = defaultOrigin();
-  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012');
 
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
@@ -248,7 +248,7 @@ test('exhaustive example of props renders correctly and SSL method default', () 
         },
       },
       ViewerCertificate: {
-        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012',
         SslSupportMethod: 'sni-only',
         MinimumProtocolVersion: 'TLSv1.2_2019',
       },
@@ -447,7 +447,7 @@ describe('multiple behaviors', () => {
 describe('certificates', () => {
   test('should fail if using an imported certificate from outside of us-east-1', () => {
     const origin = defaultOrigin();
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012');
 
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -458,7 +458,7 @@ describe('certificates', () => {
   });
 
   test('adding a certificate without a domain name', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012');
 
     new Distribution(stack, 'Dist1', {
       defaultBehavior: { origin: defaultOrigin() },
@@ -469,14 +469,14 @@ describe('certificates', () => {
       DistributionConfig: {
         Aliases: Match.absent(),
         ViewerCertificate: {
-          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012',
         },
       },
     });
   });
 
   test('use the TLSv1.2_2021 security policy by default', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012');
 
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
@@ -488,7 +488,7 @@ describe('certificates', () => {
       DistributionConfig: {
         Aliases: ['example.com', 'www.example.com'],
         ViewerCertificate: {
-          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012',
           SslSupportMethod: 'sni-only',
           MinimumProtocolVersion: 'TLSv1.2_2021',
         },
@@ -497,7 +497,7 @@ describe('certificates', () => {
   });
 
   test('adding a certificate with non default security policy protocol', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012');
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       domainNames: ['www.example.com'],
@@ -509,7 +509,7 @@ describe('certificates', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         ViewerCertificate: {
-          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-123456789012-123456789012-123456789012-123456789012',
           SslSupportMethod: 'sni-only',
           MinimumProtocolVersion: 'TLSv1_2016',
         },
@@ -1111,7 +1111,7 @@ test('grants custom actions', () => {
           Resource: {
             'Fn::Join': [
               '', [
-                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::123456789012:distribution/',
                 { Ref: 'Distribution830FAC52' },
               ],
             ],
@@ -1139,7 +1139,7 @@ test('grants createInvalidation', () => {
           Resource: {
             'Fn::Join': [
               '', [
-                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::123456789012:distribution/',
                 { Ref: 'Distribution830FAC52' },
               ],
             ],

@@ -28,7 +28,7 @@ function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
     },
   });
   stack = new Stack(app, 'Stack', {
-    env: { account: '1234', region: 'testregion' },
+    env: { account: '123456789012', region: 'testregion' },
     synthesizer: customSynthesizer,
   });
   instanceRole = new iam.Role(stack, 'InstanceRole', {

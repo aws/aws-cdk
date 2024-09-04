@@ -27,7 +27,7 @@ describe.each([
     });
     stackScope = inStage ? new CdkStage(app, 'MyStage') : app;
 
-    stack = new Stack(stackScope, 'PipelineStack', { env: { account: '2222', region: 'us-east-1' } });
+    stack = new Stack(stackScope, 'PipelineStack', { env: { account: '222222222222', region: 'us-east-1' } });
     sourceArtifact = new codepipeline.Artifact();
     initialStages = [
       {
@@ -76,7 +76,7 @@ describe.each([
           stage.addAction(new FakeBuildAction({
             actionName: 'Deploy',
             input: sourceArtifact,
-            role: iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::1111:role/some-role'),
+            role: iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::111111111111:role/some-role'),
           }));
         }).toThrow(expectedError);
       });
@@ -89,7 +89,7 @@ describe.each([
             input: sourceArtifact,
             resource: s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
               bucketName: 'foo',
-              account: '1111',
+              account: '111111111111',
             }),
           }));
         }).toThrow(expectedError);
@@ -101,7 +101,7 @@ describe.each([
           stage.addAction(new FakeBuildAction({
             actionName: 'Deploy',
             input: sourceArtifact,
-            account: '1111',
+            account: '111111111111',
           }));
         }).toThrow(expectedError);
       });
@@ -140,7 +140,7 @@ describe.each([
       });
 
       test('when twiddling another stack', () => {
-        const stack2 = new Stack(stackScope, 'Stack2', { env: { account: '2222', region: 'eu-west-1' } });
+        const stack2 = new Stack(stackScope, 'Stack2', { env: { account: '222222222222', region: 'eu-west-1' } });
 
         // WHEN
         stage.addAction(new FakeBuildAction({
@@ -162,7 +162,7 @@ describe('cross-environment CodePipeline', function () {
     const app = new App();
 
     const pipelineStack = new Stack(app, 'PipelineStack', {
-      env: { account: '123', region: 'my-region' },
+      env: { account: '123456789012', region: 'my-region' },
     });
     const sourceOutput = new codepipeline.Artifact();
     const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
@@ -185,7 +185,7 @@ describe('cross-environment CodePipeline', function () {
     // and a correct support Stack should be created.
     const deployBucket = s3.Bucket.fromBucketAttributes(pipelineStack, 'DeployBucket', {
       bucketName: 'my-bucket',
-      account: '456',
+      account: '456789101234',
     });
     pipeline.addStage({
       stageName: 'Build',
@@ -199,9 +199,9 @@ describe('cross-environment CodePipeline', function () {
     });
 
     const asm = app.synth();
-    const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-456`);
+    const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-456789101234`);
     Template.fromJSON(supportStack.template).hasResourceProperties('AWS::IAM::Role', {
-      RoleName: 'pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
+      RoleName: 'pipelinestack-support-456dbuildactionrolebf03938f0cc9a2599be5',
     });
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -216,7 +216,7 @@ describe('cross-environment CodePipeline', function () {
                 'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
-                  ':iam::456:role/pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
+                  ':iam::456789101234:role/pipelinestack-support-456dbuildactionrolebf03938f0cc9a2599be5',
                 ]],
               },
             },

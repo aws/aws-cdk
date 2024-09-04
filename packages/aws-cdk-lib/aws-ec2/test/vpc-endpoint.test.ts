@@ -271,7 +271,7 @@ describe('vpc endpoint', () => {
     describe('add interface endpoint to looked-up VPC', () => {
       test('initial run', () => {
         // GIVEN
-        const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'us-east-1' } });
+        const stack = new Stack(undefined, undefined, { env: { account: '123456789012', region: 'us-east-1' } });
         const vpc = Vpc.fromLookup(stack, 'Vpc', {
           vpcId: 'doesnt-matter',
         });
@@ -280,7 +280,7 @@ describe('vpc endpoint', () => {
         vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
           service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
           subnets: {
-            subnetFilters: [SubnetFilter.byIds(['1234'])],
+            subnetFilters: [SubnetFilter.byIds(['123456789012'])],
           },
         });
       });

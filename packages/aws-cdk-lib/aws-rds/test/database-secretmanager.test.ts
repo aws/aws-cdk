@@ -36,7 +36,7 @@ describe('database secret manager', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':secretsmanager:us-test-1:12345:secret:myDBLoginInfo:SecretString:username::}}',
+              ':secretsmanager:us-test-1:123456789012:secret:myDBLoginInfo:SecretString:username::}}',
             ],
           ],
         },
@@ -48,7 +48,7 @@ describe('database secret manager', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':secretsmanager:us-test-1:12345:secret:myDBLoginInfo:SecretString:password::}}',
+              ':secretsmanager:us-test-1:123456789012:secret:myDBLoginInfo:SecretString:password::}}',
             ],
           ],
         },
@@ -69,7 +69,7 @@ describe('database secret manager', () => {
 });
 
 function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
-  stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  const stack = new cdk.Stack(undefined, undefined, { env: { account: '123456789012', region: 'us-test-1' } });
+  stack.node.setContext('availability-zones:123456789012:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

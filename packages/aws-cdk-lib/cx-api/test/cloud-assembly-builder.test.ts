@@ -21,7 +21,7 @@ test('cloud assembly builder', () => {
     properties: {
       templateFile,
       parameters: {
-        prop1: '1234',
+        prop1: '123456789012',
         prop2: '555',
       },
     },
@@ -38,7 +38,7 @@ test('cloud assembly builder', () => {
     key: 'foo',
     provider: cxschema.ContextProvider.VPC_PROVIDER,
     props: {
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       filter: {
         a: 'a',
@@ -74,7 +74,7 @@ test('cloud assembly builder', () => {
         key: 'foo',
         provider: cxschema.ContextProvider.VPC_PROVIDER,
         props: {
-          account: '1234',
+          account: '123456789012',
           region: 'us-east-1',
           filter: {
             a: 'a',
@@ -97,7 +97,7 @@ test('cloud assembly builder', () => {
         properties: {
           templateFile: 'foo.template.json',
           parameters: {
-            prop1: '1234',
+            prop1: '123456789012',
             prop2: '555',
           },
         },
@@ -135,7 +135,7 @@ test('duplicate missing values with the same key are only reported once', () => 
   const session = new cxapi.CloudAssemblyBuilder(outdir);
 
   const props: cxschema.ContextQueryProperties = {
-    account: '1234',
+    account: '123456789012',
     region: 'asdf',
     filter: { a: 'a' },
   };
@@ -183,7 +183,7 @@ test('missing values are reported to top-level asm', () => {
 
   // WHEN
   const props: cxschema.ContextQueryProperties = {
-    account: '1234',
+    account: '123456789012',
     region: 'asdf',
     filter: { a: 'a' },
   };

@@ -69,7 +69,7 @@ test('looks up the requested VPC', async () => {
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   });
@@ -106,7 +106,7 @@ test('throws when no such VPC is found', async () => {
 
   // WHEN
   await expect(provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   })).rejects.toThrow(/Could not find any VPCs matching/);
@@ -165,7 +165,7 @@ test('throws when subnet with subnetGroupNameTag not found', async () => {
 
   // WHEN
   await expect(provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     subnetGroupNameTag: 'DOES_NOT_EXIST',
     filter,
@@ -225,7 +225,7 @@ test('does not throw when subnet with subnetGroupNameTag is found', async () => 
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     subnetGroupNameTag: 'DOES_EXIST',
     filter,
@@ -263,7 +263,7 @@ test('throws when multiple VPCs are found', async () => {
 
   // WHEN
   await expect(provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   })).rejects.toThrow(/Found 2 VPCs matching/);
@@ -322,7 +322,7 @@ test('uses the VPC main route table when a subnet has no specific association', 
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   });
@@ -386,7 +386,7 @@ test('Recognize public subnet by route table', async () => {
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   });
@@ -450,7 +450,7 @@ test('Recognize private subnet by route table with NAT Gateway', async () => {
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   });
@@ -514,7 +514,7 @@ test('Recognize private subnet by route table with Transit Gateway', async () =>
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   });
@@ -566,7 +566,7 @@ test('Recognize isolated subnet by route table', async () => {
 
   // WHEN
   const result = await provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     filter,
   });

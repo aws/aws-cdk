@@ -164,7 +164,7 @@ describe('FunctionUrl', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.AccountPrincipal('1234'),
+      assumedBy: new iam.AccountPrincipal('123456789012'),
     });
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),

@@ -354,7 +354,7 @@ describe('auto scaling group', () => {
   });
 
   test('can set minCapacity, maxCapacity, desiredCapacity to 0', () => {
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
@@ -374,7 +374,7 @@ describe('auto scaling group', () => {
   });
 
   test('validation is not performed when using Tokens', () => {
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
@@ -395,7 +395,7 @@ describe('auto scaling group', () => {
   });
 
   test('maxCapacity defaults to minCapacity when using Token', () => {
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
@@ -538,7 +538,7 @@ describe('auto scaling group', () => {
   });
 
   test('addToRolePolicy can be used to add statements to the role policy', () => {
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     const fleet = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
@@ -569,7 +569,7 @@ describe('auto scaling group', () => {
 
   testDeprecated('can configure replacing update', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -598,7 +598,7 @@ describe('auto scaling group', () => {
 
   testDeprecated('can configure rolling update', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -628,7 +628,7 @@ describe('auto scaling group', () => {
 
   testDeprecated('can configure resource signals', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -653,7 +653,7 @@ describe('auto scaling group', () => {
 
   test('can configure EC2 health check', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -672,7 +672,7 @@ describe('auto scaling group', () => {
 
   test('can configure EBS health check', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -692,7 +692,7 @@ describe('auto scaling group', () => {
 
   test('can add Security Group to Fleet', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -2314,7 +2314,7 @@ describe('auto scaling group', () => {
     let listener: ApplicationListener;
 
     beforeEach(() => {
-      stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+      stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
       vpc = mockVpc(stack);
       alb = new ApplicationLoadBalancer(stack, 'alb', {
         vpc,
@@ -2954,5 +2954,5 @@ function mockSecurityGroup(stack: cdk.Stack) {
 }
 
 function getTestStack(): cdk.Stack {
-  return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
+  return new cdk.Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }

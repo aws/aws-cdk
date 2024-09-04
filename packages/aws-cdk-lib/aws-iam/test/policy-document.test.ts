@@ -240,14 +240,14 @@ describe('IAM policy document', () => {
     const stack = new Stack();
 
     const p = new PolicyStatement();
-    p.addAwsAccountPrincipal('1234');
-    p.addAwsAccountPrincipal('5678');
+    p.addAwsAccountPrincipal('123456789012');
+    p.addAwsAccountPrincipal('567890123456');
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Effect: 'Allow',
       Principal: {
         AWS: [
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:root']] },
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] },
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] },
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::567890123456:root']] },
         ],
       },
     });
