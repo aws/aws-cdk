@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from './logging';
-import { some, ConstructTreeNode, loadTreeFromDir } from './tree';
+import { ConstructTreeNode, loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -30,6 +30,13 @@ export interface DisplayNoticesProps {
    * @default false
    */
   readonly ignoreCache?: boolean;
+
+  /**
+   * Whether to append the number of unacknowledged notices to the display.
+   *
+   * @default false
+   */
+  readonly unacknowledged?: boolean;
 }
 
 export async function refreshNotices() {
@@ -50,11 +57,19 @@ export async function generateMessage(dataSource: NoticeDataSource, props: Displ
     acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
   });
 
+  let messageString: string = '';
   if (filteredNotices.length > 0) {
-    const individualMessages = formatNotices(filteredNotices);
-    return finalMessage(individualMessages, filteredNotices[0].issueNumber);
+    messageString = getFilteredMessages(filteredNotices);
   }
-  return '';
+  if (props.unacknowledged) {
+    messageString = [messageString, `There are ${filteredNotices.length} unacknowledged notice(s).`].join('\n\n');
+  }
+  return messageString;
+}
+
+function getFilteredMessages(filteredNotices: Notice[]): string {
+  const individualMessages = formatNotices(filteredNotices);
+  return finalMessage(individualMessages, filteredNotices[0].issueNumber);
 }
 
 function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
