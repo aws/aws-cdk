@@ -169,17 +169,17 @@ class MyStack extends cdk.Stack {
     super(parent, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
-        deployRoleSessionTags: {
-          Department : 'Engineering',
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
-        fileAssetPublishingRoleSessionTags: {
-          Department: 'Engineering',
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
-        imageAssetPublishingRoleSessionTags: {
-          Department: 'Engineering',
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
-        lookupRoleSessionTags: {
-          Department: 'Engineering',
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
       })
     });
@@ -187,13 +187,13 @@ class MyStack extends cdk.Stack {
 }
 ```
 
-This will cause the CDK CLI to include session tags when assuming each of these roles during deployment. Note that the trust policy of the role 
-must contain permissions for the `sts:TagSession` action.
+This will cause the CDK CLI to include session tags when assuming each of these roles during deployment. 
+Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
 
 > See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
 
 - If you are using a custom bootstrap template, make sure the template includes these permissions.
-- If you are using the default bootstrap template, you will need to rebootstrap your enviroment (once).
+- If you are using the default bootstrap template from a CDK version lower than XXXX, you will need to rebootstrap your enviroment (once).
 
 ## Nested Stacks
 
