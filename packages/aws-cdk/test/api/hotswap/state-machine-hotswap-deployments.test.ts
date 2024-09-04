@@ -1,7 +1,7 @@
-/* eslint-disable import/order */
 import { StepFunctions } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { silentTest } from '../../util/silent';
 
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('returns undefined when a new StateMachine is added to the Stack', async () => {
+  silentTest('returns undefined when a new StateMachine is added to the Stack', async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
@@ -43,7 +43,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls the updateStateMachine() API when it receives only a definitionString change without Fn::Join in a state machine', async () => {
+  silentTest('calls the updateStateMachine() API when it receives only a definitionString change without Fn::Join in a state machine', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -81,7 +81,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateStateMachine() API when it receives only a definitionString change with Fn::Join in a state machine', async () => {
+  silentTest('calls the updateStateMachine() API when it receives only a definitionString change with Fn::Join in a state machine', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -156,7 +156,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
+  silentTest('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -193,7 +193,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test(`does not call the updateStateMachine() API when it receives a change to a property that is not the definitionString in a state machine
+  silentTest(`does not call the updateStateMachine() API when it receives a change to a property that is not the definitionString in a state machine
         alongside a hotswappable change in CLASSIC mode but does in HOTSWAP_ONLY mode`,
   async () => {
     // GIVEN
@@ -247,7 +247,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('does not call the updateStateMachine() API when a resource has a DefinitionString property but is not an AWS::StepFunctions::StateMachine is changed', async () => {
+  silentTest('does not call the updateStateMachine() API when a resource has a DefinitionString property but is not an AWS::StepFunctions::StateMachine is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -290,7 +290,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('can correctly hotswap old style synth changes', async () => {
+  silentTest('can correctly hotswap old style synth changes', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: { AssetParam1: { Type: 'String' } },
@@ -331,7 +331,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateStateMachine() API when it receives a change to the definitionString that uses Attributes in a state machine', async () => {
+  silentTest('calls the updateStateMachine() API when it receives a change to the definitionString that uses Attributes in a state machine', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -401,7 +401,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test("will not perform a hotswap deployment if it cannot find a Ref target (outside the state machine's name)", async () => {
+  silentTest("will not perform a hotswap deployment if it cannot find a Ref target (outside the state machine's name)", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -459,7 +459,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
   });
 
-  test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the state machines's name)", async () => {
+  silentTest("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the state machines's name)", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -522,7 +522,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
   });
 
-  test('knows how to handle attributes of the AWS::Events::EventBus resource', async () => {
+  silentTest('knows how to handle attributes of the AWS::Events::EventBus resource', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -598,7 +598,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('knows how to handle attributes of the AWS::DynamoDB::Table resource', async () => {
+  silentTest('knows how to handle attributes of the AWS::DynamoDB::Table resource', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -677,7 +677,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('knows how to handle attributes of the AWS::KMS::Key resource', async () => {
+  silentTest('knows how to handle attributes of the AWS::KMS::Key resource', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -740,7 +740,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('does not explode if the DependsOn changes', async () => {
+  silentTest('does not explode if the DependsOn changes', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

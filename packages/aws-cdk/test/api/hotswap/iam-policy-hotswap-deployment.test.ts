@@ -1,6 +1,7 @@
 /* eslint-disable import/order */
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { silentTest } from '../../util/silent';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
@@ -9,7 +10,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('A change to an IAM Policy results in a full deployment for HOTSWAP and a noOp for HOTSWAP_ONLY', async () => {
+  silentTest('A change to an IAM Policy results in a full deployment for HOTSWAP and a noOp for HOTSWAP_ONLY', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
