@@ -2,11 +2,11 @@ import { randomUUID } from 'crypto';
 import { IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
-import * as events from 'aws-cdk-lib/aws-events';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { ApiDestinationEnrichment } from '../lib';
 
 const app = new cdk.App();
