@@ -1646,7 +1646,7 @@ describe('node group', () => {
     // GIVEN
     const app = new cdk.App();
     const stackWithFlag = new cdk.Stack(app, 'StackWithFlag', {
-      env: { account: '1234', region: 'testregion' },
+      env: { account: '123456789012', region: 'testregion' },
     });
 
     // WHEN

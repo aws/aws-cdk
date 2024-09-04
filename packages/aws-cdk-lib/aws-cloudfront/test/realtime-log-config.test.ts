@@ -15,7 +15,7 @@ describe('RealtimeLogConfig', () => {
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'Stack', {
-      env: { account: '1234', region: 'testregion' },
+      env: { account: '123456789012', region: 'testregion' },
     });
     stream = new kinesis.Stream(stack, 'stream');
     role = new iam.Role(stack, 'my-role', {

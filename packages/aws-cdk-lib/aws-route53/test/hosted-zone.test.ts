@@ -239,7 +239,7 @@ test('grantDelegation', () => {
   });
 
   const role = new iam.Role(stack, 'Role', {
-    assumedBy: new iam.AccountPrincipal('22222222222222'),
+    assumedBy: new iam.AccountPrincipal('222222222222'),
   });
 
   const zone = new PublicHostedZone(stack, 'Zone', {

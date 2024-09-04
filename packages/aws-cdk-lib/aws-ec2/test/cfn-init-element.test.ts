@@ -14,7 +14,7 @@ let stack: Stack;
 beforeEach(() => {
   app = new App();
   stack = new Stack(app, 'Stack', {
-    env: { account: '1234', region: 'testregion' },
+    env: { account: '123456789012', region: 'testregion' },
   });
 });
 
@@ -262,7 +262,7 @@ describe('InitFile', () => {
   test('fromObject renders the contents inline as an object', () => {
     // GIVEN
     const content = {
-      version: '1234',
+      version: '123456789012',
       secretsFile: '/tmp/secrets',
       maxThreads: 15,
       isEnabled: true,
@@ -277,7 +277,7 @@ describe('InitFile', () => {
     expect(rendered).toEqual({
       '/tmp/foo': {
         content: {
-          version: '1234',
+          version: '123456789012',
           secretsFile: '/tmp/secrets',
           maxThreads: 15,
           isEnabled: true,

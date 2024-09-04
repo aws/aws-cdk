@@ -183,7 +183,7 @@ describe('load balancer context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerArn: 'arn:load-balancer1',
@@ -202,8 +202,8 @@ describe('load balancer context provider plugin', () => {
           LoadBalancerArn: 'arn:load-balancer1',
           DNSName: 'dns1.example.com',
           CanonicalHostedZoneId: 'Z1234',
-          SecurityGroups: ['sg-1234'],
-          VpcId: 'vpc-1234',
+          SecurityGroups: ['sg-123456789012'],
+          VpcId: 'vpc-123456789012',
           Type: 'application',
         },
         {
@@ -211,8 +211,8 @@ describe('load balancer context provider plugin', () => {
           LoadBalancerArn: 'arn:load-balancer2',
           DNSName: 'dns2.example.com',
           CanonicalHostedZoneId: 'Z1234',
-          SecurityGroups: ['sg-1234'],
-          VpcId: 'vpc-1234',
+          SecurityGroups: ['sg-123456789012'],
+          VpcId: 'vpc-123456789012',
           Type: 'application',
         },
       ],
@@ -236,7 +236,7 @@ describe('load balancer context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerTags: [
@@ -258,8 +258,8 @@ describe('load balancer context provider plugin', () => {
           LoadBalancerArn: 'arn:load-balancer1',
           DNSName: 'dns.example.com',
           CanonicalHostedZoneId: 'Z1234',
-          SecurityGroups: ['sg-1234'],
-          VpcId: 'vpc-1234',
+          SecurityGroups: ['sg-123456789012'],
+          VpcId: 'vpc-123456789012',
           Type: 'application',
         },
       ],
@@ -267,7 +267,7 @@ describe('load balancer context provider plugin', () => {
 
     // WHEN
     const result = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerArn: 'arn:load-balancer1',
@@ -278,8 +278,8 @@ describe('load balancer context provider plugin', () => {
     expect(result.loadBalancerArn).toEqual('arn:load-balancer1');
     expect(result.loadBalancerCanonicalHostedZoneId).toEqual('Z1234');
     expect(result.loadBalancerDnsName).toEqual('dns.example.com');
-    expect(result.securityGroupIds).toEqual(['sg-1234']);
-    expect(result.vpcId).toEqual('vpc-1234');
+    expect(result.securityGroupIds).toEqual(['sg-123456789012']);
+    expect(result.vpcId).toEqual('vpc-123456789012');
   });
 
   test('looks up by tags', async() => {
@@ -293,8 +293,8 @@ describe('load balancer context provider plugin', () => {
           LoadBalancerArn: 'arn:load-balancer1',
           DNSName: 'dns1.example.com',
           CanonicalHostedZoneId: 'Z1234',
-          SecurityGroups: ['sg-1234'],
-          VpcId: 'vpc-1234',
+          SecurityGroups: ['sg-123456789012'],
+          VpcId: 'vpc-123456789012',
           Type: 'application',
         },
         {
@@ -302,8 +302,8 @@ describe('load balancer context provider plugin', () => {
           LoadBalancerArn: 'arn:load-balancer2',
           DNSName: 'dns2.example.com',
           CanonicalHostedZoneId: 'Z1234',
-          SecurityGroups: ['sg-1234'],
-          VpcId: 'vpc-1234',
+          SecurityGroups: ['sg-123456789012'],
+          VpcId: 'vpc-123456789012',
           Type: 'application',
         },
       ],
@@ -327,7 +327,7 @@ describe('load balancer context provider plugin', () => {
 
     // WHEN
     const result = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [
@@ -351,8 +351,8 @@ describe('load balancer context provider plugin', () => {
           LoadBalancerArn: 'arn:load-balancer1',
           DNSName: 'dns1.example.com',
           CanonicalHostedZoneId: 'Z1234',
-          SecurityGroups: ['sg-1234'],
-          VpcId: 'vpc-1234',
+          SecurityGroups: ['sg-123456789012'],
+          VpcId: 'vpc-123456789012',
         },
         {
           IpAddressType: 'ipv4',
@@ -360,8 +360,8 @@ describe('load balancer context provider plugin', () => {
           LoadBalancerArn: 'arn:load-balancer2',
           DNSName: 'dns2.example.com',
           CanonicalHostedZoneId: 'Z1234',
-          SecurityGroups: ['sg-1234'],
-          VpcId: 'vpc-1234',
+          SecurityGroups: ['sg-123456789012'],
+          VpcId: 'vpc-123456789012',
         },
       ],
 
@@ -379,7 +379,7 @@ describe('load balancer context provider plugin', () => {
 
     // WHEN
     const loadBalancer = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerTags: [{ key: 'some', value: 'tag' }],
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
@@ -401,7 +401,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -433,7 +433,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerArn: 'arn:load-balancer',
@@ -487,7 +487,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -514,7 +514,7 @@ describe('load balancer listener context provider plugin', () => {
       loadBalancers: [
         {
           LoadBalancerArn: 'arn:load-balancer-arn',
-          SecurityGroups: ['sg-1234', 'sg-2345'],
+          SecurityGroups: ['sg-123456789012', 'sg-2345'],
           Type: 'application',
         },
       ],
@@ -522,7 +522,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       listenerArn: 'arn:listener-arn',
@@ -531,7 +531,7 @@ describe('load balancer listener context provider plugin', () => {
     // THEN
     expect(listener.listenerArn).toEqual('arn:listener-arn');
     expect(listener.listenerPort).toEqual(999);
-    expect(listener.securityGroupIds).toEqual(['sg-1234', 'sg-2345']);
+    expect(listener.securityGroupIds).toEqual(['sg-123456789012', 'sg-2345']);
   });
 
   test('looks up by associated load balancer arn', async () => {
@@ -543,7 +543,7 @@ describe('load balancer listener context provider plugin', () => {
       loadBalancers: [
         {
           LoadBalancerArn: 'arn:load-balancer-arn1',
-          SecurityGroups: ['sg-1234'],
+          SecurityGroups: ['sg-123456789012'],
           Type: 'application',
         },
       ],
@@ -561,7 +561,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerArn: 'arn:load-balancer-arn1',
@@ -570,7 +570,7 @@ describe('load balancer listener context provider plugin', () => {
     // THEN
     expect(listener.listenerArn).toEqual('arn:listener-arn1');
     expect(listener.listenerPort).toEqual(80);
-    expect(listener.securityGroupIds).toEqual(['sg-1234']);
+    expect(listener.securityGroupIds).toEqual(['sg-123456789012']);
   });
 
   test('looks up by associated load balancer tags', async () => {
@@ -583,7 +583,7 @@ describe('load balancer listener context provider plugin', () => {
         {
           // This one should have the wrong tags
           LoadBalancerArn: 'arn:load-balancer-arn1',
-          SecurityGroups: ['sg-1234', 'sg-2345'],
+          SecurityGroups: ['sg-123456789012', 'sg-2345'],
           Type: 'application',
         },
         {
@@ -627,7 +627,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [
@@ -656,8 +656,8 @@ describe('load balancer listener context provider plugin', () => {
             LoadBalancerArn: 'arn:load-balancer1',
             DNSName: 'dns1.example.com',
             CanonicalHostedZoneId: 'Z1234',
-            SecurityGroups: ['sg-1234'],
-            VpcId: 'vpc-1234',
+            SecurityGroups: ['sg-123456789012'],
+            VpcId: 'vpc-123456789012',
             Type: 'application',
           },
           {
@@ -667,7 +667,7 @@ describe('load balancer listener context provider plugin', () => {
             DNSName: 'dns2.example.com',
             CanonicalHostedZoneId: 'Z1234',
             SecurityGroups: ['sg-2345'],
-            VpcId: 'vpc-1234',
+            VpcId: 'vpc-123456789012',
             Type: 'application',
           },
         ],
@@ -742,7 +742,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -800,7 +800,7 @@ describe('load balancer listener context provider plugin', () => {
 
     // WHEN
     const listener = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,
       loadBalancerTags: [{ key: 'some', value: 'tag' }],
@@ -840,7 +840,7 @@ describe('load balancer listener context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
         loadBalancerType: cxschema.LoadBalancerType.NETWORK,
         listenerArn: 'arn:listener-arn1',

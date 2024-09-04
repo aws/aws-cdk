@@ -6,8 +6,8 @@ import { ILoadBalancerTarget, InstanceTarget, LoadBalancer, LoadBalancingProtoco
 
 describe('tests', () => {
   test('test specifying nonstandard port works', () => {
-    const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'test' } });
-    stack.node.setContext('availability-zones:1234:test', ['test-1a', 'test-1b']);
+    const stack = new Stack(undefined, undefined, { env: { account: '123456789012', region: 'test' } });
+    stack.node.setContext('availability-zones:123456789012:test', ['test-1a', 'test-1b']);
     const vpc = new Vpc(stack, 'VCP');
 
     const lb = new LoadBalancer(stack, 'LB', { vpc });

@@ -8,7 +8,7 @@ describe('managed policy', () => {
 
   beforeEach(() => {
     app = new cdk.App();
-    stack = new cdk.Stack(app, 'MyStack', { env: { account: '1234', region: 'us-east-1' } });
+    stack = new cdk.Stack(app, 'MyStack', { env: { account: '123456789012', region: 'us-east-1' } });
   });
 
   test('simple AWS managed policy', () => {
@@ -30,15 +30,15 @@ describe('managed policy', () => {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
-        ':iam::1234:policy/SomeCustomerPolicy',
+        ':iam::123456789012:policy/SomeCustomerPolicy',
       ]],
     });
   });
 
   test('managed policy by arn', () => {
-    const mp = ManagedPolicy.fromManagedPolicyArn(stack, 'MyManagedPolicyByArn', 'arn:aws:iam::1234:policy/my-policy');
+    const mp = ManagedPolicy.fromManagedPolicyArn(stack, 'MyManagedPolicyByArn', 'arn:aws:iam::123456789012:policy/my-policy');
 
-    expect(stack.resolve(mp.managedPolicyArn)).toEqual('arn:aws:iam::1234:policy/my-policy');
+    expect(stack.resolve(mp.managedPolicyArn)).toEqual('arn:aws:iam::123456789012:policy/my-policy');
   });
 
   test('managed policy with statements', () => {
@@ -535,7 +535,7 @@ describe('managed policy', () => {
                   [
                     'arn:',
                     { Ref: 'AWS::Partition' },
-                    ':iam::1234:policy/ACustomerManagedPolicyName',
+                    ':iam::123456789012:policy/ACustomerManagedPolicyName',
                   ],
                 ],
               },
@@ -552,7 +552,7 @@ describe('managed policy', () => {
                   [
                     'arn:',
                     { Ref: 'AWS::Partition' },
-                    ':iam::1234:policy/ACustomerManagedPolicyName',
+                    ':iam::123456789012:policy/ACustomerManagedPolicyName',
                   ],
                 ],
               },
@@ -569,7 +569,7 @@ describe('managed policy', () => {
                   [
                     'arn:',
                     { Ref: 'AWS::Partition' },
-                    ':iam::1234:policy/ACustomerManagedPolicyName',
+                    ':iam::123456789012:policy/ACustomerManagedPolicyName',
                   ],
                 ],
               },
@@ -645,7 +645,7 @@ describe('managed policy', () => {
       resources: ['*'],
     }));
 
-    const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '5678', region: 'us-east-1' } });
+    const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '567890123456', region: 'us-east-1' } });
     new cdk.CfnOutput(stack2, 'Output', {
       value: mp.managedPolicyArn,
     });
@@ -661,7 +661,7 @@ describe('managed policy', () => {
                 {
                   Ref: 'AWS::Partition',
                 },
-                ':iam::1234:policy/mystackmystackpolicy17395e221b1b6deaf875',
+                ':iam::123456789012:policy/mystackmystackpolicy17395e226cc78b06430f',
               ],
             ],
           },
@@ -725,7 +725,7 @@ describe('managed policy', () => {
         throw new Error('should not be called.');
       }
     };
-    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
+    const resource = new DummyResource(stack, 'Dummy', { account: '567890123456' });
 
     expect(() => {
       Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });

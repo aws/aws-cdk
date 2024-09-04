@@ -240,7 +240,7 @@ describe('security group', () => {
     ];
 
     const ports = [
-      Port.tcp(1234),
+      Port.tcp(123456789012),
       Port.tcp(Lazy.number({ produce: () => 5000 })),
       Port.allTcp(),
       Port.tcpRange(80, 90),
@@ -517,12 +517,12 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
 
-    const securityGroup = SecurityGroup.fromLookup(stack, 'stack', 'sg-1234');
+    const securityGroup = SecurityGroup.fromLookup(stack, 'stack', 'sg-123456789012');
 
     expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
@@ -534,7 +534,7 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
@@ -553,13 +553,13 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
 
     const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
-      vpcId: 'vpc-1234',
+      vpcId: 'vpc-123456789012',
       availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
     });
 
@@ -577,13 +577,13 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
 
     const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
-      vpcId: 'vpc-1234',
+      vpcId: 'vpc-123456789012',
       availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
     });
 
@@ -601,13 +601,13 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
 
     const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
-      vpcId: 'vpc-1234',
+      vpcId: 'vpc-123456789012',
       availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
     });
 
@@ -625,7 +625,7 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
@@ -642,7 +642,7 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
@@ -659,13 +659,13 @@ describe('security group lookup', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       },
     });
 
     const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
-      vpcId: Lazy.string({ produce: () => 'vpc-1234' }),
+      vpcId: Lazy.string({ produce: () => 'vpc-123456789012' }),
       availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
     });
 

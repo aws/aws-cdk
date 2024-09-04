@@ -18,7 +18,7 @@ let stack: Stack;
 beforeEach(() => {
   app = new App();
   stack = new Stack(app, 'Stack', {
-    env: { account: '1234', region: 'testregion' },
+    env: { account: '123456789012', region: 'testregion' },
   });
 
   jest.resetAllMocks();
@@ -262,7 +262,7 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
     new iam.PolicyStatement({
       actions: ['es:ESHttpPost', 'es:ESHttpPut'],
       effect: iam.Effect.ALLOW,
-      principals: [new iam.AccountPrincipal('5678')],
+      principals: [new iam.AccountPrincipal('567890123456')],
       resources: [domain.domainArn, `${domain.domainArn}/*`],
     }),
   );
@@ -279,7 +279,7 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
         {
           Ref: 'AWS::Partition',
         },
-        ':iam::5678:root\\"},\\"Resource\\":[\\"',
+        ':iam::567890123456:root\\"},\\"Resource\\":[\\"',
         {
           'Fn::GetAtt': [
             'Domain66AC69E0',
@@ -433,7 +433,7 @@ each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws wi
 
 each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
   const stackWithFlag = new Stack(app, 'StackWithFlag', {
-    env: { account: '1234', region: 'testregion' },
+    env: { account: '123456789012', region: 'testregion' },
   });
   stackWithFlag.node.setContext(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, true);
   new Domain(stackWithFlag, 'Domain', {
@@ -1058,7 +1058,7 @@ each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
                     {
                       Ref: 'AWS::Partition',
                     },
-                    ':es:testregion:1234:domain/test-domain-2w2x2u3tifly',
+                    ':es:testregion:123456789012:domain/test-domain-2w2x2u3tifly',
                   ],
                 ],
               },
@@ -1070,7 +1070,7 @@ each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
                     {
                       Ref: 'AWS::Partition',
                     },
-                    ':es:testregion:1234:domain/test-domain-2w2x2u3tifly/*',
+                    ':es:testregion:123456789012:domain/test-domain-2w2x2u3tifly/*',
                   ],
                 ],
               },
@@ -1240,7 +1240,7 @@ describe('import', () => {
     const imported = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
 
     expect(imported.domainName).toEqual(domainName);
-    expect(imported.domainArn).toMatch(RegExp(`es:testregion:1234:domain/${domainName}$`));
+    expect(imported.domainArn).toMatch(RegExp(`es:testregion:123456789012:domain/${domainName}$`));
     expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
 
     Template.fromStack(stack).resourceCountIs('AWS::OpenSearchService::Domain', 0);
@@ -1248,7 +1248,7 @@ describe('import', () => {
 
   test('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
-    const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
+    const domainArn = `arn:aws:es:testregion:123456789012:domain/${domainName}`;
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
     const domainEndpoint = `https://${domainEndpointWithoutHttps}`;
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
@@ -2775,7 +2775,7 @@ function testMetric(
     period,
     statistic,
     dimensions: {
-      ClientId: '1234',
+      ClientId: '123456789012',
     },
   });
   expect(metric.dimensions).toHaveProperty('DomainName');

@@ -42,8 +42,8 @@ describe('CodeCommit Source Action', () => {
     test('cross-account CodeCommit Repository Source does not use target role in source stack', () => {
       // Test for https://github.com/aws/aws-cdk/issues/15639
       const app = new App();
-      const sourceStack = new Stack(app, 'SourceStack', { env: { account: '1234', region: 'north-pole' } });
-      const targetStack = new Stack(app, 'TargetStack', { env: { account: '5678', region: 'north-pole' } });
+      const sourceStack = new Stack(app, 'SourceStack', { env: { account: '123456789012', region: 'north-pole' } });
+      const targetStack = new Stack(app, 'TargetStack', { env: { account: '567890123456', region: 'north-pole' } });
 
       const repo = new codecommit.Repository(sourceStack, 'MyRepo', {
         repositoryName: 'my-repo',
@@ -85,7 +85,7 @@ describe('CodeCommit Source Action', () => {
             'Fn::Join': ['', [
               'arn:',
               { 'Ref': 'AWS::Partition' },
-              ':events:north-pole:5678:event-bus/default',
+              ':events:north-pole:567890123456:event-bus/default',
             ]],
           },
         }],
@@ -104,7 +104,7 @@ describe('CodeCommit Source Action', () => {
                 [
                   'arn:',
                   { 'Ref': 'AWS::Partition' },
-                  ':codecommit:north-pole:1234:my-repo',
+                  ':codecommit:north-pole:123456789012:my-repo',
                 ],
               ],
             },
@@ -116,7 +116,7 @@ describe('CodeCommit Source Action', () => {
               'Fn::Join': ['', [
                 'arn:',
                 { 'Ref': 'AWS::Partition' },
-                ':codepipeline:north-pole:5678:',
+                ':codepipeline:north-pole:567890123456:',
                 { 'Ref': 'MyPipelineAED38ECF' },
               ]],
             },
@@ -574,13 +574,13 @@ describe('CodeCommit Source Action', () => {
       const repoFomAnotherAccount = codecommit.Repository.fromRepositoryName(repoStack, 'Repo', 'my-repo');
 
       const pipelineStack = new Stack(app, 'PipelineStack', {
-        env: { account: '456', region: 'us-east-1' },
+        env: { account: '456789012345', region: 'us-east-1' },
       });
       new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
         artifactBucket: s3.Bucket.fromBucketAttributes(pipelineStack, 'PipelineBucket', {
           bucketName: 'pipeline-bucket',
           encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'PipelineKey',
-            'arn:aws:kms:us-east-1:456:key/my-key'),
+            'arn:aws:kms:us-east-1:456789012345:key/my-key'),
         }),
         stages: [
           {
