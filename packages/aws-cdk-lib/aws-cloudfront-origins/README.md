@@ -5,7 +5,7 @@ S3 buckets, Elastic Load Balancing v2 load balancers, or any other domain name.
 
 ## S3 Bucket
 
-An S3 bucket can be used as an origin. An S3 bucket origin can either be configured as a standard bucket or as a website endpoint (see AWS docs for [Using an S3 Bucket](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html#using-s3-as-origin)).
+An S3 bucket can be used as an origin. An S3 bucket origin can either be configured using a standard S3 bucket or using a S3 bucket that's configured as a website endpoint (see AWS docs for [Using an S3 Bucket](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html#using-s3-as-origin)).
 
 ### Standard S3 Bucket
 
@@ -37,9 +37,9 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-### Restricting access to S3 Origin
+### Restricting access to a standard S3 Origin
 
-CloudFront provides two ways to send authenticated requests to an Amazon S3 origin:
+CloudFront provides two ways to send authenticated requests to a standard Amazon S3 origin:
 
 * origin access control (OAC) and
 * origin access identity (OAI)
@@ -60,7 +60,7 @@ the `withOriginAccessControl()`, `withOriginAccessIdentity()`, and `withBucketDe
 
 #### Setting up a new origin access control (OAC)
 
-Setup an S3 origin with origin access control as follows:
+Setup a standard S3 origin with origin access control as follows:
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
@@ -71,7 +71,7 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-When creating a S3 origin using `origins.S3BucketOrigin.withOriginAccessControl()`, an [Origin Access Control resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html) is automatically created with the origin type set to `s3` and signing behavior set to `always`.
+When creating a standard S3 origin using `origins.S3BucketOrigin.withOriginAccessControl()`, an [Origin Access Control resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html) is automatically created with the origin type set to `s3` and signing behavior set to `always`.
 
 You can grant read, write or delete access to the OAC using the `originAccessLevels` property:
 
@@ -114,7 +114,7 @@ bucket origins, the bucket's object ownership must be set to Bucket owner enforc
 If the objects in the S3 bucket origin are encrypted using server-side encryption with
 AWS Key Management Service (SSE-KMS), the OAC must have permission to use the KMS key.
 
-Setting up an S3 origin using `S3BucketOrigin.withOriginAccessControl()` will automatically add the statement to the KMS key policy
+Setting up a standard S3 origin using `S3BucketOrigin.withOriginAccessControl()` will automatically add the statement to the KMS key policy
 to give the OAC permission to use the KMS key.
 
 ```ts
@@ -272,6 +272,8 @@ changes to your stack.
 }
 ```
 
+##### Updating imported key policies
+
 For imported keys, you will need to manually update the
 key policy yourself as CDK apps cannot modify the configuration of imported resources. After deploying the distribution, add the following policy statement to your key policy to allow CloudFront OAC to access your KMS key for SSE-KMS:
 
@@ -394,7 +396,7 @@ See AWS docs on [Giving an origin access identity permission to read files in th
 
 ### Setting up a S3 origin with no origin access control
 
-To setup an S3 origin with no access control (no OAI nor OAC), use `origins.S3BucketOrigin.withBucketDefaults()`:
+To setup a standard S3 origin with no access control (no OAI nor OAC), use `origins.S3BucketOrigin.withBucketDefaults()`:
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
@@ -423,7 +425,7 @@ const distribution = new cloudfront.Distribution(this, 'myDist', {
 
 **Step 1:**
 
-To ensure CloudFront doesn't lose access to the bucket during the transition, add a statement to bucket policy to grant OAC access to S3 origin. Deploy the stack. If you are okay with downtime during the transition, you can skip this step.
+To ensure CloudFront doesn't lose access to the bucket during the transition, add a statement to bucket policy to grant OAC access to the S3 origin. Deploy the stack. If you are okay with downtime during the transition, you can skip this step.
 
 > Tip: Run `cdk diff` before deploying to verify the
 changes to your stack.
