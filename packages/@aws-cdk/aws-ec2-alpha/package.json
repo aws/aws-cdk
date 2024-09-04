@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ec2-alpha",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "description": "The CDK construct library for VPC V2",
   "main": "lib/index.js",
@@ -103,5 +103,8 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
