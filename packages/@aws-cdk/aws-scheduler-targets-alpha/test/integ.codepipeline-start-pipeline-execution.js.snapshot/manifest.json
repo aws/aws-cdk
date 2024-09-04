@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21f7be74ff104bcbfe943b11fd4088904570364fc21cd66384528bc5980ef704.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31cc57d8251ed91fb4c8b544c4b0378025db2cdec80a5e4a046eeab07809d56c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -82,6 +82,12 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -104,6 +110,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketDeploymentCustomResourceCB7E2133"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
@@ -246,7 +258,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7425c9b972fc1fd576efdd9093f828be2938508ad906c3ce8b1a880dbd10637a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/59faa3ca9b64340d6fead11cd249fab7b3a2f3ef91377dbfec152bc56f25feca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -308,12 +320,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/integrationtest-codepipeline-start-pipeline-execution/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integrationtest-codepipeline-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [

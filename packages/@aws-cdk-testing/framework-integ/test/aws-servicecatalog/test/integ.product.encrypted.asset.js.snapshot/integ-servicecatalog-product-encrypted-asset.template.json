@@ -248,7 +248,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -317,7 +317,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -485,7 +485,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
+     "S3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
     },
     "Environment": {
      "Variables": {
@@ -504,7 +504,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.11",
     "Timeout": 900
    },
    "DependsOn": [

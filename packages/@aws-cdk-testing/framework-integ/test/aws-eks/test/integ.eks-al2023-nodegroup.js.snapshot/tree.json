@@ -2057,7 +2057,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2286,7 +2286,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2512,7 +2512,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2865,7 +2865,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/d5e7e9c8ddb8c37af570bd2ca9fba5bedce686e00db159b4a2942d267f2f0fa7.json"
+                          "/7e3a4db62580d1e348e643295ab4a2ae196cf491b19e8bb2af0e5df5731f8c44.json"
                         ]
                       ]
                     }
@@ -2947,7 +2947,7 @@
                         "role": {
                           "Ref": "referencetoawscdkeksclusteral2023nodegrouptestClusterKubectlHandlerRoleEBF8BFAEArn"
                         },
-                        "runtime": "python3.10",
+                        "runtime": "python3.11",
                         "timeout": 900,
                         "vpcConfig": {
                           "subnetIds": [
@@ -3222,7 +3222,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3397,7 +3397,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/444260f7ba6df7584a44225cdac0e00d5e546a6f2191d5d04cf2b616eff35a4e.json"
+                          "/9bf54635ece475c4a80e427fbac6f464603ed4d3db0993521bf2ed14fe8f2fcb.json"
                         ]
                       ]
                     }

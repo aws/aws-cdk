@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "6b19297a97597a250e5e30435d2cc30a5558a154c4135bccb767b62181e6c86d.zip"
+     "S3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "6b19297a97597a250e5e30435d2cc30a5558a154c4135bccb767b62181e6c86d.zip"
+     "S3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -249,7 +249,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -386,7 +386,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -520,7 +520,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {

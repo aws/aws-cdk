@@ -28,7 +28,7 @@
     "Role": {
      "Ref": "referencetointegeksstackClusterKubectlHandlerRole3E1754A0Arn"
     },
-    "Runtime": "python3.10",
+    "Runtime": "python3.11",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [

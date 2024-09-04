@@ -172,7 +172,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -455,7 +455,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
+                      "s3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
                     },
                     "environment": {
                       "variables": {
@@ -474,7 +474,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.9",
+                    "runtime": "python3.11",
                     "timeout": 900
                   }
                 },
@@ -512,7 +512,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -550,7 +550,7 @@
                 "path": "deploy-time-substitution-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -570,7 +570,7 @@
                             "path": "deploy-time-substitution-integ-test/DefaultTest/DeployAssert/AwsApiCallS3getObjectd316deb61071d83221cf46c8ebac0d87/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -642,7 +642,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -684,7 +684,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
