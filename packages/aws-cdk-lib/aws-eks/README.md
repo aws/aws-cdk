@@ -1142,6 +1142,7 @@ You can disable granting the cluster admin permissions to the cluster creator ro
 
 > **Note** - Switching `bootstrapClusterCreatorAdminPermissions` on an existing cluster would cause cluster replacement and should be avoided in production.
 
+
 ### Access Entry
 
 An access entry is a cluster identity—directly linked to an AWS IAM principal user or role that is used to authenticate to
