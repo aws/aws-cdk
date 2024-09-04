@@ -10,7 +10,11 @@ import { BedrockInvokeModel } from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
  * This integ test does not actually verify a Step Functions execution, as not all AWS accounts have Bedrock model access.
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-cdk.aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask': true,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-integ');
 
 const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1);
@@ -70,14 +74,32 @@ const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
   outputPath: sfn.JsonPath.stringAt('$.names'),
 });
 
-/** Test for Bedrock s3 URI Path */
+/**Test for Bedrock Input Path */
 const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: sfn.JsonPath.format(
+        'Alphabetize this list of first names:\n{}',
+        sfn.JsonPath.stringAt('$.names'),
+      ),
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  inputPath: sfn.JsonPath.stringAt('$.names'),
+});
+
+/** Test for Bedrock s3 URI Path */
+const prompt5 = new BedrockInvokeModel(stack, 'Prompt5', {
   model,
   input: { s3InputUri: sfn.JsonPath.stringAt('$.names') },
   output: { s3OutputUri: sfn.JsonPath.stringAt('$.names') },
 });
 
-const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3).next(prompt4);
+const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3).next(prompt4).next(prompt5);
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),
