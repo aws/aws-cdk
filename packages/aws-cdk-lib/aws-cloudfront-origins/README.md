@@ -495,7 +495,7 @@ No, following the migration steps does not cause any replacement of the existing
 
 **Will migrating from OAI to OAC have any availability implications for my application?**
 
-Migrating from OAI to OAC following the steps above (requires a 2-step deployment) should not cause any downtime. However, if you decide to skip Step 1 and migrate to OAC in a single deployment, you should be aware there is a possibility of downtime.
+Updates to bucket policies are eventually consistent. Therefore, removing OAI permissions and setting up OAC in the same CloudFormation stack deployment is not recommended as it may cause downtime where CloudFront loses access to the bucket. Following the steps outlined above lowers the risk of downtime as the bucket policy is updated to have both OAI and OAC permissions, then in a subsequent deployment, the OAI permissions are removed.
 
 For more information, see [Migrating from origin access identity (OAI) to origin access control (OAC)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#migrate-from-oai-to-oac).
 
