@@ -8,6 +8,7 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
+const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
 class EksClusterAlbControllerStack extends Stack {
 
   constructor(scope: App, id: string) {
@@ -18,9 +19,9 @@ class EksClusterAlbControllerStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       albController: {
-        version: eks.AlbControllerVersion.V2_6_2,
+        version: LATEST_VERSION,
       },
     });
 

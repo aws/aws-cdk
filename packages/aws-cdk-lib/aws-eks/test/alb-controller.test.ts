@@ -5,6 +5,40 @@ import { Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart, KubernetesManifest, AuthenticationMode } from '../lib';
 
+const versions = Object.values(AlbControllerVersion);
+
+test.each(versions)('support AlbControllerVersion (%s)', (version) => {
+  const { stack } = testFixture();
+
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_27,
+  });
+  AlbController.create(stack, {
+    cluster,
+    version,
+  });
+
+  Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
+    Version: version.helmChartVersion,
+    Values: {
+      'Fn::Join': [
+        '',
+        [
+          '{"clusterName":"',
+          {
+            Ref: 'Cluster9EE0221C',
+          },
+          '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
+          {
+            Ref: 'ClusterDefaultVpcFA9F2722',
+          },
+          `","image":{"repository":"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller","tag":"${version.version}"}}`,
+        ],
+      ],
+    },
+  });
+});
+
 test('all vended policies are valid', () => {
   const addOnsDir = path.join(__dirname, '..', 'lib', 'addons');
 
