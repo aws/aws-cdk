@@ -643,7 +643,7 @@ The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cl
 
 ### Alb Controller
 
-Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/).
+Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/).
 
 From the docs:
 
@@ -658,7 +658,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_30,
   albController: {
-    version: eks.AlbControllerVersion.V2_6_2,
+    version: eks.AlbControllerVersion.V2_8_2,
   },
 });
 ```
@@ -1849,6 +1849,8 @@ new eks.Addon(this, 'Addon', {
   cluster,
   addonName: 'aws-guardduty-agent',
   addonVersion: 'v1.6.1',
+  // whether to preserve the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on.
+  preserveOnDelete: false,
 });
 ```
 

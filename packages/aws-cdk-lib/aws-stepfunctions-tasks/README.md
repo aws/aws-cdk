@@ -399,27 +399,6 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
   },
 });
 ```
-### Using Input Path
-
-Provide S3 URI as an input or output path to invoke a model
-
-```ts
-
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-
-const model = bedrock.FoundationModel.fromFoundationModelId(
-  this,
-  'Model',
-  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
-);
-
-const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
-  model,
-  inputPath: sfn.JsonPath.stringAt('$.prompt'),
-  outputPath: sfn.JsonPath.stringAt('$.prompt'),
-});
-
-```
 
 You can apply a guardrail to the invocation by setting `guardrail`.
 
@@ -700,6 +679,39 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
   propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
+
+#### Override CPU and Memory Parameter
+
+By setting the property cpu or memoryMiB, you can override the Fargate or EC2 task instance size at runtime.
+
+see: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+const cluster = new ecs.Cluster(this, 'ECSCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  compatibility: ecs.Compatibility.FARGATE,
+  cpu: '256',
+  memoryMiB: '512'
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+});
+
+const runTask = new tasks.EcsRunTask(this, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
+  cpu: '1024',
+  memoryMiB: '1048'
+});
+```
+
 
 #### ECS enable Exec
 
