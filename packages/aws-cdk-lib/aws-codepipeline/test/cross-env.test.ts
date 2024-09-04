@@ -201,7 +201,7 @@ describe('cross-environment CodePipeline', function () {
     const asm = app.synth();
     const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-234567890123`);
     Template.fromJSON(supportStack.template).hasResourceProperties('AWS::IAM::Role', {
-      RoleName: 'pipelinestack-support-456dbuildactionrolebf03938f0cc9a2599be5',
+      RoleName: 'pipelinestack-support-234dbuildactionrolec4ab6bf1cf3a58f0a3ba',
     });
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -216,7 +216,7 @@ describe('cross-environment CodePipeline', function () {
                 'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
-                  ':iam::234567890123:role/pipelinestack-support-456dbuildactionrolebf03938f0cc9a2599be5',
+                  ':iam::234567890123:role/pipelinestack-support-234dbuildactionrolec4ab6bf1cf3a58f0a3ba',
                 ]],
               },
             },
