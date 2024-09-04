@@ -1,7 +1,7 @@
-/* eslint-disable import/order */
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { silentTest } from '../../util/silent';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateLambdaConfiguration: (
@@ -28,7 +28,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('returns undefined when a new Lambda function is added to the Stack', async () => {
+  silentTest('returns undefined when a new Lambda function is added to the Stack', async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
@@ -57,7 +57,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
+  silentTest('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -108,7 +108,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test("correctly evaluates the function's name when it references a different resource from the template", async () => {
+  silentTest("correctly evaluates the function's name when it references a different resource from the template", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -178,7 +178,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test("correctly falls back to taking the function's name from the current stack if it can't evaluate it in the template", async () => {
+  silentTest("correctly falls back to taking the function's name from the current stack if it can't evaluate it in the template", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -238,7 +238,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
+  silentTest("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -288,7 +288,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
   });
 
-  test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the function's name)", async () => {
+  silentTest("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the function's name)", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -341,7 +341,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
   });
 
-  test('calls the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
+  silentTest('calls the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -391,7 +391,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
+  silentTest('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -442,7 +442,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test(`when it receives a non-hotswappable change that includes a code difference in a Lambda function, it does not call the updateLambdaCode()
+  silentTest(`when it receives a non-hotswappable change that includes a code difference in a Lambda function, it does not call the updateLambdaCode()
         API in CLASSIC mode but does in HOTSWAP_ONLY mode`,
   async () => {
     // GIVEN
@@ -500,7 +500,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('does not call the updateLambdaCode() API when a resource with type that is not AWS::Lambda::Function but has the same properties is changed', async () => {
+  silentTest('does not call the updateLambdaCode() API when a resource with type that is not AWS::Lambda::Function but has the same properties is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -555,7 +555,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls getFunction() after function code is updated with delay 1', async () => {
+  silentTest('calls getFunction() after function code is updated with delay 1', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -607,7 +607,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }));
   });
 
-  test('calls getFunction() after function code is updated and VpcId is empty string with delay 1', async () => {
+  silentTest('calls getFunction() after function code is updated and VpcId is empty string with delay 1', async () => {
     // GIVEN
     mockUpdateLambdaCode = jest.fn().mockReturnValue({
       VpcConfig: {
@@ -666,7 +666,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }));
   });
 
-  test('calls getFunction() after function code is updated on a VPC function with delay 5', async () => {
+  silentTest('calls getFunction() after function code is updated on a VPC function with delay 5', async () => {
     // GIVEN
     mockUpdateLambdaCode = jest.fn().mockReturnValue({
       VpcConfig: {
@@ -725,7 +725,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }));
   });
 
-  test('calls the updateLambdaConfiguration() API when it receives difference in Description field of a Lambda function', async () => {
+  silentTest('calls the updateLambdaConfiguration() API when it receives difference in Description field of a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -777,7 +777,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateLambdaConfiguration() API when it receives difference in Environment field of a Lambda function', async () => {
+  silentTest('calls the updateLambdaConfiguration() API when it receives difference in Environment field of a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -846,7 +846,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls both updateLambdaCode() and updateLambdaConfiguration() API when it receives both code and configuration change', async () => {
+  silentTest('calls both updateLambdaCode() and updateLambdaConfiguration() API when it receives both code and configuration change', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -903,7 +903,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('Lambda hotswap works properly with changes of environment variables and description with tokens', async () => {
+  silentTest('Lambda hotswap works properly with changes of environment variables and description with tokens', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -1000,7 +1000,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('S3ObjectVersion is hotswappable', async () => {
+  silentTest('S3ObjectVersion is hotswappable', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

@@ -48,7 +48,7 @@ to the PR.
 # Installation
 
 ```console
-cd tools/prlint
+cd tools/@aws-cdk/prlint
 yarn install
 ```
 
