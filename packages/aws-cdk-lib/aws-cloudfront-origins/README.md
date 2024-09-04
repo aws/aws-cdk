@@ -13,7 +13,7 @@ To set up an origin using a standard S3 bucket, use the `S3BucketOrigin` class. 
 is handled as a bucket origin and
 CloudFront's redirect and error handling will be used. It is recommended to use `S3BucketOrigin.withOriginAccessControl()` to configure OAC for your origin.
 
-> Note: When you use CloudFront OAC with Amazon S3 bucket origins, you must set Amazon S3 Object Ownership to Bucket owner enforced (the default for new Amazon S3 buckets). If you require ACLs, use the Bucket owner preferred setting to maintain control over objects uploaded via CloudFront.
+> Note: `S3Origin` has been deprecated. Use `S3BucketOrigin` for standard S3 origins and `S3StaticWebsiteOrigin` for static website S3 origins.
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
@@ -22,25 +22,28 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+> Note: When you use CloudFront OAC with Amazon S3 bucket origins, you must set Amazon S3 Object Ownership to Bucket owner enforced (the default for new Amazon S3 buckets). If you require ACLs, use the Bucket owner preferred setting to maintain control over objects uploaded via CloudFront.
+
 ### S3 Bucket Configured as a Website Endpoint
 
-To set up an origin using a S3 bucket configured as a website endpoint, use the `S3StaticWebsiteOrigin` class. When the bucket is configured as a
+To set up an origin using an S3 bucket configured as a website endpoint, use the `S3StaticWebsiteOrigin` class. When the bucket is configured as a
 website endpoint, the bucket is treated as an HTTP origin,
 and the distribution can use built-in S3 redirects and S3 custom error pages.
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new origins.S3StaticWebsiteOrigin({ bucket: myBucket }) },
+  defaultBehavior: { origin: new origins.S3StaticWebsiteOrigin(myBucket) },
 });
 ```
-
-> Note: `S3Origin` has been deprecated. Use `S3BucketOrigin` for standard S3 origins and `S3StaticWebsiteOrigin` for static website S3 origins.
 
 ### Restricting access to S3 Origin
 
 CloudFront provides two ways to send authenticated requests to an Amazon S3 origin:
-origin access control (OAC) and origin access identity (OAI).
+
+* origin access control (OAC) and
+* origin access identity (OAI)
+
 OAI is considered legacy due to limited functionality and regional
 limitations, whereas OAC is recommended because it supports all Amazon S3
 buckets in all AWS Regions, Amazon S3 server-side encryption with AWS KMS (SSE-KMS), and dynamic requests (PUT and DELETE) to Amazon S3. Additionally,
@@ -52,7 +55,7 @@ See AWS docs on [Restricting access to an Amazon S3 Origin](https://docs.aws.ama
 
 > Note: OAC and OAI can only be used with an regular S3 bucket origin (not a bucket configured as a website endpoint).
 
-The `S3BucketOrigin` class supports creating a S3 origin with OAC, OAI, and no access control (using your bucket access settings) via
+The `S3BucketOrigin` class supports creating a standard S3 origin with OAC, OAI, and no access control (using your bucket access settings) via
 the `withOriginAccessControl()`, `withOriginAccessIdentity()`, and `withBucketDefaults()` methods respectively.
 
 #### Setting up a new origin access control (OAC)
@@ -129,6 +132,8 @@ new cloudfront.Distribution(this, 'myDist', {
   },
 });
 ```
+
+##### Scoping down the key policy
 
 I saw this warning message during synth time. What do I do?
 

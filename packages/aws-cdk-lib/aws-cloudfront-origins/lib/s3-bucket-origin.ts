@@ -35,7 +35,7 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
   /**
    * The level of permissions granted in the bucket policy and key policy (if applicable)
    * to the CloudFront distribution.
-   * @default AccessLevel.READ
+   * @default [AccessLevel.READ]
    */
   readonly originAccessLevels?: AccessLevel[];
 }

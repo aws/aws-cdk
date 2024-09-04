@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'cloudfront-s3-static-website-origin');
 const bucket = new s3.Bucket(stack, 'Bucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-const s3Origin = new origins.S3StaticWebsiteOrigin({ bucket });
+const s3Origin = new origins.S3StaticWebsiteOrigin(bucket);
 const distribution = new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: {
     origin: s3Origin,

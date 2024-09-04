@@ -17,7 +17,7 @@ describe('S3StaticWebsiteOrigin', () => {
     });
 
     test('creates a S3 static website origin with default properties set', () => {
-      const origin = new origins.S3StaticWebsiteOrigin({ bucket });
+      const origin = new origins.S3StaticWebsiteOrigin(bucket);
       const originBindConfig = origin.bind(stack, { originId: 'StackOrigin12AB34569' });
 
       expect(originBindConfig.originProperty).toEqual({
@@ -31,8 +31,7 @@ describe('S3StaticWebsiteOrigin', () => {
     });
 
     test('creates a S3 static website origin with custom properties', () => {
-      const origin = new origins.S3StaticWebsiteOrigin({
-        bucket,
+      const origin = new origins.S3StaticWebsiteOrigin(bucket, {
         originPath: '/assets',
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
         originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_1, cloudfront.OriginSslPolicy.TLS_V1_2],
@@ -75,8 +74,7 @@ describe('S3StaticWebsiteOrigin', () => {
   describe('using imported bucket', () => {
     test('can setup S3 static website origin with imported bucket', () => {
       const bucket = s3.Bucket.fromBucketName(stack, 'myImportedStaticWebsiteBucket', 'my-bucket');
-      const origin = new origins.S3StaticWebsiteOrigin({
-        bucket,
+      const origin = new origins.S3StaticWebsiteOrigin(bucket, {
         originPath: '/assets',
       });
       const originBindConfig = origin.bind(stack, { originId: 'StackOrigin12AB34569' });
