@@ -1,13 +1,15 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { PlaceIndex } from '../lib';
+import { DataSource, PlaceIndex } from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new PlaceIndex(this, 'PlaceIndex');
+    new PlaceIndex(this, 'PlaceIndex', {
+      dataSource: DataSource.ESRI,
+    });
   }
 }
 

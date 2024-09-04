@@ -10,7 +10,9 @@ beforeEach(() => {
 });
 
 test('create a place index', () => {
-  new PlaceIndex(stack, 'PlaceIndex');
+  new PlaceIndex(stack, 'PlaceIndex', {
+    dataSource: DataSource.ESRI,
+  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::PlaceIndex', {
     DataSource: 'Esri',
@@ -21,6 +23,7 @@ test('create a place index', () => {
 test('create a place index with description', () => {
   new PlaceIndex(stack, 'PlaceIndex', {
     description: 'my-description',
+    dataSource: DataSource.ESRI,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::PlaceIndex', {
@@ -33,6 +36,7 @@ test('create a place index with description', () => {
 test('creates a place index with empty description', () => {
   new PlaceIndex(stack, 'PlaceIndex', {
     description: '',
+    dataSource: DataSource.ESRI,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::PlaceIndex', {
@@ -43,12 +47,14 @@ test('creates a place index with empty description', () => {
 test('throws with invalid description', () => {
   expect(() => new PlaceIndex(stack, 'PlaceIndex', {
     description: 'a'.repeat(1001),
+    dataSource: DataSource.ESRI,
   })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
 test('throws with invalid name', () => {
   expect(() => new PlaceIndex(stack, 'PlaceIndex', {
     placeIndexName: 'inv@lid',
+    dataSource: DataSource.ESRI,
   })).toThrow(/Invalid place index name/);
 });
 

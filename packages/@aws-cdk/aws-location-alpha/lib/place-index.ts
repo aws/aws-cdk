@@ -39,10 +39,8 @@ export interface PlaceIndexProps {
 
   /**
    * Data source for the place index
-   *
-   * @default DataSource.ESRI
    */
-  readonly dataSource?: DataSource;
+  readonly dataSource: DataSource;
 
   /**
    * Intend use for the results of an operation
@@ -159,7 +157,7 @@ export class PlaceIndex extends PlaceIndexBase {
    */
   public readonly placeIndexUpdateTime: string;
 
-  constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
+  constructor(scope: Construct, id: string, props: PlaceIndexProps) {
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
