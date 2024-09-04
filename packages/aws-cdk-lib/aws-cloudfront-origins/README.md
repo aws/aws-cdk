@@ -107,7 +107,7 @@ const importedOAC = cloudfront.S3OriginAccessControl.fromOriginAccessControlId(t
 ```
 
 > [Note](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html): When you use OAC with S3
-bucket origins, the bucket's object ownership must be set to Bucket owner enforced (default for new S3 buckets), or Bucket owner preferred (only if you require ACLs).
+bucket origins, the bucket's object ownership must be either set to Bucket owner enforced (default for new S3 buckets) or Bucket owner preferred (only if you require ACLs).
 
 #### Setting up OAC with a SSE-KMS encrypted S3 origin
 

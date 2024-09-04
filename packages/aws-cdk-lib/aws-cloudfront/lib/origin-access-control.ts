@@ -19,11 +19,13 @@ export interface IOriginAccessControl extends IResource {
 export interface OriginAccessControlBaseProps {
   /**
    * A description of the origin access control.
+   *
    * @default - no description
    */
   readonly description?: string;
   /**
    * A name to identify the origin access control. You can specify up to 64 characters.
+   *
    * @default - a generated name
    */
   readonly originAccessControlName?: string;
