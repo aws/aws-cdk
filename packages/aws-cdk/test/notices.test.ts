@@ -536,7 +536,5 @@ There are 1 unacknowledged notice(s).`);
         fetch: jest.fn(),
       };
     }
-
   });
-
 });
