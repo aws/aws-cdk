@@ -185,7 +185,7 @@ describe('cross-environment CodePipeline', function () {
     // and a correct support Stack should be created.
     const deployBucket = s3.Bucket.fromBucketAttributes(pipelineStack, 'DeployBucket', {
       bucketName: 'my-bucket',
-      account: '456789101234',
+      account: '234567890123',
     });
     pipeline.addStage({
       stageName: 'Build',
@@ -199,7 +199,7 @@ describe('cross-environment CodePipeline', function () {
     });
 
     const asm = app.synth();
-    const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-456789101234`);
+    const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-234567890123`);
     Template.fromJSON(supportStack.template).hasResourceProperties('AWS::IAM::Role', {
       RoleName: 'pipelinestack-support-456dbuildactionrolebf03938f0cc9a2599be5',
     });
@@ -216,7 +216,7 @@ describe('cross-environment CodePipeline', function () {
                 'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
-                  ':iam::456789101234:role/pipelinestack-support-456dbuildactionrolebf03938f0cc9a2599be5',
+                  ':iam::234567890123:role/pipelinestack-support-456dbuildactionrolebf03938f0cc9a2599be5',
                 ]],
               },
             },
