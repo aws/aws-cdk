@@ -36,7 +36,7 @@ To create a place index, define a `PlaceIndex`:
 ```ts
 new location.PlaceIndex(this, 'PlaceIndex', {
   placeIndexName: 'MyPlaceIndex', // optional, defaults to a generated name
-  dataSource: location.DataSource.HERE, // optional, defaults to Esri
+  dataSource: location.DataSource.ESRI,
 });
 ```
 
@@ -46,7 +46,9 @@ on the place index:
 ```ts
 declare const role: iam.Role;
 
-const placeIndex = new location.PlaceIndex(this, 'PlaceIndex');
+const placeIndex = new location.PlaceIndex(this, 'PlaceIndex', {
+  dataSource: location.DataSource.ESRI,
+});
 placeIndex.grantSearch(role);
 ```
 
