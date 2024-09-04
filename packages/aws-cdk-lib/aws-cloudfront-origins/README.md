@@ -7,13 +7,13 @@ S3 buckets, Elastic Load Balancing v2 load balancers, or any other domain name.
 
 An S3 bucket can be used as an origin. An S3 bucket origin can either be configured using a standard S3 bucket or using a S3 bucket that's configured as a website endpoint (see AWS docs for [Using an S3 Bucket](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html#using-s3-as-origin)).
 
+> Note: `S3Origin` has been deprecated. Use `S3BucketOrigin` for standard S3 origins and `S3StaticWebsiteOrigin` for static website S3 origins.
+
 ### Standard S3 Bucket
 
 To set up an origin using a standard S3 bucket, use the `S3BucketOrigin` class. The bucket
 is handled as a bucket origin and
 CloudFront's redirect and error handling will be used. It is recommended to use `S3BucketOrigin.withOriginAccessControl()` to configure OAC for your origin.
-
-> Note: `S3Origin` has been deprecated. Use `S3BucketOrigin` for standard S3 origins and `S3StaticWebsiteOrigin` for static website S3 origins.
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
