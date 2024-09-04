@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "MacOsProjectIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-project-macos"
+      ],
+      "assertionStack": "MacOsProjectIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4"
+    }
+  }
+}

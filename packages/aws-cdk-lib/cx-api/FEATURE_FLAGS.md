@@ -38,7 +38,6 @@ Flags come in three types:
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) |
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
-| [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
@@ -72,7 +71,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
-| [@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions](#aws-cdkaws-stepfunctions-tasksecsreduceruntaskpermissions) | When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN. | 2.148.0 | (fix) |
+| [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 
 <!-- END table -->
 
@@ -101,7 +100,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
-    "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
@@ -135,7 +133,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
   }
 }
 ```
@@ -748,22 +746,6 @@ always apply, regardless of the value of this flag.
 | 2.51.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-iam:standardizedServicePrincipals
-
-*Use standardized (global) service principals everywhere* (fix)
-
-We used to maintain a database of exceptions to Service Principal names in various regions. This database
-is no longer necessary: all service principals names have been standardized to their global form (`SERVICE.amazonaws.com`).
-
-This flag disables use of that exceptions database and always uses the global service principal.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.51.0 | `false` | `true` |
-
-
 ### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
 
 *Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
@@ -1358,19 +1340,20 @@ property from the event object.
 | 2.145.0 | `false` | `false` |
 
 
-### @aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions
+### @aws-cdk/aws-s3:keepNotificationInImportedBucket
 
-*When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.* (fix)
+*When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.* (fix)
 
-When this feature flag is enabled, the IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
-The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
-for more details.
+Currently, adding notifications to a bucket where it was created by ourselves will override notification added where it is imported.
+
+When this feature flag is enabled, adding notifications to a bucket in the current stack will only update notification defined in this stack.
+Other notifications that are not managed by this stack will be kept.
 
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.148.0 | `false` | `true` |
+| 2.155.0 | `false` | `false` |
 
 
 <!-- END details -->

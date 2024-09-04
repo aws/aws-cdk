@@ -54,6 +54,26 @@ describe('Addon', () => {
       },
     });
   });
+  test('create a new Addon with preserveOnDelete', () => {
+    // GIVEN
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithPreserveOnDelete', {
+      addonName: 'test-addon',
+      cluster,
+      preserveOnDelete: false,
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      PreserveOnDelete: false,
+    });
+  });
 
   test('creates an Addon from attributes', () => {
     // GIVEN

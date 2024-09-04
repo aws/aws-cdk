@@ -1,4 +1,4 @@
-import { Construct, IConstruct, IDependable, Node } from 'constructs';
+import { Construct, IConstruct, IDependable, Node, MetadataOptions } from 'constructs';
 import { Architecture } from './architecture';
 import { Function as LambdaFunction, FunctionProps, EnvironmentOptions } from './function';
 import { FunctionBase } from './function-base';
@@ -153,6 +153,14 @@ export class SingletonFunction extends FunctionBase {
    */
   public addDependency(...up: IDependable[]) {
     this.lambdaFunction.node.addDependency(...up);
+  }
+
+  /**
+   * Use this method to write to the construct tree.
+   * The metadata entries are written to the Cloud Assembly Manifest if the `treeMetadata` property is specified in the props of the App that contains this Construct.
+   */
+  public addMetadata(type: string, data: any, options?: MetadataOptions) {
+    this.lambdaFunction.node.addMetadata(type, data, options);
   }
 
   /**

@@ -72,7 +72,6 @@ export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscri
 export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
-export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
@@ -102,11 +101,11 @@ export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
-export const ECS_REDUCE_RUN_TASK_PERMISSIONS = '@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
+export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -559,20 +558,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
-      `,
-    introducedIn: { v2: '2.51.0' },
-    recommendedValue: true,
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [IAM_STANDARDIZED_SERVICE_PRINCIPALS]: {
-    type: FlagType.BugFix,
-    summary: 'Use standardized (global) service principals everywhere',
-    detailsMd: `
-      We used to maintain a database of exceptions to Service Principal names in various regions. This database
-      is no longer necessary: all service principals names have been standardized to their global form (\`SERVICE.amazonaws.com\`).
-
-      This flag disables use of that exceptions database and always uses the global service principal.
       `,
     introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
@@ -1110,16 +1095,17 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [ECS_REDUCE_RUN_TASK_PERMISSIONS]: {
+  [S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET]: {
     type: FlagType.BugFix,
-    summary: 'When enabled, IAM Policy created to run tasks won\'t include the task definition ARN, only the revision ARN.',
+    summary: 'When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.',
     detailsMd: `
-      When this feature flag is enabled, the IAM Policy created to run tasks won\'t include the task definition ARN, only the revision ARN.
-      The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
-      for more details.
+      Currently, adding notifications to a bucket where it was created by ourselves will override notification added where it is imported.
+
+      When this feature flag is enabled, adding notifications to a bucket in the current stack will only update notification defined in this stack.
+      Other notifications that are not managed by this stack will be kept.
     `,
-    introducedIn: { v2: '2.148.0' },
-    recommendedValue: true,
+    introducedIn: { v2: '2.155.0' },
+    recommendedValue: false,
   },
 };
 
