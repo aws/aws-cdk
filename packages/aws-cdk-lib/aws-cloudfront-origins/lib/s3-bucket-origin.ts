@@ -106,7 +106,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         };
       }
 
-      getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
+      private getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
         let actions: string[] = [];
         for (const accessLevel of accessLevels) {
           actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
@@ -114,7 +114,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return actions;
       }
 
-      getKeyPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
+      private getKeyPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
         let actions: string[] = [];
         for (const accessLevel of accessLevels) {
           // Filter out DELETE since delete permissions are not applicable to KMS key actions
@@ -125,7 +125,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return actions;
       }
 
-      grantDistributionAccessToBucket(distributionId: string, actions: string[]): iam.AddToResourcePolicyResult {
+      private grantDistributionAccessToBucket(distributionId: string, actions: string[]): iam.AddToResourcePolicyResult {
         const oacBucketPolicyStatement = new iam.PolicyStatement(
           {
             effect: iam.Effect.ALLOW,
@@ -143,7 +143,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return result;
       }
 
-      grantDistributionAccessToKey(actions: string[], key: IKey): iam.AddToResourcePolicyResult {
+      private grantDistributionAccessToKey(actions: string[], key: IKey): iam.AddToResourcePolicyResult {
         const oacKeyPolicyStatement = new iam.PolicyStatement(
           {
             effect: iam.Effect.ALLOW,
