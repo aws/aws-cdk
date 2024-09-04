@@ -104,6 +104,12 @@ new scheduler.Schedule(stack, 'ScheduleWithTimeFrame', {
   end: new Date(`${currentYear + 2}-10-01T00:00:00.000Z`),
 });
 
+new scheduler.Schedule(stack, 'UseDescription', {
+  schedule: expression,
+  target: target,
+  description: 'test description',
+});
+
 new IntegTest(app, 'integtest-schedule', {
   testCases: [stack],
 });
