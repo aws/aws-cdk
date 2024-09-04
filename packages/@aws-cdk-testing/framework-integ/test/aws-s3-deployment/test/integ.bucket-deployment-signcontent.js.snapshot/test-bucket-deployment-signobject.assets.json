@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "source": {
@@ -53,7 +53,7 @@
         }
       }
     },
-    "63e22b94586d2f529747b63138a320ccbabb259cc733beb31a97057e38812f1c": {
+    "0c41206f343680e6722f8cdc2907d407dcaa13d6dde45367493feb5842577a5f": {
       "source": {
         "path": "test-bucket-deployment-signobject.template.json",
         "packaging": "file"
@@ -61,7 +61,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "63e22b94586d2f529747b63138a320ccbabb259cc733beb31a97057e38812f1c.json",
+          "objectKey": "0c41206f343680e6722f8cdc2907d407dcaa13d6dde45367493feb5842577a5f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
