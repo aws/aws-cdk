@@ -86,7 +86,7 @@ export enum OriginAccessControlOriginType {
 
 /**
  * Options for which requests CloudFront signs.
- * Specify `always` for the most common use case.
+ * The recommended setting is `always`.
  */
 export enum SigningBehavior {
   /**
