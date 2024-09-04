@@ -274,8 +274,10 @@ changes to your stack.
 
 ##### Updating imported key policies
 
-For imported keys, you will need to manually update the
-key policy yourself as CDK apps cannot modify the configuration of imported resources. After deploying the distribution, add the following policy statement to your key policy to allow CloudFront OAC to access your KMS key for SSE-KMS:
+If you are using an imported KMS key to encrypt your S3 bucket and want to use OAC, you will need to update the
+key policy manually to allow CloudFront to use the key. Like most imported resources, CDK apps cannot modify the configuration of imported keys.
+
+After deploying the distribution, add the following policy statement to your key policy to allow CloudFront OAC to access your KMS key for SSE-KMS:
 
 ```json
 {
@@ -299,6 +301,8 @@ key policy yourself as CDK apps cannot modify the configuration of imported reso
         }
 }
 ```
+
+See CloudFront docs on [SSE-KMS](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#create-oac-overview-s3) for more details.
 
 #### Setting up OAC with imported S3 buckets
 

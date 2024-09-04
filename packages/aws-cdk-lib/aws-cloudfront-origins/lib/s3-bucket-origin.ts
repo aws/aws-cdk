@@ -73,7 +73,8 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         const distributionId = options.distributionId;
-        const bucketPolicyActions = this.getBucketPolicyActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+        const accessLevels = new Set(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+        const bucketPolicyActions = this.getBucketPolicyActions(accessLevels);
         const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
 
         // Failed to update bucket policy, assume using imported bucket
@@ -84,7 +85,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         }
 
         if (bucket.encryptionKey) {
-          const keyPolicyActions = this.getKeyPolicyActions(props?.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+          const keyPolicyActions = this.getKeyPolicyActions(accessLevels);
           const keyPolicyResult = this.grantDistributionAccessToKey(keyPolicyActions, bucket.encryptionKey);
           // Failed to update key policy, assume using imported key
           if (!keyPolicyResult.statementAdded) {
@@ -105,20 +106,21 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         };
       }
 
-      getBucketPolicyActions(accessLevels: cloudfront.AccessLevel[]) {
+      getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
         let actions: string[] = [];
-        for (const accessLevel of new Set(accessLevels)) {
+        for (const accessLevel of accessLevels) {
           actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
         }
         return actions;
       }
 
-      getKeyPolicyActions(accessLevels: cloudfront.AccessLevel[]) {
+      getKeyPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
         let actions: string[] = [];
-        // Remove duplicates and filters out DELETE since delete permissions are not applicable to KMS key actions
-        const keyAccessLevels = [...new Set(accessLevels.filter(level => level !== AccessLevel.DELETE))];
-        for (const accessLevel of new Set(keyAccessLevels)) {
-          actions = actions.concat(KEY_ACTIONS[accessLevel]);
+        for (const accessLevel of accessLevels) {
+          // Filter out DELETE since delete permissions are not applicable to KMS key actions
+          if (accessLevel !== AccessLevel.DELETE) {
+            actions = actions.concat(KEY_ACTIONS[accessLevel]);
+          }
         }
         return actions;
       }

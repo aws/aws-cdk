@@ -29,6 +29,9 @@ export interface OriginAccessControlBaseProps {
   readonly originAccessControlName?: string;
   /**
    * Specifies which requests CloudFront signs and the signing protocol.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html#cfn-cloudfront-originaccesscontrol-originaccesscontrolconfig-signingbehavior
+   *
    * @default SIGV4_ALWAYS
    */
   readonly signing?: Signing;
@@ -55,7 +58,7 @@ export enum AccessLevel {
 /**
  * Properties for creating a S3 Origin Access Control resource.
  */
-export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps {}
+export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps { }
 
 /**
  * Origin types supported by Origin Access Control.
