@@ -23,6 +23,7 @@ export enum StorageType {
    * Standard storage
    */
   STANDARD = 'standard',
+
   /**
    * I/O-optimized storage
    */
