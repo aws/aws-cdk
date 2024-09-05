@@ -1111,7 +1111,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
   //////////////////////////////////////////////////////////////////////
   [USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: {
-    type: FlagType.BugFix,
+    type: FlagType.ApiDefault,
     summary: 'When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.',
     detailsMd: `
     Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
