@@ -1372,7 +1372,7 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| V2NEXT | `true` | `true` |
 
 
 <!-- END details -->
