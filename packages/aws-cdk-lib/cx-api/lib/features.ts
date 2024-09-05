@@ -106,6 +106,7 @@ export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
+export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1106,6 +1107,24 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.155.0' },
     recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.',
+    detailsMd: `
+    Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
+    of State Machine Task definition.
+
+    When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
+    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.  
+
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
   },
 };
 
