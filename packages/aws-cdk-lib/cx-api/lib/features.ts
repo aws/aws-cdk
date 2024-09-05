@@ -1122,7 +1122,9 @@ export const FLAGS: Record<string, FlagInfo> = {
 
     `,
     introducedIn: { v2: 'V2NEXT' },
+    defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
   },
 };
 
