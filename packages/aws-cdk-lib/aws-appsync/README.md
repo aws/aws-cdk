@@ -547,6 +547,10 @@ log data set to never expire. If you want to set a different expiration period, 
 To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
 `GraphqlApi` construct.
 
+Also you can choose the log level by setting the `fieldLogLevel` property.
+
+For more infomertion, see [CloudWatch logs](https://docs.aws.amazon.com/en_us/appsync/latest/devguide/monitoring.html#cwl).
+
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
 
@@ -559,6 +563,7 @@ new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
   logConfig,
+  fieldLogLevel: appsync.FieldLogLevel.INFO,
 });
 ```
 
