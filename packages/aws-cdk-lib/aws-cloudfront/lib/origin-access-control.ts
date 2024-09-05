@@ -2,17 +2,6 @@ import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
 
-export const BUCKET_ACTIONS: Record<string, string[]> = {
-  READ: ['s3:GetObject'],
-  WRITE: ['s3:PutObject'],
-  DELETE: ['s3:DeleteObject'],
-};
-
-export const KEY_ACTIONS: Record<string, string[]> = {
-  READ: ['kms:Decrypt'],
-  WRITE: ['kms:Encrypt', 'kms:GenerateDataKey*'],
-};
-
 /**
  * Represents a CloudFront Origin Access Control
  */

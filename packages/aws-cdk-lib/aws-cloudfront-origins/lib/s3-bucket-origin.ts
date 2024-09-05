@@ -1,10 +1,21 @@
 import { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
-import { AccessLevel, BUCKET_ACTIONS, KEY_ACTIONS } from '../../aws-cloudfront';
+import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack } from '../../core';
+
+const BUCKET_ACTIONS: Record<string, string[]> = {
+  READ: ['s3:GetObject'],
+  WRITE: ['s3:PutObject'],
+  DELETE: ['s3:DeleteObject'],
+};
+
+const KEY_ACTIONS: Record<string, string[]> = {
+  READ: ['kms:Decrypt'],
+  WRITE: ['kms:Encrypt', 'kms:GenerateDataKey*'],
+};
 
 /**
  * Properties for configuring a origin using a standard S3 bucket
