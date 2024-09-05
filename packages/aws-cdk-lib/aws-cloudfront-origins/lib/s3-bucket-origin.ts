@@ -212,7 +212,6 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
   }
 };
 
-
 class S3BucketOriginWithOAI extends S3BucketOrigin {
   private readonly bucket: IBucket;
   private originAccessIdentity?: cloudfront.IOriginAccessIdentity;
