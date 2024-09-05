@@ -81,7 +81,7 @@ A State Machine can be used as a target for a pipe. The State Machine will be in
 declare const sourceQueue: sqs.Queue;
 declare const targetStateMachine: sfn.IStateMachine;
 
-const pipeTarget = new targets.SfnStateMachine(targetStateMachine);
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine,{});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
