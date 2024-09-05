@@ -25,7 +25,7 @@ export enum NatConnectivityType {
  * Interface to define a routing target, such as an
  * egress-only internet gateway or VPC endpoint.
  */
-export interface IRouteTarget extends IDependable{
+export interface IRouteTarget extends IDependable {
   /**
    * The type of router used in the route.
    */
@@ -429,8 +429,8 @@ export class RouteTargetType {
   readonly endpoint?: IVpcEndpoint;
 
   constructor(props: RouteTargetProps) {
-    if (props.gateway && props.endpoint) {
-      throw new Error('Cannot specify both gateway and endpoint');
+    if ((props.gateway && props.endpoint) || (!props.gateway && !props.endpoint)) {
+      throw new Error('Exactly one of `gateway` or `endpoint` must be specified.');
     } else {
       this.gateway = props.gateway;
       this.endpoint = props.endpoint;
@@ -624,10 +624,6 @@ export class RouteTable extends Resource implements IRouteTable {
    * @param target The gateway or endpoint targeted by the route.
    */
   public addRoute(id: string, destination: string, target: RouteTargetType) {
-    if (!target.gateway && !target.endpoint) {
-      throw new Error('Target is defined without a gateway or endpoint.');
-    }
-
     new Route(this, id, {
       routeTable: this,
       destination: destination,

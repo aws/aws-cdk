@@ -54,7 +54,7 @@ new SubnetV2(this, 'subnetA', {
   availabilityZone: 'us-east-1a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
   ipv6CidrBlock: new IpCidr('2a05:d02c:25:4000::/60'),
-  subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+  subnetType: SubnetType.PRIVATE_ISOLATED,
 })
 ```
 
@@ -121,11 +121,11 @@ const subnet = new SubnetV2(this, 'Subnet', {
   routeTable,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
-  subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+  subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 ```
 
-`Route`s can be created to link subnets to various different AWS services via gateways and endpoints. Each unique route target has its own dedicated construct that can be routed to a given subnet via the `Route` construct. An example using the `InternetGateway` construct can be seen below:
+`Routes` can be created to link subnets to various different AWS services via gateways and endpoints. Each unique route target has its own dedicated construct that can be routed to a given subnet via the `Route` construct. An example using the `InternetGateway` construct can be seen below:
 
 ```ts
 const stack = new Stack();
@@ -137,7 +137,7 @@ const subnet = new SubnetV2(this, 'Subnet', {
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
-  subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
+  subnetType: SubnetType.PRIVATE_ISOLATED });
 
 const igw = new InternetGateway(this, 'IGW', {
   vpc: myVpc,
@@ -149,22 +149,28 @@ new Route(this, 'IgwRoute', {
 });
 ```
 
-Alternatively, `Route`s can be created via a method in the `RouteTable` class. An example using the `EgressOnlyInternetGateway` construct can be seen below:
+Alternatively, `Routes` can also be created via method `addRoute` in the `RouteTable` class. An example using the `EgressOnlyInternetGateway` construct can be seen below:
 Note: `EgressOnlyInternetGateway` can only be used to set up outbound IPv6 routing.
 
 ```ts
-import * as vpc_v2 from '@aws-cdk/aws-ec2-alpha';
 
-const myVpc = new VpcV2(stack, 'Vpc', {...});
-const routeTable = new RouteTable(stack, 'RouteTable', {
-  vpc: vpc.myVpc,
-});
-const subnet = new SubnetV2(stack, 'Subnet', {...});
+const stack = new Stack();
+const myVpc = new VpcV2(this, 'Vpc',{
+      primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [IpAddresses.amazonProvidedIpv6({
+      cidrBlockName: 'AmazonProvided',
+    })]
+    });
 
-const eigw = new EgressOnlyInternetGateway(stack, 'EIGW', {
-  vpcId: vpc.myVpc,
+const eigw = new EgressOnlyInternetGateway(this, 'EIGW', {
+  vpc: myVpc,
 });
-routeTable.addRoute('::/0', { gateway: eigw });
+
+const routeTable = new RouteTable(this, 'RouteTable', {
+  vpc: myVpc,
+});
+
+routeTable.addRoute('EIGW', '::/0', { gateway: eigw });
 ```
 
 Other route targets may require a deeper set of parameters to set up properly. For instance, the example below illustrates how to set up a `NatGateway`:
@@ -179,7 +185,7 @@ const subnet = new SubnetV2(this, 'Subnet', {
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
-  subnetType: ec2.SubnetType.PRIVATE_ISOLATED });
+  subnetType: SubnetType.PRIVATE_ISOLATED });
 
 const natgw = new NatGateway(this, 'NatGW', {
   subnet: subnet,
@@ -198,6 +204,7 @@ It is also possible to set up endpoints connecting other AWS services. For insta
 
 ```ts
 
+const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc');
 const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
@@ -206,7 +213,7 @@ const subnet = new SubnetV2(this, 'Subnet', {
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
-  subnetType: ec2.SubnetType.PRIVATE });
+  subnetType: SubnetType.PRIVATE });
 
 const dynamoEndpoint = new ec2.GatewayVpcEndpoint(this, 'DynamoEndpoint', {
   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
@@ -222,15 +229,62 @@ new Route(this, 'DynamoDBRoute', {
 
 ## Adding Egress-Only Internet Gateway to VPC
 
-For more information see [Enable outbound IPv6 traffic using an egress-only internet gateway](https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html)
+An egress-only internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows outbound communication over IPv6 from instances in your VPC to the internet, and prevents the internet from initiating an IPv6 connection with your instances.
 
-VPCv2 supports adding an egress only internet gateway to VPC with the help of `addEgressOnlyInternetGateway` method as well.
+For more information see [Enable outbound IPv6 traffic using an egress-only internet gateway](https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html).
 
-By default, this sets up a route to all outbound IPv6 address ranges unless the user specifies a particular destination. It can only be configured for IPv6 enabled VPCs.
-`Subnets` accepts a value of `SubnetFilter`, which can be based on a `SubnetType` in VPCV2. A new route will be added to the route tables of all subnets that match this filter.
+VpcV2 supports adding an egress only internet gateway to VPC using the `addEgressOnlyInternetGateway` method.
+
+By default, this method sets up a route to all outbound IPv6 address ranges, unless a specific destination is provided by the user. It can only be configured for IPv6-enabled VPCs.
+The `Subnets` parameter accepts a `SubnetFilter`, which can be based on a `SubnetType` in VpcV2. A new route will be added to the route tables of all subnets that match this filter.
 
 ```ts
 
+const stack = new Stack();
+const myVpc = new VpcV2(this, 'Vpc',{
+      primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [IpAddresses.amazonProvidedIpv6({
+      cidrBlockName: 'AmazonProvided',
+    })]
+    });
+const routeTable = new RouteTable(this, 'RouteTable', {
+  vpc: myVpc,
+});
+const subnet = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  ipv6CidrBlock: new IpCidr('2001:db8:1::/64'),
+  subnetType: SubnetType.PRIVATE });
+
+myVpc.addEgressOnlyInternetGateway({
+  subnets: [{subnetType: SubnetType.PRIVATE}],
+  destination: '::/60',
+})
+```
+
+## Adding NATGateway to the VPC
+
+A NAT gateway is a Network Address Translation (NAT) service.You can use a NAT gateway so that instances in a private subnet can connect to services outside your VPC but external services cannot initiate a connection with those instances.
+
+For more information, see [NAT gateway basics](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html).
+
+When you create a NAT gateway, you specify one of the following connectivity types:
+
+**Public – (Default)**: Instances in private subnets can connect to the internet through a public NAT gateway, but cannot receive unsolicited inbound connections from the internet
+
+**Private**: Instances in private subnets can connect to other VPCs or your on-premises network through a private NAT gateway. 
+
+To define the NAT gateway connectivity type as `ConnectivityType.Public`, you need to ensure that there is an IGW(Internet Gateway) attached to the subnet's VPC.
+Since a NATGW is associated with a particular subnet, providing `subnet` field in the input props is mandatory.
+
+Additionally, you can set up a route in any route table with the target set to the NAT Gateway. The function `addNatGateway` returns a `NATGateway` object that you can reference later.
+
+The code example below provides the definition for adding a NAT gateway to your subnet:
+
+```ts
+
+const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc');
 const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
@@ -239,11 +293,72 @@ const subnet = new SubnetV2(this, 'Subnet', {
   vpc: myVpc,
   availabilityZone: 'eu-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
-  subnetType: ec2.SubnetType.PRIVATE });
+  subnetType: SubnetType.PUBLIC });
 
-myVpc.addEgressOnlyInternetGateway({
-  subnets: [{SubnetType.PUBLIC}],
-  destination: '::/60',
-})
+myVpc.addInternetGateway();
+myVpc.addNatGateway({
+  subnet: subnet,
+  connectivityType: NatConnectivityType.PUBLIC,
+});
+```
 
+## Enable VPNGateway for the VPC
+
+A virtual private gateway is the endpoint on the VPC side of your VPN connection.
+
+For more information, see [What is AWS Site-to-Site VPN?](https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html).
+
+VPN route propagation is a feature in Amazon Web Services (AWS) that automatically updates route tables in your Virtual Private Cloud (VPC) with routes learned from a VPN connection.
+
+To enable VPN route propogation, use the `vpnRoutePropagation` property to specify the subnets as an input to the function. VPN route propagation will then be enabled for each subnet with the corresponding route table IDs.
+
+Additionally, you can set up a route in any route table with the target set to the VPN Gateway. The function `enableVpnGatewayV2` returns a `VPNGatewayV2` object that you can reference later.
+
+The code example below provides the definition for setting up a VPN gateway with `vpnRoutePropogation` enabled:
+
+```ts
+
+const stack = new Stack();
+const myVpc = new VpcV2(this, 'Vpc');
+const vpnGateway = myVpc.enableVpnGatewayV2({
+  vpnRoutePropagation: [{ subnetType: SubnetType.PUBLIC }],
+  type: VpnConnectionType.IPSEC_1,
+});
+
+const routeTable = new RouteTable(stack, 'routeTable', { 
+  vpc: myVpc 
+  } );
+
+new Route(stack, 'route', {
+  destination: '172.31.0.0/24',
+  target: { gateway: vpnGateway },
+  routeTable: routeTable,
+});
+```
+
+## Adding InternetGateway to the VPC
+
+An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication between your VPC and the internet. It supports both IPv4 and IPv6 traffic.
+
+For more information, see [Enable VPC internet access using internet gateways](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-igw-internet-access.html).
+
+You can add an internet gateway to a VPC using `addInternetGateway` method. By default, this method creates a route in all Public Subnets with outbound destination set to `0.0.0.0` for IPv4 and `::0` for IPv6 enabled VPC. 
+Instead of using the default settings, you can configure a custom destinatation range by providing an optional input `destination` to the method.
+
+The code example below shows how to add an internet gateway with a custom outbound destination IP range:
+
+```ts
+
+const stack = new Stack();
+const myVpc = new VpcV2(this, 'Vpc');
+
+const subnet = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: SubnetType.PUBLIC });
+
+myVpc.addInternetGateway({
+  ipv4Destination: '192.168.0.0/16',
+});
 ```
