@@ -88,7 +88,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   }
 }
 
-export class S3BucketOriginWithOAC extends S3BucketOrigin {
+class S3BucketOriginWithOAC extends S3BucketOrigin {
   private readonly bucket: IBucket;
   private originAccessControl?: cloudfront.IOriginAccessControl;
   private originAccessLevels?: cloudfront.AccessLevel[];
@@ -202,7 +202,7 @@ export class S3BucketOriginWithOAC extends S3BucketOrigin {
 };
 
 
-export class S3BucketOriginWithOAI extends S3BucketOrigin {
+class S3BucketOriginWithOAI extends S3BucketOrigin {
   private readonly bucket: IBucket;
   private originAccessIdentity?: cloudfront.IOriginAccessIdentity;
 
