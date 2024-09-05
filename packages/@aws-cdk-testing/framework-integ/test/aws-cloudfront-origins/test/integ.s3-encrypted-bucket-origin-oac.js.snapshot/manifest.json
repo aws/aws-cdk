@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/59fe39630f10d43bfd4e71ac26c06f1bb8ea319c775c94d91abb0e36c61b2146.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15d3b61600e2be1c2e200e52472b4fef45f2977755379e69a452df000cac03e7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,7 @@
         "/cloudfront-s3-encrypted-bucket-origin-oac": [
           {
             "type": "aws:cdk:warning",
-            "data": "To avoid circular dependency between the KMS key, Bucket, and Distribution, a wildcard is used to match all Distribution IDs in Key policy condition.\nTo further scope down the policy for best security practices, see the \"Using OAC for a SSE-KMS encrypted S3 origin\" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]"
+            "data": "To avoid a circular dependency between the KMS key, Bucket, and Distribution during the initial deployment, a wildcard is used in the Key policy condition to match all Distribution IDs.\nAfter deploying once, it is strongly recommended to further scope down the policy for best security practices by following the guidance in the \"Using OAC for a SSE-KMS encrypted S3 origin\" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]"
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/myKey/Resource": [
@@ -116,6 +116,10 @@
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
@@ -174,7 +178,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/734071a7c5f4a192b7fa05970d2f782272f61e7843a222d807feeab66b86e5a8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e000bb1ca389bc347b84f37c0d2cd58361abe54df6bbf88fe7bbe5585bd5d431.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
