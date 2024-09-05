@@ -562,8 +562,9 @@ new appsync.GraphqlApi(this, 'api', {
   authorizationConfig: {},
   name: 'myApi',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
-  logConfig:{
+  logConfig: {
     fieldLogLevel: appsync.FieldLogLevel.INFO,
+    retention: logs.RetentionDays.ONE_WEEK,
   },
 });
 ```
