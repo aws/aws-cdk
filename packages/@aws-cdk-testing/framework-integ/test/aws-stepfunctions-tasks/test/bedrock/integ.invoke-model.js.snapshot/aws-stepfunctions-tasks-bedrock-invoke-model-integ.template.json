@@ -103,7 +103,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names: {}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt3\":{\"Next\":\"Prompt4\",\"Type\":\"Task\",\"OutputPath\":\"$.Body.results[0].outputText\",\"Resource\":\"arn:",
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:/n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt3\":{\"Next\":\"Prompt4\",\"Type\":\"Task\",\"OutputPath\":\"$.Body.results[0].outputText\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },

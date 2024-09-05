@@ -1374,5 +1374,6 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 | (not in v1) |  |  |
 | V2NEXT | `true` | `true` |
 
+**Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
 
 <!-- END details -->

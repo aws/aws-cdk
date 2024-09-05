@@ -10,11 +10,7 @@ import { BedrockInvokeModel } from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
  * This integ test does not actually verify a Step Functions execution, as not all AWS accounts have Bedrock model access.
  */
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-cdk.aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask': true,
-  },
-});
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-integ');
 
 const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1);
@@ -41,7 +37,7 @@ const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
   body: sfn.TaskInput.fromObject(
     {
       inputText: sfn.JsonPath.format(
-        'Alphabetize this list of first names: {}',
+        'Alphabetize this list of first names:/n{}',
         sfn.JsonPath.stringAt('$.names'),
       ),
       textGenerationConfig: {
@@ -75,7 +71,7 @@ const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
 });
 
 /** Test for Bedrock s3 URI Path */
-//Execution will fail for the following input as it expects a valid s3 URI from previous prompt
+//State Machine Execution will fail for the following input as it expects a valid s3 URI from previous prompt
 const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
   model,
   input: { s3InputUri: '$.names' },
