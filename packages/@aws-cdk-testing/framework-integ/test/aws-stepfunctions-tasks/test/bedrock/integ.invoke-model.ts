@@ -41,7 +41,7 @@ const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
   body: sfn.TaskInput.fromObject(
     {
       inputText: sfn.JsonPath.format(
-        'Alphabetize this list of first names:\n{}',
+        'Alphabetize this list of first names: {}',
         sfn.JsonPath.stringAt('$.names'),
       ),
       textGenerationConfig: {
@@ -62,7 +62,7 @@ const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
   body: sfn.TaskInput.fromObject(
     {
       inputText: sfn.JsonPath.format(
-        'Alphabetize this list of first names:\n{}',
+        'Echo list of first names: {}',
         sfn.JsonPath.stringAt('$.names'),
       ),
       textGenerationConfig: {
@@ -71,35 +71,18 @@ const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
       },
     },
   ),
-  outputPath: sfn.JsonPath.stringAt('$.names'),
-});
-
-/**Test for Bedrock Input Path */
-const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
-  model,
-  body: sfn.TaskInput.fromObject(
-    {
-      inputText: sfn.JsonPath.format(
-        'Alphabetize this list of first names:\n{}',
-        sfn.JsonPath.stringAt('$.names'),
-      ),
-      textGenerationConfig: {
-        maxTokenCount: 100,
-        temperature: 1,
-      },
-    },
-  ),
-  inputPath: sfn.JsonPath.stringAt('$.names'),
+  outputPath: '$.Body.results[0].outputText',
 });
 
 /** Test for Bedrock s3 URI Path */
-const prompt5 = new BedrockInvokeModel(stack, 'Prompt5', {
+//Execution will fail for the following input as it expects a valid s3 URI from previous prompt
+const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
   model,
-  input: { s3InputUri: sfn.JsonPath.stringAt('$.names') },
-  output: { s3OutputUri: sfn.JsonPath.stringAt('$.names') },
+  input: { s3InputUri: '$.names' },
+  output: { s3OutputUri: '$.names' },
 });
 
-const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3).next(prompt4).next(prompt5);
+const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3).next(prompt4);
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),
