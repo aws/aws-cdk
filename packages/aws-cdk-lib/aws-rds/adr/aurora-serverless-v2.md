@@ -106,9 +106,9 @@ Serverless v2 can go up to 256GB memory. Anything above that needs to be provisi
    - But if using a db.r6g.16xlarge (512 GB) a serverles v2 instance can't scale
      to match
 
-Out of the 4 common usage patters (peaks & valleys, outliers, random, and
+Out of the 4 common usage patterns (peaks & valleys, outliers, random, and
 consistent), provisioned should be preferred for the consistent pattern. With
-mixed use cluster you may have writers/readers that follow different patters.
+mixed use cluster you may have writers/readers that follow different patterns.
 For example, you may have a writer that follows the `consistent` pattern, but a
 reader that follows the `outliers` pattern. In this case you may want to have a
 provisioned instance as the writer along with a provisioned reader in tier 0-1
