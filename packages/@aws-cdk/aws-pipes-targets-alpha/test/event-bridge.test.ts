@@ -123,7 +123,7 @@ describe('EventBridge', () => {
   });
 });
 
-describe('EventBridge source parameters validation', () => {
+describe('EventBridge target parameters validation', () => {
   test('Detail type must be >= 1 character', () => {
     // GIVEN
     const app = new App();
