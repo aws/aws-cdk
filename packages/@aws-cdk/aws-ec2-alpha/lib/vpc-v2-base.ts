@@ -11,13 +11,15 @@ import { ISubnetV2 } from './subnet-v2';
 export interface EgressOnlyInternetGatewayOptions{
   /**
    * List of subnets where route to EGW will be added
-   * @default no route created
+   *
+   * @default - no route created
    */
   readonly subnets?: SubnetSelection[];
 
   /**
    * Destination Ipv6 address for EGW route
-   * @default '::/0' all Ipv6 traffic
+   *
+   * @default - '::/0' all Ipv6 traffic
    */
   readonly destination?: string;
 }
@@ -29,13 +31,15 @@ export interface InternetGatewayOptions{
 
   /**
    * Destination Ipv6 address for EGW route
-   * @default '0.0.0.0' all Ipv4 traffic
+   *
+   * @default - '0.0.0.0' all Ipv4 traffic
    */
   readonly ipv4Destination?: string;
 
   /**
    * Destination Ipv6 address for EGW route
-   * @default '::/0' all Ipv6 traffic
+   *
+   * @default - '::/0' all Ipv6 traffic
    */
   readonly ipv6Destination?: string;
 }

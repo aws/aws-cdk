@@ -619,6 +619,7 @@ export class RouteTable extends Resource implements IRouteTable {
 
   /**
    * Adds a new custom route to the route table.
+   *
    * @param destination The IPv4 or IPv6 CIDR block used for the destination match.
    * @param target The gateway or endpoint targeted by the route.
    */
