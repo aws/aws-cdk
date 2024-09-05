@@ -161,7 +161,7 @@ export interface NatGatewayOptions {
 export interface NatGatewayProps extends NatGatewayOptions {
   /**
    * The ID of the VPC in which the NAT gateway is located.
-   * Required in case of public connectivity if allocation id is not defined
+   * Required in case of public connectivity if `AllocationId` is not defined
    * @default none
    */
   readonly vpc?: IVpcV2;
@@ -314,7 +314,6 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
     // until it has successfully attached to the VPC.
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
     this._routePropagation.node.addDependency(this._attachment);
-
   }
 }
 

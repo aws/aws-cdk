@@ -226,8 +226,8 @@ An egress-only internet gateway is a horizontally scaled, redundant, and highly 
 
 VPCv2 supports adding an egress only internet gateway to VPC with the help of `addEgressOnlyInternetGateway` method as well.
 
-By Default, it sets up a route to all outbound IPv6 Address ranges unless specified to a specific destination by the user. It can only be set up for IPv6 enabled VPCs.
-`Subnets` takes in value of `SubnetFilter` which can be based on a SubnetType in VPCV2. A new route will be added to route tables of all subnets filtered out with this property.
+By default, this sets up a route to all outbound IPv6 address ranges unless the user specifies a particular destination. It can only be configured for IPv6 enabled VPCs.
+`Subnets` accepts a value of `SubnetFilter`, which can be based on a `SubnetType` in VPCV2. A new route will be added to the route tables of all subnets that match this filter.
 
 ```ts
 

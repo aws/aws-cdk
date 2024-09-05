@@ -63,7 +63,7 @@ export interface VPNGatewayV2Options {
   readonly vpnGatewayName?: string;
 
   /**
-     * Provide an array of subnets where the route propagation should be added.
+     * Subnets where the route propagation should be added.
      * @default noPropagation
      */
   readonly vpnRoutePropagation?: SubnetSelection[];
