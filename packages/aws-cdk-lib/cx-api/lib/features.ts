@@ -1118,7 +1118,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     of State Machine Task definition.
 
     When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
-    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoker model.  
+    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.  
 
     `,
     introducedIn: { v2: 'V2NEXT' },

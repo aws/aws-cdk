@@ -300,7 +300,7 @@ describe('Invoke Model', () => {
   });
 
   //Should not throw an error for input path and body if feature flag is set to true
-  test('validation input and body correctly with feature flag set to true', () => {
+  test('validation for input and body correctly with feature flag set to true', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
