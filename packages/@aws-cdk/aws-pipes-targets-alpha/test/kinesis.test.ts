@@ -1,5 +1,5 @@
 import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { TestSource } from './test-classes';
@@ -94,8 +94,8 @@ describe('Kinesis', () => {
   });
 });
 
-describe('Kinesis source parameters validation', () => {
-  test('Detail type must be <= 256 characters', () => {
+describe('Kinesis target parameters validation', () => {
+  test('Partition key must be <= 256 characters', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'TestStack');
@@ -107,5 +107,40 @@ describe('Kinesis source parameters validation', () => {
         partitionKey: 'x'.repeat(257),
       });
     }).toThrow('Partition key must be less than or equal to 256 characters, received 257');
+  });
+
+  test('Partition key can be given for a token', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const stream = new Stream(stack, 'MyStream', {});
+    const partitionKey = Lazy.string({ produce: () => '20' });
+
+    const target = new KinesisTarget(stream, {
+      partitionKey,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      Target: {
+        'Fn::GetAtt': [
+          'MyStream5C050E93',
+          'Arn',
+        ],
+      },
+      TargetParameters: {
+        KinesisStreamParameters: {
+          PartitionKey: '20',
+        },
+      },
+    });
   });
 });

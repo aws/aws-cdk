@@ -33,6 +33,7 @@ The following targets are supported:
 2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
 3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
 4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
+5. `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
 
 ### Amazon SQS
 

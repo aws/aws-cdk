@@ -1,4 +1,5 @@
 import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Token } from 'aws-cdk-lib';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IStream } from 'aws-cdk-lib/aws-kinesis';
 
@@ -59,7 +60,9 @@ export class KinesisTarget implements ITarget {
 }
 
 function validatePartitionKey(pk: string) {
-  if (pk.length > 256) {
-    throw new Error(`Partition key must be less than or equal to 256 characters, received ${pk.length}`);
+  if (!Token.isUnresolved(pk)) {
+    if (pk.length > 256) {
+      throw new Error(`Partition key must be less than or equal to 256 characters, received ${pk.length}`);
+    }
   }
 }
