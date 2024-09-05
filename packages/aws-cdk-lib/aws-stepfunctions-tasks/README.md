@@ -407,7 +407,8 @@ Provide S3 URI as an input or output path to invoke a model
 To specify the S3 URI as JSON path to your input or output fields, use props `s3InputUri` and `s3OutputUri` under BedrockInvokeModelProps and set 
 feature flag `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask` to true.
 
-If this flag is not set, then the existing behaviour of populating the S3Uri from `InputPath` and `OutputPath` will take effect.
+
+If this flag is not enabled, the code will populate the S3Uri using `InputPath` and `OutputPath` fields, which is not recommended.
 
 ```ts
 
@@ -436,6 +437,8 @@ To modify the existing behaviour, set `@aws-cdk/aws-stepfunctions-tasks:useNewS3
 
 If this feature flag is enabled, S3URI fields will be generated from other Props(`s3InputUri` and `s3OutputUri`), and the given inputPath, OutputPath will be rendered as 
 it is in the JSON task definition.
+
+If the feature flag is set to `false`, the behavior will be to populate the S3Uri using the `InputPath` and `OutputPath` fields, which is not recommended.
 
 ```ts
 
