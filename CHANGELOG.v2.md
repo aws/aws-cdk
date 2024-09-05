@@ -5,11 +5,6 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.156.0](https://github.com/aws/aws-cdk/compare/v2.155.0...v2.156.0) (2024-09-05)
 
 
-### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
-
-* **stepfunctions-tasks:** Reverting the original PR will come with the following breaking changes
-* **stepfunctions-tasks:** The `BedrockInvokeModel.outputPath` parameter will no longer be an S3Uri
-
 ### Features
 
 * **bedrock:** add Stable Image Ultra, Stable Diffusion 3 Large, and Stable Image Core model identifiers ([#31327](https://github.com/aws/aws-cdk/issues/31327)) ([586cb04](https://github.com/aws/aws-cdk/commit/586cb04a975403ecdbb18d37fae06a4671d3a752))
@@ -30,11 +25,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **stepfunctions-tasks:** add back BedrockInvokeModel to use JsonPath ([#31325](https://github.com/aws/aws-cdk/issues/31325)) ([5b059b9](https://github.com/aws/aws-cdk/commit/5b059b9354be9fb13cac02e832892b194a35a186)), closes [aws/aws-cdk#31308](https://github.com/aws/aws-cdk/issues/31308)
 * **stepfunctions-tasks:** fix bedrock input/output path in step-funct… ([#31305](https://github.com/aws/aws-cdk/issues/31305)) ([a190935](https://github.com/aws/aws-cdk/commit/a19093517fffbb2d0cacb109e9f6aa3b56f430d2)), closes [#31302](https://github.com/aws/aws-cdk/issues/31302) [PR#30298](https://github.com/aws/PR/issues/30298) [#29229](https://github.com/aws/aws-cdk/issues/29229)
 * **stepfunctions-tasks:** sageMakerCreateTrainingJob does not correctly support empty inputDataConfig ([#31210](https://github.com/aws/aws-cdk/issues/31210)) ([6d43146](https://github.com/aws/aws-cdk/commit/6d43146f525c587a17bfc09c57d18b22b5a6a515)), closes [#31132](https://github.com/aws/aws-cdk/issues/31132)
-
-
-### Reverts
-
-* **stepfunctions-tasks:** "feat(stepfunctions-tasks): allow BedrockInvokeModel to use JsonPath" ([#31308](https://github.com/aws/aws-cdk/issues/31308)) ([842ee15](https://github.com/aws/aws-cdk/commit/842ee15a287a28850166c0ff26f82b99859292ab))
 
 ## [2.155.0](https://github.com/aws/aws-cdk/compare/v2.154.1...v2.155.0) (2024-08-29)
 
