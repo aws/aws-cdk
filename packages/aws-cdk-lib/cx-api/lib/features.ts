@@ -1121,7 +1121,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoker model.  
 
     `,
-    introducedIn: { v2: '2.155.1' },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };

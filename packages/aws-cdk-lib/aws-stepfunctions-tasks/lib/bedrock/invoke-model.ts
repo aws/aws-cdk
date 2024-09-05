@@ -188,11 +188,11 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     if (props.output?.s3Location?.objectVersion !== undefined) {
       throw new Error('Output S3 object version is not supported.');
     }
-    if (props.input?.s3InputUri && props.input.s3Location) {
-      throw new Error('Cannot specify both S3 InputUri and S3 location');
+    if (props.input?.s3InputUri && props.input.s3Location || props.output?.s3OutputUri && props.output.s3Location) {
+      throw new Error('Either specify S3 Uri or S3 location, but not both.');
     }
-    if (props.input?.s3InputUri === '') {
-      throw new Error('S3 InputUri cannot be an empty string');
+    if (useNewS3UriParamsForTask && (props.input?.s3InputUri === '' || props.output?.s3OutputUri === '')) {
+      throw new Error('S3 Uri cannot be an empty string');
     }
 
     //Warning to let users know about the newly introduced props

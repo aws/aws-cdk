@@ -394,6 +394,50 @@ describe('Invoke Model', () => {
     });
   });
 
+  test('throws error S3 input Uri is specified as an empty string', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        input: {
+          s3InputUri: '',
+        },
+        output: {
+          s3OutputUri: '',
+        },
+      });
+    }).toThrow('S3 Uri cannot be an empty string');
+  });
+
+  test('cannot specify both s3 uri and s3 bucket', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        input: {
+          s3Location: {
+            bucketName: 'test-bucket',
+            objectKey: 'input-key',
+          },
+          s3InputUri: sfn.JsonPath.stringAt('$.prompt'),
+        },
+        output: {
+          s3Location: {
+            bucketName: 'test-bucket',
+            objectKey: 'output-key',
+          },
+          s3OutputUri: sfn.JsonPath.stringAt('$.prompt'),
+        },
+      });
+    }).toThrow('Either specify S3 Uri or S3 location, but not both.');
+  });
+
   test('S3 permissions are created in generated policy when input and output locations are specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -475,8 +519,8 @@ describe('Invoke Model', () => {
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      input: { s3InputUri: sfn.JsonPath.stringAt('$.prompt') },
-      output: { s3OutputUri: sfn.JsonPath.stringAt('$.prompt') },
+      input: { s3InputUri: 's3://input-bucket/input-key' },
+      output: { s3OutputUri: 's3://input-bucket/output-key' },
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
