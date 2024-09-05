@@ -9,7 +9,8 @@ export class TestFunction extends lambda.Function {
       ...props,
       "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
       "handler": "index.handler",
-      "runtime": lambda.Runtime.PYTHON_3_10
+      "runtime": lambda.Runtime.PYTHON_3_11
     });
+    this.node.addMetadata('aws:cdk:is-custom-resource-handler-runtime-family', this.runtime.family);
   }
 }
