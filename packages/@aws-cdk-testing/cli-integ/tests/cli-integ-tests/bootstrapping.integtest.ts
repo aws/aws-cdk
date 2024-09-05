@@ -1,6 +1,9 @@
 /* eslint-disable @aws-cdk/no-literal-partition */
 import * as fs from 'fs';
 import * as path from 'path';
+import { DescribeStackResourcesCommand, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
+import { DescribeRepositoriesCommand } from '@aws-sdk/client-ecr';
+import { CreatePolicyCommand, DeletePolicyCommand, GetRoleCommand } from '@aws-sdk/client-iam';
 import * as yaml from 'yaml';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
 import eventually from '../../lib/eventually';
@@ -15,9 +18,11 @@ integTest('can bootstrap without execution', withoutBootstrap(async (fixture) =>
     noExecute: true,
   });
 
-  const resp = await fixture.aws.cloudFormation('describeStacks', {
-    StackName: bootstrapStackName,
-  });
+  const resp = await fixture.aws.cloudFormation.send(
+    new DescribeStacksCommand({
+      StackName: bootstrapStackName,
+    }),
+  );
 
   expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 }));
@@ -145,7 +150,7 @@ integTest('can create a legacy bootstrap stack with --public-access-block-config
     tags: 'Foo=Bar',
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
@@ -167,7 +172,7 @@ integTest('can create multiple legacy bootstrap stacks', withoutBootstrap(async 
     toolkitStackName: bootstrapStackName2,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName1 });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName1 }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
@@ -272,17 +277,19 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
   const policyName = `${bootstrapStackName}-pb`;
   let policyArn;
   try {
-    const policy = await fixture.aws.iam('createPolicy', {
-      PolicyName: policyName,
-      PolicyDocument: JSON.stringify({
-        Version: '2012-10-17',
-        Statement: {
-          Action: ['*'],
-          Resource: ['*'],
-          Effect: 'Allow',
-        },
+    const policy = await fixture.aws.iam.send(
+      new CreatePolicyCommand({
+        PolicyName: policyName,
+        PolicyDocument: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: {
+            Action: ['*'],
+            Resource: ['*'],
+            Effect: 'Allow',
+          },
+        }),
       }),
-    });
+    );
     policyArn = policy.Policy?.Arn;
 
     // Policy creation and consistency across regions is "almost immediate"
@@ -295,7 +302,9 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
         customPermissionsBoundary: policyName,
       });
 
-      const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+      const response = await fixture.aws.cloudFormation.send(
+        new DescribeStacksCommand({ StackName: bootstrapStackName }),
+      );
       expect(
         response.Stacks?.[0].Parameters?.some(
           param => (param.ParameterKey === 'InputPermissionsBoundary' && param.ParameterValue === policyName),
@@ -309,7 +318,9 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
       toolkitStackName: bootstrapStackName,
       usePreviousParameters: false,
     });
-    const response2 = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+    const response2 = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({ StackName: bootstrapStackName }),
+    );
     expect(
       response2.Stacks?.[0].Parameters?.some(
         param => (param.ParameterKey === 'InputPermissionsBoundary' && !param.ParameterValue),
@@ -317,12 +328,17 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
 
     const region = fixture.aws.region;
     const account = await fixture.aws.account();
-    const role = await fixture.aws.iam('getRole', { RoleName: `cdk-${fixture.qualifier}-cfn-exec-role-${account}-${region}` });
+    const role = await fixture.aws.iam.send(
+      new GetRoleCommand({ RoleName: `cdk-${fixture.qualifier}-cfn-exec-role-${account}-${region}` }),
+    );
+    if (!role.Role) {
+      throw new Error('Role not found');
+    }
     expect(role.Role.PermissionsBoundary).toBeUndefined();
 
   } finally {
     if (policyArn) {
-      await fixture.aws.iam('deletePolicy', { PolicyArn: policyArn });
+      await fixture.aws.iam.send(new DeletePolicyCommand({ PolicyArn: policyArn }));
     }
   }
 }));
@@ -342,7 +358,7 @@ integTest('switch on termination protection, switch is left alone on re-bootstra
     force: true,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].EnableTerminationProtection).toEqual(true);
 }));
 
@@ -361,7 +377,7 @@ integTest('add tags, left alone on re-bootstrap', withoutBootstrap(async (fixtur
     force: true,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
@@ -384,7 +400,7 @@ integTest('can add tags then update tags during re-bootstrap', withoutBootstrap(
     force: true,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'BarBaz' },
   ]);
@@ -418,18 +434,22 @@ integTest('create ECR with tag IMMUTABILITY to set on', withoutBootstrap(async (
     toolkitStackName: bootstrapStackName,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStackResources', {
-    StackName: bootstrapStackName,
-  });
+  const response = await fixture.aws.cloudFormation.send(
+    new DescribeStackResourcesCommand({
+      StackName: bootstrapStackName,
+    }),
+  );
   const ecrResource = response.StackResources?.find(resource => resource.LogicalResourceId === 'ContainerAssetsRepository');
   expect(ecrResource).toBeDefined();
 
-  const ecrResponse = await fixture.aws.ecr('describeRepositories', {
-    repositoryNames: [
-      // This is set, as otherwise we don't end up here
-      ecrResource?.PhysicalResourceId ?? '',
-    ],
-  });
+  const ecrResponse = await fixture.aws.ecr.send(
+    new DescribeRepositoriesCommand({
+      repositoryNames: [
+        // This is set, as otherwise we don't end up here
+        ecrResource?.PhysicalResourceId ?? '',
+      ],
+    }),
+  );
 
   expect(ecrResponse.repositories?.[0].imageTagMutability).toEqual('IMMUTABLE');
 }));

@@ -18,7 +18,7 @@ test('use AwsApi as an event rule target', () => {
     parameters: {
       service: 'cool-service',
       forceNewDeployment: true,
-    } as AWS.ECS.UpdateServiceRequest,
+    },
     catchErrorPattern: 'error',
     apiVersion: '2019-01-01',
   }));
@@ -28,7 +28,7 @@ test('use AwsApi as an event rule target', () => {
     action: 'createDBSnapshot',
     parameters: {
       DBInstanceIdentifier: 'cool-instance',
-    } as AWS.RDS.CreateDBSnapshotMessage,
+    },
   }));
 
   // THEN
