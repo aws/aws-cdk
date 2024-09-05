@@ -34,6 +34,7 @@ The following targets are supported:
 3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
 4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
 5. `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
+6. `targets.EventBridgeTarget`: [Send event soruce to an EventBridge event bus](#amazon-eventbridge-event-bus)
 
 ### Amazon SQS
 
@@ -80,7 +81,7 @@ A State Machine can be used as a target for a pipe. The State Machine will be in
 declare const sourceQueue: sqs.Queue;
 declare const targetStateMachine: sfn.IStateMachine;
 
-const pipeTarget = new targets.SfnStateMachine(targetStateMachine,{});
+const pipeTarget = new targets.SfnStateMachine(targetStateMachine);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
@@ -134,7 +135,7 @@ A Lambda Function can be used as a target for a pipe. The Lambda Function will b
 declare const sourceQueue: sqs.Queue;
 declare const targetFunction: lambda.IFunction;
 
-const pipeTarget = new targets.LambdaFunction(targetFunction,{});
+const pipeTarget = new targets.LambdaFunction(targetFunction);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
@@ -250,7 +251,7 @@ An event bus can be used as a target for a pipe. The event bus will receive the 
 declare const sourceQueue: sqs.Queue;
 declare const targetEventBus: events.EventBus;
 
-const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {});
+const eventBusTarget = new targets.EventBridgeTarget(targetEventBus);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),

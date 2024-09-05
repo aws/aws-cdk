@@ -1,5 +1,5 @@
 import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { TestSource } from './test-classes';
@@ -234,5 +234,121 @@ describe('EventBridge source parameters validation', () => {
         time: 'x'.repeat(257),
       });
     }).toThrow('Time must be between 1 and 256 characters, received 257');
+  });
+
+  test('Detail type can be given for a token', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const bus = new EventBus(stack, 'MyEventBus', {});
+    const detailType = Lazy.string({ produce: () => '20' });
+
+    const target = new EventBridgeTarget(bus, {
+      detailType,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // WHEN
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      TargetParameters: {
+        EventBridgeEventBusParameters: {
+          DetailType: '20',
+        },
+      },
+    });
+  });
+
+  test('Endpoint can be given for a token', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const bus = new EventBus(stack, 'MyEventBus', {});
+    const endpointId = Lazy.string({ produce: () => 'abcde.veo' });
+
+    const target = new EventBridgeTarget(bus, {
+      endpointId,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // WHEN
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      TargetParameters: {
+        EventBridgeEventBusParameters: {
+          EndpointId: 'abcde.veo',
+        },
+      },
+    });
+  });
+
+  test('Source can be given for a token', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const bus = new EventBus(stack, 'MyEventBus', {});
+    const source = Lazy.string({ produce: () => 'mySource' });
+
+    const target = new EventBridgeTarget(bus, {
+      source,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // WHEN
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      TargetParameters: {
+        EventBridgeEventBusParameters: {
+          Source: 'mySource',
+        },
+      },
+    });
+  });
+
+  test('Time can be given for a token', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const bus = new EventBus(stack, 'MyEventBus', {});
+    const time = Lazy.string({ produce: () => '1234' });
+
+    const target = new EventBridgeTarget(bus, {
+      time,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // WHEN
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      TargetParameters: {
+        EventBridgeEventBusParameters: {
+          Time: '1234',
+        },
+      },
+    });
   });
 });

@@ -1,6 +1,7 @@
 import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { Token } from 'aws-cdk-lib';
 
 /**
  * EventBridge target properties.
@@ -66,6 +67,7 @@ export class EventBridgeTarget implements ITarget {
   private eventBus: IEventBus;
   private eventBridgeParameters?: EventBridgeTargetParameters;
   public readonly targetArn: string;
+
   constructor(eventBus: IEventBus, parameters?: EventBridgeTargetParameters) {
     this.eventBus = eventBus;
     this.targetArn = eventBus.eventBusArn;
@@ -98,7 +100,7 @@ export class EventBridgeTarget implements ITarget {
 }
 
 function validateDetailType({ detailType }: EventBridgeTargetParameters) {
-  if (detailType !== undefined) {
+  if (detailType !== undefined && !Token.isUnresolved(detailType)) {
     if (detailType.length < 1 || detailType.length > 128) {
       throw new Error(`Detail type must be between 1 and 128 characters, received ${detailType.length}`);
     }
@@ -106,7 +108,7 @@ function validateDetailType({ detailType }: EventBridgeTargetParameters) {
 }
 
 function validateEndpointId({ endpointId }: EventBridgeTargetParameters) {
-  if (endpointId !== undefined) {
+  if (endpointId !== undefined && !Token.isUnresolved(endpointId)) {
     if (endpointId.length < 1 || endpointId.length > 50) {
       throw new Error(`Endpoint id must be between 1 and 50 characters, received ${endpointId.length}`);
     }
@@ -114,7 +116,7 @@ function validateEndpointId({ endpointId }: EventBridgeTargetParameters) {
 }
 
 function validateSource({ source }: EventBridgeTargetParameters) {
-  if (source !== undefined) {
+  if (source !== undefined && !Token.isUnresolved(source)) {
     if (source.length < 1 || source.length > 256) {
       throw new Error(`Source must be between 1 and 256 characters, received ${source.length}`);
     }
@@ -122,7 +124,7 @@ function validateSource({ source }: EventBridgeTargetParameters) {
 }
 
 function validateTime({ time }: EventBridgeTargetParameters) {
-  if (time !== undefined) {
+  if (time !== undefined && !Token.isUnresolved(time)) {
     if (time.length < 1 || time.length > 256) {
       throw new Error(`Time must be between 1 and 256 characters, received ${time.length}`);
     }
