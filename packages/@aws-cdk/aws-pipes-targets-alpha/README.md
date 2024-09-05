@@ -135,7 +135,7 @@ A Lambda Function can be used as a target for a pipe. The Lambda Function will b
 declare const sourceQueue: sqs.Queue;
 declare const targetFunction: lambda.IFunction;
 
-const pipeTarget = new targets.LambdaFunction(targetFunction);
+const pipeTarget = new targets.LambdaFunction(targetFunction,{});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
