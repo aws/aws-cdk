@@ -138,9 +138,8 @@ new cloudfront.Distribution(this, 'myDist', {
 I saw this warning message during synth time. What do I do?
 
 ```text
-To avoid circular dependency between the KMS key, Bucket, and Distribution,
-a wildcard is used to match all Distribution IDs in Key policy condition.
-To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.
+To avoid a circular dependency between the KMS key, Bucket, and Distribution during the initial deployment, a wildcard is used in the Key policy condition to match all Distribution IDs.
+After deploying once, it is strongly recommended to further scope down the policy for best security practices by following the guidance in the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.
 ```
 
 If the S3 bucket has an `encryptionKey` defined, `S3BucketOrigin.withOriginAccessControl()`

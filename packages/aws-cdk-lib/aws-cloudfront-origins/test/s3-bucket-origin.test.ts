@@ -379,9 +379,10 @@ describe('S3BucketOrigin', () => {
           },
         });
         Annotations.fromStack(stack).hasWarning('/Default',
-          'To avoid circular dependency between the KMS key, Bucket, and Distribution, ' +
-          'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
-          'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]');
+          'To avoid a circular dependency between the KMS key, Bucket, and Distribution during the initial deployment, ' +
+          'a wildcard is used in the Key policy condition to match all Distribution IDs.\n' +
+          'After deploying once, it is strongly recommended to further scope down the policy for best security practices by ' +
+          'following the guidance in the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]');
       });
 
       it('should allow users to use escape hatch to scope down KMS key policy to specific distribution id', () => {
@@ -459,6 +460,22 @@ describe('S3BucketOrigin', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           KeyPolicy: finalKeyPolicy,
         });
+      });
+      it('should warn users to update key policy manually for imported keys', () => {
+        const stack = new Stack();
+        const keyArn = 'arn:aws:kms:us-west-2:111122223333:key/test-key';
+        const kmsKey = kms.Key.fromKeyArn(stack, 'myImportedKey', keyArn);
+        const bucket = new s3.Bucket(stack, 'myEncryptedBucket', {
+          encryption: s3.BucketEncryption.KMS,
+          encryptionKey: kmsKey,
+          objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+        });
+        new cloudfront.Distribution(stack, 'MyDistributionA', {
+          defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(bucket) },
+        });
+        Annotations.fromStack(stack).hasWarning('/Default/MyDistributionA/Origin1',
+          'Cannot update key policy of an imported key. You will need to update the policy manually instead.\n' +
+          'See the "Updating imported key policies" section of the module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicyOac]');
       });
     });
 

@@ -130,6 +130,7 @@ export interface OriginBindOptions {
   /**
    * The identifier of the Distribution this Origin is used for.
    * This is used to grant origin access permissions to the distribution for origin access control.
+   *
    * @default - no distribution id
    */
   readonly distributionId?: string;

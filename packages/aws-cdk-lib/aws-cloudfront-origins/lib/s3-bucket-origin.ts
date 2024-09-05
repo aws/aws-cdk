@@ -1,21 +1,10 @@
 import { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
-import { AccessLevel } from '../../aws-cloudfront';
+import { AccessLevel, BUCKET_ACTIONS, KEY_ACTIONS } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack } from '../../core';
-
-const BUCKET_ACTIONS: Record<string, string[]> = {
-  READ: ['s3:GetObject'],
-  WRITE: ['s3:PutObject'],
-  DELETE: ['s3:DeleteObject'],
-};
-
-const KEY_ACTIONS: Record<string, string[]> = {
-  READ: ['kms:Decrypt'],
-  WRITE: ['kms:Encrypt', 'kms:GenerateDataKey*'],
-};
 
 /**
  * Properties for configuring a origin using a standard S3 bucket
@@ -92,8 +81,9 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
           const keyPolicyResult = this.grantDistributionAccessToKey(keyPolicyActions, bucket.encryptionKey);
           // Failed to update key policy, assume using imported key
           if (!keyPolicyResult.statementAdded) {
-            Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicy',
-              'Cannot update key policy of an imported key. You may need to update the policy manually instead.');
+            Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicyOac',
+              'Cannot update key policy of an imported key. You will need to update the policy manually instead.\n' +
+              'See the "Updating imported key policies" section of the module\'s README for more info.');
           }
         }
 
@@ -109,7 +99,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         };
       }
 
-      private getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
+      private getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): string[] {
         let actions: string[] = [];
         for (const accessLevel of accessLevels) {
           actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
@@ -117,7 +107,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
         return actions;
       }
 
-      private getKeyPolicyActions(accessLevels: Set<cloudfront.AccessLevel>) {
+      private getKeyPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): string[] {
         let actions: string[] = [];
         for (const accessLevel of accessLevels) {
           // Filter out DELETE since delete permissions are not applicable to KMS key actions
@@ -161,9 +151,10 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
           },
         );
         Annotations.of(key.node.scope!).addWarningV2('@aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac',
-          'To avoid circular dependency between the KMS key, Bucket, and Distribution, ' +
-          'a wildcard is used to match all Distribution IDs in Key policy condition.\n' +
-          'To further scope down the policy for best security practices, see the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.');
+          'To avoid a circular dependency between the KMS key, Bucket, and Distribution during the initial deployment, ' +
+          'a wildcard is used in the Key policy condition to match all Distribution IDs.\n' +
+          'After deploying once, it is strongly recommended to further scope down the policy for best security practices by ' +
+          'following the guidance in the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README.');
         const result = key.addToResourcePolicy(oacKeyPolicyStatement);
         return result;
       }
@@ -236,7 +227,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
     }();
   }
 
-  constructor(bucket: IBucket, props: S3BucketOriginBaseProps) {
+  constructor(bucket: IBucket, props?: S3BucketOriginBaseProps) {
     super(bucket.bucketRegionalDomainName, props);
   }
 
