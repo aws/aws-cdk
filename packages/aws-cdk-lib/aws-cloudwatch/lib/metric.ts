@@ -226,9 +226,34 @@ export interface MathExpressionProps extends MathExpressionOptions {
    * The key is the identifier that represents the given metric in the
    * expression, and the value is the actual Metric object.
    *
-   * The `period` of each Metric object is ignored and instead overridden by
-   * the `period` of this math expression object. Even if the `period` of the
-   * math expression is not specified, it is overridden by its default value.
+   * The `period` of each metric in `usingMetrics` is ignored and instead overridden
+   * by the `period` specified for the `MathExpression` construct. Even if no `period`
+   * is specified for the `MathExpression`, it will be overridden by the default
+   * value (`Duration.minutes(5)`).
+   *
+   * Example:
+   *
+   * ```ts
+   * declare const metrics: elbv2.IApplicationLoadBalancerMetrics;
+   * new cloudwatch.MathExpression({
+   *   expression:  'm1+m2',
+   *   label: 'AlbErrors',
+   *   usingMetrics: {
+   *     m1: metrics.custom('HTTPCode_ELB_500_Count', {
+   *       period: Duration.minutes(1), // <- This period will be ignored
+   *       statistic: 'Sum',
+   *       label: 'HTTPCode_ELB_500_Count',
+   *     }),
+   *     m2: metrics.custom('HTTPCode_ELB_502_Count', {
+   *       period: Duration.minutes(1), // <- This period will be ignored
+   *       statistic: 'Sum',
+   *       label: 'HTTPCode_ELB_502_Count',
+   *     }),
+   *   },
+   *   period: Duration.minutes(3), // <- This overrides the period of each metric in `usingMetrics`
+   *                                //    (Even if not specified, it is overridden by the default value)
+   * });
+   * ```
    *
    * @default - Empty map.
    */
