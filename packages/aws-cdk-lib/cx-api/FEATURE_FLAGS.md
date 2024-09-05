@@ -1358,7 +1358,7 @@ Other notifications that are not managed by this stack will be kept.
 | 2.155.0 | `false` | `false` |
 
 
-### @aws-cdk:aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask
+### @aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask
 
 *When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.* (fix)
 
