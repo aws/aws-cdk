@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
@@ -31,9 +32,34 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
 }
 
 /**
+ * Properties for configuring a origin using a standard Lambda Functions URLs.
+ */
+export interface FunctionUrlOriginBaseProps extends cloudfront.OriginProps { }
+
+/**
+ * Properties for configuring a Lambda Functions URLs with OAC.
+ */
+export interface FunctionUrlOriginWithOACProps extends FunctionUrlOriginProps {
+  /**
+   * An optional Origin Access Control
+   *
+   * @default - an Origin Access Control will be created.
+   */
+  readonly originAccessControl?: cloudfront.IOriginAccessControl;
+
+}
+
+/**
  * An Origin for a Lambda Function URL.
  */
 export class FunctionUrlOrigin extends cloudfront.OriginBase {
+  /**
+   * Create a Functions URL Origin with Origin Access Control (OAC) configured
+   */
+  public static withOriginAccessControl(url: lambda.IFunctionUrl, props?: FunctionUrlOriginWithOACProps): cloudfront.IOrigin {
+    return new FunctionUrlOriginWithOAC(url, props);
+  }
+
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, private readonly props: FunctionUrlOriginProps = {}) {
     // Lambda Function URL is of the form 'https://<lambda-id>.lambda-url.<region>.on.aws/'
     // No need to split URL as we do with REST API, the entire URL is needed
@@ -50,6 +76,53 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+    };
+  }
+}
+
+/**
+ * An Origin for a Lambda Function URL with OAC.
+ */
+export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
+  private originAccessControl?: cloudfront.IOriginAccessControl;
+
+  constructor(lambdaFunctionUrl: lambda.IFunctionUrl, props: FunctionUrlOriginWithOACProps = {}) {
+    const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
+    super(domainName, props);
+    this.originAccessControl = props.originAccessControl;
+
+  }
+
+  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
+    return {
+      originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
+      originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+    };
+  }
+
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    const originBindConfig = super.bind(scope, options);
+
+    if (!this.originAccessControl) {
+      const cfnOriginAccessControl = new cloudfront.CfnOriginAccessControl(scope, 'LambdaOriginAccessControl', {
+        originAccessControlConfig: {
+          name: 'OAC for Lambda Function URL',
+          originAccessControlOriginType: 'lambda',
+          signingBehavior: 'always',
+          signingProtocol: 'sigv4',
+        },
+      });
+
+      this.originAccessControl = {
+        originAccessControlId: cfnOriginAccessControl.attrId,
+      } as cloudfront.IOriginAccessControl;
+    }
+    return {
+      ...originBindConfig,
+      originProperty: {
+        ...originBindConfig.originProperty!,
+        originAccessControlId: this.originAccessControl?.originAccessControlId,
+      },
     };
   }
 }
