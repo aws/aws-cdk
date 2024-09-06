@@ -51,14 +51,35 @@ export interface FunctionUrlOriginWithOACProps extends FunctionUrlOriginProps {
 }
 
 /**
+ * Properties for configuring a Lambda Function URL with OAI.
+ */
+export interface FunctionUrlOriginWithOAIProps extends FunctionUrlOriginProps {
+  /**
+   * An optional Origin Access Identity (OAI)
+   *
+   * @default - an Origin Access Identity will be created.
+   */
+  readonly originAccessIdentity?: cloudfront.IOriginAccessIdentity;
+}
+
+/**
  * An Origin for a Lambda Function URL.
  */
 export class FunctionUrlOrigin extends cloudfront.OriginBase {
   /**
-   * Create a Functions URL Origin with Origin Access Control (OAC) configured
+   * Create a Lambda Function URL Origin with Origin Access Control (OAC) configured
    */
   public static withOriginAccessControl(url: lambda.IFunctionUrl, props?: FunctionUrlOriginWithOACProps): cloudfront.IOrigin {
     return new FunctionUrlOriginWithOAC(url, props);
+  }
+
+  /**
+   * Create a Lambda Function URL Origin with Origin Access Identity (OAI) configured
+   * OAI is a legacy feature and we **strongly** recommend you to use OAC via `withOriginAccessControl()`
+   * unless it is not supported in your required region (e.g. China regions).
+   */
+  public static withOriginAccessIdentity(url: lambda.IFunctionUrl, props?: FunctionUrlOriginWithOAIProps): cloudfront.IOrigin {
+    return new FunctionUrlOriginWithOAI(url, props);
   }
 
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, private readonly props: FunctionUrlOriginProps = {}) {
@@ -119,17 +140,62 @@ export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
           signingProtocol: 'sigv4',
         },
       });
-
       this.originAccessControl = {
         originAccessControlId: cfnOriginAccessControl.attrId,
       } as cloudfront.IOriginAccessControl;
+    }
 
-      const lambdaFunction = lambda.Function.fromFunctionArn(scope, 'ReferencedLambdaFunction', this.functionArn);
+    const lambdaFunction = lambda.Function.fromFunctionArn(scope, 'ReferencedLambdaFunction', this.functionArn);
 
-      lambdaFunction.addPermission('AllowCloudFrontServicePrincipal', {
-        principal: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
-        action: 'lambda:InvokeFunctionUrl',
-        sourceArn: `arn:${cdk.Aws}:cloudfront::${cdk.Stack.of(scope).account}:distribution/${distributionId}`,
+    lambdaFunction.addPermission('AllowCloudFrontServicePrincipal', {
+      principal: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+      action: 'lambda:InvokeFunctionUrl',
+      sourceArn: `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`,
+    });
+
+    return {
+      ...originBindConfig,
+      originProperty: {
+        ...originBindConfig.originProperty!,
+        originAccessControlId: this.originAccessControl?.originAccessControlId,
+      },
+    };
+  }
+}
+
+class FunctionUrlOriginWithOAI extends cloudfront.OriginBase {
+  private originAccessIdentity?: cloudfront.IOriginAccessIdentity;
+  private functionUrl: lambda.IFunctionUrl
+
+  constructor(lambdaFunctionUrl: lambda.IFunctionUrl, props: FunctionUrlOriginWithOAIProps = {}) {
+    const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
+    super(domainName, props);
+    this.originAccessIdentity = props.originAccessIdentity;
+    this.functionUrl = lambdaFunctionUrl;
+  }
+
+  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
+    return {
+      originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+      originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
+    };
+  }
+
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    const originBindConfig = super.bind(scope, options);
+    if (!this.originAccessIdentity) {
+    // If the Lambda function URL is in a different stack than the Distribution, avoid cyclic dependencies
+      const functionUrlStack = cdk.Stack.of(this.functionUrl);
+      const isDifferentStack = functionUrlStack !== cdk.Stack.of(scope);
+
+      // Define the scope for the OAI
+      const oaiScope = isDifferentStack ? functionUrlStack : scope;
+
+      // Create a unique ID for the OAI if it's in a different stack to avoid naming collisions
+      const oaiId = isDifferentStack ? `${cdk.Names.uniqueId(scope)}LambdaOrigin` : 'LambdaOriginAccessIdentity';
+      // Create the OAI with the correct scope and ID, and set the appropriate comment
+      this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
+        comment: `OAI for ${options.originId}`,
       });
     }
 
@@ -137,7 +203,8 @@ export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       ...originBindConfig,
       originProperty: {
         ...originBindConfig.originProperty!,
-        originAccessControlId: this.originAccessControl?.originAccessControlId,
+        customOriginConfig: this.renderCustomOriginConfig(),
+        s3OriginConfig: undefined,
       },
     };
   }
