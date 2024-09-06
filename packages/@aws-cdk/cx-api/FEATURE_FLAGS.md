@@ -72,6 +72,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
+| [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -133,7 +134,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": true
   }
 }
 ```
@@ -986,10 +988,10 @@ removing these ingress/egress rules in order to restrict access to the default s
 | (not in v1) |  |  |
 | 2.78.0 | `false` | `true` |
 
-**Compatibility with old behavior:** 
+**Compatibility with old behavior:**
       To allow all ingress/egress traffic to the VPC default security group you
       can set the `restrictDefaultSecurityGroup: false`.
-    
+
 
 
 ### @aws-cdk/aws-kms:aliasNameRef
@@ -1047,10 +1049,10 @@ provided.
 | (not in v1) |  |  |
 | 2.88.0 | `false` | `true` |
 
-**Compatibility with old behavior:** 
+**Compatibility with old behavior:**
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
-    
+
 
 
 ### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
@@ -1128,7 +1130,7 @@ shipped as part of the runtime environment.
 
 *When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.* (fix)
 
-When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in
 the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
 Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
 
@@ -1185,7 +1187,7 @@ database cluster from a snapshot.
 
 *When enabled, the CodeCommit source action is using the default branch name 'main'.* (fix)
 
-When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+When setting up a CodeCommit source action for the source stage of a pipeline, please note that the
 default branch is 'master'.
 However, with the activation of this feature flag, the default branch is updated to 'main'.
 
@@ -1355,5 +1357,23 @@ Other notifications that are not managed by this stack will be kept.
 | (not in v1) |  |  |
 | 2.155.0 | `false` | `false` |
 
+
+### @aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask
+
+*When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.* (fix)
+
+Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
+of State Machine Task definition.
+
+When this feature flag is enabled, specify newly introduced props 's3InputUri' and
+'s3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
 
 <!-- END details -->
