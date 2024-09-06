@@ -681,3 +681,53 @@ new cloudfront.Distribution(stack, 'MyDistribution', {
   },
 });
 ```
+
+### Lambda Function URL with Origin Access Identity (OAI)
+You can configure the Lambda Function URL with Origin Access Identity (OAI) to restrict access and ensure that requests are routed through CloudFront. OAI is a legacy feature that is recommended for use only in regions where Origin Access Control (OAC) is not available. The withOriginAccessIdentity() method automatically configures the necessary identity for enhanced security.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+declare const fn: lambda.Function;
+
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+});
+
+// Configure Lambda Function URL with OAI in CloudFront Distribution
+new cloudfront.Distribution(stack, 'MyDistribution', {
+  defaultBehavior: {
+    origin: origins.FunctionUrlOrigin.withOriginAccessIdentity(fnUrl),
+  },
+});
+```
+
+If you want to explicitly create and manage an OAI, you can pass the originAccessIdentity option to customize the setup.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+declare const fn: lambda.Function;
+
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.NONE,
+});
+
+// Create a custom OAI
+const oai = new cloudfront.OriginAccessIdentity(stack, 'MyOAI', {
+  comment: 'OAI for Lambda Function URL',
+});
+
+// Set up Lambda Function URL with custom OAI in CloudFront Distribution
+new cloudfront.Distribution(stack, 'MyDistribution', {
+  defaultBehavior: {
+    origin: origins.FunctionUrlOrigin.withOriginAccessIdentity(fnUrl, {
+      originAccessIdentity: oai,
+    }),
+  },
+});
+```
