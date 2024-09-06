@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import { IKey } from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
-import { CustomerManagedEncryptionConfiguration } from '../../../aws-stepfunctions/lib/cmkencryptionconfiguration';
+import { CustomerManagedEncryptionConfiguration } from '../../../aws-stepfunctions/lib/customer-managed-key-encryption-configuration';
 
 /**
  * Properties for invoking an Activity worker

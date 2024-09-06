@@ -1,16 +1,16 @@
 import { Construct } from 'constructs';
-import { CustomerManagedEncryptionConfiguration } from './cmkencryptionconfiguration';
+import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
+import { EncryptionConfiguration } from './encryption-configuration';
+import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
-import { buildEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
-import { EncryptionConfiguration } from '../lib/encryptionconfiguration';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.

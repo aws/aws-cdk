@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { CustomerManagedEncryptionConfiguration } from './cmkencryptionconfiguration';
-import { EncryptionConfiguration } from './encryptionconfiguration';
+import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
+import { EncryptionConfiguration } from './encryption-configuration';
+import { buildEncryptionConfiguration } from './private/util';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
-import { buildEncryptionConfiguration } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';

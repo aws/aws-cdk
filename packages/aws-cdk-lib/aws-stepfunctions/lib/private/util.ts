@@ -1,14 +1,13 @@
-import { AwsOwnedEncryptionConfiguration } from './aokencryptionconfiguration';
-import { CustomerManagedEncryptionConfiguration } from './cmkencryptionconfiguration';
-import { CfnActivity, CfnStateMachine } from './stepfunctions.generated';
+import { AwsOwnedEncryptionConfiguration } from '../aws-owned-key-encryption-configuration';
+import { CustomerManagedEncryptionConfiguration } from '../customer-managed-key-encryption-configuration';
+import { EncryptionConfiguration } from '../encryption-configuration';
 
 export function noEmptyObject<A>(o: Record<string, A>): Record<string, A> | undefined {
   if (Object.keys(o).length === 0) { return undefined; }
   return o;
 }
 
-// eslint-disable-next-line max-len
-export function buildEncryptionConfiguration(encryptionConfiguration? : CustomerManagedEncryptionConfiguration | AwsOwnedEncryptionConfiguration) : CfnStateMachine.EncryptionConfigurationProperty | CfnActivity.EncryptionConfigurationProperty | undefined {
+export function buildEncryptionConfiguration(encryptionConfiguration? : EncryptionConfiguration) {
   if (encryptionConfiguration instanceof AwsOwnedEncryptionConfiguration) {
     return {
       type: encryptionConfiguration.type,

@@ -1,4 +1,4 @@
-import { EncryptionConfiguration } from './encryptionconfiguration';
+import { EncryptionConfiguration } from './encryption-configuration';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 

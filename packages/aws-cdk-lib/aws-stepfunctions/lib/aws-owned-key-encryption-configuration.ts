@@ -1,4 +1,4 @@
-import { EncryptionConfiguration } from './encryptionconfiguration';
+import { EncryptionConfiguration } from './encryption-configuration';
 
 const AWS_OWNED_KEY = 'AWS_OWNED_KEY';
 
