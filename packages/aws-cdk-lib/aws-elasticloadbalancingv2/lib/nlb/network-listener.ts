@@ -335,7 +335,7 @@ export interface AddNetworkActionProps {
  */
 export interface AddNetworkTargetsProps {
   /**
-   * The port on which the listener listens for requests.
+   * The port on which the target receives traffic.
    *
    * @default Determined from protocol if known
    */
