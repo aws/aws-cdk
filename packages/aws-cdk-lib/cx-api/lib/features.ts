@@ -1121,7 +1121,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.  
 
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.156.0' },
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
