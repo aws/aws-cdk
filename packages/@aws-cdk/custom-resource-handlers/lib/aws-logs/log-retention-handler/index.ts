@@ -11,7 +11,7 @@ interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceE
     SdkRetry?: {
       maxRetries?: string;
     };
-    RemovalPolicy?: string
+    RemovalPolicy?: string;
   };
 }
 
@@ -91,7 +91,7 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
     const logGroupRegion = event.ResourceProperties.LogGroupRegion;
 
     // Parse to AWS SDK retry options
-    const maxRetries = parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries) ?? 5;
+    const maxRetries = parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries) ?? 10;
     const withDelay = makeWithDelay(maxRetries);
 
     const sdkConfig: Logs.CloudWatchLogsClientConfig = {
@@ -188,8 +188,8 @@ function parseIntOptional(value?: string, base = 10): number | undefined {
 
 function makeWithDelay(
   maxRetries: number,
-  delayBase: number = 100,
-  delayCap = 10 * 1000, // 10s
+  delayBase: number = 1_000,
+  delayCap = 60_000, // 60s
 ): (block: () => Promise<void>) => Promise<void> {
   // If we try to update the log group, then due to the async nature of
   // Lambda logging there could be a race condition when the same log group is
@@ -224,5 +224,5 @@ function makeWithDelay(
 }
 
 function calculateDelay(attempt: number, base: number, cap: number): number {
-  return Math.round(Math.random() * Math.min(cap, base * 2 ** attempt));
+  return Math.min(Math.round(Math.random() * base * 2 ** attempt), cap);
 }
