@@ -51,6 +51,21 @@ const sm = new StateMachine(stack, 'StateMachine', {
   }),
 });
 
+const smWithoutInputData = new StateMachine(stack, 'StateMachineAnother', {
+  definition: new SageMakerCreateTrainingJob(stack, 'TrainTaskAnother', {
+    algorithmSpecification: {
+      algorithmName: 'BlazingText',
+      trainingInputMode: InputMode.FAST_FILE,
+    },
+    outputDataConfig: { s3OutputLocation: S3Location.fromBucket(trainingData, 'result/') },
+    trainingJobName: 'mytrainingjob',
+  }),
+});
+
 new CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
+});
+
+new CfnOutput(stack, 'stateMachineArn2', {
+  value: smWithoutInputData.stateMachineArn,
 });

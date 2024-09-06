@@ -2,7 +2,7 @@ import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions } from './project';
+import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions, isLambdaComputeType } from './project';
 import * as ecr from '../../aws-ecr';
 import * as secretsmanager from '../../aws-secretsmanager';
 
@@ -103,17 +103,13 @@ export class LinuxArmBuildImage implements IBuildImage {
   }
 
   /**
-   * Validates by checking the BuildEnvironment computeType as aarch64 images only support ComputeType.SMALL and
-   * ComputeType.LARGE
+   * Validates by checking the BuildEnvironments' images are not Lambda ComputeTypes
    * @param buildEnvironment BuildEnvironment
    */
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.SMALL &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`ARM images only support ComputeTypes '${ComputeType.SMALL}' and '${ComputeType.LARGE}' - ` +
-               `'${buildEnvironment.computeType}' was given`);
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
+      ret.push(`ARM images do not support Lambda ComputeTypes, got ${buildEnvironment.computeType}`);
     }
     return ret;
   }

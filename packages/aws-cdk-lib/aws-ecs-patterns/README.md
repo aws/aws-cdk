@@ -1123,7 +1123,45 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 });
 ```
 
-### Use dualstack NLB
+### Use dualstack Load Balancer
+
+You can use dualstack IP address type for Application Load Balancer and Network Load Balancer.
+
+To use dualstack IP address type, you must have associated IPv6 CIDR blocks with the VPC and subnets and set the `ipAddressType` to `IpAddressType.DUAL_STACK` when creating the load balancer.
+
+### Application Load Balancer
+
+You can use dualstack Application Load Balancer for Fargate and EC2 services.
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
+// The VPC and subnet must have associated IPv6 CIDR blocks.
+const vpc = new ec2.Vpc(this, 'Vpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+});
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+
+const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'myService', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+
+const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'myService', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+### Network Load Balancer
+
+You can use dualstack Network Load Balancer for Fargate and EC2 services.
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';

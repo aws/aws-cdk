@@ -37,7 +37,7 @@ const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
   body: sfn.TaskInput.fromObject(
     {
       inputText: sfn.JsonPath.format(
-        'Alphabetize this list of first names:\n{}',
+        'Alphabetize this list of first names:/n{}',
         sfn.JsonPath.stringAt('$.names'),
       ),
       textGenerationConfig: {
@@ -52,13 +52,33 @@ const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
   resultPath: '$',
 });
 
+/** Test for Bedrock Output Path */
 const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
   model,
-  inputPath: sfn.JsonPath.stringAt('$.names'),
-  outputPath: sfn.JsonPath.stringAt('$.names'),
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: sfn.JsonPath.format(
+        'Echo list of first names: {}',
+        sfn.JsonPath.stringAt('$.names'),
+      ),
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  outputPath: '$.Body.results[0].outputText',
 });
 
-const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3);
+/** Test for Bedrock s3 URI Path */
+//State Machine Execution will fail for the following input as it expects a valid s3 URI from previous prompt
+const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
+  model,
+  input: { s3InputUri: '$.names' },
+  output: { s3OutputUri: '$.names' },
+});
+
+const chain = sfn.Chain.start(prompt1).next(prompt2).next(prompt3).next(prompt4);
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),

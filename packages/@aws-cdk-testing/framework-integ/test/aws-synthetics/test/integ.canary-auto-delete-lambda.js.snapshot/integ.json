@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
     "cdk-integ-synthetics-canary-auto-delete/DefaultTest": {
       "stacks": [

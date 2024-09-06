@@ -1,7 +1,7 @@
-/* eslint-disable import/order */
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { silentTest } from '../../util/silent';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
@@ -31,7 +31,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
+  silentTest('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -79,7 +79,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the getFunction() API with a delay of 5', async () => {
+  silentTest('calls the getFunction() API with a delay of 5', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

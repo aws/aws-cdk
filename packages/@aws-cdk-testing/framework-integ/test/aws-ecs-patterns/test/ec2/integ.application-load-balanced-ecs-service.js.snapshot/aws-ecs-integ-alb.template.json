@@ -889,6 +889,7 @@
   "myServiceLB168895E1": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
+    "IpAddressType": "ipv4",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",

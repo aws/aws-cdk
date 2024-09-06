@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
     "aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest": {
       "stacks": [

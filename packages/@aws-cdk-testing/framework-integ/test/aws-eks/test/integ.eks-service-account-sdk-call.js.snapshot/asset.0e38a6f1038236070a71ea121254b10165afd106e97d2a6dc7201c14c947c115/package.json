@@ -1,7 +1,0 @@
-{
-  "name": "eks-service-account-sdk-call-integ-test",
-  "private": "true",
-  "dependencies": {
-    "@aws-sdk/client-s3": "3.623.0"
-  }
-}

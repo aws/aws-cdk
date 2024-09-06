@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "integ-globalaccelerator.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d94a7db543843e4dcf0ffa0a6c3db0368d6a7e59d9ade266a53c5dc8187687f7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6280b10acaf3d635197181b337bd386a140fe6954412446bc32de00be8698362.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -172,22 +172,22 @@
             "data": "Listener828B0E81"
           }
         ],
+        "/integ-globalaccelerator/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/integ-globalaccelerator/SecurityGroup/from GlobalAcceleratorGroup:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupfromGlobalAcceleratorGroup44382272BC7"
+          }
+        ],
         "/integ-globalaccelerator/ALB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBAEE750D2"
-          }
-        ],
-        "/integ-globalaccelerator/ALB/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBSecurityGroup8B8624F8"
-          }
-        ],
-        "/integ-globalaccelerator/ALB/SecurityGroup/from GlobalAcceleratorGroup:443": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBSecurityGroupfromGlobalAcceleratorGroup4435D2AC398"
           }
         ],
         "/integ-globalaccelerator/NLB/Resource": [
@@ -278,6 +278,16 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
           }
         ],
         "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [

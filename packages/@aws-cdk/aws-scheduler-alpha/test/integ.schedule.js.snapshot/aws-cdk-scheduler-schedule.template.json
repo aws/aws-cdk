@@ -411,6 +411,37 @@
      }
     }
    }
+  },
+  "UseDescription170B07AB": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "Description": "test description",
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "Function76856677",
+       "Arn"
+      ]
+     },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
   }
  },
  "Parameters": {

@@ -1,8 +1,8 @@
-/* eslint-disable import/order */
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { silentTest } from '../../util/silent';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapMode) => {
-  test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Node.js code)', async () => {
+  silentTest('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Node.js code)', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -67,7 +67,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do
     });
   });
 
-  test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Python code)', async () => {
+  silentTest('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Python code)', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -111,7 +111,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do
     });
   });
 
-  test('throw a CfnEvaluationException when it receives an unsupported function runtime', async () => {
+  silentTest('throw a CfnEvaluationException when it receives an unsupported function runtime', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

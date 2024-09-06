@@ -89,6 +89,58 @@ test('create basic training job', () => {
   });
 });
 
+test('create basic training job without inputDataConfig', () => {
+  // WHEN
+  const task = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
+    trainingJobName: 'MyTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'BlazingText',
+    },
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createTrainingJob',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      AlgorithmSpecification: {
+        AlgorithmName: 'BlazingText',
+        TrainingInputMode: 'File',
+      },
+      OutputDataConfig: {
+        S3OutputPath: {
+          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
+        },
+      },
+      ResourceConfig: {
+        InstanceCount: 1,
+        InstanceType: 'ml.m4.xlarge',
+        VolumeSizeInGB: 10,
+      },
+      RoleArn: { 'Fn::GetAtt': ['TrainSagemakerSagemakerRole89E8C593', 'Arn'] },
+      StoppingCondition: {
+        MaxRuntimeInSeconds: 3600,
+      },
+      TrainingJobName: 'MyTrainJob',
+    },
+  });
+});
+
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {

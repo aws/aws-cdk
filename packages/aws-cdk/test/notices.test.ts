@@ -37,6 +37,32 @@ const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
   schemaVersion: '1',
 };
 
+const CLI_2_132_AFFECTED_NOTICE_1 = {
+  title: '(cli): Some bug affecting cdk deploy.',
+  issueNumber: 29420,
+  overview: 'cdk deploy bug',
+  components: [
+    {
+      name: 'cli',
+      version: '2.132.0',
+    },
+  ],
+  schemaVersion: '1',
+};
+
+const CLI_2_132_AFFECTED_NOTICE_2 = {
+  title: '(cli): Some bug affecting cdk diff.',
+  issueNumber: 29483,
+  overview: 'cdk diff bug',
+  components: [
+    {
+      name: 'cli',
+      version: '>=2.132.0 <=2.132.1',
+    },
+  ],
+  schemaVersion: '1',
+};
+
 const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
   title: 'Regression on module foobar',
   issueNumber: 1234,
@@ -381,6 +407,19 @@ describe('cli notices', () => {
       expect(result).toEqual('');
     });
 
+    test('Shows no notices when there are no notices with --unacknowledged', async () => {
+      const dataSource = createDataSource();
+      dataSource.fetch.mockResolvedValue([]);
+
+      const result = await generateMessage(dataSource, {
+        acknowledgedIssueNumbers: [],
+        outdir: '/tmp',
+        unacknowledged: true,
+      });
+
+      expect(result).toEqual('\n\nThere are 0 unacknowledged notice(s).');
+    });
+
     test('shows notices that pass the filter', async () => {
       const dataSource = createDataSource();
       dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
@@ -407,6 +446,90 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
     });
+
+    function createDataSource() {
+      return {
+        fetch: jest.fn(),
+      };
+    }
+  });
+});
+
+describe('mock cdk version 2.132.0', () => {
+  beforeAll(() => {
+    jest
+      .spyOn(version, 'versionNumber')
+      .mockImplementation(() => '2.132.0');
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('Shows notices that pass the filter with --unacknowledged', async () => {
+    const dataSource = createDataSource();
+    dataSource.fetch.mockResolvedValue([CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2]);
+
+    const allNotices = await generateMessage(dataSource, {
+      acknowledgedIssueNumbers: [],
+      outdir: '/tmp',
+      unacknowledged: true,
+    });
+
+    expect(allNotices).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+29420	(cli): Some bug affecting cdk deploy.
+
+	Overview: cdk deploy bug
+
+	Affected versions: cli: 2.132.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/29420
+
+
+29483	(cli): Some bug affecting cdk diff.
+
+	Overview: cdk diff bug
+
+	Affected versions: cli: >=2.132.0 <=2.132.1
+
+	More information at: https://github.com/aws/aws-cdk/issues/29483
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29420".
+
+There are 2 unacknowledged notice(s).`);
+
+    const acknowledgeNotice29420 = await generateMessage(dataSource, {
+      acknowledgedIssueNumbers: [29420],
+      outdir: '/tmp',
+      unacknowledged: true,
+    });
+
+    expect(acknowledgeNotice29420).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+29483	(cli): Some bug affecting cdk diff.
+
+	Overview: cdk diff bug
+
+	Affected versions: cli: >=2.132.0 <=2.132.1
+
+	More information at: https://github.com/aws/aws-cdk/issues/29483
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29483".
+
+There are 1 unacknowledged notice(s).`);
+
+    const allAcknowledgedNotices = await generateMessage(dataSource, {
+      acknowledgedIssueNumbers: [29420, 29483],
+      outdir: '/tmp',
+      unacknowledged: true,
+    });
+
+    expect(allAcknowledgedNotices).toEqual('\n\nThere are 0 unacknowledged notice(s).');
 
     function createDataSource() {
       return {

@@ -158,7 +158,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-ecs', 'lambda-source', 'index.py'),
-        runtime: Runtime.PYTHON_3_9,
+        runtime: Runtime.PYTHON_3_11,
         handler: 'index.lambda_handler',
         minifyAndBundle: false,
       },
@@ -181,31 +181,31 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_10,
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'apply', '__init__.py'),
-        runtime: Runtime.PYTHON_3_10,
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'get', '__init__.py'),
-        runtime: Runtime.PYTHON_3_10,
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'helm', '__init__.py'),
-        runtime: Runtime.PYTHON_3_10,
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
-        runtime: Runtime.PYTHON_3_10,
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
     ],
@@ -267,7 +267,6 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'notifications-resource-handler', 'index.py'),
-        // Should match the actual Lambda runtime version in https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.ts
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
@@ -278,7 +277,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_9,
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
     ],
@@ -308,7 +307,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'role-policy-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_9,
+        runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
     ],

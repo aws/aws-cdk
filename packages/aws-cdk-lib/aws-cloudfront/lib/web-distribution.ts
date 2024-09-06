@@ -741,6 +741,7 @@ export interface CloudFrontWebDistributionAttributes {
  * You can customize the distribution using additional properties from the CloudFrontWebDistributionProps interface.
  *
  * @resource AWS::CloudFront::Distribution
+ * @deprecated Use `Distribution` instead
  */
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
 
