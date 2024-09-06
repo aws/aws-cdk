@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "albFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-fg-ipv6"
+      ],
+      "assertionStack": "albFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "albFargateServiceTestDefaultTestDeployAssert11CD2C41"
+    }
+  }
+}
