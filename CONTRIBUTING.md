@@ -139,6 +139,7 @@ Another reason we hear from authors that they don't want to publish their own pa
 
 ## Quick Start
 
+### Setup
 Fork the aws-cdk repository into your account: https://github.com/aws/aws-cdk/fork
 
 Clone the forked repository:
@@ -151,7 +152,7 @@ $ yarn install
 Before you create a pull request:
 * Write code changes
 * Write unit tests
-* Write integ tests
+* Write integ tests (aws-cdk/packages/@aws-cdk-testing/)
 * Commit changes and push to remote branch
 
 Build the entire aws-cdk repo (this may take some time):
@@ -159,6 +160,7 @@ Build the entire aws-cdk repo (this may take some time):
 $ npx lerna run build --skip-nx-cache
 ```
 
+### Testing
 Run the unit tests for the modules(e.g. aws-lambda) you've changed:
 ```console
 $ cd aws-cdk/packages/aws-cdk-lib
@@ -171,17 +173,18 @@ $ cd aws-cdk/packages/@aws-cdk-testing/framework-integ
 $ yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed
 ```
 
-If there are sample code changes in README.md file:
+If you've made changes to sample code in any README, ensure those examples compile with:
 ```console
 $ /bin/bash ./scripts/run-rosetta.sh
 ```
 
-Link your CDK application to the forked AWS-CDK repository:
+### Linking
+If you would like to test your code changes against a CDK App, create the App and link your local CDK with it:
 ```console
 $ mkdir cdkApp # in parent dir of aws-cdk
 $ cd cdkApp
-$ npx cdk@latest init app --language typescript
-$ npx cdk --version # show current version e.g. 2.155.0 (build 34dcc5a)
+$ npx cdk init app --language typescript
+$ npx cdk --version # shows the latest CDK version e.g. 2.155.0 (build 34dcc5a)
 $ ../aws-cdk/link-all.sh # link the aws-cdk repo with your cdkApp
 $ npx cdk --version # verify linked cdk version 0.0.0
 # Define the resource that uses your aws-cdk changes in cdkApp lib folder
@@ -208,7 +211,7 @@ The following tools need to be installed on your system prior to installing the 
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
 
-First fork the repository, and then run the following commands to clone the repository locally.
+First fork the repository https://github.com/aws/aws-cdk/fork, and then run the following commands to clone the repository locally.
 
 ```console
 $ git clone https://github.com/{your-account}/aws-cdk.git
