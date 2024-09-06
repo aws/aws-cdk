@@ -96,7 +96,7 @@ describe('framework', () => {
     const component: ComponentProps = {
       type: ComponentType.FUNCTION,
       sourceCode: sourceCodePy,
-      runtime: Runtime.PYTHON_3_10,
+      runtime: Runtime.PYTHON_3_11,
     };
     const outfile = calculateOutfile(sourceCodePy);
     module.build(component, calculateCodeDirectory(path.dirname(outfile)));
@@ -116,7 +116,7 @@ describe('framework', () => {
     const component: ComponentProps = {
       type: ComponentType.SINGLETON_FUNCTION,
       sourceCode: sourceCodePy,
-      runtime: Runtime.PYTHON_3_10,
+      runtime: Runtime.PYTHON_3_11,
     };
     const outfile = calculateOutfile(sourceCodePy);
     module.build(component, calculateCodeDirectory(path.dirname(outfile)));
@@ -136,7 +136,7 @@ describe('framework', () => {
     const component: ComponentProps = {
       type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
       sourceCode: sourceCodePy,
-      runtime: Runtime.PYTHON_3_10,
+      runtime: Runtime.PYTHON_3_11,
     };
     const outfile = calculateOutfile(sourceCodePy);
     module.build(component, calculateCodeDirectory(path.dirname(outfile)));
@@ -156,7 +156,7 @@ describe('framework', () => {
     const component: ComponentProps = {
       type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
       sourceCode: sourceCodePy,
-      runtime: Runtime.PYTHON_3_10,
+      runtime: Runtime.PYTHON_3_11,
     };
     const outfile = calculateOutfile(sourceCodePy);
     module.build(component, calculateCodeDirectory(path.dirname(outfile)));

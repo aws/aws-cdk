@@ -1,7 +1,8 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
+import { DataSource, generateUniqueId } from './util';
 
 /**
  * A Place Index
@@ -56,25 +57,6 @@ export interface PlaceIndexProps {
    * @default - no description
    */
   readonly description?: string;
-}
-
-/**
- * Data source for a place index
- */
-export enum DataSource {
-  /**
-   * Esri
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/esri.html
-   */
-  ESRI = 'Esri',
-
-  /**
-   * HERE
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/HERE.html
-   */
-  HERE = 'Here',
 }
 
 /**
@@ -164,7 +146,7 @@ export class PlaceIndex extends PlaceIndexBase {
   public readonly placeIndexArn: string;
 
   /**
-   * The timestamp for when the place index resource was created in ISO 8601 forma
+   * The timestamp for when the place index resource was created in ISO 8601 format
    *
    * @attribute
    */
@@ -187,7 +169,7 @@ export class PlaceIndex extends PlaceIndexBase {
     }
 
     super(scope, id, {
-      physicalName: props.placeIndexName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
+      physicalName: props.placeIndexName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
 
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
@@ -205,11 +187,4 @@ export class PlaceIndex extends PlaceIndexBase {
     this.placeIndexUpdateTime = placeIndex.attrUpdateTime;
   }
 
-  private generateUniqueId(): string {
-    const name = Names.uniqueId(this);
-    if (name.length > 100) {
-      return name.substring(0, 50) + name.substring(name.length - 50);
-    }
-    return name;
-  }
 }
