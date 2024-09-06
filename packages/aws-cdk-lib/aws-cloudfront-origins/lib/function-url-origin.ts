@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
+import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 
@@ -85,12 +86,17 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
  */
 export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
   private originAccessControl?: cloudfront.IOriginAccessControl;
+  private functionArn: string
 
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, props: FunctionUrlOriginWithOACProps = {}) {
     const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
     super(domainName, props);
+
+    this.functionArn = lambdaFunctionUrl.functionArn;
     this.originAccessControl = props.originAccessControl;
 
+    validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
+    validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -102,6 +108,7 @@ export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
 
   public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     const originBindConfig = super.bind(scope, options);
+    const distributionId = options.distributionId;
 
     if (!this.originAccessControl) {
       const cfnOriginAccessControl = new cloudfront.CfnOriginAccessControl(scope, 'LambdaOriginAccessControl', {
@@ -116,7 +123,16 @@ export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       this.originAccessControl = {
         originAccessControlId: cfnOriginAccessControl.attrId,
       } as cloudfront.IOriginAccessControl;
+
+      const lambdaFunction = lambda.Function.fromFunctionArn(scope, 'ReferencedLambdaFunction', this.functionArn);
+
+      lambdaFunction.addPermission('AllowCloudFrontServicePrincipal', {
+        principal: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+        action: 'lambda:InvokeFunctionUrl',
+        sourceArn: `arn:${cdk.Aws}:cloudfront::${cdk.Stack.of(scope).account}:distribution/${distributionId}`,
+      });
     }
+
     return {
       ...originBindConfig,
       originProperty: {
