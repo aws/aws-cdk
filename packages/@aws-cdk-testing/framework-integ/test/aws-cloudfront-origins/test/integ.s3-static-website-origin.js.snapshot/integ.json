@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "s3-origin-oac/DefaultTest": {
+      "stacks": [
+        "cloudfront-s3-static-website-origin"
+      ],
+      "assertionStack": "s3-origin-oac/DefaultTest/DeployAssert",
+      "assertionStackName": "s3originoacDefaultTestDeployAssertD8FD270A"
+    }
+  }
+}

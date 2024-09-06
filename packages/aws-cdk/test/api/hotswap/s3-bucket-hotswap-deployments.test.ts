@@ -1,8 +1,8 @@
-/* eslint-disable import/order */
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { REQUIRED_BY_CFN } from '../../../lib/api/hotswap/s3-bucket-deployments';
+import { silentTest } from '../../util/silent';
 
 let mockLambdaInvoke: (params: Lambda.Types.InvocationRequest) => Lambda.Types.InvocationResponse;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -23,7 +23,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('calls the lambdaInvoke() API when it receives only an asset difference in an S3 bucket deployment and evaluates CFN expressions in S3 Deployment Properties', async () => {
+  silentTest('calls the lambdaInvoke() API when it receives only an asset difference in an S3 bucket deployment and evaluates CFN expressions in S3 Deployment Properties', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -81,7 +81,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('does not call the invoke() API when a resource with type that is not Custom::CDKBucketDeployment but has the same properties is changed', async () => {
+  silentTest('does not call the invoke() API when a resource with type that is not Custom::CDKBucketDeployment but has the same properties is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -124,7 +124,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('does not call the invokeLambda() api if the updated Policy has no Roles in CLASSIC mode but does in HOTSWAP_ONLY mode', async () => {
+  silentTest('does not call the invokeLambda() api if the updated Policy has no Roles in CLASSIC mode but does in HOTSWAP_ONLY mode', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -224,7 +224,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('throws an error when the serviceToken fails evaluation in the template', async () => {
+  silentTest('throws an error when the serviceToken fails evaluation in the template', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -423,7 +423,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       );
     });
 
-    test('calls the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment and an IAM Policy difference using old-style synthesis', async () => {
+    silentTest('calls the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment and an IAM Policy difference using old-style synthesis', async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -465,7 +465,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       });
     });
 
-    test(`does not call the lambdaInvoke() API when the difference in the S3 deployment is referred to in one IAM policy change but not another
+    silentTest(`does not call the lambdaInvoke() API when the difference in the S3 deployment is referred to in one IAM policy change but not another
           in CLASSIC mode but does in HOTSWAP_ONLY`,
     async () => {
       // GIVEN
@@ -539,7 +539,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       }
     });
 
-    test(`does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment
+    silentTest(`does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment
           in CLASSIC mode but does in HOTSWAP_ONLY mode`,
     async () => {
       // GIVEN
@@ -616,7 +616,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       }
     });
 
-    test('calls the lambdaInvoke() API when it receives an asset difference in two S3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
+    silentTest('calls the lambdaInvoke() API when it receives an asset difference in two S3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
       // GIVEN
       const deploymentLambda2Old = {
         Type: 'AWS::Lambda::Function',
@@ -736,7 +736,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       });
     });
 
-    test(`does not call the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment that references two different policies
+    silentTest(`does not call the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment that references two different policies
           in CLASSIC mode but does in HOTSWAP_ONLY mode`,
     async () => {
       // GIVEN
@@ -809,7 +809,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       }
     });
 
-    test(`does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an S3 deployment
+    silentTest(`does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an S3 deployment
           in CLASSIC mode but does in HOTSWAP_ONLY mode`,
     async () => {
       // GIVEN
