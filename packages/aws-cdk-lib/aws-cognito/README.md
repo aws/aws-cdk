@@ -1016,7 +1016,7 @@ For more information, see [Adding groups to a user pool](https://docs.aws.amazon
 declare const userPool: cognito.UserPool;
 declare const role: iam.Role;
 
-new UserPoolGroup(this, 'UserPoolGroup', {
+new cognito.UserPoolGroup(this, 'UserPoolGroup', {
   userPool,
   groupName: 'my-group-name',
   precedence: 1,
