@@ -67,12 +67,12 @@ new rds.DatabaseProxy(stack, 'Proxy3', {
   secrets: [clusterWithWriter.secret!],
   vpc,
 });
-cluster.addProxy('Proxy4', {
-  secrets: [cluster.secret!],
+clusterWithWriter.addProxy('Proxy4', {
+  secrets: [clusterWithWriter.secret!],
   vpc,
 });
-cluster.addProxy('Proxy5', {
-  secrets: [cluster.secret!],
+clusterWithWriter.addProxy('Proxy5', {
+  secrets: [clusterWithWriter.secret!],
   vpc,
 });
 
