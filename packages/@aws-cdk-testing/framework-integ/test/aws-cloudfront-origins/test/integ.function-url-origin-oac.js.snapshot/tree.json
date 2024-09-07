@@ -144,7 +144,7 @@
                       "aws:cdk:cloudformation:type": "AWS::CloudFront::OriginAccessControl",
                       "aws:cdk:cloudformation:props": {
                         "originAccessControlConfig": {
-                          "name": "OAC for b6b1f667f503",
+                          "name": "OAC for ab8fc77910a7",
                           "originAccessControlOriginType": "lambda",
                           "signingBehavior": "always",
                           "signingProtocol": "sigv4"
