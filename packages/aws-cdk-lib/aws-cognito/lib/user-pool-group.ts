@@ -90,7 +90,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
       (props.description.length > 2048)) {
-      throw new Error(`\`description\` must be between 0 and 2048. Received: ${props.description.length} characters`);
+      throw new Error(`\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`);
     }
 
     if (props.precedence !== undefined &&
@@ -104,7 +104,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       !Token.isUnresolved(props.groupName) &&
       !/^[\p{L}\p{M}\p{S}\p{N}\p{P}]{1,128}$/u.test(props.groupName)
     ) {
-      throw new Error(`\`groupName\` must be 1-128 characters long and can include letters, numbers, and symbols. Received: ${props.groupName}`);
+      throw new Error('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.');
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {
