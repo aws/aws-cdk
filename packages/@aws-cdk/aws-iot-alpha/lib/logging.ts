@@ -49,7 +49,7 @@ export enum LogLevel {
  */
 export interface LoggingProps {
   /**
-   * The log level.
+   * The log level for the AWS IoT Logging.
    *
    * @default LogLevel.ERROR
    */
@@ -75,7 +75,7 @@ export class Logging extends Resource implements ILogging {
   }
 
   /**
-   * The log ID
+   * The logging ID
    * @attribute
    */
   public readonly logId: string;
@@ -84,6 +84,7 @@ export class Logging extends Resource implements ILogging {
     super(scope, id);
 
     const accountId = Stack.of(this).account;
+
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('iot.amazonaws.com'),
       inlinePolicies: {
