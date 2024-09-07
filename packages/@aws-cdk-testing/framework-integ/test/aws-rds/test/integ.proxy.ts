@@ -52,6 +52,22 @@ cluster.addProxy('Proxy2', {
   vpc,
 });
 
+// Has a `writer` property instead of the legacy `instanceProps`
+const clusterWithWriter = new rds.DatabaseCluster(stack, 'dbClusterWithWriter', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_14_5,
+  }),
+  vpc,
+  writer: rds.ClusterInstance.provisioned('writer'),
+  readers: [rds.ClusterInstance.provisioned('reader')],
+});
+
+new rds.DatabaseProxy(stack, 'Proxy3', {
+  proxyTarget: rds.ProxyTarget.fromCluster(clusterWithWriter),
+  secrets: [clusterWithWriter.secret!],
+  vpc,
+});
+
 new integ.IntegTest(app, 'database-proxy-integ-test', {
   testCases: [stack],
   diffAssets: true,

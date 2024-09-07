@@ -558,6 +558,38 @@ describe('proxy', () => {
     });
   });
 
+  test('DBProxyTargetGroup should also have dependency on the proxy targets when using writer and readers properties instead of instanceProps', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'cluster', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      vpc,
+      writer: rds.ClusterInstance.provisioned('writer'),
+      readers: [rds.ClusterInstance.provisioned('reader')],
+    });
+
+    //WHEN
+    new rds.DatabaseProxy(stack, 'proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [cluster.secret!],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
+      Properties: {
+        DBProxyName: {
+          Ref: 'proxy3A1DA9C7',
+        },
+        TargetGroupName: 'default',
+      },
+      DependsOn: [
+        'clusterreaderE226030A',
+        'cluster611F8AFF',
+        'clusterwriter3FDF01F3',
+      ],
+    });
+  });
+
   describe('clientPasswordAuthType', () => {
     test('create a DB proxy with specified client password authentication type', () => {
       // GIVEN
