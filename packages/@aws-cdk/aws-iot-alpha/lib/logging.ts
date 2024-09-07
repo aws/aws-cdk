@@ -8,6 +8,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
  */
 export interface ILogging extends IResource {
   /**
+   * The log ID
    * @attribute
    */
   readonly logId: string;
@@ -61,9 +62,9 @@ export class Logging extends Resource implements ILogging {
    * @param id The construct's name.
    * @param logId AWS IoT Logging ID
    */
-  public static fromLogId(scope: Construct, id: string, logid: string): ILogging {
+  public static fromLogId(scope: Construct, id: string, logId: string): ILogging {
     class Import extends Resource implements ILogging {
-      public readonly logId = logid;
+      public readonly logId = logId;
     }
     return new Import(scope, id);
   }
@@ -74,7 +75,7 @@ export class Logging extends Resource implements ILogging {
    */
   public readonly logId: string;
 
-  constructor(scope: Construct, id: string, props: LoggingProps) {
+  constructor(scope: Construct, id: string, props?: LoggingProps) {
     super(scope, id);
 
     const accountId = Stack.of(this).account;
@@ -114,7 +115,7 @@ export class Logging extends Resource implements ILogging {
 
     const resource = new iot.CfnLogging(this, 'Resource', {
       accountId,
-      defaultLogLevel: props.logLevel ?? LogLevel.ERROR,
+      defaultLogLevel: props?.logLevel ?? LogLevel.ERROR,
       roleArn: role.roleArn,
     });
 
