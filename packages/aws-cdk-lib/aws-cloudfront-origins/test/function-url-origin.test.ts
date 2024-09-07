@@ -79,10 +79,10 @@ test('Correctly adds permission to Lambda for CloudFront', () => {
   });
 
   const fnUrl = fn.addFunctionUrl({
-    authType: lambda.FunctionUrlAuthType.NONE,
+    authType: lambda.FunctionUrlAuthType.AWS_IAM,
   });
 
-  const distribution = new cloudfront.Distribution(stack, 'MyDistribution', {
+  new cloudfront.Distribution(stack, 'MyDistribution', {
     defaultBehavior: {
       origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
         originAccessControl: undefined,
@@ -129,7 +129,7 @@ test('Correctly configures CloudFront Distribution with Origin Access Control', 
   });
 
   const fnUrl = fn.addFunctionUrl({
-    authType: lambda.FunctionUrlAuthType.NONE,
+    authType: lambda.FunctionUrlAuthType.AWS_IAM,
   });
 
   new cloudfront.Distribution(stack, 'MyDistribution', {

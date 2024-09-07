@@ -638,15 +638,13 @@ new cloudfront.Distribution(this, 'Distribution', {
 You can also configure the Lambda function URL with Origin Access Control (OAC) to manage permissions and security. The withOriginAccessControl() method automatically configures this setup for enhanced security.
 
 ```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-
 declare const fn: lambda.Function;
 
 const fnUrl = fn.addFunctionUrl({
   authType: lambda.FunctionUrlAuthType.NONE,
 });
 
-new cloudfront.Distribution(stack, 'MyDistribution', {
+new cloudfront.Distribution(this, 'MyDistribution', {
   defaultBehavior: {
     origin: origins.FunctionUrlOrigin.withOriginAccessControl(fnUrl),
   },
@@ -656,9 +654,7 @@ new cloudfront.Distribution(stack, 'MyDistribution', {
 If you want to explicitly add OAC for more customized access control, you can use the originAccessControl option as shown below.
 
 ```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 
 declare const fn: lambda.Function;
 
@@ -667,7 +663,7 @@ const fnUrl = fn.addFunctionUrl({
 });
 
 // Define a custom OAC
-const oac = new cloudfront.FunctionUrlOriginAccessControl(stack, 'MyOAC', {
+const oac = new cloudfront.FunctionUrlOriginAccessControl(this, 'MyOAC', {
   originAccessControlName: 'CustomLambdaOAC',
   signing: cloudfront.Signing.SIGV4_ALWAYS,
 });
