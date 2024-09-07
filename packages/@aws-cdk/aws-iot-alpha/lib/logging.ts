@@ -37,6 +37,11 @@ export enum LogLevel {
    * DEBUG level logging
    */
   DEBUG = 'DEBUG',
+
+  /**
+   * DISABLED logging
+   */
+  DISABLED = 'DISABLED',
 }
 
 /**
