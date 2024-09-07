@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
+import { contentHashAny } from '../../../aws-cdk/lib/util/content-hash';
 import * as cloudfront from '../../aws-cloudfront';
-import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 
@@ -86,13 +86,12 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
  */
 export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
   private originAccessControl?: cloudfront.IOriginAccessControl;
-  private functionArn: string;
+  private functionUrl: lambda.IFunctionUrl;
 
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, props: FunctionUrlOriginWithOACProps = {}) {
     const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
     super(domainName, props);
-
-    this.functionArn = lambdaFunctionUrl.functionArn;
+    this.functionUrl = lambdaFunctionUrl;
     this.originAccessControl = props.originAccessControl;
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
@@ -111,24 +110,38 @@ export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     const distributionId = options.distributionId;
 
     if (!this.originAccessControl) {
-      const cfnOriginAccessControl = new cloudfront.CfnOriginAccessControl(scope, 'LambdaOriginAccessControl', {
+      const functionUrlStack = cdk.Stack.of(this.functionUrl);
+      const isDifferentStack = functionUrlStack !== cdk.Stack.of(scope);
+
+      const oacScope = isDifferentStack ? functionUrlStack : scope;
+
+      const originalOriginId = options.originId;
+      const originId = `OAC for ${originalOriginId}`.length > 64
+        ? contentHashAny({
+          region: cdk.Stack.of(oacScope).region,
+          account: cdk.Aws.ACCOUNT_ID,
+          originId: originalOriginId,
+        }).substring(0, 12)
+        : originalOriginId;
+
+      const cfnOriginAccessControl = new cloudfront.CfnOriginAccessControl(oacScope, 'LambdaOriginAccessControl', {
         originAccessControlConfig: {
-          name: 'OAC for Lambda Function URL',
+          name: `OAC for ${originId}`,
           originAccessControlOriginType: 'lambda',
           signingBehavior: 'always',
           signingProtocol: 'sigv4',
         },
       });
+
       this.originAccessControl = {
         originAccessControlId: cfnOriginAccessControl.attrId,
       } as cloudfront.IOriginAccessControl;
     }
 
-    const lambdaFunction = lambda.Function.fromFunctionArn(scope, 'ReferencedLambdaFunction', this.functionArn);
-
-    lambdaFunction.addPermission('AllowCloudFrontServicePrincipal', {
-      principal: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+    new lambda.CfnPermission(scope, `InvokeFromApiFor${options.originId}`, {
+      principal: 'cloudfront.amazonaws.com',
       action: 'lambda:InvokeFunctionUrl',
+      functionName: cdk.Fn.select(6, cdk.Fn.split(':', this.functionUrl.functionArn)),
       sourceArn: `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`,
     });
 

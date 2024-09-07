@@ -1,0 +1,143 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "integ-cloudfront-function-url-origin-oac.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-cloudfront-function-url-origin-oac.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-cloudfront-function-url-origin-oac": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-cloudfront-function-url-origin-oac.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64512c6f712d963607611300bd70219fc88173e3cc04d818636f7d20a93d9797.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-cloudfront-function-url-origin-oac.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-cloudfront-function-url-origin-oac.assets"
+      ],
+      "metadata": {
+        "/integ-cloudfront-function-url-origin-oac/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/integ-cloudfront-function-url-origin-oac/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1"
+          }
+        ],
+        "/integ-cloudfront-function-url-origin-oac/MyFunction/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionFunctionUrlFF6DE78C"
+          }
+        ],
+        "/integ-cloudfront-function-url-origin-oac/Distribution/Origin1/LambdaOriginAccessControl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionOrigin1LambdaOriginAccessControlA2462D70"
+          }
+        ],
+        "/integ-cloudfront-function-url-origin-oac/Distribution/Origin1/InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D877": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D87785748A6F"
+          }
+        ],
+        "/integ-cloudfront-function-url-origin-oac/Distribution/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Distribution830FAC52"
+          }
+        ],
+        "/integ-cloudfront-function-url-origin-oac/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-cloudfront-function-url-origin-oac/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-cloudfront-function-url-origin-oac"
+    },
+    "lambdaurloriginoacDefaultTestDeployAssert0BF569B3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaurloriginoacDefaultTestDeployAssert0BF569B3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaurloriginoacDefaultTestDeployAssert0BF569B3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaurloriginoacDefaultTestDeployAssert0BF569B3.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaurloriginoacDefaultTestDeployAssert0BF569B3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaurloriginoacDefaultTestDeployAssert0BF569B3.assets"
+      ],
+      "metadata": {
+        "/lambda-url-origin-oac/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-url-origin-oac/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-url-origin-oac/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
