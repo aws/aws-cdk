@@ -6,7 +6,7 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'integ-cloudfront-function-url-origin-oai');
+const stack = new cdk.Stack(app, 'integ-cloudfront-function-url-origin-oac');
 
 // Create the Lambda function
 const fn = new lambda.Function(stack, 'MyFunction', {
@@ -20,22 +20,23 @@ const fnUrl = fn.addFunctionUrl({
   authType: lambda.FunctionUrlAuthType.NONE,
 });
 
-// Create an Origin Access Identity (OAI)
-const originAccessIdentity = new cloudfront.OriginAccessIdentity(stack, 'LambdaOriginAccessIdentity', {
-  comment: 'OAI for Lambda Function URL',
+// Create an Origin Access Control (OAC)
+const originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(stack, 'LambdaOriginAccessControl', {
+  originAccessControlName: 'OAC for Lambda Function URL',
+  signing: cloudfront.Signing.SIGV4_ALWAYS,
 });
 
-// Create CloudFront Distribution with OAI
+// Create CloudFront Distribution with OAC
 const distribution = new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: {
-    origin: origins.FunctionUrlOrigin.withOriginAccessIdentity(fnUrl, {
-      originAccessIdentity,
+    origin: origins.FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+      originAccessControl,
     }),
   },
 });
 
 // Set up integration test
-const integ = new IntegTest(app, 'lambda-url-origin-oai', {
+const integ = new IntegTest(app, 'lambda-url-origin-oac', {
   testCases: [stack],
 });
 
@@ -70,17 +71,17 @@ integ.assertions.awsApiCall('CloudFront', 'getDistributionConfig', {
   }),
 }));
 
-// Validate Origin Access Identity (OAI) configuration
-integ.assertions.awsApiCall('CloudFront', 'getCloudFrontOriginAccessIdentity', {
-  Id: originAccessIdentity.originAccessIdentityId,
+// Validate Origin Access Control (OAC) configuration
+integ.assertions.awsApiCall('CloudFront', 'getOriginAccessControl', {
+  Id: originAccessControl.originAccessControlId,
 }).expect(ExpectedResult.objectLike({
-  CloudFrontOriginAccessIdentity: {
+  OriginAccessControl: {
     Id: Match.stringLikeRegexp('^[A-Z0-9]+$'),
-    S3CanonicalUserId: Match.stringLikeRegexp('^[A-Za-z0-9]+$'),
-    CloudFrontOriginAccessIdentityConfig: {
-      CallerReference: Match.stringLikeRegexp('^[A-Za-z0-9-]+$'),
-      Comment: 'OAI for Lambda Function URL',
+    OriginAccessControlConfig: {
+      Name: 'OAC for Lambda Function URL',
+      OriginAccessControlOriginType: 'lambda',
+      SigningBehavior: 'always',
+      SigningProtocol: 'sigv4',
     },
   },
 }));
-
