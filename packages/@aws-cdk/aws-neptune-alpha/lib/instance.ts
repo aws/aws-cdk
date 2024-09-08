@@ -150,7 +150,7 @@ export class InstanceType {
   /**
    * db.r6i.16xlarge
    */
-  public static readonly R6I_16XßLARGE = InstanceType.of('db.r6i.16xlarge');
+  public static readonly R6I_16XLARGE = InstanceType.of('db.r6i.16xlarge');
 
   /**
    * db.r6i.24xlarge
