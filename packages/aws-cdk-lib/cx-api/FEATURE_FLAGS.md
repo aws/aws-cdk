@@ -71,6 +71,7 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
+| [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -175,6 +176,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | (fix) | 1.106.0 | `false` | `true` |
 | [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | (fix) | 1.117.0 | `false` | `true` |
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | (default) |  | `false` | `true` |
+| [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | (fix) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -190,7 +192,8 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
     "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
-    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false
+    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false,
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": false
   }
 }
 ```
@@ -1336,6 +1339,23 @@ property from the event object.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.145.0 | `false` | `false` |
+
+
+### @aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId
+
+*When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
+
+Currently, the value of the property 'instanceResourceId' in construct 'DatabaseInstanceReadReplica' is not correct, and set to 'DbInstanceArn' which is not correct when it is used to create the IAM Policy in the grantConnect method.
+
+When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`
 
 
 <!-- END details -->
