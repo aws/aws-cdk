@@ -607,6 +607,41 @@ describe('Environment', () => {
     });
   });
 
+  test('build image - can use secret to access build image', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.MAC_ARM,
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      environment: {
+        buildImage: codebuild.MacBuildImage.fromDockerRegistry('myimage', { secretsManagerCredentials: secret }),
+        fleet: fleet,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        RegistryCredential: {
+          CredentialProvider: 'SECRETS_MANAGER',
+          Credential: { 'Ref': 'SecretA720EF05' },
+        },
+      }),
+    });
+  });
+
   test('build image - can use imported secret by name', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -620,6 +655,41 @@ describe('Environment', () => {
       }),
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('myimage', { secretsManagerCredentials: secret }),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        RegistryCredential: {
+          CredentialProvider: 'SECRETS_MANAGER',
+          Credential: 'MySecretName',
+        },
+      }),
+    });
+  });
+
+  test('build image - can use imported secret by name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'MySecretName');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.MAC_ARM,
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      environment: {
+        buildImage: codebuild.MacBuildImage.fromDockerRegistry('myimage', { secretsManagerCredentials: secret }),
+        fleet: fleet,
+        computeType: codebuild.ComputeType.MEDIUM,
       },
     });
 
@@ -823,6 +893,40 @@ describe('Environment', () => {
     });
   });
 
+  test.each([
+    ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+  ])('has build image for %s', (_, buildImage, expected) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.MAC_ARM,
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        buildImage: buildImage,
+        fleet: fleet,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        Image: expected,
+      }),
+    });
+  });
+
   test('can set fleet', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -859,6 +963,43 @@ describe('Environment', () => {
     });
   });
 
+  test('can set fleet', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.MAC_ARM,
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        fleet,
+        buildImage: codebuild.MacBuildImage.BASE_14,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        Image: 'aws/codebuild/macos-arm-base:14',
+        Type: 'MAC_ARM',
+        Fleet: {
+          FleetArn: { 'Fn::GetAtt': ['Fleet30813DF3', 'Arn'] },
+        },
+      }),
+    });
+  });
+
   test('can set imported fleet', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -883,6 +1024,38 @@ describe('Environment', () => {
         ComputeType: 'BUILD_GENERAL1_SMALL',
         Image: 'aws/codebuild/standard:7.0',
         Type: 'LINUX_CONTAINER',
+        Fleet: {
+          FleetArn: 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid',
+        },
+      }),
+    });
+  });
+
+  test('can set imported fleet', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        fleet,
+        buildImage: codebuild.MacBuildImage.BASE_14,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        Image: 'aws/codebuild/macos-arm-base:14',
+        Type: 'MAC_ARM',
         Fleet: {
           FleetArn: 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid',
         },
@@ -1009,6 +1182,47 @@ describe('EnvironmentVariables', () => {
         }),
         environment: {
           buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('myimage'),
+        },
+        environmentVariables: {
+          'ENV_VAR1': {
+            type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
+            value: '/params/param1',
+          },
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          EnvironmentVariables: [{
+            Name: 'ENV_VAR1',
+            Type: 'PARAMETER_STORE',
+            Value: '/params/param1',
+          }],
+        }),
+      });
+    });
+
+    test('can use environment variables', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fleet = new codebuild.Fleet(stack, 'Fleet', {
+        fleetName: 'MyFleet',
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType: codebuild.EnvironmentType.MAC_ARM,
+      });
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.MacBuildImage.fromDockerRegistry('myimage'),
+          computeType: codebuild.ComputeType.MEDIUM,
+          fleet: fleet,
         },
         environmentVariables: {
           'ENV_VAR1': {

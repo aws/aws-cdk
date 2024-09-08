@@ -332,6 +332,13 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The port number on which the DB instances in the DB cluster accept connections.
+   *
+   * @default 8182
+   */
+  readonly port?: number;
 }
 
 /**
@@ -617,6 +624,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
+      dbPort: props.port,
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,
