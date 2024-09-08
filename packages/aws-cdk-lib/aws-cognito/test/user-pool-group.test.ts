@@ -36,6 +36,16 @@ describe('User Pool Group', () => {
     });
   });
 
+  test('create User Pool Group using addGroup method', () => {
+    // WHEN
+    userPool.addGroup('Group', {});
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolGroup', {
+      UserPoolId: stack.resolve(userPool.userPoolId),
+    });
+  });
+
   test('throws when description length is invalid', () => {
     expect(() => new UserPoolGroup(stack, 'UserPoolGroup', {
       userPool,
