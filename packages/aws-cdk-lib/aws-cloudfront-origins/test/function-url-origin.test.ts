@@ -111,7 +111,7 @@ test('Correctly adds permission to Lambda for CloudFront', () => {
           },
           OriginAccessControlId: Match.objectLike({
             'Fn::GetAtt': [
-              Match.stringLikeRegexp('MyDistributionOrigin.*LambdaOriginAccessControl.*'),
+              'MyDistributionOrigin1FunctionUrlOriginAccessControl0591AF75',
               'Id',
             ],
           }),
@@ -161,7 +161,7 @@ test('Correctly configures CloudFront Distribution with Origin Access Control', 
           },
           OriginAccessControlId: Match.objectLike({
             'Fn::GetAtt': [
-              Match.stringLikeRegexp('MyDistributionOrigin.*LambdaOriginAccessControl.*'),
+              'MyDistributionOrigin1FunctionUrlOriginAccessControl0591AF75',
               'Id',
             ],
           }),

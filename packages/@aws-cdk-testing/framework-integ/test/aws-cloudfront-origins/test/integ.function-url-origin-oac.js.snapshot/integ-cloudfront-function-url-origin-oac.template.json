@@ -62,11 +62,11 @@
     }
    }
   },
-  "DistributionOrigin1LambdaOriginAccessControlA2462D70": {
+  "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55": {
    "Type": "AWS::CloudFront::OriginAccessControl",
    "Properties": {
     "OriginAccessControlConfig": {
-     "Name": "OAC for ab8fc77910a7",
+     "Name": "integcloudfrontfunctionurlornctionUrlOriginAccessControlABD689FE",
      "OriginAccessControlOriginType": "lambda",
      "SigningBehavior": "always",
      "SigningProtocol": "sigv4"
@@ -155,7 +155,7 @@
        "Id": "integcloudfrontfunctionurloriginoacDistributionOrigin112C3D877",
        "OriginAccessControlId": {
         "Fn::GetAtt": [
-         "DistributionOrigin1LambdaOriginAccessControlA2462D70",
+         "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55",
          "Id"
         ]
        }

@@ -137,22 +137,32 @@
                 "id": "Origin1",
                 "path": "integ-cloudfront-function-url-origin-oac/Distribution/Origin1",
                 "children": {
-                  "LambdaOriginAccessControl": {
-                    "id": "LambdaOriginAccessControl",
-                    "path": "integ-cloudfront-function-url-origin-oac/Distribution/Origin1/LambdaOriginAccessControl",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudFront::OriginAccessControl",
-                      "aws:cdk:cloudformation:props": {
-                        "originAccessControlConfig": {
-                          "name": "OAC for ab8fc77910a7",
-                          "originAccessControlOriginType": "lambda",
-                          "signingBehavior": "always",
-                          "signingProtocol": "sigv4"
+                  "FunctionUrlOriginAccessControl": {
+                    "id": "FunctionUrlOriginAccessControl",
+                    "path": "integ-cloudfront-function-url-origin-oac/Distribution/Origin1/FunctionUrlOriginAccessControl",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-cloudfront-function-url-origin-oac/Distribution/Origin1/FunctionUrlOriginAccessControl/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudFront::OriginAccessControl",
+                          "aws:cdk:cloudformation:props": {
+                            "originAccessControlConfig": {
+                              "name": "integcloudfrontfunctionurlornctionUrlOriginAccessControlABD689FE",
+                              "signingBehavior": "always",
+                              "signingProtocol": "sigv4",
+                              "originAccessControlOriginType": "lambda"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudfront.CfnOriginAccessControl",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudfront.CfnOriginAccessControl",
+                      "fqn": "aws-cdk-lib.aws_cloudfront.FunctionUrlOriginAccessControl",
                       "version": "0.0.0"
                     }
                   },
@@ -247,7 +257,7 @@
                           },
                           "originAccessControlId": {
                             "Fn::GetAtt": [
-                              "DistributionOrigin1LambdaOriginAccessControlA2462D70",
+                              "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55",
                               "Id"
                             ]
                           }
