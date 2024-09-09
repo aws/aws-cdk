@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "kms-key-multi-region/DefaultTest": {
+      "stacks": [
+        "KmsKeyMultiRegionStack"
+      ],
+      "assertionStack": "kms-key-multi-region/DefaultTest/DeployAssert",
+      "assertionStackName": "kmskeymultiregionDefaultTestDeployAssert5D62E49E"
+    }
+  }
+}
