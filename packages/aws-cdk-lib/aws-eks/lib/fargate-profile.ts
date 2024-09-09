@@ -204,7 +204,7 @@ export class FargateProfile extends Construct implements ITaggable {
     const supportConfigMap = [
       undefined,
       AuthenticationMode.CONFIG_MAP,
-      AuthenticationMode.API_AND_CONFIG_MAP
+      AuthenticationMode.API_AND_CONFIG_MAP,
     ].includes(props.cluster.authenticationMode);
 
     if (supportConfigMap) {
