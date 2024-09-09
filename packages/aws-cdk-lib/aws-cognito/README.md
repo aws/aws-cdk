@@ -1022,4 +1022,9 @@ new cognito.UserPoolGroup(this, 'UserPoolGroup', {
   precedence: 1,
   role,  // assign IAM Role
 });
+
+// You can also add a group by using addGroup method.
+userPool.addGroup('AnotherUserPoolGroup', {
+  groupName: 'another-group-name'
+});
 ```
