@@ -2,7 +2,7 @@ import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway
 import { Construct, IConstruct, IDependable } from 'constructs';
 import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
-import { NetworkUtils, allRouteTableIds, flatten } from './util';
+import { NetworkUtils, allRouteTableIds } from './util';
 import { ISubnetV2 } from './subnet-v2';
 
 /**
@@ -48,7 +48,8 @@ export interface EgressOnlyInternetGatewayProps {
 
   /**
    * The resource name of the egress-only internet gateway.
-   * @default none
+   *
+   * @default - provisioned without a resource name
    */
   readonly egressOnlyInternetGatewayName?: string;
 }
@@ -64,7 +65,8 @@ export interface InternetGatewayProps {
 
   /**
    * The resource name of the internet gateway.
-   * @default none
+   *
+   * @default - provisioned without a resource name
    */
   readonly internetGatewayName?: string;
 
@@ -73,7 +75,7 @@ export interface InternetGatewayProps {
 /**
  * Properties to define a VPN gateway.
  */
-export interface VPNGatewayV2Props extends VPNGatewayV2Options{
+export interface VPNGatewayV2Props extends VPNGatewayV2Options {
 
   /**
    * The ID of the VPC for which to create the VPN gateway.
@@ -93,35 +95,40 @@ export interface NatGatewayOptions {
   /**
    * AllocationID of Elastic IP address that's associated with the NAT gateway. This property is required for a public NAT
    * gateway and cannot be specified with a private NAT gateway.
-   * @default attr.allocationID of a new Elastic IP created by default
+   *
+   * @default - attr.allocationID of a new Elastic IP created by default
    * //TODO: ADD L2 for elastic ip
    */
   readonly allocationId?: string;
 
   /**
    * Indicates whether the NAT gateway supports public or private connectivity.
-   * @default public
+   *
+   * @default NatConnectivityType.Public
    */
   readonly connectivityType?: NatConnectivityType;
 
   /**
    * The maximum amount of time to wait before forcibly releasing the
    * IP addresses if connections are still in progress.
-   * @default 350 seconds
+   *
+   * @default 350seconds
    */
   readonly maxDrainDuration?: Duration;
 
   /**
-   * The private IPv4 address to assign to the NAT gateway. If you don't provide an
-   * address, a private IPv4 address will be automatically assigned.
-   * @default none
+   * The private IPv4 address to assign to the NAT gateway.
+   *
+   * @default - If you don't provide an address, a private IPv4 address will be automatically assigned.
    */
   readonly privateIpAddress?: string;
 
   /**
    * Secondary EIP allocation IDs.
-   * @default none
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
+   *
+   * @default - no secondary allocation IDs attached to NATGW
+   *
    */
   readonly secondaryAllocationIds?: string[];
 
@@ -131,9 +138,9 @@ export interface NatGatewayOptions {
    *
    * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be
    * set at the same time.
-   *
-   * @default none
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
+   *
+   * @default - no secondary allocation IDs associated with NATGW
    */
   readonly secondaryPrivateIpAddressCount?: number;
 
@@ -142,15 +149,16 @@ export interface NatGatewayOptions {
    *
    * `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be
    * set at the same time.
-   *
-   * @default none
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating
+   *
+   * @default - no secondary private IpAddresses associated with NATGW
    */
   readonly secondaryPrivateIpAddresses?: string[];
 
   /**
    * The resource name of the NAT gateway.
-   * @default none
+   *
+   * @default - NATGW provisioned without any name
    */
   readonly natGatewayName?: string;
 }
@@ -161,8 +169,8 @@ export interface NatGatewayOptions {
 export interface NatGatewayProps extends NatGatewayOptions {
   /**
    * The ID of the VPC in which the NAT gateway is located.
-   * Required in case of public connectivity if `AllocationId` is not defined
-   * @default none
+   *
+   * @default - no elastic ip associated, required in case of public connectivity if `AllocationId` is not defined
    */
   readonly vpc?: IVpcV2;
 }
@@ -299,11 +307,12 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
     });
 
     // Propagate routes on route tables associated with the right subnets
-    const vpnRoutePropagation = props.vpnRoutePropagation ?? [{}];
-    const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => props.vpc.selectSubnets(s).subnets)));
+    const vpnRoutePropagation = props.vpnRoutePropagation ?? [];
+    const subnets = vpnRoutePropagation.map(s => props.vpc.selectSubnets(s).subnets).flat();
+    const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
-      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(this).addWarningV2('@aws-cdk:aws-ec2-elpha:enableVpnGatewayV2', `No subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     this._routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -334,14 +343,16 @@ export class NatGateway extends Resource implements IRouteTarget {
 
   /**
    * Indicates whether the NAT gateway supports public or private connectivity.
+   *
    * @default public
    */
-  public readonly connectivityType?: string;
+  public readonly connectivityType?: NatConnectivityType;
 
   /**
    * The maximum amount of time to wait before forcibly releasing the
    * IP addresses if connections are still in progress.
-   * @default 350 seconds
+   *
+   * @default '350 seconds'
    */
   public readonly maxDrainDuration?: Duration;
 
@@ -358,7 +369,7 @@ export class NatGateway extends Resource implements IRouteTarget {
     this.connectivityType = props.connectivityType || NatConnectivityType.PUBLIC;
     this.maxDrainDuration = props.maxDrainDuration || Duration.seconds(350);
 
-    if (this.connectivityType == NatConnectivityType.PUBLIC) {
+    if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.vpc && !props.allocationId) {
         throw new Error('Either provide vpc or allocationId');
       }
@@ -366,7 +377,7 @@ export class NatGateway extends Resource implements IRouteTarget {
 
     // If user does not provide EIP, generate one for them
     var aId: string | undefined;
-    if (this.connectivityType == 'public') {
+    if (this.connectivityType == NatConnectivityType.PUBLIC) {
       if (!props.allocationId) {
         let eip = new CfnEIP(this, 'EIP', {
           domain: props.vpc?.vpcId,
@@ -398,14 +409,16 @@ export interface RouteTargetProps {
   /**
    * The gateway route target. This is used for targets such as
    * egress-only internet gateway or VPC peering connection.
-   * @default none
+   *
+   * @default - target is not set to a gateway, in this case an endpoint is needed.
    */
   readonly gateway?: IRouteTarget;
 
   /**
    * The endpoint route target. This is used for targets such as
    * VPC endpoints.
-   * @default none
+   *
+   * @default - target is not set to an endpoint, in this case a gateway is needed.
    */
   readonly endpoint?: IVpcEndpoint;
 }
@@ -417,14 +430,16 @@ export class RouteTargetType {
   /**
    * The gateway route target. This is used for targets such as
    * egress-only internet gateway or VPC peering connection.
-   * @default none
+   *
+   * @default - target is not set to a gateway, in this case an endpoint is needed.
    */
   readonly gateway?: IRouteTarget;
 
   /**
    * The endpoint route target. This is used for targets such as
    * VPC endpoints.
-   * @default none
+   *
+   * @default - target is not set to an endpoint, in this case a gateway is needed.
    */
   readonly endpoint?: IVpcEndpoint;
 
@@ -441,7 +456,7 @@ export class RouteTargetType {
 /**
  * Interface to define a route.
  */
-export interface IRoute extends IConstruct, IResource{
+export interface IRoute extends IConstruct, IResource {
   /**
    * The ID of the route table for the route.
    * @attribute routeTable
@@ -468,6 +483,7 @@ export interface IRoute extends IConstruct, IResource{
 export interface RouteProps {
   /**
    * The ID of the route table for the route.
+   *
    * @attribute routeTable
    */
   readonly routeTable: IRouteTable;
@@ -486,7 +502,8 @@ export interface RouteProps {
 
   /**
    * The resource name of the route.
-   * @default none
+   *
+   * @default - provisioned without a route name
    */
   readonly routeName?: string;
 }
@@ -548,7 +565,7 @@ export class Route extends Resource implements IRoute, IDependable {
       this.destinationIpv4Cidr = props.destination;
     }
 
-    if (this.target.gateway?.routerType == RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
+    if (this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
       throw new Error('Egress only internet gateway does not support IPv4 routing');
     }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
@@ -586,7 +603,8 @@ export interface RouteTableProps {
 
   /**
    * The resource name of the route table.
-   * @default none
+   *
+   * @default - provisioned without a route table name
    */
   readonly routeTableName?: string;
 }

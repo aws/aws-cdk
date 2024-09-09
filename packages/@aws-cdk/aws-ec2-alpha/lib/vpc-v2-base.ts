@@ -56,20 +56,23 @@ export interface VPNGatewayV2Options {
 
   /**
    * The private Autonomous System Number (ASN) for the Amazon side of a BGP session.
-   * @default none
+   *
+   * @default - no ASN set for BGP session
    */
   readonly amazonSideAsn?: number;
 
   /**
-     * The resource name of the VPN gateway.
-     * @default none
-     */
+   * The resource name of the VPN gateway.
+   *
+   * @default - resource provisioned without any name
+   */
   readonly vpnGatewayName?: string;
 
   /**
-     * Subnets where the route propagation should be added.
-     * @default noPropagation
-     */
+   * Subnets where the route propagation should be added.
+   *
+   * @default - no propogation for routes
+   */
   readonly vpnRoutePropagation?: SubnetSelection[];
 }
 
@@ -103,22 +106,25 @@ export interface IVpcV2 extends IVpc {
   /**
    * Adds an Internet Gateway to current VPC.
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-igw-internet-access.html}.
-   * @default defines route for all ipv4('0.0.0.0') and ipv6 addresses('::/0')
+   *
+   * @default - defines route for all ipv4('0.0.0.0') and ipv6 addresses('::/0')
    */
   addInternetGateway(options?: InternetGatewayOptions): void;
 
   /**
    * Adds VPN Gateway to VPC and set route propogation.
    * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html}.
-   * @default no route propogation
+   *
+   * @default - no route propogation
    */
   enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2;
 
   /**
    * Adds a new NAT Gateway to VPC
-   * A NAT gateway is a Network Address Translation (NAT) service. NAT Gateway Connectivity can be of type `Public` or `Private`
-   * @default ConnectivityType.Public
+   * A NAT gateway is a Network Address Translation (NAT) service. NAT Gateway Connectivity can be of type `Public` or `Private`.
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html}.
+   *
+   * @default ConnectivityType.Public
    */
   addNatGateway(options: NatGatewayOptions): NatGateway;
 
@@ -329,8 +335,9 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
   /**
    * Adds a new Egress Only Internet Gateway to this VPC and defines a new route
-   * to the route table of given subnets
-   * @default in case of no input subnets, no route is created.
+   * to the route table of given subnets.
+   *
+   * @default - in case of no input subnets, no route is created
    */
   public addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void {
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
@@ -338,7 +345,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     });
 
     const useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-    secondaryAddress.ipv6IpamPoolId != undefined))? true : false;
+    secondaryAddress.ipv6IpamPoolId != undefined));
 
     if (!useIpv6) {
       throw new Error('Egress only IGW can only be added to Ipv6 enabled VPC');
@@ -367,7 +374,8 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
   /**
    * Adds a new Internet Gateway to this VPC
-   * @default creates a new route for public subnets(with all outbound access) to the Internet Gateway.
+   *
+   * @default - creates a new route for public subnets(with all outbound access) to the Internet Gateway.
    */
   public addInternetGateway(options?: InternetGatewayOptions): void {
     if (this._internetGatewayId) {
