@@ -234,6 +234,19 @@ describe('HttpApi', () => {
     });
   });
 
+  test('routeSelectionExpression is enabled', () => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      routeSelectionExpression: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      RouteSelectionExpression: '$request.method $request.path',
+    });
+  });
+
   test('can add a vpc links', () => {
     // GIVEN
     const stack = new Stack();
