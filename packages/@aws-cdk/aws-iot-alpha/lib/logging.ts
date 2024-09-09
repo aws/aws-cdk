@@ -19,27 +19,35 @@ export interface ILogging extends IResource {
  */
 export enum LogLevel {
   /**
-   * ERROR level logging
+   * Any error that causes an operation to fail
+   *
+   * Logs include ERROR information only
    */
   ERROR = 'ERROR',
 
   /**
-   * WARN level logging
+   * Anything that can potentially cause inconsistencies in the system, but might not cause the operation to fail
+   *
+   * Logs include ERROR and WARN information
    */
   WARN = 'WARN',
 
   /**
-   * INFO level logging
+   * High-level information about the flow of things
+   *
+   * Logs include INFO, ERROR, and WARN information
    */
   INFO = 'INFO',
 
   /**
-   * DEBUG level logging
+   * Information that might be helpful when debugging a problem
+   *
+   * Logs include DEBUG, INFO, ERROR, and WARN information
    */
   DEBUG = 'DEBUG',
 
   /**
-   * DISABLED logging
+   * All logging is disabled
    */
   DISABLED = 'DISABLED',
 }
@@ -49,7 +57,7 @@ export enum LogLevel {
  */
 export interface LoggingProps {
   /**
-   * The log level for the AWS IoT Logging.
+   * The log level for the AWS IoT Logging
    *
    * @default LogLevel.ERROR
    */
@@ -57,14 +65,14 @@ export interface LoggingProps {
 }
 
 /**
- * Defines an AWS IoT Logging.
+ * Defines an AWS IoT Logging
  */
 export class Logging extends Resource implements ILogging {
   /**
    * Import an existing AWS IoT Logging
    *
-   * @param scope The parent creating construct (usually `this`).
-   * @param id The construct's name.
+   * @param scope The parent creating construct (usually `this`)
+   * @param id The construct's name
    * @param logId AWS IoT Logging ID
    */
   public static fromLogId(scope: Construct, id: string, logId: string): ILogging {

@@ -80,14 +80,12 @@ See also [@aws-cdk/aws-iot-actions-alpha](https://docs.aws.amazon.com/cdk/api/v2
 
 ## Logging
 
-AWS IoT provides [logging feature](https://docs.aws.amazon.com/iot/latest/developerguide/configure-logging.html) that allows you to monitor and log AWS IoT activity.
+AWS IoT provides a [logging feature](https://docs.aws.amazon.com/iot/latest/developerguide/configure-logging.html) that allows you to monitor and log AWS IoT activity.
 
 You can enable IoT logging with the following code:
 
 ```ts
 new iot.Logging(this, 'Logging', {
-  // The log level can be selected from five options: ERROR, WARN, INFO, DEBUG, and DISABLED.
-  // The default value is ERROR.
   logLevel: iot.LogLevel.INFO,
 });
 ```
