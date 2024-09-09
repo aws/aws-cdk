@@ -298,6 +298,7 @@ describe('instance engine', () => {
       ['10.11.9', rds.MariaDbEngineVersion.VER_10_11_9],
     ])('is passed correctly for %s', (engineVersion, version) => {
 
+      // WHEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
