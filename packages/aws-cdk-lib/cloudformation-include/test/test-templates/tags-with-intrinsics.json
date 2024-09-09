@@ -17,6 +17,10 @@
         "BucketName": "cdk-integ-cfn-include-bucket2",
         "Tags": [
           {
+            "Key": "Key1",
+            "Value": "Value1"
+          },
+          {
             "Fn::If": [
               "ShouldIncludeTag",
               {
