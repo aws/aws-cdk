@@ -136,7 +136,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.21",
+    "@aws-cdk/aws-service-spec": "^0.1.23",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -411,6 +411,7 @@
     "./aws-panorama": "./aws-panorama/index.js",
     "./aws-paymentcryptography": "./aws-paymentcryptography/index.js",
     "./aws-pcaconnectorad": "./aws-pcaconnectorad/index.js",
+    "./aws-pcaconnectorscep": "./aws-pcaconnectorscep/index.js",
     "./aws-personalize": "./aws-personalize/index.js",
     "./aws-pinpoint": "./aws-pinpoint/index.js",
     "./aws-pinpointemail": "./aws-pinpointemail/index.js",
@@ -466,6 +467,7 @@
     "./aws-ssm": "./aws-ssm/index.js",
     "./aws-ssmcontacts": "./aws-ssmcontacts/index.js",
     "./aws-ssmincidents": "./aws-ssmincidents/index.js",
+    "./aws-ssmquicksetup": "./aws-ssmquicksetup/index.js",
     "./aws-sso": "./aws-sso/index.js",
     "./aws-stepfunctions": "./aws-stepfunctions/index.js",
     "./aws-stepfunctions-tasks": "./aws-stepfunctions-tasks/index.js",
