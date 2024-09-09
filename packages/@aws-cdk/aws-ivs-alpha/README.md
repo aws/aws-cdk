@@ -55,6 +55,18 @@ const myChannel = new ivs.Channel(this, 'myChannel', {
 });
 ```
 
+If you want to use RTMP ingest, set `ingestInsecure` property to `true`.
+
+By default, `ingestInsecure` is `false` which means using RTMPS ingest.
+
+For more information, see [Encoder Settings](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/streaming-config.html#streaming-config-settings).
+
+```ts
+const myRtmpChannel = new ivs.Channel(this, 'myRtmpChannel', {
+  type: ivs.ChannelType.STANDARD,
+  insecureIngest: true, // default value is false
+});
+```
 
 ### Importing an existing channel
 
