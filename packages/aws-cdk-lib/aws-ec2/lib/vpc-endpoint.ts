@@ -275,7 +275,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ACCESS_ANALYZER = new InterfaceVpcEndpointAwsService('access-analyzer');
   public static readonly ACCOUNT_MANAGEMENT = new InterfaceVpcEndpointAwsService('account');
   public static readonly AIRFLOW_API = new InterfaceVpcEndpointAwsService('airflow.api');
+  public static readonly AIRFLOW_API_FIPS = new InterfaceVpcEndpointAwsService('airflow.api-fips');
   public static readonly AIRFLOW_ENV = new InterfaceVpcEndpointAwsService('airflow.env');
+  public static readonly AIRFLOW_ENV_FIPS = new InterfaceVpcEndpointAwsService('airflow.env-fips');
   public static readonly AIRFLOW_OPS = new InterfaceVpcEndpointAwsService('airflow.ops');
   public static readonly APIGATEWAY = new InterfaceVpcEndpointAwsService('execute-api');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.APP_MESH_ENVOY_MANAGEMENT instead. */
@@ -323,6 +325,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEWHISPERER = new InterfaceVpcEndpointAwsService('codewhisperer');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.CLOUDWATCH_MONITORING instead. */
   public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
+  public static readonly CLOUDWATCH_APPLICATION_INSIGHTS = new InterfaceVpcEndpointAwsService('applicationinsights');
   public static readonly CLOUDWATCH_APPLICATION_SIGNALS = new InterfaceVpcEndpointAwsService('application-signals');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.EVENTBRIDGE instead. */
   public static readonly CLOUDWATCH_EVENTS = new InterfaceVpcEndpointAwsService('events');
@@ -395,6 +398,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EMR = new InterfaceVpcEndpointAwsService('elasticmapreduce');
   public static readonly EMR_EKS = new InterfaceVpcEndpointAwsService('emr-containers');
   public static readonly EMR_SERVERLESS = new InterfaceVpcEndpointAwsService('emr-serverless');
+  public static readonly EMR_SERVERLESS_LIVY = new InterfaceVpcEndpointAwsService('emr-serverless-services.livy');
   public static readonly EMR_WAL = new InterfaceVpcEndpointAwsService('emrwal.prod');
   public static readonly ENTITY_RESOLUTION = new InterfaceVpcEndpointAwsService('entityresolution');
   public static readonly EVENTBRIDGE = new InterfaceVpcEndpointAwsService('events');
@@ -485,6 +489,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly OMICS_TAGS = new InterfaceVpcEndpointAwsService('tags-omics');
   public static readonly OMICS_WORKFLOWS = new InterfaceVpcEndpointAwsService('workflows-omics');
   public static readonly PANORAMA = new InterfaceVpcEndpointAwsService('panorama');
+  public static readonly PARALLEL_COMPUTING_SERVICE = new InterfaceVpcEndpointAwsService('pcs');
+  public static readonly PARALLEL_COMPUTING_SERVICE_FIPS = new InterfaceVpcEndpointAwsService('pcs-fips');
   public static readonly PAYMENT_CRYPTOGRAPHY_CONTROLPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.controlplane');
   public static readonly PAYMENT_CRYTOGRAPHY_DATAPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.dataplane');
   public static readonly PERSONALIZE = new InterfaceVpcEndpointAwsService('personalize');
@@ -505,12 +511,16 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PROMETHEUS_WORKSPACES = new InterfaceVpcEndpointAwsService('aps-workspaces');
   public static readonly PROTON = new InterfaceVpcEndpointAwsService('proton');
   public static readonly Q_BUSSINESS = new InterfaceVpcEndpointAwsService('qbusiness', 'aws.api');
+  public static readonly Q_DEVELOPER = new InterfaceVpcEndpointAwsService('q');
   public static readonly Q_DEVELOPER_CODE_WHISPERER = new InterfaceVpcEndpointAwsService('codewhisperer');
   public static readonly Q_DEVELOPER_QAPPS = new InterfaceVpcEndpointAwsService('qapps');
+  public static readonly Q_USER_SUBSCRIPTIONS = new InterfaceVpcEndpointAwsService('service.user-subscriptions');
   public static readonly QLDB = new InterfaceVpcEndpointAwsService('qldb.session');
   public static readonly QUICKSIGHT_WEBSITE = new InterfaceVpcEndpointAwsService('quicksight-website');
   public static readonly RDS = new InterfaceVpcEndpointAwsService('rds');
   public static readonly RDS_DATA = new InterfaceVpcEndpointAwsService('rds-data');
+  public static readonly RDS_PERFORMANCE_INSIGHTS = new InterfaceVpcEndpointAwsService('pi');
+  public static readonly RDS_PERFORMANCE_INSIGHTS_FIPS = new InterfaceVpcEndpointAwsService('pi-fips');
   public static readonly REDSHIFT = new InterfaceVpcEndpointAwsService('redshift');
   public static readonly REDSHIFT_FIPS = new InterfaceVpcEndpointAwsService('redshift-fips');
   public static readonly REDSHIFT_DATA = new InterfaceVpcEndpointAwsService('redshift-data');
@@ -523,6 +533,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION_STREAMING_FIPS = new InterfaceVpcEndpointAwsService('streaming-rekognition-fips');
   public static readonly REPOST_SPACE = new InterfaceVpcEndpointAwsService('repostspace');
   public static readonly ROBOMAKER = new InterfaceVpcEndpointAwsService('robomaker');
+  public static readonly RECYCLE_BIN = new InterfaceVpcEndpointAwsService('rbin');
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
   public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, { global: true });
@@ -548,9 +559,11 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SNS = new InterfaceVpcEndpointAwsService('sns');
   public static readonly SQS = new InterfaceVpcEndpointAwsService('sqs');
   public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
+  public static readonly SSM_FIPS = new InterfaceVpcEndpointAwsService('ssm-fips');
   public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
   public static readonly SSM_CONTACTS = new InterfaceVpcEndpointAwsService('ssm-contacts');
   public static readonly SSM_INCIDENTS = new InterfaceVpcEndpointAwsService('ssm-incidents');
+  public static readonly SSM_QUICK_SETUP = new InterfaceVpcEndpointAwsService('ssm-quicksetup');
   public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
   public static readonly STEP_FUNCTIONS_SYNC = new InterfaceVpcEndpointAwsService('sync-states');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
@@ -562,12 +575,14 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly TEXTRACT = new InterfaceVpcEndpointAwsService('textract');
   public static readonly TEXTRACT_FIPS = new InterfaceVpcEndpointAwsService('textract-fips');
   public static readonly TIMESTREAM_INFLUXDB = new InterfaceVpcEndpointAwsService('timestream-influxdb');
+  public static readonly TIMESTREAM_INFLUXDB_FIPS = new InterfaceVpcEndpointAwsService('timestream-influxdb-fips');
   public static readonly TRANSCRIBE = new InterfaceVpcEndpointAwsService('transcribe');
   public static readonly TRANSCRIBE_STREAMING = new InterfaceVpcEndpointAwsService('transcribestreaming');
   public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer');
   public static readonly TRANSFER_SERVER = new InterfaceVpcEndpointAwsService('transfer.server');
   public static readonly TRANSLATE = new InterfaceVpcEndpointAwsService('translate');
   public static readonly TRUSTED_ADVISOR = new InterfaceVpcEndpointAwsService('trustedadvisor');
+  public static readonly WELL_ARCHITECTED_TOOL = new InterfaceVpcEndpointAwsService('wellarchitected');
   public static readonly WORKSPACES = new InterfaceVpcEndpointAwsService('workspaces');
   public static readonly WORKSPACES_THIN_CLIENT = new InterfaceVpcEndpointAwsService('thinclient.api');
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
