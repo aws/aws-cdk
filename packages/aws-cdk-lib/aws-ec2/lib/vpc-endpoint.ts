@@ -450,6 +450,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly KEYSPACES = new InterfaceVpcEndpointAwsService('cassandra', '', 9142);
   public static readonly KEYSPACES_FIPS = new InterfaceVpcEndpointAwsService('cassandra-fips', '', 9142);
   public static readonly KINESIS_STREAMS = new InterfaceVpcEndpointAwsService('kinesis-streams');
+  public static readonly KINESIS_STREAMS_FIPS = new InterfaceVpcEndpointAwsService('kinesis-streams-fips');
   public static readonly KINESIS_FIREHOSE = new InterfaceVpcEndpointAwsService('kinesis-firehose');
   public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
   public static readonly KMS_FIPS = new InterfaceVpcEndpointAwsService('kms-fips');
