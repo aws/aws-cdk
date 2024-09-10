@@ -106,18 +106,12 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
 
   public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     const originBindConfig = super.bind(scope, options);
-    const distributionId = options.distributionId;
 
     if (!this.originAccessControl) {
       this.originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(scope, 'FunctionUrlOriginAccessControl');
     }
 
-    new lambda.CfnPermission(scope, `InvokeFromApiFor${options.originId}`, {
-      principal: 'cloudfront.amazonaws.com',
-      action: 'lambda:InvokeFunctionUrl',
-      functionName: cdk.Fn.select(6, cdk.Fn.split(':', this.functionUrl.functionArn)),
-      sourceArn: `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`,
-    });
+    this.addInvokePermission(scope, options);
 
     return {
       ...originBindConfig,
@@ -126,5 +120,16 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
         originAccessControlId: this.originAccessControl?.originAccessControlId,
       },
     };
+  }
+
+  private addInvokePermission(scope: Construct, options: cloudfront.OriginBindOptions) {
+    const distributionId = options.distributionId;
+
+    new lambda.CfnPermission(scope, `InvokeFromApiFor${options.originId}`, {
+      principal: 'cloudfront.amazonaws.com',
+      action: 'lambda:InvokeFunctionUrl',
+      functionName: cdk.Fn.select(6, cdk.Fn.split(':', this.functionUrl.functionArn)),
+      sourceArn: `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`,
+    });
   }
 }
