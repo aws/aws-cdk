@@ -186,15 +186,23 @@ export interface AuthorizationConfig {
  */
 export enum FieldLogLevel {
   /**
-   * No logging
+   * Resolver logging is disabled
    */
   NONE = 'NONE',
   /**
-   * Error logging
+   * Only Error messages appear in logs
    */
   ERROR = 'ERROR',
   /**
-   * All logging
+   * Info and Error messages appear in logs
+   */
+  INFO = 'INFO',
+  /**
+   * Debug, Info, and Error messages, appear in logs
+   */
+  DEBUG = 'DEBUG',
+  /**
+   * All messages (Debug, Error, Info, and Trace) appear in logs
    */
   ALL = 'ALL',
 }

@@ -386,7 +386,7 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'python3.9',
+      Runtime: 'python3.11',
     });
   });
 
