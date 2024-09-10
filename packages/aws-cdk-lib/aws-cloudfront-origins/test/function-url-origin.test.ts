@@ -118,6 +118,27 @@ describe('FunctionUrlOriginAccessControl', () => {
         ]),
       },
     });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunctionUrl',
+      FunctionName: {
+        'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+    });
   });
 
   test('Correctly configures CloudFront Distribution with Origin Access Control', () => {
@@ -174,6 +195,27 @@ describe('FunctionUrlOriginAccessControl', () => {
         OriginAccessControlOriginType: 'lambda',
         SigningBehavior: 'always',
         SigningProtocol: 'sigv4',
+      },
+    });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunctionUrl',
+      FunctionName: {
+        'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
       },
     });
   });
