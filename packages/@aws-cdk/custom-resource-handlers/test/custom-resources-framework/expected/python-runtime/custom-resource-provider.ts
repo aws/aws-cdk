@@ -25,7 +25,7 @@ export class TestProvider extends CustomResourceProviderBase {
     super(scope, id, {
       ...props,
       "codeDirectory": path.join(__dirname, 'my-handler'),
-      "runtimeName": "python3.10"
+      "runtimeName": "python3.11"
     });
     this.node.addMetadata('aws:cdk:is-custom-resource-handler-customResourceProvider', true);
   }
