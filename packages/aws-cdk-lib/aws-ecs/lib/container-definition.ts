@@ -390,8 +390,6 @@ export interface ContainerDefinitionOptions {
    *
    * When you set up a restart policy, Amazon ECS can restart the container without needing to replace the task.
    *
-   * You can't enable a restart policy for a Firelens log router container.
-   *
    * @default false
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html
    */

@@ -443,18 +443,5 @@ describe('firelens log driver', () => {
         ],
       });
     });
-
-    test('throws when restart policy is enabled', () => {
-      // THEN
-      expect(() => {
-        td.addFirelensLogRouter('log_router', {
-          image: ecs.obtainDefaultFluentBitECRImage(td, undefined, '2.1.0'),
-          firelensConfig: {
-            type: ecs.FirelensLogRouterType.FLUENTBIT,
-          },
-          enableRestartPolicy: true,
-        });
-      }).toThrow(/Firelens log router container cannot enable restart policy/);
-    });
   });
 });
