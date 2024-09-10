@@ -374,9 +374,6 @@ export class CdkToolkit {
         print('Stack ARN:');
 
         data(result.stackArn);
-      } catch (e) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
-        throw e;
       } finally {
         if (options.cloudWatchLogMonitor) {
           const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
@@ -427,9 +424,11 @@ export class CdkToolkit {
         buildAsset,
         publishAsset,
       });
-    } catch (e) {
-      error('\n ❌ Deployment failed: %s', e);
-      throw e;
+    } catch (e: any) {
+      error('\n ❌ Deployment failed: %s', e.message);
+      throw new Error('There was an error deploying (see above for details)');
+    }
+  }
     }
   }
 
