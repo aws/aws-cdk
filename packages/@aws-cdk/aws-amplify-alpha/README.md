@@ -246,6 +246,20 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+## Cache Config
+
+Amplify uses Amazon CloudFront to manage the caching configuration for your hosted applications. A cache configuration is applied to each app to optimize for the best performance.
+
+Setting the `cacheConfigType` field on the Amplify `App` construct can be used to control cache configguration. By default, the value is set to `AMPLIFY_MANAGED`. If you want to exclude all cookies from the cache key, set `AMPLIFY_MANAGED_NO_COOKIES`.
+
+For more information, see [Managing the cache configuration for an app](https://docs.aws.amazon.com/amplify/latest/userguide/caching.html).
+
+```ts
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  cacheConfigType: amplify.CacheConfigType.AMPLIFY_MANAGED_NO_COOKIES,
+});
+```
+
 ## Deploying Assets
 
 `sourceCodeProvider` is optional; when this is not specified the Amplify app can be deployed to using `.zip` packages. The `asset` property can be used to deploy S3 assets to Amplify as part of the CDK:
