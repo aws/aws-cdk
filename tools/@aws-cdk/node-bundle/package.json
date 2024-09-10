@@ -4,17 +4,13 @@
     "node-bundle": "bin/node-bundle"
   },
   "scripts": {
-    "build": "cdk-build",
-    "build+test": "yarn build && yarn test",
+    "build": "tsc --build",
+    "build+test": "npm run build && npm run test",
     "lint": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern src test",
     "package": "mkdir -p dist/js && mv $(npm pack) dist/js/",
-    "test": "cdk-test",
+    "test": "jest --passWithNoTests --updateSnapshot",
     "test:watch": "jest --watch",
-    "watch": "cdk-watch",
-    "pkglint": "pkglint -f",
-    "build+extract": "yarn build",
-    "build+test+package": "yarn build+test && yarn package",
-    "build+test+extract": "yarn build+test"
+    "watch": "tsc --build -w tsconfig.dev.json"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -32,9 +28,7 @@
     "npm-check-updates": "^16",
     "standard-version": "^9",
     "ts-jest": "^29",
-    "typescript": "~5.4.5",
-    "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0"
+    "typescript": "~5.4.5"
   },
   "dependencies": {
     "esbuild": "^0.23.1",
@@ -47,27 +41,50 @@
   "main": "lib/index.js",
   "license": "Apache-2.0",
   "version": "0.0.0",
+  "jest": {
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.ts?(x)",
+      "<rootDir>/(test|src)/**/*(*.)@(spec|test).ts?(x)"
+    ],
+    "clearMocks": true,
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "clover",
+      "cobertura",
+      "text"
+    ],
+    "coverageDirectory": "coverage",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "watchPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-reports"
+        }
+      ]
+    ],
+    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.dev.json",
+          "isolatedModules": true
+        }
+      ]
+    }
+  },
   "types": "lib/index.d.ts",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "tools/@aws-cdk/node-bundle"
-  },
-  "homepage": "https://github.com/aws/aws-cdk",
-  "author": {
-    "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com",
-    "organization": true
-  },
-  "keywords": [
-    "aws",
-    "cdk"
-  ],
-  "engines": {
-    "node": ">= 14.15.0"
-  },
-  "cdk-build": {
-    "jest": true
-  }
+  "private": true
 }
