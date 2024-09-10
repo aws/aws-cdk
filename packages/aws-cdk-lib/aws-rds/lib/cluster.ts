@@ -385,6 +385,27 @@ interface DatabaseClusterBaseProps {
    * @default - false
    */
   readonly enableDataApi?: boolean;
+
+  /**
+   * Whether to enable Performance Insights for the DB instance.
+   *
+   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set.
+   */
+  readonly enablePerformanceInsights?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   *
+   * @default 7
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   *
+   * @default - default master key
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -690,6 +711,12 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
+    const enablePerformanceInsights = props.enablePerformanceInsights
+      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -730,6 +757,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
+      performanceInsightsEnabled: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set
+      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsRetentionPeriod: enablePerformanceInsights
+        ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+        : undefined,
     };
   }
 
