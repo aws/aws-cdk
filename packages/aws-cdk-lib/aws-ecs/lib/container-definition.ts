@@ -628,6 +628,8 @@ export class ContainerDefinition extends Construct {
     if (props.ulimits) {
       this.addUlimits(...props.ulimits);
     }
+
+    this.validateRestartPolicy(props.restartIgnoredExitCodes, props.restartAttemptPeriod);
   }
 
   /**
@@ -807,6 +809,15 @@ export class ContainerDefinition extends Construct {
       ...pm,
       hostPort: 0,
     };
+  }
+
+  private validateRestartPolicy(restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration) {
+    if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
+      throw new Error(`Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`);
+    }
+    if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
+      throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`);
+    }
   }
 
   /**
@@ -1537,12 +1548,6 @@ function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinitio
 }
 
 function renderRestartPolicy(restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration): CfnTaskDefinition.RestartPolicyProperty {
-  if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
-    throw new Error(`Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`);
-  }
-  if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
-    throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`);
-  }
   return {
     enabled: true,
     ignoredExitCodes: restartIgnoredExitCodes,

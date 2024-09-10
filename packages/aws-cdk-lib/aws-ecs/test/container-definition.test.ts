@@ -2768,6 +2768,7 @@ describe('container definition', () => {
     new ecs.ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       taskDefinition,
+      memoryLimitMiB: 2048,
       enableRestartPolicy: true,
       restartIgnoredExitCodes: [0, 127],
       restartAttemptPeriod: cdk.Duration.seconds(360),
@@ -2779,6 +2780,7 @@ describe('container definition', () => {
         {
           Image: '/aws/aws-example-app',
           Name: 'Container',
+          Memory: 2048,
           RestartPolicy: {
             Enabled: true,
             IgnoredExitCodes: [0, 127],
@@ -2798,6 +2800,7 @@ describe('container definition', () => {
     new ecs.ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       taskDefinition,
+      memoryLimitMiB: 2048,
       enableRestartPolicy: false,
       restartIgnoredExitCodes: [0, 127],
       restartAttemptPeriod: cdk.Duration.seconds(360),
@@ -2809,6 +2812,7 @@ describe('container definition', () => {
         {
           Image: '/aws/aws-example-app',
           Name: 'Container',
+          Memory: 2048,
           RestartPolicy: Match.absent(),
         },
       ],
@@ -2824,6 +2828,7 @@ describe('container definition', () => {
     new ecs.ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       taskDefinition,
+      memoryLimitMiB: 2048,
       restartIgnoredExitCodes: [0, 127],
       restartAttemptPeriod: cdk.Duration.seconds(360),
     });
@@ -2834,6 +2839,7 @@ describe('container definition', () => {
         {
           Image: '/aws/aws-example-app',
           Name: 'Container',
+          Memory: 2048,
           RestartPolicy: Match.absent(),
         },
       ],
@@ -2853,6 +2859,7 @@ describe('container definition', () => {
       new ecs.ContainerDefinition(stack, 'Container', {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         taskDefinition,
+        memoryLimitMiB: 2048,
         enableRestartPolicy: true,
         restartIgnoredExitCodes,
       });
@@ -2869,6 +2876,7 @@ describe('container definition', () => {
       new ecs.ContainerDefinition(stack, 'Container', {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         taskDefinition,
+        memoryLimitMiB: 2048,
         enableRestartPolicy: true,
         restartAttemptPeriod: cdk.Duration.seconds(1801),
       });
@@ -2885,6 +2893,7 @@ describe('container definition', () => {
       new ecs.ContainerDefinition(stack, 'Container', {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         taskDefinition,
+        memoryLimitMiB: 2048,
         enableRestartPolicy: true,
         restartAttemptPeriod: cdk.Duration.seconds(59),
       });
