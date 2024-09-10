@@ -4,7 +4,7 @@ import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
- * Represents an AWS IoT Logging
+ * Represents AWS IoT Logging
  */
 export interface ILogging extends IResource {
   /**
@@ -53,7 +53,7 @@ export enum LogLevel {
 }
 
 /**
- * Properties for defining an AWS IoT Logging
+ * Properties for defining AWS IoT Logging
  */
 export interface LoggingProps {
   /**
@@ -65,7 +65,7 @@ export interface LoggingProps {
 }
 
 /**
- * Defines an AWS IoT Logging
+ * Defines AWS IoT Logging
  */
 export class Logging extends Resource implements ILogging {
   /**
@@ -93,6 +93,8 @@ export class Logging extends Resource implements ILogging {
 
     const accountId = Stack.of(this).account;
 
+    // Create a role for logging
+    // https://docs.aws.amazon.com/iot/latest/developerguide/configure-logging.html#configure-logging-role-and-policy
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('iot.amazonaws.com'),
       inlinePolicies: {
