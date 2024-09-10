@@ -2090,6 +2090,21 @@ describe('stack', () => {
     expect(asm.getStackArtifact(stack1.artifactId).notificationArns).toEqual(NOTIFICATION_ARNS);
   });
 
+  test('throws if stack notification arns contain tokens', () => {
+    // GIVEN
+    const NOTIFICATION_ARNS = ['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic'];
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1', {
+      notificationArns: [...NOTIFICATION_ARNS, Aws.URL_SUFFIX],
+    });
+
+    // THEN
+    const asm = app.synth();
+    const expected = { foo: 'bar' };
+
+    expect(asm.getStackArtifact(stack1.artifactId).notificationArns).toEqual(NOTIFICATION_ARNS);
+  });
+
   test('Termination Protection is reflected in Cloud Assembly artifact', () => {
     // if the root is an app, invoke "synth" to avoid double synthesis
     const app = new App();

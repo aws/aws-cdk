@@ -649,7 +649,7 @@ integTest(
 integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixture) => {
   const topicName = `${fixture.stackNamePrefix}-test-topic-prop`;
 
-  const response = await fixture.aws.sns('createTopic', { Name: topicName });
+  const response = await fixture.aws.sns.send(new CreateTopicCommand({ Name: topicName }));
   const topicArn = response.TopicArn!;
 
   try {
@@ -663,9 +663,11 @@ integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixt
     );
     expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
   } finally {
-    await fixture.aws.sns('deleteTopic', {
-      TopicArn: topicArn,
-    });
+    await fixture.aws.sns.send(
+      new DeleteTopicCommand({
+        TopicArn: topicArn,
+      }),
+    );
   }
 }));
 

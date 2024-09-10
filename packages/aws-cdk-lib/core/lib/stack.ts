@@ -464,6 +464,13 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
     }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
+
+    for (const notificationArn of props.notificationArns ?? []) {
+      if (Token.isUnresolved(notificationArn)) {
+        throw new Error(`Stack '${id}' includes one or more tokens in its notification ARNs: ${props.notificationArns}`);
+      }
+    }
+
     this._notificationArns = props.notificationArns ?? [];
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
