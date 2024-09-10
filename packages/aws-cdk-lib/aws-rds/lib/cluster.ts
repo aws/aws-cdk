@@ -387,7 +387,7 @@ interface DatabaseClusterBaseProps {
   readonly enableDataApi?: boolean;
 
   /**
-   * Whether to enable Performance Insights for the DB instance.
+   * Whether to enable Performance Insights for the DB cluster.
    *
    * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set.
    */
