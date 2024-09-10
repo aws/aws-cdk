@@ -19,6 +19,7 @@ import {
 import {
   UserPoolAuthenticationProvider,
 } from '../lib/identitypool-user-pool-authentication-provider';
+import { IdentityPoolRoleAttachment } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-identitypool');
@@ -69,6 +70,19 @@ const idPool = new IdentityPool(stack, 'identitypool', {
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
 });
+idPool.addRoleMappings(
+  {
+    mappingKey: 'myKey',
+    providerUrl: IdentityPoolProviderUrl.userPool(userPool, client),
+    rules: [
+      {
+        claim: 'myClaim',
+        claimValue: 'myValue',
+        mappedRole: idPool.authenticatedRole,
+      },
+    ],
+  }
+);
 idPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   effect: Effect.ALLOW,
   actions: ['dynamodb:*'],
@@ -80,4 +94,7 @@ idPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   resources: ['*'],
 }));
 idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
+new IdentityPoolRoleAttachment(stack, 'RoleAttachment', {
+  identityPool: idPool,
+});
 app.synth();
