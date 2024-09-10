@@ -59,14 +59,6 @@
     "@aws-cdk/service-spec-types" "^0.0.90"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@2.153.0":
-  version "2.153.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-2.153.0.tgz#43d86b52f4fd9aa5ad384d30e7001e116917dab2"
-  integrity sha512-m304DL4pIfY7N3qWcXzkpKEUL/kqpOdmPgGvWrx5JDW5/oxT5xByzBiWyNTU3u+IlEcaPXndKI02dUMbVJ3bSA==
-  dependencies:
-    jsonschema "^1.4.1"
-    semver "^7.6.2"
-
 "@aws-cdk/cloud-assembly-schema@^36.0.24":
   version "36.0.24"
   resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-36.0.24.tgz#f6f05615223e800771ca99c88ad631c32b33d642"
@@ -75,10 +67,10 @@
     jsonschema "^1.4.1"
     semver "^7.6.3"
 
-"@aws-cdk/cx-api@2.153.0":
-  version "2.153.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-2.153.0.tgz#3115624a66a0eb4b5409b696916859d851ba856e"
-  integrity sha512-64NWRwjgAHuMQ9FyBmuNDMUUa26vNlhmgXZwccw7iH/8VhfksY8KWlcpWp2hUSSpByoSIBjpF6zngr0/uJmwsw==
+"@aws-cdk/cx-api@^2.157.0":
+  version "2.157.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-2.157.0.tgz#c0721f1d27778dd740c98f12efaf89b105cf89ce"
+  integrity sha512-PRZAbVVPyhcrnNW4tmSKIp8WMxjo9ImSa1K7MAbK8ufafD+KFWGQgxhVIl3bY6WVeZVaduoXRD2gQZwUaDj3XQ==
   dependencies:
     semver "^7.6.2"
 
@@ -7926,10 +7918,26 @@ aws-sdk-mock@5.6.0:
     sinon "^11.1.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1653.0, aws-sdk@^2.1688.0, aws-sdk@^2.928.0:
+aws-sdk@^2.1688.0, aws-sdk@^2.928.0:
   version "2.1688.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1688.0.tgz#9deee720bd82f6a87bc00d0e3297e72ab002aafd"
   integrity sha512-L7AWt2+09uDQQfNRUaxvKEM+qHJdwBOln7xiMZg1kE1iNSGSQlwDPGYSFXwdMJDKJkeitJvhFrDhxon3cQ3ppA==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.6.2"
+
+aws-sdk@^2.1691.0:
+  version "2.1691.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1691.0.tgz#9d6ccdcbae03c806fc62667b76eb3e33e5294dcc"
+  integrity sha512-/F2YC+DlsY3UBM2Bdnh5RLHOPNibS/+IcjUuhP8XuctyrN+MlL+fWDAiela32LTDk7hMy4rx8MTgvbJ+0blO5g==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -8382,15 +8390,15 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-assets@^2.153.0:
-  version "2.153.0"
-  resolved "https://registry.npmjs.org/cdk-assets/-/cdk-assets-2.153.0.tgz#828330cfe8bd3d3aaf9448a29283cfa15dc45daf"
-  integrity sha512-uXPVTvzUlVG9OdOM1B77SRmhzwJod2pW3bMLRiCwKfL5qsiYVYumX/FVa6CveF6GEGa31PVRu12SBzcR5d+qyQ==
+cdk-assets@^2.151.29:
+  version "2.151.29"
+  resolved "https://registry.npmjs.org/cdk-assets/-/cdk-assets-2.151.29.tgz#69f2e2ec618ae1853b9b7962067afc089b5e875e"
+  integrity sha512-Nr7fX4U40vx5Y1wvYvQsTRkSaZ5jHpPjlTgs3FqrFFKLy+JMoi/DESp0TdojV6peAKCV7OQen+jQzhyDK3C55g==
   dependencies:
-    "@aws-cdk/cloud-assembly-schema" "2.153.0"
-    "@aws-cdk/cx-api" "2.153.0"
+    "@aws-cdk/cloud-assembly-schema" "^36.0.24"
+    "@aws-cdk/cx-api" "^2.157.0"
     archiver "^5.3.2"
-    aws-sdk "^2.1653.0"
+    aws-sdk "^2.1691.0"
     glob "^7.2.3"
     mime "^2.6.0"
     yargs "^16.2.0"
@@ -16189,16 +16197,7 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@*, string-width@^1.0.1, "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3, string-width@^5.0.1, string-width@^5.1.2:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@*, string-width@^1.0.1, "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3, string-width@^5.0.1, string-width@^5.1.2:
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -16263,7 +16262,7 @@ stringify-package@^1.0.1:
   resolved "https://registry.npmjs.org/stringify-package/-/stringify-package-1.0.1.tgz#e5aa3643e7f74d0f28628b72f3dad5cecfc3ba85"
   integrity sha512-sa4DUQsYciMP1xhKWGuFM04fB0LG/9DlluZoSVywUMRNvzid6XucHK0/90xGxRoHrAaROrcHK1aPKaijCtSrhg==
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -16276,13 +16275,6 @@ strip-ansi@^3.0.1:
   integrity sha512-VhumSSbBqDTP8p2ZLKj40UjBCV4+v8bUSEpUb4KjRgWk9pbqGF4REFj6KEagidb2f/M6AzC0EmFyDNGaw9OCzg==
   dependencies:
     ansi-regex "^2.0.0"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1, strip-ansi@^7.1.0:
   version "7.1.0"
@@ -17276,7 +17268,7 @@ workerpool@^6.5.1:
   resolved "https://registry.npmjs.org/workerpool/-/workerpool-6.5.1.tgz#060f73b39d0caf97c6db64da004cd01b4c099544"
   integrity sha512-Fs4dNYcsdpYSAfVxhnl1L5zTksjvOJxtC5hzMNl+1t9B8hTJTdKDyZ5ju7ztgPy+ft9tBFXoOlDNiOT9WUXZlA==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -17289,15 +17281,6 @@ wrap-ansi@^6.0.1, wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
