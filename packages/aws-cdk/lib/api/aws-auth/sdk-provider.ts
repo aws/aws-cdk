@@ -369,22 +369,16 @@ export class SdkProvider {
     region: string | undefined) {
     debug(`Assuming role '${roleArn}'.`);
 
-    if (
-      additionalOptions &&
-      additionalOptions.Tags &&
-      additionalOptions.Tags.length > 0 &&
-      additionalOptions.TransitiveTagKeys === undefined
-    ) {
-      additionalOptions.TransitiveTagKeys = additionalOptions.Tags?.map((t) => t.Key);
-    }
-
     region = region ?? this.defaultRegion;
     const creds = new AWS.ChainableTemporaryCredentials({
       params: {
         RoleArn: roleArn,
         ExternalId: externalId,
         RoleSessionName: `aws-cdk-${safeUsername()}`,
-        ...additionalOptions,
+        TransitiveTagKeys: additionalOptions?.Tags
+          ? additionalOptions.Tags.map((t) => t.Key)
+          : undefined,
+        ...(additionalOptions ?? {}),
       },
       stsConfig: {
         region,
