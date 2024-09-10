@@ -8,9 +8,6 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const amplifyApp = new amplify.App(this, 'App', {
-      // basicAuth: amplify.BasicAuth.fromGeneratedPassword('aws'),
-      // autoBranchCreation: {},
-      // platform: amplify.Platform.WEB_COMPUTE,
       cacheConfigType: amplify.CacheConfigType.AMPLIFY_MANAGED_NO_COOKIES,
     });
 
