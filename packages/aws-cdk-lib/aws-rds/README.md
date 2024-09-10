@@ -1242,3 +1242,69 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
 });
 ```
+
+## Performance Insights
+
+You can enable Performance Insights for a clustered database or an instance database.
+
+### Clustered Database
+
+You can enable Performance Insights at cluster level or instance level.
+
+To enable Performance Insights at the cluster level, set the `enablePerformanceInsights` property for the `DatabaseCluster` to `true`.
+If you want to specify the detailed settings, you can use the `performanceInsightRetention` and `performanceInsightEncryptionKey` properties.
+
+The settings are then applied to all instances in the cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  writer: rds.ClusterInstance.provisioned('Writer'),
+  enablePerformanceInsights: true,
+  performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+  performanceInsightEncryptionKey: kmsKey,
+});
+```
+
+To enable Performance Insights at the instance level, set the same properties for each instance of the `writer` and the `readers`.
+
+In this way, different settings can be applied to different instances in a cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    enablePerformanceInsights: true,
+    performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('Reader', {
+      enablePerformanceInsights: true,
+      performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_1,
+    }),
+  ],
+});
+```
+
+### Instance Database
+
+To enable Performance Insights for an instance database, set the `enablePerformanceInsights` property for the `DatabaseInstance` to `true`.
+If you want to specify the detailed settings, you can use the `performanceInsightRetention` and `performanceInsightEncryptionKey` properties.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  enablePerformanceInsights: true,
+  performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+  performanceInsightEncryptionKey: kmsKey,
+});
+```
