@@ -83,7 +83,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
 /**
  * An Origin for a Lambda Function URL with OAC.
  */
-export class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
+class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
   private originAccessControl?: cloudfront.IOriginAccessControl;
   private functionUrl: lambda.IFunctionUrl;
 
