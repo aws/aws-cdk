@@ -85,9 +85,7 @@ describe('FunctionUrlOriginAccessControl', () => {
 
     new cloudfront.Distribution(stack, 'MyDistribution', {
       defaultBehavior: {
-        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
-          originAccessControl: undefined,
-        }),
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {}),
       },
     });
 
