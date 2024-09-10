@@ -631,7 +631,7 @@ taskDefinition.addContainer('container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   enableRestartPolicy: true,
   restartIgnoredExitCodes: [0, 127],
-  restartAttemptPeriod: cdk.Duration.seconds(360),
+  restartAttemptPeriod: Duration.seconds(360),
 });
 ```
 
