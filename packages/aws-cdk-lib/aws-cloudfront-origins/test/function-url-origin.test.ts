@@ -6,9 +6,11 @@ import * as cdk from '../../core';
 import { FunctionUrlOrigin } from '../lib';
 
 let stack: Stack;
+let otherStack: Stack;
 
 beforeEach(() => {
   stack = new Stack();
+  otherStack = new Stack();
 });
 
 test('Correctly renders the origin for a Lambda Function URL', () => {
@@ -253,6 +255,43 @@ describe('FunctionUrlOriginAccessControl', () => {
         OriginAccessControlOriginType: 'lambda',
         SigningBehavior: 'always',
         SigningProtocol: 'sigv4',
+      },
+    });
+  });
+
+  test('Correctly adds permission for an imported Lambda Function', () => {
+    const importedFn = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function:my-imported-fn');
+
+    const fnUrl = importedFn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {}),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunctionUrl',
+      FunctionName: {
+        'Fn::GetAtt': ['ImportedFunctionFunctionUrlB3FF8A17', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
       },
     });
   });
