@@ -1363,7 +1363,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),

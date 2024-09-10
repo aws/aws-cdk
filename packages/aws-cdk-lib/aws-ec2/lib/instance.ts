@@ -177,7 +177,7 @@ export interface InstanceProps {
    * UserData, which will cause CloudFormation to replace it if the UserData
    * changes.
    *
-   * @default - true iff `initOptions` is specified, false otherwise.
+   * @default - true if `initOptions` is specified, false otherwise.
    */
   readonly userDataCausesReplacement?: boolean;
 

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.157.0](https://github.com/aws/aws-cdk/compare/v2.156.0...v2.157.0) (2024-09-09)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#31361](https://github.com/aws/aws-cdk/issues/31361)) ([bc4dbfd](https://github.com/aws/aws-cdk/commit/bc4dbfdb05a1fe02d30c4724958d09f239a3656f))
+* **appsync:** support DEBUG and INFO logging levels for AppSync GraphQL APIs ([#31326](https://github.com/aws/aws-cdk/issues/31326)) ([4b9643f](https://github.com/aws/aws-cdk/commit/4b9643f28edc2c530809931ccd7a17a811891af2))
+* **lambda:** added new property allowAllIpv6Outbound to FunctionOptions ([#31013](https://github.com/aws/aws-cdk/issues/31013)) ([fa55194](https://github.com/aws/aws-cdk/commit/fa55194698960b9161590e05cf1138a813315615)), closes [#30994](https://github.com/aws/aws-cdk/issues/30994) [/github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-ec2/lib/security-group.ts#L272](https://github.com/aws//github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-ec2/lib/security-group.ts/issues/L272) [/github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts#L146C18-L146C33](https://github.com/aws//github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts/issues/L146C18-L146C33) [/github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts#L296C12-L296C28](https://github.com/aws//github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts/issues/L296C12-L296C28) [/github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts#L1464C11-L1464C23](https://github.com/aws//github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts/issues/L1464C11-L1464C23) [/github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts#L1503](https://github.com/aws//github.com/aws/aws-cdk/blob/9295a85a8fb893d7f5eae06108b68df864096c4c/packages/aws-cdk-lib/aws-lambda/lib/function.ts/issues/L1503)
+
+
+### Bug Fixes
+
+* **rds:** proxy target group does not depend on database instances when using writer property for database cluster ([#31354](https://github.com/aws/aws-cdk/issues/31354)) ([6542207](https://github.com/aws/aws-cdk/commit/65422077123fa5870106e29594b8f0392484da3f)), closes [#31304](https://github.com/aws/aws-cdk/issues/31304) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-rds/lib/proxy.ts#L535-L539](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-rds/lib/proxy.ts/issues/L535-L539)
+
 ## [2.156.0](https://github.com/aws/aws-cdk/compare/v2.155.0...v2.156.0) (2024-09-05)
 
 
@@ -15,7 +29,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **eks:** support alb controller versions 2.7.0-2.8.2 ([#31264](https://github.com/aws/aws-cdk/issues/31264)) ([a3863a6](https://github.com/aws/aws-cdk/commit/a3863a6b5607dd462b3774f01f21d9dea4fd15d5))
 * **events-targets:** support for `RedshiftDataParameters` ([#29462](https://github.com/aws/aws-cdk/issues/29462)) ([84c6442](https://github.com/aws/aws-cdk/commit/84c6442d6a4253472df1fee5589f154590bae182)), closes [#15712](https://github.com/aws/aws-cdk/issues/15712) [#31017](https://github.com/aws/aws-cdk/issues/31017)
 * **synthetics:** syn-nodejs-puppeteer-9.0 as supported runtime ([#31272](https://github.com/aws/aws-cdk/issues/31272)) ([c1d7782](https://github.com/aws/aws-cdk/commit/c1d778254346aea444ae844a17d0cab296cce4bb)), closes [#31271](https://github.com/aws/aws-cdk/issues/31271)
-
+* **custom-resources:** update python runtime for custom resources  ([#31166](https://github.com/aws/aws-cdk/pull/31166)) ([03ebca8](https://github.com/aws/aws-cdk/commit/03ebca8a9768b6415e6942893e0310ac412d4b80)), closes [#31245](https://github.com/aws/aws-cdk/issues/31245)
 
 ### Bug Fixes
 

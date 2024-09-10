@@ -151,7 +151,7 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
 /**
  * Replace all references to the given logicalID on the given template, in-place
  *
- * Returns true iff any references were replaced.
+ * Returns true if any references were replaced.
  */
 function propagateReplacedReferences(template: object, logicalId: string): boolean {
   let ret = false;

@@ -255,7 +255,7 @@ export class NoticeFilter {
   }
 
   /**
-   * Returns true iff we should show this notice.
+   * Returns true if we should show this notice.
    */
   apply(notice: Notice): boolean {
     if (this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
@@ -267,7 +267,7 @@ export class NoticeFilter {
   }
 
   /**
-   * Returns true iff we should show the notice.
+   * Returns true if we should show the notice.
    */
   private applyVersion(notice: Notice, name: string, compareToVersion: string | undefined) {
     if (compareToVersion === undefined) { return false; }

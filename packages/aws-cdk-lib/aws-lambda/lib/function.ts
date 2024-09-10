@@ -294,7 +294,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Whether to allow the Lambda to send all network traffic
+   * Whether to allow the Lambda to send all network traffic (except ipv6)
    *
    * If set to false, you must individually add traffic rules to allow the
    * Lambda to connect to network targets.
@@ -305,6 +305,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether to allow the Lambda to send all ipv6 network traffic
+   *
+   * If set to true, there will only be a single egress rule which allows all
+   * outbound ipv6 traffic. If set to false, you must individually add traffic rules to allow the
+   * Lambda to connect to network targets using ipv6.
+   *
+   * Do not specify this property if the `securityGroups` or `securityGroup` property is set.
+   * Instead, configure `allowAllIpv6Outbound` directly on the security group.
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
 
   /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
@@ -1515,6 +1529,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.ipv6AllowedForDualStack) {
         throw new Error('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC');
       }
+      if (props.allowAllIpv6Outbound !== undefined) {
+        throw new Error('Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC');
+      }
       return undefined;
     }
 
@@ -1527,6 +1544,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
     }
 
+    if (props.allowAllIpv6Outbound !== undefined) {
+      if (props.securityGroup) {
+        throw new Error('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup.');
+      }
+      if (hasSecurityGroups) {
+        throw new Error('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups.');
+      }
+    }
+
     let securityGroups: ec2.ISecurityGroup[];
 
     if (hasSecurityGroups) {
@@ -1536,6 +1562,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         vpc: props.vpc,
         description: 'Automatic security group for Lambda Function ' + Names.uniqueId(this),
         allowAllOutbound: props.allowAllOutbound,
+        allowAllIpv6Outbound: props.allowAllIpv6Outbound,
       });
       securityGroups = [securityGroup];
     }

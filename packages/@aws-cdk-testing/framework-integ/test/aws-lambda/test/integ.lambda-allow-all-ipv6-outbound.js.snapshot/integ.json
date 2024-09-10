@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "lambda-allow-all-ipv6-outbound/DefaultTest": {
+      "stacks": [
+        "LambdaAllowAllIpv6Outbound"
+      ],
+      "assertionStack": "lambda-allow-all-ipv6-outbound/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaallowallipv6outboundDefaultTestDeployAssert52B7EB97"
+    }
+  }
+}
