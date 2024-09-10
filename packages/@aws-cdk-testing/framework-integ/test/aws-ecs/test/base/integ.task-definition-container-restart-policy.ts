@@ -5,7 +5,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-task-definition-container-restart-policy');
 
-const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {});
+const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {});
 
 taskDefinition.addContainer('Container', {
   image: ecs.ContainerImage.fromRegistry('public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest'),

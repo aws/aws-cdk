@@ -1536,7 +1536,7 @@ function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinitio
   }));
 }
 
-function renderRestartPolicy(restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration): CfnTaskDefinition.RestartPolicy {
+function renderRestartPolicy(restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration): CfnTaskDefinition.RestartPolicyProperty {
   if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
     throw new Error(`Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`);
   }
@@ -1544,8 +1544,8 @@ function renderRestartPolicy(restartIgnoredExitCodes?: number[], restartAttemptP
     throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`);
   }
   return {
-    Enabled: true,
-    IgnoredExitCodes: restartIgnoredExitCodes,
-    RestartAttemptPeriod: restartAttemptPeriod?.toSeconds(),
+    enabled: true,
+    ignoredExitCodes: restartIgnoredExitCodes,
+    restartAttemptPeriod: restartAttemptPeriod?.toSeconds(),
   };
 }
