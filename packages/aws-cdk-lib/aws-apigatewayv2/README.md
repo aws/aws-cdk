@@ -93,6 +93,15 @@ new apigwv2.HttpApi(this, 'HttpProxyApi', {
 });
 ```
 
+The `routeSelectionExpression` option can be configured.
+In the HTTP API, only the value `$request.method $request.path` is allowed, and it can be configured by enabling `routeSelectionExpression`.
+
+```ts
+new apigwv2.HttpApi(this, 'HttpProxyApi', {
+  routeSelectionExpression: true,
+});
+```
+
 ### Cross Origin Resource Sharing (CORS)
 
 [Cross-origin resource sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a browser security
