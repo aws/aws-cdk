@@ -25,12 +25,12 @@ export interface UserPoolIdentityProviderAppleProps extends UserPoolIdentityProv
    * The privateKey content for Apple APIs to authenticate the client.
    *
    * @deprecated use privateKeyValue
-   * @default undefined
+   * @default none
    */
   readonly privateKey?: string;
   /**
    * The privateKey content for Apple APIs to authenticate the client.
-   * @default undefined
+   * @default none
    */
   readonly privateKeyValue?: SecretValue;
   /**
