@@ -428,13 +428,13 @@ class SessionTagsStack extends cdk.Stack {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
         deployRoleAdditionalOptions: {
-          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
         fileAssetPublishingRoleAdditionalOptions: {
-          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
         imageAssetPublishingRoleAdditionalOptions: {
-          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
       })
     });
@@ -469,7 +469,7 @@ class SessionTagsWithNoExecutionRoleCustomSynthesizerStack extends cdk.Stack {
       ...props,
       synthesizer: new NoExecutionRoleCustomSynthesizer({
         deployRoleAdditionalOptions: {
-          Tags: [{ Key: 'Departement', Value: 'Engineering' }]
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
       })
     });
