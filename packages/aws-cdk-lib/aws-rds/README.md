@@ -1292,6 +1292,8 @@ new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
+If Performance Insights is enabled at the cluster level, it cannot be specified at the instance level.
+
 ### Instance Database
 
 To enable Performance Insights for an instance database, set the `enablePerformanceInsights` property for the `DatabaseInstance` to `true`.
@@ -1308,3 +1310,13 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   performanceInsightEncryptionKey: kmsKey,
 });
 ```
+
+### Supported Engines
+
+Performance Insights supports a limited number of engines.
+
+To see Amazon RDS DB engines that support Performance Insights, see [Amazon RDS DB engine, Region, and instance class support for Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.Engines.html).
+
+To see Amazon Aurora DB engines that support Performance Insights, see [Amazon Aurora DB engine, Region, and instance class support for Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.Engines.html).
+
+For more information about Performance Insights, see [Monitoring DB load with Performance Insights on Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html).
