@@ -637,6 +637,34 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
+class AppSyncHotswapStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const api = new appsync.GraphqlApi(this, "Api", {
+      name: "appsync-hotswap",
+      definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.hotswap.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.IAM,
+        },
+      },
+    });
+
+    const noneDataSource = api.addNoneDataSource("none");
+    // create 50 appsync functions to hotswap
+    for (const i of Array(50).keys()) {
+      const appsyncFunction = new appsync.AppsyncFunction(this, `Function${i}`, {
+        name: `appsync_function${i}`,
+        api,
+        dataSource: noneDataSource,
+        requestMappingTemplate: appsync.MappingTemplate.fromString(process.env.DYNAMIC_APPSYNC_PROPERTY_VALUE ?? "$util.toJson({})"),
+        responseMappingTemplate: appsync.MappingTemplate.fromString('$util.toJson({})'),
+      });
+    }
+  }
+}
+
 const app = new cdk.App({
   context: {
     '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
@@ -674,6 +702,7 @@ switch (stackSet) {
     new LambdaStack(app, `${stackPrefix}-lambda`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
+    new AppSyncHotswapStack(app, `${stackPrefix}-appsync-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
