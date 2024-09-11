@@ -33,6 +33,7 @@ import {
   withCDKMigrateFixture,
   withExtendedTimeoutFixture,
   randomString,
+  withSpecificFixture,
 } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -2198,5 +2199,51 @@ integTest(
     const noticesUnacknowledgedAlias = await fixture.cdk(['notices', '-u'], { verbose: false });
     expect(noticesUnacknowledged).toEqual(expect.stringMatching(/There are \d{1,} unacknowledged notice\(s\)./));
     expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
+  }),
+);
+
+integTest(
+  'test cdk rollback',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      if (!deployOutput.includes('UPDATE_FAILED')) {
+        throw new Error(`Expected output to contain UPDATE_FAILED, got: ${deployOutput}`);
+      }
+
+      // Should still fail
+      const rollbackOutput = await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      if (!rollbackOutput.includes('Failing rollback')) {
+        throw new Error(`Expected output to contain "Failing rollback", got: ${rollbackOutput}`);
+      }
+
+      // Rollback and force cleanup
+      await fixture.cdk(['rollback', '--force'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
   }),
 );
