@@ -2,6 +2,7 @@ import { Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import { CfnParameter, Stack } from '../../core';
 import { UserPool, UserPoolDomain } from '../lib';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('User Pool Domain', () => {
   test('custom domain name', () => {
@@ -103,7 +104,7 @@ describe('User Pool Domain', () => {
     })).not.toThrow();
   });
 
-  test('custom resource is added when cloudFrontDomainName property is used', () => {
+  testDeprecated('custom resource is added when cloudFrontDomainName property is used', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
@@ -137,7 +138,7 @@ describe('User Pool Domain', () => {
     });
   });
 
-  test('cloudFrontDomainName property can be called multiple times', () => {
+  testDeprecated('cloudFrontDomainName property can be called multiple times', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
     const domain = pool.addDomain('Domain', {
@@ -161,12 +162,12 @@ describe('User Pool Domain', () => {
       },
     });
 
-    const cfDomainNameFirst = domain.cloudFrontEndpoint;
+    const cloudFrontEndpoint = domain.cloudFrontEndpoint;
 
-    expect(stack.resolve(cfDomainNameFirst)).toEqual({
+    expect(stack.resolve(cloudFrontEndpoint)).toEqual({
       'Fn::GetAtt': [
-        'PoolDomainCloudFrontDomainName340BF87E',
-        'DomainDescription.CloudFrontDistribution',
+        'PoolDomainCFC71F56',
+        'CloudFrontDistribution',
       ],
     });
   });
