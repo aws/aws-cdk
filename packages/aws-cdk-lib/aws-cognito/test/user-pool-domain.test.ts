@@ -1,8 +1,8 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import { CfnParameter, Stack } from '../../core';
 import { UserPool, UserPoolDomain } from '../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 describe('User Pool Domain', () => {
   test('custom domain name', () => {
