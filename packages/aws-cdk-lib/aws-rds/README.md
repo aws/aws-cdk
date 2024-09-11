@@ -476,14 +476,14 @@ to use for the instance:
 declare const vpc: ec2.Vpc;
 
 const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   storageType: rds.StorageType.IO1,
   iops: 5000,
 });
 
 const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   allocatedStorage: 500,
   storageType: rds.StorageType.GP3,
@@ -499,7 +499,7 @@ declare const vpc: ec2.Vpc;
 
 // Setting allocatedStorage for DatabaseInstance
 const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   storageType: rds.StorageType.IO1,
   iops: 5000,
@@ -525,7 +525,7 @@ to use for the instance:
 declare const vpc: ec2.Vpc;
 
 new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   caCertificate: rds.CaCertificate.RDS_CA_RSA2048_G1,
 });
@@ -537,7 +537,7 @@ You can specify a custom CA certificate with:
 declare const vpc: ec2.Vpc;
 
 new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   caCertificate: rds.CaCertificate.of('future-rds-ca'),
 });
@@ -1262,10 +1262,12 @@ declare const kmsKey: kms.Key;
 new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.AURORA,
   vpc: vpc,
-  writer: rds.ClusterInstance.provisioned('Writer'),
   enablePerformanceInsights: true,
   performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
   performanceInsightEncryptionKey: kmsKey,
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  }),
 });
 ```
 
@@ -1280,11 +1282,14 @@ new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.AURORA,
   vpc: vpc,
   writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
     enablePerformanceInsights: true,
     performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+    performanceInsightEncryptionKey: kmsKey,
   }),
   readers: [
     rds.ClusterInstance.provisioned('Reader', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
       enablePerformanceInsights: true,
       performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_1,
     }),
@@ -1303,7 +1308,8 @@ If you want to specify the detailed settings, you can use the `performanceInsigh
 declare const vpc: ec2.Vpc;
 declare const kmsKey: kms.Key;
 const instance = new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
   vpc,
   enablePerformanceInsights: true,
   performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
