@@ -8,7 +8,7 @@ import { ISubnetV2 } from './subnet-v2';
 /**
  * Options to define EgressOnlyInternetGateway for VPC
  */
-export interface EgressOnlyInternetGatewayOptions{
+export interface EgressOnlyInternetGatewayOptions {
   /**
    * List of subnets where route to EGW will be added
    *
@@ -389,7 +389,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     this._internetConnectivityEstablished.add(igw);
     this._internetGatewayId = igw.routerTargetId;
 
-    //If there are no public subnets defined, no default route will be added
+    // If there are no public subnets defined, no default route will be added
     if (this.publicSubnets) {
       this.publicSubnets.forEach( (s) => this.addDefaultInternetRoute(s, igw, options));
     }
@@ -405,7 +405,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       throw new Error('No public subnets defined to add route for internet gateway');
     }
 
-    //Add deffault route to IGW for IPv6
+    // Add default route to IGW for IPv6
     if (subnet.ipv6CidrBlock) {
       new Route(this, `${subnet.node.id}-DefaultIPv6Route`, {
         routeTable: subnet.routeTable,
