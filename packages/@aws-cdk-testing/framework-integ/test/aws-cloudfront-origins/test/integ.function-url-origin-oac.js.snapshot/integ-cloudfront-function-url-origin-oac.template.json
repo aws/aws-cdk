@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyFunctionServiceRole3C357FF2"
@@ -162,6 +162,16 @@
       }
      ]
     }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDistribution830FAC524DF81588": {
+   "Value": {
+    "Ref": "Distribution830FAC52"
+   },
+   "Export": {
+    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
    }
   }
  },
