@@ -52,7 +52,7 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
 
     const scopes = props.scopes ?? ['name'];
 
-    //at least one of the properties must be configured
+    // Exactly one of the properties must be configured
     if ((!props.privateKey && !props.privateKeyValue) ||
       (props.privateKey && props.privateKeyValue)) {
       throw new Error('Exactly one of "privateKey" or "privateKeyValue" must be configured.');
