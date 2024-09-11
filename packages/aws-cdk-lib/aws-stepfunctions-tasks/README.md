@@ -398,6 +398,64 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },
 });
+
+```
+### Using Input Path for S3 URI
+
+Provide S3 URI as an input or output path to invoke a model
+
+To specify the S3 URI as JSON path to your input or output fields, use props `s3InputUri` and `s3OutputUri` under BedrockInvokeModelProps and set 
+feature flag `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask` to true.
+
+
+If this flag is not enabled, the code will populate the S3Uri using `InputPath` and `OutputPath` fields, which is not recommended.
+
+```ts
+
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  input : { s3InputUri: sfn.JsonPath.stringAt('$.prompt') },
+  output: { s3OutputUri: sfn.JsonPath.stringAt('$.prompt') },
+});
+
+```
+
+### Using Input Path
+
+Provide S3 URI as an input or output path to invoke a model
+
+Currently, input and output Path provided in the BedrockInvokeModelProps input is defined as S3URI field under task definition of state machine.
+To modify the existing behaviour, set `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask` to true. 
+
+If this feature flag is enabled, S3URI fields will be generated from other Props(`s3InputUri` and `s3OutputUri`), and the given inputPath, OutputPath will be rendered as 
+it is in the JSON task definition.
+
+If the feature flag is set to `false`, the behavior will be to populate the S3Uri using the `InputPath` and `OutputPath` fields, which is not recommended.
+
+```ts
+
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  inputPath: sfn.JsonPath.stringAt('$.prompt'),
+  outputPath: sfn.JsonPath.stringAt('$.prompt'),
+});
+
 ```
 
 You can apply a guardrail to the invocation by setting `guardrail`.
@@ -1305,7 +1363,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),

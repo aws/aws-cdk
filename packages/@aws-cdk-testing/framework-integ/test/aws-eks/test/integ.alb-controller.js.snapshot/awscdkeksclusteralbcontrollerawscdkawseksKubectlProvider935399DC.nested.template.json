@@ -28,7 +28,7 @@
     "Role": {
      "Ref": "referencetoawscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn"
     },
-    "Runtime": "python3.10",
+    "Runtime": "python3.11",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
