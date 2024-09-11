@@ -429,8 +429,6 @@ export class CdkToolkit {
       throw new Error('There was an error deploying (see above for details)');
     }
   }
-    }
-  }
 
   public async watch(options: WatchOptions) {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
