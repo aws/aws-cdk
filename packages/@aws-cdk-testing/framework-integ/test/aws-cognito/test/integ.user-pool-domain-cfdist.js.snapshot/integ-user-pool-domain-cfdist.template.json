@@ -61,7 +61,7 @@
        {
         "Ref": "UserPoolDomainD0EA232A"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -77,7 +77,7 @@
        {
         "Ref": "UserPoolDomainD0EA232A"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },

@@ -7,7 +7,7 @@ import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from 'aws-cdk-lib/cx-api'
  * * Verify that the CloudFrontDistribution stack output is of the format 'xxxxxxxxxxxxxx.cloudfront.net'
  */
 
-const app = new App({ postCliContext: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true } });
+const app = new App({ postCliContext: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: false } });
 const stack = new Stack(app, 'integ-user-pool-domain-cfdist');
 
 const userpool = new UserPool(stack, 'UserPool', {
