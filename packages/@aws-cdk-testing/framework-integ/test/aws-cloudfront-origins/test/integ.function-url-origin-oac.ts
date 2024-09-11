@@ -12,7 +12,7 @@ const stack = new cdk.Stack(app, 'integ-cloudfront-function-url-origin-oac');
 const fn = new lambda.Function(stack, 'MyFunction', {
   code: lambda.Code.fromInline('exports.handler = async () => {};'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_LATEST,
+  runtime: lambda.Runtime.NODEJS_20_X,
 });
 
 // Add a Lambda Function URL
