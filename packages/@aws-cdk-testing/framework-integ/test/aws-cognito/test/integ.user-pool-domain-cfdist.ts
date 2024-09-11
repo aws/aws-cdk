@@ -8,7 +8,7 @@ import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from 'aws-cdk-lib/cx-api'
  */
 
 const app = new App({
-  context: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: false },
+  context: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true },
 });
 const stack = new Stack(app, 'integ-user-pool-domain-cfdist');
 
