@@ -153,7 +153,7 @@ describe('User Pool Domain', () => {
     expect(cfDomainNameSecond).toEqual(cfDomainNameFirst);
   });
 
-  test('cloudFrontEndpoint property can be called', () => {
+  test('cloudFrontEndpoint property can be called without custom resource', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
     const domain = pool.addDomain('Domain', {
@@ -170,6 +170,8 @@ describe('User Pool Domain', () => {
         'CloudFrontDistribution',
       ],
     });
+
+    Template.fromStack(stack).resourceCountIs('Custom::UserPoolCloudFrontDomainName', 0);
   });
 
   test('import', () => {
