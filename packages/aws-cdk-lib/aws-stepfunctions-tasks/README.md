@@ -23,7 +23,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [API Gateway](#api-gateway)
     - [Call REST API Endpoint](#call-rest-api-endpoint)
     - [Call HTTP API Endpoint](#call-http-api-endpoint)
-    - [AWS SDK](#aws-sdk)
+  - [AWS SDK](#aws-sdk)
+    - [Cross-region AWS API call](#cross-region-aws-api-call)
   - [Athena](#athena)
     - [StartQueryExecution](#startqueryexecution)
     - [GetQueryExecution](#getqueryexecution)
@@ -188,7 +189,7 @@ const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API'
 });
 ```
 
-### AWS SDK
+## AWS SDK
 
 Step Functions supports calling [AWS service's API actions](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html)
 through the service integration pattern.
@@ -244,6 +245,26 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
 });
 ```
 
+### Cross-region AWS API call
+
+You can call AWS API in a different region from your state machine by using the `CallAwsServiceCrossRegion` construct. In addition to the properties for `CallAwsService` construct, you have to set `region` property to call the API.
+
+```ts
+declare const myBucket: s3.Bucket;
+const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
+  region: 'ap-northeast-1',
+  service: 's3',
+  action: 'getObject',
+  parameters: {
+    Bucket: myBucket.bucketName,
+    Key: sfn.JsonPath.stringAt('$.key')
+  },
+  iamResources: [myBucket.arnForObjects('*')],
+});
+```
+
+Other properties such as `additionalIamStatements` can be used in the same way as the `CallAwsService` task.
+
 ## Athena
 
 Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
@@ -268,6 +289,28 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
     },
   },
   executionParameters: ['param1', 'param2'],
+});
+```
+
+You can reuse the query results by setting the `resultReuseConfigurationMaxAge` property.
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start Athena Query', {
+  queryString: sfn.JsonPath.stringAt('$.queryString'),
+  queryExecutionContext: {
+    databaseName: 'mydatabase',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'query-results-bucket',
+      objectKey: 'folder',
+    },
+  },
+  executionParameters: ['param1', 'param2'],
+  resultReuseConfigurationMaxAge: Duration.minutes(100),
 });
 ```
 
@@ -351,6 +394,93 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
       },
     },
   ),
+  resultSelector: {
+    names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+});
+
+```
+### Using Input Path for S3 URI
+
+Provide S3 URI as an input or output path to invoke a model
+
+To specify the S3 URI as JSON path to your input or output fields, use props `s3InputUri` and `s3OutputUri` under BedrockInvokeModelProps and set 
+feature flag `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask` to true.
+
+
+If this flag is not enabled, the code will populate the S3Uri using `InputPath` and `OutputPath` fields, which is not recommended.
+
+```ts
+
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  input : { s3InputUri: sfn.JsonPath.stringAt('$.prompt') },
+  output: { s3OutputUri: sfn.JsonPath.stringAt('$.prompt') },
+});
+
+```
+
+### Using Input Path
+
+Provide S3 URI as an input or output path to invoke a model
+
+Currently, input and output Path provided in the BedrockInvokeModelProps input is defined as S3URI field under task definition of state machine.
+To modify the existing behaviour, set `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask` to true. 
+
+If this feature flag is enabled, S3URI fields will be generated from other Props(`s3InputUri` and `s3OutputUri`), and the given inputPath, OutputPath will be rendered as 
+it is in the JSON task definition.
+
+If the feature flag is set to `false`, the behavior will be to populate the S3Uri using the `InputPath` and `OutputPath` fields, which is not recommended.
+
+```ts
+
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  inputPath: sfn.JsonPath.stringAt('$.prompt'),
+  outputPath: sfn.JsonPath.stringAt('$.prompt'),
+});
+
+```
+
+You can apply a guardrail to the invocation by setting `guardrail`.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'Generate a list of five first names.',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  guardrail: tasks.Guardrail.enable('guardrailId', 1),
   resultSelector: {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },
@@ -607,6 +737,39 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
   propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
+
+#### Override CPU and Memory Parameter
+
+By setting the property cpu or memoryMiB, you can override the Fargate or EC2 task instance size at runtime.
+
+see: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+const cluster = new ecs.Cluster(this, 'ECSCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  compatibility: ecs.Compatibility.FARGATE,
+  cpu: '256',
+  memoryMiB: '512'
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+});
+
+const runTask = new tasks.EcsRunTask(this, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
+  cpu: '1024',
+  memoryMiB: '1048'
+});
+```
+
 
 #### ECS enable Exec
 
@@ -1142,6 +1305,15 @@ new tasks.GlueStartJobRun(this, 'Task', {
 });
 ```
 
+You can choose the execution class by setting the `executionClass` property.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  executionClass: tasks.ExecutionClass.FLEX,
+});
+```
+
 ### StartCrawlerRun
 
 You can call the [`StartCrawler`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-StartCrawler) API from a `Task` state through AWS SDK service integrations.
@@ -1191,7 +1363,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),
@@ -1309,13 +1481,13 @@ Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-func
 
 ### CreateJob
 
-The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job. 
+The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
 For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
 
-You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`. 
+You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
 
-Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) & 
-[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer 
+Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) &
+[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer
 [CreateJobRequest](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-model-createjobrequest) for all other optional parameters.
 
 ```ts

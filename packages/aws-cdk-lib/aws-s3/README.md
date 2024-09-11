@@ -225,6 +225,10 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
+Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
+permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+are not allowed in the bucket name.
+
 ```ts
 declare const myLambda: lambda.Function;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
@@ -301,6 +305,16 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
   bucketArn: 'arn:aws:s3:::my-bucket',
 });
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
+```
+
+If you do not want for S3 to validate permissions of Amazon SQS, Amazon SNS, and Lambda destinations you can use the `notificationsSkipDestinationValidation` flag:
+
+```ts
+declare const myQueue: sqs.Queue;
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  notificationsSkipDestinationValidation: true,
+});
+bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SqsDestination(myQueue));
 ```
 
 When you add an event notification to a bucket, a custom resource is created to

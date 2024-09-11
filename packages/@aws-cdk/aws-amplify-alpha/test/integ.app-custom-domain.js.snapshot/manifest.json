@@ -1,0 +1,158 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "cdk-amplify-app-custom-domain.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-amplify-app-custom-domain.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-amplify-app-custom-domain": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-amplify-app-custom-domain.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5314d52dac3409b06902f1cf40df3d58dceb16146ad8cf66843edee0096d1d87.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-amplify-app-custom-domain.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-amplify-app-custom-domain.assets"
+      ],
+      "metadata": {
+        "/cdk-amplify-app-custom-domain/Repo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Repo02AC86CF"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/App/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRole1AF9B530"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/App/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRoleDefaultPolicy9CADBAA1"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/App/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppF1B96344"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/App/main/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppmainF505BAED"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/App/dev/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppdevB328DAFC"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/App/*.example.com/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Appexamplecom6AF1A3AD"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/Certificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-amplify-app-custom-domain/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-amplify-app-custom-domain"
+    },
+    "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.assets"
+      ],
+      "metadata": {
+        "/amplify-app-custom-domain-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/amplify-app-custom-domain-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "amplify-app-custom-domain-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

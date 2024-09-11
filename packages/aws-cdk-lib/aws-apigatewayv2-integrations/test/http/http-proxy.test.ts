@@ -1,7 +1,7 @@
-import { HttpUrlIntegration } from './../../lib/http/http-proxy';
-import { Stack } from '../../..';
 import { Template } from '../../../assertions';
 import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
+import { Duration, Stack } from '../../../core';
+import { HttpUrlIntegration } from './../../lib/http/http-proxy';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {
@@ -21,17 +21,28 @@ describe('HttpProxyIntegration', () => {
     });
   });
 
-  test('method option is correctly recognized', () => {
+  test('additional props are correctly set', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyRoute', {
       httpApi: api,
-      integration: new HttpUrlIntegration('Integration', 'some-target-url', { method: HttpMethod.PATCH }),
+      integration: new HttpUrlIntegration('Integration', 'some-target-url', {
+        method: HttpMethod.PATCH,
+        parameterMapping: new ParameterMapping()
+          .appendHeader('header2', MappingValue.requestHeader('header1'))
+          .removeHeader('header1'),
+        timeout: Duration.seconds(20),
+      }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationMethod: 'PATCH',
+      RequestParameters: {
+        'append:header.header2': '$request.header.header1',
+        'remove:header.header1': '',
+      },
+      TimeoutInMillis: 20000,
     });
   });
 
