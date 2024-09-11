@@ -73,6 +73,7 @@ Flags come in three types:
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | V2NEXT | (fix) |
+| [@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName](#aws-cdkaws-route53-targetsusenewmethodforuserpooldomaindnsname) | When enabled, use a new method for DNS Name of user pool domain target. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -135,7 +136,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
-    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": true
+    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": true,
+    "@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName": true
   }
 }
 ```
@@ -1375,5 +1377,22 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 | V2NEXT | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
+
+
+### @aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName
+
+*When enabled, use a new method for DNS Name of user pool domain target.* (fix)
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
 
 <!-- END details -->

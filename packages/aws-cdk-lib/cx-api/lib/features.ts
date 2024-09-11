@@ -107,6 +107,7 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const USE_NEW_METHOD_FOR_USER_POOL_DOMAIN_DNS_NAME = '@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1125,6 +1126,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_NEW_METHOD_FOR_USER_POOL_DOMAIN_DNS_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, use a new method for DNS Name of user pool domain target.',
+    detailsMd: `
+    When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+    creates a custom resource internally, but the new method doesn't need a custom resource.
+
+    If the flag is set to false then a custom resource will be created when using \`UserPoolDomainTarget\`.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "userpool-domain-alias-target-integ/DefaultTest": {
+      "stacks": [
+        "userpool-domain-alias-target"
+      ],
+      "assertionStack": "userpool-domain-alias-target-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "userpooldomainaliastargetintegDefaultTestDeployAssert300E1214"
+    }
+  }
+}
