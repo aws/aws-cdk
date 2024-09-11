@@ -923,7 +923,7 @@
                         "dbClusterIdentifier": {
                           "Ref": "DatabaseB269D8BB"
                         },
-                        "dbInstanceClass": "db.t3.medium",
+                        "dbInstanceClass": "db.r7g.large",
                         "engine": "aurora-mysql",
                         "promotionTier": 0
                       }
@@ -952,7 +952,7 @@
                         "dbClusterIdentifier": {
                           "Ref": "DatabaseB269D8BB"
                         },
-                        "dbInstanceClass": "db.t3.medium",
+                        "dbInstanceClass": "db.r7g.large",
                         "engine": "aurora-mysql",
                         "promotionTier": 2
                       }

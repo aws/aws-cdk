@@ -1,7 +1,7 @@
 {
-  "version": "36.0.5",
+  "version": "36.0.24",
   "files": {
-    "33f552b8f5bd0097c0564cffc56739351a6fecb450b6ed11158b4fb0571cf1bb": {
+    "e7bac5e168de01dddc4e1a60af680c5e433c25b20942fe704cf35f08f37031f4": {
       "source": {
         "path": "aws-cdk-rds-integ-cluster-performance-insights.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "33f552b8f5bd0097c0564cffc56739351a6fecb450b6ed11158b4fb0571cf1bb.json",
+          "objectKey": "e7bac5e168de01dddc4e1a60af680c5e433c25b20942fe704cf35f08f37031f4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

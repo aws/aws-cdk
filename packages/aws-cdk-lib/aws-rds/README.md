@@ -1254,8 +1254,8 @@ You can enable Performance Insights at cluster level or instance level.
 To enable Performance Insights at the cluster level, set the `enablePerformanceInsights` property for the `DatabaseCluster` to `true`.
 If you want to specify the detailed settings, you can use the `performanceInsightRetention` and `performanceInsightEncryptionKey` properties.
 
-The settings are then applied to all instances in the cluster. If Performance Insights is enabled at the cluster level, it cannot be specified
-at the instance level.
+The settings are then applied to all instances in the cluster. If Performance Insights is enabled at the cluster level, it is not possible to
+specify a different value for the instance level than the cluster level.
 
 ```ts
 declare const vpc: ec2.Vpc;
