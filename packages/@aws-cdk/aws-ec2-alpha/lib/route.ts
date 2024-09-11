@@ -377,7 +377,7 @@ export class NatGateway extends Resource implements IRouteTarget {
 
     // If user does not provide EIP, generate one for them
     var aId: string | undefined;
-    if (this.connectivityType == NatConnectivityType.PUBLIC) {
+    if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.allocationId) {
         let eip = new CfnEIP(this, 'EIP', {
           domain: props.vpc?.vpcId,
