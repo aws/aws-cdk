@@ -69,8 +69,8 @@ import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
-import { flatten } from '../lib/util';
 import { Configuration } from '../lib/settings';
+import { flatten } from '../lib/util';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
