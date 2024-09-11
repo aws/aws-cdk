@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
+     "S3Key": "4e5786121b49befeda196d85566718fb8bf828540847d3d87b5dabccd17c2578.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -123,7 +123,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
+     "S3Key": "4e5786121b49befeda196d85566718fb8bf828540847d3d87b5dabccd17c2578.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -265,9 +265,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -410,9 +410,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
     },
-    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -552,9 +552,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
     },
-    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -700,7 +700,7 @@
        {
         "Ref": "ProviderframeworkisComplete26D7B0CB"
        },
-       "-c869c08c980be0925d94f1357103cfe2a3fbbe91b5"
+       "-c839d73545f02a789e62c95068ea800f743a2a733a"
       ]
      ]
     },
@@ -888,7 +888,7 @@
   }
  },
  "Outputs": {
-  "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleB261F10EArn": {
+  "awscdkeksfargateclusterteststack2awscdkawseksClusterResourceProviderOnEventHandlerServiceRole4D815224Arn": {
    "Value": {
     "Fn::GetAtt": [
      "OnEventHandlerServiceRole15A26729",
@@ -896,7 +896,7 @@
     ]
    }
   },
-  "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAC5AFF2AArn": {
+  "awscdkeksfargateclusterteststack2awscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole7C6A2DAEArn": {
    "Value": {
     "Fn::GetAtt": [
      "IsCompleteHandlerServiceRole5810CC58",
@@ -904,7 +904,7 @@
     ]
    }
   },
-  "awscdkeksfargateclustertestawscdkawseksClusterResourceProviderframeworkonEventC85EBDF3Arn": {
+  "awscdkeksfargateclusterteststack2awscdkawseksClusterResourceProviderframeworkonEventB487163FArn": {
    "Value": {
     "Fn::GetAtt": [
      "ProviderframeworkonEvent83C1D0A7",
