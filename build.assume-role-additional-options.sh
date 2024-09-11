@@ -150,4 +150,5 @@ workdir=$(mktemp -d)
 (cd ${workdir} && npm install "./aws-cdk.tgz")
 (cd ${workdir} && touch main.ts)
 
-echo "Done: ${workdir}"
+echo "Workdir: ${workdir}"
+echo "Buildir: ${builddir}"
