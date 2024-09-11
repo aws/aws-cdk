@@ -1254,8 +1254,7 @@ You can enable Performance Insights at cluster level or instance level.
 To enable Performance Insights at the cluster level, set the `enablePerformanceInsights` property for the `DatabaseCluster` to `true`.
 If you want to specify the detailed settings, you can use the `performanceInsightRetention` and `performanceInsightEncryptionKey` properties.
 
-The settings are then applied to all instances in the cluster. If Performance Insights is enabled at the cluster level, it is not possible to
-specify a different value for the instance level than the cluster level.
+The settings are then applied to all instances in the cluster.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1275,6 +1274,9 @@ new rds.DatabaseCluster(this, 'Database', {
 To enable Performance Insights at the instance level, set the same properties for each instance of the `writer` and the `readers`.
 
 In this way, different settings can be applied to different instances in a cluster.
+
+However, if Performance Insights is enabled at the cluster level, it is not possible to specify a different value for the instance
+level than the cluster level.
 
 ```ts
 declare const vpc: ec2.Vpc;
