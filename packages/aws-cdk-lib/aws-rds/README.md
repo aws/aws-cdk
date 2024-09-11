@@ -1254,7 +1254,8 @@ You can enable Performance Insights at cluster level or instance level.
 To enable Performance Insights at the cluster level, set the `enablePerformanceInsights` property for the `DatabaseCluster` to `true`.
 If you want to specify the detailed settings, you can use the `performanceInsightRetention` and `performanceInsightEncryptionKey` properties.
 
-The settings are then applied to all instances in the cluster.
+The settings are then applied to all instances in the cluster. If Performance Insights is enabled at the cluster level, it cannot be specified
+at the instance level.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1284,20 +1285,17 @@ new rds.DatabaseCluster(this, 'Database', {
   writer: rds.ClusterInstance.provisioned('Writer', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
     enablePerformanceInsights: true,
-    performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+    performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
     performanceInsightEncryptionKey: kmsKey,
   }),
   readers: [
     rds.ClusterInstance.provisioned('Reader', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
-      enablePerformanceInsights: true,
-      performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_1,
+      enablePerformanceInsights: false,
     }),
   ],
 });
 ```
-
-If Performance Insights is enabled at the cluster level, it cannot be specified at the instance level.
 
 ### Instance Database
 

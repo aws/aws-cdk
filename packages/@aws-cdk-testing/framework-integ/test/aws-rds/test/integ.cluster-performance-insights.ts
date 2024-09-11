@@ -17,11 +17,15 @@ class TestStack extends cdk.Stack {
         version: AuroraMysqlEngineVersion.VER_3_07_1,
       }),
       vpc,
-      writer: ClusterInstance.provisioned('writer'),
-      readers: [ClusterInstance.provisioned('reader')],
       enablePerformanceInsights: true,
       performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
       performanceInsightEncryptionKey: kmsKey,
+      writer: ClusterInstance.provisioned('writer', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+      }),
+      readers: [ClusterInstance.provisioned('reader', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+      })],
     });
   }
 }
