@@ -152,6 +152,25 @@ describe('User Pool Domain', () => {
     expect(cfDomainNameSecond).toEqual(cfDomainNameFirst);
   });
 
+  test('cloudFrontEndpoint property can be called', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const domain = pool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+    });
+
+    const cfDomainNameFirst = domain.cloudFrontEndpoint;
+
+    expect(stack.resolve(cfDomainNameFirst)).toEqual({
+      'Fn::GetAtt': [
+        'PoolDomainCloudFrontDomainName340BF87E',
+        'DomainDescription.CloudFrontDistribution',
+      ],
+    });
+  });
+
   test('import', () => {
     // GIVEN
     const stack = new Stack();
