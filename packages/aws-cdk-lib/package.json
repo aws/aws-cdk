@@ -169,7 +169,7 @@
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "^3.1.0",
     "aws-sdk-client-mock-jest": "^3.1.0",
-    "cdk8s": "2.68.104",
+    "cdk8s": "2.69.0",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.23.1",
