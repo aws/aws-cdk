@@ -45,7 +45,7 @@ test('CodePipeline has self-mutation stage', () => {
       BuildSpec: Match.serializedJson(Match.objectLike({
         phases: {
           install: {
-            commands: ['npm install -g aws-cdk@latest'],
+            commands: ['npm install -g aws-cdk@2'],
           },
           build: {
             commands: Match.arrayWith(['cdk -a . deploy PipelineStack --require-approval=never --verbose']),
@@ -187,7 +187,7 @@ test('self-mutation stage can be customized with BuildSpec', () => {
       BuildSpec: Match.serializedJson(Match.objectLike({
         phases: {
           install: {
-            commands: ['npm config set registry example.com', 'npm install -g aws-cdk@latest'],
+            commands: ['npm config set registry example.com', 'npm install -g aws-cdk@2'],
           },
           build: {
             commands: Match.arrayWith(['cdk -a . deploy PipelineStack --require-approval=never --verbose']),
