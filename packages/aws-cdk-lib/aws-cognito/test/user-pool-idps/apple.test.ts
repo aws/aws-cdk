@@ -90,8 +90,8 @@ describe('UserPoolIdentityProvider', () => {
         keyId: 'CDKKEYCDK1',
         privateKey: 'PRIV_KEY_CDK',
         attributeMapping: {
-          familyName: ProviderAttribute.APPLE_FIRST_NAME,
-          givenName: ProviderAttribute.APPLE_LAST_NAME,
+          familyName: ProviderAttribute.APPLE_LAST_NAME,
+          givenName: ProviderAttribute.APPLE_FIRST_NAME,
           custom: {
             customAttr1: ProviderAttribute.APPLE_EMAIL,
             customAttr2: ProviderAttribute.other('sub'),
@@ -102,8 +102,8 @@ describe('UserPoolIdentityProvider', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
         AttributeMapping: {
-          family_name: 'firstName',
-          given_name: 'lastName',
+          family_name: 'lastName',
+          given_name: 'firstName',
           customAttr1: 'email',
           customAttr2: 'sub',
         },
