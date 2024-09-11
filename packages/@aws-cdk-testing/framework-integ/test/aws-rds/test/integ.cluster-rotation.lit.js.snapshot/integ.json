@@ -1,14 +1,12 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
-    "integ.cluster-rotation.lit": {
+    "test-rds-cluster-rotation/DefaultTest": {
       "stacks": [
         "aws-cdk-rds-cluster-rotation"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "test-rds-cluster-rotation/DefaultTest/DeployAssert",
+      "assertionStackName": "testrdsclusterrotationDefaultTestDeployAssertCC761439"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

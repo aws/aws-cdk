@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
-import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
+import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 
 /**
  * Properties to initialize UserPoolFacebookIdentityProvider

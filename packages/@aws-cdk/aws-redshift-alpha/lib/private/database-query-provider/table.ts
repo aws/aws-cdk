@@ -32,7 +32,7 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
       tableColumns,
       useColumnIds,
       tableAndClusterProps,
-      event.OldResourceProperties as TableAndClusterProps,
+      event.OldResourceProperties as unknown as TableAndClusterProps,
       isTableV2,
     );
     return { PhysicalResourceId: event.PhysicalResourceId };

@@ -1,14 +1,12 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
-    "integ.cluster": {
+    "test-rds-cluster-with-feature-flag/DefaultTest": {
       "stacks": [
         "aws-cdk-rds-integ-with-feature-flag"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "test-rds-cluster-with-feature-flag/DefaultTest/DeployAssert",
+      "assertionStackName": "testrdsclusterwithfeatureflagDefaultTestDeployAssert8E2E540B"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

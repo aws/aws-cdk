@@ -7,15 +7,15 @@ import { EnvironmentResources } from './environment-resources';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { HotswapMode, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { addMetadataAssetsToManifest } from '../assets';
+import { Tag } from '../cdk-toolkit';
+import { debug, print, warning } from '../logging';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
   waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
-import { addMetadataAssetsToManifest } from '../assets';
-import { Tag } from '../cdk-toolkit';
-import { debug, print, warning } from '../logging';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 

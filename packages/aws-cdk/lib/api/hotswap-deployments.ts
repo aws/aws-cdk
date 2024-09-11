@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { print } from '../logging';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
 import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange, reportNonHotswappableResource } from './hotswap/common';
@@ -13,7 +14,6 @@ import { skipChangeForS3DeployCustomResourcePolicy, isHotswappableS3BucketDeploy
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
-import { print } from '../logging';
 
 type HotswapDetector = (
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate

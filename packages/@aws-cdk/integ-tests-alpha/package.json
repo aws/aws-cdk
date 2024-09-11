@@ -79,7 +79,7 @@
     "aws-sdk-client-mock": "^3.1.0",
     "aws-sdk-client-mock-jest": "^3.1.0",
     "jest": "^29.7.0",
-    "nock": "^13.5.4",
+    "nock": "^13.5.5",
     "sinon": "^9.2.4",
     "aws-cdk-lib": "0.0.0",
     "node-fetch": "^2.7.0",

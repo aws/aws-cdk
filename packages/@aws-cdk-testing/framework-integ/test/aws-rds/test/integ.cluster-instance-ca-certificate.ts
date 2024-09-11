@@ -11,12 +11,12 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 const instanceProps = {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   isFromLegacyInstanceProps: true,
-  caCertificate: CaCertificate.RDS_CA_2019,
+  caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
 };
 
 new DatabaseCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_03_0,
+    version: AuroraMysqlEngineVersion.VER_3_07_1,
   }),
   credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
