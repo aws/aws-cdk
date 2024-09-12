@@ -1,6 +1,6 @@
 
 import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { TestSource } from './test-classes';
@@ -143,6 +143,38 @@ describe('CloudWatch Logs source parameters validation', () => {
     }).toThrow('Log stream name must be between 1 and 256 characters, received 257');
   });
 
+  test('validateLogStreamName works with a token', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const logGroup = new LogGroup(stack, 'MyLogGroup', {});
+    const logStreamName = Lazy.string({ produce: () => 'log-stream-name' });
+    const target = new CloudWatchLogsTarget(logGroup, {logStreamName});
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      Target: {
+        'Fn::GetAtt': [
+          'MyLogGroup5C0DAD85',
+          'Arn',
+        ],
+      },
+      TargetParameters: {
+        CloudWatchLogsParameters: {
+          LogStreamName: 'log-stream-name',
+        },
+      },
+    });
+  });
+
   test('Timestamp must be >= 1 character', () => {
     // GIVEN
     const app = new App();
@@ -169,5 +201,37 @@ describe('CloudWatch Logs source parameters validation', () => {
         timestamp: 'x'.repeat(257),
       });
     }).toThrow('Timestamp must be between 1 and 256 characters, received 257');
+  });
+
+  test('validateTimestamp works with a token', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const logGroup = new LogGroup(stack, 'MyLogGroup', {});
+    const timestamp = Lazy.string({ produce: () => 'timestamp' });
+    const target = new CloudWatchLogsTarget(logGroup, {timestamp});
+
+    new Pipe(stack, 'MyPipe', {
+      source: new TestSource(),
+      target,
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      Target: {
+        'Fn::GetAtt': [
+          'MyLogGroup5C0DAD85',
+          'Arn',
+        ],
+      },
+      TargetParameters: {
+        CloudWatchLogsParameters: {
+          Timestamp: 'timestamp',
+        },
+      },
+    });
   });
 });
