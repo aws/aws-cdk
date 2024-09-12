@@ -153,18 +153,18 @@ declare const destination: firehose.IDestination;
 
 // SSE with an AWS-owned key
 new firehose.DeliveryStream(this, 'Delivery Stream AWS Owned', {
-  encryption: firehose.StreamEncryption.AWS_OWNED,
+  encryption: firehose.StreamEncryption.awsOwnedKey(),
   destinations: [destination],
 });
 // SSE with an customer-managed key that is created automatically by the CDK
 new firehose.DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
-  encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
+  encryption: firehose.StreamEncryption.customerManagedKey(),
   destinations: [destination],
 });
 // SSE with an customer-managed key that is explicitly specified
 declare const key: kms.Key;
 new firehose.DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
-  encryptionKey: key,
+  encryptionKey: firehose.StreamEncryption.customerManagedKey(key),
   destinations: [destination],
 });
 ```
