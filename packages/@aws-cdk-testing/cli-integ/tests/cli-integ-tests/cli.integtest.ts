@@ -19,7 +19,6 @@ import {
 import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import * as chalk from 'chalk';
 import {
   integTest,
   cloneDirectory,
@@ -2168,7 +2167,6 @@ integTest(
       allowErrExit: true,
     });
 
-    const stackName = `${fixture.stackNamePrefix}-ecs-hotswap`;
     const expectedSubstring = 'Resource is not in the state deploymentCompleted';
 
     expect(deployOutput).toContain(expectedSubstring);
