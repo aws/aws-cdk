@@ -367,7 +367,7 @@ export class SdkProvider {
     externalId: string | undefined,
     additionalOptions: AssumeRoleAdditionalOptions | undefined,
     region: string | undefined) {
-    debug(`Assuming role '${roleArn}'.`);
+    debug(`Assuming role '${roleArn}' with additional options: ${JSON.stringify(additionalOptions ?? {}, null, 2)}.`);
 
     region = region ?? this.defaultRegion;
     const creds = new AWS.ChainableTemporaryCredentials({
