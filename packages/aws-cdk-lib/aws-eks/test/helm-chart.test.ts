@@ -4,7 +4,6 @@ import { Template } from '../../assertions';
 import { Asset } from '../../aws-s3-assets';
 import { Duration } from '../../core';
 import * as eks from '../lib';
-import { Repository } from '../../aws-ecr';
 
 /* eslint-disable max-len */
 
