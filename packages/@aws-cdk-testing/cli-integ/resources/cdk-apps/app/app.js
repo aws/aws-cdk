@@ -439,6 +439,9 @@ class SessionTagsStack extends cdk.Stack {
       })
     });
 
+    // VPC lookup to test LookupRole
+    ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
+
     // Lambda Function to test AssetPublishingRole
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
@@ -727,7 +730,13 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
-    new SessionTagsStack(app, `${stackPrefix}-session-tags`);
+
+    if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
+      // this stack performs a VPC lookup so we gate synth
+      const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+      new SessionTagsStack(app, `${stackPrefix}-session-tags`, { env });
+    }
+
     new SessionTagsWithNoExecutionRoleCustomSynthesizerStack(app, `${stackPrefix}-session-tags-with-custom-synthesizer`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);

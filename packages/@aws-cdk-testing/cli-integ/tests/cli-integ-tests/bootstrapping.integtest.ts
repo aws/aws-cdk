@@ -87,7 +87,7 @@ integTest('can and deploy if omitting execution policies', withoutBootstrap(asyn
   });
 }));
 
-integTest('can deploy with session tags on the deploy, file asset, and image asset publishing roles', withoutBootstrap(async (fixture) => {
+integTest('can deploy with session tags on the deploy, lookup, file asset, and image asset publishing roles', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
   await fixture.cdkBootstrapModern({
@@ -101,6 +101,9 @@ integTest('can deploy with session tags on the deploy, file asset, and image ass
       '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
+    modEnv: {
+      ENABLE_VPC_TESTING: 'IMPORT',
+    },
   });
 }));
 
