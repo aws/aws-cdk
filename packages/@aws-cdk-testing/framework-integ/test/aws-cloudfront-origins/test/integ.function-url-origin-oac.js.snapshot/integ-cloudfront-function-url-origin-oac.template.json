@@ -78,19 +78,9 @@
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",
     "FunctionName": {
-     "Fn::Select": [
-      6,
-      {
-       "Fn::Split": [
-        ":",
-        {
-         "Fn::GetAtt": [
-          "MyFunctionFunctionUrlFF6DE78C",
-          "FunctionArn"
-         ]
-        }
-       ]
-      }
+     "Fn::GetAtt": [
+      "MyFunctionFunctionUrlFF6DE78C",
+      "FunctionArn"
      ]
     },
     "Principal": "cloudfront.amazonaws.com",
