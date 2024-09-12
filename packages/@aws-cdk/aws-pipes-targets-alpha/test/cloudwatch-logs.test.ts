@@ -149,7 +149,7 @@ describe('CloudWatch Logs source parameters validation', () => {
     const stack = new Stack(app, 'TestStack');
     const logGroup = new LogGroup(stack, 'MyLogGroup', {});
     const logStreamName = Lazy.string({ produce: () => 'log-stream-name' });
-    const target = new CloudWatchLogsTarget(logGroup, {logStreamName});
+    const target = new CloudWatchLogsTarget(logGroup, { logStreamName });
 
     new Pipe(stack, 'MyPipe', {
       source: new TestSource(),
@@ -209,7 +209,7 @@ describe('CloudWatch Logs source parameters validation', () => {
     const stack = new Stack(app, 'TestStack');
     const logGroup = new LogGroup(stack, 'MyLogGroup', {});
     const timestamp = Lazy.string({ produce: () => 'timestamp' });
-    const target = new CloudWatchLogsTarget(logGroup, {timestamp});
+    const target = new CloudWatchLogsTarget(logGroup, { timestamp });
 
     new Pipe(stack, 'MyPipe', {
       source: new TestSource(),
