@@ -1104,11 +1104,7 @@ export class Stack extends Construct implements ITaggable {
     fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
-      if (lookupRoleArn != null) {
-        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn, ...(lookupRoleAdditionalOptions ?? {}) } });
-      } else {
-        builder.addMissing(ctx);
-      }
+      builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn, lookupRoleAdditionalOptions } });
     }
   }
 
