@@ -436,6 +436,9 @@ class SessionTagsStack extends cdk.Stack {
         imageAssetPublishingRoleAdditionalOptions: {
           Tags: [{ Key: 'Department', Value: 'Engineering' }]
         },
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        }
       })
     });
 
