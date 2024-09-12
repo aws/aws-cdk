@@ -1,5 +1,6 @@
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
@@ -590,4 +591,18 @@ function fmtObtainedCredentials(
 
       return msg.join('');
   }
+}
+
+export async function initPluginSdk(aws: SdkProvider, options: cxschema.ContextLookupRoleOptions): Promise<ISDK> {
+
+  const account = options.account;
+  const region = options.region;
+
+  const creds: CredentialsOptions = {
+    assumeRoleArn: options.lookupRoleArn,
+    assumeRoleAdditionalOptions: options.lookupRoleAdditionalOptions,
+    assumeRoleExternalId: options.lookupRoleExternalId,
+  };
+
+  return (await aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, creds)).sdk;
 }

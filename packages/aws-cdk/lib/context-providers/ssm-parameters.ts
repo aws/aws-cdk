@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as AWS from 'aws-sdk';
-import { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { ContextProviderPlugin, initPluginSdk } from '../api/plugin';
+import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 
 /**

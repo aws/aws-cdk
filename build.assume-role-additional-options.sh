@@ -26,6 +26,8 @@ set_dev_dependency_version() {
   node -e "let fs=require('fs'), manifestPath='${manifest_path}'; let manifest=JSON.parse(fs.readFileSync(manifestPath, 'utf8')); manifest.devDependencies['${dependency}']='${version}'; fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));"
 }
 
+yarn cache clean
+
 builddir=$(mktemp -d)
 
 cd ${builddir}
@@ -34,7 +36,7 @@ echo "Working directory: ${builddir}"
 
 git clone https://github.com/cdklabs/cloud-assembly-schema.git -b sumughan/add-session-tags-to-schema --single-branch
 git clone https://github.com/cdklabs//cdk-assets.git -b sumughan/add-session-tags-to-client-options --single-branch
-git clone https://github.com/aws/aws-cdk.git --single-branch -b sumughan/session-tags
+git clone https://github.com/aws/aws-cdk.git -b sumughan/session-tags --single-branch
 
 echo "Building @aws-cdk/cloud-assembly-schema"
 (cd cloud-assembly-schema && yarn install && yarn compile && yarn package:js)
