@@ -93,8 +93,7 @@ new apigwv2.HttpApi(this, 'HttpProxyApi', {
 });
 ```
 
-The `routeSelectionExpression` option can be configured.
-In the HTTP API, only the value `$request.method $request.path` is allowed, and it can be configured by enabling `routeSelectionExpression`.
+The `routeSelectionExpression` option allows configuring the HTTP API to accept only `${request.method} ${request.path}`. Setting it to `true` automatically applies this value.
 
 ```ts
 new apigwv2.HttpApi(this, 'HttpProxyApi', {

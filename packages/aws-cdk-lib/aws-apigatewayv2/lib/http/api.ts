@@ -443,7 +443,7 @@ export class HttpApi extends HttpApiBase {
       corsConfiguration,
       description: props?.description,
       disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
-      routeSelectionExpression: props?.routeSelectionExpression ? '$request.method $request.path' : undefined,
+      routeSelectionExpression: props?.routeSelectionExpression ? '${request.method} ${request.path}' : undefined,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
