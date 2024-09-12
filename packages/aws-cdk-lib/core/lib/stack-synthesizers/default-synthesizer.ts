@@ -463,7 +463,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    * Synthesize the stack template to the given session, passing the configured lookup role ARN
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
-    stack._synthesizeTemplate(session, this.lookupRoleArn);
+    stack._synthesizeTemplate(session, this.lookupRoleArn, this.props.lookupRoleAdditionalOptions);
   }
 
   /**
@@ -490,7 +490,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       this.addBootstrapVersionRule(this._requiredBootstrapVersionForDeployment, this.bootstrapStackVersionSsmParameter!);
     }
 
-    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
+    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn, this.props.lookupRoleAdditionalOptions);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
