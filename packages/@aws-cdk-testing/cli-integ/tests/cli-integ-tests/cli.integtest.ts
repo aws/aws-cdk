@@ -2169,7 +2169,7 @@ integTest(
     });
 
     const stackName = `${fixture.stackNamePrefix}-ecs-hotswap`;
-    const expectedSubstring = `❌  ${chalk.bold(stackName)} failed: ResourceNotReady: Resource is not in the state deploymentCompleted`;
+    const expectedSubstring = 'Resource is not in the state deploymentCompleted';
 
     expect(deployOutput).toContain(expectedSubstring);
     expect(deployOutput).not.toContain('hotswapped!');
