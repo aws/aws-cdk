@@ -96,7 +96,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   private isCognitoDomain: boolean;
 
   private cloudFrontCustomResource?: AwsCustomResource;
-  private resource: CfnUserPoolDomain;
+  private readonly resource: CfnUserPoolDomain;
 
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
