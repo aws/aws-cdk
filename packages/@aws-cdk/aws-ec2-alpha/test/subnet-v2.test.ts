@@ -301,5 +301,4 @@ describe('Subnet V2 with custom IP and routing', () => {
 
     expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetNetworkAclAssociation', {}));
   });
-
 });
