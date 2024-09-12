@@ -1,0 +1,19 @@
+{
+  "version": "36.0.24",
+  "files": {
+    "500ab0cbc3e5f25aa40531fa4642888278c4bed1500e3cfaa1fdbe2964dcb42a": {
+      "source": {
+        "path": "integ-bastionhost-userdatacausesreplacement.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "500ab0cbc3e5f25aa40531fa4642888278c4bed1500e3cfaa1fdbe2964dcb42a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
