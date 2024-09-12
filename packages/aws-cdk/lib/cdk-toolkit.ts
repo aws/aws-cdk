@@ -376,7 +376,7 @@ export class CdkToolkit {
         data(result.stackArn);
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for it
-        throw new Error(`❌  ${chalk.bold(stack.stackName)} failed: ${e.message}`);
+        throw new Error(`❌  ${chalk.bold(stack.stackName)} failed: ${e.constructor.name}: ${e.message}`);
       } finally {
         if (options.cloudWatchLogMonitor) {
           const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
