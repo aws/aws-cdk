@@ -164,7 +164,7 @@ new firehose.DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
 // SSE with an customer-managed key that is explicitly specified
 declare const key: kms.Key;
 new firehose.DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
-  encryptionKey: firehose.StreamEncryption.customerManagedKey(key),
+  encryption: firehose.StreamEncryption.customerManagedKey(key),
   destinations: [destination],
 });
 ```
