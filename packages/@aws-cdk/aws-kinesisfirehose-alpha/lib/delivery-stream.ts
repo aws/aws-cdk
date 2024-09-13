@@ -220,13 +220,6 @@ export interface DeliveryStreamProps {
    * @default StreamEncryption.unencrypted()
    */
   readonly encryption?: StreamEncryption;
-
-  // /**
-  //  * Customer managed key to server-side encrypt data in the stream.
-  //  *
-  //  * @default - no KMS key will be used; if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you
-  //  */
-  // readonly encryptionKey?: kms.IKey;
 }
 
 /**
