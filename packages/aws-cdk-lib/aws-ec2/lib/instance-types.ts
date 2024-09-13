@@ -901,6 +901,11 @@ export enum InstanceClass {
   G6 = 'g6',
 
   /**
+   * Graphics-optimized instances powered by AMD EPYC processors and NVIDIA L40S Tensor Core GPUs, 6th generation
+   */
+  G6E = 'g6e',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'parallel2',
@@ -1589,6 +1594,7 @@ export class InstanceType {
       [InstanceClass.GRAPHICS5_GRAVITON2]: 'g5g',
       [InstanceClass.G5G]: 'g5g',
       [InstanceClass.GRAPHICS6]: 'g6',
+      [InstanceClass.G6E]: 'g6e',
       [InstanceClass.G6]: 'g6',
       [InstanceClass.PARALLEL2]: 'p2',
       [InstanceClass.P2]: 'p2',
