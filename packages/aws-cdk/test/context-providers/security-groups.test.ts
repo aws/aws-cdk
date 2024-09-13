@@ -27,9 +27,9 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
-        securityGroupId: 'sg-1234',
+        securityGroupId: 'sg-123456789012',
       }),
     ).rejects.toThrow(/No security groups found/i);
   });
@@ -39,11 +39,11 @@ describe('security group context provider plugin', () => {
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
     AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({ GroupIds: ['sg-1234'] });
+      expect(_params).toEqual({ GroupIds: ['sg-123456789012'] });
       cb(null, {
         SecurityGroups: [
           {
-            GroupId: 'sg-1234',
+            GroupId: 'sg-123456789012',
             IpPermissionsEgress: [
               {
                 IpProtocol: '-1',
@@ -65,13 +65,13 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
-      securityGroupId: 'sg-1234',
+      securityGroupId: 'sg-123456789012',
     });
 
     // THEN
-    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.securityGroupId).toEqual('sg-123456789012');
     expect(res.allowAllOutbound).toEqual(true);
   });
 
@@ -81,7 +81,7 @@ describe('security group context provider plugin', () => {
 
     AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
       expect(_params).toEqual({
-        GroupIds: ['sg-1234'],
+        GroupIds: ['sg-123456789012'],
         Filters: [
           {
             Name: 'vpc-id',
@@ -92,7 +92,7 @@ describe('security group context provider plugin', () => {
       cb(null, {
         SecurityGroups: [
           {
-            GroupId: 'sg-1234',
+            GroupId: 'sg-123456789012',
             IpPermissionsEgress: [
               {
                 IpProtocol: '-1',
@@ -114,14 +114,14 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
-      securityGroupId: 'sg-1234',
+      securityGroupId: 'sg-123456789012',
       vpcId: 'vpc-1234567',
     });
 
     // THEN
-    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.securityGroupId).toEqual('sg-123456789012');
     expect(res.allowAllOutbound).toEqual(true);
   });
 
@@ -141,7 +141,7 @@ describe('security group context provider plugin', () => {
       cb(null, {
         SecurityGroups: [
           {
-            GroupId: 'sg-1234',
+            GroupId: 'sg-123456789012',
             IpPermissionsEgress: [
               {
                 IpProtocol: '-1',
@@ -163,13 +163,13 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       securityGroupName: 'my-security-group',
     });
 
     // THEN
-    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.securityGroupId).toEqual('sg-123456789012');
     expect(res.allowAllOutbound).toEqual(true);
   });
 
@@ -193,7 +193,7 @@ describe('security group context provider plugin', () => {
       cb(null, {
         SecurityGroups: [
           {
-            GroupId: 'sg-1234',
+            GroupId: 'sg-123456789012',
             IpPermissionsEgress: [
               {
                 IpProtocol: '-1',
@@ -215,14 +215,14 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
       securityGroupName: 'my-security-group',
       vpcId: 'vpc-1234567',
     });
 
     // THEN
-    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.securityGroupId).toEqual('sg-123456789012');
     expect(res.allowAllOutbound).toEqual(true);
   });
 
@@ -231,11 +231,11 @@ describe('security group context provider plugin', () => {
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
     AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({ GroupIds: ['sg-1234'] });
+      expect(_params).toEqual({ GroupIds: ['sg-123456789012'] });
       cb(null, {
         SecurityGroups: [
           {
-            GroupId: 'sg-1234',
+            GroupId: 'sg-123456789012',
             IpPermissionsEgress: [
               {
                 IpProtocol: '-1',
@@ -251,13 +251,13 @@ describe('security group context provider plugin', () => {
 
     // WHEN
     const res = await provider.getValue({
-      account: '1234',
+      account: '123456789012',
       region: 'us-east-1',
-      securityGroupId: 'sg-1234',
+      securityGroupId: 'sg-123456789012',
     });
 
     // THEN
-    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.securityGroupId).toEqual('sg-123456789012');
     expect(res.allowAllOutbound).toEqual(false);
   });
 
@@ -266,11 +266,11 @@ describe('security group context provider plugin', () => {
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
     AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({ GroupIds: ['sg-1234'] });
+      expect(_params).toEqual({ GroupIds: ['sg-123456789012'] });
       cb(null, {
         SecurityGroups: [
           {
-            GroupId: 'sg-1234',
+            GroupId: 'sg-123456789012',
             IpPermissionsEgress: [
               {
                 IpProtocol: '-1',
@@ -281,7 +281,7 @@ describe('security group context provider plugin', () => {
             ],
           },
           {
-            GroupId: 'sg-1234',
+            GroupId: 'sg-123456789012',
             IpPermissionsEgress: [
               {
                 IpProtocol: '-1',
@@ -297,9 +297,9 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
-        securityGroupId: 'sg-1234',
+        securityGroupId: 'sg-123456789012',
       }),
     ).rejects.toThrow(/\More than one security groups found matching/i);
   });
@@ -311,9 +311,9 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
-        securityGroupId: 'sg-1234',
+        securityGroupId: 'sg-123456789012',
         securityGroupName: 'my-security-group',
       }),
     ).rejects.toThrow(/\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group/i);
@@ -326,7 +326,7 @@ describe('security group context provider plugin', () => {
     // WHEN
     await expect(
       provider.getValue({
-        account: '1234',
+        account: '123456789012',
         region: 'us-east-1',
       }),
     ).rejects.toThrow(/\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group/i);

@@ -505,7 +505,7 @@ test('adding environment variable to assets job adds SecretsManager permissions'
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+              ':secretsmanager:us-pipeline:123456789012:secret:FoobarSecret-??????',
             ]],
           },
         }),
@@ -569,7 +569,7 @@ describe('pipeline with single asset publisher', () => {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+                ':secretsmanager:us-pipeline:123456789012:secret:FoobarSecret-??????',
               ],
             ],
           },

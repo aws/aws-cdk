@@ -38,7 +38,7 @@ describe('tag parameter container image', () => {
       const app = new cdk.App();
       const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
         env: {
-          account: 'pipeline-account',
+          account: '123456789012',
           region: 'us-west-1',
         },
       });
@@ -50,7 +50,7 @@ describe('tag parameter container image', () => {
 
       const serviceStack = new cdk.Stack(app, 'ServiceStack', {
         env: {
-          account: 'service-account',
+          account: '234567890123',
           region: 'us-west-1',
         },
       });
@@ -77,7 +77,7 @@ describe('tag parameter container image', () => {
                 'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
-                  ':iam::service-account:root',
+                  ':iam::234567890123:root',
                 ]],
               },
             },
@@ -104,7 +104,7 @@ describe('tag parameter container image', () => {
                 'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
-                  `:ecr:us-west-1:pipeline-account:repository/${repositoryName}`,
+                  `:ecr:us-west-1:123456789012:repository/${repositoryName}`,
                 ]],
               },
             }),

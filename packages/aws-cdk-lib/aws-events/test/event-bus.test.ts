@@ -569,7 +569,7 @@ describe('event bus', () => {
     // WHEN
     bus.addToResourcePolicy(new iam.PolicyStatement({
       effect: Effect.ALLOW,
-      principals: [new iam.AccountPrincipal('111111111111111')],
+      principals: [new iam.AccountPrincipal('111111111111')],
       actions: ['events:PutEvents'],
       sid: '123',
       resources: [bus.eventBusArn],
@@ -593,7 +593,7 @@ describe('event bus', () => {
                 {
                   Ref: 'AWS::Partition',
                 },
-                ':iam::111111111111111:root',
+                ':iam::111111111111:root',
               ],
             ],
           },

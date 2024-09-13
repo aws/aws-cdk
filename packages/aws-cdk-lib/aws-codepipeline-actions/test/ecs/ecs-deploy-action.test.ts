@@ -193,13 +193,13 @@ describe('ecs deploy action', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'PipelineStack', {
         env: {
-          region: 'pipeline-region', account: 'pipeline-account',
+          region: 'pipeline-region', account: '123456789012',
         },
       });
       const clusterName = 'cluster-name';
       const serviceName = 'service-name';
       const region = 'service-region';
-      const account = 'service-account';
+      const account = '567890123456';
       const serviceArn = `arn:aws:ecs:${region}:${account}:service/${clusterName}/${serviceName}`;
       const service = ecs.BaseService.fromServiceArnWithCluster(stack, 'FargateService', serviceArn);
 
@@ -256,7 +256,7 @@ describe('ecs deploy action', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      `:iam::${account}:role/pipelinestack-support-serloyecsactionrole49867f847238c85af7c0`,
+                      `:iam::${account}:role/pipelinestack-support-567loyecsactionrole2318d264424c21116eab`,
                     ],
                   ],
                 },

@@ -220,7 +220,7 @@ describe('function', () => {
         .toThrow(/Invalid principal type for Lambda permission statement/);
 
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
-      fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
+      fn.addPermission('S2', { principal: new iam.AccountPrincipal('234567890123') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
       fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
     });
@@ -1280,7 +1280,7 @@ describe('function', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.AccountPrincipal('1234'),
+        assumedBy: new iam.AccountPrincipal('123456789012'),
       });
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
@@ -1313,7 +1313,7 @@ describe('function', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.AccountPrincipal('1234'),
+        assumedBy: new iam.AccountPrincipal('123456789012'),
       });
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
@@ -1346,7 +1346,7 @@ describe('function', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.AccountPrincipal('1234'),
+        assumedBy: new iam.AccountPrincipal('123456789012'),
       });
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
@@ -1647,8 +1647,8 @@ describe('function', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const compositePrincipal = new iam.CompositePrincipal(
-        new iam.AccountPrincipal('1234'),
-        new iam.AccountPrincipal('5678'),
+        new iam.AccountPrincipal('123456789012'),
+        new iam.AccountPrincipal('567890123456'),
       );
 
       const fn = new lambda.Function(stack, 'Function', {
@@ -1669,7 +1669,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Principal: '1234',
+        Principal: '123456789012',
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
@@ -1679,7 +1679,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Principal: '5678',
+        Principal: '567890123456',
       });
     });
 
@@ -1687,7 +1687,7 @@ describe('function', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const compositePrincipal = new iam.CompositePrincipal(
-        new iam.AccountPrincipal('1234'),
+        new iam.AccountPrincipal('123456789012'),
         new iam.ServicePrincipal('apigateway.amazonaws.com'),
         new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
         new iam.OrganizationPrincipal('my-org-id'),
@@ -1711,7 +1711,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Principal: '1234',
+        Principal: '123456789012',
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
@@ -3428,7 +3428,7 @@ describe('function', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.AccountPrincipal('1234'),
+        assumedBy: new iam.AccountPrincipal('123456789012'),
       });
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),

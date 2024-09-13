@@ -24,12 +24,12 @@ test('calls DescribeImages on the request', async () => {
   let request: aws.EC2.DescribeImagesRequest;
   AWS.mock('EC2', 'describeImages', (params: aws.EC2.DescribeImagesRequest, cb: AwsCallback<aws.EC2.DescribeImagesResult>) => {
     request = params;
-    return cb(null, { Images: [{ ImageId: 'ami-1234' }] });
+    return cb(null, { Images: [{ ImageId: 'ami-123456789012' }] });
   });
 
   // WHEN
   await new AmiContextProviderPlugin(mockSDK).getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'asdf',
     owners: ['some-owner'],
     filters: {
@@ -55,7 +55,7 @@ test('returns the most recent AMI matching the criteria', async () => {
     return cb(null, {
       Images: [
         {
-          ImageId: 'ami-1234',
+          ImageId: 'ami-123456789012',
           CreationDate: '2016-06-22T08:39:59.000Z',
         },
         {
@@ -68,7 +68,7 @@ test('returns the most recent AMI matching the criteria', async () => {
 
   // WHEN
   const result = await new AmiContextProviderPlugin(mockSDK).getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'asdf',
     filters: {},
   });

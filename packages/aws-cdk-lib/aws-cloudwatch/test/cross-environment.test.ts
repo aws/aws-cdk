@@ -10,7 +10,7 @@ let stack3: Stack;
 let stack4: Stack;
 describe('cross environment', () => {
   beforeEach(() => {
-    stack1 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '1234' } });
+    stack1 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '123456789012' } });
     stack2 = new Stack(undefined, undefined, { env: { region: 'mars', account: '5678' } });
     stack3 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '0000' } });
     stack4 = new Stack(undefined, undefined);
@@ -42,7 +42,7 @@ describe('cross environment', () => {
 
       // THEN
       graphMetricsAre(stack2, graph, [
-        ['Test', 'ACount', { region: 'pluto', accountId: '1234' }],
+        ['Test', 'ACount', { region: 'pluto', accountId: '123456789012' }],
       ]);
 
     });
@@ -51,13 +51,13 @@ describe('cross environment', () => {
       // GIVEN
       const graph = new GraphWidget({
         left: [
-          a.with({ account: '1234', region: 'us-north-5' }),
+          a.with({ account: '123456789012', region: 'us-north-5' }),
         ],
       });
 
       // THEN
       graphMetricsAre(new Stack(), graph, [
-        ['Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
+        ['Test', 'ACount', { accountId: '123456789012', region: 'us-north-5' }],
       ]);
 
     });
@@ -300,7 +300,7 @@ describe('cross environment', () => {
       const b = new Metric({
         namespace: 'Test',
         metricName: 'ACount',
-        account: '1234',
+        account: '123456789012',
       });
 
       const c = new MathExpression({
@@ -357,7 +357,7 @@ describe('cross environment', () => {
       const b = new Metric({
         namespace: 'Test',
         metricName: 'ACount',
-        account: '1234',
+        account: '123456789012',
       });
 
       const c = new MathExpression({
@@ -382,7 +382,7 @@ describe('cross environment', () => {
       const b = new Metric({
         namespace: 'Test',
         metricName: 'ACount',
-        account: '1234',
+        account: '123456789012',
       });
 
       const c = new MathExpression({

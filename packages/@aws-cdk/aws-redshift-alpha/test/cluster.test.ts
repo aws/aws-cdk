@@ -937,7 +937,7 @@ describe('IAM role', () => {
 });
 
 function testStack() {
-  const newTestStack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
-  newTestStack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  const newTestStack = new cdk.Stack(undefined, undefined, { env: { account: '123456789012', region: 'us-test-1' } });
+  newTestStack.node.setContext('availability-zones:123456789012:us-test-1', ['us-test-1a', 'us-test-1b']);
   return newTestStack;
 }
