@@ -10,10 +10,10 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var iam = require('@aws-cdk/aws-iam');
   var sns = require('@aws-cdk/aws-sns');
   var sqs = require('@aws-cdk/aws-sqs');
-  var appsync = require('@aws-cdk/aws-appsync');
   var lambda = require('@aws-cdk/aws-lambda');
   var sso = require('@aws-cdk/aws-sso');
   var docker = require('@aws-cdk/aws-ecr-assets');
+  var appsync = require('@aws-cdk/aws-appsync');
 } else {
   var cdk = require('aws-cdk-lib');
   var {
@@ -29,6 +29,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_sqs: sqs,
     aws_lambda: lambda,
     aws_ecr_assets: docker,
+    aws_appsync: appsync,
     Stack
   } = require('aws-cdk-lib');
 }
