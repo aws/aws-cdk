@@ -1227,11 +1227,11 @@ $ yarn test
 If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
 its own [contribution guide](https://github.com/cdklabs/cloud-assembly-schema/blob/main/CONTRIBUTING.md).
 
-The team will not actively monitor the `cloud-assembly-schema` repository for contributions. If you have a PR
-that needs to modify `cloud-assembly-schema`, open both PRs and ensure that you link the `cloud-assembly-schema`
-PR in the one opened against this repository. The `cloud-assembly-schema` changes must be merged (and released)
-before the PR in this repository can be merged. The PR in this repository must be updated to use the new release
-of the `cloud-assembly-schema` before it can be merged.
+The team will not actively monitor the [cloud-assembly-schema](https://github.com/cdklabs/cloud-assembly-schema)
+repository for contributions. If you have a PR that needs to modify `cloud-assembly-schema`, open both PRs and
+ensure that you link the `cloud-assembly-schema` PR in the one opened against this repository.
+The `cloud-assembly-schema` changes must be merged (and released) before the PR in this repository can be merged.
+The PR in this repository must be updated to use the new release of the `cloud-assembly-schema` before it can be merged.
 
 ## Feature Flags
 
