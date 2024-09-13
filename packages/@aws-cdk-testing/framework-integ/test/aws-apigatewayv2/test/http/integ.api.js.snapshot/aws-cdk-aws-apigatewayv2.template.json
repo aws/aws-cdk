@@ -5,7 +5,7 @@
    "Properties": {
     "Name": "HttpApi",
     "ProtocolType": "HTTP",
-    "RouteSelectionExpression": "$request.method $request.path"
+    "RouteSelectionExpression": "${request.method} ${request.path}"
    }
   },
   "HttpApiDefaultStage3EEB07D6": {
