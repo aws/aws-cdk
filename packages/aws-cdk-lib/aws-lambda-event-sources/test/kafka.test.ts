@@ -998,5 +998,28 @@ describe('KafkaEventSource', () => {
       });
 
     });
+
+    test('eventSourceMappingArn and eventSourceMappingId are defined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      const eventSource = new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        });
+
+      // WHEN
+      fn.addEventSource(eventSource);
+      expect(eventSource.eventSourceMappingArn).toBeDefined();
+      expect(eventSource.eventSourceMappingId).toBeDefined();
+    });
+
   });
 });
