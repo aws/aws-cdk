@@ -2202,7 +2202,7 @@ integTest('hotswap deployment supports AppSync APIs with many functions',
     expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
     // assert all 50 functions were hotswapped
     for (const i of Array(50).keys()) {
-      expect(deployOutput).toContain(`AWS::AppSync::FunctionConfiguration appsync_function${i} hotswapped!`);
+      expect(deployOutput).toContain(`AWS::AppSync::FunctionConfiguration 'appsync_function${i}' hotswapped!`);
     }
   }),
 );
