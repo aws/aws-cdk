@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AlbDualstackWithoutPublicIpv4/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elbv2-integ-dualstack-without-public-ipv4"
+      ],
+      "assertionStack": "AlbDualstackWithoutPublicIpv4/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbDualstackWithoutPublicIpv4DefaultTestDeployAssertFA6F90DD"
+    }
+  }
+}

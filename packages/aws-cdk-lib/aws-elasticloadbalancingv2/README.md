@@ -272,15 +272,39 @@ lb.logAccessLogs(bucket);
 Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
 Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
 
-```ts 
+```ts
 declare const vpc: ec2.Vpc;
 
-const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{ 
+const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{
   encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
 lb.logConnectionLogs(bucket);
+```
+
+### Dualstack Application Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+});
 ```
 
 ## Defining a Network Load Balancer
