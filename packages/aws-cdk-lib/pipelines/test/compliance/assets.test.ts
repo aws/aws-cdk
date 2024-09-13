@@ -253,7 +253,7 @@ describe('basic pipeline', () => {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             install: {
-              commands: ['npm install -g cdk-assets@1.2.3'],
+              commands: ['npm install -g aws-cdk@1.2.3'],
             },
           },
         })),
@@ -388,7 +388,7 @@ test('can supply pre-install scripts to asset upload', () => {
       BuildSpec: Match.serializedJson(Match.objectLike({
         phases: {
           install: {
-            commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@2'],
+            commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@latest'],
           },
         },
       })),
