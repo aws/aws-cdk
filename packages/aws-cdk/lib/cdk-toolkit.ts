@@ -375,10 +375,6 @@ export class CdkToolkit {
 
         data(result.stackArn);
       } catch (e: any) {
-        // We need to emit this string to satisfy a CLI integ test that expects
-        // the literal string "Deployment failed: <error>".
-        debug('\n ❌ Deployment failed: %s', e);
-
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
         throw new Error([
@@ -386,11 +382,6 @@ export class CdkToolkit {
           ...e.code ? [`${e.code}:`] : [],
           e.message,
         ].join(' '));
-
-        // By the time you read this, the 'debug' can probably be removed, as
-        // the same commit that introduced this output to make the backwards
-        // compatibility tests pass, also loosened the tests to only check for
-        // the actual error message, and not any additional decoration.
       } finally {
         if (options.cloudWatchLogMonitor) {
           const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
