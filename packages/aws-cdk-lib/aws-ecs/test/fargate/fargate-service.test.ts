@@ -1044,7 +1044,7 @@ describe('fargate service', () => {
         securityGroups: [securityGroup1],
       });
 
-      const securityGroup2 = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup2', "sg-abcdefghijklmnopq");
+      const securityGroup2 = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup2', 'sg-abcdefghijklmnopq');
 
       service.connections.addSecurityGroup(securityGroup2);
 
@@ -1060,7 +1060,7 @@ describe('fargate service', () => {
                   'GroupId',
                 ],
               },
-              "sg-abcdefghijklmnopq"
+              'sg-abcdefghijklmnopq',
             ],
           },
         },
