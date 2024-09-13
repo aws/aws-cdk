@@ -589,11 +589,14 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
+    if (props.initOptions?.timeout && props.resourceSignalTimeout) {
+      Annotations.of(this).addWarning('two fields set')
+    }
+    this.applyUpdatePolicies(props);
+
     if (props.init) {
       this.applyCloudFormationInit(props.init, props.initOptions);
     }
-
-    this.applyUpdatePolicies(props);
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     //

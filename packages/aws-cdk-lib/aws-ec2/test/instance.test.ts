@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as cdk from 'aws-cdk-lib';
 import { Annotations, Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
@@ -1064,4 +1065,55 @@ test.each([true, false])('throw error for specifying ipv6AddressCount with assoc
       associatePublicIpAddress,
     });
   }).toThrow('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+});
+
+
+test('Resource signal specified', () => {
+  // GIVEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    resourceSignalTimeout: cdk.Duration.minutes(10),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT15M',
+      },
+    },
+  });
+});
+
+test('add time', () => {
+  // GIVEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    initOptions: {
+      timeout: cdk.Duration.minutes(10),
+    },
+    resourceSignalTimeout: cdk.Duration.minutes(10),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('*', 'two fields set');
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT20M',
+      },
+    },
+  });
 });
