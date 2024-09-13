@@ -752,6 +752,7 @@ const service = new ecs.ExternalService(this, 'Service', {
 
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
+If you'd like to add additional security group(s) to a `Service` instance, you can call `service.connections.addSecurityGroup()`.
 
 By default, the service will use the revision of the passed task definition generated when the `TaskDefinition`
 is deployed by CloudFormation. However, this may not be desired if the revision is externally managed,
