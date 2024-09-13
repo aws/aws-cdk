@@ -1026,6 +1026,47 @@ describe('fargate service', () => {
       });
     });
 
+    test('can add security groups after construction, and it correctly updates cloudformation template', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', { vpc });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        securityGroups: [securityGroup1],
+      });
+
+      const securityGroup2 = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup2', "sg-abcdefghijklmnopq");
+
+      service.connections.addSecurityGroup(securityGroup2);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'SecurityGroup1F554B36F',
+                  'GroupId',
+                ],
+              },
+              "sg-abcdefghijklmnopq"
+            ],
+          },
+        },
+      });
+    });
+
     test('with deployment alarms', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
