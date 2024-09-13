@@ -107,6 +107,7 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const EXPLICIT_STACK_TAGS = '@aws-cdk/core:explicitStackTags';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -930,9 +931,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.',
     detailsMd: `
-      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in
       the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
-      Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement. 
+      Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
     `,
     introducedIn: { v2: '2.97.0' },
     recommendedValue: true,
@@ -951,7 +952,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       is replicated with the new \`snapshotCredentials\` property, but the original
       \`credentials\` secret can still be created resulting in an extra database
       secret.
-      
+
       Set this flag to prevent rendering deprecated \`credentials\` and creating an
       extra database secret when only using \`snapshotCredentials\` to create an RDS
       database cluster from a snapshot.
@@ -965,7 +966,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, the CodeCommit source action is using the default branch name \'main\'.',
     detailsMd: `
-      When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+      When setting up a CodeCommit source action for the source stage of a pipeline, please note that the
       default branch is \'master\'.
       However, with the activation of this feature flag, the default branch is updated to \'main\'.
     `,
@@ -981,7 +982,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, a logical ID of \`LambdaPermission\` for a
       \`LambdaAction\` will include an alarm ID. Therefore multiple alarms for the same Lambda
       can be created with \`LambdaAction\`.
-      
+
       If the flag is set to false then it can only make one alarm for the Lambda with
       \`LambdaAction\`.
     `,
@@ -1117,14 +1118,35 @@ export const FLAGS: Record<string, FlagInfo> = {
     Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
     of State Machine Task definition.
 
-    When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
-    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.  
+    When this feature flag is enabled, specify newly introduced props 's3InputUri' and
+    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
 
     `,
     introducedIn: { v2: '2.156.0' },
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EXPLICIT_STACK_TAGS]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, stack tags need to be assigned explicitly on a Stack.',
+    detailsMd: `
+    Without this feature flag enabled, if tags are added to a Stack using
+    \`Tags.of(scope).add(...)\`, they will be added to both the stack and all resources
+    in the Stack.
+
+    With this flag enabled, tags added to a stack using \`Tags.of(...)\` are ignored,
+    and Stack tags must be configured explicitly on the Stack object.
+
+    Tags configured on the Stack will be propagated to all resources automatically
+    by CloudFormation, so there is no need for the automatic propagation that
+    \`Tags.of(...)\` does.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Configure stack-level tags using `new Stack(..., { tags: { ... } })`.',
   },
 };
 

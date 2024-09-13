@@ -73,6 +73,7 @@ Flags come in three types:
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
+| [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -134,7 +135,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/core:explicitStackTags": true
   }
 }
 ```
@@ -1131,7 +1133,7 @@ shipped as part of the runtime environment.
 
 *When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.* (fix)
 
-When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in
 the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
 Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
 
@@ -1188,7 +1190,7 @@ database cluster from a snapshot.
 
 *When enabled, the CodeCommit source action is using the default branch name 'main'.* (fix)
 
-When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+When setting up a CodeCommit source action for the source stage of a pipeline, please note that the
 default branch is 'master'.
 However, with the activation of this feature flag, the default branch is updated to 'main'.
 
@@ -1366,7 +1368,7 @@ Other notifications that are not managed by this stack will be kept.
 Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
 of State Machine Task definition.
 
-When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
+When this feature flag is enabled, specify newly introduced props 's3InputUri' and
 's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
 
 
@@ -1376,6 +1378,30 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 | 2.156.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
+
+
+### @aws-cdk/core:explicitStackTags
+
+*When enabled, stack tags need to be assigned explicitly on a Stack.* (default)
+
+Without this feature flag enabled, if tags are added to a Stack using
+`Tags.of(scope).add(...)`, they will be added to both the stack and all resources
+in the Stack.
+
+With this flag enabled, tags added to a stack using `Tags.of(...)` are ignored,
+and Stack tags must be configured explicitly on the Stack object.
+
+Tags configured on the Stack will be propagated to all resources automatically
+by CloudFormation, so there is no need for the automatic propagation that
+`Tags.of(...)` does.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Configure stack-level tags using `new Stack(..., { tags: { ... } })`.
 
 
 <!-- END details -->
