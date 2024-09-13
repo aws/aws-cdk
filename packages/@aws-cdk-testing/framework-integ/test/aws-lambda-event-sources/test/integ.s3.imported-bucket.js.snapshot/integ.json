@@ -3,7 +3,7 @@
   "testCases": {
     "issue-4324/DefaultTest": {
       "stacks": [
-        "TestStack"
+        "TestStack2"
       ],
       "assertionStack": "issue-4324/DefaultTest/DeployAssert",
       "assertionStackName": "issue4324DefaultTestDeployAssert63CED672"
