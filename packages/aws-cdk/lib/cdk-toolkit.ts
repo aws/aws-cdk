@@ -381,7 +381,11 @@ export class CdkToolkit {
 
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
-        throw new Error(`❌  ${chalk.bold(stack.stackName)} failed: ${e.constructor.name}: ${e.message}`);
+        throw new Error([
+          `❌  ${chalk.bold(stack.stackName)} failed:`,
+          ...e.code ? [`${e.code}:`] : [],
+          e.message,
+        ].join(' '));
 
         // By the time you read this, the 'debug' can probably be removed, as
         // the same commit that introduced this output to make the backwards
