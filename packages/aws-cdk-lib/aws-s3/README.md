@@ -506,7 +506,7 @@ const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
 
 // Creating a bucket policy using L1
 const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
-  bucket: bucket01Name,
+  bucket: accessLogsBucket,
   policyDocument: {
     Statement: [
       {
@@ -569,7 +569,7 @@ const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
 });
 
 const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
-  bucket: bucket01Name,
+  bucket: accessLogsBucket,
   policyDocument: {
     Statement: [
       {
@@ -591,7 +591,7 @@ const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
 // Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent 
 // generated bucket policy to allow access log delivery would append 
 // to the current policy.
-new s3.BucketPolicy.fromCfnBucketPolicy(bucketPolicy);
+s3.BucketPolicy.fromCfnBucketPolicy(bucketPolicy);
 
 const bucket = new s3.Bucket(this, 'MyBucket', {
   serverAccessLogsBucket: accessLogsBucket,
