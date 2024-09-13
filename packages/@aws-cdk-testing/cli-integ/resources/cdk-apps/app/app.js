@@ -10,6 +10,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var iam = require('@aws-cdk/aws-iam');
   var sns = require('@aws-cdk/aws-sns');
   var sqs = require('@aws-cdk/aws-sqs');
+  var appsync = require('@aws-cdk/aws-appsync');
   var lambda = require('@aws-cdk/aws-lambda');
   var sso = require('@aws-cdk/aws-sso');
   var docker = require('@aws-cdk/aws-ecr-assets');
