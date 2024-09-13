@@ -308,6 +308,55 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('consumerGroupId can be set for ManagedKafkaEventSource', () => {
+
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const consumerGroupId = 'my-consumer-group-id';
+
+      const mskEventMapping = new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          consumerGroupId,
+        });
+
+      // WHEN
+      fn.addEventSource(mskEventMapping);
+      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        AmazonManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
+      });
+
+    });
+
+    test('ManagedKafkaEventSource name conforms to construct id rules', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      const mskEventMapping = new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        });
+
+      // WHEN
+      fn.addEventSource(mskEventMapping);
+      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
+    });
+
   });
 
   describe('self-managed kafka', () => {
@@ -948,55 +997,6 @@ describe('KafkaEventSource', () => {
         SelfManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
       });
 
-    });
-
-    test('consumerGroupId can be set for ManagedKafkaEventSource', () => {
-
-      // GIVEN
-      const stack = new cdk.Stack();
-      const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
-      const kafkaTopic = 'some-topic';
-      const consumerGroupId = 'my-consumer-group-id';
-
-      const mskEventMapping = new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          consumerGroupId,
-        });
-
-      // WHEN
-      fn.addEventSource(mskEventMapping);
-      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
-      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-        AmazonManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
-      });
-
-    });
-
-    test('ManagedKafkaEventSource name conforms to construct id rules', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
-      const kafkaTopic = 'some-topic';
-
-      const mskEventMapping = new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        });
-
-      // WHEN
-      fn.addEventSource(mskEventMapping);
-      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
-      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
     });
   });
 });
