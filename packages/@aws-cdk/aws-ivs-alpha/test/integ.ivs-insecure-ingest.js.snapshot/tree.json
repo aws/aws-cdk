@@ -1,0 +1,127 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-ivs-insecure-ingest": {
+        "id": "aws-cdk-ivs-insecure-ingest",
+        "path": "aws-cdk-ivs-insecure-ingest",
+        "children": {
+          "ChannelInsecureIngestEnabled": {
+            "id": "ChannelInsecureIngestEnabled",
+            "path": "aws-cdk-ivs-insecure-ingest/ChannelInsecureIngestEnabled",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ivs-insecure-ingest/ChannelInsecureIngestEnabled/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IVS::Channel",
+                  "aws:cdk:cloudformation:props": {
+                    "insecureIngest": true,
+                    "name": "aws-cdk-ivs-insecure-ingestChannelInsecureIngestEnabled15F31314",
+                    "type": "STANDARD"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ivs.CfnChannel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ivs-alpha.Channel",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-ivs-insecure-ingest/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-ivs-insecure-ingest/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ivs-insecure-ingest-test": {
+        "id": "ivs-insecure-ingest-test",
+        "path": "ivs-insecure-ingest-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ivs-insecure-ingest-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ivs-insecure-ingest-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ivs-insecure-ingest-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ivs-insecure-ingest-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ivs-insecure-ingest-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
