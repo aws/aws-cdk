@@ -407,6 +407,48 @@ describe('KafkaEventSource', () => {
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
+    test('AT_TIMESTAMP starting position', () => {
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      fn.addEventSource(new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+        startingPositionTimestamp: 1640995200,
+      }),
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        StartingPosition: 'AT_TIMESTAMP',
+        StartingPositionTimestamp: 1640995200,
+      });
+    });
+
+    test('startingPositionTimestamp missing throws error', () => {
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      expect(() => new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      })).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
+    });
+
+    test('startingPositionTimestamp without AT_TIMESTAMP throws error', () => {
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      expect(() => new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.LATEST,
+        startingPositionTimestamp: 1640995200,
+      })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
+    });
   });
 
   describe('self-managed kafka', () => {
@@ -1185,6 +1227,57 @@ describe('KafkaEventSource', () => {
             maximumPollers: 1,
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    });
+
+    test('AT_TIMESTAMP starting position', () => {
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const bootstrapServers = ['kafka-broker:9092'];
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const kafkaTopic = 'some-topic';
+
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        secret: secret,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+        startingPositionTimestamp: 1640995200,
+      }),
+      );
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        StartingPosition: 'AT_TIMESTAMP',
+        StartingPositionTimestamp: 1640995200,
+      });
+    });
+
+    test('startingPositionTimestamp missing throws error', () => {
+      const stack = new cdk.Stack();
+      const bootstrapServers = ['kafka-broker:9092'];
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const kafkaTopic = 'some-topic';
+
+      expect(() => new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        secret: secret,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      })).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
+    });
+
+    test('startingPositionTimestamp without AT_TIMESTAMP throws error', () => {
+      const stack = new cdk.Stack();
+      const bootstrapServers = ['kafka-broker:9092'];
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const kafkaTopic = 'some-topic';
+
+      expect(() => new sources.SelfManagedKafkaEventSource({
+        bootstrapServers,
+        secret: secret,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.LATEST,
+        startingPositionTimestamp: 1640995200,
+      })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
     });
   });
 });
