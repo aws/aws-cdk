@@ -584,7 +584,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
       dummyValue: defaultValue || `dummy-value-for-${parameterName}`,
-      ignoreErrorOnMissingContext: !!defaultValue,
+      ignoreErrorOnMissingContext: defaultValue !== undefined,
     }).value;
 
     return value;
