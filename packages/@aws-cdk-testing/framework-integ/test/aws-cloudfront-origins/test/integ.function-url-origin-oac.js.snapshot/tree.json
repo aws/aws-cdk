@@ -76,7 +76,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "exports.handler = async () => {};"
+                      "zipFile": "\n    exports.handler = async () => ({\n      statusCode: 200,\n      body: 'Hello!!'\n    });\n  "
                     },
                     "handler": "index.handler",
                     "role": {
@@ -283,6 +283,14 @@
               "Output{\"Ref\":\"Distribution830FAC52\"}": {
                 "id": "Output{\"Ref\":\"Distribution830FAC52\"}",
                 "path": "integ-cloudfront-function-url-origin-oac/Exports/Output{\"Ref\":\"Distribution830FAC52\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"Distribution830FAC52\",\"DomainName\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"Distribution830FAC52\",\"DomainName\"]}",
+                "path": "integ-cloudfront-function-url-origin-oac/Exports/Output{\"Fn::GetAtt\":[\"Distribution830FAC52\",\"DomainName\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -529,6 +537,60 @@
                     },
                     "constructInfo": {
                       "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43": {
+                    "id": "HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43",
+                    "path": "lambda-url-origin-oac/DefaultTest/DeployAssert/HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43",
+                    "children": {
+                      "HttpProvider": {
+                        "id": "HttpProvider",
+                        "path": "lambda-url-origin-oac/DefaultTest/DeployAssert/HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43/HttpProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "lambda-url-origin-oac/DefaultTest/DeployAssert/HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43/HttpProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "lambda-url-origin-oac/DefaultTest/DeployAssert/HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "lambda-url-origin-oac/DefaultTest/DeployAssert/HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "lambda-url-origin-oac/DefaultTest/DeployAssert/HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.HttpApiCall",
                       "version": "0.0.0"
                     }
                   },

@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1726103034438"
+    "salt": "1726199493707"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -107,7 +107,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "38bcec258d35a1cc95292038cdecc3454e1fcfd2367f5cbf9a26c60df1f3e718.zip"
+     "S3Key": "358df072f638d226bc60515a98fa15305e91193108367a0fa01dc626fb9b07d6.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -148,7 +148,7 @@
     "outputPaths": [
      "DistributionConfig.Origins.Items.0.OriginAccessControlId"
     ],
-    "salt": "1726103034440"
+    "salt": "1726199493709"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -183,7 +183,35 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1726103034441"
+    "salt": "1726199493710"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
+        }
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":\"Hello!!\"}}",
+    "salt": "1726199493710"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -202,6 +230,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallCloudFrontgetOriginAccessControlConfig56a7e5cef1aef611fe864ba9fac7fd53",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall7ee8727392631b1a9bf9268f5e1c4e43": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43",
      "assertion"
     ]
    }

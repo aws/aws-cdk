@@ -8,9 +8,14 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'integ-cloudfront-function-url-origin-oac');
 
-// Create the Lambda function
+// Create the Lambda function with a custom response
 const fn = new lambda.Function(stack, 'MyFunction', {
-  code: lambda.Code.fromInline('exports.handler = async () => {};'),
+  code: lambda.Code.fromInline(`
+    exports.handler = async () => ({
+      statusCode: 200,
+      body: 'Hello!!'
+    });
+  `),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_20_X,
 });
@@ -65,6 +70,13 @@ integ.assertions.awsApiCall('CloudFront', 'getOriginAccessControlConfig', {
     SigningBehavior: 'always',
     OriginAccessControlOriginType: 'lambda',
   },
+}));
+
+// Make an HTTP call to the CloudFront distribution and verify the response
+const httpCall = integ.assertions.httpApiCall(`https://${distribution.distributionDomainName}`);
+httpCall.expect(ExpectedResult.objectLike({
+  status: 200,
+  body: 'Hello!!',
 }));
 
 app.synth();
