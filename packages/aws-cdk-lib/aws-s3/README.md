@@ -493,11 +493,11 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 ```
 
 The above code will create a new bucket policy if none exists or update the
-existing bucket policy otherwise to allow access log delivery.
+existing bucket policy to allow access log delivery.
 
 However, there could be an edge case if the `accessLogsBucket` also defines a bucket
-policy resource using the L1 Construct. Although the mix of L1 and L2 Constructs are not
-recommended, there is nothing stopping users to do this at the moment.
+policy resource using the L1 Construct. Although the mixing of L1 and L2 Constructs is not
+recommended, there are no mechanisms in place to prevent users from doing this at the moment.
 
 ```ts
 const bucketName = "my-favorite-bucket-name";
@@ -535,9 +535,9 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-The above example uses L2 Bucket Construct with L1 CfnBucketPolicy Construct. However,
-when `serverAccessLogsBucket` is used, it will attempt to create a new L2 Bucket Policy
-resource and overwrite the permissions defined in the L1 Bucket Policy, causing unintended
+The above example uses the L2 Bucket Construct with the L1 CfnBucketPolicy Construct. However,
+when `serverAccessLogsBucket` is set, a new L2 Bucket Policy resource will be created
+which overwrites the permissions defined in the L1 Bucket Policy causing unintended
 behaviours.
 
 As noted above, we highly discourage the mixed usage of L1 and L2 Constructs. The recommended
