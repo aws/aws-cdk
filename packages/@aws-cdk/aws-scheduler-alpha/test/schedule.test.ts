@@ -214,5 +214,30 @@ describe('Schedule', () => {
         });
       }).toThrow('The provided duration must be between 1 minute and 1440 minutes, got 0');
     });
+
+    test('throw error when scheduleName exceeds 64 characters', () => {
+      const name = 'an-extremely-unnecessarily-long-name-exceeding-64-characters-in-length';
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          scheduleName: name,
+        });
+      }).toThrow(`scheduleName cannot be longer than 64 characters, got: ${name.length}`);
+    });
+
+    test('schedule with description', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        description: 'test description',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        Description: 'test description',
+      });
+    });
   });
 });

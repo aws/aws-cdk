@@ -1,7 +1,7 @@
-/* eslint-disable import/order */
 import { CodeBuild } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { silentTest } from '../../util/silent';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateProject: (params: CodeBuild.UpdateProjectInput) => CodeBuild.UpdateProjectOutput;
@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('returns undefined when a new CodeBuild Project is added to the Stack', async () => {
+  silentTest('returns undefined when a new CodeBuild Project is added to the Stack', async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
@@ -43,7 +43,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls the updateProject() API when it receives only a source difference in a CodeBuild project', async () => {
+  silentTest('calls the updateProject() API when it receives only a source difference in a CodeBuild project', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -96,7 +96,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateProject() API when it receives only a source version difference in a CodeBuild project', async () => {
+  silentTest('calls the updateProject() API when it receives only a source version difference in a CodeBuild project', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -148,7 +148,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateProject() API when it receives only an environment difference in a CodeBuild project', async () => {
+  silentTest('calls the updateProject() API when it receives only an environment difference in a CodeBuild project', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -254,7 +254,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test("correctly evaluates the project's name when it references a different resource from the template", async () => {
+  silentTest("correctly evaluates the project's name when it references a different resource from the template", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -324,7 +324,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test("correctly falls back to taking the project's name from the current stack if it can't evaluate it in the template", async () => {
+  silentTest("correctly falls back to taking the project's name from the current stack if it can't evaluate it in the template", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -386,7 +386,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test("will not perform a hotswap deployment if it cannot find a Ref target (outside the project's name)", async () => {
+  silentTest("will not perform a hotswap deployment if it cannot find a Ref target (outside the project's name)", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -436,7 +436,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
   });
 
-  test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the project's name)", async () => {
+  silentTest("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the project's name)", async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -489,7 +489,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
   });
 
-  test('calls the updateProject() API when it receives a difference in a CodeBuild project with no name', async () => {
+  silentTest('calls the updateProject() API when it receives a difference in a CodeBuild project with no name', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -541,7 +541,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('does not call the updateProject() API when it receives a change that is not Source, SourceVersion, or Environment difference in a CodeBuild project', async () => {
+  silentTest('does not call the updateProject() API when it receives a change that is not Source, SourceVersion, or Environment difference in a CodeBuild project', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -592,7 +592,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test(`when it receives a change that is not Source, SourceVersion, or Environment difference in a CodeBuild project alongside a hotswappable change,
+  silentTest(`when it receives a change that is not Source, SourceVersion, or Environment difference in a CodeBuild project alongside a hotswappable change,
         it does not call the updateProject() API in CLASSIC mode, but it does in HOTSWAP_ONLY mode`,
   async () => {
     // GIVEN
@@ -650,7 +650,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       });
     }
   });
-  test('does not call the updateProject() API when a resource with type that is not AWS::CodeBuild::Project but has the same properties is changed', async () => {
+  silentTest('does not call the updateProject() API when a resource with type that is not AWS::CodeBuild::Project but has the same properties is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
     "codepipeline-elastic-beanstalk-deploy/DefaultTest": {
       "stacks": [
