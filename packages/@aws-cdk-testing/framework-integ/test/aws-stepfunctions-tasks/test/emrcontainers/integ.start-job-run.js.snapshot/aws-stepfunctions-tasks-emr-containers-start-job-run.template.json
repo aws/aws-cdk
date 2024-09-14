@@ -1053,7 +1053,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b7773b14622afe5a48990d0625ebaa01f11ac208f0a3ca2c023b051c48db0c9c.json"
+       "/89a0adef78ece6c87a85a286e4270dac2a3299c7ececf29729771b28beea0859.json"
       ]
      ]
     }
@@ -1100,7 +1100,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/ab35eef07955d05198a8bf31a262cfc0900c00162ff1295e3536f458b94c4fb3.json"
+       "/db17d4f429860e38ff73349adc27c59c00dc5c6f8a7a98370e215e5d679569b3.json"
       ]
      ]
     }
@@ -1342,7 +1342,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider)",
     "Environment": {
@@ -1580,7 +1580,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.11",
     "Timeout": 30
    },
    "DependsOn": [

@@ -50,6 +50,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.titan-image-generator-v1:0". */
   public static readonly AMAZON_TITAN_IMAGE_GENERATOR_V1_0 = new FoundationModelIdentifier('amazon.titan-image-generator-v1:0');
 
+  /** Base model "amazon.titan-image-generator-v2:0". */
+  public static readonly AMAZON_TITAN_IMAGE_GENERATOR_V2_0 = new FoundationModelIdentifier('amazon.titan-image-generator-v2:0');
+
   /** Base model "amazon.titan-embed-image-v1:0". */
   public static readonly AMAZON_TITAN_EMBED_IMAGE_V1_0 = new FoundationModelIdentifier('amazon.titan-embed-image-v1:0');
 
@@ -235,6 +238,15 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.stable-diffusion-xl-v1:0". */
   public static readonly STABILITY_STABLE_DIFFUSION_XL_V1_0 = new FoundationModelIdentifier('stability.stable-diffusion-xl-v1:0');
+
+  /** Base model "stability.sd3-large-v1:0". */
+  public static readonly STABILITY_SD3_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-large-v1:0');
+
+  /** Base model "stability.stable-image-ultra-v1:0". */
+  public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_0 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:0');
+
+  /** Base model "stability.stable-image-core-v1:0". */
+  public static readonly STABILITY_STABLE_IMAGE_CORE_V1_0 = new FoundationModelIdentifier('stability.stable-image-core-v1:0');
 
   /**
    * Constructor for foundation model identifier
