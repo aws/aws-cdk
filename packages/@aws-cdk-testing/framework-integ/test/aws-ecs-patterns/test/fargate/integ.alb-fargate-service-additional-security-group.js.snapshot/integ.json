@@ -1,0 +1,12 @@
+{
+  "version": "36.0.24",
+  "testCases": {
+    "ApplicationLoadBalancedFargateServiceAdditionalSecurityGroupTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-alb-with-additional-security-group"
+      ],
+      "assertionStack": "ApplicationLoadBalancedFargateServiceAdditionalSecurityGroupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationLoadBalancedFargateServiceAdditionalSecurityGroupTestDefaultTestDeployAssert52556E6E"
+    }
+  }
+}
