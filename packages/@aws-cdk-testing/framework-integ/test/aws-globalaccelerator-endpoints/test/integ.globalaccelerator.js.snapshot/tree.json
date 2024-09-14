@@ -665,6 +665,69 @@
               "version": "0.0.0"
             }
           },
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "integ-globalaccelerator/SecurityGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-globalaccelerator/SecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "integ-globalaccelerator/SecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "from GlobalAcceleratorGroup:443": {
+                "id": "from GlobalAcceleratorGroup:443",
+                "path": "integ-globalaccelerator/SecurityGroup/from GlobalAcceleratorGroup:443",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "from GlobalAcceleratorGroup:443",
+                    "fromPort": 443,
+                    "groupId": {
+                      "Fn::GetAtt": [
+                        "SecurityGroupDD263621",
+                        "GroupId"
+                      ]
+                    },
+                    "ipProtocol": "tcp",
+                    "sourceSecurityGroupId": {
+                      "Fn::GetAtt": [
+                        "GroupPeerCustomResourceB3A15D36",
+                        "SecurityGroups.0.GroupId"
+                      ]
+                    },
+                    "toPort": 443
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
           "ALB": {
             "id": "ALB",
             "path": "integ-globalaccelerator/ALB",
@@ -685,7 +748,7 @@
                     "securityGroups": [
                       {
                         "Fn::GetAtt": [
-                          "ALBSecurityGroup8B8624F8",
+                          "SecurityGroupDD263621",
                           "GroupId"
                         ]
                       }
@@ -703,71 +766,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
-                  "version": "0.0.0"
-                }
-              },
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "integ-globalaccelerator/ALB/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-globalaccelerator/ALB/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Automatically created Security Group for ELB integglobalacceleratorALBEE1DE7F7",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "255.255.255.255/32",
-                            "description": "Disallow all traffic",
-                            "ipProtocol": "icmp",
-                            "fromPort": 252,
-                            "toPort": 86
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "from GlobalAcceleratorGroup:443": {
-                    "id": "from GlobalAcceleratorGroup:443",
-                    "path": "integ-globalaccelerator/ALB/SecurityGroup/from GlobalAcceleratorGroup:443",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
-                      "aws:cdk:cloudformation:props": {
-                        "description": "from GlobalAcceleratorGroup:443",
-                        "fromPort": 443,
-                        "groupId": {
-                          "Fn::GetAtt": [
-                            "ALBSecurityGroup8B8624F8",
-                            "GroupId"
-                          ]
-                        },
-                        "ipProtocol": "tcp",
-                        "sourceSecurityGroupId": {
-                          "Fn::GetAtt": [
-                            "GroupPeerCustomResourceB3A15D36",
-                            "SecurityGroups.0.GroupId"
-                          ]
-                        },
-                        "toPort": 443
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               }
@@ -794,6 +792,14 @@
                       }
                     ],
                     "scheme": "internet-facing",
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "SecurityGroupDD263621",
+                          "GroupId"
+                        ]
+                      }
+                    ],
                     "subnets": [
                       {
                         "Ref": "VPCPublicSubnet1SubnetB4246D30"
@@ -1428,7 +1434,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+                      "s3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
                     },
                     "handler": "index.handler",
                     "role": {

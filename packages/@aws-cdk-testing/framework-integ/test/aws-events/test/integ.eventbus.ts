@@ -5,7 +5,9 @@ import { EventBus } from 'aws-cdk-lib/aws-events';
 
 const app = new App();
 const stack = new Stack(app, 'Stack');
-const bus = new EventBus(stack, 'Bus');
+const bus = new EventBus(stack, 'Bus', {
+  description: 'myEventBus',
+});
 
 bus.addToResourcePolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
