@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "36.0.24",
   "artifacts": {
     "aws-cdk-nested-stack-in-product-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -11,21 +11,21 @@
     },
     "aws-cdk-nested-stack-in-product-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://12345678/test-region",
+      "environment": "aws://772514331817/us-east-1",
       "properties": {
         "templateFile": "aws-cdk-nested-stack-in-product-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/88bf3ae6c6791411a445541abc4c5a4b63d9c90295d234908b3c31c21241d261.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::772514331817:role/cdk-hnb659fds-deploy-role-772514331817-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::772514331817:role/cdk-hnb659fds-cfn-exec-role-772514331817-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-772514331817-us-east-1/6afe65960d54925e7bf7ba6ed354e8e37668b529a6f1d76100b4731292547221.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-cdk-nested-stack-in-product-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "arn": "arn:${AWS::Partition}:iam::772514331817:role/cdk-hnb659fds-lookup-role-772514331817-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -56,6 +56,10 @@
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
           }
         ],
         "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
