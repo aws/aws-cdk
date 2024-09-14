@@ -62,7 +62,7 @@ describe('ResponseHeadersPolicy', () => {
         frameOptions: { frameOption: HeadersFrameOption.DENY, override: true },
         referrerPolicy: { referrerPolicy: HeadersReferrerPolicy.NO_REFERRER, override: true },
         strictTransportSecurity: { accessControlMaxAge: Duration.seconds(600), includeSubdomains: true, override: true },
-        xssProtection: { protection: true, modeBlock: true, reportUri: 'https://example.com/csp-report', override: true },
+        xssProtection: { protection: true, modeBlock: false, reportUri: 'https://example.com/csp-report', override: true },
       },
       removeHeaders: ['Server'],
       serverTimingSamplingRate: 12.3456,
@@ -136,7 +136,7 @@ describe('ResponseHeadersPolicy', () => {
             Override: true,
           },
           XSSProtection: {
-            ModeBlock: true,
+            ModeBlock: false,
             Override: true,
             Protection: true,
             ReportUri: 'https://example.com/csp-report',

@@ -423,6 +423,9 @@
   "aws-lambda": [
     "AWS::Lambda"
   ],
+  "aws-launchwizard": [
+    "AWS::LaunchWizard"
+  ],
   "aws-lex": [
     "AWS::Lex"
   ],
@@ -533,6 +536,9 @@
   ],
   "aws-pcaconnectorad": [
     "AWS::PCAConnectorAD"
+  ],
+  "aws-pcaconnectorscep": [
+    "AWS::PCAConnectorSCEP"
   ],
   "aws-personalize": [
     "AWS::Personalize"
@@ -677,6 +683,9 @@
   ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"
+  ],
+  "aws-ssmquicksetup": [
+    "AWS::SSMQuickSetup"
   ],
   "aws-sso": [
     "AWS::SSO"

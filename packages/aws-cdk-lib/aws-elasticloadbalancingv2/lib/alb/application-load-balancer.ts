@@ -186,6 +186,11 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     });
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
+
+    if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
+      throw new Error('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
+    }
+
     const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
@@ -197,8 +202,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
-    if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
-    if (props.desyncMitigationMode !== undefined) {this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
+    if (props.dropInvalidHeaderFields) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
+    if (props.desyncMitigationMode !== undefined) { this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
     if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
     if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
     if (props.preserveXffClientPort) { this.setAttribute('routing.http.xff_client_port.enabled', 'true'); }
@@ -288,6 +293,68 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         principals: [logsDeliveryServicePrincipal],
         resources: [
           bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
+        ],
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
+      }),
+    );
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetBucketAcl'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [bucket.bucketArn],
+      }),
+    );
+
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
+    // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528
+    // and https://github.com/aws/aws-cdk/issues/27928)
+    const lb = this.node.defaultChild;
+    const bucketPolicy = bucket.policy?.node.defaultChild;
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+      lb.addDependency(bucketPolicy);
+    }
+  }
+
+  /**
+   * Enable connection logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks.
+   *
+   * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   */
+  public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
+    /**
+    * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
+    */
+    if (bucket.encryptionKey) {
+      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+    }
+
+    prefix = prefix || '';
+    this.setAttribute('connection_logs.s3.enabled', 'true');
+    this.setAttribute('connection_logs.s3.bucket', bucket.bucketName.toString());
+    this.setAttribute('connection_logs.s3.prefix', prefix);
+
+    // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+    bucket.addToResourcePolicy(new PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [this.resourcePolicyPrincipal()],
+      resources: [
+        bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+      ],
+    }));
+    // We still need this policy for the bucket using the ACL
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
@@ -1167,6 +1234,8 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
       this.ipAddressType = IpAddressType.IPV4;
     } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK) {
       this.ipAddressType = IpAddressType.DUAL_STACK;
+    } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) {
+      this.ipAddressType = IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4;
     }
 
     this.vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
