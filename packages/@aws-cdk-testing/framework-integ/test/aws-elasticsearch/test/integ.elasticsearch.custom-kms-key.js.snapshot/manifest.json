@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "cdk-integ-elasticsearch-custom-kms-key.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf2f6edc659e04c135e95c97aeeb6a6bb1ba9182acc56bbd68cf5a525bc71dce.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4835dc9d65e27eb79cfab3d4eb42658cd0bf721ef774a5806a46fe3a51437327.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,12 +52,6 @@
             "data": "DomainAppLogs21698C1B"
           }
         ],
-        "/cdk-integ-elasticsearch-custom-kms-key/Domain/ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
-          }
-        ],
         "/cdk-integ-elasticsearch-custom-kms-key/Domain/ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -86,6 +80,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DomainESAccessPolicyCustomResourcePolicy9747FC42"
+          }
+        ],
+        "/cdk-integ-elasticsearch-custom-kms-key/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/cdk-integ-elasticsearch-custom-kms-key/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
           }
         ],
         "/cdk-integ-elasticsearch-custom-kms-key/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -138,7 +156,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0781f83a1f73c9afc63b74bc2e42e9ba7108724c0e0af3e2350322bb9677ce25.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -154,30 +172,6 @@
         "ElasticsearchCustomKmsIntegDefaultTestDeployAssertFEEBA45B.assets"
       ],
       "metadata": {
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchLogsdescribeResourcePolicies"
-          }
-        ],
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeResourcePolicies"
-          }
-        ],
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
         "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

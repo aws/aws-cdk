@@ -238,6 +238,7 @@ export class Rule extends Resource implements IRule {
       deadLetterConfig: targetProps.deadLetterConfig,
       retryPolicy: targetProps.retryPolicy,
       sqsParameters: targetProps.sqsParameters,
+      redshiftDataParameters: targetProps.redshiftDataParameters,
       appSyncParameters: targetProps.appSyncParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
@@ -312,6 +313,10 @@ export class Rule extends Resource implements IRule {
 
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
+    }
+
+    if (this.targets.length > 5) {
+      errors.push('Event rule cannot have more than 5 targets.');
     }
 
     return errors;

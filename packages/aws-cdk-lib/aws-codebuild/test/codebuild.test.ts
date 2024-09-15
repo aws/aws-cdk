@@ -567,6 +567,10 @@ describe('default properties', () => {
         webhookFilters: [
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.RELEASED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PRERELEASED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CLOSED).andBaseBranchIs('main'),
         ],
       }),
     });
@@ -593,6 +597,22 @@ describe('default properties', () => {
           ],
           [
             { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'RELEASED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'PRERELEASED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'WORKFLOW_JOB_QUEUED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'PULL_REQUEST_CLOSED' },
             { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
           ],
         ],
@@ -664,6 +684,7 @@ describe('default properties', () => {
             codebuild.EventAction.PULL_REQUEST_CREATED,
             codebuild.EventAction.PULL_REQUEST_UPDATED,
             codebuild.EventAction.PULL_REQUEST_MERGED,
+            codebuild.EventAction.PULL_REQUEST_CLOSED,
           ).andTagIs('v.*'),
           // duplicate event actions are fine
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
@@ -685,7 +706,7 @@ describe('default properties', () => {
         Webhook: true,
         FilterGroups: [
           [
-            { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_MERGED' },
+            { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_MERGED, PULL_REQUEST_CLOSED' },
             { Type: 'HEAD_REF', Pattern: 'refs/tags/v.*' },
           ],
           [
@@ -1730,12 +1751,12 @@ describe('Linux x86-64 Image', () => {
 });
 
 describe('ARM image', () => {
-  describe('AMAZON_LINUX_2_ARM', () => {
+  describe('AMAZON_LINUX_2_ARM_3', () => {
     test('has type ARM_CONTAINER and default ComputeType LARGE', () => {
       const stack = new cdk.Stack();
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
         },
       });
 
@@ -1752,7 +1773,7 @@ describe('ARM image', () => {
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
           computeType: codebuild.ComputeType.SMALL,
-          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
         },
       });
 
@@ -1764,17 +1785,22 @@ describe('ARM image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType MEDIUM', () => {
+    test('can be used with ComputeType MEDIUM', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
-            computeType: codebuild.ComputeType.MEDIUM,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
+          computeType: codebuild.ComputeType.MEDIUM,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        'Environment': {
+          'Type': 'ARM_CONTAINER',
+          'ComputeType': 'BUILD_GENERAL1_MEDIUM',
+        },
+      });
     });
 
     test('can be used with ComputeType LARGE', () => {
@@ -1782,7 +1808,7 @@ describe('ARM image', () => {
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
           computeType: codebuild.ComputeType.LARGE,
-          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
         },
       });
 
@@ -1794,17 +1820,39 @@ describe('ARM image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType X2_LARGE', () => {
+    test('can be used with ComputeType X_LARGE', () => {
+      const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.X_LARGE,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        'Environment': {
+          'Type': 'ARM_CONTAINER',
+          'ComputeType': 'BUILD_GENERAL1_XLARGE',
+        },
+      });
+    });
+
+    test('can be used with ComputeType X2_LARGE', () => {
       const stack = new cdk.Stack();
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
-            computeType: codebuild.ComputeType.X2_LARGE,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
+          computeType: codebuild.ComputeType.X2_LARGE,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        'Environment': {
+          'Type': 'ARM_CONTAINER',
+          'ComputeType': 'BUILD_GENERAL1_2XLARGE',
+        },
+      });
     });
 
     test('cannot be used in conjunction with ComputeType LAMBDA_1GB', () => {
@@ -1813,11 +1861,11 @@ describe('ARM image', () => {
       expect(() => {
         new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM_3,
             computeType: codebuild.ComputeType.LAMBDA_1GB,
           },
         });
-      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_LAMBDA_1GB' was given/);
+      }).toThrow('Invalid CodeBuild environment: ARM images do not support Lambda ComputeTypes, got BUILD_LAMBDA_1GB');
     });
   });
 });

@@ -15,7 +15,7 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
+import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
@@ -177,7 +177,7 @@ export interface InstanceProps {
    * UserData, which will cause CloudFormation to replace it if the UserData
    * changes.
    *
-   * @default - true iff `initOptions` is specified, false otherwise.
+   * @default - true if `initOptions` is specified, false otherwise.
    */
   readonly userDataCausesReplacement?: boolean;
 
@@ -294,6 +294,8 @@ export interface InstanceProps {
   /**
    * Whether to associate a public IP address to the primary network interface attached to this instance.
    *
+   * You cannot specify this property and `ipv6AddressCount` at the same time.
+   *
    * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
@@ -333,6 +335,43 @@ export interface InstanceProps {
    * @default - no placement group will be used for this instance.
    */
   readonly placementGroup?: IPlacementGroup;
+
+  /**
+   * Whether the instance is enabled for AWS Nitro Enclaves.
+   *
+   * Nitro Enclaves requires a Nitro-based virtualized parent instance with specific Intel/AMD with at least 4 vCPUs
+   * or Graviton with at least 2 vCPUs instance types and Linux/Windows host OS,
+   * while the enclave itself supports only Linux OS.
+   *
+   * You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance.
+   *
+   * @see https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs
+   *
+   * @default - false
+   */
+  readonly enclaveEnabled?: boolean;
+
+  /**
+   * Whether the instance is enabled for hibernation.
+   *
+   * You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-hibernationoptions.html
+   *
+   * @default - false
+   */
+  readonly hibernationEnabled?: boolean;
+
+  /**
+   * The number of IPv6 addresses to associate with the primary network interface.
+   *
+   * Amazon EC2 chooses the IPv6 addresses from the range of your subnet.
+   *
+   * You cannot specify this property and `associatePublicIpAddress` at the same time.
+   *
+   * @default - For instances associated with an IPv6 subnet, use 1; otherwise, use 0.
+   */
+  readonly ipv6AddressCount?: number;
 }
 
 /**
@@ -484,6 +523,24 @@ export class Instance extends Resource implements IInstance {
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
     }
 
+    if (props.enclaveEnabled && props.hibernationEnabled) {
+      throw new Error('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
+    }
+
+    if (
+      props.ipv6AddressCount !== undefined &&
+      !Token.isUnresolved(props.ipv6AddressCount) &&
+      (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
+    ) {
+      throw new Error(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`);
+    }
+
+    if (
+      props.ipv6AddressCount !== undefined &&
+      props.associatePublicIpAddress !== undefined) {
+      throw new Error('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+    }
+
     // if network interfaces array is configured then subnetId, securityGroupIds,
     // and privateIpAddress are configured on the network interface level and
     // there is no need to configure them on the instance level
@@ -506,6 +563,9 @@ export class Instance extends Resource implements IInstance {
       ebsOptimized: props.ebsOptimized,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
       placementGroupName: props.placementGroup?.placementGroupName,
+      enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
+      hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
+      ipv6AddressCount: props.ipv6AddressCount,
     });
     this.instance.node.addDependency(this.role);
 
@@ -598,7 +658,7 @@ export class Instance extends Resource implements IInstance {
    * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
-  private applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+  public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     init.attach(this.instance, {
       platform: this.osType,
       instanceRole: this.role,

@@ -758,7 +758,7 @@
      ]
     },
     "Config": {
-     "version": "1.22",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "integrationtesteksclusterRole03F70AF0",
@@ -793,7 +793,8 @@
       ],
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -801,7 +802,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "integrationtesteksclusterDefaultVpcIGW9ADAFE6F",
@@ -993,7 +994,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/3663b247b06f76c575559a3a075b5aa32a8dacb385f3f93a4b50e7ee896b88d7.json"
+       "/25b8b1a072cd9192a542ac45a34cba6ecce1d6bfd65f2a75734d730e2da6878e.json"
       ]
      ]
     }
@@ -1040,7 +1041,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/004a771e727c5a548c4b9d2a79a9eb255dc105814c25a2962cf7b7e82376830e.json"
+       "/267345bbed6db3fe985d1e1229e4af9a4f26d7b3d31ee0a1bc83f002f435cd78.json"
       ]
      ]
     }

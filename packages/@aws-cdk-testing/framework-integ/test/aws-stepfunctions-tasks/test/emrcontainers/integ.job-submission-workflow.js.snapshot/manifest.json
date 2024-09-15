@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-all-services-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/626acf310931ef518d56d1c8cf0b71e7893155fec8fe7db2cd89905be6581677.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74284d00a5423fd72209b4e92823e08f0341e5525c145a346c6802392af4ed8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,7 @@
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster": [
           {
             "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.22 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v22. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
+            "data": "You created a cluster with Kubernetes Version 1.30 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v30. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/Resource": [
@@ -256,6 +256,12 @@
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -416,6 +422,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/awsstepfunctionstasksemrcontainersallservicestestawscdkawseksKubectlProviderframeworkonEventC503FA1CArn": [

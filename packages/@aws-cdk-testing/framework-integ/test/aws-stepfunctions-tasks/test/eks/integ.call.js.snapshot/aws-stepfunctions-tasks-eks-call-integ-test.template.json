@@ -819,7 +819,7 @@
     },
     "Config": {
      "name": "eksCluster",
-     "version": "1.22",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "EksClusterRoleC84B376F",
@@ -854,7 +854,8 @@
       ],
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -862,7 +863,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "EksClusterDefaultVpcIGWCA6A3220",
@@ -1068,7 +1069,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f9d506f0f889c20e071319c8f1b9ee5cdfbab831e0d314b4a5be409a48485cb8.json"
+       "/f7aa3008968380942d8a904737425d85b53d67861a291e848f6490c21bec4bf3.json"
       ]
      ]
     }
@@ -1115,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cf3d9b6e792958a3ecc1d2053925437f1c9fe75870c05995fec7b25150b735ce.json"
+       "/d163afd0a5a8105f45ee5d8a01d75479285e43d1b6383966f2213b6ad8e3be79.json"
       ]
      ]
     }
