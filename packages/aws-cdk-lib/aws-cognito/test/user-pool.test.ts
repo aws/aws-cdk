@@ -293,9 +293,7 @@ describe('User Pool', () => {
 
   test('import using arn', () => {
     // GIVEN
-    const stack = new Stack(undefined, undefined, {
-      env: { region: 'us-east-1', account: '0123456789012' },
-    });
+    const stack = new Stack();
     const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
 
     // WHEN

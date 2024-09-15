@@ -768,7 +768,7 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
-   * User pool provider name
+   * The provider name of this user pool resource
    * @attribute
    */
   readonly userPoolProviderName: string;
@@ -878,7 +878,7 @@ export class UserPool extends UserPoolBase {
 
     const userPoolId = arnParts.resourceName;
     // ex) cognito-idp.us-east-1.amazonaws.com/us-east-1_abcdefghi
-    const providerName = `cognito-idp.${Stack.of(scope).region}.amazonaws.com/${userPoolId}`;
+    const providerName = `cognito-idp.${arnParts.region}.${arnParts.partition}/${userPoolId}`;;
 
     class ImportedUserPool extends UserPoolBase {
       public readonly userPoolArn = userPoolArn;
