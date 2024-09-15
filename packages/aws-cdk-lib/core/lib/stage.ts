@@ -44,6 +44,13 @@ export interface StageProps {
   readonly env?: Environment;
 
   /**
+   * Whether to enable termination protection for stacks in this stage.
+   * 
+   * @default - The termination protection should be configured on the `Stack`s. 
+   */
+  readonly terminationProtection?: boolean;
+
+  /**
    * The output directory into which to emit synthesized artifacts.
    *
    * Can only be specified if this stage is the root stage (the app). If this is
@@ -122,6 +129,11 @@ export class Stage extends Construct {
   public readonly account?: string;
 
   /**
+   * The default termination protection setting for all stacks in this stage.
+   */
+  public readonly terminationProtection?: boolean;
+
+  /**
    * The cloud assembly builder that is being used for this App
    *
    * @internal
@@ -167,6 +179,7 @@ export class Stage extends Construct {
 
     this.region = props.env?.region ?? this.parentStage?.region;
     this.account = props.env?.account ?? this.parentStage?.account;
+    this.terminationProtection = props.terminationProtection ?? this.parentStage?.terminationProtection;
 
     props.permissionsBoundary?._bind(this);
 

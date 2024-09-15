@@ -2112,6 +2112,32 @@ describe('stack', () => {
     expect(artifact.terminationProtection).toEqual(false);
   });
 
+  test('Set termination protection to true via parent Stage', () => {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stage = new Stage(app, 'Stage', { terminationProtection: true });
+    const stack = new Stack(stage, 'Stack', {});
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    expect(artifact.terminationProtection).toEqual(true);
+  });
+
+  test('Override parent Stage termination protection', () => {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stage = new Stage(app, 'Stage', { terminationProtection: true });
+    const stack = new Stack(stage, 'Stack', {});
+
+    stack.terminationProtection = false;
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    expect(artifact.terminationProtection).toEqual(false);
+  });
+
   test('context can be set on a stack using a LegacySynthesizer', () => {
     // WHEN
     const stack = new Stack(undefined, undefined, {

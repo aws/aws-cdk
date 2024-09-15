@@ -335,6 +335,64 @@ describe('stage', () => {
     expect(Stage.isStage(app)).toEqual(true);
     expect(Stage.isStage(externalStage)).toEqual(true);
   });
+
+  test('Stack inherits termination protection from Stage', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      terminationProtection: true,
+    });
+
+    // WHEN
+    const stack1 = new Stack(stage, 'Stack1', { env: { region: 'elsewhere' } });
+
+    // THEN
+    expect(stack1.terminationProtection).toEqual(true);
+  });
+
+  test('Stack can override termination protection from Stage', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      terminationProtection: true,
+    });
+
+    // WHEN
+    const stack1 = new Stack(stage, 'Stack1', { terminationProtection: false });
+
+    // THEN
+    expect(stack1.terminationProtection).toEqual(false);
+  });
+
+  test('termination protection is inherited deeply', () => {
+    // GIVEN
+    const app = new App();
+    const outer = new Stage(app, 'Stage', {
+      terminationProtection: true,
+    });
+
+    // WHEN
+    const inner = new Stage(outer, 'Acct');
+
+    // THEN
+    expect(inner.terminationProtection).toEqual(true);
+    expect(new Stack(inner, 'Stack').terminationProtection).toEqual(true);
+  });
+
+  test('termination protection can be overridden in inner stage', () => {
+    // GIVEN
+    const app = new App();
+    const outer = new Stage(app, 'Stage', {
+      terminationProtection: false,
+    });
+
+    // WHEN
+    const inner = new Stage(outer, 'Acct', { terminationProtection: true });
+
+    // THEN
+    expect(inner.terminationProtection).toEqual(true);
+    expect(new Stack(inner, 'Stack').terminationProtection).toEqual(true);
+  });
 });
 
 test('missing context in Stages is propagated up to root assembly', () => {
