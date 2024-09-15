@@ -344,7 +344,7 @@ describe('stage', () => {
     });
 
     // WHEN
-    const stack1 = new Stack(stage, 'Stack1', { env: { region: 'elsewhere' } });
+    const stack1 = new Stack(stage, 'Stack1');
 
     // THEN
     expect(stack1.terminationProtection).toEqual(true);
