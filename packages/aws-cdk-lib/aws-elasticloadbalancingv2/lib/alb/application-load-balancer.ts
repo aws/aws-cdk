@@ -186,6 +186,11 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     });
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
+
+    if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
+      throw new Error('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
+    }
+
     const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
@@ -197,8 +202,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
-    if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
-    if (props.desyncMitigationMode !== undefined) {this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
+    if (props.dropInvalidHeaderFields) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
+    if (props.desyncMitigationMode !== undefined) { this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
     if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
     if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
     if (props.preserveXffClientPort) { this.setAttribute('routing.http.xff_client_port.enabled', 'true'); }
@@ -1229,6 +1234,8 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
       this.ipAddressType = IpAddressType.IPV4;
     } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK) {
       this.ipAddressType = IpAddressType.DUAL_STACK;
+    } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) {
+      this.ipAddressType = IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4;
     }
 
     this.vpc = ec2.Vpc.fromLookup(this, 'Vpc', {

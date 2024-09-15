@@ -14,6 +14,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
   public async getValue(args: cxschema.SSMParameterContextQuery) {
     const region = args.region;
     const account = args.account;
+
     if (!('parameterName' in args)) {
       throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
     }
@@ -21,10 +22,16 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
     debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);
 
     const response = await this.getSsmParameterValue(args);
-    if (!response.Parameter || response.Parameter.Value === undefined) {
+    const parameterNotFound: boolean = !response.Parameter || response.Parameter.Value === undefined;
+    const suppressError = 'ignoreErrorOnMissingContext' in args && args.ignoreErrorOnMissingContext as boolean;
+    if (parameterNotFound && suppressError && 'dummyValue' in args) {
+      return args.dummyValue;
+    }
+    if (parameterNotFound) {
       throw new Error(`SSM parameter not available in account ${account}, region ${region}: ${parameterName}`);
     }
-    return response.Parameter.Value;
+    // will not be undefined because we've handled undefined cases above
+    return response.Parameter!.Value;
   }
 
   /**

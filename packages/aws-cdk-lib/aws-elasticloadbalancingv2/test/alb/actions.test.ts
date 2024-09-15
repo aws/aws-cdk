@@ -338,4 +338,19 @@ describe('tests', () => {
       ],
     });
   });
+
+  test('throw error for invalid path pattern for redirect action', () => {
+    // GIVEN
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // THEN
+    expect(() => {
+      listener.addAction('RedirectAction', {
+        action: elbv2.ListenerAction.redirect({
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          path: 'example',
+        }),
+      });
+    }).toThrow('Redirect path must start with a \'/\', got: example');
+  });
 });
