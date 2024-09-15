@@ -600,7 +600,7 @@ export async function initPluginSdk(aws: SdkProvider, options: cxschema.ContextL
 
   const creds: CredentialsOptions = {
     assumeRoleArn: options.lookupRoleArn,
-    assumeRoleAdditionalOptions: options.lookupRoleAdditionalOptions,
+    assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
     assumeRoleExternalId: options.lookupRoleExternalId,
   };
 

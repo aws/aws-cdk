@@ -62,7 +62,7 @@ export class StageDeployment {
     const stepFromArtifact = new Map<CloudFormationStackArtifact, StackDeployment>();
     for (const artifact of assembly.stacks) {
       if (artifact.assumeRoleAdditionalOptions?.Tags && artifact.assumeRoleArn) {
-        throw new Error(`Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags ${JSON.stringify(artifact.assumeRoleAdditionalOptions.Tags)}, but assuming roles with session tags is not supported by CodePipeline.`);
+        throw new Error(`Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags, but assuming roles with session tags is not supported by CodePipeline.`);
       }
       const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);

@@ -68,12 +68,7 @@ export async function provideContextValues(
         lookupRoleArn: missingContext.props.lookupRoleArn,
       }, resolvedEnvironment, sdk);
 
-      value = await provider.getValue({
-        ...missingContext.props,
-        lookupRoleArn: arns.lookupRoleArn,
-        lookupRoleExternalId: missingContext.props.lookupRoleExternalId,
-        assumeRoleAdditionalOptions: missingContext.props.lookupRoleAdditionalOptions,
-      });
+      value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
     } catch (e: any) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.
