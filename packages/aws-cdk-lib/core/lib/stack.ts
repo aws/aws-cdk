@@ -147,7 +147,7 @@ export interface StackProps {
   /**
    * Whether to enable termination protection for this stack.
    *
-   * @default - The termination protection of the containing 
+   * @default - The termination protection of the containing
    * `Stage` if available, otherwise `false`.
    */
   readonly terminationProtection?: boolean;

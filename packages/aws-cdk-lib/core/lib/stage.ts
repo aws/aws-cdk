@@ -45,8 +45,8 @@ export interface StageProps {
 
   /**
    * Whether to enable termination protection for stacks in this stage.
-   * 
-   * @default - The termination protection should be configured on the `Stack`s. 
+   *
+   * @default - The termination protection should be configured on the `Stack`s.
    */
   readonly terminationProtection?: boolean;
 
