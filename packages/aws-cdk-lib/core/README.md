@@ -155,13 +155,53 @@ new MyStack(app, 'MyStack', {
 For more information on bootstrapping accounts and customizing synthesis,
 see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
-### STS Session Tags
+### STS Role Options
+
+You can configure STS options that instruct the CDK CLI on which configuration should it use when assuming 
+the various roles that are involved in a deployment operation.
+
+> See https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles
+
+These options are available via the `DefaultStackSynthesizer` properties:
+
+```ts
+class MyStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleExternalId: '',
+        deployRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        fileAssetPublishingExternalId: '',
+        fileAssetPublishingRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        imageAssetPublishingExternalId: '',
+        imageAssetPublishingRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        lookupRoleExternalId: '',
+        lookupRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+      })
+    });
+  }
+}
+```
+
+> Note that the `*additionalOptions` property does not allow passing `ExternalId` or `RoleArn`, as these options
+> have dedicated properties that configure them.
+
+#### Session Tags
 
 STS session tags are used to implement [Attribute-Based Access Control](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html) (ABAC).
 
 > See [IAM tutorial: Define permissions to access AWS resources based on tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_attribute-based-access-control.html)
 
-You can pass session tags for each [role created during bootstrap](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles) via the `DefaultStackSynthesizer`:
+You can pass session tags for each [role created during bootstrap](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles) via the `*additionalOptions` property:
 
 ```ts
 class MyStack extends cdk.Stack {
