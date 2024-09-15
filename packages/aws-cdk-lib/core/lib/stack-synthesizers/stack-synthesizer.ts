@@ -107,9 +107,11 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    * the credentials will be the same identity that is doing the `UpdateStack`
    * call, which may not have the right permissions to write to S3.
    */
-  protected synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string,
+  protected synthesizeTemplate(session: ISynthesisSession,
+    lookupRoleArn?: string,
+    lookupRoleExternalId?: string,
     lookupRoleAdditionalOptions?: { [key: string]: any }): FileAssetSource {
-    this.boundStack._synthesizeTemplate(session, lookupRoleArn, lookupRoleAdditionalOptions);
+    this.boundStack._synthesizeTemplate(session, lookupRoleArn, lookupRoleExternalId, lookupRoleAdditionalOptions);
     return stackTemplateFileAsset(this.boundStack, session);
   }
 
