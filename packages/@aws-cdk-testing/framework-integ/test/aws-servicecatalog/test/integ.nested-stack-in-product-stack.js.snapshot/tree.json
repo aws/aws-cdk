@@ -73,7 +73,7 @@
                           "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                           "aws:cdk:cloudformation:props": {
                             "content": {
-                              "s3Bucket": "cdk-hnb659fds-assets-772514331817-us-east-1",
+                              "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
                               "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
                             },
                             "description": "/opt/awscli/aws"
@@ -514,7 +514,7 @@
                                           {
                                             "Ref": "AWS::Partition"
                                           },
-                                          ":s3:::cdk-hnb659fds-assets-772514331817-us-east-1"
+                                          ":s3:::cdk-hnb659fds-assets-12345678-test-region"
                                         ]
                                       ]
                                     },
@@ -526,7 +526,7 @@
                                           {
                                             "Ref": "AWS::Partition"
                                           },
-                                          ":s3:::cdk-hnb659fds-assets-772514331817-us-east-1/*"
+                                          ":s3:::cdk-hnb659fds-assets-12345678-test-region/*"
                                         ]
                                       ]
                                     }
@@ -630,7 +630,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-772514331817-us-east-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
                       "s3Key": "a4c4da3d8af8741fce375f7ccc826c875d4a5c51f00b6aa09a1a90154236948e.zip"
                     },
                     "environment": {
@@ -683,7 +683,7 @@
                         "disableTemplateValidation": false,
                         "info": {
                           "LoadTemplateFromURL": {
-                            "Fn::Sub": "https://s3.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-assets-772514331817-us-east-1/b19855fc4d79148d4a4bcf46bdec84d2838a1ff6787e8aa2eaa98c0f7d8b9ac8.json"
+                            "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/b19855fc4d79148d4a4bcf46bdec84d2838a1ff6787e8aa2eaa98c0f7d8b9ac8.json"
                           }
                         }
                       }
