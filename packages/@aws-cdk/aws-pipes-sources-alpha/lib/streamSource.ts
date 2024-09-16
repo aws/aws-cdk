@@ -80,11 +80,11 @@ export abstract class StreamSource extends SourceWithDeadLetterTarget {
   /**
    * The maximum length of a time to wait for events in seconds.
    */
-  readonly maximumBatchingWindowInSeconds;
+  readonly maximumBatchingWindowInSeconds?: number;
   /**
    * The maximum record age in seconds.
    */
-  readonly maximumRecordAgeInSeconds;
+  readonly maximumRecordAgeInSeconds?: number;
 
   constructor(sourceArn: string, sourceParameters: StreamSourceParameters) {
     super(sourceArn, sourceParameters.deadLetterTarget);
