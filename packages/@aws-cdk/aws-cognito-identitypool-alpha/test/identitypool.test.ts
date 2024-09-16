@@ -749,18 +749,7 @@ describe('role mappings', () => {
       },
       RoleMappings: {
         cognito: {
-          IdentityProvider: {
-            'Fn::Join': [
-              '',
-              [
-                'cognito-idp.',
-                {
-                  Ref: 'AWS::Region',
-                },
-                '.amazonaws.com/test-user-pool:client-id',
-              ],
-            ],
-          },
+          IdentityProvider: 'cognito-idp.us-east-1.amazonaws.com/test-user-pool:client-id',
           Type: 'Token',
         },
       },

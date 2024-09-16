@@ -761,7 +761,20 @@
                                 [
                                   "cognito-idp.",
                                   {
-                                    "Ref": "AWS::Region"
+                                    "Fn::Select": [
+                                      3,
+                                      {
+                                        "Fn::Split": [
+                                          ":",
+                                          {
+                                            "Fn::GetAtt": [
+                                              "UserPoolToImport1A7C21D3",
+                                              "Arn"
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
                                   },
                                   ".amazonaws.com/",
                                   {
