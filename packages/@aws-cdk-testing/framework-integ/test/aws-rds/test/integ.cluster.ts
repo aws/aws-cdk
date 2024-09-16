@@ -4,6 +4,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
 import { AuroraMysqlEngineVersion, ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from 'aws-cdk-lib/aws-rds';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from 'aws-cdk-lib/cx-api';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 let featureFlag = false;
 
@@ -14,7 +15,7 @@ class TestStack extends cdk.Stack {
 
     const params = new ParameterGroup(this, 'Params', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_03_0,
+        version: AuroraMysqlEngineVersion.VER_3_07_1,
       }),
       description: 'A nice parameter group',
       parameters: {
@@ -50,7 +51,7 @@ class TestStack extends cdk.Stack {
 
     const cluster = new DatabaseCluster(this, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_03_0,
+        version: AuroraMysqlEngineVersion.VER_3_07_1,
       }),
       credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -84,12 +85,18 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'aws-cdk-rds-integ');
+const stack = new TestStack(app, 'aws-cdk-rds-integ');
+new IntegTest(app, 'test-rds-cluster', {
+  testCases: [stack],
+});
 app.synth();
 
 featureFlag = true;
 const appWithFeatureFlag = new cdk.App({
   context: { [AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS]: true },
 });
-new TestStack(appWithFeatureFlag, 'aws-cdk-rds-integ-with-feature-flag');
+const stackWithFeatureFlag = new TestStack(appWithFeatureFlag, 'aws-cdk-rds-integ-with-feature-flag');
+new IntegTest(appWithFeatureFlag, 'test-rds-cluster-with-feature-flag', {
+  testCases: [stackWithFeatureFlag],
+});
 appWithFeatureFlag.synth();
