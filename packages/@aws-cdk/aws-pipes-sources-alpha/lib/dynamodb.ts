@@ -41,8 +41,8 @@ export class DynamoDBSource extends StreamSource {
         dynamoDbStreamParameters: {
           batchSize: this.sourceParameters.batchSize,
           deadLetterConfig: this.deadLetterTargetArn ? { arn: this.deadLetterTargetArn } : undefined,
-          maximumBatchingWindowInSeconds: this.maximumBatchingWindowSeconds,
-          maximumRecordAgeInSeconds: this.maximumRecordAgeSeconds,
+          maximumBatchingWindowInSeconds: this.maximumBatchingWindow,
+          maximumRecordAgeInSeconds: this.maximumRecordAge,
           maximumRetryAttempts: this.sourceParameters.maximumRetryAttempts,
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,
