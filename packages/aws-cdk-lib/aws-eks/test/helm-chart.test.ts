@@ -272,5 +272,15 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { SkipCrds: true });
     });
+    test('should use private ecr repo when specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyPrivateChart', { cluster, chart: 'chart', repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
+    });
   });
 });

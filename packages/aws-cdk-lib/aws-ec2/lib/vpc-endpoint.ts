@@ -538,6 +538,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION_STREAMING = new InterfaceVpcEndpointAwsService('streaming-rekognition');
   public static readonly REKOGNITION_STREAMING_FIPS = new InterfaceVpcEndpointAwsService('streaming-rekognition-fips');
   public static readonly REPOST_SPACE = new InterfaceVpcEndpointAwsService('repostspace');
+  public static readonly RESOURCE_ACCESS_MANAGER = new InterfaceVpcEndpointAwsService('ram');
   public static readonly ROBOMAKER = new InterfaceVpcEndpointAwsService('robomaker');
   public static readonly RECYCLE_BIN = new InterfaceVpcEndpointAwsService('rbin');
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');

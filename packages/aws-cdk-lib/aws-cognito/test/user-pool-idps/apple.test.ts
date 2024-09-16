@@ -1,5 +1,5 @@
 import { Template } from '../../../assertions';
-import { Stack } from '../../../core';
+import { Stack, SecretValue } from '../../../core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderApple } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
@@ -102,10 +102,49 @@ describe('UserPoolIdentityProvider', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
         AttributeMapping: {
-          family_name: 'firstName',
-          given_name: 'lastName',
+          family_name: 'lastName',
+          given_name: 'firstName',
           customAttr1: 'email',
           customAttr2: 'sub',
+        },
+      });
+    });
+
+    // cannot assign both privateKey and privateKeyValue
+    test('cannot assign both privateKey and privateKeyValue', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      expect(() => {
+        new UserPoolIdentityProviderApple(stack, 'userpoolidp', {
+          userPool: pool,
+          clientId: 'com.amzn.cdk',
+          teamId: 'CDKTEAMCDK',
+          keyId: 'XXXXXXXXXX',
+          privateKey: 'PRIV_KEY_CDK',
+          privateKeyValue: SecretValue.secretsManager('dummyId'),
+        });
+      }).toThrow('Exactly one of "privateKey" or "privateKeyValue" must be configured.');
+    });
+
+    // should support privateKeyValue
+    test('should support privateKeyValue', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      new UserPoolIdentityProviderApple(stack, 'userpoolidp', {
+        userPool: pool,
+        clientId: 'com.amzn.cdk',
+        teamId: 'CDKTEAMCDK',
+        keyId: 'XXXXXXXXXX',
+        privateKeyValue: SecretValue.secretsManager('dummyId'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderDetails: {
+          private_key: '{{resolve:secretsmanager:dummyId:SecretString:::}}',
         },
       });
     });

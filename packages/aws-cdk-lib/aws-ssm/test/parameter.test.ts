@@ -725,6 +725,33 @@ test('fromLookup will use the SSM context provider to read value during synthesi
       key: 'ssm:account=12344:parameterName=my-param-name:region=us-east-1',
       props: {
         account: '12344',
+        ignoreErrorOnMissingContext: false,
+        dummyValue: 'dummy-value-for-my-param-name',
+        region: 'us-east-1',
+        parameterName: 'my-param-name',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('fromLookup will return defaultValue when it is provided', () => {
+  // GIVEN
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+
+  // WHEN
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', 'some-default-value');
+
+  // THEN
+  expect(value).toEqual('some-default-value');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=12344:parameterName=my-param-name:region=us-east-1',
+      props: {
+        account: '12344',
+        ignoreErrorOnMissingContext: true,
+        dummyValue: 'some-default-value',
         region: 'us-east-1',
         parameterName: 'my-param-name',
       },

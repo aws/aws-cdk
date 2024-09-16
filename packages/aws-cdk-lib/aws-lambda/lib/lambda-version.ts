@@ -7,7 +7,7 @@ import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { Fn, Lazy, RemovalPolicy } from '../../core';
+import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 
 export interface IVersion extends IFunction {
   /**
@@ -122,7 +122,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    */
   public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
     const version = extractQualifierFromArn(versionArn);
-    const lambda = Function.fromFunctionArn(scope, `${id}Function`, versionArn);
+    const lambdaArn = extractLambdaFunctionArn(versionArn);
+    const lambda = Function.fromFunctionArn(scope, `${id}Function`, lambdaArn);
 
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = version;
@@ -305,4 +306,23 @@ export class Version extends QualifiedFunctionBase implements IVersion {
  */
 export function extractQualifierFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the
+ * function ARN (excluding qualifier) from the ARN.
+ *
+ * Version ARNs look like this:
+ *
+ *   arn:aws:lambda:region:account-id:function:function-name:qualifier
+ *
+ * ..which means that in order to extract the function arn component from the ARN, we can
+ * split the ARN using ":" and join the first 7 components.
+ *
+ */
+export function extractLambdaFunctionArn(arn: string) {
+  if (!Token.isUnresolved(arn)) {
+    return arn.split(':').slice(0, 7).join(':');
+  }
+  return Fn.join(':', [...Array(7).keys()].map((i) => Fn.select(i, Fn.split(':', arn))));
 }
