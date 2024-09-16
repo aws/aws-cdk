@@ -589,10 +589,6 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
-    if (props.initOptions?.timeout && props.resourceSignalTimeout) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set');
-    }
-
     if (props.init) {
       this.applyCloudFormationInit(props.init, props.initOptions);
     }
@@ -699,9 +695,16 @@ export class Instance extends Resource implements IInstance {
   }
 
   /**
-   * Apply CloudFormation update policies for the instance
+   * Apply CloudFormation update policies for the instance.
+   *
+   * If both initOptions.timeout and resourceSignalTimeout are specified,
+   * timeout is summed together, else timeout is set to the value of the specified field.
    */
   private applyUpdatePolicies(props: InstanceProps) {
+    if (props.initOptions?.timeout && props.resourceSignalTimeout) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set');
+    }
+
     if (props.resourceSignalTimeout !== undefined) {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
