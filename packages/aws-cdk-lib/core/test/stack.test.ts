@@ -2075,6 +2075,21 @@ describe('stack', () => {
     expect(asm.getStackArtifact(stack2.artifactId).tags).toEqual(expected);
   });
 
+  test('stack tags may not contain tokens', () => {
+    // GIVEN
+    const app = new App({
+      stackTraces: false,
+    });
+
+    const stack = new Stack(app, 'stack1', {
+      tags: {
+        foo: Lazy.string({ produce: () => 'lazy' }),
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/Stack tags may not contain deploy-time values/);
+  });
+
   test('Termination Protection is reflected in Cloud Assembly artifact', () => {
     // if the root is an app, invoke "synth" to avoid double synthesis
     const app = new App();
