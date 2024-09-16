@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { evaluateCFN } from './evaluate-cfn';
-import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
+import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, StackProps, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
 let app: App;
@@ -112,7 +113,7 @@ describe('tokens that return literals', () => {
     const asm = app.synth();
     const template = asm.getStackByName(stack.stackName).template;
     const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
-    expect(stringifyLogicalId).toBeDefined();
+    expect(stringifyLogicalId).toBe('CdkJsonStringifyRefThing47B9E256');
 
     expect(template.Resources.Resource.Properties.someJson).toEqual({
       'Fn::Join': ['', [
