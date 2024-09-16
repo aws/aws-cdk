@@ -1,4 +1,4 @@
-import { FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
+import { FargatePlatformVersion, FargateTaskDefinition, PidMode, RuntimePlatform } from '../../../aws-ecs';
 
 export interface FargateServiceBaseProps {
   /**
@@ -89,4 +89,18 @@ export interface FargateServiceBaseProps {
    * @default - If the property is undefined, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
    */
   readonly runtimePlatform?: RuntimePlatform;
+
+  /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Only supported for tasks that are hosted on AWS Fargate if the tasks
+   * are using platform version 1.4.0 or later (Linux).  Only the TASK option
+   * is supported for Linux-based Fargate containers. Not supported in
+   * Windows containers. If pidMode is specified for a Fargate task, then
+   * runtimePlatform.operatingSystemFamily must also be specified.  For more
+   * information, see [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_definition_pidmode).
+   *
+   * @default - PidMode used by the task is not specified
+   */
+  readonly pidMode?: PidMode;
 }
