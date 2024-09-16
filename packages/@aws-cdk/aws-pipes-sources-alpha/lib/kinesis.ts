@@ -54,8 +54,8 @@ export class KinesisSource extends StreamSource {
         kinesisStreamParameters: {
           batchSize: this.sourceParameters.batchSize,
           deadLetterConfig: this.deadLetterTargetArn ? { arn: this.deadLetterTargetArn } : undefined,
-          maximumBatchingWindowInSeconds: this.maximumBatchingWindowInSeconds,
-          maximumRecordAgeInSeconds: this.maximumRecordAgeInSeconds,
+          maximumBatchingWindowInSeconds: this.maximumBatchingWindowSeconds,
+          maximumRecordAgeInSeconds: this.maximumRecordAgeSeconds,
           maximumRetryAttempts: this.sourceParameters.maximumRetryAttempts,
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,

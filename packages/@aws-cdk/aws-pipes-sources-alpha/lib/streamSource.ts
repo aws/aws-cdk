@@ -80,22 +80,22 @@ export abstract class StreamSource extends SourceWithDeadLetterTarget {
   /**
    * The maximum length of a time to wait for events in seconds.
    */
-  readonly maximumBatchingWindowInSeconds?: number;
+  readonly maximumBatchingWindowSeconds?: number;
   /**
    * The maximum record age in seconds.
    */
-  readonly maximumRecordAgeInSeconds?: number;
+  readonly maximumRecordAgeSeconds?: number;
 
   constructor(sourceArn: string, sourceParameters: StreamSourceParameters) {
     super(sourceArn, sourceParameters.deadLetterTarget);
     this.sourceArn = sourceArn;
     this.sourceParameters = sourceParameters;
-    this.maximumBatchingWindowInSeconds = this.sourceParameters.maximumBatchingWindow?.toSeconds();
-    this.maximumRecordAgeInSeconds = this.sourceParameters.maximumRecordAge?.toSeconds();
+    this.maximumBatchingWindowSeconds = this.sourceParameters.maximumBatchingWindow?.toSeconds();
+    this.maximumRecordAgeSeconds = this.sourceParameters.maximumRecordAge?.toSeconds();
 
     validateBatchSize(this.sourceParameters.batchSize);
-    validateMaximumBatchingWindow(this.maximumBatchingWindowInSeconds);
-    validateMaximumRecordAge(this.maximumRecordAgeInSeconds);
+    validateMaximumBatchingWindow(this.maximumBatchingWindowSeconds);
+    validateMaximumRecordAge(this.maximumRecordAgeSeconds);
     validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
     validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
   }
