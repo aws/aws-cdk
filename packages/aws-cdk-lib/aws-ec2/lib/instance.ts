@@ -692,6 +692,7 @@ export class Instance extends Resource implements IInstance {
     this.instance.cfnOptions.creationPolicy = {
       ...this.instance.cfnOptions.creationPolicy,
       resourceSignal: {
+        count: (oldResourceSignal?.count ?? 0) + 1,
         timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
       },
     };
