@@ -1,5 +1,5 @@
 import { IPipe, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { App, Duration, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AttributeType, ITableV2, StreamViewType, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Topic } from 'aws-cdk-lib/aws-sns';
@@ -49,6 +49,49 @@ describe('stream source validations', () => {
         batchSize: 0,
       });
     }).toThrow('Batch size must be between 1 and 10000, received 0');
+  });
+
+  it('validateBatchSize works with a token', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const queue = new Queue(stack, 'MyQueue');
+    const batchSize = Lazy.number({ produce: () => 1 });
+    const source = new FakeStreamSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
+      deadLetterTarget: queue,
+      batchSize,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      Source: {
+        'Fn::GetAtt': [
+          'MyTable794EDED1',
+          'StreamArn',
+        ],
+      },
+      SourceParameters: {
+        DynamoDBStreamParameters: {
+          BatchSize: 1,
+        },
+      },
+    });
   });
 
   test('maximum batching window > 300 should throw', () => {
@@ -156,6 +199,49 @@ describe('stream source validations', () => {
     }).toThrow('Maximum retry attempts must be between -1 and 10000, received 10001');
   });
 
+  it('validateMaxiumRetryAttemps works with a token', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const queue = new Queue(stack, 'MyQueue');
+    const maximumRetryAttempts = Lazy.number({ produce: () => 1 });
+    const source = new FakeStreamSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
+      deadLetterTarget: queue,
+      maximumRetryAttempts,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      Source: {
+        'Fn::GetAtt': [
+          'MyTable794EDED1',
+          'StreamArn',
+        ],
+      },
+      SourceParameters: {
+        DynamoDBStreamParameters: {
+          MaximumRetryAttempts: 1,
+        },
+      },
+    });
+  });
+
   test('parallelization factor < 1 should throw', () => {
     // GIVEN
     const app = new App();
@@ -196,6 +282,49 @@ describe('stream source validations', () => {
         parallelizationFactor: 11,
       });
     }).toThrow('Parallelization factor must be between 1 and 10, received 11');
+  });
+
+  it('validateParallelizationFactor works with a token', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const queue = new Queue(stack, 'MyQueue');
+    const parallelizationFactor = Lazy.number({ produce: () => 1 });
+    const source = new FakeStreamSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
+      deadLetterTarget: queue,
+      parallelizationFactor,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResourceProperties('AWS::Pipes::Pipe', {
+      Source: {
+        'Fn::GetAtt': [
+          'MyTable794EDED1',
+          'StreamArn',
+        ],
+      },
+      SourceParameters: {
+        DynamoDBStreamParameters: {
+          ParallelizationFactor: 1,
+        },
+      },
+    });
   });
 
   it('should grant pipe role write access to dead-letter queue', () => {

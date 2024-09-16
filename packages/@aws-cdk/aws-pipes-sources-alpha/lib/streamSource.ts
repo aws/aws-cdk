@@ -1,5 +1,5 @@
 import { SourceWithDeadLetterTarget } from '@aws-cdk/aws-pipes-alpha';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, Token } from 'aws-cdk-lib';
 import { ITopic } from 'aws-cdk-lib/aws-sns';
 import { IQueue } from 'aws-cdk-lib/aws-sqs';
 import { OnPartialBatchItemFailure } from './enums';
@@ -77,22 +77,32 @@ export abstract class StreamSource extends SourceWithDeadLetterTarget {
    * Base parameters for streaming sources.
    */
   readonly sourceParameters: StreamSourceParameters;
+  /**
+   * The maximum length of a time to wait for events in seconds.
+   */
+  readonly maximumBatchingWindowInSeconds;
+  /**
+   * The maximum record age in seconds.
+   */
+  readonly maximumRecordAgeInSeconds;
 
   constructor(sourceArn: string, sourceParameters: StreamSourceParameters) {
     super(sourceArn, sourceParameters.deadLetterTarget);
     this.sourceArn = sourceArn;
     this.sourceParameters = sourceParameters;
+    this.maximumBatchingWindowInSeconds = this.sourceParameters.maximumBatchingWindow?.toSeconds();
+    this.maximumRecordAgeInSeconds = this.sourceParameters.maximumRecordAge?.toSeconds();
 
     validateBatchSize(this.sourceParameters.batchSize);
-    validateMaximumBatchingWindow(this.sourceParameters.maximumBatchingWindow?.toSeconds());
-    validateMaximumRecordAge(this.sourceParameters.maximumRecordAge?.toSeconds());
+    validateMaximumBatchingWindow(this.maximumBatchingWindowInSeconds);
+    validateMaximumRecordAge(this.maximumRecordAgeInSeconds);
     validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
     validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
   }
 }
 
 function validateBatchSize(batchSize?: number) {
-  if (batchSize !== undefined) {
+  if (batchSize !== undefined && !Token.isUnresolved(batchSize)) {
     if (batchSize < 1 || batchSize > 10000) {
       throw new Error(`Batch size must be between 1 and 10000, received ${batchSize}`);
     }
@@ -117,7 +127,7 @@ function validateMaximumRecordAge(age?: number) {
 }
 
 function validateMaxiumRetryAttemps(attempts?: number) {
-  if (attempts !== undefined) {
+  if (attempts !== undefined && !Token.isUnresolved(attempts)) {
     if (attempts < -1 || attempts > 10000) {
       throw new Error(`Maximum retry attempts must be between -1 and 10000, received ${attempts}`);
     }
@@ -125,7 +135,7 @@ function validateMaxiumRetryAttemps(attempts?: number) {
 }
 
 function validateParallelizationFactor(factor?: number) {
-  if (factor !== undefined) {
+  if (factor !== undefined && !Token.isUnresolved(factor)) {
     if (factor < 1 || factor > 10) {
       throw new Error(`Parallelization factor must be between 1 and 10, received ${factor}`);
     }
