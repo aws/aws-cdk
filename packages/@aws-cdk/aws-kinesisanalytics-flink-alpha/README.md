@@ -80,7 +80,7 @@ declare const bucket: s3.Bucket;
 declare const vpc: ec2.Vpc;
 const flinkApp = new flink.Application(this, 'Application', {
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
-  runtime: flink.Runtime.FLINK_1_19,
+  runtime: flink.Runtime.FLINK_1_20,
   vpc,
 });
 ```
