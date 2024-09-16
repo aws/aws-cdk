@@ -1081,7 +1081,6 @@ test('initOptions.timeout and resourceSignalTimeout are both not set. Timeout is
   Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     CreationPolicy: {
       ResourceSignal: {
-        Count: 1,
         Timeout: 'PT5M',
       },
     },
@@ -1129,7 +1128,6 @@ test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set t
   Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     CreationPolicy: {
       ResourceSignal: {
-        Count: 1,
         Timeout: 'PT10M',
       },
     },

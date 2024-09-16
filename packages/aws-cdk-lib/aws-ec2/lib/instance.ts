@@ -706,6 +706,7 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
+          ...this.instance.cfnOptions.creationPolicy?.resourceSignal,
           timeout: props.initOptions?.timeout ?
             props.resourceSignalTimeout.plus(props.initOptions?.timeout).toIsoString() :
             props.resourceSignalTimeout.toIsoString(),
