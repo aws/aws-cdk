@@ -590,7 +590,7 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicIp = this.instance.attrPublicIp;
 
     if (props.initOptions?.timeout && props.resourceSignalTimeout) {
-      Annotations.of(this).addWarning('two fields set')
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout','Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set')
     }
     this.applyUpdatePolicies(props);
 

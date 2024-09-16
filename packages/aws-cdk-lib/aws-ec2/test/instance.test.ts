@@ -1067,8 +1067,54 @@ test.each([true, false])('throw error for specifying ipv6AddressCount with assoc
   }).toThrow('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
 });
 
+test('initOptions.timeout and resourceSignalTimeout are both not set. Timeout is set to default of 5 min', () => {
+  // GIVEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+  });
 
-test('Resource signal specified', () => {
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT5M',
+      },
+    },
+  });
+})
+
+test('initOptions.timeout is set and not resourceSignalTimeout. Timeout is set to initOptions.timeout value', () => {
+  // GIVEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    initOptions: {
+      timeout: cdk.Duration.minutes(10),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT10M',
+      },
+    },
+  });
+});
+
+test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set to resourceSignalTimeout value', () => {
   // GIVEN
   new Instance(stack, 'Instance', {
     vpc,
@@ -1091,7 +1137,7 @@ test('Resource signal specified', () => {
   });
 });
 
-test('add time', () => {
+test('resourceSignalTimeout and initOptions.timeout are both set, sum timeout and log warning', () => {
   // GIVEN
   new Instance(stack, 'Instance', {
     vpc,
@@ -1107,7 +1153,7 @@ test('add time', () => {
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('*', 'two fields set');
+  Annotations.fromStack(stack).hasWarning('/Default/Instance', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set [ack: @aws-cdk/aws-ec2:setSetimeout]');
   Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     CreationPolicy: {
       ResourceSignal: {
