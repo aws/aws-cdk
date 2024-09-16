@@ -590,13 +590,14 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicIp = this.instance.attrPublicIp;
 
     if (props.initOptions?.timeout && props.resourceSignalTimeout) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout','Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set')
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set');
     }
-    this.applyUpdatePolicies(props);
 
     if (props.init) {
       this.applyCloudFormationInit(props.init, props.initOptions);
     }
+
+    this.applyUpdatePolicies(props);
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     //
@@ -691,7 +692,6 @@ export class Instance extends Resource implements IInstance {
     this.instance.cfnOptions.creationPolicy = {
       ...this.instance.cfnOptions.creationPolicy,
       resourceSignal: {
-        count: (oldResourceSignal?.count ?? 0) + 1,
         timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
       },
     };
@@ -705,7 +705,9 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
+          timeout: props.initOptions?.timeout ?
+            props.resourceSignalTimeout.plus(props.initOptions?.timeout).toIsoString() :
+            props.resourceSignalTimeout.toIsoString(),
         },
       };
     }

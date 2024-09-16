@@ -1,10 +1,9 @@
 import * as path from 'path';
-import * as cdk from 'aws-cdk-lib';
 import { Annotations, Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
-import { App, Stack } from '../../core';
+import { App, Stack, Duration } from '../../core';
 import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxImage,
@@ -1087,7 +1086,7 @@ test('initOptions.timeout and resourceSignalTimeout are both not set. Timeout is
       },
     },
   });
-})
+});
 
 test('initOptions.timeout is set and not resourceSignalTimeout. Timeout is set to initOptions.timeout value', () => {
   // GIVEN
@@ -1099,7 +1098,7 @@ test('initOptions.timeout is set and not resourceSignalTimeout. Timeout is set t
       InitCommand.shellCommand('echo hello'),
     ),
     initOptions: {
-      timeout: cdk.Duration.minutes(10),
+      timeout: Duration.minutes(10),
     },
   });
 
@@ -1123,7 +1122,7 @@ test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set t
     init: CloudFormationInit.fromElements(
       InitCommand.shellCommand('echo hello'),
     ),
-    resourceSignalTimeout: cdk.Duration.minutes(10),
+    resourceSignalTimeout: Duration.minutes(10),
   });
 
   // THEN
@@ -1131,7 +1130,7 @@ test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set t
     CreationPolicy: {
       ResourceSignal: {
         Count: 1,
-        Timeout: 'PT15M',
+        Timeout: 'PT10M',
       },
     },
   });
@@ -1147,9 +1146,9 @@ test('resourceSignalTimeout and initOptions.timeout are both set, sum timeout an
       InitCommand.shellCommand('echo hello'),
     ),
     initOptions: {
-      timeout: cdk.Duration.minutes(10),
+      timeout: Duration.minutes(10),
     },
-    resourceSignalTimeout: cdk.Duration.minutes(10),
+    resourceSignalTimeout: Duration.minutes(10),
   });
 
   // THEN
