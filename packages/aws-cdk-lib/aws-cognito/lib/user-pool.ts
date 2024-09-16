@@ -878,7 +878,7 @@ export class UserPool extends UserPoolBase {
 
     const userPoolId = arnParts.resourceName;
     // ex) cognito-idp.us-east-1.amazonaws.com/us-east-1_abcdefghi
-    const providerName = `cognito-idp.${arnParts.region}.amazonaws.com/${userPoolId}`;;
+    const providerName = `cognito-idp.${arnParts.region}.${Stack.of(scope).urlSuffix}/${userPoolId}`;;
 
     class ImportedUserPool extends UserPoolBase {
       public readonly userPoolArn = userPoolArn;
