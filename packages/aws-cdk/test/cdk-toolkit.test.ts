@@ -69,6 +69,7 @@ import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
+import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
 
 let cloudExecutable: MockCloudExecutable;
@@ -115,7 +116,6 @@ describe('readCurrentTemplate', () => {
   let mockForEnvironment = jest.fn();
   let mockCloudExecutable: MockCloudExecutable;
   beforeEach(() => {
-
     template = {
       Resources: {
         Func: {
@@ -390,6 +390,29 @@ describe('readCurrentTemplate', () => {
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
       assumeRoleArn: undefined,
       assumeRoleExternalId: undefined,
+    });
+  });
+});
+
+describe('bootstrap', () => {
+  test('accepts qualifier from context', async () => {
+    // GIVEN
+    const toolkit = defaultToolkitSetup();
+    const configuration = new Configuration();
+    configuration.context.set('@aws-cdk/core:bootstrapQualifier', 'abcde');
+
+    // WHEN
+    await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {
+      parameters: {
+        qualifier: configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
+      },
+    });
+
+    // THEN
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
+      parameters: {
+        qualifier: 'abcde',
+      },
     });
   });
 });
