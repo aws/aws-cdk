@@ -61,6 +61,7 @@ new ec2.Instance(stack, 'Instance2', {
       ]),
     },
   }),
+  resourceSignalTimeout: cdk.Duration.minutes(10),
 });
 
 app.synth();
