@@ -136,7 +136,7 @@ def handler(event, context):
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
             # Passing through the ARN sequences dependencees on the deployment
             'DestinationBucketArn': props.get('DestinationBucketArn'),
-            **({'SourceObjectKeys': props.get('SourceObjectKeys')} if output_object_keys else {})
+            **({'SourceObjectKeys': props.get('SourceObjectKeys')} if output_object_keys else {'SourceObjectKeys': []})
         })
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
@@ -334,4 +334,3 @@ def replace_markers(filename, markers):
     # # delete the original file and rename the new one to the original
     os.remove(filename)
     os.rename(outfile, filename)
-    

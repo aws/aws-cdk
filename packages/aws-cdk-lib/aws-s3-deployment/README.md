@@ -471,7 +471,7 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 
 ## Controlling the Output of Source Object Keys
 
-By default, the keys of the source objects copied to the destination bucket are returned in the Data property of the custom resource. However, you can disable this behavior by setting the outputObjectKeys property to false. This is particularly useful when the number of objects is too large and might exceed the size limit of the data property.
+By default, the keys of the source objects copied to the destination bucket are returned in the Data property of the custom resource. However, you can disable this behavior by setting the outputObjectKeys property to false. This is particularly useful when the number of objects is too large and might exceed the size limit of the responseData property.
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
