@@ -776,7 +776,11 @@
                                       }
                                     ]
                                   },
-                                  ".amazonaws.com/",
+                                  ".",
+                                  {
+                                    "Ref": "AWS::URLSuffix"
+                                  },
+                                  "/",
                                   {
                                     "Fn::Select": [
                                       1,
