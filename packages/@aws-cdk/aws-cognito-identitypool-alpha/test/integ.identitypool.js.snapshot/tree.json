@@ -867,60 +867,6 @@
           "version": "0.0.0"
         }
       },
-      "identitypool-integ": {
-        "id": "identitypool-integ",
-        "path": "identitypool-integ",
-        "children": {
-          "DefaultTest": {
-            "id": "DefaultTest",
-            "path": "identitypool-integ/DefaultTest",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "identitypool-integ/DefaultTest/Default",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "DeployAssert": {
-                "id": "DeployAssert",
-                "path": "identitypool-integ/DefaultTest/DeployAssert",
-                "children": {
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "identitypool-integ/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "identitypool-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "0.0.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "0.0.0"
-        }
-      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
