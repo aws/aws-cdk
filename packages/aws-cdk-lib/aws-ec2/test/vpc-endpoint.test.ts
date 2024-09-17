@@ -694,6 +694,37 @@ describe('vpc endpoint', () => {
       });
 
     });
+
+    test.each([
+      ['us-isof-test-1', 'gov.ic.hci.csp'],
+      ['eu-isoe-test-1', 'uk.adc-e.cloud'],
+      ['us-east-1', 'com.amazonaws'],
+      ['us-gov-west-1', 'com.amazonaws'],
+      ['cn-northwest-1', 'cn.com.amazonaws'],
+      ['cn-north-1', 'cn.com.amazonaws'],
+    ])('test vpc interface endpoint for ECR can be created correctly in all regions', (region : string, domain: string) => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: region } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('ECR Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECR,
+      });
+
+      vpc.addInterfaceEndpoint('ECR Docker Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `${domain}.${region}.ecr.api`,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `${domain}.${region}.ecr.dkr`,
+      });
+    });
+
     test.each([
       ['transcribe', InterfaceVpcEndpointAwsService.TRANSCRIBE],
     ])('test vpc interface endpoint with .cn suffix for %s can be created correctly in China regions', (name: string, given: InterfaceVpcEndpointAwsService) => {
