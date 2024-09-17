@@ -5,6 +5,7 @@ import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './appl
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Lazy, Resource, Token } from '../../../core';
@@ -96,6 +97,66 @@ export interface BaseApplicationListenerProps {
    * @default true
    */
   readonly open?: boolean;
+
+  /**
+   * The mutual authentication configuration information
+   *
+   * @default - No mutual authentication configuration
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html
+   */
+  readonly mutualAuthentication?: MutualAuthentication;
+}
+
+/**
+ * The mutual authentication configuration information
+ *
+ */
+export interface MutualAuthentication {
+  /**
+   * The client certificate handling method
+   *
+   * @default MutualAuthenticationMode.OFF
+   */
+  readonly mutualAuthenticationMode?: MutualAuthenticationMode;
+
+  /**
+   * The trust store
+   *
+   * Cannot be used with MutualAuthenticationMode.OFF or MutualAuthenticationMode.PASS_THROUGH
+   *
+   * @default - no trust store
+   */
+  readonly trustStore?: ITrustStore;
+
+  /**
+   * Indicates whether expired client certificates are ignored
+   *
+   * Cannot be used with MutualAuthenticationMode.OFF or MutualAuthenticationMode.PASS_THROUGH
+   *
+   * @default false
+   */
+  readonly ignoreClientCertificateExpiry?: boolean;
+}
+
+/**
+ * The client certificate handling method
+ */
+export enum MutualAuthenticationMode {
+  /**
+   * Off
+   */
+  OFF = 'off',
+
+  /**
+   * Application Load Balancer sends the whole client certificate chain to the target using HTTP headers
+   */
+  PASS_THROUGH = 'passthrough',
+
+  /**
+   * Application Load Balancer performs X.509 client certificate authentication for clients when a load balancer negotiates TLS connections
+   */
+  VERIFY = 'verify',
 }
 
 /**
@@ -173,6 +234,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public readonly loadBalancer: IApplicationLoadBalancer;
 
   /**
+   * The port of the listener.
+  */
+  public readonly port: number;
+
+  /**
    * ARNs of certificates added to this listener
    */
   private readonly certificateArns: string[];
@@ -188,16 +254,24 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       throw new Error('At least one of \'port\' or \'protocol\' is required');
     }
 
+    validateMutualAuthentication(props.mutualAuthentication);
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
       sslPolicy: props.sslPolicy,
+      mutualAuthentication: props.mutualAuthentication ? {
+        ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
+        mode: props.mutualAuthentication?.mutualAuthenticationMode,
+        trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
+      } : undefined,
     });
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
+    this.port = port;
     this.certificateArns = [];
 
     // Attach certificates
@@ -664,15 +738,21 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * It is not possible to add a default action to an imported IApplicationListener.
    * In order to add actions to an imported IApplicationListener a `priority`
    * must be provided.
+   *
+   * If you previously deployed a `ListenerRule` using the `addTargetGroups()` method
+   * and need to migrate to using the more feature rich `addAction()`
+   * method, then you will need to set the `removeRuleSuffixFromLogicalId: true`
+   * property here to avoid having CloudFormation attempt to replace your resource.
    */
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
+      const ruleId = props.removeSuffix ? id : id + 'Rule';
       // New rule
       //
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
-      new ApplicationListenerRule(this, id + 'Rule', {
+      new ApplicationListenerRule(this, ruleId, {
         listener: this,
         priority: props.priority,
         ...props,
@@ -807,6 +887,19 @@ export interface AddApplicationActionProps extends AddRuleProps {
    * Action to perform
    */
   readonly action: ListenerAction;
+  /**
+   * `ListenerRule`s have a `Rule` suffix on their logicalId by default. This allows you to remove that suffix.
+   *
+   * Legacy behavior of the `addTargetGroups()` convenience method did not include the `Rule` suffix on the logicalId of the generated `ListenerRule`.
+   * At some point, increasing complexity of requirements can require users to switch from the `addTargetGroups()` method
+   * to the `addAction()` method.
+   * When migrating `ListenerRule`s deployed by a legacy version of `addTargetGroups()`,
+   * you will need to enable this flag to avoid changing the logicalId of your resource.
+   * Otherwise Cfn will attempt to replace the `ListenerRule` and fail.
+   *
+   * @default - use standard logicalId with the `Rule` suffix
+   */
+  readonly removeSuffix?: boolean;
 }
 
 /**
@@ -913,6 +1006,16 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    */
   readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
 
+  /**
+   * Indicates whether anomaly mitigation is enabled.
+   *
+   * Only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`
+   *
+   * @default false
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
+   */
+  readonly enableAnomalyMitigation?: boolean;
 }
 
 /**
@@ -938,5 +1041,29 @@ function checkAddRuleProps(props: AddRuleProps) {
   const hasPriority = props.priority !== undefined;
   if (hasAnyConditions !== hasPriority) {
     throw new Error('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
+  }
+}
+
+function validateMutualAuthentication(mutualAuthentication?: MutualAuthentication): void {
+  if (!mutualAuthentication) {
+    return;
+  }
+
+  const currentMode = mutualAuthentication.mutualAuthenticationMode;
+
+  if (currentMode === MutualAuthenticationMode.VERIFY) {
+    if (!mutualAuthentication.trustStore) {
+      throw new Error(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`);
+    }
+  }
+
+  if (currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH) {
+    if (mutualAuthentication.trustStore) {
+      throw new Error(`You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+    }
+
+    if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
+      throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+    }
   }
 }

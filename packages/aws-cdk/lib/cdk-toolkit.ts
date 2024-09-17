@@ -105,7 +105,7 @@ export class CdkToolkit {
 
   public async metadata(stackName: string, json: boolean) {
     const stacks = await this.selectSingleStackByName(stackName);
-    data(serializeStructure(stacks.firstStack.manifest.metadata ?? {}, json));
+    printSerializedObject(stacks.firstStack.manifest.metadata ?? {}, json);
   }
 
   public async acknowledge(noticeId: string) {
@@ -136,41 +136,10 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      let changeSet = undefined;
-
-      if (options.changeSet) {
-        let stackExists = false;
-        try {
-          stackExists = await this.props.deployments.stackExists({
-            stack: stacks.firstStack,
-            deployName: stacks.firstStack.stackName,
-            tryLookupRole: true,
-          });
-        } catch (e: any) {
-          debug(e.message);
-          stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
-          stackExists = false;
-        }
-
-        if (stackExists) {
-          changeSet = await createDiffChangeSet({
-            stack: stacks.firstStack,
-            uuid: uuid.v4(),
-            deployments: this.props.deployments,
-            willExecute: false,
-            sdkProvider: this.props.sdkProvider,
-            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-            stream,
-          });
-        } else {
-          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
-        }
-      }
-
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, false, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -663,7 +632,7 @@ export class CdkToolkit {
     });
 
     if (options.long && options.showDeps) {
-      data(serializeStructure(stacks, options.json ?? false));
+      printSerializedObject(stacks, options.json ?? false);
       return 0;
     }
 
@@ -677,7 +646,7 @@ export class CdkToolkit {
         });
       }
 
-      data(serializeStructure(stackDeps, options.json ?? false));
+      printSerializedObject(stackDeps, options.json ?? false);
       return 0;
     }
 
@@ -691,7 +660,7 @@ export class CdkToolkit {
           environment: stack.environment,
         });
       }
-      data(serializeStructure(long, options.json ?? false));
+      printSerializedObject(long, options.json ?? false);
       return 0;
     }
 
@@ -718,7 +687,7 @@ export class CdkToolkit {
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
       if (!quiet) {
-        data(serializeStructure(stacks.firstStack.template, json ?? false));
+        printSerializedObject(obscureTemplate(stacks.firstStack.template), json ?? false);
       }
       return undefined;
     }
@@ -732,7 +701,7 @@ export class CdkToolkit {
     // behind an environment variable.
     const isIntegMode = process.env.CDK_INTEG_MODE === '1';
     if (isIntegMode) {
-      data(serializeStructure(stacks.stackArtifacts.map(s => s.template), json ?? false));
+      printSerializedObject(stacks.stackArtifacts.map(s => obscureTemplate(s.template)), json ?? false);
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...
@@ -1074,6 +1043,13 @@ export class CdkToolkit {
 
     return undefined;
   }
+}
+
+/**
+ * Print a serialized object (YAML or JSON) to stdout.
+ */
+function printSerializedObject(obj: any, json: boolean) {
+  data(serializeStructure(obj, json));
 }
 
 export interface DiffOptions {
@@ -1556,4 +1532,22 @@ function buildParameterMap(parameters: {
   }
 
   return parameterMap;
+}
+
+/**
+ * Remove any template elements that we don't want to show users.
+ */
+function obscureTemplate(template: any = {}) {
+  if (template.Rules) {
+    // see https://github.com/aws/aws-cdk/issues/17942
+    if (template.Rules.CheckBootstrapVersion) {
+      if (Object.keys(template.Rules).length > 1) {
+        delete template.Rules.CheckBootstrapVersion;
+      } else {
+        delete template.Rules;
+      }
+    }
+  }
+
+  return template;
 }

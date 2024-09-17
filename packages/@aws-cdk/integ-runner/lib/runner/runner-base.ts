@@ -6,8 +6,8 @@ import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_
 import * as fs from 'fs-extra';
 import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { IntegTest } from './integration-tests';
-import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
 import { flatten } from '../utils';
+import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
 import { DestructiveChange } from '../workers/common';
 
 const DESTRUCTIVE_CHANGES = '!!DESTRUCTIVE_CHANGES:';

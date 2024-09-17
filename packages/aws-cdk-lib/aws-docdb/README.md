@@ -20,6 +20,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
     subnetType: ec2.SubnetType.PUBLIC,
   },
   vpc,
+  copyTagsToSnapshot: true  // whether to save the cluster tags when creating the snapshot.
 });
 ```
 
@@ -238,3 +239,42 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   securityGroupRemovalPolicy: RemovalPolicy.RETAIN,
 });
 ```
+
+## CA certificate
+
+Use the `caCertificate` property to specify the [CA certificate](https://docs.aws.amazon.com/documentdb/latest/developerguide/ca_cert_rotation.html) to use for all instances inside the cluster:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser',
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
+  vpc,
+  caCertificate: docdb.CaCertificate.RDS_CA_RSA4096_G1, // CA certificate for all instances under this cluster
+});
+```
+
+## Storage Type
+
+You can specify [storage type](https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-storage-configs.html) for the cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser',
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpc,
+  storageType: docdb.StorageType.IOPT1, // Default is StorageType.STANDARD
+});
+```
+
+**Note**: `StorageType.IOPT1` is supported starting with engine version 5.0.0.

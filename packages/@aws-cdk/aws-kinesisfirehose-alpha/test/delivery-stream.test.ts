@@ -4,9 +4,12 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as cdk from 'aws-cdk-lib';
 import { Construct, Node } from 'constructs';
 import * as firehose from '../lib';
+import { StreamEncryption } from '../lib';
 
 describe('delivery stream', () => {
   let stack: cdk.Stack;
@@ -55,6 +58,41 @@ describe('delivery stream', () => {
         BucketARN: bucketArn,
         RoleARN: roleArn,
       },
+    });
+  });
+
+  test('creates stream with events target V2 class', () => {
+    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [mockS3Destination],
+    });
+
+    new events.Rule(stack, 'rule', {
+      eventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          eventName: ['PutObject'],
+        },
+      },
+    }).addTarget(new targets.KinesisFirehoseStreamV2(firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'DeliveryStream58CF96DB',
+              'Arn',
+            ],
+          },
+          Id: 'Target0',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'firehoseEventsRole71BC7157',
+              'Arn',
+            ],
+          },
+        },
+      ],
     });
   });
 
@@ -114,12 +152,12 @@ describe('delivery stream', () => {
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
   });
 
-  test('not providing role but specifying encryptionKey creates two roles', () => {
+  test('not providing role but using customerManagedKey encryption with a key creates two roles', () => {
     const key = new kms.Key(stack, 'Key');
 
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
-      encryptionKey: key,
+      encryption: StreamEncryption.customerManagedKey(key),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -178,7 +216,7 @@ describe('delivery stream', () => {
   test('requesting customer-owned encryption creates key and configuration', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
-      encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
+      encryption: firehose.StreamEncryption.customerManagedKey(),
       role: deliveryStreamRole,
     });
 
@@ -209,12 +247,12 @@ describe('delivery stream', () => {
     });
   });
 
-  test('providing encryption key creates configuration', () => {
+  test('using customerManagedKey encryption with provided key creates configuration', () => {
     const key = new kms.Key(stack, 'Key');
 
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
-      encryptionKey: key,
+      encryption: StreamEncryption.customerManagedKey(key),
       role: deliveryStreamRole,
     });
 
@@ -244,7 +282,7 @@ describe('delivery stream', () => {
   test('requesting AWS-owned key does not create key and creates configuration', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
-      encryption: firehose.StreamEncryption.AWS_OWNED,
+      encryption: firehose.StreamEncryption.awsOwnedKey(),
       role: deliveryStreamRole,
     });
 
@@ -262,7 +300,7 @@ describe('delivery stream', () => {
   test('requesting no encryption creates no configuration', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destinations: [mockS3Destination],
-      encryption: firehose.StreamEncryption.UNENCRYPTED,
+      encryption: firehose.StreamEncryption.unencrypted(),
       role: deliveryStreamRole,
     });
 
@@ -274,42 +312,22 @@ describe('delivery stream', () => {
     });
   });
 
-  test('requesting AWS-owned key and providing a key throws an error', () => {
-    const key = new kms.Key(stack, 'Key');
-
-    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream', {
-      destinations: [mockS3Destination],
-      encryption: firehose.StreamEncryption.AWS_OWNED,
-      encryptionKey: key,
-    })).toThrowError('Specified stream encryption as AWS_OWNED but provided a customer-managed key');
-  });
-
-  test('requesting no encryption and providing a key throws an error', () => {
-    const key = new kms.Key(stack, 'Key');
-
-    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream', {
-      destinations: [mockS3Destination],
-      encryption: firehose.StreamEncryption.UNENCRYPTED,
-      encryptionKey: key,
-    })).toThrowError('Specified stream encryption as UNENCRYPTED but provided a customer-managed key');
-  });
-
   test('requesting encryption or providing a key when source is a stream throws an error', () => {
     const sourceStream = new kinesis.Stream(stack, 'Source Stream');
 
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
       destinations: [mockS3Destination],
-      encryption: firehose.StreamEncryption.AWS_OWNED,
+      encryption: firehose.StreamEncryption.awsOwnedKey(),
       sourceStream,
     })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
       destinations: [mockS3Destination],
-      encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
+      encryption: firehose.StreamEncryption.customerManagedKey(),
       sourceStream,
     })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
       destinations: [mockS3Destination],
-      encryptionKey: new kms.Key(stack, 'Key'),
+      encryption: StreamEncryption.customerManagedKey(new kms.Key(stack, 'Key')),
       sourceStream,
     })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
   });

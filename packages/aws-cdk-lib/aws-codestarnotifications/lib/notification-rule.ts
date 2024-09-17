@@ -47,6 +47,14 @@ export interface NotificationRuleOptions {
    * @default DetailType.FULL
    */
   readonly detailType?: DetailType;
+
+  /**
+   * The name or email alias of the person who created the notification rule.
+   * If not specified, it means that the creator's alias is not provided.
+   *
+   * @default - No alias provided
+   */
+  readonly createdBy?: string;
 }
 
 /**
@@ -148,6 +156,7 @@ export class NotificationRule extends Resource implements INotificationRule {
       status: props.enabled !== undefined
         ? (props.enabled ? 'ENABLED' : 'DISABLED')
         : undefined,
+      createdBy: props.createdBy,
     });
 
     this.notificationRuleArn = resource.ref;

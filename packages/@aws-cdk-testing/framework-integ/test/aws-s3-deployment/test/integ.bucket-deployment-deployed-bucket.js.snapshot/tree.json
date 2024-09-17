@@ -129,6 +129,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "test-bucket-deployment-deployed-bucket/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "test-bucket-deployment-deployed-bucket/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -498,7 +506,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "2d56e153cac88d3e0c2f842e8e6f6783b8725bf91f95e0673b4725448a56e96d.zip"
+                      "s3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
                     },
                     "environment": {
                       "variables": {
@@ -517,7 +525,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.9",
+                    "runtime": "python3.11",
                     "timeout": 900
                   }
                 },

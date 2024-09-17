@@ -21,8 +21,13 @@ class GaStack extends Stack {
         },
       ],
     });
-    const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc, internetFacing: true });
-    const nlb = new elbv2.NetworkLoadBalancer(this, 'NLB', { vpc, internetFacing: true });
+
+    const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+      vpc,
+    });
+
+    const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc, internetFacing: true, securityGroup });
+    const nlb = new elbv2.NetworkLoadBalancer(this, 'NLB', { vpc, internetFacing: true, securityGroups: [securityGroup] });
     const eip = new ec2.CfnEIP(this, 'ElasticIpAddress');
     const instances = new Array<ec2.Instance>();
 
@@ -38,7 +43,9 @@ class GaStack extends Stack {
       listener,
       endpoints: [
         new endpoints.ApplicationLoadBalancerEndpoint(alb),
+        new endpoints.ApplicationLoadBalancerEndpoint(alb, { preserveClientIp: true }),
         new endpoints.NetworkLoadBalancerEndpoint(nlb),
+        new endpoints.NetworkLoadBalancerEndpoint(nlb, { preserveClientIp: true }),
         new endpoints.CfnEipEndpoint(eip),
         new endpoints.InstanceEndpoint(instances[0]),
         new endpoints.InstanceEndpoint(instances[1]),
@@ -46,6 +53,7 @@ class GaStack extends Stack {
     });
 
     alb.connections.allowFrom(group.connectionsPeer('Peer', vpc), ec2.Port.tcp(443));
+
   }
 }
 

@@ -69,6 +69,7 @@ import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
+import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
 
 let cloudExecutable: MockCloudExecutable;
@@ -115,7 +116,6 @@ describe('readCurrentTemplate', () => {
   let mockForEnvironment = jest.fn();
   let mockCloudExecutable: MockCloudExecutable;
   beforeEach(() => {
-
     template = {
       Resources: {
         Func: {
@@ -241,7 +241,7 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
       expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+      expect.stringContaining("Bootstrap stack version '5' is required, found version '1'. To get rid of this error, please upgrade to bootstrap version >= 5"),
     ]));
     expect(requestedParameterName!).toEqual('/bootstrap/parameter');
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
@@ -276,7 +276,6 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
       expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -315,7 +314,6 @@ describe('readCurrentTemplate', () => {
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
       expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -350,7 +348,7 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+      expect.stringMatching(/Lookup role exists but was not assumed. Proceeding with default credentials./),
     ]));
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
@@ -392,6 +390,29 @@ describe('readCurrentTemplate', () => {
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
       assumeRoleArn: undefined,
       assumeRoleExternalId: undefined,
+    });
+  });
+});
+
+describe('bootstrap', () => {
+  test('accepts qualifier from context', async () => {
+    // GIVEN
+    const toolkit = defaultToolkitSetup();
+    const configuration = new Configuration();
+    configuration.context.set('@aws-cdk/core:bootstrapQualifier', 'abcde');
+
+    // WHEN
+    await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {
+      parameters: {
+        qualifier: configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
+      },
+    });
+
+    // THEN
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
+      parameters: {
+        qualifier: 'abcde',
+      },
     });
   });
 });
@@ -918,8 +939,8 @@ describe('synth', () => {
         stackName: 'cannot-generate-template',
         fromPath: path.join(__dirname, 'commands', 'test-resources', 'templates', 'sqs-template.json'),
         language: 'rust',
-      })).rejects.toThrowError('CannotGenerateTemplateStack could not be generated because template and/or language inputs caused the source code to panic');
-      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `cannot-generate-template`: CannotGenerateTemplateStack could not be generated because template and/or language inputs caused the source code to panic');
+      })).rejects.toThrowError('CannotGenerateTemplateStack could not be generated because rust is not a supported language');
+      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `cannot-generate-template`: CannotGenerateTemplateStack could not be generated because rust is not a supported language');
     });
 
     cliTest('migrate succeeds for valid template from local path when no lanugage is provided', async (workDir) => {

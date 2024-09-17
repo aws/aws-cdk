@@ -7,15 +7,15 @@ import { EnvironmentResources } from './environment-resources';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { HotswapMode, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { addMetadataAssetsToManifest } from '../assets';
+import { Tag } from '../cdk-toolkit';
+import { debug, print, warning } from '../logging';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
   waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
-import { addMetadataAssetsToManifest } from '../assets';
-import { Tag } from '../cdk-toolkit';
-import { debug, print, warning } from '../logging';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 
@@ -269,11 +269,13 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     ? templateParams.updateExisting(finalParameterValues, cloudFormationStack.parameters)
     : templateParams.supplyAll(finalParameterValues);
 
+  const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     // if we can skip deployment and we are performing a hotswap, let the user know
     // that no hotswap deployment happened
-    if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
+    if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
       print(`\n ${ICON} %s\n`, chalk.bold('hotswap deployment skipped - no changes were detected (use --force to override)'));
     }
     return {
@@ -296,8 +298,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     parallel: options.assetParallelism,
   });
 
-  const hotswapMode = options.hotswap;
-  if (hotswapMode && hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
+  if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(

@@ -13,7 +13,6 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-
       - name: Check Out
         uses: actions/checkout@v4
 
@@ -53,16 +52,17 @@ jobs:
         # Upgrade special cases:
         # - Various `@types/*` packages need to be pinned to specific versions due to breaking changes in minor upgrades https://github.com/DefinitelyTyped/DefinitelyTyped/issues/64266
         # - `typescript` is not semantically versioned, so we only upgrade the patch version
+        # - `jsii`, `jsii-rosetta` is not semantically versioned and needs to be upgrades alongside typescript
         # - `constructs` because we need to stay in control of the minimum compatible version
         # - `aws-sdk-mock` because of breaking changes in type exports https://github.com/dwyl/aws-sdk-mock/pull/260. We are not respecting `@ts-ignore`.
         # - `@aws-cdk/aws-service-spec` and `@aws-cdk/service-spec-types` have their own update workflow
         run: |-
           # Upgrade dependencies at repository root
-          ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/prettier,constructs,typescript --target=minor
+          ncu --upgrade --filter=jsii,jsii-rosetta,typescript --target=patch
+          ncu --upgrade --reject=@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript --target=minor
           # Upgrade all the packages
-          lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
+          lerna exec --parallel ncu -- --upgrade --filter=jsii,jsii-rosetta,typescript --target=patch
+          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
           # Upgrade package.json files in init templates
           for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
             (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
@@ -116,7 +116,7 @@ jobs:
           }}/upgrade.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           # Git commit details
           branch: automation/yarn-upgrade

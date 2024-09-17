@@ -32,18 +32,21 @@ class NatInstanceStack extends cdk.Stack {
     const natGatewayProvider = ec2.NatProvider.instanceV2({
       instanceType: new ec2.InstanceType('t3.small'),
       creditSpecification: ec2.CpuCredits.UNLIMITED,
-      defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
+      defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
       keyPair,
       userData,
     });
 
-    const vpc = new ec2.Vpc(this, 'MyVpc', {
-      natGatewayProvider,
-      natGateways: 2,
-    });
+    const vpc = new ec2.Vpc(this, 'MyVpc', { natGatewayProvider });
 
+    const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Allow egress to S3');
     for (const gateway of natGatewayProvider.gatewayInstances) {
       bucket.grantWrite(gateway);
+      gateway.addSecurityGroup(securityGroup);
     }
 
     Array.isArray(vpc);
@@ -70,7 +73,6 @@ const stack = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instance-v2-custom');
 
 const integ = new IntegTest(app, 'nat-instance-v2-custom-integ-test', {
   testCases: [stack],
-
 });
 
 integ.assertions.httpApiCall(stack.apiUrl, {})

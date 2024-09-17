@@ -105,7 +105,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
               "version": "0.0.0"
             }
           },
@@ -228,7 +228,33 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "MyTopicTracingConfig": {
+            "id": "MyTopicTracingConfig",
+            "path": "SNSInteg/MyTopicTracingConfig",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSInteg/MyTopicTracingConfig/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "fooDisplayNameTracingConfig",
+                    "topicName": "fooTopicTracingConfig",
+                    "tracingConfig": "Active"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
               "version": "0.0.0"
             }
           },
@@ -259,7 +285,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
               "version": "0.0.0"
             }
           },

@@ -6,6 +6,7 @@
 export class CaCertificate {
   /**
    * rds-ca-2019 certificate authority
+   * @deprecated rds-ca-2019 expired in August, 2024.
    */
   public static readonly RDS_CA_2019 = CaCertificate.of('rds-ca-2019');
 
@@ -16,13 +17,27 @@ export class CaCertificate {
 
   /**
    * rds-ca-rsa2048-g1 certificate authority
+   *
+   * @deprecated use RDS_CA_RSA2048_G1 (slight misspelling)
    */
   public static readonly RDS_CA_RDS2048_G1 = CaCertificate.of('rds-ca-rsa2048-g1');
 
   /**
+   * rds-ca-rsa2048-g1 certificate authority
+   */
+  public static readonly RDS_CA_RSA2048_G1 = CaCertificate.of('rds-ca-rsa2048-g1');
+
+  /**
    * rds-ca-rsa4096-g1 certificate authority
+   *
+   * @deprecated use RDS_CA_RSA4096_G1 (slight misspelling)
    */
   public static readonly RDS_CA_RDS4096_G1 = CaCertificate.of('rds-ca-rsa4096-g1');
+
+  /**
+   * rds-ca-rsa4096-g1 certificate authority
+   */
+  public static readonly RDS_CA_RSA4096_G1 = CaCertificate.of('rds-ca-rsa4096-g1');
 
   /**
    * Custom CA certificate

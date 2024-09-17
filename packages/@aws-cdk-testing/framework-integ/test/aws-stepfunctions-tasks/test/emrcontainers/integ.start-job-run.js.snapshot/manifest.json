@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-start-job-run.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4ed5f5b2a247d37d7c5be8f7b639d85ecae07537235d8faed6724f37b2107fee.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02c3da8d3964f06cfd3a98138ef852e08aeb1c22b2758fe2860ce633f655201b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,7 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster": [
           {
             "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.22 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v22. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
+            "data": "You created a cluster with Kubernetes Version 1.30 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v30. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/Resource": [
@@ -268,6 +268,12 @@
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -358,6 +364,12 @@
             "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderwaiterstatemachineLogGroupDD693A98"
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -422,6 +434,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksKubectlProviderframeworkonEventB25EDDAEArn": [
@@ -520,6 +538,18 @@
             "data": "StartaJobRunCustomResource3BD90664"
           }
         ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -530,6 +560,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/SingletonLambda8693BB64968944B69AAFB0CC9EB8757C/ServiceRole/Resource": [

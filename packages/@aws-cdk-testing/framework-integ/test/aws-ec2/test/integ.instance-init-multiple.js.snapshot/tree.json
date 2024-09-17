@@ -669,6 +669,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "integ-ec2-multiple-instances-in-stack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "integ-ec2-multiple-instances-in-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -699,7 +707,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -992,13 +1000,13 @@
               "version": "0.0.0"
             }
           },
-          "9765cd68daf64b350a75502a51fcf08f--target--path--config.jsonAsset": {
-            "id": "9765cd68daf64b350a75502a51fcf08f--target--path--config.jsonAsset",
-            "path": "integ-ec2-multiple-instances-in-stack/9765cd68daf64b350a75502a51fcf08f--target--path--config.jsonAsset",
+          "f27b09f58ee912006330da522f9e1af7--target--path--config.jsonAsset": {
+            "id": "f27b09f58ee912006330da522f9e1af7--target--path--config.jsonAsset",
+            "path": "integ-ec2-multiple-instances-in-stack/f27b09f58ee912006330da522f9e1af7--target--path--config.jsonAsset",
             "children": {
               "Stage": {
                 "id": "Stage",
-                "path": "integ-ec2-multiple-instances-in-stack/9765cd68daf64b350a75502a51fcf08f--target--path--config.jsonAsset/Stage",
+                "path": "integ-ec2-multiple-instances-in-stack/f27b09f58ee912006330da522f9e1af7--target--path--config.jsonAsset/Stage",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -1006,7 +1014,7 @@
               },
               "AssetBucket": {
                 "id": "AssetBucket",
-                "path": "integ-ec2-multiple-instances-in-stack/9765cd68daf64b350a75502a51fcf08f--target--path--config.jsonAsset/AssetBucket",
+                "path": "integ-ec2-multiple-instances-in-stack/f27b09f58ee912006330da522f9e1af7--target--path--config.jsonAsset/AssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                   "version": "0.0.0"
@@ -1257,7 +1265,7 @@
                         "Fn::Join": [
                           "",
                           [
-                            "#!/bin/bash\n# fingerprint: 8787022e9944cbeb\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+                            "#!/bin/bash\n# fingerprint: 370d9b2dcf8bf44b\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
                             {
                               "Ref": "AWS::Region"
                             },
@@ -1291,13 +1299,13 @@
               "version": "0.0.0"
             }
           },
-          "fb677242c476036ca1f54bfb6b6ae839--target--path--config.jsonAsset": {
-            "id": "fb677242c476036ca1f54bfb6b6ae839--target--path--config.jsonAsset",
-            "path": "integ-ec2-multiple-instances-in-stack/fb677242c476036ca1f54bfb6b6ae839--target--path--config.jsonAsset",
+          "bf770f8524a622af39b03870b0984704--target--path--config.jsonAsset": {
+            "id": "bf770f8524a622af39b03870b0984704--target--path--config.jsonAsset",
+            "path": "integ-ec2-multiple-instances-in-stack/bf770f8524a622af39b03870b0984704--target--path--config.jsonAsset",
             "children": {
               "Stage": {
                 "id": "Stage",
-                "path": "integ-ec2-multiple-instances-in-stack/fb677242c476036ca1f54bfb6b6ae839--target--path--config.jsonAsset/Stage",
+                "path": "integ-ec2-multiple-instances-in-stack/bf770f8524a622af39b03870b0984704--target--path--config.jsonAsset/Stage",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -1305,7 +1313,7 @@
               },
               "AssetBucket": {
                 "id": "AssetBucket",
-                "path": "integ-ec2-multiple-instances-in-stack/fb677242c476036ca1f54bfb6b6ae839--target--path--config.jsonAsset/AssetBucket",
+                "path": "integ-ec2-multiple-instances-in-stack/bf770f8524a622af39b03870b0984704--target--path--config.jsonAsset/AssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                   "version": "0.0.0"
@@ -1352,7 +1360,7 @@
                 "path": "instance-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1398,7 +1406,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

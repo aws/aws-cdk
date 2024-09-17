@@ -5,7 +5,7 @@ import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, IpAddressType, NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
@@ -40,10 +40,16 @@ describe('ApplicationLoadBalancedEc2Service', () => {
         command: ['/bin/bash'],
       },
       desiredCount: 2,
+      ipAddressType: IpAddressType.DUAL_STACK,
     });
 
     // THEN - stack contains a load balancer and a service
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Type: 'application',
+      IpAddressType: 'dualstack',
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 2,
@@ -842,6 +848,35 @@ describe('NetworkLoadBalancedEc2Service', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       LoadBalancerArn: nlb.loadBalancerArn,
       Port: 80,
+    });
+  });
+
+  test('specify IPV6 address type for NLB', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      ipAddressType: IpAddressType.DUAL_STACK,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      IpAddressType: 'dualstack',
     });
   });
 });

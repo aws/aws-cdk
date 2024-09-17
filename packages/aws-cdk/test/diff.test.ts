@@ -14,6 +14,75 @@ let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
 
+describe('fixed template', () => {
+  const templatePath = 'oldTemplate.json';
+  beforeEach(() => {
+    const oldTemplate = {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::SomeService::SomeResource',
+          Properties: {
+            Something: 'old-value',
+          },
+        },
+      },
+    };
+
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: {
+          Resources: {
+            SomeResource: {
+              Type: 'AWS::SomeService::SomeResource',
+              Properties: {
+                Something: 'new-value',
+              },
+            },
+          },
+        },
+      }],
+    });
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    fs.writeFileSync(templatePath, JSON.stringify(oldTemplate));
+  });
+
+  afterEach(() => fs.rmSync(templatePath));
+
+  test('fixed template with valid templates', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: undefined,
+      templatePath,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(exitCode).toBe(0);
+    expect(plainTextOutput.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')).toContain(`Resources
+[~] AWS::SomeService::SomeResource SomeResource 
+ └─ [~] Something
+     ├─ [-] old-value
+     └─ [+] new-value
+
+
+✨  Number of stacks with differences: 1
+`);
+  });
+});
+
 describe('imports', () => {
   beforeEach(() => {
     const outputToJson = {
@@ -783,6 +852,95 @@ Resources
 
     expect(exitCode).toBe(0);
     expect(changeSetSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('--strict', () => {
+  const templatePath = 'oldTemplate.json';
+  beforeEach(() => {
+    const oldTemplate = {};
+
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: {
+          Resources: {
+            MetadataResource: {
+              Type: 'AWS::CDK::Metadata',
+              Properties: {
+                newMeta: 'newData',
+              },
+            },
+            SomeOtherResource: {
+              Type: 'AWS::Something::Amazing',
+            },
+          },
+          Rules: {
+            CheckBootstrapVersion: {
+              newCheck: 'newBootstrapVersion',
+            },
+          },
+        },
+      }],
+    });
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    fs.writeFileSync(templatePath, JSON.stringify(oldTemplate));
+  });
+
+  afterEach(() => fs.rmSync(templatePath));
+
+  test('--strict does not obscure CDK::Metadata or CheckBootstrapVersion', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      strict: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput.trim()).toEqual(`Stack A
+Resources
+[+] AWS::CDK::Metadata MetadataResource 
+[+] AWS::Something::Amazing SomeOtherResource 
+
+Other Changes
+[+] Unknown Rules: {\"CheckBootstrapVersion\":{\"newCheck\":\"newBootstrapVersion\"}}
+
+
+✨  Number of stacks with differences: 1`);
+    expect(exitCode).toBe(0);
+  });
+
+  test('--no-strict obscures CDK::Metadata and CheckBootstrapVersion', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput.trim()).toEqual(`Stack A
+Resources
+[+] AWS::Something::Amazing SomeOtherResource 
+
+
+✨  Number of stacks with differences: 1`);
+    expect(exitCode).toBe(0);
   });
 });
 

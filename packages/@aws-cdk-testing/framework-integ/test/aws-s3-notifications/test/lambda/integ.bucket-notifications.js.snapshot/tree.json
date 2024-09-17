@@ -4,71 +4,23 @@
     "id": "App",
     "path": "",
     "children": {
-      "cdk-integ-lambda-bucket-notifications": {
-        "id": "cdk-integ-lambda-bucket-notifications",
-        "path": "cdk-integ-lambda-bucket-notifications",
+      "cdk-integ-lambda-bucket-s3-notifications": {
+        "id": "cdk-integ-lambda-bucket-s3-notifications",
+        "path": "cdk-integ-lambda-bucket-s3-notifications",
         "children": {
           "MyBucket": {
             "id": "MyBucket",
-            "path": "cdk-integ-lambda-bucket-notifications/MyBucket",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/MyBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-integ-lambda-bucket-notifications/MyBucket/Resource",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/MyBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
-                }
-              },
-              "Notifications": {
-                "id": "Notifications",
-                "path": "cdk-integ-lambda-bucket-notifications/MyBucket/Notifications",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "cdk-integ-lambda-bucket-notifications/MyBucket/Notifications/Resource",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1": {
-                "id": "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
-                "path": "cdk-integ-lambda-bucket-notifications/MyBucket/AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "MyFunction3BAA72D1",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "s3.amazonaws.com",
-                    "sourceAccount": {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "MyBucketF68F3FF0",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
@@ -80,15 +32,15 @@
           },
           "MyFunction": {
             "id": "MyFunction",
-            "path": "cdk-integ-lambda-bucket-notifications/MyFunction",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/MyFunction",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "cdk-integ-lambda-bucket-notifications/MyFunction/ServiceRole",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/MyFunction/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "cdk-integ-lambda-bucket-notifications/MyFunction/ServiceRole/ImportServiceRole",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/MyFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -96,7 +48,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-integ-lambda-bucket-notifications/MyFunction/ServiceRole/Resource",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/MyFunction/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -141,7 +93,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-integ-lambda-bucket-notifications/MyFunction/Resource",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/MyFunction/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -171,11 +123,11 @@
           },
           "YourBucket": {
             "id": "YourBucket",
-            "path": "cdk-integ-lambda-bucket-notifications/YourBucket",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/YourBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-integ-lambda-bucket-notifications/YourBucket/Resource",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/YourBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {}
@@ -187,11 +139,11 @@
               },
               "Notifications": {
                 "id": "Notifications",
-                "path": "cdk-integ-lambda-bucket-notifications/YourBucket/Notifications",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/YourBucket/Notifications",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-integ-lambda-bucket-notifications/YourBucket/Notifications/Resource",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/YourBucket/Notifications/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -203,9 +155,9 @@
                   "version": "10.3.0"
                 }
               },
-              "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1": {
-                "id": "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
-                "path": "cdk-integ-lambda-bucket-notifications/YourBucket/AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
+              "AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39": {
+                "id": "AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/YourBucket/AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -241,15 +193,15 @@
           },
           "BucketNotificationsHandler050a0587b7544547bf325f094a3db834": {
             "id": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
-            "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -257,7 +209,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -296,18 +248,21 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
+                        "path": "cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "s3:PutBucketNotification",
+                                  "Action": [
+                                    "s3:GetBucketNotification",
+                                    "s3:PutBucketNotification"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": "*"
                                 }
@@ -341,7 +296,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -353,9 +308,104 @@
               "version": "10.3.0"
             }
           },
+          "Construct1": {
+            "id": "Construct1",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/Construct1",
+            "children": {
+              "IntegUnmanagedBucket1": {
+                "id": "IntegUnmanagedBucket1",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/Construct1/IntegUnmanagedBucket1",
+                "children": {
+                  "Notifications": {
+                    "id": "Notifications",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/Construct1/IntegUnmanagedBucket1/Notifications",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-integ-lambda-bucket-s3-notifications/Construct1/IntegUnmanagedBucket1/Notifications/Resource",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39": {
+                    "id": "AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39",
+                    "path": "cdk-integ-lambda-bucket-s3-notifications/Construct1/IntegUnmanagedBucket1/AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "MyFunction3BAA72D1",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "s3.amazonaws.com",
+                        "sourceAccount": {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":s3:::",
+                              {
+                                "Ref": "MyBucketF68F3FF0"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyBucketF68F3FF0\"}": {
+                "id": "Output{\"Ref\":\"MyBucketF68F3FF0\"}",
+                "path": "cdk-integ-lambda-bucket-s3-notifications/Exports/Output{\"Ref\":\"MyBucketF68F3FF0\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "cdk-integ-lambda-bucket-notifications/BootstrapVersion",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -363,7 +413,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "cdk-integ-lambda-bucket-notifications/CheckBootstrapVersion",
+            "path": "cdk-integ-lambda-bucket-s3-notifications/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -372,6 +422,156 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LambdaBucketNotificationsTest": {
+        "id": "LambdaBucketNotificationsTest",
+        "path": "LambdaBucketNotificationsTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaBucketNotificationsTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaBucketNotificationsTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a": {
+                    "id": "AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a",
+                    "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-user-pool-client-explicit-props.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-user-pool-client-explicit-props.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2f3eeea0bc8482a2cbaf87c70e3a1f66f91277860f6c6897150ccaebc3e4f01.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/818e0a5f80da9195c8bb51dd9e9da860f135a1d29343137b03b4c0e7d1d2c8a9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,6 +56,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [

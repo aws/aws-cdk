@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AutoPublishTest/DefaultTest": {
+      "stacks": [
+        "integ-distribution-function"
+      ],
+      "assertionStack": "AutoPublishTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoPublishTestDefaultTestDeployAssert10053C6C"
+    }
+  }
+}

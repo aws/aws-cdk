@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "LambdaRecursiveLoopTest/DefaultTest": {
+      "stacks": [
+        "stack"
+      ],
+      "assertionStack": "LambdaRecursiveLoopTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaRecursiveLoopTestDefaultTestDeployAssert68FA1353"
+    }
+  }
+}

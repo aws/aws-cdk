@@ -309,3 +309,86 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-eks:nodegroupNameAttribute`
+
+When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.
+
+When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup
+without any prefix.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-eks:nodegroupNameAttribute": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ec2:ebsDefaultGp3Volume`
+
+When enabled, the default volume type of the EBS volume will be GP3.
+
+When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm`
+
+When enabled, remove default deployment alarm settings.
+
+When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+  }
+}
+```
+
+* `@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions`
+
+When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+
+When this feature flag is enabled, the IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
+for more details.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
+  }
+}
+```
+
+* `@aws-cdk/aws-stepfunctions-taks:useNewS3UriParametersForBedrockInvokeModelTask`
+
+When enabled, use new props for S3 URI under `input` and `output` fields in task definition of state machine for bedrock invoke model.
+
+When this feature flag is enabled, use newly introduced props `s3InputUri` and `s3OutputUri` to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": true
+  }
+}
+```

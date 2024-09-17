@@ -768,6 +768,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "PipelinesFileSystemLocations/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "PipelinesFileSystemLocations/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -2189,22 +2197,6 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":iam::",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":root"
-                                        ]
-                                      ]
-                                    },
                                     "Service": "codebuild.amazonaws.com"
                                   }
                                 }
@@ -2526,7 +2518,7 @@
                             },
                             "source": {
                               "type": "CODEPIPELINE",
-                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelinesFileSystemLocations-Beta/PipelinesFileSystemLocationsBetaStack18199ECAE.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}"
+                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@latest\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelinesFileSystemLocations-Beta/PipelinesFileSystemLocationsBetaStack18199ECAE.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}"
                             },
                             "vpcConfig": {
                               "vpcId": {

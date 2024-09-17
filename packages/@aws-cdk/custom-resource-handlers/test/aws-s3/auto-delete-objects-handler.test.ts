@@ -143,6 +143,30 @@ test('does nothing on update event when the new resource properties are absent',
   expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
 });
 
+test('does nothing on update event when the new bucket name is null', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    RequestType: 'Update',
+    OldResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: null,
+    },
+  };
+
+  // WHEN
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockS3Client.getBucketPolicy).not.toHaveBeenCalled();
+  expect(mockS3Client.putBucketPolicy).not.toHaveBeenCalled();
+  expect(mockS3Client.listObjectVersions).not.toHaveBeenCalled();
+  expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
+});
+
 test('deletes all objects when the name changes on update event', async () => {
   // GIVEN
   mockS3Client.listObjectVersions.mockResolvedValue({
@@ -165,27 +189,14 @@ test('deletes all objects when the name changes on update event', async () => {
   };
 
   // WHEN
-  await invokeHandler(event);
+  const response = await invokeHandler(event);
 
   // THEN
-  expect(mockS3Client.getBucketPolicy).toHaveBeenCalledTimes(1);
-  expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
-  expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
-    Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
-  });
-  expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
-  expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
-  expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(1);
-  expect(mockS3Client.deleteObjects).toHaveBeenCalledWith({
-    Bucket: 'MyBucket',
-    Delete: {
-      Objects: [
-        { Key: 'Key1', VersionId: 'VersionId1' },
-        { Key: 'Key2', VersionId: 'VersionId2' },
-      ],
-    },
-  });
+  expect(response).toEqual({ PhysicalResourceId: 'MyBucket-renamed' });
+  expect(mockS3Client.getBucketPolicy).not.toHaveBeenCalled();
+  expect(mockS3Client.putBucketPolicy).not.toHaveBeenCalled();
+  expect(mockS3Client.listObjectVersions).not.toHaveBeenCalled();
+  expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
 });
 
 test('deletes no objects on delete event when bucket has no objects', async () => {

@@ -1,7 +1,7 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "files": {
-    "21f98f2f8f63068d0de7255ebe0e3852f45369f33baec7e3ab859611fc970740": {
+    "bea06982eecdfaff1befd443f9dd57dd1925dcc822f4c020ee543e1e33a39692": {
       "source": {
         "path": "aws-ecs-integ-fargate-multi-alb-health.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21f98f2f8f63068d0de7255ebe0e3852f45369f33baec7e3ab859611fc970740.json",
+          "objectKey": "bea06982eecdfaff1befd443f9dd57dd1925dcc822f4c020ee543e1e33a39692.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
