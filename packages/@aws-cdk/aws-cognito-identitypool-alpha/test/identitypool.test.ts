@@ -730,7 +730,7 @@ describe('role mappings', () => {
     });
   });
 
-  test('role mapping with a imported user pool and client', () => {
+  test('role mapping with an imported user pool and client', () => {
     const stack = new Stack();
     const importedPool = UserPool.fromUserPoolArn(stack, 'ImportedPool', 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
     const importedClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedPoolClient', 'client-id');
@@ -749,7 +749,16 @@ describe('role mappings', () => {
       },
       RoleMappings: {
         cognito: {
-          IdentityProvider: 'cognito-idp.us-east-1.amazonaws.com/test-user-pool:client-id',
+          IdentityProvider: {
+            'Fn::Join': [
+              '',
+              [
+                'cognito-idp.us-east-1.',
+                { Ref: 'AWS::URLSuffix' },
+                '/test-user-pool:client-id',
+              ],
+            ],
+          },
           Type: 'Token',
         },
       },
