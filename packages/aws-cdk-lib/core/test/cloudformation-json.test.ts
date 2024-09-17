@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { evaluateCFN } from './evaluate-cfn';
+import { TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE } from '../../cx-api';
 import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, StackProps, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
@@ -113,7 +114,7 @@ describe('tokens that return literals', () => {
     const asm = app.synth();
     const template = asm.getStackByName(stack.stackName).template;
     const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
-    expect(stringifyLogicalId).toBe('CdkJsonStringifyRefThing47B9E256');
+    expect(stringifyLogicalId).toBeDefined();
 
     expect(template.Resources.Resource.Properties.someJson).toEqual({
       'Fn::Join': ['', [
@@ -122,6 +123,44 @@ describe('tokens that return literals', () => {
         '}',
       ]],
     });
+  });
+
+  test("Intrinsic-resolving List Tokens generate the custom resource's logical ID from the Intrisic's stringified value when the feature flag is enabled", () => {
+    // GIVEN
+    const someList = Token.asList(new Intrinsic({ Ref: 'Thing' }));
+    stack.node.setContext(TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE, true);
+
+    // WHEN
+    new CfnResource(stack, 'Resource', {
+      type: 'AWS::Banana',
+      properties: {
+        someJson: stack.toJsonString({ someList }),
+      },
+    });
+
+    const asm = app.synth();
+    const template = asm.getStackByName(stack.stackName).template;
+    const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
+    expect(stringifyLogicalId).toEqual('CdkJsonStringifyRefThing47B9E256');
+  });
+
+  test("Intrinsic-resolving List Tokens generate the custom resource's logical ID from a counter when the feature flag is disabled", () => {
+    // GIVEN
+    const someList = Token.asList(new Intrinsic({ Ref: 'Thing' }));
+    stack.node.setContext(TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE, false);
+
+    // WHEN
+    new CfnResource(stack, 'Resource', {
+      type: 'AWS::Banana',
+      properties: {
+        someJson: stack.toJsonString({ someList }),
+      },
+    });
+
+    const asm = app.synth();
+    const template = asm.getStackByName(stack.stackName).template;
+    const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
+    expect(stringifyLogicalId).toMatch(/CdkJsonStringify[0-9]+$/);
   });
 
   test('tokens in strings survive additional TokenJSON.stringification()', () => {

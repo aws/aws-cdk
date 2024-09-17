@@ -73,6 +73,7 @@ Flags come in three types:
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
+| [@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue](#aws-cdkcoregenerateuniqueidentifiersfortokenizedlists) | When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value. | 2.159.0 | (fix) |
 
 <!-- END table -->
 
@@ -134,7 +135,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue": true
   }
 }
 ```
@@ -1377,5 +1379,37 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
 
+### @aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue
+
+*When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value.* (fix)
+
+Any stringified value containing an intrinsic will use a custom resource to resolve this value at deploy time.
+
+Without enabling this feature flag, this custom resource's logical ID will take the form `'CDKJsonStringify<number>'`,
+where <number> is a counter incremented for each stringified value. This results in resource replacement updates for the custom resource
+when the order of construct instantiation is changed, like changing this:
+```
+const app = new App();
+new SomeStack(app, 'Stack1');
+new SomeStack(app, 'Stack2');
+```
+
+to:
+
+```
+const app = new App();
+new SomeStack(app, 'Stack2');
+new SomeStack(app, 'Stack1');
+```
+
+This only happens if `SomeStack` stringifies a token, which CDK constructs will do automatically.
+
+Enabling this feature flag will generate a unique identifier from the token's value instead of a counter,
+which makes this logical ID no longer instantiation-order dependent.
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.156.0 | `true` | `true` |
 
 <!-- END details -->

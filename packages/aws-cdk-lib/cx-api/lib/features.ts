@@ -107,6 +107,7 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE = '@aws-cdk/core:generateUniqueIdentifiersForTokenizedLists';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1125,6 +1126,26 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE]: {
+    type: FlagType.BugFix,
+    summary: "When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value.",
+    detailsMd: `
+      Any stringified value containing an intrinsic will use a custom resource to resolve this value at deploy time.
+
+      Without enabling this feature flag, this custom resource's logical ID will take the form 'CDKJsonStringify<number>',
+      where <number> is a counter incremented for each stringified value. This results in resource replacement updates for the custom resource
+      when the order of construct instantiation is changed.
+
+      Enabling this feature flag will generate a unique identifier from the token's value instead of a counter,
+      which makes this logical ID no longer instantiation-order dependent.
+    `,
+    introducedIn: { v2: '2.158.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'When disabled, generate the Logical ID of the CDKJsonStringify Custom Resource from a counter.',
   },
 };
 
