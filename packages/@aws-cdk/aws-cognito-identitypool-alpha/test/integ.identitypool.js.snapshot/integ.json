@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.24",
   "testCases": {
-    "integ.identitypool": {
+    "identitypool-integ/DefaultTest": {
       "stacks": [
         "integ-identitypool"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "identitypool-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "identitypoolintegDefaultTestDeployAssertCFCC3421"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
