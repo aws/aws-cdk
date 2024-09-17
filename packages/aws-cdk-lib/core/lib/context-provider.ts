@@ -31,10 +31,17 @@ export interface GetContextKeyOptions {
 export interface GetContextValueOptions extends GetContextKeyOptions {
   /**
    * The value to return if the context value was not found and a missing
-   * context is reported. This should be a dummy value that should preferably
-   * fail during deployment since it represents an invalid state.
+   * context is reported.
    */
   readonly dummyValue: any;
+
+  /**
+   * When True, the context provider will not throw an error if missing context
+   * is reported
+   *
+   * @default false
+   */
+  readonly ignoreErrorOnMissingContext?: boolean;
 }
 
 /**
@@ -101,10 +108,20 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
+      // build a version of the props which includes the dummyValue and ignoreError flag
+      const extendedProps: { [p: string]: any } = {
+        dummyValue: options.dummyValue,
+        ignoreErrorOnMissingContext: options.ignoreErrorOnMissingContext,
+        ...props,
+      };
+
+      // We'll store the extendedProps in the missingContextKey report
+      // so that we can retrieve the dummyValue and ignoreError flag
+      // in the aws-cdk's ssm-context provider
       stack.reportMissingContextKey({
         key,
         provider: options.provider as cxschema.ContextProvider,
-        props: props as cxschema.ContextQueryProperties,
+        props: extendedProps as cxschema.ContextQueryProperties,
       });
 
       if (providerError !== undefined) {
