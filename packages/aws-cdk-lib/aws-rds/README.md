@@ -1275,7 +1275,7 @@ To enable Performance Insights at the instance level, set the same properties fo
 
 In this way, different settings can be applied to different instances in a cluster.
 
-However, if Performance Insights is enabled at the cluster level, it is not possible to specify a different value for the instance
+**Note:** If Performance Insights is enabled at the cluster level, it is not possible to specify a different value for the instance
 level than the cluster level.
 
 ```ts

@@ -1736,6 +1736,24 @@ describe('cluster', () => {
       });
     });
 
+    test('setting `enablePerformanceInsights` without other performance insights fields enables performance insights', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        enablePerformanceInsights: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        PerformanceInsightsEnabled: true,
+      });
+    });
+
     test('setting performance insights fields enables performance insights', () => {
       // GIVEN
       const stack = testStack();
