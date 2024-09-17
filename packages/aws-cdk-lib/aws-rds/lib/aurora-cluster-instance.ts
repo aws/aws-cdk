@@ -436,9 +436,14 @@ export interface IAuroraClusterInstance extends IResource {
   readonly instanceSize?: string;
 
   /**
-   * Te promotion tier the instance was created in
+   * The promotion tier the instance was created in
    */
   readonly tier: number;
+
+  /**
+   * Whether Performance Insights is enabled
+   */
+  readonly performanceInsightsEnabled?: boolean;
 }
 
 class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
@@ -449,6 +454,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
   public readonly type: InstanceType;
   public readonly tier: number;
   public readonly instanceSize?: string;
+  public readonly performanceInsightsEnabled: boolean;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {
     super(
       scope,
@@ -480,6 +486,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     const engine = props.cluster.engine!;
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    this.performanceInsightsEnabled = enablePerformanceInsights;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
       throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     }

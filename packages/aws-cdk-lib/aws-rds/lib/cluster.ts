@@ -607,6 +607,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
+  /**
+   * Whether Performance Insights is enabled at cluster level.
+   */
+  public readonly performanceInsightsEnabled: boolean;
+
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
 
@@ -713,6 +718,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    this.performanceInsightsEnabled = enablePerformanceInsights;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
       throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     }
@@ -825,8 +831,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * Perform validations on the cluster instances
    */
   private validateClusterInstances(writer: IAuroraClusterInstance, readers: IAuroraClusterInstance[]): void {
+    let performanceInsightsDuplicate = false;
+
     if (writer.type === InstanceType.SERVERLESS_V2) {
       this.hasServerlessInstance = true;
+    }
+    if (writer.performanceInsightsEnabled && this.performanceInsightsEnabled) {
+      performanceInsightsDuplicate = true;
     }
     if (readers.length > 0) {
       const sortedReaders = readers.sort((a, b) => a.tier - b.tier);
@@ -856,7 +867,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         if (reader.tier <= 1) {
           noFailoverTierInstances = false;
         }
+        if (reader.performanceInsightsEnabled && this.performanceInsightsEnabled) {
+          performanceInsightsDuplicate = true;
+        }
       }
+
       const hasOnlyServerlessReaders = hasServerlessReader && !hasProvisionedReader;
       if (hasOnlyServerlessReaders) {
         if (noFailoverTierInstances) {
@@ -889,6 +904,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
           );
         }
       }
+    }
+
+    if (performanceInsightsDuplicate) {
+      throw new Error('Cannot enable Performance Insights on both the cluster and the instances');
     }
   }
 
@@ -1410,6 +1429,9 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
     || instanceProps.performanceInsightRetention !== undefined || instanceProps.performanceInsightEncryptionKey !== undefined;
   if (enablePerformanceInsights && instanceProps.enablePerformanceInsights === false) {
     throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+  }
+  if (enablePerformanceInsights && cluster.performanceInsightsEnabled) {
+    throw new Error('Cannot enable Performance Insights on both the cluster and the instances');
   }
 
   const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);

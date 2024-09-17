@@ -1788,6 +1788,58 @@ describe('cluster', () => {
         });
       }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
     });
+
+    test('throws if performance insights is enabled on both cluster and writer instance', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          writer: ClusterInstance.provisioned('writer', {
+            enablePerformanceInsights: true,
+          }),
+          enablePerformanceInsights: true,
+        });
+      }).toThrow(/Cannot enable Performance Insights on both the cluster and the instances/);
+    });
+
+    test('throws if performance insights is enabled on both cluster and reader instance', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          writer: ClusterInstance.provisioned('writer'),
+          readers: [ClusterInstance.provisioned('reader', {
+            enablePerformanceInsights: true,
+          })],
+          enablePerformanceInsights: true,
+        });
+      }).toThrow(/Cannot enable Performance Insights on both the cluster and the instances/);
+    });
+
+    test('throws if performance insights is enabled on both cluster and instances with instanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          enablePerformanceInsights: true,
+          instanceProps: {
+            vpc,
+            enablePerformanceInsights: true,
+          },
+        });
+      }).toThrow(/Cannot enable Performance Insights on both the cluster and the instances/);
+    });
   });
 
   describe('performance insights for instances', () => {
