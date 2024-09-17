@@ -96,7 +96,7 @@ export async function isHotswappableAppSyncChange(
             delete sdkRequestObject.runtime;
           }
 
-          const functions = await getAppSyncFunctions(sdk, sdkRequestObject.apiId, undefined);
+          const functions = await getAppSyncFunctions(sdk, sdkRequestObject.apiId);
           const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
           // Updating multiple functions at the same time or along with graphql schema results in `ConcurrentModificationException`
           await simpleRetry(
@@ -159,7 +159,7 @@ async function sleep(ms: number) {
 /**
  * Get all functions for a given AppSync API by iterating through the paginated list of functions
  */
-async function getAppSyncFunctions(sdk: ISDK, apiId: string, nextToken: string | undefined): Promise<FunctionConfiguration[]> {
+async function getAppSyncFunctions(sdk: ISDK, apiId: string, nextToken?: string): Promise<FunctionConfiguration[]> {
   const ret = new Array<FunctionConfiguration>();
   return sdk.appsync().listFunctions({ apiId, nextToken }).promise()
     .then(async (listFunctionsResponse: ListFunctionsResponse) => {
