@@ -1402,7 +1402,7 @@ new SomeStack(app, 'Stack2');
 new SomeStack(app, 'Stack1');
 ```
 
-This only happens if `SomeStack` stringifies a token, which CDK constructs will do automatically.
+This only happens if `SomeStack` stringifies a token, which some CDK constructs will do automatically.
 
 Enabling this feature flag will generate a unique identifier from the token's value instead of a counter,
 which makes this logical ID no longer instantiation-order dependent.
