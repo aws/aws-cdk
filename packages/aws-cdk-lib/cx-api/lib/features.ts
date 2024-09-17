@@ -107,7 +107,7 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
-export const TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE = '@aws-cdk/core:generateUniqueIdentifiersForTokenizedLists';
+export const TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE = '@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1158,7 +1158,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       which makes this logical ID no longer instantiation-order dependent.
     `,
     introducedIn: { v2: '2.158.0' },
-    defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'When disabled, generate the Logical ID of the CDKJsonStringify Custom Resource from a counter.',
   },
