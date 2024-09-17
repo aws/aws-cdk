@@ -30,7 +30,7 @@ export interface BucketPolicyProps {
  * `addToResourcePolicy()`, which will automatically create a new resource
  * policy if one doesn't exist yet, otherwise it will add to the existing
  * policy.
- * 
+ *
  * The bucket policy method is implemented differently than `addToResourcePolicy()`
  * as `BucketPolicy()` creates a new policy without knowing one earlier existed.
  * e.g. if during Bucket creation, if `autoDeleteObject:true`, these policies are
