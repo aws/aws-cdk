@@ -9,6 +9,7 @@ import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
+import { PARTITION_MAP } from '../../region-info/build-tools/fact-tables';
 
 /**
  * A VPC endpoint.
@@ -666,8 +667,21 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
+      'us-isof-': ['ecr.api', 'ecr.dkr'],
+      'eu-isoe-': ['ecr.api', 'ecr.dkr'],
     };
-    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
+
+    const regionPartition = region.split('-').slice(0, 2).join('-');
+    const partitionDetails = PARTITION_MAP[`${regionPartition}-`];
+
+    // Check for specific service name under isolated region prefix
+    const serviceInExceptions = VPC_ENDPOINT_SERVICE_EXCEPTIONS[`${regionPartition}-`]?.includes(name);
+
+    if (serviceInExceptions) {
+      // Endpoints generated in reverse of domain suffix for the services mentioned in map
+      const reverseString = partitionDetails.domainSuffix.split('.').reverse().join('.');
+      return reverseString;
+    } else if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       return 'cn.com.amazonaws';
     } else {
       return 'com.amazonaws';
