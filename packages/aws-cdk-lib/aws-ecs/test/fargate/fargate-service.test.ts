@@ -206,7 +206,6 @@ describe('fargate service', () => {
       });
     });
 
-
     [false, undefined].forEach((value) => {
       test('set cloudwatch permissions based on falsy feature flag when no cloudwatch log configured', () => {
         // GIVEN
