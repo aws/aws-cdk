@@ -47,6 +47,10 @@ export class Names {
    */
   public static uniqueId(construct: IConstruct): string {
     const node = Node.of(construct);
+
+    const nearestStackIndex = node.scopes.indexOf(node.scopes.reverse()
+      .find(component => Stack.isStack(component))!);
+
     const components = node.scopes.slice(1).map(c => Node.of(c).id);
     return components.length > 0 ? makeUniqueId(components) : '';
   }

@@ -9,7 +9,7 @@ import * as cdk from '../../../core';
 import { Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
-import { CodePipeline } from '../../lib';
+import { CodePipeline, ShellStep, CodePipelineSource } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
 
 let app: TestApp;
@@ -521,6 +521,74 @@ test('artifactBucket can be overridden', () => {
   template.hasResourceProperties('AWS::S3::Bucket', {
     BucketName: 'my-custom-artifact-bucket',
   });
+});
+
+test('Names.uniqueId is stable after placing stack in pipeline', () => {
+
+  class MyPipelineAppStage extends cdk.Stage {
+
+    constructor(scope: Construct, id: string, props?: cdk.StageProps) {
+      super(scope, id, props);
+
+      new MyStack(this, 'MyStack', {});
+
+    }
+  }
+
+  class ProfilingGroup extends Construct {
+    constructor(scope: Construct, id: string) {
+      super(scope, id);
+
+      new cdk.CfnResource(this, 'ProfilingGroup', {
+        type: 'AWS::CodeProfiling::ProfilingGroup',
+        properties: {
+          profilingGroupName: cdk.Names.uniqueId(this),
+        },
+      });
+
+    }
+  }
+
+  class MyStack extends cdk.Stack {
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+      super(scope, id, props);
+
+      new ProfilingGroup(this, 'ProfilingGroup');
+
+    }
+  }
+
+  class MyPipelineStack extends cdk.Stack {
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+      super(scope, id, props);
+
+      const pipeline = new CodePipeline(this, 'Pipeline', {
+        pipelineName: 'MyPipeline',
+        synth: new ShellStep('Synth', {
+          input: CodePipelineSource.gitHub('OWNER/REPO', 'main'),
+          commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+        }),
+      });
+
+      pipeline.addStage(new MyPipelineAppStage(this, 'alpha'));
+    }
+  }
+
+  function findProfilingGroupName(template: Template) {
+    return (Object.values(template.toJSON().Resources)[0] as any).Properties.profilingGroupName;
+  }
+  const pipelineApp = new cdk.App();
+  const simpleApp = new cdk.App();
+
+  const simpleStack = new MyStack(simpleApp, 'MyStack');
+  new MyPipelineStack(pipelineApp, 'MyPipelineStack');
+
+  const simpleTemplate = Template.fromStack(simpleStack);
+
+  const s = pipelineApp.node.findAll().find(n => Stack.isStack(n) && n.stackName === 'alpha-MyStack')!;
+  const pipelineTemplate = Template.fromStack(s as Stack);
+  expect(findProfilingGroupName(simpleTemplate)).toEqual(findProfilingGroupName(pipelineTemplate));
+
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
