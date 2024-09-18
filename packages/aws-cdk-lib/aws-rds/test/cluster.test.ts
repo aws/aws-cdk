@@ -1826,56 +1826,6 @@ describe('cluster', () => {
       }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
     });
 
-    test('warn if performance insights is enabled at cluster level but disabled on writer instance', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-
-      // WHEN
-      new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
-        vpc,
-        writer: ClusterInstance.provisioned('writer', {
-          enablePerformanceInsights: false,
-        }),
-        enablePerformanceInsights: true,
-      });
-
-      // THEN
-      Annotations.fromStack(stack).hasWarning('*',
-        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instance \'writer\'. '+
-        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:instancePerformanceInsightsOverridden]',
-      );
-    });
-
-    test('warn if performance insights is enabled at cluster level but disabled on reader instance', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-
-      // WHEN
-      new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
-        vpc,
-        writer: ClusterInstance.provisioned('writer'),
-        readers: [
-          ClusterInstance.provisioned('reader1', {
-            enablePerformanceInsights: true,
-          }),
-          ClusterInstance.provisioned('reader2', {
-            enablePerformanceInsights: false,
-          }),
-        ],
-        enablePerformanceInsights: true,
-      });
-
-      // THEN
-      Annotations.fromStack(stack).hasWarning('*',
-        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instance \'reader2\'. '+
-        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:instancePerformanceInsightsOverridden]',
-      );
-    });
-
     test('warn if performance insights is enabled at cluster level but disabled on writer and reader instances', () => {
       // GIVEN
       const stack = testStack();
