@@ -1138,7 +1138,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
     When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.159.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to continue grant permissions to log group when no log group is specified',
   },
