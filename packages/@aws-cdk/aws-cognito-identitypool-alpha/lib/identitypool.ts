@@ -177,54 +177,39 @@ export class IdentityPoolProviderUrl {
 }
 
 /**
- * Login Provider for Identity Federation using Amazon Credentials
+ * Authentication Provider for external third-party Identity Federation
  */
-export interface IdentityPoolAmazonLoginProvider {
+export interface IdentityPoolAuthenticationProvider {
   /**
-   * App Id for Amazon Identity Federation
-   */
-  readonly appId: string;
-}
-
-/**
- * Login Provider for Identity Federation using Facebook Credentials
- */
-export interface IdentityPoolFacebookLoginProvider {
-  /**
-   * App Id for Facebook Identity Federation
-   */
-  readonly appId: string;
-}
-
-/**
- * Login Provider for Identity Federation using Apple Credentials
-*/
-export interface IdentityPoolAppleLoginProvider {
-  /**
-   * App Id for Apple Identity Federation
-  */
-  readonly servicesId: string;
-}
-
-/**
- * Login Provider for Identity Federation using Google Credentials
- */
-export interface IdentityPoolGoogleLoginProvider {
-  /**
-   * App Id for Google Identity Federation
+   * Client Id for Identity Federation
    */
   readonly clientId: string;
 }
 
 /**
+ * Login Provider for Identity Federation using Amazon Credentials
+ */
+export interface IdentityPoolAmazonLoginProvider extends IdentityPoolAuthenticationProvider {}
+
+/**
+ * Login Provider for Identity Federation using Facebook Credentials
+ */
+export interface IdentityPoolFacebookLoginProvider extends IdentityPoolAuthenticationProvider {}
+
+/**
+ * Login Provider for Identity Federation using Apple Credentials
+*/
+export interface IdentityPoolAppleLoginProvider extends IdentityPoolAuthenticationProvider {}
+
+/**
+ * Login Provider for Identity Federation using Google Credentials
+ */
+export interface IdentityPoolGoogleLoginProvider extends IdentityPoolAuthenticationProvider {}
+
+/**
  * Login Provider for Identity Federation using Twitter Credentials
  */
-export interface IdentityPoolTwitterLoginProvider {
-  /**
-   * App Id for Twitter Identity Federation
-   */
-  readonly consumerKey: string;
-
+export interface IdentityPoolTwitterLoginProvider extends IdentityPoolAuthenticationProvider {
   /**
    * App Secret for Twitter Identity Federation
    */
@@ -233,13 +218,15 @@ export interface IdentityPoolTwitterLoginProvider {
 
 /**
  * Login Provider for Identity Federation using Digits Credentials
+ * @deprecated As of September 30, 2017, the Digits Auth service has been deprecated.
  */
 export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLoginProvider {}
 
 /**
- * External Identity Providers To Connect to User Pools and Identity Pools
- */
-export interface IdentityPoolProviders {
+ * Authentication providers for using in identity pool.
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
+*/
+export interface IdentityPoolAuthenticationProviders {
   /** App Id for Facebook Identity Federation
    * @default - No Facebook Authentication Provider used without OpenIdConnect or a User Pool
    */
@@ -267,15 +254,10 @@ export interface IdentityPoolProviders {
 
   /** Consumer Key and Secret for Digits Identity Federation
    * @default - No Digits Authentication Provider used without OpenIdConnect or a User Pool
+   * @deprecated As of September 30, 2017, the Digits Auth service has been deprecated.
    */
   readonly digits?: IdentityPoolDigitsLoginProvider;
-}
 
-/**
-* Authentication providers for using in identity pool.
-* @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
-*/
-export interface IdentityPoolAuthenticationProviders extends IdentityPoolProviders {
   /**
    * The User Pool Authentication Providers associated with this Identity Pool
    * @default - no User Pools Associated
@@ -409,12 +391,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
       ) : undefined;
 
     let supportedLoginProviders:any = {};
-    if (authProviders.amazon) supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.appId;
-    if (authProviders.facebook) supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] = authProviders.facebook.appId;
+    if (authProviders.amazon) supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.clientId;
+    if (authProviders.facebook) supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] = authProviders.facebook.clientId;
     if (authProviders.google) supportedLoginProviders[IdentityPoolProviderUrl.GOOGLE.value] = authProviders.google.clientId;
-    if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.servicesId;
-    if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.consumerKey};${authProviders.twitter.consumerSecret}`;
-    if (authProviders.digits) supportedLoginProviders[IdentityPoolProviderUrl.DIGITS.value] = `${authProviders.digits.consumerKey};${authProviders.digits.consumerSecret}`;
+    if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.clientId;
+    if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.clientId};${authProviders.twitter.consumerSecret}`;
+    if (authProviders.digits) supportedLoginProviders[IdentityPoolProviderUrl.DIGITS.value] = `${authProviders.digits.clientId};${authProviders.digits.consumerSecret}`;
     if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
 
     const cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {
