@@ -769,6 +769,7 @@ export interface IUserPool extends IResource {
 
   /**
    * The provider name of this user pool resource
+   *
    * @attribute
    */
   readonly userPoolProviderName: string;
