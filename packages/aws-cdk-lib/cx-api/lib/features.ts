@@ -107,6 +107,7 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1125,6 +1126,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration',
+    detailsMd: `
+    Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+    specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+    When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to continue grant permissions to log group when no log group is specified',
   },
 };
 
