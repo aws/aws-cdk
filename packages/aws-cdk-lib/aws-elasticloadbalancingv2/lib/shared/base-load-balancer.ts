@@ -234,6 +234,11 @@ export abstract class BaseLoadBalancer extends Resource {
 
     this.vpc = baseProps.vpc;
 
+    if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+      additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
+      throw new Error(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`);
+    }
+
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
       subnets: subnetIds,

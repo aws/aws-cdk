@@ -11,6 +11,11 @@ export enum IpAddressType {
    * Allocate both IPv4 and IPv6 addresses
    */
   DUAL_STACK = 'dualstack',
+
+  /**
+   * IPv6 only public addresses, with private IPv4 and IPv6 addresses
+   */
+  DUAL_STACK_WITHOUT_PUBLIC_IPV4 = 'dualstack-without-public-ipv4',
 }
 
 /**

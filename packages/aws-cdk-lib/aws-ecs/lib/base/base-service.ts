@@ -1033,23 +1033,30 @@ export abstract class BaseService extends Resource
   }
 
   private executeCommandLogConfiguration() {
+    const reducePermissions = FeatureFlags.of(this).isEnabled(cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS);
     const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:CreateLogStream',
-        'logs:DescribeLogStreams',
-        'logs:PutLogEvents',
-      ],
-      resources: [logGroupArn],
-    }));
+    // When Feature Flag is false, keep the previous behaviour for non-breaking changes.
+    // When Feature Flag is true and when cloudwatch log group is specified in logConfiguration, then
+    // append the necessary permissions to the task definition.
+    if (!reducePermissions || logConfiguration?.cloudWatchLogGroup) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
+
+      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:CreateLogStream',
+          'logs:DescribeLogStreams',
+          'logs:PutLogEvents',
+        ],
+        resources: [logGroupArn],
+      }));
+    }
 
     if (logConfiguration?.s3Bucket?.bucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({

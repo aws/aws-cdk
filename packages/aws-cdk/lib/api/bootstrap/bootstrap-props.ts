@@ -129,5 +129,4 @@ export interface BootstrappingParameters {
    * @default - No value, optional argument
    */
   readonly customPermissionsBoundary?: string;
-
 }

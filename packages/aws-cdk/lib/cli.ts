@@ -547,7 +547,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             createCustomerMasterKey: args.bootstrapCustomerKey,
-            qualifier: args.qualifier,
+            qualifier: args.qualifier ?? configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
             examplePermissionsBoundary: argv.examplePermissionsBoundary,
             customPermissionsBoundary: argv.customPermissionsBoundary,

@@ -551,6 +551,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_12_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.12.1');
   /** Version "5.7.mysql_aurora.2.12.2". */
   public static readonly VER_2_12_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.12.2');
+  /** Version "5.7.mysql_aurora.2.12.3". */
+  public static readonly VER_2_12_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.12.3');
   /**
    * Version "8.0.mysql_aurora.3.01.0"
    * @deprecated Aurora MySQL 8.0.mysql_aurora.3.01.0 is no longer supported by Amazon RDS.

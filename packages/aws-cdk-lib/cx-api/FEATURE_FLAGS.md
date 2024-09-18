@@ -73,6 +73,7 @@ Flags come in three types:
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
+| [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
 
 <!-- END table -->
 
@@ -134,7 +135,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true
   }
 }
 ```
@@ -1376,6 +1378,24 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 | 2.156.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
+
+
+### @aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions
+
+*When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration* (fix)
+
+Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.159.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to continue grant permissions to log group when no log group is specified
 
 
 <!-- END details -->

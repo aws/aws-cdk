@@ -9,6 +9,7 @@ import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
 import { FirehoseMetrics } from 'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated';
 import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { StreamEncryption } from './encryption';
 
 const PUT_RECORD_ACTIONS = [
   'firehose:PutRecord',
@@ -162,7 +163,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
 /**
  * Options for server-side encryption of a delivery stream.
  */
-export enum StreamEncryption {
+export enum StreamEncryptionType {
   /**
    * Data in the stream is stored unencrypted.
    */
@@ -216,16 +217,9 @@ export interface DeliveryStreamProps {
   /**
    * Indicates the type of customer master key (CMK) to use for server-side encryption, if any.
    *
-   * @default StreamEncryption.UNENCRYPTED - unless `encryptionKey` is provided, in which case this will be implicitly set to `StreamEncryption.CUSTOMER_MANAGED`
+   * @default StreamEncryption.unencrypted()
    */
   readonly encryption?: StreamEncryption;
-
-  /**
-   * Customer managed key to server-side encrypt data in the stream.
-   *
-   * @default - no KMS key will be used; if `encryption` is set to `CUSTOMER_MANAGED`, a KMS key will be created for you
-   */
-  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -334,7 +328,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
     }
 
-    if (props.encryptionKey || props.sourceStream) {
+    if (props.encryption?.encryptionKey || props.sourceStream) {
       this._role = this._role ?? new iam.Role(this, 'Service Role', {
         assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
       });
@@ -342,15 +336,12 @@ export class DeliveryStream extends DeliveryStreamBase {
 
     if (
       props.sourceStream &&
-        (props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.CUSTOMER_MANAGED || props.encryptionKey)
+        (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
     ) {
       throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     }
-    if ((props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.UNENCRYPTED) && props.encryptionKey) {
-      throw new Error(`Specified stream encryption as ${StreamEncryption[props.encryption]} but provided a customer-managed key`);
-    }
-    const encryptionKey = props.encryptionKey ?? (props.encryption === StreamEncryption.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
-    const encryptionConfig = (encryptionKey || (props.encryption === StreamEncryption.AWS_OWNED)) ? {
+    const encryptionKey = props.encryption?.encryptionKey ?? (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
+    const encryptionConfig = (encryptionKey || (props.encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {
       keyArn: encryptionKey?.keyArn,
       keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
     } : undefined;
