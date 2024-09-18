@@ -1751,10 +1751,12 @@ describe('cluster', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
         PerformanceInsightsEnabled: true,
+        PerformanceInsightsRetentionPeriod: 7, // default period is set by the construct if the `PerformanceInsightsEnabled` is enabled
+        PerformanceInsightsKmsKeyId: Match.absent(), // KMS key is not set by default
       });
     });
 
-    test('setting performance insights fields enables performance insights', () => {
+    test('setting performanceInsightRetention enables performance insights', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1773,7 +1775,26 @@ describe('cluster', () => {
       });
     });
 
-    test('throws if performance insights fields are set but performance insights is disabled', () => {
+    test('setting performanceInsightEncryptionKey enables performance insights', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        PerformanceInsightsEnabled: true,
+        PerformanceInsightsKmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      });
+    });
+
+    test('throws if performanceInsightRetention is set but performance insights is disabled', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1789,24 +1810,7 @@ describe('cluster', () => {
       }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
     });
 
-    test('throws if performance insights is enabled on both cluster and writer instance', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-
-      expect(() => {
-        new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
-          vpc,
-          writer: ClusterInstance.provisioned('writer', {
-            enablePerformanceInsights: true,
-          }),
-          enablePerformanceInsights: true,
-        });
-      }).toThrow(/Cannot enable Performance Insights on both the cluster and the instances/);
-    });
-
-    test('throws if performance insights is enabled on both cluster and reader instance', () => {
+    test('throws if performanceInsightEncryptionKey is set but performance insights is disabled', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1816,15 +1820,121 @@ describe('cluster', () => {
           engine: DatabaseClusterEngine.AURORA,
           vpc,
           writer: ClusterInstance.provisioned('writer'),
-          readers: [ClusterInstance.provisioned('reader', {
-            enablePerformanceInsights: true,
-          })],
-          enablePerformanceInsights: true,
+          enablePerformanceInsights: false,
+          performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
         });
-      }).toThrow(/Cannot enable Performance Insights on both the cluster and the instances/);
+      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
     });
 
-    test('throws if performance insights is enabled on both cluster and instances with instanceProps', () => {
+    test('warn if performance insights is enabled at cluster level but disabled on writer instance', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          enablePerformanceInsights: false,
+        }),
+        enablePerformanceInsights: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('*',
+        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instance \'writer\'. '+
+        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:instancePerformanceInsightsOverridden]',
+      );
+    });
+
+    test('warn if performance insights is enabled at cluster level but disabled on reader instance', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        readers: [
+          ClusterInstance.provisioned('reader1', {
+            enablePerformanceInsights: true,
+          }),
+          ClusterInstance.provisioned('reader2', {
+            enablePerformanceInsights: false,
+          }),
+        ],
+        enablePerformanceInsights: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('*',
+        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instance \'reader2\'. '+
+        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:instancePerformanceInsightsOverridden]',
+      );
+    });
+
+    test('warn if performance insights is enabled at cluster level but disabled on writer and reader instances', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          enablePerformanceInsights: false,
+        }),
+        readers: [
+          ClusterInstance.provisioned('reader1', {
+            enablePerformanceInsights: true,
+          }),
+          ClusterInstance.provisioned('reader2', {
+            enablePerformanceInsights: false,
+          }),
+        ],
+        enablePerformanceInsights: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('*',
+        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instance \'writer\'. '+
+        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:instancePerformanceInsightsOverridden]',
+      );
+      Annotations.fromStack(stack).hasWarning('*',
+        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instance \'reader2\'. '+
+        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:instancePerformanceInsightsOverridden]',
+      );
+    });
+
+    test('does not warn if performance insights is enabled on cluster on instances', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          enablePerformanceInsights: true,
+        }),
+        readers: [
+          ClusterInstance.provisioned('reader1', {
+            enablePerformanceInsights: true,
+          }),
+        ],
+        enablePerformanceInsights: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', '*');
+    });
+
+    test('throws if performanceInsightRetention on instance conflicts with cluster level parameter', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1832,13 +1942,389 @@ describe('cluster', () => {
       expect(() => {
         new DatabaseCluster(stack, 'Database', {
           engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_12,
+          }),
+        });
+      }).toThrow(/`performanceInsightRetention` for each instance must be the same as the one at cluster level, got instance 'writer': 372, cluster: 731/);
+    });
+
+    test('throws if explicit default performanceInsightRetention on instance conflicts with cluster level parameter', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          writer: ClusterInstance.provisioned('writer', {
+            enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          }),
+        });
+      }).toThrow(/`performanceInsightRetention` for each instance must be the same as the one at cluster level, got instance 'writer': 7, cluster: 731/);
+    });
+
+    test('throws if performanceInsightRetention on instance conflicts with cluster level parameter as explicit default value', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_12,
+          }),
+        });
+      }).toThrow(/`performanceInsightRetention` for each instance must be the same as the one at cluster level, got instance 'writer': 372, cluster: 7/);
+    });
+
+    test('does not throw if performanceInsightRetention is the same value on cluster and instance', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          }),
+        });
+      }).not.toThrow();
+    });
+
+    test('does not throw if performanceInsightRetention is implicit default value on cluster and explicit default value on instance', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+          writer: ClusterInstance.provisioned('writer', {
+            enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          }),
+        });
+      }).not.toThrow();
+    });
+
+    test('does not throw if performanceInsightRetention is explicit default value on cluster and implicit default value on instance', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+          }),
+        });
+      }).not.toThrow();
+    });
+
+    test('throws if performanceInsightEncryptionKey on instance conflicts with cluster level parameter as token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightEncryptionKey: new kms.Key(stack, 'Key1'),
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightEncryptionKey: new kms.Key(stack, 'Key2'),
+          }),
+        });
+      }).toThrow(/`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level/);
+    });
+
+    test('throws if performanceInsightEncryptionKey on instance conflicts with cluster level parameter as non-token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const importedKey1 = kms.Key.fromKeyArn(stack, 'Key1', 'arn:aws:kms:us-east-1:123456789012:key/1');
+      const importedKey2 = kms.Key.fromKeyArn(stack, 'Key2', 'arn:aws:kms:us-east-1:123456789012:key/2');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightEncryptionKey: importedKey1,
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightEncryptionKey: importedKey2,
+          }),
+        });
+      }).toThrow(/`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level, got instance 'writer': 'arn:aws:kms:us-east-1:123456789012:key\/2', cluster: 'arn:aws:kms:us-east-1:123456789012:key\/1'/);
+    });
+
+    test('does not throw if performanceInsightEncryptionKeys are the same value on cluster and instance as token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'Key');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightEncryptionKey: key,
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightEncryptionKey: key,
+          }),
+        });
+      }).not.toThrow();
+    });
+
+    test('does not throw if performanceInsightEncryptionKeys are the same value on cluster and instance as non-token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const importedKey = kms.Key.fromKeyArn(stack, 'Key1', 'arn:aws:kms:us-east-1:123456789012:key/1');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          vpc,
+          performanceInsightEncryptionKey: importedKey,
+          writer: ClusterInstance.provisioned('writer', {
+            performanceInsightEncryptionKey: importedKey,
+          }),
+        });
+      }).not.toThrow();
+    });
+  });
+
+  describe('performance insights for cluster with instanceProps', () => {
+    test('warn if performance insights is enabled at cluster level but disabled on instanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        enablePerformanceInsights: true,
+        instanceProps: {
+          vpc,
+          enablePerformanceInsights: false,
+        },
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('*',
+        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instanceProps. '+
+        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:legacyInstancePerformanceInsightsOverridden]',
+      );
+    });
+
+    test('does not warn if performance insights is enabled on cluster on instanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        enablePerformanceInsights: true,
+        instanceProps: {
+          vpc,
           enablePerformanceInsights: true,
+        },
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', '*');
+    });
+
+    test('throws if performanceInsightRetention on instanceProps conflicts with cluster level parameter', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
           instanceProps: {
             vpc,
-            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_12,
           },
         });
-      }).toThrow(/Cannot enable Performance Insights on both the cluster and the instances/);
+      }).toThrow(/`performanceInsightRetention` for each instance must be the same as the one at cluster level, got `instanceProps`: 372, cluster: 731/);
+    });
+
+    test('throws if explicit default performanceInsightRetention on instanceProps conflicts with cluster level parameter', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          instanceProps: {
+            vpc,
+            enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          },
+        });
+      }).toThrow(/`performanceInsightRetention` for each instance must be the same as the one at cluster level, got `instanceProps`: 7, cluster: 731/);
+    });
+
+    test('throws if performanceInsightRetention on instanceProps conflicts with cluster level parameter as explicit default value', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          instanceProps: {
+            vpc,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_12,
+          },
+        });
+      }).toThrow(/`performanceInsightRetention` for each instance must be the same as the one at cluster level, got `instanceProps`: 372, cluster: 7/);
+    });
+
+    test('does not throw if performanceInsightRetention is the same value on cluster and instanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          instanceProps: {
+            vpc,
+            performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          },
+        });
+      }).not.toThrow();
+    });
+
+    test('does not throw if performanceInsightRetention is implicit default value on cluster and explicit default value on instanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+          instanceProps: {
+            vpc,
+            enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          },
+        });
+      }).not.toThrow();
+    });
+
+    test('does not throw if performanceInsightRetention is explicit default value on cluster and implicit default value on instanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          enablePerformanceInsights: true, // default period is set by the construct if the `enablePerformanceInsights` is enabled
+          instanceProps: {
+            vpc,
+            performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+          },
+        });
+      }).not.toThrow();
+    });
+
+    test('throws if performanceInsightEncryptionKey on instanceProps conflicts with cluster level parameter as token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightEncryptionKey: new kms.Key(stack, 'Key1'),
+          instanceProps: {
+            vpc,
+            performanceInsightEncryptionKey: new kms.Key(stack, 'Key2'),
+          },
+        });
+      }).toThrow(/`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level/);
+    });
+
+    test('throws if performanceInsightEncryptionKey on instanceProps conflicts with cluster level parameter as non-token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const importedKey1 = kms.Key.fromKeyArn(stack, 'Key1', 'arn:aws:kms:us-east-1:123456789012:key/1');
+      const importedKey2 = kms.Key.fromKeyArn(stack, 'Key2', 'arn:aws:kms:us-east-1:123456789012:key/2');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightEncryptionKey: importedKey1,
+          instanceProps: {
+            vpc,
+            performanceInsightEncryptionKey: importedKey2,
+          },
+        });
+      }).toThrow(/`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level, got `instanceProps`: 'arn:aws:kms:us-east-1:123456789012:key\/2', cluster: 'arn:aws:kms:us-east-1:123456789012:key\/1'/);
+    });
+
+    test('does not throw if performanceInsightEncryptionKeys are the same value on cluster and instanceProps as token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'Key');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightEncryptionKey: key,
+          instanceProps: {
+            vpc,
+            performanceInsightEncryptionKey: key,
+          },
+        });
+      }).not.toThrow();
+    });
+
+    test('does not throw if performanceInsightEncryptionKeys are the same value on cluster and instanceProps as non-token', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const importedKey = kms.Key.fromKeyArn(stack, 'Key1', 'arn:aws:kms:us-east-1:123456789012:key/1');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA,
+          performanceInsightEncryptionKey: importedKey,
+          instanceProps: {
+            vpc,
+            performanceInsightEncryptionKey: importedKey,
+          },
+        });
+      }).not.toThrow();
     });
   });
 

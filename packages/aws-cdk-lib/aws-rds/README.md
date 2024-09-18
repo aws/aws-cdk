@@ -1275,8 +1275,8 @@ To enable Performance Insights at the instance level, set the same properties fo
 
 In this way, different settings can be applied to different instances in a cluster.
 
-**Note:** If Performance Insights is enabled at the cluster level, it is not possible to specify a different value for the instance
-level than the cluster level.
+**Note:** If Performance Insights is enabled at the cluster level, it is also automatically enabled for each instance. If specified, Performance Insights
+for each instance require the same retention period and encryption key as the cluster level.
 
 ```ts
 declare const vpc: ec2.Vpc;
