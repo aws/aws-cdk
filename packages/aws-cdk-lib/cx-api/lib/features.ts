@@ -1133,7 +1133,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration',
     detailsMd: `
-    Currently, we will automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+    Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
     specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
 
     When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
