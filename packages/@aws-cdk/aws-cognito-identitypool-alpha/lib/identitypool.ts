@@ -185,7 +185,7 @@ export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLogi
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
 export interface IdentityPoolAuthenticationProviders {
-  /** 
+  /**
    * The Facebook authentication provider associated with this identity pool
    * @default - No Facebook authentication provider used without OpenIdConnect or a User Pool
    */

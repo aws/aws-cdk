@@ -41,7 +41,7 @@ const clientToImport = userPoolToImport.addClient('clientToImport');
 const importedUserPool = UserPool.fromUserPoolArn(stack, 'ImportedUserPool', userPoolToImport.userPoolArn);
 const importedUserPoolClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedUserPoolClient', clientToImport.userPoolClientId);
 const provider = new UserPoolAuthenticationProvider({ userPool, userPoolClient: client });
-const importedProvider = new UserPoolAuthenticationProvider({ userPool: importedUserPool, userPoolClient: importedUserPoolClient });
+new UserPoolAuthenticationProvider({ userPool: importedUserPool, userPoolClient: importedUserPoolClient });
 const idPool = new IdentityPool(stack, 'identitypool', {
   authenticationProviders: {
     userPools: [provider],
