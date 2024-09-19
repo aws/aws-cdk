@@ -994,7 +994,7 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
 ```
 
 ### Encrypting state machine logs in Cloud Watch Logs
-If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. To optionally encrypt the logs, you can encrypt the `LogGroup` used by the state machine with a KMS key.
+If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. If you want to encrypt the logs from the state machine using your own KMS key, you can do so by configuring the `LogGroup` associated with the state machine to use a KMS key.
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
