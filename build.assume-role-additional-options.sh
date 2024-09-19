@@ -34,7 +34,7 @@ cd ${builddir}
 
 echo "Working directory: ${builddir}"
 
-git clone https://github.com/cdklabs/cloud-assembly-schema.git -b sumughan/add-session-tags-to-schema --single-branch
+git clone https://github.com/cdklabs/cloud-assembly-schema.git -b main --single-branch
 git clone https://github.com/cdklabs//cdk-assets.git -b sumughan/add-session-tags-to-client-options --single-branch
 git clone https://github.com/aws/aws-cdk.git -b sumughan/session-tags --single-branch
 
@@ -98,10 +98,12 @@ echo "Building aws-cdk"
 cp ${cloud_assembly_schema_pkg} aws-cdk/packages/aws-cdk/cloud-assembly-schema.tgz
 cp ${cdk_assets_pkg} aws-cdk/packages/aws-cdk/cdk-assets.tgz
 cp ${cx_api_pkg} aws-cdk/packages/aws-cdk/cx-api.tgz
+cp ${cdk_assets_pkg} aws-cdk/packages/@aws-cdk/integ-runner/cdk-assets.tgz
 
 (cd aws-cdk/packages/@aws-cdk/cx-api && set_peer_dependency_version "@aws-cdk/cloud-assembly-schema" "./cloud-assembly-schema.tgz")
 (cd aws-cdk/packages/@aws-cdk/cx-api && set_dev_dependency_version "@aws-cdk/cloud-assembly-schema" "./cloud-assembly-schema.tgz")
 (cd aws-cdk/packages/@aws-cdk/integ-runner && set_dependency_version "@aws-cdk/cloud-assembly-schema" "./cloud-assembly-schema.tgz")
+(cd aws-cdk/packages/@aws-cdk/integ-runner && set_dependency_version "cdk-assets" "./cdk-assets.tgz")
 (cd aws-cdk/packages/aws-cdk && set_dependency_version "@aws-cdk/cloud-assembly-schema" "./cloud-assembly-schema.tgz")
 (cd aws-cdk/packages/aws-cdk-lib && set_dependency_version "@aws-cdk/cloud-assembly-schema" "./cloud-assembly-schema.tgz")
 
@@ -113,6 +115,7 @@ cp ${cx_api_pkg} aws-cdk/packages/aws-cdk/cx-api.tgz
 (cd aws-cdk/packages/@aws-cdk/cx-api && set_peer_dependency_version "@aws-cdk/cloud-assembly-schema" "${allow_all_version_range}")
 (cd aws-cdk/packages/@aws-cdk/cx-api && set_dev_dependency_version "@aws-cdk/cloud-assembly-schema" "${allow_all_version_range}")
 (cd aws-cdk/packages/@aws-cdk/integ-runner && set_dependency_version "@aws-cdk/cloud-assembly-schema" "${allow_all_version_range}")
+(cd aws-cdk/packages/@aws-cdk/integ-runner && set_dependency_version "cdk-assets" "${allow_all_version_range}")
 (cd aws-cdk/packages/aws-cdk && set_dependency_version "@aws-cdk/cloud-assembly-schema" "${allow_all_version_range}")
 (cd aws-cdk/packages/aws-cdk-lib && set_dependency_version "@aws-cdk/cloud-assembly-schema" "${allow_all_version_range}")
 
@@ -139,11 +142,11 @@ echo "aws-cdk package: ${aws_cdk_pkg}"
 
 workdir=$(mktemp -d)
 
-(cd ${workdir} && mv ${cloud_assembly_schema_pkg} "cloud-assembly-schema.tgz")
-(cd ${workdir} && mv ${cx_api_pkg} "cx-api.tgz")
-(cd ${workdir} && mv ${cdk_assets_pkg} "cdk-assets.tgz")
-(cd ${workdir} && mv ${aws_cdk_lib_pkg} "aws-cdk-lib.tgz")
-(cd ${workdir} && mv ${aws_cdk_pkg} "aws-cdk.tgz")
+(cd ${workdir} && cp ${cloud_assembly_schema_pkg} "cloud-assembly-schema.tgz")
+(cd ${workdir} && cp ${cx_api_pkg} "cx-api.tgz")
+(cd ${workdir} && cp ${cdk_assets_pkg} "cdk-assets.tgz")
+(cd ${workdir} && cp ${aws_cdk_lib_pkg} "aws-cdk-lib.tgz")
+(cd ${workdir} && cp ${aws_cdk_pkg} "aws-cdk.tgz")
 
 (cd ${workdir} && npm install "./cloud-assembly-schema.tgz")
 (cd ${workdir} && npm install "./cx-api.tgz")
