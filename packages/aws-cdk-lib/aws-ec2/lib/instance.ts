@@ -709,9 +709,6 @@ export class Instance extends Resource implements IInstance {
 
   /**
    * Apply CloudFormation update policies for the instance.
-   *
-   * If both initOptions.timeout and resourceSignalTimeout are specified,
-   * timeout is summed together, else timeout is set to the value of the specified field.
    */
   private applyUpdatePolicies(props: InstanceProps) {
     if (props.resourceSignalTimeout !== undefined) {
@@ -760,6 +757,7 @@ export interface ApplyCloudFormationInitOptions {
    * config changes nothing will happen to the running instance. If a
    * config update introduces errors, you will not notice until after the
    * CloudFormation deployment successfully finishes and the next instance
+   * fails to launch.
    *
    * @default true
    */
