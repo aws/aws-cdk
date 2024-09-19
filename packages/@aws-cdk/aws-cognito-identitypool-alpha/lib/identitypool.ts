@@ -1,4 +1,4 @@
-import { CfnIdentityPool, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { CfnIdentityPool, IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from 'aws-cdk-lib/aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
@@ -117,8 +117,8 @@ export class IdentityPoolProviderUrl {
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.SAML, url);
   }
 
-  /** User pool provider url */
-  public static userPool(userPool: UserPool, userPoolClient: UserPoolClient): IdentityPoolProviderUrl {
+  /** User pool provider Url */
+  public static userPool(userPool: IUserPool, userPoolClient: IUserPoolClient): IdentityPoolProviderUrl {
     const url = `${userPool.userPoolProviderName}:${userPoolClient.userPoolClientId}`;
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.USER_POOL, url);
   }

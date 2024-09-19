@@ -9,7 +9,6 @@ import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
-import { PARTITION_MAP } from '../../region-info/build-tools/fact-tables';
 
 /**
  * A VPC endpoint.
@@ -306,7 +305,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
-  public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier');
+  public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier', 'aws.api');
   public static readonly BILLING_AND_COST_MANAGEMENT_TAX = new InterfaceVpcEndpointAwsService('tax');
   public static readonly BILLING_CONDUCTOR = new InterfaceVpcEndpointAwsService('billingconductor');
   public static readonly BRAKET = new InterfaceVpcEndpointAwsService('braket');
@@ -366,7 +365,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CONTROL_CATALOG = new InterfaceVpcEndpointAwsService('controlcatalog');
   public static readonly COST_EXPLORER = new InterfaceVpcEndpointAwsService('ce');
   public static readonly DATA_EXCHANGE = new InterfaceVpcEndpointAwsService('dataexchange');
-  public static readonly DATA_EXPORTS = new InterfaceVpcEndpointAwsService('bcm-data-exports');
+  public static readonly DATA_EXPORTS = new InterfaceVpcEndpointAwsService('bcm-data-exports', 'aws.api');
   public static readonly DATASYNC = new InterfaceVpcEndpointAwsService('datasync');
   public static readonly DATAZONE = new InterfaceVpcEndpointAwsService('datazone');
   public static readonly DATABASE_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('dms');
@@ -421,6 +420,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly GRAFANA = new InterfaceVpcEndpointAwsService('grafana');
   public static readonly GRAFANA_WORKSPACE = new InterfaceVpcEndpointAwsService('grafana-workspace');
   public static readonly GROUNDSTATION = new InterfaceVpcEndpointAwsService('groundstation');
+  public static readonly GUARDDUTY = new InterfaceVpcEndpointAwsService('guardduty');
+  public static readonly GUARDDUTY_FIPS = new InterfaceVpcEndpointAwsService('guardduty-fips');
   public static readonly GUARDDUTY_DATA = new InterfaceVpcEndpointAwsService('guardduty-data');
   public static readonly GUARDDUTY_DATA_FIPS = new InterfaceVpcEndpointAwsService('guardduty-data-fips');
   public static readonly HEALTH_IMAGING = new InterfaceVpcEndpointAwsService('medical-imaging');
@@ -667,21 +668,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
-      'us-isof-': ['ecr.api', 'ecr.dkr'],
-      'eu-isoe-': ['ecr.api', 'ecr.dkr'],
     };
-
-    const regionPartition = region.split('-').slice(0, 2).join('-');
-    const partitionDetails = PARTITION_MAP[`${regionPartition}-`];
-
-    // Check for specific service name under isolated region prefix
-    const serviceInExceptions = VPC_ENDPOINT_SERVICE_EXCEPTIONS[`${regionPartition}-`]?.includes(name);
-
-    if (serviceInExceptions) {
-      // Endpoints generated in reverse of domain suffix for the services mentioned in map
-      const reverseString = partitionDetails.domainSuffix.split('.').reverse().join('.');
-      return reverseString;
-    } else if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
+    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       return 'cn.com.amazonaws';
     } else {
       return 'com.amazonaws';
