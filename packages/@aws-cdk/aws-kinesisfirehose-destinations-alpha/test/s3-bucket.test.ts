@@ -200,14 +200,6 @@ describe('S3 destination', () => {
       });
     });
 
-    // it('throws error if logging disabled but log group provided', () => {
-    //   const destination = new firehosedestinations.S3Bucket(bucket, { logging: false, logGroup: new logs.LogGroup(stack, 'Log Group') });
-
-    //   expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-    //     destinations: [destination],
-    //   })).toThrowError('logging cannot be set to false when logGroup is provided');
-    // });
-
     it('grants log group write permissions to destination role', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
 
@@ -572,8 +564,6 @@ describe('S3 destination', () => {
           bufferingInterval: cdk.Duration.minutes(1),
           compression: firehosedestinations.Compression.ZIP,
           encryptionKey: key,
-          // logging: true,
-          // logGroup: logGroup,
           loggingConfig: new firehosedestinations.EnableLogging(logGroup),
         },
       });

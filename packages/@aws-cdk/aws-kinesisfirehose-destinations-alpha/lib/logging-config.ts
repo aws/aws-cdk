@@ -5,9 +5,6 @@ import * as logs from 'aws-cdk-lib/aws-logs';
  * 
  * This class defines whether logging is enabled or disabled and holds
  * the CloudWatch log group where error logs are stored if logging is enabled.
- * 
- * Subclasses must implement whether logging is enabled (`EnableLogging`) 
- * or disabled (`DisableLogging`).
  */
 export abstract class LoggingConfig {
     /**
@@ -53,6 +50,5 @@ export class DisableLogging extends LoggingConfig {
   
     constructor() {
       super();
-      // No logGroup should be allowed when logging is disabled
     }
   }
