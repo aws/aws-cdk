@@ -1150,7 +1150,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
     detailsMd: `
       Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
-      only the value from 'resourceSignalTimeout' will be used. This feature flag will enable both values to be summed together.
+      only the value from 'resourceSignalTimeout' will be used. 
+      
+      When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
       `,
     recommendedValue: true,
     introducedIn: { v2: 'V2NEXT' },

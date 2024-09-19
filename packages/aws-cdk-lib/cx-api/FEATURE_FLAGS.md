@@ -1382,7 +1382,7 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
 
 
-### @aws-cdk.aws-ec2:ec2SumTImeoutEnabled
+### @aws-cdk.aws-ec2:ec2SumTimeoutEnabled
 
 *When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
 
