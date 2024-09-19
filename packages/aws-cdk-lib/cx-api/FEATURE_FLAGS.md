@@ -1382,20 +1382,6 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
 
 
-### @aws-cdk/aws-ec2:ec2SumTimeoutEnabled
-
-*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
-
-Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
-only the value from 'resourceSignalTimeout' will be used. This feature flag will enable both values to be summed together.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-
 ### @aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions
 
 *When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration* (fix)
@@ -1412,6 +1398,22 @@ When this feature flag is enabled, we will only grant the necessary permissions 
 | 2.159.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to continue grant permissions to log group when no log group is specified
+
+
+### @aws-cdk/aws-ec2:ec2SumTImeoutEnabled
+
+*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
+
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+only the value from 'resourceSignalTimeout' will be used. 
+
+When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

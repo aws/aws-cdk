@@ -581,7 +581,8 @@
    ],
    "CreationPolicy": {
     "ResourceSignal": {
-     "Timeout": "PT10M"
+     "Count": 1,
+     "Timeout": "PT40M"
     }
    },
    "Metadata": {
