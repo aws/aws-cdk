@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.159.0](https://github.com/aws/aws-cdk/compare/v2.158.0...v2.159.0) (2024-09-18)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#31484](https://github.com/aws/aws-cdk/issues/31484)) ([60ce351](https://github.com/aws/aws-cdk/commit/60ce351c16eda105ba3514508c00a6b05282384e)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html/issues/cfn-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html/issues/cfn-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html/issues/cfn-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html/issues/cfn-ec2)
+* **opensearch:** support OpenSearch version 2.15 ([#31398](https://github.com/aws/aws-cdk/issues/31398)) ([33eea3f](https://github.com/aws/aws-cdk/commit/33eea3f7f2e832d63dc2c1823c56f5e235c80076))
+* update L1 CloudFormation resource definitions ([#31460](https://github.com/aws/aws-cdk/issues/31460)) ([e220e90](https://github.com/aws/aws-cdk/commit/e220e90c879360447c5c1f6034213018d98ca636))
+* **apigatewayv2:** support for setting `routeSelectionExpression` for an HTTP API ([#31373](https://github.com/aws/aws-cdk/issues/31373)) ([36baf51](https://github.com/aws/aws-cdk/commit/36baf5172d3d70bb906a5dccbf28b22b1473ed11)), closes [#31104](https://github.com/aws/aws-cdk/issues/31104)
+* **elasticloadbalancingv2:** alb dualstack without public ipv4 ([#30248](https://github.com/aws/aws-cdk/issues/30248)) ([4068af3](https://github.com/aws/aws-cdk/commit/4068af3c047bbd2351593aa107e69c1eb6001fc9)), closes [#30256](https://github.com/aws/aws-cdk/issues/30256)
+* **events-target:** support Dead Letter Queue for Kinesis Stream Event Target ([#31435](https://github.com/aws/aws-cdk/issues/31435)) ([358f231](https://github.com/aws/aws-cdk/commit/358f231adb628b308c2240e99166fe1f0a83bee9)), closes [#31428](https://github.com/aws/aws-cdk/issues/31428) [#13600](https://github.com/aws/aws-cdk/issues/13600)
+* **stepfunctions-tasks:** support idle timeout for EmrCreateCluster ([#31142](https://github.com/aws/aws-cdk/issues/31142)) ([432ffaf](https://github.com/aws/aws-cdk/commit/432ffafb8e06d695609ec3881b8fe7f24b4dc391)), closes [#29926](https://github.com/aws/aws-cdk/issues/29926)
+* **vpcv2:** implementation of add gateway method ([#31224](https://github.com/aws/aws-cdk/issues/31224)) ([4b90bfc](https://github.com/aws/aws-cdk/commit/4b90bfc3cebcb38d312dcecc46bbfe856b39a44f))
+
+
+### Bug Fixes
+
+* **cli:** bootstrap respects qualifier from cdk.json ([#31410](https://github.com/aws/aws-cdk/issues/31410)) ([44134ad](https://github.com/aws/aws-cdk/commit/44134adfe8701c4e5b51ae3a34cd1d09f91735ec)), closes [#28249](https://github.com/aws/aws-cdk/issues/28249)
+* **cli:** hotswapping appsync functions fails when API does not return function on the first page ([#31406](https://github.com/aws/aws-cdk/issues/31406)) ([0da4f43](https://github.com/aws/aws-cdk/commit/0da4f4347b0852b7eb7742504ae613a9c14b5958)), closes [/github.com/aws/aws-cdk/blob/1e203753519e10e19ef0db87e1382377b609bcaa/packages/aws-cdk/lib/api/evaluate-cloudformation-template.ts#L23-L36](https://github.com/aws//github.com/aws/aws-cdk/blob/1e203753519e10e19ef0db87e1382377b609bcaa/packages/aws-cdk/lib/api/evaluate-cloudformation-template.ts/issues/L23-L36)
+* **cli:** release outdir lock when synth fails ([#30874](https://github.com/aws/aws-cdk/issues/30874)) ([b6ad97f](https://github.com/aws/aws-cdk/commit/b6ad97f4b4e1c185ddc53f60e15b0dabd8022694)), closes [#27864](https://github.com/aws/aws-cdk/issues/27864)
+* **cognito:** deprecate privateKey and add privateKeyValue as typed SecureValue ([#31409](https://github.com/aws/aws-cdk/issues/31409)) ([7ee183d](https://github.com/aws/aws-cdk/commit/7ee183d788a71015fb5aeafeaee1fa8001cc44ad)), closes [/github.com/aws/aws-cdk/blob/1e203753519e10e19ef0db87e1382377b609bcaa/packages/aws-cdk-lib/aws-cognito/lib/user-pool-idps/google.ts#L28](https://github.com/aws//github.com/aws/aws-cdk/blob/1e203753519e10e19ef0db87e1382377b609bcaa/packages/aws-cdk-lib/aws-cognito/lib/user-pool-idps/google.ts/issues/L28)
+* **ecs:** reduce ecs service task role cloudwatch permissions when no log configured (under feature flag) ([#31475](https://github.com/aws/aws-cdk/issues/31475)) ([de7ab7c](https://github.com/aws/aws-cdk/commit/de7ab7c662d326b9818514e236d82ea1228d1263))
+* **eks:** fargateCluster compatibility with AuthenticationMode.API ([#31267](https://github.com/aws/aws-cdk/issues/31267)) ([4d12833](https://github.com/aws/aws-cdk/commit/4d128330b058bf92c405661f6a2cb29fccaf6b38))
+* **eks:** update private ecr repo url regex ([#31394](https://github.com/aws/aws-cdk/issues/31394)) ([386fca3](https://github.com/aws/aws-cdk/commit/386fca3e1408a9389efac08598bde2d93d53fbba))
+* **lambda:** invalid Version object created from Version.fromVersionArn ([#31433](https://github.com/aws/aws-cdk/issues/31433)) ([1726abd](https://github.com/aws/aws-cdk/commit/1726abddbe10a22c092de7bf0b566710d13f5efd))
+* **ssm:** update ssm-context to prevent raising an error on missing parameter ([#31415](https://github.com/aws/aws-cdk/issues/31415)) ([ff02cca](https://github.com/aws/aws-cdk/commit/ff02ccaf12bddc9ed9236c5b5f2693604745f3c6)), closes [#7051](https://github.com/aws/aws-cdk/issues/7051) [#22064](https://github.com/aws/aws-cdk/issues/22064) [#7259](https://github.com/aws/aws-cdk/issues/7259)
+* pipelines ties cli version with cdk-assets version ([#31261](https://github.com/aws/aws-cdk/issues/31261)) ([4392ab4](https://github.com/aws/aws-cdk/commit/4392ab46de282a4f70365be0952c308e2d7cb8b8)), closes [#31253](https://github.com/aws/aws-cdk/issues/31253)
+
+## [2.158.0](https://github.com/aws/aws-cdk/compare/v2.157.0...v2.158.0) (2024-09-11)
+
+
+### Bug Fixes
+
+* **cloudformation-include:** can't use CFN intrinsics in Tags ([#30515](https://github.com/aws/aws-cdk/issues/30515)) ([af9e6ba](https://github.com/aws/aws-cdk/commit/af9e6bae94c0c303364c2c4f2033eb3823fb59c9)), closes [#27594](https://github.com/aws/aws-cdk/issues/27594)
+
 ## [2.157.0](https://github.com/aws/aws-cdk/compare/v2.156.0...v2.157.0) (2024-09-09)
 
 
