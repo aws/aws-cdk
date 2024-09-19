@@ -617,7 +617,7 @@
          "Value"
         ]
        },
-       "},\"physicalResourceId\":{\"id\":\"resourceid\"}}"
+       "},\"physicalResourceId\":{\"id\":\"resourceid\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -632,11 +632,11 @@
          "Value"
         ]
        },
-       "},\"physicalResourceId\":{\"id\":\"resourceid\"}}"
+       "},\"physicalResourceId\":{\"id\":\"resourceid\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "GetEndpointIpCustomResourcePolicyAC2A32E8"
