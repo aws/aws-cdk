@@ -421,6 +421,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly GRAFANA = new InterfaceVpcEndpointAwsService('grafana');
   public static readonly GRAFANA_WORKSPACE = new InterfaceVpcEndpointAwsService('grafana-workspace');
   public static readonly GROUNDSTATION = new InterfaceVpcEndpointAwsService('groundstation');
+  public static readonly GUARDDUTY = new InterfaceVpcEndpointAwsService('guardduty');
+  public static readonly GUARDDUTY_FIPS = new InterfaceVpcEndpointAwsService('guardduty-fips');
   public static readonly GUARDDUTY_DATA = new InterfaceVpcEndpointAwsService('guardduty-data');
   public static readonly GUARDDUTY_DATA_FIPS = new InterfaceVpcEndpointAwsService('guardduty-data-fips');
   public static readonly HEALTH_IMAGING = new InterfaceVpcEndpointAwsService('medical-imaging');
