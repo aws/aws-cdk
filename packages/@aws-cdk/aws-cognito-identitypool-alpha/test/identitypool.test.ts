@@ -3,6 +3,7 @@ import {
 } from 'aws-cdk-lib/assertions';
 import {
   UserPool,
+  UserPoolClient,
   UserPoolIdentityProvider,
 } from 'aws-cdk-lib/aws-cognito';
 import {
@@ -724,6 +725,41 @@ describe('role mappings', () => {
             ],
           },
           Type: 'Rules',
+        },
+      },
+    });
+  });
+
+  test('role mapping with an imported user pool and client', () => {
+    const stack = new Stack();
+    const importedPool = UserPool.fromUserPoolArn(stack, 'ImportedPool', 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    const importedClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedPoolClient', 'client-id');
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+      roleMappings: [{
+        mappingKey: 'cognito',
+        providerUrl: IdentityPoolProviderUrl.userPool(importedPool, importedClient),
+        useToken: true,
+      }],
+    });
+    const temp = Template.fromStack(stack);
+    temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 1);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
+      },
+      RoleMappings: {
+        cognito: {
+          IdentityProvider: {
+            'Fn::Join': [
+              '',
+              [
+                'cognito-idp.us-east-1.',
+                { Ref: 'AWS::URLSuffix' },
+                '/test-user-pool:client-id',
+              ],
+            ],
+          },
+          Type: 'Token',
         },
       },
     });
