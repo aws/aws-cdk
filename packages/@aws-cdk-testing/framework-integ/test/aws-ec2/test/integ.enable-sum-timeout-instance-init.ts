@@ -8,7 +8,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk.aws-ec2:ec2SumTImeoutEnabled': false,
+    '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled': false,
   },
 });
 const stack = new cdk.Stack(app, 'integ-init');

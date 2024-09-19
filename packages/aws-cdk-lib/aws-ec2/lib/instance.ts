@@ -708,7 +708,7 @@ export class Instance extends Resource implements IInstance {
   }
 
   /**
-   * Apply CloudFormation update policies for the instance.
+   * Apply CloudFormation update policies for the instance
    */
   private applyUpdatePolicies(props: InstanceProps) {
     if (props.resourceSignalTimeout !== undefined) {
