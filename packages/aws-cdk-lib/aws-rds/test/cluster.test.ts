@@ -2078,8 +2078,8 @@ describe('cluster', () => {
 
       // THEN
       Annotations.fromStack(stack).hasWarning('*',
-        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for instanceProps. '+
-        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:legacyInstancePerformanceInsightsOverridden]',
+        'Performance Insights is enabled on cluster \'Database\' at cluster level, but disabled for `instanceProps`. '+
+        'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level. [ack: @aws-cdk/aws-rds:instancePerformanceInsightsOverridden]',
       );
     });
 
