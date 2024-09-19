@@ -145,7 +145,14 @@ export class IdentityPoolProviderUrl {
   }
 
   constructor(
+    /**
+     * The type of identity pool provider
+     */
     public readonly type: IdentityPoolProviderType,
+
+    /**
+     * The value of the identity pool provider
+     */
     public readonly value: string,
   ) {}
 }
