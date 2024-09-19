@@ -59,26 +59,18 @@
     "@aws-cdk/service-spec-types" "^0.0.91"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^36.1.1":
-  version "36.3.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-36.3.0.tgz#17aeb389cbbff72f2b8d5b3b25d8d21d6ec3f0ef"
-  integrity sha512-mLSYgcMFTNCXrGAD7xob95p9s47/7WwEWUJiexxM46H2GxiijhlhLQJs31AS5uRRP6Cx1DLEu4qayKAUOOVGrw==
-  dependencies:
-    jsonschema "^1.4.1"
-    semver "^7.6.3"
-
-"@aws-cdk/cloud-assembly-schema@^37.0.0":
-  version "37.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-37.0.0.tgz#a265f00d40135cbd2a65034ee6e0776caecaa232"
-  integrity sha512-iCY/vEBnb7zRUj9LRRz52Ol0gWEJvnbZNouISFi8GtA8YZ7BFuh+fN24qQNn1lGNjPli4E1Nn2JNk1P//gNrOw==
+"@aws-cdk/cloud-assembly-schema@^38.0.0":
+  version "38.0.1"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-38.0.1.tgz#cdf4684ae8778459e039cd44082ea644a3504ca9"
+  integrity sha512-KvPe+NMWAulfNVwY7jenFhzhuLhLqJ/OPy5jx7wUstbjnYnjRVLpUHPU3yCjXFE0J8cuJVdx95BJ4rOs66Pi9w==
   dependencies:
     jsonschema "^1.4.1"
     semver "^7.6.3"
 
 "@aws-cdk/cx-api@^2.158.0":
-  version "2.158.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-2.158.0.tgz#f151027803dd7ecfcf69d3f23ab07276678d0560"
-  integrity sha512-hiSaCK6Wc29WbYaf05pvaABhRS/M8wqOgG0e3djhDp7OHiY3/fNW1dcQHwjMY6oq9Sppcgts8w4jrhapIKEQBg==
+  version "2.159.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-2.159.0.tgz#567c0ae0d7a6fc2f7cb9bda7e6cb23fac8d99094"
+  integrity sha512-HVkHCKQjVi3PCSOF22zLztZMEL+cJcyVvFctS3vXPetgl77L+e/onaGt1AUwRcNY44tvbqJm3oIVQt2HqM3q7w==
   dependencies:
     semver "^7.6.3"
 
@@ -8762,12 +8754,12 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-assets@^2.151.37:
-  version "2.151.37"
-  resolved "https://registry.npmjs.org/cdk-assets/-/cdk-assets-2.151.37.tgz#f3f024803eed0105e3608c7cd2e7340befb0834a"
-  integrity sha512-UvYktNzwE28Tt5CzJvR8R5aHw7EnJ8Fkk8p8Tj6d2Xz5/hDpDGSE5vC5bOjPOKcxFusAdOtyEfq/gYUKR2emEA==
+cdk-assets@^2.154.0:
+  version "2.154.0"
+  resolved "https://registry.npmjs.org/cdk-assets/-/cdk-assets-2.154.0.tgz#675d239c0156ca05c4a2809b30858c843f984ead"
+  integrity sha512-8M3zLHCx8nj5Fv5ubEps53jh22NN9G7ZLuq1AJwPdXZP7+nb4q5tdl2Ah2ZPMM/dob9u3KTwNeN34oLKHfDzbw==
   dependencies:
-    "@aws-cdk/cloud-assembly-schema" "^36.1.1"
+    "@aws-cdk/cloud-assembly-schema" "^38.0.0"
     "@aws-cdk/cx-api" "^2.158.0"
     archiver "^5.3.2"
     aws-sdk "^2.1691.0"

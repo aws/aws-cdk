@@ -71,10 +71,10 @@
   },
   "dependencies": {
     "chokidar": "^3.6.0",
-    "@aws-cdk/cloud-assembly-schema": "^37.0.0",
+    "@aws-cdk/cloud-assembly-schema": "^38.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "cdk-assets": "^2.151.37",
+    "cdk-assets": "^2.154.0",
     "@aws-cdk/aws-service-spec": "^0.1.24",
 
     "@aws-cdk/cdk-cli-wrapper": "0.0.0",
