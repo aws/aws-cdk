@@ -465,7 +465,7 @@ declare const api: apigateway.RestApi;
 
 const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
   customerId: 'hello-customer',
-  stages: [api.deploymentStage],
+  stages: [{ stage: api.deploymentStage }],
   quota: {
     limit: 10000,
     period: apigateway.Period.MONTH
