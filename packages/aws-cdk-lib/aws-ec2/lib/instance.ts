@@ -15,8 +15,9 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
+import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import * as cxapi from '../../cx-api';
 
 /**
  * Name tag constant
@@ -589,11 +590,23 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
-    if (props.init) {
-      this.applyCloudFormationInit(props.init, props.initOptions);
+    if (props.initOptions?.timeout && props.resourceSignalTimeout) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set');
     }
 
-    this.applyUpdatePolicies(props);
+    if (FeatureFlags.of(this).isEnabled(cxapi.EC2_SUM_TIMEOUT_ENABLED)) {
+      this.applyUpdatePolicies(props);
+
+      if (props.init) {
+        this.applyCloudFormationInit(props.init, props.initOptions);
+      }
+    } else {
+      if (props.init) {
+        this.applyCloudFormationInit(props.init, props.initOptions);
+      }
+
+      this.applyUpdatePolicies(props);
+    }
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     //
@@ -701,18 +714,11 @@ export class Instance extends Resource implements IInstance {
    * timeout is summed together, else timeout is set to the value of the specified field.
    */
   private applyUpdatePolicies(props: InstanceProps) {
-    if (props.initOptions?.timeout && props.resourceSignalTimeout) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set');
-    }
-
     if (props.resourceSignalTimeout !== undefined) {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
-          ...this.instance.cfnOptions.creationPolicy?.resourceSignal,
-          timeout: props.initOptions?.timeout ?
-            props.resourceSignalTimeout.plus(props.initOptions.timeout).toIsoString() :
-            props.resourceSignalTimeout.toIsoString(),
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
     }
@@ -754,7 +760,6 @@ export interface ApplyCloudFormationInitOptions {
    * config changes nothing will happen to the running instance. If a
    * config update introduces errors, you will not notice until after the
    * CloudFormation deployment successfully finishes and the next instance
-   * fails to launch.
    *
    * @default true
    */

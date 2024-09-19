@@ -1066,8 +1066,48 @@ test.each([true, false])('throw error for specifying ipv6AddressCount with assoc
   }).toThrow('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
 });
 
+test('resourceSignalTimeout overwrites initOptions.timeout when feature flag turned off', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: false,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    initOptions: {
+      timeout: Duration.minutes(30),
+    },
+    resourceSignalTimeout: Duration.minutes(10),
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('/Default/Instance', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set [ack: @aws-cdk/aws-ec2:setSetimeout]');
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Timeout: 'PT10M',
+      },
+    },
+  });
+});
+
 test('initOptions.timeout and resourceSignalTimeout are both not set. Timeout is set to default of 5 min', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   new Instance(stack, 'Instance', {
     vpc,
     machineImage: new AmazonLinuxImage(),
@@ -1089,6 +1129,13 @@ test('initOptions.timeout and resourceSignalTimeout are both not set. Timeout is
 
 test('initOptions.timeout is set and not resourceSignalTimeout. Timeout is set to initOptions.timeout value', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   new Instance(stack, 'Instance', {
     vpc,
     machineImage: new AmazonLinuxImage(),
@@ -1114,6 +1161,13 @@ test('initOptions.timeout is set and not resourceSignalTimeout. Timeout is set t
 
 test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set to resourceSignalTimeout value', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   new Instance(stack, 'Instance', {
     vpc,
     machineImage: new AmazonLinuxImage(),
@@ -1128,7 +1182,7 @@ test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set t
   Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     CreationPolicy: {
       ResourceSignal: {
-        Timeout: 'PT10M',
+        Timeout: 'PT15M',
       },
     },
   });
@@ -1136,6 +1190,13 @@ test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set t
 
 test('resourceSignalTimeout and initOptions.timeout are both set, sum timeout and log warning', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   new Instance(stack, 'Instance', {
     vpc,
     machineImage: new AmazonLinuxImage(),
