@@ -79,15 +79,25 @@ export interface IdentityPoolProps {
  * Types of identity pool login providers
  */
 export enum IdentityPoolProviderType {
+  /** Facebook provider type */
   FACEBOOK = 'Facebook',
+  /** Google provider type */
   GOOGLE = 'Google',
+  /** Amazon provider type */
   AMAZON = 'Amazon',
+  /** Apple provider type */
   APPLE = 'Apple',
+  /** Twitter provider type */
   TWITTER = 'Twitter',
+  /** Digits provider type */
   DIGITS = 'Digits',
+  /** Open Id provider type */
   OPEN_ID = 'OpenId',
+  /** Saml provider type */
   SAML = 'Saml',
+  /** User Pool provider type */
   USER_POOL = 'UserPool',
+  /** Custom provider type */
   CUSTOM = 'Custom',
 }
 
@@ -95,16 +105,22 @@ export enum IdentityPoolProviderType {
  * Keys for login providers - each correspond to the client IDs of their respective federation identity providers
  */
 export class IdentityPoolProviderUrl {
+  /** Facebook provider url */
   public static readonly FACEBOOK = new IdentityPoolProviderUrl(IdentityPoolProviderType.FACEBOOK, 'graph.facebook.com');
 
+  /** Google provider url */
   public static readonly GOOGLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.GOOGLE, 'accounts.google.com');
 
+  /** Amazon provider url */
   public static readonly AMAZON = new IdentityPoolProviderUrl(IdentityPoolProviderType.AMAZON, 'www.amazon.com');
 
+  /** Apple provider url */
   public static readonly APPLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.APPLE, 'appleid.apple.com');
 
+  /** Twitter provider url */
   public static readonly TWITTER = new IdentityPoolProviderUrl(IdentityPoolProviderType.TWITTER, 'api.twitter.com');
 
+  /** Digits provider url */
   public static readonly DIGITS = new IdentityPoolProviderUrl(IdentityPoolProviderType.DIGITS, 'www.digits.com');
 
   /** OpenId provider url */
