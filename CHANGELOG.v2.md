@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.159.1](https://github.com/aws/aws-cdk/compare/v2.159.0...v2.159.1) (2024-09-19)
+
+
+### Reverts
+
+*  fix(ec2): fixing vpc endpoint pattern for ecr and ecr docker ([#31496](https://github.com/aws/aws-cdk/issues/31496)) ([f7e8452](https://github.com/aws/aws-cdk/commit/f7e8452012623d55a21428edafdc12c29f7fc92b))
+
 ## [2.159.0](https://github.com/aws/aws-cdk/compare/v2.158.0...v2.159.0) (2024-09-18)
 
 
