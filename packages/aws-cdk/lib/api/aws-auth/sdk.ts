@@ -1,5 +1,22 @@
 import * as AWS from 'aws-sdk';
-import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { AppSync } from '@aws-sdk/client-appsync';
+import { CloudFormation } from '@aws-sdk/client-cloudformation';
+import { CloudWatchLogs } from '@aws-sdk/client-cloudwatch-logs';
+import { CodeBuild } from '@aws-sdk/client-codebuild';
+import { EC2 } from '@aws-sdk/client-ec2';
+import { ECR } from '@aws-sdk/client-ecr';
+import { ECS } from '@aws-sdk/client-ecs';
+import { ElasticLoadBalancingV2 } from '@aws-sdk/client-elastic-load-balancing-v2';
+import { IAM } from '@aws-sdk/client-iam';
+import { KMS } from '@aws-sdk/client-kms';
+import { Lambda } from '@aws-sdk/client-lambda';
+import { Route53 } from '@aws-sdk/client-route-53';
+import { S3 } from '@aws-sdk/client-s3';
+import { SecretsManager } from '@aws-sdk/client-secrets-manager';
+import { SFN } from '@aws-sdk/client-sfn';
+import { SSM } from '@aws-sdk/client-ssm';
+import { STS } from '@aws-sdk/client-sts';
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
@@ -51,22 +68,22 @@ export interface ISDK {
    */
   removeCustomUserAgent(userAgentData: string): void;
 
-  lambda(): AWS.Lambda;
-  cloudFormation(): AWS.CloudFormation;
-  ec2(): AWS.EC2;
-  iam(): AWS.IAM;
-  ssm(): AWS.SSM;
-  s3(): AWS.S3;
-  route53(): AWS.Route53;
-  ecr(): AWS.ECR;
-  ecs(): AWS.ECS;
-  elbv2(): AWS.ELBv2;
-  secretsManager(): AWS.SecretsManager;
-  kms(): AWS.KMS;
-  stepFunctions(): AWS.StepFunctions;
-  codeBuild(): AWS.CodeBuild;
-  cloudWatchLogs(): AWS.CloudWatchLogs;
-  appsync(): AWS.AppSync;
+  lambda(): Lambda;
+  cloudFormation(): CloudFormation;
+  ec2(): EC2;
+  iam(): IAM;
+  ssm(): SSM;
+  s3(): S3;
+  route53(): Route53;
+  ecr(): ECR;
+  ecs(): ECS;
+  elbv2(): ElasticLoadBalancingV2;
+  secretsManager(): SecretsManager;
+  kms(): KMS;
+  stepFunctions(): SFN;
+  codeBuild(): CodeBuild;
+  cloudWatchLogs(): CloudWatchLogs;
+  appsync(): AppSync;
 }
 
 /**
@@ -90,12 +107,33 @@ export class SDK implements ISDK {
 
   public readonly currentRegion: string;
 
-  private readonly config: ConfigurationOptions;
+  private config: {
+    region: string;
+    credentials: AWS.Credentials;
+    logger: {
+      debug: (...messages: any[]) => void;
+      info: (...messages: any[]) => void;
+      warn: (...messages: any[]) => void;
+      error: (...messages: any[]) => void;
+    };
+    retryStrategy: ConfiguredRetryStrategy;
+    customUserAgent?: string;
+  };
+
+  private readonly logger = {
+    debug: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+    info: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+    warn: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+    error: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+  };
 
   /**
    * Default retry options for SDK clients.
    */
-  private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 } };
+  private readonly retryStrategy = new ConfiguredRetryStrategy(
+    6,
+    (attempt: number) => 300 + attempt, // 300ms delay
+  )
 
   /**
    * The more generous retry policy for CloudFormation, which has a 1 TPM limit on certain APIs,
@@ -103,12 +141,17 @@ export class SDK implements ISDK {
    *
    * So we're allowing way more retries, but waiting a bit more.
    */
-  private readonly cloudFormationRetryOptions = { maxRetries: 10, retryDelayOptions: { base: 1_000 } };
-
+  private readonly cloudFormationRetryStrategy = new ConfiguredRetryStrategy(
+    10,
+    (attempt: number) => 1000 + attempt, // 1000ms delay
+  )
   /**
    * STS is used to check credential validity, don't do too many retries.
    */
-  private readonly stsRetryOptions = { maxRetries: 3, retryDelayOptions: { base: 100 } };
+  private readonly stsRetryStrategy = new ConfiguredRetryStrategy(
+    3,
+    (attempt: number) => 100 + attempt, // 1000ms delay
+  )
 
   /**
    * Whether we have proof that the credentials have not expired
@@ -122,15 +165,14 @@ export class SDK implements ISDK {
   constructor(
     private readonly _credentials: AWS.Credentials,
     region: string,
-    httpOptions: ConfigurationOptions = {},
     private readonly sdkOptions: SdkOptions = {}) {
 
     this.config = {
-      ...httpOptions,
-      ...this.retryOptions,
-      credentials: _credentials,
       region,
-      logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
+      credentials: this._credentials,
+      logger: this.logger,
+      retryStrategy: this.retryStrategy,
+      customUserAgent: undefined,
     };
     this.currentRegion = region;
   }
@@ -150,71 +192,75 @@ export class SDK implements ISDK {
     this.config.customUserAgent = this.config.customUserAgent?.replace(userAgentData, '');
   }
 
-  public lambda(): AWS.Lambda {
-    return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
-  }
-
-  public cloudFormation(): AWS.CloudFormation {
-    return this.wrapServiceErrorHandling(new AWS.CloudFormation({
-      ...this.config,
-      ...this.cloudFormationRetryOptions,
+  public lambda(): Lambda {
+    return this.wrapServiceErrorHandling(new Lambda({
+      region: this.currentRegion,
+      credentials: this._credentials,
+      logger: this.logger,
+      retryStrategy: this.retryStrategy,
     }));
   }
 
-  public ec2(): AWS.EC2 {
-    return this.wrapServiceErrorHandling(new AWS.EC2(this.config));
+  public cloudFormation(): CloudFormation {
+    const cfnConfig = this.config;
+    cfnConfig.retryStrategy = this.cloudFormationRetryStrategy;
+    return this.wrapServiceErrorHandling(new CloudFormation(cfnConfig));
   }
 
-  public iam(): AWS.IAM {
-    return this.wrapServiceErrorHandling(new AWS.IAM(this.config));
+  public ec2(): EC2 {
+    return this.wrapServiceErrorHandling(new EC2(this.config));
   }
 
-  public ssm(): AWS.SSM {
-    return this.wrapServiceErrorHandling(new AWS.SSM(this.config));
+  public iam(): IAM {
+    return this.wrapServiceErrorHandling(new IAM(this.config));
   }
 
-  public s3(): AWS.S3 {
-    return this.wrapServiceErrorHandling(new AWS.S3(this.config));
+  public ssm(): SSM {
+    return this.wrapServiceErrorHandling(new SSM(this.config));
   }
 
-  public route53(): AWS.Route53 {
-    return this.wrapServiceErrorHandling(new AWS.Route53(this.config));
+  public s3(): S3 {
+    return this.wrapServiceErrorHandling(new S3(this.config));
   }
 
-  public ecr(): AWS.ECR {
-    return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
+  public route53(): Route53 {
+    return this.wrapServiceErrorHandling(new Route53(this.config));
   }
 
-  public ecs(): AWS.ECS {
-    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
+  public ecr(): ECR {
+    return this.wrapServiceErrorHandling(new ECR(this.config));
   }
 
-  public elbv2(): AWS.ELBv2 {
-    return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
+  public ecs(): ECS {
+    return this.wrapServiceErrorHandling(new ECS(this.config));
   }
 
-  public secretsManager(): AWS.SecretsManager {
-    return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  public elbv2(): ElasticLoadBalancingV2 {
+    return this.wrapServiceErrorHandling(new ElasticLoadBalancingV2(this.config));
   }
 
-  public kms(): AWS.KMS {
-    return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+  public secretsManager(): SecretsManager {
+    return this.wrapServiceErrorHandling(new SecretsManager(this.config));
   }
 
-  public stepFunctions(): AWS.StepFunctions {
-    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
+  public kms(): KMS {
+    return this.wrapServiceErrorHandling(new KMS(this.config));
   }
 
-  public codeBuild(): AWS.CodeBuild {
-    return this.wrapServiceErrorHandling(new AWS.CodeBuild(this.config));
+  public stepFunctions(): SFN {
+    return this.wrapServiceErrorHandling(new SFN(this.config));
   }
 
-  public cloudWatchLogs(): AWS.CloudWatchLogs {
-    return this.wrapServiceErrorHandling(new AWS.CloudWatchLogs(this.config));
+  public codeBuild(): CodeBuild {
+    return this.wrapServiceErrorHandling(new CodeBuild(this.config));
   }
 
-  public appsync(): AWS.AppSync {
-    return this.wrapServiceErrorHandling(new AWS.AppSync(this.config));
+  public cloudWatchLogs(): CloudWatchLogs {
+    return this.wrapServiceErrorHandling(new CloudWatchLogs(this.config));
+  }
+
+  public appsync(): AppSync {
+    return this.wrapServiceErrorHandling(new AppSync(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
@@ -224,7 +270,9 @@ export class SDK implements ISDK {
     return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
       // if we don't have one, resolve from STS and store in cache.
       debug('Looking up default account ID from STS');
-      const result = await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
+      const stsConfig = this.config;
+      stsConfig.retryStrategy = this.stsRetryStrategy;
+      const result = await new STS(stsConfig).getCallerIdentity();
       const accountId = result.Account;
       const partition = result.Arn!.split(':')[1];
       if (!accountId) {
@@ -268,9 +316,7 @@ export class SDK implements ISDK {
       debug(`Assuming role failed: ${e.message}`);
       throw new Error([
         'Could not assume role in target account',
-        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
-          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : [],
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`] : []),
         e.message,
         '. Please make sure that this role exists in the account. If it doesn\'t exist, (re)-bootstrap the environment ' +
         'with the right \'--trust\', using the latest version of the CDK CLI.',
@@ -286,7 +332,9 @@ export class SDK implements ISDK {
       return;
     }
 
-    await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
+    const stsConfig = this.config;
+    stsConfig.retryStrategy = this.stsRetryStrategy;
+    await new STS(stsConfig).getCallerIdentity();
     this._credentialsValidated = true;
   }
 
@@ -347,11 +395,15 @@ export class SDK implements ISDK {
           // do additional things to errors.
           return Object.assign(Object.create(response), {
             promise() {
-              return response.promise().catch((e: Error & { code?: string }) => {
-                e = self.makeDetailedException(e);
-                debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message} (code=${e.code})`);
-                return Promise.reject(e); // Re-'throw' the new error
-              });
+              return (
+                // The `.promise()` call might be on an JS SDK v2 client API.
+                // If yes, please remove .promise(). If not, remove this comment.
+                response.promise().catch((e: Error & { code?: string }) => {
+                  e = self.makeDetailedException(e);
+                  debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message} (code=${e.code})`);
+                  return Promise.reject(e); // Re-'throw' the new error
+                })
+              );
             },
           });
         };
@@ -384,9 +436,7 @@ export class SDK implements ISDK {
     if (e.message === 'Could not load credentials from ChainableTemporaryCredentials') {
       e.message = [
         'Could not assume role in target account',
-        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
-          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : [],
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`] : []),
         '(did you bootstrap the environment with the right \'--trust\'s?)',
       ].join(' ');
     }
