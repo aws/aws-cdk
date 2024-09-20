@@ -204,7 +204,7 @@ export interface IdentityPoolTwitterLoginProvider extends IdentityPoolAuthentica
 export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLoginProvider {}
 
 /**
- * Authentication providers for using in identity pool.
+ * External Authentication providers for usage in identity pool.
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
 export interface IdentityPoolAuthenticationProviders {
