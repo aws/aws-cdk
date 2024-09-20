@@ -159,7 +159,7 @@ export interface TableOptionsV2 {
 
   /**
  * Resource policy to assign to DynamoDB Stream.
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicaspecification.html#cfn-dynamodb-globaltable-replicaspecification-resourcepolicy
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicaspecification.html#cfn-dynamodb-globaltable-replicaspecification-replicastreamspecification
  * @default - No resource policy statements are added to the stream.
  */
   readonly streamResourcePolicy?: PolicyDocument;
