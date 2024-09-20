@@ -156,6 +156,13 @@ export interface TableOptionsV2 {
    * @default - No resource policy statements are added to the created table.
    */
   readonly resourcePolicy?: PolicyDocument;
+
+  /**
+ * Resource policy to assign to DynamoDB Stream.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicaspecification.html#cfn-dynamodb-globaltable-replicaspecification-resourcepolicy
+ * @default - No resource policy statements are added to the stream.
+ */
+  readonly streamResourcePolicy?: PolicyDocument;
 }
 
 /**
@@ -399,13 +406,15 @@ export class TableV2 extends TableBaseV2 {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
       public readonly resourcePolicy?: PolicyDocument;
+      public readonly streamResourcePolicy?: PolicyDocument;
 
       protected readonly region: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
-      public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string, resourcePolicy?: PolicyDocument) {
+      public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string,
+        resourcePolicy?: PolicyDocument, streamResourcePolicy?: PolicyDocument) {
         super(scope, id, { environmentFromArn: tableArn });
 
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
@@ -420,6 +429,7 @@ export class TableV2 extends TableBaseV2 {
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
         this.resourcePolicy = resourcePolicy;
+        this.streamResourcePolicy = streamResourcePolicy;
       }
     }
 
@@ -479,6 +489,11 @@ export class TableV2 extends TableBaseV2 {
    * @attribute
    */
   public resourcePolicy?: PolicyDocument;
+
+  /**
+   * @attribute
+   */
+  public streamResourcePolicy?: PolicyDocument;
 
   protected readonly region: string;
 
@@ -665,6 +680,7 @@ export class TableV2 extends TableBaseV2 {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
     const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+    const streamResourcePolicy = props.region === this.region ? this.tableOptions.streamResourcePolicy : props.streamResourcePolicy || undefined;
 
     return {
       region: props.region,
@@ -692,6 +708,9 @@ export class TableV2 extends TableBaseV2 {
           : undefined,
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
+        : undefined,
+      replicaStreamSpecification: streamResourcePolicy
+        ? { resourcePolicy: { policyDocument: streamResourcePolicy } }
         : undefined,
     };
   }
