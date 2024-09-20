@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 
@@ -14,7 +14,7 @@ export class AZContextProviderPlugin implements ContextProviderPlugin {
     const region = args.region;
     const account = args.account;
     debug(`Reading AZs for ${account}:${region}`);
-    const ec2 = (await initPluginSdk(this.aws, args)).ec2();
+    const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
     const response = await ec2.describeAvailabilityZones().promise();
     if (!response.AvailabilityZones) { return []; }
     const azs = response.AvailabilityZones.filter(zone => zone.State === 'available').map(zone => zone.ZoneName);

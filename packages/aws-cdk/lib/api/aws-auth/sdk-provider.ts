@@ -593,15 +593,19 @@ function fmtObtainedCredentials(
   }
 }
 
-export async function initPluginSdk(aws: SdkProvider, options: cxschema.ContextLookupRoleOptions): Promise<ISDK> {
+/**
+ * Instantiate an SDK for context providers. This function ensures that all
+ * lookup assume role options are used when context providers perform lookups.
+ */
+export async function initContextProviderSdk(aws: SdkProvider, options: cxschema.ContextLookupRoleOptions): Promise<ISDK> {
 
   const account = options.account;
   const region = options.region;
 
   const creds: CredentialsOptions = {
     assumeRoleArn: options.lookupRoleArn,
-    assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
     assumeRoleExternalId: options.lookupRoleExternalId,
+    assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
   };
 
   return (await aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, creds)).sdk;

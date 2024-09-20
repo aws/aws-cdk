@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 
@@ -16,7 +16,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     }
     const domainName = args.domainName;
     debug(`Reading hosted zone ${account}:${region}:${domainName}`);
-    const r53 = (await initPluginSdk(this.aws, args)).route53();
+    const r53 = (await initContextProviderSdk(this.aws, args)).route53();
     const response = await r53.listHostedZonesByName({ DNSName: domainName }).promise();
     if (!response.HostedZones) {
       throw new Error(`Hosted Zone not found in account ${account}, region ${region}: ${domainName}`);

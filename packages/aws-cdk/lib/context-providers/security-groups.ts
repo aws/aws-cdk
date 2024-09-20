@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 
 export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin {
@@ -18,7 +18,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
       throw new Error('\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group');
     }
 
-    const ec2 = (await initPluginSdk(this.aws, args)).ec2();
+    const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
 
     const filters: AWS.EC2.FilterList = [];
     if (args.vpcId) {

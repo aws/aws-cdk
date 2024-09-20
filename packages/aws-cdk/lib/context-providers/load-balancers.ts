@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 
 /**
@@ -12,7 +12,7 @@ export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin 
   }
 
   async getValue(query: cxschema.LoadBalancerContextQuery): Promise<cxapi.LoadBalancerContextResponse> {
-    const elbv2 = (await initPluginSdk(this.aws, query)).elbv2();
+    const elbv2 = (await initContextProviderSdk(this.aws, query)).elbv2();
 
     if (!query.loadBalancerArn && !query.loadBalancerTags) {
       throw new Error('The load balancer lookup query must specify either `loadBalancerArn` or `loadBalancerTags`');
@@ -57,7 +57,7 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
   }
 
   async getValue(query: LoadBalancerListenerQuery): Promise<LoadBalancerListenerResponse> {
-    const elbv2 = (await initPluginSdk(this.aws, query)).elbv2();
+    const elbv2 = (await initContextProviderSdk(this.aws, query)).elbv2();
 
     if (!query.listenerArn && !query.loadBalancerArn && !query.loadBalancerTags) {
       throw new Error('The load balancer listener query must specify at least one of: `listenerArn`, `loadBalancerArn` or `loadBalancerTags`');

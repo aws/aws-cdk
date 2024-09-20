@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as AWS from 'aws-sdk';
-import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 
@@ -47,7 +47,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
    */
   private async getSsmParameterValue(args: cxschema.SSMParameterContextQuery)
     : Promise<AWS.SSM.GetParameterResult> {
-    const ssm = (await initPluginSdk(this.aws, args)).ssm();
+    const ssm = (await initContextProviderSdk(this.aws, args)).ssm();
     try {
       return await ssm.getParameter({ Name: args.parameterName }).promise();
     } catch (e: any) {

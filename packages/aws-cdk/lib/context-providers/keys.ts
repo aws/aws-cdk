@@ -2,7 +2,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
-import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 
@@ -12,7 +12,7 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
   }
 
   public async getValue(args: cxschema.KeyContextQuery) {
-    const kms = (await initPluginSdk(this.aws, args)).kms();
+    const kms = (await initContextProviderSdk(this.aws, args)).kms();
 
     const aliasListEntry = await this.findKey(kms, args);
 

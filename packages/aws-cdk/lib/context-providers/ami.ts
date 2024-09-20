@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { SdkProvider, initPluginSdk } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug, print } from '../logging';
 
@@ -19,7 +19,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     print(`Searching for AMI in ${account}:${region}`);
     debug(`AMI search parameters: ${JSON.stringify(args)}`);
 
-    const ec2 = (await initPluginSdk(this.aws, args)).ec2();
+    const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
     const response = await ec2.describeImages({
       Owners: args.owners,
       Filters: Object.entries(args.filters).map(([key, values]) => ({
