@@ -685,7 +685,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
-          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+          produce: () => renderInstances(this, this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
         }),
         type: this.spot ? 'SPOT' : 'EC2',
         spotIamFleetRole: this.spotFleetRole?.roleArn,
@@ -712,14 +712,18 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       resourceName: this.physicalName,
     });
 
-    this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
+    this.node.addValidation({
+      validate: () => validateInstances.call(this, this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+    });
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
+    // TODO add check
     this.instanceTypes.push(instanceType);
   }
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
+    // TODO add check
     this.instanceClasses.push(instanceClass);
   }
 }
@@ -1034,7 +1038,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
-        instanceTypes: Lazy.list({ produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) }),
+        instanceTypes: Lazy.list({ produce: () => renderInstances(this, this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) }),
         type: this.spot ? 'SPOT' : 'EC2',
         allocationStrategy: this.allocationStrategy,
         bidPercentage: this.spotBidPercentage,
@@ -1059,7 +1063,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
       resourceName: this.physicalName,
     });
 
-    this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
+    this.node.addValidation({
+      validate: () => validateInstances.call(this, this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+    });  
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
@@ -1133,7 +1139,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
   }
 }
 
-function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+function renderInstances(scope: Construct, types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
   const instances = [];
   let hasArmInstances = false;
   let hasX86Instances = false;
@@ -1162,7 +1168,7 @@ function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass
   }
 
   if (hasArmInstances && (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined)) {
-    console.warn('Warning: "optimal" instance types are not supported with ARM instance classes. Setting useOptimalInstanceClasses to false');
+    Annotations.of(scope).addWarningV2('@aws-cdk/aws-batch:optimalNotSupportedWithARM', '\'optimal\' instance types are not supported with ARM instance types or classes, setting useOptimalInstanceClasses to false');
     useOptimalInstanceClasses = false;
   }
 
@@ -1207,8 +1213,8 @@ function determineAllocationStrategy(id: string, allocationStrategy?: Allocation
   return result;
 }
 
-function validateInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
-  if (renderInstances(types, classes, useOptimalInstanceClasses).length === 0) {
+function validateInstances(this: Construct, types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+  if (renderInstances(this, types, classes, useOptimalInstanceClasses).length === 0) {
     return ["Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes"];
   }
 
