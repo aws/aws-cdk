@@ -5,7 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from '../../core';
+import { Annotations, ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from '../../core';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -1063,10 +1063,12 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
+    // TODO: implement check if it is arm
     this.instanceTypes.push(instanceType);
   }
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
+    // TODO: implement check if it is arm
     this.instanceClasses.push(instanceClass);
   }
 }
@@ -1133,13 +1135,37 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
 
 function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
   const instances = [];
-
+  let hasArmInstances = false;
+  let hasX86Instances = false;
+ 
   for (const instanceType of types ?? []) {
     instances.push(instanceType.toString());
+    if (instanceType.architecture === ec2.InstanceArchitecture.ARM_64) {
+      hasArmInstances = true;
+    } else {
+      hasX86Instances = true;
+    }
   }
+  
   for (const instanceClass of classes ?? []) {
     instances.push(instanceClass);
+    const instanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
+    if (instanceType.architecture === ec2.InstanceArchitecture.ARM_64) {
+      hasArmInstances = true;
+    } else {
+      hasX86Instances = true;
+    }
   }
+
+  if (hasArmInstances && hasX86Instances) {
+    throw new Error('Cannot mix ARM and x86 instance types or classes');
+  }
+
+  if (hasArmInstances && (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined)) {
+    console.warn('Warning: "optimal" instance types are not supported with ARM instance classes. Setting useOptimalInstanceClasses to false');
+    useOptimalInstanceClasses = false;
+  }
+
   if (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined) {
     instances.push('optimal');
   }
