@@ -734,7 +734,7 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   queryLines: [
     'fields @message',
     'filter @message like /Error/',
-  ],
+  ]
 }));
 ```
 
