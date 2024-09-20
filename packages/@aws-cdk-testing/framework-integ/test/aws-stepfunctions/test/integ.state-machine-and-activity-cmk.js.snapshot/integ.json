@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig"
+      ],
+      "assertionStack": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "StateMachineAndActivityWithCMKEncryptionConfigurationDefaultTestDeployAssert11207853"
+    }
+  }
+}
