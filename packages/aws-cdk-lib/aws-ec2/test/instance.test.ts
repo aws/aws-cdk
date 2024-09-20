@@ -1089,10 +1089,10 @@ test('resourceSignalTimeout overwrites initOptions.timeout when feature flag tur
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Default/Instance', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set [ack: @aws-cdk/aws-ec2:setSetimeout]');
   Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     CreationPolicy: {
       ResourceSignal: {
+        Count: 1,
         Timeout: 'PT10M',
       },
     },
@@ -1211,7 +1211,6 @@ test('resourceSignalTimeout and initOptions.timeout are both set, sum timeout an
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Default/Instance', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set [ack: @aws-cdk/aws-ec2:setSetimeout]');
   Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     CreationPolicy: {
       ResourceSignal: {

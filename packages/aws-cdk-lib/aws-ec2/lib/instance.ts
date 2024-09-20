@@ -590,10 +590,6 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
-    if (props.initOptions?.timeout && props.resourceSignalTimeout) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:setSetimeout', 'Both initOptions.timeout and resourceSignalTimeout fields are set, timeout is summed together. It is suggested that only one of the two fields is set');
-    }
-
     if (FeatureFlags.of(this).isEnabled(cxapi.EC2_SUM_TIMEOUT_ENABLED)) {
       this.applyUpdatePolicies(props);
 
@@ -715,6 +711,7 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
+          ...this.instance.cfnOptions.creationPolicy?.resourceSignal,
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
