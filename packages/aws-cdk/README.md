@@ -396,12 +396,12 @@ You can pass the `--import-existing-resources` flag to the `deploy` command:
 $ cdk deploy --import-existing-resources
 ```
 
-This allows you to automatically import resources into your stack that already
-exist in your AWS account during CloudFormation deployments.
-With this feature, you can reduce the manual effort of import operations and avoid
-deployment failures because of naming conflicts.
+Automatically import resources in your CDK application which represent
+unmanaged resources in your account. 
+Reduces the manual effort of import operations and avoids
+deployment failures due to naming conflicts with unmanaged resources in your account.
 
-use `--method=prepare-change-set` flag to review which resources are imported or not before deploying
+Use `--method=prepare-change-set` flag to review which resources are imported or not before deploying
 You can inspect the change set created by CDK from the management console or other external tools.
 
 ```console
