@@ -1,0 +1,689 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig": {
+        "id": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig",
+        "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig",
+        "children": {
+          "StateMachine Key": {
+            "id": "StateMachine Key",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "Activity Key": {
+            "id": "Activity Key",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:Decrypt",
+                            "kms:GenerateDataKey"
+                          ],
+                          "Condition": {
+                            "StringEquals": {
+                              "kms:EncryptionContext:aws:states:activityArn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":states:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":activity:ActivityWithCMKEncryptionConfiguration"
+                                  ]
+                                ]
+                              }
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "states.amazonaws.com"
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "ActivityWithCMKEncryptionConfiguration": {
+            "id": "ActivityWithCMKEncryptionConfiguration",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::Activity",
+                  "aws:cdk:cloudformation:props": {
+                    "encryptionConfiguration": {
+                      "kmsKeyId": {
+                        "Fn::GetAtt": [
+                          "ActivityKey371097A6",
+                          "Arn"
+                        ]
+                      },
+                      "kmsDataKeyReusePeriodSeconds": 75,
+                      "type": "CUSTOMER_MANAGED_KMS_KEY"
+                    },
+                    "name": "ActivityWithCMKEncryptionConfiguration"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnActivity",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Activity",
+              "version": "0.0.0"
+            }
+          },
+          "Activity": {
+            "id": "Activity",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsInvokeActivity",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineWithCMKEncryptionConfiguration": {
+            "id": "StateMachineWithCMKEncryptionConfiguration",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "kms:Decrypt",
+                                    "kms:GenerateDataKey"
+                                  ],
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "kms:EncryptionContext:aws:states:activityArn": {
+                                        "Ref": "ActivityWithCMKEncryptionConfiguration3D01813A"
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ActivityKey371097A6",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "kms:Decrypt",
+                                    "kms:GenerateDataKey"
+                                  ],
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "kms:EncryptionContext:aws:states:stateMachineArn": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":states:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":stateMachine:StateMachineWithCMKEncryptionConfiguration"
+                                          ]
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "StateMachineKeyE4B4725B",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"Activity\",\"States\":{\"Activity\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+                          {
+                            "Ref": "ActivityWithCMKEncryptionConfiguration3D01813A"
+                          },
+                          "\",\"Parameters\":{\"Hello\":\"World\"}}}}"
+                        ]
+                      ]
+                    },
+                    "encryptionConfiguration": {
+                      "kmsKeyId": {
+                        "Fn::GetAtt": [
+                          "StateMachineKeyE4B4725B",
+                          "Arn"
+                        ]
+                      },
+                      "kmsDataKeyReusePeriodSeconds": 75,
+                      "type": "CUSTOMER_MANAGED_KMS_KEY"
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18",
+                        "Arn"
+                      ]
+                    },
+                    "stateMachineName": "StateMachineWithCMKEncryptionConfiguration",
+                    "stateMachineType": "STANDARD"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports",
+            "children": {
+              "Output{\"Ref\":\"StateMachineWithCMKEncryptionConfiguration10773462\"}": {
+                "id": "Output{\"Ref\":\"StateMachineWithCMKEncryptionConfiguration10773462\"}",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"StateMachineWithCMKEncryptionConfiguration10773462\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"ActivityWithCMKEncryptionConfiguration3D01813A\"}": {
+                "id": "Output{\"Ref\":\"ActivityWithCMKEncryptionConfiguration3D01813A\"}",
+                "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"ActivityWithCMKEncryptionConfiguration3D01813A\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "StateMachineAndActivityWithCMKEncryptionConfiguration": {
+        "id": "StateMachineAndActivityWithCMKEncryptionConfiguration",
+        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2": {
+                    "id": "AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2",
+                    "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578": {
+                    "id": "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578",
+                    "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1": {
+                    "id": "AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1",
+                    "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
