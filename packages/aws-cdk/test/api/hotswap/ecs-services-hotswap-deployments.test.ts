@@ -1,9 +1,8 @@
 import * as AWS from 'aws-sdk';
-import { Configuration } from '../../../lib/settings';
 import * as setup from './hotswap-test-setup';
 import { EcsHotswapProperties, HotswapMode, HotswapProperties } from '../../../lib/api/hotswap/common';
+import { Configuration } from '../../../lib/settings';
 import { silentTest } from '../../util/silent';
-
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockRegisterTaskDef: jest.Mock<AWS.ECS.RegisterTaskDefinitionResponse, AWS.ECS.RegisterTaskDefinitionRequest[]>;

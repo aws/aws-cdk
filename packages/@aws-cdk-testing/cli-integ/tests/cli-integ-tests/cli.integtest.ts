@@ -2239,21 +2239,24 @@ integTest('hotswap ECS deployment respects properties override', withDefaultFixt
     },
   });
 
-  const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', {
-    StackName: stackArn,
-  });
+  const describeStacksResponse = await fixture.aws.cloudFormation.send(
+    new DescribeStacksCommand({
+      StackName: stackArn,
+    }),
+  );
+
   const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
   const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
 
   // THEN
-
-  const describeServicesResponse = await fixture.aws.ecs('describeServices', {
-    cluster: clusterName,
-    services: [serviceName],
-  });
+  const describeServicesResponse = await fixture.aws.ecs.send(
+    new DescribeServicesCommand({
+      cluster: clusterName,
+      services: [serviceName],
+    }),
+  );
   expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(ecsMinimumHealthyPercent);
   expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(ecsMaximumHealthyPercent);
-
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
