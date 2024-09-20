@@ -2,7 +2,6 @@
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
-import type { AssumeRoleAdditionalOptions } from '../../lib/api/aws-auth/sdk-provider';
 
 interface RegisteredIdentity {
   readonly account: string;
@@ -22,7 +21,8 @@ interface AssumedRole {
   readonly serialNumber: string;
   readonly tokenCode: string;
   readonly roleSessionName: string;
-  readonly assumeRoleAdditionalOptions?: AssumeRoleAdditionalOptions;
+  readonly tags?: AWS.STS.Tag[];
+  readonly transitiveTagKeys?: string[];
 }
 
 /**
@@ -161,66 +161,37 @@ export class FakeSts {
   }
 
   /**
-   * This function parses session tags from the STS mock request into a dictionary. This is necessary because
-   * the STS request body writes these dictionary values in the format Tags.member.X.Key and Tags.member.X.Value.
+   * Maps have a funky encoding to them when sent to STS.
    *
    * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
-   * @param body - the parsed body of the mockRequest
-   * @returns session tags dictionary
    */
-  private decodeTagsFromRequestBody(body: Record<string, string>): AWS.STS.Tag[] {
-    const tags: AWS.STS.Tag[] = [];
-
-    for (const key in body) {
-      if (key.startsWith('Tags.member.') && key.endsWith('.Key')) {
-        const tagIndex = key.split('.')[2];
-        const tagKey = body[key];
-        const tagValueKey = `Tags.member.${tagIndex}.Value`;
-        if (tagValueKey in body) {
-          tags.push({ Key: tagKey, Value: body[tagValueKey] });
-        }
-      }
-    }
-
-    return tags;
+  private decodeMapFromRequestBody(parameter: string, body: Record<string, string>): AWS.STS.Tag[] {
+    return Object.entries(body)
+      .filter(([key, _]) => key.startsWith(`${parameter}.member.`) && key.endsWith('.Key'))
+      .map(([key, tagKey]) => ({ Key: tagKey, Value: body[`${parameter}.member.${key.split('.')[2]}.Value`] }));
   }
 
   /**
-   * This function parses transitive session tags keys from the STS mock request into an array. This is necessary because
-   * the STS request body writes these array values in the format TransitiveTagKeys.member.N
+   * Lists have a funky encoding when sent to STS.
    *
    * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
-   * @param body - the parsed body of the mockRequest
-   * @returns transitive session tags keys array
    */
-  private decodeTransitiveTagKeysFromRequestBody(body: Record<string, string>): string[] {
-    const tags: string[] = [];
-
-    for (const key in body) {
-      if (key.startsWith('TransitiveTagKeys.member.')) {
-        const transtiveTagKey = key.split('.')[2];
-        tags.push(transtiveTagKey);
-      }
-    }
-
-    return tags;
+  private decodeListKeysFromRequestBody(parameter: string, body: Record<string, string>): string[] {
+    return Object.entries(body)
+      .filter(([key]) => key.startsWith(`${parameter}.member.`))
+      .map(([, value]) => value);
   }
 
   private handleAssumeRole(identity: RegisteredIdentity, mockRequest: MockRequest): Record<string, any> {
     this.checkForFailure(mockRequest.parsedBody.RoleArn);
-
-    const tags = this.decodeTagsFromRequestBody(mockRequest.parsedBody);
-    const transitiveTagKeys = this.decodeTransitiveTagKeysFromRequestBody(mockRequest.parsedBody);
 
     this.assumedRoles.push({
       roleArn: mockRequest.parsedBody.RoleArn,
       roleSessionName: mockRequest.parsedBody.RoleSessionName,
       serialNumber: mockRequest.parsedBody.SerialNumber,
       tokenCode: mockRequest.parsedBody.TokenCode,
-      assumeRoleAdditionalOptions: {
-        Tags: tags,
-        TransitiveTagKeys: transitiveTagKeys,
-      },
+      tags: this.decodeMapFromRequestBody('Tags', mockRequest.parsedBody),
+      transitiveTagKeys: this.decodeListKeysFromRequestBody('TransitiveTagKeys', mockRequest.parsedBody),
     });
 
     const roleArn = mockRequest.parsedBody.RoleArn;

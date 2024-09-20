@@ -155,11 +155,13 @@ describe('new style synthesis', () => {
     const assetManifestJSON = readAssetManifest(assetManifest);
 
     // Validates that the image and file asset session tags were set in the asset manifest:
-    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['current_account-current_region'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }]);
-    expect(assetManifestJSON.files?.fileHash.destinations['current_account-current_region'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-FileAssetTag' }]);
+    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['111111111111-us-east-1'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }]);
+    expect(assetManifestJSON.files?.fileHash.destinations['111111111111-us-east-1'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-FileAssetTag' }]);
 
     // assert that lookup role options are added to the missing lookup context
-    expect(asm.manifest.missing![0].props.assumeRoleAdditionalOptions).toEqual({});
+    expect(asm.manifest.missing![0].props.assumeRoleAdditionalOptions).toEqual({
+      Tags: [{ Key: 'Department', Value: 'Engineering-LookupRoleTag' }],
+    });
 
   });
 

@@ -369,9 +369,7 @@ describe('with intercepted network calls', () => {
 
         // THEN
         expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
-          assumeRoleAdditionalOptions: {
-            Tags: [{ Key: 'Department', Value: 'Engineering' }],
-          },
+          tags: [{ Key: 'Department', Value: 'Engineering' }],
           transitiveTagKeys: ['Department'],
         }));
       });
