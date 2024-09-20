@@ -194,6 +194,7 @@ describe('Graphs', () => {
         'fields @message',
         'filter @message like /Error/',
       ],
+      accountId: '123456789',
     });
 
     // THEN
@@ -202,6 +203,7 @@ describe('Graphs', () => {
       width: 6,
       height: 6,
       properties: {
+        accountId: '123456789',
         view: 'table',
         region: { Ref: 'AWS::Region' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
@@ -349,6 +351,7 @@ describe('Graphs', () => {
       width: 6,
       height: 6,
       properties: {
+        accountId: '123456789',
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         annotations: {
