@@ -21,16 +21,18 @@ class TestStack extends Stack {
     });
 
     // table with resource policy
-    const table = new dynamodb.TableV2(this, 'TableTestV2-1', {
+    new dynamodb.TableV2(this, 'TableTestV2-1', {
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
       resourcePolicy: docu,
+      replicas: [{
+        region: 'eu-west-2',
+      }],
     });
 
-    table.grantReadData(new iam.AccountPrincipal('123456789012'));
   }
 }
 

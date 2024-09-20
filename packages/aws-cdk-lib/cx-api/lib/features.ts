@@ -108,6 +108,7 @@ export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-reso
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
+export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1141,6 +1142,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.159.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to continue grant permissions to log group when no log group is specified',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`TableV2\` is to use
+      the use a different \`resourcePolicy\` for all replicas. 
+      
+      If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
+
+      This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
