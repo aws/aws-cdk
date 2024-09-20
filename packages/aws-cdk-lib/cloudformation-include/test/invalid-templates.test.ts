@@ -245,6 +245,12 @@ describe('CDK Include', () => {
       },
     );
   });
+
+  test('throws an exception if Tags contains invalid intrinsics', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'tags-with-invalid-intrinsics.json');
+    }).toThrow(/expression does not exist in the template/);
+  });
 });
 
 interface IncludeTestTemplateProps {

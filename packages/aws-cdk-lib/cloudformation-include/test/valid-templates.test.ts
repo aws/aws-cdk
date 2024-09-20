@@ -1130,10 +1130,12 @@ describe('CDK Include', () => {
     );
   });
 
-  test('throws an exception if Tags contains invalid intrinsics', () => {
-    expect(() => {
-      includeTestTemplate(stack, 'tags-with-invalid-intrinsics.json');
-    }).toThrow(/expression does not exist in the template/);
+  test('Intrinsics can be used in update policy attribute', () => {
+    includeTestTemplate(stack, 'update-policy-with-intrinsics.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('update-policy-with-intrinsics.json'),
+    );
   });
 });
 
