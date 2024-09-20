@@ -16,6 +16,13 @@ export interface MetricWidgetProps {
   readonly title?: string;
 
   /**
+   * Account ID for the metrics of this widget
+   *
+   * @default - None
+   */
+  readonly accountId?: string;
+
+  /**
    * The region the metrics of this graph should be taken from
    *
    * @default - Current region
@@ -108,6 +115,7 @@ export class AlarmWidget extends ConcreteWidget {
       y: this.y,
       properties: {
         view: 'timeSeries',
+        accountId: this.props.accountId,
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         annotations: {
@@ -274,6 +282,7 @@ export class GaugeWidget extends ConcreteWidget {
       properties: {
         view: 'gauge',
         title: this.props.title,
+        accountId: this.props.accountId,
         region: this.props.region || cdk.Aws.REGION,
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations: (this.props.annotations ?? []).length > 0 ? { horizontal: this.props.annotations } : undefined,
@@ -499,6 +508,7 @@ export class GraphWidget extends ConcreteWidget {
       properties: {
         view: this.props.view ?? GraphWidgetView.TIME_SERIES,
         title: this.props.title,
+        accountId: this.props.accountId,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
         metrics: metrics.length > 0 ? metrics : undefined,
@@ -787,6 +797,7 @@ export class TableWidget extends ConcreteWidget {
       x: this.x,
       y: this.y,
       properties: {
+        accountId: this.props.accountId,
         title: this.props.title,
         view: 'table',
         table: {
@@ -907,6 +918,7 @@ export class SingleValueWidget extends ConcreteWidget {
       properties: {
         view: 'singleValue',
         title: this.props.title,
+        accountId: this.props.accountId,
         region: this.props.region || cdk.Aws.REGION,
         sparkline: this.props.sparkline,
         metrics: allMetricsGraphJson(this.props.metrics, []),
