@@ -89,8 +89,6 @@ export enum IdentityPoolProviderType {
   APPLE = 'Apple',
   /** Twitter provider type */
   TWITTER = 'Twitter',
-  /** Digits provider type */
-  DIGITS = 'Digits',
   /** Open Id provider type */
   OPEN_ID = 'OpenId',
   /** Saml provider type */
@@ -119,9 +117,6 @@ export class IdentityPoolProviderUrl {
 
   /** Twitter provider url */
   public static readonly TWITTER = new IdentityPoolProviderUrl(IdentityPoolProviderType.TWITTER, 'api.twitter.com');
-
-  /** Digits provider url */
-  public static readonly DIGITS = new IdentityPoolProviderUrl(IdentityPoolProviderType.DIGITS, 'www.digits.com');
 
   /** OpenId provider url */
   public static openId(url: string): IdentityPoolProviderUrl {
@@ -198,12 +193,6 @@ export interface IdentityPoolTwitterLoginProvider extends IdentityPoolAuthentica
 }
 
 /**
- * Login provider for identity federation using Digits credentials
- * @deprecated As of September 30, 2017, the Digits Auth service has been deprecated.
- */
-export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLoginProvider {}
-
-/**
  * External Authentication providers for usage in identity pool.
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
@@ -237,13 +226,6 @@ export interface IdentityPoolAuthenticationProviders {
    * @default - No Twitter authentication provider used without OpenIdConnect or a user pool
    */
   readonly twitter?: IdentityPoolTwitterLoginProvider;
-
-  /**
-   * The Digits authentication provider associated with this identity pool
-   * @default - No Digits authentication provider used without OpenIdConnect or a user pool
-   * @deprecated As of September 30, 2017, the Digits Auth service has been deprecated.
-   */
-  readonly digits?: IdentityPoolDigitsLoginProvider;
 
   /**
    * The user pool authentication providers associated with this identity pool
@@ -383,7 +365,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (authProviders.google) supportedLoginProviders[IdentityPoolProviderUrl.GOOGLE.value] = authProviders.google.clientId;
     if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.clientId;
     if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.clientId};${authProviders.twitter.consumerSecret}`;
-    if (authProviders.digits) supportedLoginProviders[IdentityPoolProviderUrl.DIGITS.value] = `${authProviders.digits.clientId};${authProviders.digits.consumerSecret}`;
     if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
 
     const cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {
