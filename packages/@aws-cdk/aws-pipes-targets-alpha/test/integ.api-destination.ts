@@ -75,7 +75,7 @@ new Pipe(stack, 'Pipe', {
       'x-header': 'myheader',
       'x-api-key': 'apiKeyFromHeaderParams', // check which header has precedence
     },
-    queryStringParameters: { key: 'harrypotter' },
+    queryStringParameters: { key: '$.body' },
   }),
 });
 
@@ -83,20 +83,22 @@ const test = new IntegTest(app, 'integtest-pipe-target-api-dest', {
   testCases: [stack],
 });
 
+const payload = 'UnitedStates';
 const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   QueueUrl: sourceQueue.queueUrl,
-  MessageBody: 'USA',
+  MessageBody: payload,
 });
 
 const logEvents = test.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
   logGroupName: fn.logGroup.logGroupName,
-  limit: 1,
+  limit: 3,
 });
 
 const message = putMessageOnQueue.next(logEvents);
 
 // Check that the Lambda was invoked successfully from API GW
-message.assertAtPath('events.0.message', ExpectedResult.stringLikeRegexp('INIT_START')).waitForAssertions({
+// Payload from SQS is in the third log line
+message.assertAtPath('events.2.message', ExpectedResult.stringLikeRegexp(payload)).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(1),
   interval: cdk.Duration.seconds(15),
 });

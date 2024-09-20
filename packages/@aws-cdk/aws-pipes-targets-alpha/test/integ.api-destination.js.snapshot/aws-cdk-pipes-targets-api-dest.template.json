@@ -318,7 +318,7 @@
        "x-api-key": "apiKeyFromHeaderParams"
       },
       "QueryStringParameters": {
-       "key": "harrypotter"
+       "key": "$.body"
       }
      }
     }

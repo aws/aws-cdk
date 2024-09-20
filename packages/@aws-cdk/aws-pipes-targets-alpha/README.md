@@ -32,6 +32,7 @@ The following targets are supported:
 1. `targets.SqsTarget`: [Send event source to a Queue](#amazon-sqs)
 2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
 3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
+4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
 
 ### Amazon SQS
 
@@ -181,7 +182,9 @@ The API destination will receive the (enriched/filtered) source payload.
 declare const sourceQueue: sqs.Queue;
 declare const dest: events.ApiDestination;
 
-const apiTarget = new targets.ApiDestinationTarget(dest);
+const apiTarget = new targets.ApiDestinationTarget(dest, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
