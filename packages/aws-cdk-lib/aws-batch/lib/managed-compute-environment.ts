@@ -718,12 +718,13 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
-    // TODO add check
+    checkArchitectureConsistency(instanceType, this.instanceTypes, this.instanceClasses);
     this.instanceTypes.push(instanceType);
   }
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    // TODO add check
+    const tempInstanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
+    checkArchitectureConsistency(tempInstanceType, this.instanceTypes, this.instanceClasses);
     this.instanceClasses.push(instanceClass);
   }
 }
@@ -1069,12 +1070,13 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
-    // TODO: implement check if it is arm
+    checkArchitectureConsistency(instanceType, this.instanceTypes, this.instanceClasses);
     this.instanceTypes.push(instanceType);
   }
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    // TODO: implement check if it is arm
+    const tempInstanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
+    checkArchitectureConsistency(tempInstanceType, this.instanceTypes, this.instanceClasses);
     this.instanceClasses.push(instanceClass);
   }
 }
@@ -1139,6 +1141,28 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
   }
 }
 
+function checkArchitectureConsistency(
+  newInstanceType: ec2.InstanceType,
+  existingTypes: ec2.InstanceType[],
+  existingClasses: ec2.InstanceClass[]
+): void {
+  const newArchitecture = newInstanceType.architecture;
+
+  for (const existingType of existingTypes ?? []) {
+    if (existingType.architecture !== newArchitecture) {
+      throw new Error(`Cannot add instance type ${newInstanceType.toString()} with architecture ${newArchitecture}. It conflicts with existing instance type ${existingType.toString()} with architecture ${existingType.architecture}.`);
+    }
+  }
+
+  for (const existingClass of existingClasses ?? []) {
+    const tempInstanceType = new ec2.InstanceType(`${existingClass.toString()}.large`);
+    const existingClassArchitecture = tempInstanceType.architecture;
+    if (existingClassArchitecture !== newArchitecture) {
+      throw new Error(`Cannot add instance type ${newInstanceType.toString()} with architecture ${newArchitecture}. It conflicts with existing instance class ${existingClass} with architecture ${existingClassArchitecture}.`);
+    }
+  }
+}
+
 function renderInstances(scope: Construct, types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
   const instances = [];
   let hasArmInstances = false;
@@ -1155,8 +1179,8 @@ function renderInstances(scope: Construct, types?: ec2.InstanceType[], classes?:
   
   for (const instanceClass of classes ?? []) {
     instances.push(instanceClass);
-    const instanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
-    if (instanceType.architecture === ec2.InstanceArchitecture.ARM_64) {
+    const tempInstanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
+    if (tempInstanceType.architecture === ec2.InstanceArchitecture.ARM_64) {
       hasArmInstances = true;
     } else {
       hasX86Instances = true;
