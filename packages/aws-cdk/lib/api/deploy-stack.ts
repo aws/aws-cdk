@@ -226,7 +226,7 @@ export interface ChangeSetDeploymentMethod {
   readonly changeSetName?: string;
 
   /**
-   * Indicates if the stack set imports resources that already exist.
+   * Indicates if the change set imports resources that already exist.
    *
    * @default false
    */

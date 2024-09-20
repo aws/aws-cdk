@@ -401,21 +401,20 @@ exist in your AWS account during CloudFormation deployments.
 With this feature, you can reduce the manual effort of import operations and avoid
 deployment failures because of naming conflicts.
 
-To review which resources are imported or not before actually executing a change set,
-use `--method=prepare-change-set` flag.
+use `--method=prepare-change-set` flag to review which resources are imported or not before deploying
 You can inspect the change set created by CDK from the management console or other external tools.
 
 ```console
 $ cdk deploy --import-existing-resources --method=prepare-change-set
 ```
 
-To enable this feature only for a specific stack, use `--exclusively` flag.
+Use the `--exclusively` flag to enable this feature for a specific stack
 
 ```console
 $ cdk deploy --import-existing-resources --exclusively StackName
 ```
 
-This parameter can only import resources that have custom names in templates. 
+Only resources that have custom names can be imported using `--import-existing-resources`
 For more information, see [name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html). 
 To import resources that do not accept custom names, such as EC2 instances,
 use the `cdk import` instead. 
@@ -613,9 +612,9 @@ To import an existing resource to a CDK stack, follow the following steps:
 5. When `cdk import` reports success, the resource is managed by CDK. Any subsequent
    changes in the construct configuration will be reflected on the resource.
 
-NOTE: You can also import existing resources by `--import-existing-resources` option of `cdk deploy` command.
-This parameter only works for resources that you can set custom physical names,
-such as S3 bucket, DynamoDB table, etc.
+NOTE: You can also import existing resources by passing `--import-existing-resources` to `cdk deploy`.
+This parameter only works for resources that support custom physical names,
+such as S3 bucket, DynamoDB table, etc...
 For more information, see [Request Parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html#API_CreateChangeSet_RequestParameters).
 
 #### Limitations
