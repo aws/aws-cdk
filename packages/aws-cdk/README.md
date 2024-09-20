@@ -396,7 +396,7 @@ You can pass the `--import-existing-resources` flag to the `deploy` command:
 $ cdk deploy --import-existing-resources
 ```
 
-This allows you to automatically import the resources in your template that already
+This allows you to automatically import resources into your stack that already
 exist in your AWS account during CloudFormation deployments.
 With this feature, you can reduce the manual effort of import operations and avoid
 deployment failures because of naming conflicts.
