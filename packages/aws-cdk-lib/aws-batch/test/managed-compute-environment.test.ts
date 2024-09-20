@@ -237,6 +237,26 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('should not include optimal for ARM instance classes', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      instanceClasses: [ec2.InstanceClass.M6G],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        InstanceTypes: [
+          'm6g',
+        ],
+      },
+    });
+  });
+
   test('instance types are correctly rendered', () => {
     // WHEN
     const ce = new ComputeEnvironment(stack, 'MyCE', {
