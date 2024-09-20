@@ -7,7 +7,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "DatapointsToAlarm": 2,
     "Dimensions": [
      {
@@ -20,6 +19,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ApproximateNumberOfMessagesVisible",
     "Namespace": "AWS/SQS",
     "Period": 300,
@@ -74,7 +74,7 @@
          "QueueName"
         ]
        },
-       "\"]]}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":20,\"properties\":{\"view\":\"table\",\"title\":\"Errors in my log group\",\"region\":\"",
+       "\"]]}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":20,\"properties\":{\"view\":\"table\",\"title\":\"Errors in my log group\",\"accountId\":\"123456789\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },

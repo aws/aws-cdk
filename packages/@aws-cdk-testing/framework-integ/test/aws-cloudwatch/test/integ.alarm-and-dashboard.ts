@@ -61,6 +61,8 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 }));
 dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   title: 'Errors in my log group',
+  // Setting an account ID just for this LogQueryWidget
+  accountId: '123456789',
   logGroupNames: ['my-log-group'],
   queryString: `fields @message
                 | filter @message like /Error/`,
