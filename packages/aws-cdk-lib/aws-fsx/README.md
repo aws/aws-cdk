@@ -70,13 +70,10 @@ lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.SCRATCH_2 },
 **Note**: The `fileSystemTypeVersion` has a restrictions on the values that can be set based on the `deploymentType`.
 
 - `V_2_10` is supported by the Scratch and `PERSISTENT_1` deployment types.
-- `V_2_12` is supported by all Lustre deployment types, except for `PERSISTENT_2` with a metadata configuration mode.
+- `V_2_12` is supported by all Lustre deployment types.
 - `V_2_15` is supported by all Lustre deployment types and is recommended for all new file systems.
 
-**Note**: The default value of `fileSystemTypeVersion` is `V_2_10` except for the following cases:
-
-- Default value is `V_2_12` when `deploymentType` is set to `PERSISTENT_2` without a metadata configuration mode.
-- Default value is `V_2_15` when `deploymentType` is set to `PERSISTENT_2` with a metadata configuration mode.
+**Note**: The default value of `fileSystemTypeVersion` is `V_2_10` except for `PERSISTENT_2` deployment type where the default value is `V_2_12`.
 
 ### Connecting
 
