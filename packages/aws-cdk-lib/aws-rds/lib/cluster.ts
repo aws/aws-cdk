@@ -385,6 +385,13 @@ interface DatabaseClusterBaseProps {
    * @default - false
    */
   readonly enableDataApi?: boolean;
+
+  /**
+   * Whether read replicas can forward write operations to the writer DB instance in the DB cluster.
+   *
+   * @default false
+   */
+  readonly enableLocalWriteForwarding?: boolean;
 }
 
 /**
@@ -690,6 +697,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
+    if (props.enableLocalWriteForwarding !== undefined && !props.engine.engineType.includes('aurora')) {
+      throw new Error(`\'enableLocalWriteForwarding\' is only supported for Aurora clusters engine type, got: ${props.engine.engineType}`);
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -716,6 +727,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         },
       }),
       storageType: props.storageType?.toString(),
+      enableLocalWriteForwarding: props.enableLocalWriteForwarding,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
