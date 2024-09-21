@@ -55,8 +55,8 @@ myTopic.addSubscription(
     {
       deliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 5,
-          maxDelayTarget: 10,
+          minDelayTarget: Duration.seconds(5),
+          maxDelayTarget: Duration.seconds(10),
           numRetries: 6,
           backoffFunction: sns.BackoffFunction.EXPONENTIAL,
         },

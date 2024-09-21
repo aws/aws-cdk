@@ -274,8 +274,8 @@ describe('Subscription', () => {
       endpoint: 'endpoint',
       deliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 5,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(5),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
           backoffFunction: sns.BackoffFunction.EXPONENTIAL,
         },
@@ -421,15 +421,15 @@ describe('Subscription', () => {
       endpoint: 'endpoint',
       deliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 11,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(11),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
         },
       },
       protocol: protocol,
       subscriptionRoleArn: '???',
       topic,
-    })).toThrow(/Delivery policy is only supported for HTTP and HTTPS subscriptions/);
+    })).toThrow(new RegExp(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`));
   });
 
   test('throws an error when deliveryPolicy minDelayTarget exceeds maxDelayTarget', () => {
@@ -442,8 +442,8 @@ describe('Subscription', () => {
       endpoint: 'endpoint',
       deliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 11,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(11),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
         },
       },
@@ -457,8 +457,8 @@ describe('Subscription', () => {
       prop: 'minDelayTarget',
       invalidDeliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 0,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(0),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
         },
       },
@@ -467,8 +467,8 @@ describe('Subscription', () => {
       prop: 'maxDelayTarget',
       invalidDeliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 10,
-          maxDelayTarget: 0,
+          minDelayTarget: cdk.Duration.seconds(10),
+          maxDelayTarget: cdk.Duration.seconds(0),
           numRetries: 6,
         },
       },
@@ -477,8 +477,8 @@ describe('Subscription', () => {
       prop: 'minDelayTarget',
       invalidDeliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 3601,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(3601),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
         },
       },
@@ -487,8 +487,8 @@ describe('Subscription', () => {
       prop: 'maxDelayTarget',
       invalidDeliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 10,
-          maxDelayTarget: 3601,
+          minDelayTarget: cdk.Duration.seconds(10),
+          maxDelayTarget: cdk.Duration.seconds(3601),
           numRetries: 6,
         },
       },
@@ -508,7 +508,7 @@ describe('Subscription', () => {
         deliveryPolicy: invalidDeliveryPolicy,
         protocol: sns.SubscriptionProtocol.HTTPS,
         topic,
-      })).toThrow(new RegExp(`${prop} must be between 1 and 3600 inclusive`));
+      })).toThrow(new RegExp(`${prop} must be between 1 and 3600 seconds inclusive`));
     });
   });
 
@@ -522,8 +522,8 @@ describe('Subscription', () => {
       endpoint: 'endpoint',
       deliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 10,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(10),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: invalidValue,
         },
       },
@@ -536,8 +536,8 @@ describe('Subscription', () => {
     {
       invalidDeliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 1,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
           numNoDelayRetries: -1,
         },
@@ -547,8 +547,8 @@ describe('Subscription', () => {
     {
       invalidDeliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 1,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
           numMinDelayRetries: -1,
         },
@@ -558,8 +558,8 @@ describe('Subscription', () => {
     {
       invalidDeliveryPolicy: {
         healthyRetryPolicy: {
-          minDelayTarget: 1,
-          maxDelayTarget: 10,
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
           numRetries: 6,
           numMaxDelayRetries: -1,
         },

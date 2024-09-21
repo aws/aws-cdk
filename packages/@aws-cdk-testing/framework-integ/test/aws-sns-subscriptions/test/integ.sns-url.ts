@@ -15,8 +15,8 @@ class SnsToUrlStack extends cdk.Stack {
         {
           deliveryPolicy: {
             healthyRetryPolicy: {
-              minDelayTarget: 20,
-              maxDelayTarget: 21,
+              minDelayTarget: cdk.Duration.seconds(20),
+              maxDelayTarget: cdk.Duration.seconds(21),
               numRetries: 10,
             },
             throttlePolicy: {

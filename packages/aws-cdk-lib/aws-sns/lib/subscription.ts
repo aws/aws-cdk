@@ -144,43 +144,6 @@ export class Subscription extends Resource {
       throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
     }
 
-    if (props.deliveryPolicy) {
-      if (props.protocol !== SubscriptionProtocol.HTTP && props.protocol !== SubscriptionProtocol.HTTPS) {
-        throw new Error('Delivery policy is only supported for HTTP and HTTPS subscriptions');
-      }
-      const { healthyRetryPolicy, throttlePolicy } = props.deliveryPolicy;
-      if (healthyRetryPolicy) {
-        const delayTargetLimit = 3600;
-        if (healthyRetryPolicy.minDelayTarget < 1 || healthyRetryPolicy.minDelayTarget > delayTargetLimit) {
-          throw new Error(`minDelayTarget must be between 1 and ${delayTargetLimit} inclusive`);
-        }
-        if (healthyRetryPolicy.maxDelayTarget < 1 || healthyRetryPolicy.maxDelayTarget > delayTargetLimit) {
-          throw new Error(`maxDelayTarget must be between 1 and ${delayTargetLimit} inclusive`);
-        }
-        if (healthyRetryPolicy.minDelayTarget > healthyRetryPolicy.maxDelayTarget) {
-          throw new Error('minDelayTarget must not exceed maxDelayTarget');
-        }
-        const numRetriesLimit = 100;
-        if (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit) {
-          throw new Error(`numRetries must be between 0 and ${numRetriesLimit} inclusive`);
-        }
-        if (healthyRetryPolicy.numNoDelayRetries && healthyRetryPolicy.numNoDelayRetries < 0) {
-          throw new Error('numNoDelayRetries must be zero or greater');
-        }
-        if (healthyRetryPolicy.numMinDelayRetries && healthyRetryPolicy.numMinDelayRetries < 0) {
-          throw new Error('numMinDelayRetries must be zero or greater');
-        }
-        if (healthyRetryPolicy.numMaxDelayRetries && healthyRetryPolicy.numMaxDelayRetries < 0) {
-          throw new Error('numMaxDelayRetries must be zero or greater');
-        }
-      }
-      if (throttlePolicy) {
-        if (throttlePolicy.maxReceivesPerSecond !== undefined && throttlePolicy.maxReceivesPerSecond < 1) {
-          throw new Error('maxReceivesPerSecond must be greater than zero');
-        }
-      }
-    }
-
     // Format filter policy
     const filterPolicy = this.filterPolicyWithMessageBody
       ? buildFilterPolicyWithMessageBody(this.filterPolicyWithMessageBody)
@@ -197,16 +160,60 @@ export class Subscription extends Resource {
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
-      deliveryPolicy: props.deliveryPolicy ? this.renderDeliveryPolicy(props.deliveryPolicy): undefined,
+      deliveryPolicy: props.deliveryPolicy ? this.renderDeliveryPolicy(props.deliveryPolicy, props.protocol): undefined,
     });
 
   }
 
-  private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy): any {
+  private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {
+    if (protocol !== SubscriptionProtocol.HTTP && protocol !== SubscriptionProtocol.HTTPS) {
+      throw new Error(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`);
+    }
+    const { healthyRetryPolicy, throttlePolicy } = deliveryPolicy;
+    if (healthyRetryPolicy) {
+      const delayTargetLimitSecs = 3600;
+      const minDelayTarget = healthyRetryPolicy.minDelayTarget;
+      const maxDelayTarget = healthyRetryPolicy.maxDelayTarget;
+      if (minDelayTarget.toMilliseconds() % 1000 !== 0) {
+        throw new Error(`minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`);
+      }
+      if (maxDelayTarget.toMilliseconds() % 1000 !== 0) {
+        throw new Error(`maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`);
+      }
+      const minDelayTargetSecs = minDelayTarget.toSeconds();
+      if (minDelayTargetSecs < 1 || minDelayTargetSecs > delayTargetLimitSecs) {
+        throw new Error(`minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive`);
+      }
+      const maxDelayTargetSecs = maxDelayTarget.toSeconds();
+      if (maxDelayTargetSecs < 1 || maxDelayTargetSecs > delayTargetLimitSecs) {
+        throw new Error(`maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive`);
+      }
+      if (minDelayTargetSecs > maxDelayTargetSecs) {
+        throw new Error('minDelayTarget must not exceed maxDelayTarget');
+      }
+      const numRetriesLimit = 100;
+      if (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit) {
+        throw new Error(`numRetries must be between 0 and ${numRetriesLimit} inclusive`);
+      }
+      if (healthyRetryPolicy.numNoDelayRetries && healthyRetryPolicy.numNoDelayRetries < 0) {
+        throw new Error('numNoDelayRetries must be zero or greater');
+      }
+      if (healthyRetryPolicy.numMinDelayRetries && healthyRetryPolicy.numMinDelayRetries < 0) {
+        throw new Error('numMinDelayRetries must be zero or greater');
+      }
+      if (healthyRetryPolicy.numMaxDelayRetries && healthyRetryPolicy.numMaxDelayRetries < 0) {
+        throw new Error('numMaxDelayRetries must be zero or greater');
+      }
+    }
+    if (throttlePolicy) {
+      if (throttlePolicy.maxReceivesPerSecond !== undefined && throttlePolicy.maxReceivesPerSecond < 1) {
+        throw new Error('maxReceivesPerSecond must be greater than zero');
+      }
+    }
     return {
       healthyRetryPolicy: deliveryPolicy.healthyRetryPolicy ? {
-        minDelayTarget: deliveryPolicy.healthyRetryPolicy.minDelayTarget,
-        maxDelayTarget: deliveryPolicy.healthyRetryPolicy.maxDelayTarget,
+        minDelayTarget: deliveryPolicy.healthyRetryPolicy.minDelayTarget.toSeconds(),
+        maxDelayTarget: deliveryPolicy.healthyRetryPolicy.maxDelayTarget.toSeconds(),
         numRetries: deliveryPolicy.healthyRetryPolicy.numRetries,
         numNoDelayRetries: deliveryPolicy.healthyRetryPolicy.numNoDelayRetries,
         numMinDelayRetries: deliveryPolicy.healthyRetryPolicy.numMinDelayRetries,
