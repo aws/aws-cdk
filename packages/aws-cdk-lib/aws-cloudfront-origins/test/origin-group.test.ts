@@ -7,18 +7,21 @@ import * as origins from '../lib';
 let stack: Stack;
 let bucket: s3.IBucket;
 let primaryOrigin: cloudfront.IOrigin;
+let importedBucket: s3.IBucket;
+let fallbackOrigin: cloudfront.IOrigin;
 beforeEach(() => {
   stack = new Stack();
   bucket = new s3.Bucket(stack, 'Bucket');
   primaryOrigin = new origins.S3Origin(bucket);
+  importedBucket = s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket');
+  fallbackOrigin = new origins.S3Origin(importedBucket);
 });
 
 describe('Origin Groups', () => {
   test('correctly render the OriginGroups property of DistributionConfig', () => {
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
       fallbackStatusCodes: [500],
     });
 
@@ -95,10 +98,10 @@ describe('Origin Groups', () => {
   });
 
   test('correctly render the OriginGroups property of DistributionConfig with originId set', () => {
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'), { originId: 'MyCustomOrigin1' });
+    fallbackOrigin = new origins.S3Origin(importedBucket, { originId: 'MyCustomOrigin1' });
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
       fallbackStatusCodes: [500],
     });
 
@@ -174,11 +177,10 @@ describe('Origin Groups', () => {
   });
 
   test('correctly render custom OriginGroup ID', () => {
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroupId = 'CustomOriginGroupId';
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
       fallbackStatusCodes: [500],
       originId: originGroupId,
     });
@@ -222,11 +224,10 @@ describe('Origin Groups', () => {
   });
 
   test('originId cannot be duplicated by another Origin added after the OriginGroup', () => {
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const duplicateOriginId = 'DuplicateOrigin';
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
       fallbackStatusCodes: [500],
       originId: duplicateOriginId,
     });
@@ -242,11 +243,10 @@ describe('Origin Groups', () => {
   });
 
   test('originId cannot duplicate a previously added Origin', () => {
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const duplicateOriginId = 'DuplicateOrigin';
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
       fallbackStatusCodes: [500],
       originId: duplicateOriginId,
     });
@@ -265,10 +265,9 @@ describe('Origin Groups', () => {
   test('originId cannot duplicate primary Origin', () => {
     const duplicateOriginId = 'DuplicateOrigin';
     primaryOrigin = new origins.S3Origin(bucket, { originId: duplicateOriginId });
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
       fallbackStatusCodes: [500],
       originId: duplicateOriginId,
     });
@@ -281,14 +280,13 @@ describe('Origin Groups', () => {
   });
 
   test('cannot have an Origin with their own failover configuration as the primary Origin', () => {
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
     });
     const groupOfGroups = new origins.OriginGroup({
       primaryOrigin: originGroup,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
     });
 
     expect(() => {
@@ -301,7 +299,7 @@ describe('Origin Groups', () => {
   test('cannot have an Origin with their own failover configuration as the fallback Origin', () => {
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket')),
+      fallbackOrigin,
     });
     const groupOfGroups = new origins.OriginGroup({
       primaryOrigin,
@@ -316,10 +314,9 @@ describe('Origin Groups', () => {
   });
 
   test('cannot have an empty array of fallbackStatusCodes', () => {
-    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroup = new origins.OriginGroup({
       primaryOrigin,
-      fallbackOrigin: failoverOrigin,
+      fallbackOrigin,
       fallbackStatusCodes: [],
     });
 
