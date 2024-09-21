@@ -4,7 +4,11 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': false,
+  },
+});
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
