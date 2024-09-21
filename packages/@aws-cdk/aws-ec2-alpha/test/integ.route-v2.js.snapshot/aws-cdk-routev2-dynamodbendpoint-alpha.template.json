@@ -1,0 +1,147 @@
+{
+ "Resources": {
+  "dynamodbC0A56799": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "dynamodbAmazonIpv6698EF571": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "dynamodbC0A56799",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "dynamodbC0A56799",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "dynamodbSubnet81957A26": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "dynamodbC0A56799",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "dynamodbC0A56799",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "dynamodbAmazonIpv6698EF571"
+   ]
+  },
+  "dynamodbSubnetRouteTableAssociationC38B30F3": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "dynamodbSubnet81957A26"
+    }
+   },
+   "DependsOn": [
+    "dynamodbAmazonIpv6698EF571"
+   ]
+  },
+  "testDynamoEndpoint03D5BDE5": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Fn::GetAtt": [
+       "TestRoottableRouteTableFA28AA38",
+       "RouteTableId"
+      ]
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".dynamodb"
+      ]
+     ]
+    },
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "dynamodbC0A56799",
+      "VpcId"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,7 +1,7 @@
 import {
   CfnIdentityPool,
-  UserPool,
-  UserPoolClient,
+  IUserPool,
+  IUserPoolClient,
 } from 'aws-cdk-lib/aws-cognito';
 import {
   IOpenIdConnectProvider,
@@ -16,6 +16,7 @@ import {
   Stack,
   ArnFormat,
   Lazy,
+  Token,
 } from 'aws-cdk-lib/core';
 import {
   Construct,
@@ -157,7 +158,7 @@ export class IdentityPoolProviderUrl {
   }
 
   /** User Pool Provider Url */
-  public static userPool(userPool: UserPool, userPoolClient: UserPoolClient): IdentityPoolProviderUrl {
+  public static userPool(userPool: IUserPool, userPoolClient: IUserPoolClient): IdentityPoolProviderUrl {
     const url = `${userPool.userPoolProviderName}:${userPoolClient.userPoolClientId}`;
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.USER_POOL, url);
   }
@@ -329,9 +330,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (!res) {
       throw new Error('Invalid Identity Pool ARN');
     }
-    const idParts = res.split(':');
-    if (!(idParts.length === 2)) throw new Error('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
-    if (idParts[0] !== pool.region) throw new Error('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+    if (!Token.isUnresolved(res)) {
+      const idParts = res.split(':');
+      if (!(idParts.length === 2)) {
+        throw new Error('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
+      }
+      if (!Token.isUnresolved(pool.region) && idParts[0] !== pool.region) {
+        throw new Error('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+      }
+    }
     class ImportedIdentityPool extends Resource implements IIdentityPool {
       public readonly identityPoolId = res;
       public readonly identityPoolArn = identityPoolArn;

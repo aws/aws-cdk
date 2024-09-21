@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "FlinkAppTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48dd04d48b618ae68b67e5b8cf8896c84fb9c39997deb11669ac2a4a5205a3db.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/539ea479a53381b85109d0220f8067dd583db122c2272078f2e00d541ee3738d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,52 +34,340 @@
         "FlinkAppTest.assets"
       ],
       "metadata": {
-        "/FlinkAppTest/App/Role/Resource": [
+        "/FlinkAppTest/App-FLINK-1_6/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppRole1AF9B530"
+            "data": "AppFLINK16RoleA21DF652"
           }
         ],
-        "/FlinkAppTest/App/Role/DefaultPolicy/Resource": [
+        "/FlinkAppTest/App-FLINK-1_6/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppRoleDefaultPolicy9CADBAA1"
+            "data": "AppFLINK16RoleDefaultPolicy312C949D"
           }
         ],
-        "/FlinkAppTest/App/Resource": [
+        "/FlinkAppTest/App-FLINK-1_6/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppF1B96344",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AppFLINK16C87388A5"
           }
         ],
-        "/FlinkAppTest/App/LogGroup/Resource": [
+        "/FlinkAppTest/App-FLINK-1_6/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppLogGroupC72EEC8C"
+            "data": "AppFLINK16LogGroup6709DAA8"
           }
         ],
-        "/FlinkAppTest/App/LogStream/Resource": [
+        "/FlinkAppTest/App-FLINK-1_6/LogStream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppLogStream3CAF66A7"
+            "data": "AppFLINK16LogStream203A3C4A"
           }
         ],
-        "/FlinkAppTest/App/LoggingOption": [
+        "/FlinkAppTest/App-FLINK-1_6/LoggingOption": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppLoggingOption75BE995E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AppFLINK16LoggingOption6A093E18"
           }
         ],
-        "/FlinkAppTest/Alarm/Resource": [
+        "/FlinkAppTest/Alarm-FLINK-1_6/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Alarm7103F465"
+            "data": "AlarmFLINK16629EC33E"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_8/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK18RoleF2B5E704"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_8/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK18RoleDefaultPolicy3E0E376C"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK18DFC0B750"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_8/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK18LogGroupEC247BE6"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_8/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK18LogStream773D6792"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_8/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK18LoggingOptionFA3821B9"
+          }
+        ],
+        "/FlinkAppTest/Alarm-FLINK-1_8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmFLINK188AA6547E"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_11/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK111Role85754B20"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_11/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK111RoleDefaultPolicy76505541"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK1115BD3FEB8"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_11/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK111LogGroup8B96ECB4"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_11/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK111LogStream9FBA643C"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_11/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK111LoggingOptionB868A248"
+          }
+        ],
+        "/FlinkAppTest/Alarm-FLINK-1_11/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmFLINK111B1BFA12F"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_13/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK113RoleE0638828"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_13/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK113RoleDefaultPolicy701032C8"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK1138C7FE76E"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_13/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK113LogGroupF5F42067"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_13/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK113LogStream63C2732B"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_13/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK113LoggingOption98F806DA"
+          }
+        ],
+        "/FlinkAppTest/Alarm-FLINK-1_13/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmFLINK1136262934D"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_15/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK115RoleD758509C"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_15/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK115RoleDefaultPolicy402697BF"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK11548C6DD0B"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_15/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK115LogGroupBACCAB69"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_15/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK115LogStreamD7900E5F"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_15/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK115LoggingOption201B75CF"
+          }
+        ],
+        "/FlinkAppTest/Alarm-FLINK-1_15/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmFLINK1151BBA9866"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_18/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK118Role1B878112"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_18/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK118RoleDefaultPolicy1D8097BB"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK118BEACE639"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_18/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK118LogGroupEF87F95A"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_18/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK118LogStreamAFAF3379"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_18/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK118LoggingOption6EEBD514"
+          }
+        ],
+        "/FlinkAppTest/Alarm-FLINK-1_18/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmFLINK118680AE078"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_19/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK119Role6594F124"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_19/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK119RoleDefaultPolicy6EB1C39D"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK119DAC5CF3C"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_19/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK119LogGroup472EA32B"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_19/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK119LogStream5FD726B5"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_19/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK119LoggingOption224F0C40"
+          }
+        ],
+        "/FlinkAppTest/Alarm-FLINK-1_19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmFLINK1194841405B"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_20/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK120RoleDC5875D6"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_20/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK120RoleDefaultPolicy2540C6BA"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK120E80F19CE"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_20/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK120LogGroupFFF89194"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_20/LogStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK120LogStream155EEEF9"
+          }
+        ],
+        "/FlinkAppTest/App-FLINK-1_20/LoggingOption": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppFLINK120LoggingOption6B00A786"
+          }
+        ],
+        "/FlinkAppTest/Alarm-FLINK-1_20/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmFLINK120DB2152C4"
           }
         ],
         "/FlinkAppTest/BootstrapVersion": [
@@ -93,9 +381,120 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "AppRole1AF9B530": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRole1AF9B530",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AppRoleDefaultPolicy9CADBAA1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppRoleDefaultPolicy9CADBAA1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AppF1B96344": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppF1B96344",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AppLogGroupC72EEC8C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLogGroupC72EEC8C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AppLogStream3CAF66A7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLogStream3CAF66A7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AppLoggingOption75BE995E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppLoggingOption75BE995E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Alarm7103F465": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm7103F465",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "FlinkAppTest"
+    },
+    "ApplicationTestDefaultTestDeployAssertF9C5F731.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ApplicationTestDefaultTestDeployAssertF9C5F731.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ApplicationTestDefaultTestDeployAssertF9C5F731": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ApplicationTestDefaultTestDeployAssertF9C5F731.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ApplicationTestDefaultTestDeployAssertF9C5F731.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ApplicationTestDefaultTestDeployAssertF9C5F731.assets"
+      ],
+      "metadata": {
+        "/ApplicationTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ApplicationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ApplicationTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

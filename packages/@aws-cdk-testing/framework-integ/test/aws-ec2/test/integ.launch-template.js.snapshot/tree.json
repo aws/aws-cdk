@@ -146,6 +146,16 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                   "aws:cdk:cloudformation:props": {
                     "launchTemplateData": {
+                      "blockDeviceMappings": [
+                        {
+                          "deviceName": "/dev/xvda",
+                          "ebs": {
+                            "volumeSize": 15,
+                            "throughput": 250,
+                            "volumeType": "gp3"
+                          }
+                        }
+                      ],
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -198,7 +208,8 @@
                           }
                         ]
                       }
-                    ]
+                    ],
+                    "versionDescription": "test template v1"
                   }
                 },
                 "constructInfo": {

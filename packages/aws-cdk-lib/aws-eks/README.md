@@ -55,6 +55,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       - [Manually importing k8s specs and CRD's](#manually-importing-k8s-specs-and-crds)
   - [Patching Kubernetes Resources](#patching-kubernetes-resources)
   - [Querying Kubernetes Resources](#querying-kubernetes-resources)
+  - [Add-ons](#add-ons)
   - [Using existing clusters](#using-existing-clusters)
   - [Logging](#logging)
   - [Known Issues and Limitations](#known-issues-and-limitations)
@@ -642,7 +643,7 @@ The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cl
 
 ### Alb Controller
 
-Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/).
+Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/).
 
 From the docs:
 
@@ -657,7 +658,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_30,
   albController: {
-    version: eks.AlbControllerVersion.V2_6_2,
+    version: eks.AlbControllerVersion.V2_8_2,
   },
 });
 ```
@@ -1835,6 +1836,22 @@ Specifically, since the above use-case is quite common, there is an easier way t
 ```ts
 declare const cluster: eks.Cluster;
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
+```
+
+## Add-ons
+
+[Add-ons](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html) is a software that provides supporting operational capabilities to Kubernetes applications. The EKS module supports adding add-ons to your cluster using the `eks.Addon` class.
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.Addon(this, 'Addon', {
+  cluster,
+  addonName: 'aws-guardduty-agent',
+  addonVersion: 'v1.6.1',
+  // whether to preserve the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on.
+  preserveOnDelete: false,
+});
 ```
 
 ## Using existing clusters
