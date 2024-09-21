@@ -110,6 +110,36 @@
                     "provisionedThroughput": {
                       "readCapacityUnits": 5,
                       "writeCapacityUnits": 5
+                    },
+                    "resourcePolicy": {
+                      "policyDocument": {
+                        "Statement": [
+                          {
+                            "Action": "dynamodb:*",
+                            "Effect": "Allow",
+                            "Principal": {
+                              "AWS": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":root"
+                                  ]
+                                ]
+                              }
+                            },
+                            "Resource": "*"
+                          }
+                        ],
+                        "Version": "2012-10-17"
+                      }
                     }
                   }
                 },

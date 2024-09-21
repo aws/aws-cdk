@@ -524,7 +524,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-export abstract class TableBase extends Resource implements ITable, iam.IResourceWithPolicy {
+export abstract class TableBase extends Resource implements ITable {
   /**
    * @attribute
    */
@@ -564,7 +564,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipalOrResource({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [
@@ -575,7 +575,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ],
-      resource: this,
+      scope: this,
     });
   }
   /**
@@ -689,23 +689,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
-  }
-
-  /**
-   * Adds a statement to the resource policy associated with this file system.
-   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
-   *
-   * Note that this does not work with imported file systems.
-   *
-   * @param statement The policy statement to add
-   */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
   }
 
   /**
@@ -958,11 +941,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ];
-      const ret = iam.Grant.addToPrincipalOrResource({
+      const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
         resourceArns: resources,
-        resource: this,
+        scope: this,
       });
       return ret;
     }
@@ -971,11 +954,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
       const resources = [this.tableStreamArn];
-      const ret = iam.Grant.addToPrincipalOrResource({
+      const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.streamActions,
         resourceArns: resources,
-        resource: this,
+        scope: this,
       });
       return ret;
     }
@@ -1730,6 +1713,29 @@ export class Table extends TableBase {
         s3BucketOwner: importSource.bucketOwner,
         s3KeyPrefix: importSource.keyPrefix,
       },
+    };
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this file system.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported file systems.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+    this.resourcePolicy.addStatements(statement);
+
+    this.table.resourcePolicy = {
+      policyDocument: this.resourcePolicy,
+    };
+
+    return {
+      statementAdded: true,
+      policyDependable: this,
     };
   }
 }
