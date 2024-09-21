@@ -274,3 +274,27 @@ new dynamodb.Table(this, 'MyTable', {
 ```
 
 If you have a global table replica, note that it does not support the addition of a resource-based policy.
+
+Using `streamResourcePolicy` you can add a [resource policy](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/access-control-resource-based.html) to a table's stream in the form of a `PolicyDocument`:
+
+```ts
+const policy = new iam.PolicyDocument({
+  statements: [
+    new iam.PolicyStatement({
+      actions: ['dynamodb:GetRecords'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    }),
+  ],
+});
+
+new dynamodb.Table(this, 'MyTable', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  removalPolicy: RemovalPolicy.DESTROY,
+  streamResourcePolicy: policy,
+  stream: StreamViewType.NEW_AND_OLD_IMAGES,
+});
+```
