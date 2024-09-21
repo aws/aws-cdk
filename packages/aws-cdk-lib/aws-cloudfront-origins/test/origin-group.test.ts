@@ -221,6 +221,65 @@ describe('Origin Groups', () => {
     });
   });
 
+  test('originId cannot be duplicated by another Origin added after the OriginGroup', () => {
+    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
+    const duplicateOriginId = 'DuplicateOrigin';
+    const originGroup = new origins.OriginGroup({
+      primaryOrigin,
+      fallbackOrigin: failoverOrigin,
+      fallbackStatusCodes: [500],
+      originId: duplicateOriginId,
+    });
+    const additionalOrigin = new origins.HttpOrigin('test', { originId: duplicateOriginId });
+
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: originGroup },
+    });
+
+    expect(() => {
+      distribution.addBehavior('/x', additionalOrigin);
+    }).toThrow(`Origin with id ${duplicateOriginId} already exists`);
+  });
+
+  test('originId cannot duplicate a previously added Origin', () => {
+    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
+    const duplicateOriginId = 'DuplicateOrigin';
+    const originGroup = new origins.OriginGroup({
+      primaryOrigin,
+      fallbackOrigin: failoverOrigin,
+      fallbackStatusCodes: [500],
+      originId: duplicateOriginId,
+    });
+
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('test', { originId: duplicateOriginId }),
+      },
+    });
+
+    expect(() => {
+      distribution.addBehavior('/x', originGroup);
+    }).toThrow(`Origin with id ${duplicateOriginId} already exists`);
+  });
+
+  test('originId cannot duplicate primary Origin', () => {
+    const duplicateOriginId = 'DuplicateOrigin';
+    primaryOrigin = new origins.S3Origin(bucket, { originId: duplicateOriginId });
+    const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
+    const originGroup = new origins.OriginGroup({
+      primaryOrigin,
+      fallbackOrigin: failoverOrigin,
+      fallbackStatusCodes: [500],
+      originId: duplicateOriginId,
+    });
+
+    expect(() => {
+      new cloudfront.Distribution(stack, 'Distribution', {
+        defaultBehavior: { origin: originGroup },
+      });
+    }).toThrow(`OriginGroup id ${duplicateOriginId} duplicates the primary Origin id`);
+  });
+
   test('cannot have an Origin with their own failover configuration as the primary Origin', () => {
     const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroup = new origins.OriginGroup({

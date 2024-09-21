@@ -82,7 +82,6 @@ export interface DistributionAttributes {
 
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
-  readonly originGroupId?: string;
 }
 
 /**
@@ -614,12 +613,8 @@ export class Distribution extends Resource implements IDistribution {
       const distributionId = this.distributionId;
       const originBindConfig = origin.bind(scope, { originId: generatedId, distributionId: Lazy.string({ produce: () => this.distributionId }) });
       const originId = originBindConfig.originProperty?.id ?? generatedId;
-      const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
-      if (duplicateId) {
-        throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
-      }
       if (!originBindConfig.failoverConfig) {
-        this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig });
+        this.addBoundOrigin({ origin, originId, distributionId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
@@ -627,7 +622,7 @@ export class Distribution extends Resource implements IDistribution {
         const groupIndex = this.originGroups.length + 1;
         const originGroupId = originBindConfig.originGroupId ??
           Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
-        this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
+        this.addBoundOrigin({ origin, originId, distributionId, ...originBindConfig, originGroupId });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
@@ -635,6 +630,24 @@ export class Distribution extends Resource implements IDistribution {
       }
       return originBindConfig.originProperty?.id ?? originId;
     }
+  }
+
+  private addBoundOrigin(boundOrigin: BoundOrigin) {
+    const { originId } = boundOrigin;
+    if (originId === boundOrigin.originGroupId) {
+      throw new Error(`OriginGroup id ${originId} duplicates the primary Origin id. OriginIds must be unique within a distribution`);
+    }
+    const duplicate = this.findDuplicateOriginId(originId) ?? this.findDuplicateOriginId(boundOrigin.originGroupId);
+    if (duplicate) {
+      throw new Error(`Origin with id ${duplicate} already exists. OriginIds must be unique within a distribution`);
+    }
+    this.boundOrigins.push(boundOrigin);
+  }
+
+  private findDuplicateOriginId(originId: string | undefined): string | undefined {
+    const duplicate = originId && this.boundOrigins.some(boundOrigin =>
+      boundOrigin.originId === originId || boundOrigin.originGroupId === originId);
+    return duplicate ? originId : undefined;
   }
 
   private addOriginGroup(originGroupId: string, statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
