@@ -38,4 +38,3 @@ new IntegTest(app, 'aws-cdk-dynamodb-contributor-insights-for-gis-test', {
   testCases: [stack],
 });
 
-app.synth();
