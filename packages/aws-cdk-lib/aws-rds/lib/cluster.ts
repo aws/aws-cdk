@@ -389,6 +389,8 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether read replicas can forward write operations to the writer DB instance in the DB cluster.
    *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html
+   *
    * @default false
    */
   readonly enableLocalWriteForwarding?: boolean;
