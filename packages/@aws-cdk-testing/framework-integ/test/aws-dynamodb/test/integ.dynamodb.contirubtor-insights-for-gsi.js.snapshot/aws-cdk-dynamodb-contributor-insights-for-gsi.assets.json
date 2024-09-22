@@ -1,9 +1,9 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.24",
   "files": {
     "f9b6221d41c7d1dec71841a066339cb8de39d9cc4b599c8bd8af7b741044e64c": {
       "source": {
-        "path": "aws-cdk-dynamodb-contributor-insights-for-gis.template.json",
+        "path": "aws-cdk-dynamodb-contributor-insights-for-gsi.template.json",
         "packaging": "file"
       },
       "destinations": {

@@ -3,7 +3,7 @@ import { Attribute, AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 // CDK parameters
-const STACK_NAME = 'aws-cdk-dynamodb-contributor-insights-for-gis';
+const STACK_NAME = 'aws-cdk-dynamodb-contributor-insights-for-gsi';
 
 // DynamoDB table parameters
 const TABLE = 'TableWithGlobalSecondaryIndex';
@@ -34,7 +34,6 @@ table.addGlobalSecondaryIndex({
   partitionKey: GSI_PARTITION_KEY,
 });
 
-new IntegTest(app, 'aws-cdk-dynamodb-contributor-insights-for-gis-test', {
+new IntegTest(app, 'aws-cdk-dynamodb-contributor-insights-for-gsi-test', {
   testCases: [stack],
 });
-

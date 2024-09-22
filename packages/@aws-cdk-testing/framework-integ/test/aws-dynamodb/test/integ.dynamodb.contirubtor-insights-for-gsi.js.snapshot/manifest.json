@@ -1,19 +1,19 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.24",
   "artifacts": {
-    "aws-cdk-dynamodb-contributor-insights-for-gis.assets": {
+    "aws-cdk-dynamodb-contributor-insights-for-gsi.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-dynamodb-contributor-insights-for-gis.assets.json",
+        "file": "aws-cdk-dynamodb-contributor-insights-for-gsi.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-dynamodb-contributor-insights-for-gis": {
+    "aws-cdk-dynamodb-contributor-insights-for-gsi": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-dynamodb-contributor-insights-for-gis.template.json",
+        "templateFile": "aws-cdk-dynamodb-contributor-insights-for-gsi.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-dynamodb-contributor-insights-for-gis.assets"
+          "aws-cdk-dynamodb-contributor-insights-for-gsi.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,43 +31,43 @@
         }
       },
       "dependencies": [
-        "aws-cdk-dynamodb-contributor-insights-for-gis.assets"
+        "aws-cdk-dynamodb-contributor-insights-for-gsi.assets"
       ],
       "metadata": {
-        "/aws-cdk-dynamodb-contributor-insights-for-gis/TableWithGlobalSecondaryIndex/Resource": [
+        "/aws-cdk-dynamodb-contributor-insights-for-gsi/TableWithGlobalSecondaryIndex/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TableWithGlobalSecondaryIndexCC8E841E"
           }
         ],
-        "/aws-cdk-dynamodb-contributor-insights-for-gis/BootstrapVersion": [
+        "/aws-cdk-dynamodb-contributor-insights-for-gsi/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-dynamodb-contributor-insights-for-gis/CheckBootstrapVersion": [
+        "/aws-cdk-dynamodb-contributor-insights-for-gsi/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-dynamodb-contributor-insights-for-gis"
+      "displayName": "aws-cdk-dynamodb-contributor-insights-for-gsi"
     },
-    "awscdkdynamodbcontributorinsightsforgistestDefaultTestDeployAssert6C041B3E.assets": {
+    "awscdkdynamodbcontributorinsightsforgsitestDefaultTestDeployAssert9D8EC318.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscdkdynamodbcontributorinsightsforgistestDefaultTestDeployAssert6C041B3E.assets.json",
+        "file": "awscdkdynamodbcontributorinsightsforgsitestDefaultTestDeployAssert9D8EC318.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscdkdynamodbcontributorinsightsforgistestDefaultTestDeployAssert6C041B3E": {
+    "awscdkdynamodbcontributorinsightsforgsitestDefaultTestDeployAssert9D8EC318": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkdynamodbcontributorinsightsforgistestDefaultTestDeployAssert6C041B3E.template.json",
+        "templateFile": "awscdkdynamodbcontributorinsightsforgsitestDefaultTestDeployAssert9D8EC318.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -76,7 +76,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkdynamodbcontributorinsightsforgistestDefaultTestDeployAssert6C041B3E.assets"
+          "awscdkdynamodbcontributorinsightsforgsitestDefaultTestDeployAssert9D8EC318.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -85,23 +85,23 @@
         }
       },
       "dependencies": [
-        "awscdkdynamodbcontributorinsightsforgistestDefaultTestDeployAssert6C041B3E.assets"
+        "awscdkdynamodbcontributorinsightsforgsitestDefaultTestDeployAssert9D8EC318.assets"
       ],
       "metadata": {
-        "/aws-cdk-dynamodb-contributor-insights-for-gis-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-dynamodb-contributor-insights-for-gsi-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-dynamodb-contributor-insights-for-gis-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-dynamodb-contributor-insights-for-gsi-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-dynamodb-contributor-insights-for-gis-test/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-dynamodb-contributor-insights-for-gsi-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
