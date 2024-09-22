@@ -1,0 +1,12 @@
+{
+  "version": "36.0.24",
+  "testCases": {
+    "nlb-tcp-idle-timeout-test/DefaultTest": {
+      "stacks": [
+        "nlb-tcp-idle-timeout"
+      ],
+      "assertionStack": "nlb-tcp-idle-timeout-test/DefaultTest/DeployAssert",
+      "assertionStackName": "nlbtcpidletimeouttestDefaultTestDeployAssertAD9AE406"
+    }
+  }
+}
