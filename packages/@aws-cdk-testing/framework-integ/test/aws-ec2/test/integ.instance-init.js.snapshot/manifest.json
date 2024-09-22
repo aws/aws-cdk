@@ -223,19 +223,19 @@
       },
       "displayName": "integ-init"
     },
-    "EnableSumTimeoutInstanceTestDefaultTestDeployAssert5CD5B9B5.assets": {
+    "instanceinittestDefaultTestDeployAssert2123E149.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "EnableSumTimeoutInstanceTestDefaultTestDeployAssert5CD5B9B5.assets.json",
+        "file": "instanceinittestDefaultTestDeployAssert2123E149.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "EnableSumTimeoutInstanceTestDefaultTestDeployAssert5CD5B9B5": {
+    "instanceinittestDefaultTestDeployAssert2123E149": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "EnableSumTimeoutInstanceTestDefaultTestDeployAssert5CD5B9B5.template.json",
+        "templateFile": "instanceinittestDefaultTestDeployAssert2123E149.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -244,7 +244,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "EnableSumTimeoutInstanceTestDefaultTestDeployAssert5CD5B9B5.assets"
+          "instanceinittestDefaultTestDeployAssert2123E149.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -253,23 +253,23 @@
         }
       },
       "dependencies": [
-        "EnableSumTimeoutInstanceTestDefaultTestDeployAssert5CD5B9B5.assets"
+        "instanceinittestDefaultTestDeployAssert2123E149.assets"
       ],
       "metadata": {
-        "/EnableSumTimeoutInstanceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/instance-init-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/EnableSumTimeoutInstanceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/instance-init-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "EnableSumTimeoutInstanceTest/DefaultTest/DeployAssert"
+      "displayName": "instance-init-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

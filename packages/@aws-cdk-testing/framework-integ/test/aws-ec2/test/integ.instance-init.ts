@@ -69,7 +69,7 @@ new ec2.Instance(stack, 'Instance2', {
   resourceSignalTimeout: cdk.Duration.minutes(10),
 });
 
-new integ.IntegTest(app, 'EnableSumTimeoutInstanceTest', {
+new integ.IntegTest(app, 'instance-init-test', {
   testCases: [stack],
 });
 
