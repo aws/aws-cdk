@@ -527,7 +527,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
-When you use `Table`, you can enable contributor insights for a table or specifig global secondary index by setting `contributorInsightsEnabled` to `true`.
+When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsEnabled` to `true`.
 
 ```ts
 const table = new dynamodb.Table(this, 'Table', {
