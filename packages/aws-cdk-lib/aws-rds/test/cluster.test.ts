@@ -175,23 +175,41 @@ describe('cluster new api', () => {
       });
     });
 
-    test('enableLocalWriteForwarding provided in ClusterProps', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
+    describe('enableLocalWriteForwarding', () => {
+      test('set enableLocalWriteForwarding', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
 
-      // WHEN
-      new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
-        vpc,
-        enableLocalWriteForwarding: true,
-        writer: ClusterInstance.serverlessV2('writer'),
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 }),
+          vpc,
+          enableLocalWriteForwarding: true,
+          writer: ClusterInstance.serverlessV2('writer'),
+        });
+
+        // THEN
+        const template = Template.fromStack(stack);
+        template.hasResourceProperties('AWS::RDS::DBCluster', {
+          EnableLocalWriteForwarding: true,
+        });
       });
 
-      // THEN
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::RDS::DBCluster', {
-        EnableLocalWriteForwarding: true,
+      test('throw error for enableLocalWriteForwarding with aurora postgresql cluster', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        expect(() => {
+          new DatabaseCluster(stack, 'Database', {
+            engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }),
+            vpc,
+            enableLocalWriteForwarding: true,
+            writer: ClusterInstance.serverlessV2('writer'),
+          });
+        }).toThrow('\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: aurora-postgresql');
       });
     });
 

@@ -389,6 +389,8 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether read replicas can forward write operations to the writer DB instance in the DB cluster.
    *
+   * This setting can only be enabled for Aurora MySQL clusters.
+   *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html
    *
    * @default false
@@ -699,8 +701,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
-    if (props.enableLocalWriteForwarding !== undefined && !props.engine.engineType.includes('aurora')) {
-      throw new Error(`\'enableLocalWriteForwarding\' is only supported for Aurora clusters engine type, got: ${props.engine.engineType}`);
+    if (props.enableLocalWriteForwarding !== undefined && !['aurora', 'aurora-mysql'].includes(props.engine.engineType)) {
+      throw new Error(`\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: ${props.engine.engineType}`);
     }
 
     this.newCfnProps = {
