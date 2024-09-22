@@ -376,3 +376,36 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-stepfunctions-taks:useNewS3UriParametersForBedrockInvokeModelTask`
+
+When enabled, use new props for S3 URI under `input` and `output` fields in task definition of state machine for bedrock invoke model.
+
+When this feature flag is enabled, use newly introduced props `s3InputUri` and `s3OutputUri` to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions`
+
+Currently, we will automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true
+  }
+}
+```

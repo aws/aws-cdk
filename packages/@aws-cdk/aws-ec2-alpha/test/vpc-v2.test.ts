@@ -150,7 +150,7 @@ describe('Vpc V2 with full control', () => {
           Type: 'AWS::EC2::IPAMPool',
           Properties: {
             AddressFamily: 'ipv4',
-            IpamScopeId: 'DefaultPrivateScope',
+            IpamScopeId: { 'Fn::GetAtt': ['TestIpamDBF92BA8', 'PrivateDefaultScopeId'] },
             Locale: 'us-west-1',
             ProvisionedCidrs: [
               {
@@ -210,7 +210,7 @@ describe('Vpc V2 with full control', () => {
           Properties: {
             AddressFamily: 'ipv6',
             AwsService: 'ec2',
-            IpamScopeId: 'DefaultPublicScope',
+            IpamScopeId: { 'Fn::GetAtt': ['TestIpamDBF92BA8', 'PublicDefaultScopeId'] },
             PublicIpSource: 'amazon',
           },
         },
