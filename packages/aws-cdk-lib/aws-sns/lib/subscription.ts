@@ -195,19 +195,21 @@ export class Subscription extends Resource {
       if (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit) {
         throw new Error(`numRetries must be between 0 and ${numRetriesLimit} inclusive`);
       }
-      if (healthyRetryPolicy.numNoDelayRetries && healthyRetryPolicy.numNoDelayRetries < 0) {
-        throw new Error('numNoDelayRetries must be zero or greater');
+      const { numNoDelayRetries, numMinDelayRetries, numMaxDelayRetries } = healthyRetryPolicy;
+      if (numNoDelayRetries && (numNoDelayRetries < 0 || !Number.isInteger(numNoDelayRetries))) {
+        throw new Error('numNoDelayRetries must be an integer zero or greater');
       }
-      if (healthyRetryPolicy.numMinDelayRetries && healthyRetryPolicy.numMinDelayRetries < 0) {
-        throw new Error('numMinDelayRetries must be zero or greater');
+      if (numMinDelayRetries && (numMinDelayRetries < 0 || !Number.isInteger(numMinDelayRetries))) {
+        throw new Error('numMinDelayRetries must be an integer zero or greater');
       }
-      if (healthyRetryPolicy.numMaxDelayRetries && healthyRetryPolicy.numMaxDelayRetries < 0) {
-        throw new Error('numMaxDelayRetries must be zero or greater');
+      if (numMaxDelayRetries && (numMaxDelayRetries < 0 || !Number.isInteger(numMaxDelayRetries))) {
+        throw new Error('numMaxDelayRetries must be an integer zero or greater');
       }
     }
     if (throttlePolicy) {
-      if (throttlePolicy.maxReceivesPerSecond !== undefined && throttlePolicy.maxReceivesPerSecond < 1) {
-        throw new Error('maxReceivesPerSecond must be greater than zero');
+      const maxReceivesPerSecond = throttlePolicy.maxReceivesPerSecond;
+      if (maxReceivesPerSecond !== undefined && (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))) {
+        throw new Error('maxReceivesPerSecond must be an integer greater than zero');
       }
     }
     return {

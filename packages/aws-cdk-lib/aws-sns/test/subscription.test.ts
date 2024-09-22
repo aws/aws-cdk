@@ -543,6 +543,7 @@ describe('Subscription', () => {
         },
       },
       prop: 'numNoDelayRetries',
+      value: -1,
     },
     {
       invalidDeliveryPolicy: {
@@ -554,6 +555,7 @@ describe('Subscription', () => {
         },
       },
       prop: 'numMinDelayRetries',
+      value: -1,
     },
     {
       invalidDeliveryPolicy: {
@@ -565,8 +567,45 @@ describe('Subscription', () => {
         },
       },
       prop: 'numMaxDelayRetries',
+      value: -1,
     },
-  ])('throws an error when $prop < 0', ({ invalidDeliveryPolicy, prop }) => {
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numNoDelayRetries: 1.5,
+        },
+      },
+      prop: 'numNoDelayRetries',
+      value: 1.5,
+    },
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numMinDelayRetries: 1.5,
+        },
+      },
+      prop: 'numMinDelayRetries',
+      value: 1.5,
+    },
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numMaxDelayRetries: 1.5,
+        },
+      },
+      prop: 'numMaxDelayRetries',
+      value: 1.5,
+    },
+  ])('throws an error when $prop = $value', ({ invalidDeliveryPolicy, prop }) => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
@@ -577,7 +616,7 @@ describe('Subscription', () => {
       deliveryPolicy: invalidDeliveryPolicy,
       protocol: sns.SubscriptionProtocol.HTTPS,
       topic,
-    })).toThrow(new RegExp(`${prop} must be zero or greater`));
+    })).toThrow(new RegExp(`${prop} must be an integer zero or greater`));
   });
 
   test('throws an error when throttlePolicy < 1', () => {
@@ -595,6 +634,6 @@ describe('Subscription', () => {
       },
       protocol: sns.SubscriptionProtocol.HTTPS,
       topic,
-    })).toThrow(/maxReceivesPerSecond must be greater than zero/);
+    })).toThrow(/maxReceivesPerSecond must be an integer greater than zero/);
   });
 });
