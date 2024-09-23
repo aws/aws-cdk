@@ -140,7 +140,7 @@
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
                         "deploymentId": {
-                          "Ref": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a"
+                          "Ref": "corsapitestDeployment2BF1633Ada55363b66409fc2172b1b24cc59bd27"
                         },
                         "restApiId": {
                           "Ref": "corsapitest8682546E"
@@ -672,6 +672,7 @@
                                   "requestTemplates": {
                                     "application/json": "{ statusCode: 200 }"
                                   },
+                                  "passthroughBehavior": "NEVER",
                                   "integrationResponses": [
                                     {
                                       "statusCode": "204",
@@ -832,7 +833,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f.zip"
+                      "s3Key": "8acb5caf9986fc38529f137481ecc2500fa4914281114be778f5f715b9cf175a.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -890,7 +891,7 @@
                 "path": "cors/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -936,7 +937,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

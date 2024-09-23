@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "cors-twitch-test.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "cors-twitch-test.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b86b43c1a293038e6b507b773f348d699167e46c088fe6ed4b1ae400ce17192.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cdd52d2974ae9c878f45398cee6588ea951289f5cac0708950ef24b198639f4a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,7 +56,7 @@
         "/cors-twitch-test/cors-api-test/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a"
+            "data": "corsapitestDeployment2BF1633Ada55363b66409fc2172b1b24cc59bd27"
           }
         ],
         "/cors-twitch-test/cors-api-test/DeploymentStage.prod/Resource": [
@@ -160,10 +161,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1": [
+        "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1",
+            "data": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -187,6 +188,7 @@
         "templateFile": "corsDefaultTestDeployAssert5CF8F851.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
