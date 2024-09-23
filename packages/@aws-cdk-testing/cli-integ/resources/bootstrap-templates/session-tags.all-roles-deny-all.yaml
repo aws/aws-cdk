@@ -277,14 +277,14 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-          - Action: sts:TagSession
+          - Action: sts:AssumeRole
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
-          - Action: sts:AssumeRole
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -307,14 +307,14 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-          - Action: sts:TagSession
+          - Action: sts:AssumeRole
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
-          - Action: sts:AssumeRole
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -337,14 +337,14 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-          - Action: sts:TagSession
+          - Action: sts:AssumeRole
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
-          - Action: sts:AssumeRole
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -367,16 +367,17 @@ Resources:
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}
-      ManagedPolicyArns:
-        - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/ReadOnlyAccess"
       Policies:
         - PolicyDocument:
             Statement:
-              - Sid: DontReadSecrets
-                Effect: Deny
+              - Sid: AllowEc2OnlyIfEngineeringDepartement
+                Effect: Allow
                 Action:
-                  - kms:Decrypt
+                  - ec2:*
                 Resource: "*"
+                Condition:
+                  StringEquals:
+                    aws:PrincipalTag/Department: "Engineering"
             Version: '2012-10-17'
           PolicyName: LookupRolePolicy
       Tags:
@@ -398,10 +399,14 @@ Resources:
             Resource:
               - Fn::Sub: "${StagingBucket.Arn}"
               - Fn::Sub: "${StagingBucket.Arn}/*"
+            # This condition requires that the File Publishing Role is assumed with the session tags
+            # 'Department: Engineering'; if these tags are not passed in, the role will
+            # not be able to perform these S3 actions.
             Condition:
               StringEquals:
                 aws:ResourceAccount:
                   - Fn::Sub: ${AWS::AccountId}
+                aws:PrincipalTag/Department: "Engineering"
             Effect: Allow
           - Action:
               - kms:Decrypt
@@ -438,6 +443,12 @@ Resources:
             Resource:
               Fn::Sub: "${ContainerAssetsRepository.Arn}"
             Effect: Allow
+            # This condition requires that the Image Publishing Role is assumed with the session tags
+            # 'Department: Engineering'; if these tags are not passed in, the role will
+            # not be able to perform these ECR actions.
+            Condition:
+              StringEquals:
+                aws:PrincipalTag/Department: "Engineering"
           - Action:
               - ecr:GetAuthorizationToken
             Resource: "*"
@@ -452,14 +463,14 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-          - Action: sts:TagSession
+          - Action: sts:AssumeRole
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
-          - Action: sts:AssumeRole
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -486,6 +497,12 @@ Resources:
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
                 Resource: "*"
+                # This condition requires that the Deploy Role is assumed with the session tags
+                # 'Department: Engineering'; if these tags are not passed in, the Deploy Role will
+                # not be able to perform these CloudFormation actions.
+                Condition:
+                  StringEquals:
+                    aws:PrincipalTag/Department: "Engineering"
               - Sid: PipelineCrossAccountArtifactsBucket
                 # Read/write buckets in different accounts. Permissions to buckets in
                 # same account are granted by bucket policies.
