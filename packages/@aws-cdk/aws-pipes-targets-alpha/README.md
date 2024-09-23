@@ -182,6 +182,20 @@ The API destination will receive the (enriched/filtered) source payload.
 declare const sourceQueue: sqs.Queue;
 declare const dest: events.ApiDestination;
 
+const apiTarget = new targets.ApiDestinationTarget(dest);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: apiTarget,
+});
+```
+
+The input to the target API destination can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const dest: events.ApiDestination;
+
 const apiTarget = new targets.ApiDestinationTarget(dest, {
   inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
 });
