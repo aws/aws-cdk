@@ -56,7 +56,7 @@ export interface CheckConfiguration {
    *
    * @default true
    */
-  readonly conflictingCliuentIdsCheck?: boolean;
+  readonly conflictingClientIdsCheck?: boolean;
 
   /**
    * Checks if a device certificate is expiring.
@@ -257,7 +257,7 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
         this.renderAuditCheckConfiguration(checkConfiguration?.authenticatedCognitoRoleOverlyPermissiveCheck),
       caCertificateExpiringCheck: this.renderAuditCheckConfiguration(checkConfiguration?.caCertificateExpiringCheck),
       caCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(checkConfiguration?.caCertificateKeyQualityCheck),
-      conflictingClientIdsCheck: this.renderAuditCheckConfiguration(checkConfiguration?.conflictingCliuentIdsCheck),
+      conflictingClientIdsCheck: this.renderAuditCheckConfiguration(checkConfiguration?.conflictingClientIdsCheck),
       deviceCertificateExpiringCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateExpiringCheck),
       deviceCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateKeyQualityCheck),
       deviceCertificateSharedCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateSharedCheck),
