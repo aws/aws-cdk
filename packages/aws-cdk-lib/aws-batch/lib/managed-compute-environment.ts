@@ -1066,7 +1066,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.node.addValidation({
       validate: () => validateInstances.call(this, this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
-    });  
+    });
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
@@ -1144,7 +1144,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
 function checkArchitectureConsistency(
   newInstanceType: ec2.InstanceType,
   existingTypes: ec2.InstanceType[],
-  existingClasses: ec2.InstanceClass[]
+  existingClasses: ec2.InstanceClass[],
 ): void {
   const newArchitecture = newInstanceType.architecture;
 
@@ -1163,11 +1163,11 @@ function checkArchitectureConsistency(
   }
 }
 
-function renderInstances(scope: Construct, types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+function renderInstances(
+  scope: Construct, types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
   const instances = [];
   let hasArmInstances = false;
   let hasX86Instances = false;
- 
   for (const instanceType of types ?? []) {
     instances.push(instanceType.toString());
     if (instanceType.architecture === ec2.InstanceArchitecture.ARM_64) {
@@ -1176,7 +1176,7 @@ function renderInstances(scope: Construct, types?: ec2.InstanceType[], classes?:
       hasX86Instances = true;
     }
   }
-  
+
   for (const instanceClass of classes ?? []) {
     instances.push(instanceClass);
     const tempInstanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
@@ -1237,7 +1237,8 @@ function determineAllocationStrategy(id: string, allocationStrategy?: Allocation
   return result;
 }
 
-function validateInstances(this: Construct, types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+function validateInstances(
+  this: Construct, types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
   if (renderInstances(this, types, classes, useOptimalInstanceClasses).length === 0) {
     return ["Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes"];
   }

@@ -262,17 +262,17 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     const ce = new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
       vpc,
-      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE)],  // x86 architecture
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE)], // x86 architecture
     });
-  
+
     // THEN
     expect(() => {
-      ce.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.ARM1, ec2.InstanceSize.LARGE));  // ARM architecture
+      ce.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.ARM1, ec2.InstanceSize.LARGE)); // ARM architecture
     }).toThrow(
-      new Error('Cannot add instance type a1.large with architecture arm64. It conflicts with existing instance type r4.large with architecture x86_64.')
+      new Error('Cannot add instance type a1.large with architecture arm64. It conflicts with existing instance type r4.large with architecture x86_64.'),
     );
   });
-  
+
   test('instance types throw error on conflicting architectures', () => {
     // WHEN
     const ce = new ComputeEnvironment(stack, 'MyCE', {
@@ -280,12 +280,12 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       vpc,
       instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE)],
     });
-  
+
     // THEN
     expect(() => {
       ce.addInstanceClass(ec2.InstanceClass.STANDARD6_GRAVITON);
     }).toThrow(
-      new Error('Cannot add instance type standard6-graviton.large with architecture arm64. It conflicts with existing instance type r4.large with architecture x86_64.')
+      new Error('Cannot add instance type standard6-graviton.large with architecture arm64. It conflicts with existing instance type r4.large with architecture x86_64.'),
     );
   });
 
@@ -387,14 +387,14 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       vpc,
       instanceClasses: [ec2.InstanceClass.A1],
       instanceTypes: [
-        ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE)
+        ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE),
       ],
       useOptimalInstanceClasses: true,
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('*', 
-      '\'optimal\' instance types are not supported with ARM instance types or classes, setting useOptimalInstanceClasses to false [ack: @aws-cdk/aws-batch:optimalNotSupportedWithARM]'
+    Annotations.fromStack(stack).hasWarning('*',
+      '\'optimal\' instance types are not supported with ARM instance types or classes, setting useOptimalInstanceClasses to false [ack: @aws-cdk/aws-batch:optimalNotSupportedWithARM]',
     );
   });
 
@@ -413,7 +413,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
           ...defaultComputeResources,
         },
       });
-    }).toThrow(/Cannot mix ARM and x86 instance types or classes/)
+    }).toThrow(/Cannot mix ARM and x86 instance types or classes/);
   });
 
   test('mixing ARM and x86 instance types should throw an error', () => {
@@ -421,7 +421,10 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     const CE = new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
       vpc,
-      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE), ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE)],
+      instanceTypes: [
+        ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE),
+        ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE),
+      ],
     });
 
     expect(() => {
@@ -431,7 +434,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
           ...defaultComputeResources,
         },
       });
-    }).toThrow(/Cannot mix ARM and x86 instance types or classes/)
+    }).toThrow(/Cannot mix ARM and x86 instance types or classes/);
   });
 
   test('mixing ARM and x86 instance classes and types should throw an error', () => {
@@ -450,7 +453,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
           ...defaultComputeResources,
         },
       });
-    }).toThrow(/Cannot mix ARM and x86 instance types or classes/)
+    }).toThrow(/Cannot mix ARM and x86 instance types or classes/);
   });
 
   test('creates and uses instanceProfile, even when instanceRole is specified', () => {
