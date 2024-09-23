@@ -271,6 +271,11 @@ async function parseCommandLineArguments(args: string[]) {
     .command('notices', 'Returns a list of relevant notices', (yargs: Argv) => yargs
       .option('unacknowledged', { type: 'boolean', alias: 'u', default: false, desc: 'Returns a list of unacknowledged notices' }),
     )
+    .command('gc [ENVIRONMENTS..]', 'Garbage collect assets', (yargs: Argv) => yargs
+      .option('dry-run', { type: 'boolean', desc: 'List assets instead of garbage collecting them', default: false })
+      .option('tag-only', { type: 'boolean', desc: 'Tag assets as isolated without deleting them', default: false })
+      .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
+      .option('days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 }))
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
@@ -663,6 +668,14 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: args.force,
           roleArn: args.roleArn,
           ci: args.ci,
+        });
+
+      case 'gc':
+        return cli.garbageCollect(args.ENVIRONMENTS, {
+          dryRun: args['dry-run'],
+          tagOnly: args['tag-only'],
+          type: args.type,
+          days: args.days,
         });
 
       case 'synthesize':

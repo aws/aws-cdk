@@ -764,6 +764,15 @@ export class CdkToolkit {
   }
 
   /**
+   * Garbage collects assets from a CDK app's environment
+   * @param options Options for Garbage Collection
+   */
+  public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
+    // eslint-disable-next-line no-console
+    console.log(userEnvironmentSpecs, options);
+  }
+
+  /**
    * Migrates a CloudFormation stack/template to a CDK app
    * @param options Options for CDK app creation
    */
@@ -1405,6 +1414,13 @@ export interface DestroyOptions {
    * @default false
    */
   readonly ci?: boolean;
+}
+
+export interface GarbageCollectionOptions {
+  readonly dryRun?: boolean;
+  readonly tagOnly?: boolean;
+  readonly type: 'ecr' | 'days' | 'all';
+  readonly days: number;
 }
 
 export interface MigrateOptions {
