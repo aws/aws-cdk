@@ -6,8 +6,8 @@
     "LogGroupName": "my-log-group",
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "IncomingBytesPerInstanceAlarmFA8EEFDB": {
    "Type": "AWS::CloudWatch::Alarm",
