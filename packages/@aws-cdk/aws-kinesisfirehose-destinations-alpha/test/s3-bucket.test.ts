@@ -107,7 +107,9 @@ describe('S3 destination', () => {
 
   it('bucket and log group grants are depended on by delivery stream', () => {
     const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Log Group', 'evergreen');
-    const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole, loggingConfig: new firehosedestinations.EnableLogging(logGroup) });
+    const destination = new firehosedestinations.S3Bucket(bucket, {
+      role: destinationRole, loggingConfig: new firehosedestinations.EnableLogging(logGroup),
+    });
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destinations: [destination],
     });
@@ -204,7 +206,9 @@ describe('S3 destination', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.EnableLogging(logGroup), role: destinationRole })],
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          loggingConfig: new firehosedestinations.EnableLogging(logGroup), role: destinationRole,
+        })],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
