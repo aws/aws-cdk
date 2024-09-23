@@ -55,20 +55,20 @@ export interface HealthyRetryPolicy {
    *
    * @default - 20 seconds
    */
-  readonly minDelayTarget: Duration;
+  readonly minDelayTarget?: Duration;
   /**
    * The maximum delay for a retry.  Must be at least `minDelayTarget` less than 3,600 seconds, and correspond to a whole number of seconds,
    *
    * @default - 20 seconds
    */
-  readonly maxDelayTarget: Duration;
+  readonly maxDelayTarget?: Duration;
 
   /**
    * The total number of retries, including immediate, pre-backoff, backoff, and post-backoff retries.  Must be greater than or equal to zero and not exceed 100.
    *
    * @default 3
    */
-  readonly numRetries: number;
+  readonly numRetries?: number;
 
   /**
    * The number of retries to be done immediately, with no delay between them.  Must be zero or greater.

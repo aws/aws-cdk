@@ -309,6 +309,36 @@ describe('Subscription', () => {
     });
   });
 
+  test('sets correct healthyRetryPolicy defaults for attributes required by Cloudformation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+      },
+      protocol: sns.SubscriptionProtocol.HTTPS,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      DeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: 20,
+          maxDelayTarget: 20,
+          numRetries: 3,
+	      backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+      },
+    });
+  });
+
   test.each(
     [
       SubscriptionProtocol.LAMBDA,

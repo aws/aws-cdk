@@ -174,53 +174,61 @@ export class Subscription extends Resource {
       const delayTargetLimitSecs = 3600;
       const minDelayTarget = healthyRetryPolicy.minDelayTarget;
       const maxDelayTarget = healthyRetryPolicy.maxDelayTarget;
-      if (minDelayTarget.toMilliseconds() % 1000 !== 0) {
-        throw new Error(`minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`);
+      if (minDelayTarget !== undefined) {
+        if (minDelayTarget.toMilliseconds() % 1000 !== 0) {
+          throw new Error(`minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`);
+        }
+        const minDelayTargetSecs = minDelayTarget.toSeconds();
+        if (minDelayTargetSecs < 1 || minDelayTargetSecs > delayTargetLimitSecs) {
+          throw new Error(`minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${minDelayTargetSecs}s`);
+        }
       }
-      if (maxDelayTarget.toMilliseconds() % 1000 !== 0) {
-        throw new Error(`maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`);
+      if (maxDelayTarget !== undefined) {
+        if (maxDelayTarget.toMilliseconds() % 1000 !== 0) {
+          throw new Error(`maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`);
+        }
+        const maxDelayTargetSecs = maxDelayTarget.toSeconds();
+        if (maxDelayTargetSecs < 1 || maxDelayTargetSecs > delayTargetLimitSecs) {
+          throw new Error(`maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${maxDelayTargetSecs}s`);
+        }
+        if ((minDelayTarget !== undefined) && minDelayTarget.toSeconds() > maxDelayTargetSecs) {
+          throw new Error('minDelayTarget must not exceed maxDelayTarget');
+        }
       }
-      const minDelayTargetSecs = minDelayTarget.toSeconds();
-      if (minDelayTargetSecs < 1 || minDelayTargetSecs > delayTargetLimitSecs) {
-        throw new Error(`minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive`);
-      }
-      const maxDelayTargetSecs = maxDelayTarget.toSeconds();
-      if (maxDelayTargetSecs < 1 || maxDelayTargetSecs > delayTargetLimitSecs) {
-        throw new Error(`maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive`);
-      }
-      if (minDelayTargetSecs > maxDelayTargetSecs) {
-        throw new Error('minDelayTarget must not exceed maxDelayTarget');
-      }
+
       const numRetriesLimit = 100;
-      if (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit) {
-        throw new Error(`numRetries must be between 0 and ${numRetriesLimit} inclusive`);
+      if (healthyRetryPolicy.numRetries && (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit)) {
+        throw new Error(`numRetries must be between 0 and ${numRetriesLimit} inclusive, got: ${healthyRetryPolicy.numRetries}`);
       }
       const { numNoDelayRetries, numMinDelayRetries, numMaxDelayRetries } = healthyRetryPolicy;
       if (numNoDelayRetries && (numNoDelayRetries < 0 || !Number.isInteger(numNoDelayRetries))) {
-        throw new Error('numNoDelayRetries must be an integer zero or greater');
+        throw new Error(`numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`);
       }
       if (numMinDelayRetries && (numMinDelayRetries < 0 || !Number.isInteger(numMinDelayRetries))) {
-        throw new Error('numMinDelayRetries must be an integer zero or greater');
+        throw new Error(`numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`);
       }
       if (numMaxDelayRetries && (numMaxDelayRetries < 0 || !Number.isInteger(numMaxDelayRetries))) {
-        throw new Error('numMaxDelayRetries must be an integer zero or greater');
+        throw new Error(`numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`);
       }
     }
     if (throttlePolicy) {
       const maxReceivesPerSecond = throttlePolicy.maxReceivesPerSecond;
       if (maxReceivesPerSecond !== undefined && (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))) {
-        throw new Error('maxReceivesPerSecond must be an integer greater than zero');
+        throw new Error(`maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`);
       }
     }
     return {
-      healthyRetryPolicy: deliveryPolicy.healthyRetryPolicy ? {
-        minDelayTarget: deliveryPolicy.healthyRetryPolicy.minDelayTarget.toSeconds(),
-        maxDelayTarget: deliveryPolicy.healthyRetryPolicy.maxDelayTarget.toSeconds(),
-        numRetries: deliveryPolicy.healthyRetryPolicy.numRetries,
-        numNoDelayRetries: deliveryPolicy.healthyRetryPolicy.numNoDelayRetries,
-        numMinDelayRetries: deliveryPolicy.healthyRetryPolicy.numMinDelayRetries,
-        numMaxDelayRetries: deliveryPolicy.healthyRetryPolicy.numMaxDelayRetries,
-        backoffFunction: deliveryPolicy.healthyRetryPolicy.backoffFunction,
+      healthyRetryPolicy: healthyRetryPolicy ? {
+        // minDelayTarget, maxDelayTarget and numRetries are (empirically) mandatory when healthyRetryPolicy is specified,
+        // but for user-friendliness we allow them to be undefined and set them here instead.
+        // The defaults we use here are the same used in the event healthyRetryPolicy is not specified, see https://docs.aws.amazon.com/sns/latest/dg/creating-delivery-policy.html.
+        minDelayTarget: (healthyRetryPolicy.minDelayTarget === undefined)? 20 : healthyRetryPolicy.minDelayTarget.toSeconds(),
+        maxDelayTarget: (healthyRetryPolicy.maxDelayTarget === undefined)? 20 : healthyRetryPolicy.maxDelayTarget.toSeconds(),
+        numRetries: (healthyRetryPolicy.numRetries === undefined)? 3: healthyRetryPolicy.numRetries,
+        numNoDelayRetries: healthyRetryPolicy.numNoDelayRetries,
+        numMinDelayRetries: healthyRetryPolicy.numMinDelayRetries,
+        numMaxDelayRetries: healthyRetryPolicy.numMaxDelayRetries,
+        backoffFunction: healthyRetryPolicy.backoffFunction,
       }: undefined,
       throttlePolicy: deliveryPolicy.throttlePolicy ? {
         maxReceivesPerSecond: deliveryPolicy.throttlePolicy.maxReceivesPerSecond,
