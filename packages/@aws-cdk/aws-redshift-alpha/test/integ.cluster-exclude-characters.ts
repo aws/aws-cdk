@@ -41,5 +41,3 @@ const app = new App();
 new integ.IntegTest(app, 'ExcludeCharactersInteg', {
   testCases: [new RedshiftEnv(app, 'redshift-exclude-characters-integ')],
 });
-
-app.synth();
