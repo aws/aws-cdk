@@ -9,7 +9,6 @@ import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
-import { PARTITION_MAP } from '../../region-info/build-tools/fact-tables';
 
 /**
  * A VPC endpoint.
@@ -356,6 +355,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODE_CONNECTIONS = new InterfaceVpcEndpointAwsService('codeconnections.api');
   public static readonly COMPREHEND = new InterfaceVpcEndpointAwsService('comprehend');
   public static readonly COMPREHEND_MEDICAL = new InterfaceVpcEndpointAwsService('comprehendmedical');
+  public static readonly COMPUTE_OPTIMIZER = new InterfaceVpcEndpointAwsService('compute-optimizer');
   public static readonly CONFIG = new InterfaceVpcEndpointAwsService('config');
   public static readonly CONNECT_APP_INTEGRATIONS = new InterfaceVpcEndpointAwsService('app-integrations');
   public static readonly CONNECT_CASES = new InterfaceVpcEndpointAwsService('cases');
@@ -562,6 +562,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SERVER_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('sms');
   public static readonly SERVER_MIGRATION_SERVICE_FIPS = new InterfaceVpcEndpointAwsService('sms-fips');
   public static readonly SERVER_MIGRATION_SERVICE_AWSCONNECTOR = new InterfaceVpcEndpointAwsService('awsconnector');
+  public static readonly SERVERLESS_APPLICATION_REPOSITORY = new InterfaceVpcEndpointAwsService('serverlessrepo');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.EMAIL_SMTP instead. */
   public static readonly SES = new InterfaceVpcEndpointAwsService('email-smtp');
   public static readonly SIMSPACE_WEAVER = new InterfaceVpcEndpointAwsService('simspaceweaver');
@@ -669,21 +670,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
-      'us-isof-': ['ecr.api', 'ecr.dkr'],
-      'eu-isoe-': ['ecr.api', 'ecr.dkr'],
     };
-
-    const regionPartition = region.split('-').slice(0, 2).join('-');
-    const partitionDetails = PARTITION_MAP[`${regionPartition}-`];
-
-    // Check for specific service name under isolated region prefix
-    const serviceInExceptions = VPC_ENDPOINT_SERVICE_EXCEPTIONS[`${regionPartition}-`]?.includes(name);
-
-    if (serviceInExceptions) {
-      // Endpoints generated in reverse of domain suffix for the services mentioned in map
-      const reverseString = partitionDetails.domainSuffix.split('.').reverse().join('.');
-      return reverseString;
-    } else if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
+    if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       return 'cn.com.amazonaws';
     } else {
       return 'com.amazonaws';
