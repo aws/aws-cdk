@@ -69,6 +69,15 @@ new ManagedEc2EcsComputeEnvironment(stack, 'AllocationStrategySPOT_CAPACITY', {
   allocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
 });
 
+new ManagedEc2EcsComputeEnvironment(stack, 'noOptimalInstancesForARM', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+  instanceClasses: [ec2.InstanceClass.M6G],
+  instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE)],
+});
+
 const taggedEc2Ecs = new ManagedEc2EcsComputeEnvironment(stack, 'taggedCE', {
   vpc,
   images: [{
