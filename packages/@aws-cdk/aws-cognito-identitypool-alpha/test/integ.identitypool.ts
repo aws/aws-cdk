@@ -45,7 +45,7 @@ new UserPoolAuthenticationProvider({ userPool: importedUserPool, userPoolClient:
 const idPool = new IdentityPool(stack, 'identitypool', {
   authenticationProviders: {
     userPools: [provider],
-    amazon: { clientId: 'amzn1.application.12312k3j234j13rjiwuenf' },
+    amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
     google: { clientId: '12345678012.apps.googleusercontent.com' },
   },
   roleMappings: [

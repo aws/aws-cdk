@@ -371,7 +371,7 @@ describe('identity pool', () => {
     new IdentityPool(stack, 'TestIdentityPoolauthproviders', {
       identityPoolName: 'my-id-pool',
       authenticationProviders: {
-        amazon: { clientId: 'amzn1.application.12312k3j234j13rjiwuenf' },
+        amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
         google: { clientId: '12345678012.apps.googleusercontent.com' },
       },
     });

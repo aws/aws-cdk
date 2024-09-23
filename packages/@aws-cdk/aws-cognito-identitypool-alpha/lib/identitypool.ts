@@ -153,39 +153,54 @@ export class IdentityPoolProviderUrl {
 }
 
 /**
- * Authentication provider for external third-party identity federation
+ * Login provider for identity federation using Amazon credentials
  */
-export interface IdentityPoolAuthenticationProvider {
+export interface IdentityPoolAmazonLoginProvider {
   /**
-   * Client ID for identity federation
+   * App ID for Amazon identity federation
+   */
+  readonly appId: string;
+}
+
+/**
+ * Login provider for identity federation using Facebook credentials
+ */
+export interface IdentityPoolFacebookLoginProvider {
+  /**
+   * App ID for Facebook identity dederation
+   */
+  readonly appId: string;
+}
+
+/**
+ * Login provider for identity federation using Apple credentials
+*/
+export interface IdentityPoolAppleLoginProvider {
+  /**
+   * Services ID for Apple identity federation
+   */
+  readonly servicesId: string;
+}
+
+/**
+ * Login provider for identity federation using Google credentials
+ */
+export interface IdentityPoolGoogleLoginProvider {
+  /**
+   * Client ID for Google identity federation
    */
   readonly clientId: string;
 }
 
 /**
- * Login provider for identity federation using Amazon credentials
- */
-export interface IdentityPoolAmazonLoginProvider extends IdentityPoolAuthenticationProvider {}
-
-/**
- * Login provider for identity federation using Facebook credentials
- */
-export interface IdentityPoolFacebookLoginProvider extends IdentityPoolAuthenticationProvider {}
-
-/**
- * Login provider for identity federation using Apple credentials
-*/
-export interface IdentityPoolAppleLoginProvider extends IdentityPoolAuthenticationProvider {}
-
-/**
- * Login provider for identity federation using Google credentials
- */
-export interface IdentityPoolGoogleLoginProvider extends IdentityPoolAuthenticationProvider {}
-
-/**
  * Login provider for identity federation using Twitter credentials
  */
-export interface IdentityPoolTwitterLoginProvider extends IdentityPoolAuthenticationProvider {
+export interface IdentityPoolTwitterLoginProvider {
+  /**
+   * Consumer key for Twitter identity federation
+   */
+  readonly consumerKey: string;
+
   /**
    * Consumer secret for identity federation
    */
@@ -360,11 +375,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
       ) : undefined;
 
     let supportedLoginProviders:any = {};
-    if (authProviders.amazon) supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.clientId;
-    if (authProviders.facebook) supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] = authProviders.facebook.clientId;
+    if (authProviders.amazon) supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.appId;
+    if (authProviders.facebook) supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] = authProviders.facebook.appId;
     if (authProviders.google) supportedLoginProviders[IdentityPoolProviderUrl.GOOGLE.value] = authProviders.google.clientId;
-    if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.clientId;
-    if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.clientId};${authProviders.twitter.consumerSecret}`;
+    if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.servicesId;
+    if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.consumerKey};${authProviders.twitter.consumerSecret}`;
     if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
 
     const cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {

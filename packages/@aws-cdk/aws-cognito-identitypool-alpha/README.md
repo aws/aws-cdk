@@ -180,19 +180,19 @@ new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
     amazon: {
-      clientId: 'amzn1.application.12312k3j234j13rjiwuenf',
+      appId: 'amzn1.application.12312k3j234j13rjiwuenf',
     },
     facebook: {
-      clientId: '1234567890123',
+      appId: '1234567890123',
     },
     google: {
       clientId: '12345678012.apps.googleusercontent.com',
     },
     apple: {
-      clientId: 'com.myappleapp.auth',
+      servicesId: 'com.myappleapp.auth',
     },
     twitter: {
-      clientId: 'my-twitter-id',
+      consumerKey: 'my-twitter-id',
       consumerSecret: 'my-twitter-secret',
     },
   },
