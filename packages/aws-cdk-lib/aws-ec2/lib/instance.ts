@@ -590,6 +590,9 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
+    // When feature flag is true, if both the resourceSignalTimeout and initOptions.timeout are set,
+    // the timeout is summed together. This logic is done in applyCloudFormationInit.
+    // This is because applyUpdatePolicies overwrites the timeout when both timeout fields are specified.
     if (FeatureFlags.of(this).isEnabled(cxapi.EC2_SUM_TIMEOUT_ENABLED)) {
       this.applyUpdatePolicies(props);
 
