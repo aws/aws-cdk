@@ -1,7 +1,6 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
 import { LoggingConfig } from './logging-config';
