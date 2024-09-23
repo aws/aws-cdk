@@ -2,7 +2,6 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as iot from '../lib';
-import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
 
 test('Default property', () => {
   const stack = new cdk.Stack();
