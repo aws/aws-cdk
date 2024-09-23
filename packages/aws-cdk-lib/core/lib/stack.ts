@@ -1083,7 +1083,10 @@ export class Stack extends Construct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
+  public _synthesizeTemplate(session: ISynthesisSession,
+    lookupRoleArn?: string,
+    lookupRoleExternalId?: string,
+    lookupRoleAdditionalOptions?: { [key: string]: any }): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -1126,11 +1129,17 @@ export class Stack extends Construct implements ITaggable {
     fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
-      if (lookupRoleArn != null) {
-        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn } });
-      } else {
-        builder.addMissing(ctx);
-      }
+
+      // 'account' and 'region' are added to the schema at tree instantiation time.
+      // these options however are only known at synthesis, so are added here.
+      // see https://github.com/aws/aws-cdk/blob/v2.158.0/packages/aws-cdk-lib/core/lib/context-provider.ts#L71
+      const queryLookupOptions: Omit<cxschema.ContextLookupRoleOptions, 'account' | 'region'> = {
+        lookupRoleArn,
+        lookupRoleExternalId,
+        assumeRoleAdditionalOptions: lookupRoleAdditionalOptions,
+      };
+
+      builder.addMissing({ ...ctx, props: { ...ctx.props, ...queryLookupOptions } });
     }
   }
 
