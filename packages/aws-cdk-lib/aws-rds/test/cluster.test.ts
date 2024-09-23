@@ -196,7 +196,7 @@ describe('cluster new api', () => {
         });
       });
 
-      test('throw error for enableLocalWriteForwarding with aurora postgresql cluster', () => {
+      test.each([true, false])('throw error for enableLocalWriteForwarding with aurora postgresql cluster', (enableLocalWriteForwarding) => {
         // GIVEN
         const stack = testStack();
         const vpc = new ec2.Vpc(stack, 'VPC');
@@ -206,7 +206,7 @@ describe('cluster new api', () => {
           new DatabaseCluster(stack, 'Database', {
             engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }),
             vpc,
-            enableLocalWriteForwarding: true,
+            enableLocalWriteForwarding,
             writer: ClusterInstance.serverlessV2('writer'),
           });
         }).toThrow('\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: aurora-postgresql');

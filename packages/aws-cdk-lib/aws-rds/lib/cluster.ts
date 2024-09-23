@@ -389,7 +389,7 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether read replicas can forward write operations to the writer DB instance in the DB cluster.
    *
-   * This setting can only be enabled for Aurora MySQL clusters.
+   * This setting can only be enabled for Aurora MySQL 3.04 and higher clusters.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html
    *
