@@ -9,6 +9,7 @@ import * as uuid from 'uuid';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
+import { GarbageCollector } from './api/garbage-collector';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { Deployments } from './api/deployments';
@@ -770,6 +771,39 @@ export class CdkToolkit {
   public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
     // eslint-disable-next-line no-console
     console.log(userEnvironmentSpecs, options);
+
+    // TODO: copied from bootstrap, make into function
+    // By default, glob for everything
+    const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
+
+    // Partition into globs and non-globs (this will mutate environmentSpecs).
+    const globSpecs = partition(environmentSpecs, looksLikeGlob);
+    if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
+      if (userEnvironmentSpecs.length > 0) {
+        // User did request this glob
+        throw new Error(`'${globSpecs}' is not an environment name. Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json' to use wildcards.`);
+      } else {
+        // User did not request anything
+        throw new Error('Specify an environment name like \'aws://123456789012/us-east-1\', or run in a directory with \'cdk.json\'.');
+      }
+    }
+
+    const environments: cxapi.Environment[] = [
+      ...environmentsFromDescriptors(environmentSpecs),
+    ];
+
+    await Promise.all(environments.map(async (environment) => {
+      success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
+      const gc = new GarbageCollector({
+        sdkProvider: this.props.sdkProvider,
+        resolvedEnvironment: environment,
+        isolationDays: options.days,
+        dryRun: options.dryRun ?? false,
+        tagOnly: options.tagOnly ?? false,
+        type: options.type ?? 'all',
+      });
+      await gc.garbageCollect();
+    }));
   }
 
   /**
@@ -1419,7 +1453,7 @@ export interface DestroyOptions {
 export interface GarbageCollectionOptions {
   readonly dryRun?: boolean;
   readonly tagOnly?: boolean;
-  readonly type: 'ecr' | 'days' | 'all';
+  readonly type: 'ecr' | 's3' | 'all';
   readonly days: number;
 }
 
