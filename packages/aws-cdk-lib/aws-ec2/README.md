@@ -2020,6 +2020,20 @@ const instance = new ec2.Instance(this, 'Instance', {
 > NOTE: You must use an instance and a volume that meet the requirements for hibernation.
 > For more information, see [Prerequisites for Amazon EC2 instance hibernation](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
 
+### Enable termination protection
+
+You can enable [termination protection](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingDisableAPITermination.html) for your EC2 instances by setting the `disableApiTermination` property to `true`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  vpc: vpc,
+  disableApiTermination: true,
+});
+```
 
 ## VPC Flow Logs
 

@@ -372,6 +372,17 @@ export interface InstanceProps {
    * @default - For instances associated with an IPv6 subnet, use 1; otherwise, use 0.
    */
   readonly ipv6AddressCount?: number;
+
+  /**
+   * If you set this parameter to `true` , you can't terminate the instance using the Amazon EC2 console, CLI, or API;
+   *
+   * otherwise, you can. To change this attribute after launch, use [ModifyInstanceAttribute](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyInstanceAttribute.html) . Alternatively, if you set `InstanceInitiatedShutdownBehavior` to `terminate` , you can terminate the instance by running the shutdown command from the instance.
+   *
+   * @default - false
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
+   */
+  readonly disableApiTermination?: boolean;
 }
 
 /**
@@ -566,6 +577,7 @@ export class Instance extends Resource implements IInstance {
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
       hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
       ipv6AddressCount: props.ipv6AddressCount,
+      disableApiTermination: props.disableApiTermination,
     });
     this.instance.node.addDependency(this.role);
 

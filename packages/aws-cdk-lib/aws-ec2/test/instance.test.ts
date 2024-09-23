@@ -693,6 +693,23 @@ describe('instance', () => {
       InstanceInitiatedShutdownBehavior: 'terminate',
     });
   });
+
+  test('set disableApiTermination', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      disableApiTermination: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      InstanceType: 't2.micro',
+      DisableApiTermination: true,
+    });
+  });
+
 });
 
 test('add CloudFormation Init to instance', () => {
