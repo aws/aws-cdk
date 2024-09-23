@@ -16,6 +16,7 @@ export interface TestStackArtifact {
   env?: string;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
+  notificationArns?: string[];
 
   /** Old-style assets */
   assets?: cxschema.AssetMetadataEntry[];
@@ -101,6 +102,7 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
         ...stack.properties,
         templateFile,
         terminationProtection: stack.terminationProtection,
+        notificationArns: stack.notificationArns,
       },
       displayName: stack.displayName,
     });
