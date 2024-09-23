@@ -89,7 +89,9 @@ Local write forwarding allows read replicas to accept write transactions and for
 To enable local write forwarding, set the `enableLocalWriteForwarding` property to `true`:
 
 ```ts
-new rds.DatabaseCluster(stack, 'DatabaseCluster', {
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   readers: [
