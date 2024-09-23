@@ -84,6 +84,28 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
    * Public method to get the physical name of this log group
    */
   logGroupPhysicalName(): string;
+
+  // /**
+  //  * Return the given named metric for this Log Group
+  //  *
+  //  * @param metricName The name of the metric
+  //  * @param props Properties for the metric
+  //  */
+  // metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of logs ingested
+   *
+   * @param props Properties for the metric
+   */
+  metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of bytes stored
+   *
+   * @param props Properties for the metric
+   */
+  metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -244,6 +266,22 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     }
 
     return principal;
+  }
+
+  public metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IncomingLogs', props);
+  }
+
+  public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IncomingBytes', props);
+  }
+
+  private metric(_metricName: string, _props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/LogGroup',
+      metricName: _metricName,
+      ..._props,
+    }).attachTo(this);
   }
 }
 

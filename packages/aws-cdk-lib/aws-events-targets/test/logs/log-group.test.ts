@@ -398,3 +398,40 @@ testDeprecated('specifying retry policy with 0 retryAttempts', () => {
     ],
   });
 });
+
+test('metricIncomingLogEvents', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+
+  expect(stack.resolve(logGroup.metricIncomingLogEvents())).toEqual({
+    period: {
+      amount: 5,
+      unit: { label: 'minutes', inMillis: 300000, isoLabel: 'M' },
+    },
+    namespace: 'AWS/LogGroup',
+    metricNames: 'IncomingLogEvents',
+    statistics: 'Average',
+  });
+});
+
+test('metricIncomingBytes', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+
+  expect(stack.resolve(logGroup.metricIncomingBytes())).toEqual({
+    period: {
+      amount: 5,
+      unit: { label: 'minutes', inMillis: 300000, isoLabel: 'M' },
+    },
+    namespace: 'AWS/LogGroup',
+    metricNames: 'IncomingBytes',
+    statistics: 'Average',
+  });
+});
+

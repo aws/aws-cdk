@@ -1,0 +1,19 @@
+{
+  "version": "36.0.24",
+  "files": {
+    "ad8c4f6a20b1f148d1e63951d027301ce28de807ae5efd3ebe16d88c5986cc5d": {
+      "source": {
+        "path": "aws-cdk-log-group-metrics.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ad8c4f6a20b1f148d1e63951d027301ce28de807ae5efd3ebe16d88c5986cc5d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
