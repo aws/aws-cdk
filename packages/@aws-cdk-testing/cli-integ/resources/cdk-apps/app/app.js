@@ -700,6 +700,12 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
+class NotificationArnPropStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    new sns.Topic(this, 'topic');
+  }
+}
 class AppSyncHotswapStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -776,6 +782,10 @@ switch (stackSet) {
     new AppSyncHotswapStack(app, `${stackPrefix}-appsync-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+
+    new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
+      notificationArns: [`arn:aws:sns:${defaultEnv.region}:${defaultEnv.account}:${stackPrefix}-test-topic-prop`],
+    });
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);
