@@ -1,3 +1,4 @@
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { AppSync } from '@aws-sdk/client-appsync';
@@ -17,7 +18,6 @@ import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 import { SFN } from '@aws-sdk/client-sfn';
 import { SSM } from '@aws-sdk/client-ssm';
 import { STS } from '@aws-sdk/client-sts';
-import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
