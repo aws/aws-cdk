@@ -33,5 +33,3 @@ importedCluster.grantDataApiAccess(func);
 new integ.IntegTest(app, 'integ-cluster-data-api-to-imported-cluster', {
   testCases: [stack],
 });
-
-app.synth();
