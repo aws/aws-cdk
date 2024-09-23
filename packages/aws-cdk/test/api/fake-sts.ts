@@ -21,6 +21,8 @@ interface AssumedRole {
   readonly serialNumber: string;
   readonly tokenCode: string;
   readonly roleSessionName: string;
+  readonly tags?: AWS.STS.Tag[];
+  readonly transitiveTagKeys?: string[];
 }
 
 /**
@@ -158,6 +160,28 @@ export class FakeSts {
     };
   }
 
+  /**
+   * Maps have a funky encoding to them when sent to STS.
+   *
+   * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
+   */
+  private decodeMapFromRequestBody(parameter: string, body: Record<string, string>): AWS.STS.Tag[] {
+    return Object.entries(body)
+      .filter(([key, _]) => key.startsWith(`${parameter}.member.`) && key.endsWith('.Key'))
+      .map(([key, tagKey]) => ({ Key: tagKey, Value: body[`${parameter}.member.${key.split('.')[2]}.Value`] }));
+  }
+
+  /**
+   * Lists have a funky encoding when sent to STS.
+   *
+   * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
+   */
+  private decodeListKeysFromRequestBody(parameter: string, body: Record<string, string>): string[] {
+    return Object.entries(body)
+      .filter(([key]) => key.startsWith(`${parameter}.member.`))
+      .map(([, value]) => value);
+  }
+
   private handleAssumeRole(identity: RegisteredIdentity, mockRequest: MockRequest): Record<string, any> {
     this.checkForFailure(mockRequest.parsedBody.RoleArn);
 
@@ -166,6 +190,8 @@ export class FakeSts {
       roleSessionName: mockRequest.parsedBody.RoleSessionName,
       serialNumber: mockRequest.parsedBody.SerialNumber,
       tokenCode: mockRequest.parsedBody.TokenCode,
+      tags: this.decodeMapFromRequestBody('Tags', mockRequest.parsedBody),
+      transitiveTagKeys: this.decodeListKeysFromRequestBody('TransitiveTagKeys', mockRequest.parsedBody),
     });
 
     const roleArn = mockRequest.parsedBody.RoleArn;
@@ -255,6 +281,7 @@ interface MockRequest {
   readonly uri: string;
   readonly headers: Record<string, string>;
   readonly parsedBody: Record<string, string>;
+  readonly sessionTags?: { [key: string]: string };
 }
 
 function urldecode(body: string): Record<string, string> {

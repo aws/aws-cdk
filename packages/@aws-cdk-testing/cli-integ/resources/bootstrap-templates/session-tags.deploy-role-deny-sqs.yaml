@@ -277,8 +277,8 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
           - Action: sts:TagSession
             Effect: Allow
             Principal:
@@ -307,8 +307,8 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
           - Action: sts:TagSession
             Effect: Allow
             Principal:
@@ -337,14 +337,14 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-          - Action: sts:TagSession
+          - Action: sts:AssumeRole
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
-          - Action: sts:AssumeRole
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -452,14 +452,14 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
-          # allows this role to be assumed with session tags.
-          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
-          - Action: sts:TagSession
+          - Action: sts:AssumeRole
             Effect: Allow
             Principal:
               AWS:
                 Ref: AWS::AccountId
-          - Action: sts:AssumeRole
+          # The TagSession action is required to be able to assume this role with session tags.
+          # Without this trust policy, attemping to assume this role with session tags will fail.
+          - Action: sts:TagSession
             Effect: Allow
             Principal:
               AWS:
@@ -523,6 +523,20 @@ Resources:
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
                 Effect: Allow
+              # Permissions to allow the Deploy Role to perform SQS Actions.
+              # Users of this bootstrap template intend to uses the Deploy Role
+              # instead of the CFN ExecutionRole, so the deploy role needs permissions
+              # to perform CFN actions; in this simple case, we only permit SQS Actions.
+              - Sid: SQSPermissions
+                Action: sqs:*
+                Resource: "*"
+                Effect: Allow
+                # This condition requires that the Deploy Role is assumed with the session tags
+                # 'Department: Engineering'; if these tags are not passed in, the DeployRole will
+                # not be able to perform SQS actions.
+                Condition:
+                  StringEquals:
+                    aws:PrincipalTag/Department: "Engineering"
               - Sid: CliPermissions
                 Action:
                   # Permissions needed by the CLI when doing `cdk deploy`.

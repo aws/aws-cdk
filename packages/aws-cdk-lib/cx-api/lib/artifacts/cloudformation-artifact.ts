@@ -4,7 +4,6 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import type { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
-
 const CLOUDFORMATION_STACK_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.CloudFormationStackArtifact');
 
 export class CloudFormationStackArtifact extends CloudArtifact {
@@ -98,6 +97,18 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   readonly assumeRoleExternalId?: string;
 
   /**
+   * Additional options to pass to STS when assuming the role for cloudformation deployments.
+   *
+   * - `RoleArn` should not be used. Use the dedicated `assumeRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `assumeRoleExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transitive by default.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
+   */
+  readonly assumeRoleAdditionalOptions?: { [key: string]: any };
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
@@ -166,6 +177,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.notificationArns = properties.notificationArns ?? [];
     this.assumeRoleArn = properties.assumeRoleArn;
     this.assumeRoleExternalId = properties.assumeRoleExternalId;
+    this.assumeRoleAdditionalOptions = properties.assumeRoleAdditionalOptions;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
