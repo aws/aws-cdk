@@ -46,7 +46,7 @@
                     "comparisonOperator": "GreaterThanOrEqualToThreshold",
                     "evaluationPeriods": 1,
                     "metricName": "IncomingBytes",
-                    "namespace": "AWS/LogGroup",
+                    "namespace": "AWS/Logs",
                     "period": 300,
                     "statistic": "Average",
                     "threshold": 1
@@ -76,7 +76,7 @@
                     "comparisonOperator": "GreaterThanOrEqualToThreshold",
                     "evaluationPeriods": 1,
                     "metricName": "IncomingLogs",
-                    "namespace": "AWS/LogGroup",
+                    "namespace": "AWS/Logs",
                     "period": 300,
                     "statistic": "Average",
                     "threshold": 1

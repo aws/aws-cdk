@@ -15,7 +15,7 @@
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
     "EvaluationPeriods": 1,
     "MetricName": "IncomingBytes",
-    "Namespace": "AWS/LogGroup",
+    "Namespace": "AWS/Logs",
     "Period": 300,
     "Statistic": "Average",
     "Threshold": 1
@@ -27,7 +27,7 @@
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
     "EvaluationPeriods": 1,
     "MetricName": "IncomingLogs",
-    "Namespace": "AWS/LogGroup",
+    "Namespace": "AWS/Logs",
     "Period": 300,
     "Statistic": "Average",
     "Threshold": 1
