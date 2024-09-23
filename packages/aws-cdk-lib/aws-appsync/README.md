@@ -544,21 +544,24 @@ new route53.CnameRecord(this, `CnameApiRecord`, {
 AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
 log data set to never expire. If you want to set a different expiration period, use the `logConfig.retention` property.
 
+Also you can choose the log level by setting the `logConfig.fieldLogLevel` property.
+
+For more information, see [CloudWatch logs](https://docs.aws.amazon.com/en_us/appsync/latest/devguide/monitoring.html#cwl).
+
 To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
 `GraphqlApi` construct.
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
 
-const logConfig: appsync.LogConfig = {
-  retention: logs.RetentionDays.ONE_WEEK,
-};
-
 new appsync.GraphqlApi(this, 'api', {
   authorizationConfig: {},
   name: 'myApi',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
-  logConfig,
+  logConfig: {
+    fieldLogLevel: appsync.FieldLogLevel.INFO,
+    retention: logs.RetentionDays.ONE_WEEK,
+  },
 });
 ```
 

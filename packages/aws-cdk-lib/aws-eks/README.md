@@ -40,6 +40,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [Cluster Security Group](#cluster-security-group)
     - [Node SSH Access](#node-ssh-access)
     - [Service Accounts](#service-accounts)
+    - [Pod Identities](#pod-identities)
   - [Applying Kubernetes Resources](#applying-kubernetes-resources)
     - [Kubernetes Manifests](#kubernetes-manifests)
       - [ALB Controller Integration](#alb-controller-integration)
@@ -54,6 +55,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       - [Manually importing k8s specs and CRD's](#manually-importing-k8s-specs-and-crds)
   - [Patching Kubernetes Resources](#patching-kubernetes-resources)
   - [Querying Kubernetes Resources](#querying-kubernetes-resources)
+  - [Add-ons](#add-ons)
   - [Using existing clusters](#using-existing-clusters)
   - [Logging](#logging)
   - [Known Issues and Limitations](#known-issues-and-limitations)
@@ -641,7 +643,7 @@ The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cl
 
 ### Alb Controller
 
-Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/).
+Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/).
 
 From the docs:
 
@@ -656,7 +658,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_30,
   albController: {
-    version: eks.AlbControllerVersion.V2_6_2,
+    version: eks.AlbControllerVersion.V2_8_2,
   },
 });
 ```
@@ -1335,6 +1337,46 @@ Note that adding service accounts requires running `kubectl` commands against th
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
 See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#using-existing-clusters).
 
+### Pod Identities
+
+[Amazon EKS Pod Identities](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html) is a feature that simplifies how
+Kubernetes applications running on Amazon EKS can obtain AWS IAM credentials. It provides a way to associate an IAM role with a
+Kubernetes service account, allowing pods to retrieve temporary AWS credentials without the need
+to manage IAM roles and policies directly.
+
+By default, `ServiceAccount` creates an `OpenIdConnectProvider` for 
+[IRSA(IAM roles for service accounts)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) if
+`identityType` is `undefined` or `IdentityType.IRSA`.
+
+You may opt in Amaozn EKS Pod Identities as below:
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.ServiceAccount(this, 'ServiceAccount', {
+  cluster,
+  name: 'test-sa',
+  namespace: 'default',
+  identityType: eks.IdentityType.POD_IDENTITY,
+});
+```
+
+When you create the ServiceAccount with the `identityType` set to `POD_IDENTITY`,
+`ServiceAccount` contruct will perform the following actions behind the scenes:
+
+1. It will create an IAM role with the necessary trust policy to allow the "pods.eks.amazonaws.com" principal to assume the role.
+This trust policy grants the EKS service the permission to retrieve temporary AWS credentials on behalf of the pods using this service account.
+
+2. It will enable the "Amazon EKS Pod Identity Agent" add-on on the EKS cluster. This add-on is responsible for managing the temporary
+AWS credentials and making them available to the pods.
+
+3. It will create an association between the IAM role and the Kubernetes service account. This association allows the pods using this
+service account to obtain the temporary AWS credentials from the associated IAM role.
+
+This simplifies the process of configuring IAM permissions for your Kubernetes applications running on Amazon EKS. It handles the creation of the IAM role,
+the installation of the Pod Identity Agent add-on, and the association between the role and the service account, making it easier to manage AWS credentials
+for your applications.
+
 ## Applying Kubernetes Resources
 
 The library supports several popular resource deployment mechanisms, among which are:
@@ -1794,6 +1836,22 @@ Specifically, since the above use-case is quite common, there is an easier way t
 ```ts
 declare const cluster: eks.Cluster;
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
+```
+
+## Add-ons
+
+[Add-ons](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html) is a software that provides supporting operational capabilities to Kubernetes applications. The EKS module supports adding add-ons to your cluster using the `eks.Addon` class.
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.Addon(this, 'Addon', {
+  cluster,
+  addonName: 'aws-guardduty-agent',
+  addonVersion: 'v1.6.1',
+  // whether to preserve the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on.
+  preserveOnDelete: false,
+});
 ```
 
 ## Using existing clusters

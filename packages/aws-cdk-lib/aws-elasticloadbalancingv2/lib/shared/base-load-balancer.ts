@@ -54,7 +54,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - false for Network Load Balancers and true for Application Load Balancers.
    * This can not be `false` for Application Load Balancers.
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattribute.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattribute.html
    */
   readonly crossZoneEnabled?: boolean;
 
@@ -233,6 +233,11 @@ export abstract class BaseLoadBalancer extends Resource {
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
+
+    if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+      additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
+      throw new Error(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`);
+    }
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,

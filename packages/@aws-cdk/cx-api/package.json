@@ -79,15 +79,15 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.6.2"
+    "semver": "^7.6.3"
   },
   "peerDependencies": {
-    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "^38.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "^38.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.12",
     "@types/mock-fs": "^4.13.4",

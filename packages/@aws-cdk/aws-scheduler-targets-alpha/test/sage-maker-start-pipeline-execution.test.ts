@@ -17,7 +17,7 @@ describe('schedule target', () => {
   }];
 
   beforeEach(() => {
-    app = new App();
+    app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     pipeline = new FakePipeline(stack, 'MyPipeline', { pipelineName: 'MyPipeline1' });
   });

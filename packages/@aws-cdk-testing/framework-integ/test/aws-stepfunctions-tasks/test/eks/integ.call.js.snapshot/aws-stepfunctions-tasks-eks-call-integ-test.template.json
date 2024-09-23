@@ -819,7 +819,7 @@
     },
     "Config": {
      "name": "eksCluster",
-     "version": "1.22",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "EksClusterRoleC84B376F",
@@ -1069,7 +1069,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7f71d74c2d3d9ad49884524313375b8bc61f84536a34b03c684e47dda454fc7a.json"
+       "/f7aa3008968380942d8a904737425d85b53d67861a291e848f6490c21bec4bf3.json"
       ]
      ]
     }
@@ -1116,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f039f966692c328d8e89b44b50104ff6a7d722c66d6244f3537c2d5ddf73c98e.json"
+       "/d163afd0a5a8105f45ee5d8a01d75479285e43d1b6383966f2213b6ad8e3be79.json"
       ]
      ]
     }
