@@ -7,7 +7,7 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 /**
  * Represents AWS IoT Audit Configuration
  */
-export interface IAuditConfiguration extends IResource {
+export interface IAccountAuditConfiguration extends IResource {
   /**
    * The account ID
    * @attribute
@@ -20,7 +20,7 @@ export interface IAuditConfiguration extends IResource {
  *
  * @see https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-defender-audit-checks.html
  */
-interface CheckConfiguration {
+export interface CheckConfiguration {
   /**
    * Checks the permissiveness of an authenticated Amazon Cognito identity pool role.
    *
@@ -155,9 +155,11 @@ interface CheckConfiguration {
 /**
  * Properties for defining AWS IoT Audit Configuration
  */
-export interface AuditConfigurationProps {
+export interface AccountAuditConfigurationProps {
   /**
-   * The target SNS topic to which audit notifications are sent
+   * The target SNS topic to which audit notifications are sent.
+   *
+   * @default - no notifications are sent
    */
   readonly targetTopic?: sns.ITopic;
 
@@ -172,7 +174,7 @@ export interface AuditConfigurationProps {
 /**
  * Defines AWS IoT Audit Configuration
  */
-export class AuditConfiguration extends Resource implements IAuditConfiguration {
+export class AccountAuditConfiguration extends Resource implements IAccountAuditConfiguration {
   /**
    * Import an existing AWS IoT Audit Configuration
    *
@@ -180,8 +182,8 @@ export class AuditConfiguration extends Resource implements IAuditConfiguration 
    * @param id The construct's name
    * @param accountId The account ID
    */
-  public static fromAccountId(scope: Construct, id: string, accountId: string): IAuditConfiguration {
-    class Import extends Resource implements IAuditConfiguration {
+  public static fromAccountId(scope: Construct, id: string, accountId: string): IAccountAuditConfiguration {
+    class Import extends Resource implements IAccountAuditConfiguration {
       public readonly accountId = accountId;
     }
     return new Import(scope, id);
@@ -193,7 +195,7 @@ export class AuditConfiguration extends Resource implements IAuditConfiguration 
    */
   public readonly accountId: string;
 
-  constructor(scope: Construct, id: string, props?: AuditConfigurationProps) {
+  constructor(scope: Construct, id: string, props?: AccountAuditConfigurationProps) {
     super(scope, id);
 
     this.accountId = Stack.of(this).account;
