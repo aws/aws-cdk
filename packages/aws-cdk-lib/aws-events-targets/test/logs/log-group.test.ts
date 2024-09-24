@@ -435,11 +435,9 @@ test('metricIncomingLogEvents with MetricOptions props', () => {
     namespace: 'AWS/Logs',
     metricName: 'IncomingLogs',
     statistic: 'Average',
-    label: 'MyMetric'
+    label: 'MyMetric',
   });
 });
-
-
 
 test('metricIncomingBytes', () => {
   // GIVEN
