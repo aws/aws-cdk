@@ -342,6 +342,39 @@ describe('with intercepted network calls', () => {
       });
     });
 
+    test('session tags can be passed when assuming a role', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '11111' },
+        },
+      });
+
+      await withMocked(os, 'userInfo', async (userInfo) => {
+        userInfo.mockReturnValue({ username: 'skål', uid: 1, gid: 1, homedir: '/here', shell: '/bin/sh' });
+
+        // WHEN
+        const provider = await providerFromProfile(undefined);
+
+        const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading,
+          {
+            assumeRoleArn: 'arn:aws:role',
+            assumeRoleExternalId: 'bruh',
+            assumeRoleAdditionalOptions: {
+              Tags: [{ Key: 'Department', Value: 'Engineering' }],
+            },
+          })).sdk as SDK;
+        await sdk.currentAccount();
+
+        // THEN
+        expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
+          tags: [{ Key: 'Department', Value: 'Engineering' }],
+          transitiveTagKeys: ['Department'],
+        }));
+      });
+    });
+
     test('assuming a role does not fail when OS username cannot be read', async () => {
       // GIVEN
       prepareCreds({
