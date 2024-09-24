@@ -392,3 +392,36 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions`
+
+Currently, we will automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ec2:ec2SumTImeoutEnabled`
+
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance, only the value from 'resourceSignalTimeout' will be used. 
+      
+When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true
+  }
+}
+```
