@@ -1,0 +1,382 @@
+{
+ "Resources": {
+  "AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "startExecution",
+    "parameters": {
+     "stateMachineArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputRefStateMachineWithCMKEncryptionConfiguration107734624DC890C0"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1724800071895"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:GetActivityTask"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "kms:Decrypt",
+         "Resource": {
+          "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputFnGetAttActivityKey371097A6ArnD0599452"
+         }
+        },
+        {
+         "Action": [
+          "states:SendTaskSuccess"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "kms:Decrypt",
+         "Resource": {
+          "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputFnGetAttActivityKey371097A6ArnD0599452"
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsgetActivityTask",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "getActivityTask",
+    "expected": "{\"$StringLike\":\"World\"}",
+    "actualPath": "input.Hello",
+    "parameters": {
+     "activityArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig:ExportsOutputRefActivityWithCMKEncryptionConfiguration3D01813A4B9ECB48"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "taskToken",
+     "input.Hello"
+    ],
+    "salt": "1724800071896"
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsstartExecutionfd2d7439ba7a3ea7b82bab17a2a946c2"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionssendTaskSuccessa30d0d6fe62fe8cc8e72d8e7f75642a1": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionssendTaskSuccess",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "sendTaskSuccess",
+    "parameters": {
+     "taskToken": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578",
+          "apiCallResponse.taskToken"
+         ]
+        },
+        "\""
+       ]
+      ]
+     },
+     "output": "\"{\\\"hello\\\":\\\"world\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1724800071896"
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallStepFunctionsgetActivityTask2f188ef11668d5c3d86ad399643a0578",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

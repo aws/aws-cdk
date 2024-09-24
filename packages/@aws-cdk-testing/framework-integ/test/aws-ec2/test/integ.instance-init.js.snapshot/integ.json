@@ -1,14 +1,12 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.24",
   "testCases": {
-    "integ.instance-init": {
+    "instance-init-test/DefaultTest": {
       "stacks": [
         "integ-init"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "instance-init-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instanceinittestDefaultTestDeployAssert2123E149"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

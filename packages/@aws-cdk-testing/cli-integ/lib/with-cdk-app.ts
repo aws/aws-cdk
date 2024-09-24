@@ -233,6 +233,13 @@ export async function cloneDirectory(source: string, target: string, output?: No
 }
 
 interface CommonCdkBootstrapCommandOptions {
+  /**
+   * Path to a custom bootstrap template.
+   *
+   * @default - the default CDK bootstrap template.
+   */
+  readonly bootstrapTemplate?: string;
+
   readonly toolkitStackName: string;
 
   /**
@@ -421,6 +428,9 @@ export class TestFixture extends ShellHelper {
     }
     if (options.usePreviousParameters === false) {
       args.push('--no-previous-parameters');
+    }
+    if (options.bootstrapTemplate) {
+      args.push('--template', options.bootstrapTemplate);
     }
 
     return this.cdk(args, {

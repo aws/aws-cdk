@@ -1,8 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Mode } from '../api/aws-auth/credentials';
-import { SdkProvider } from '../api/aws-auth/sdk-provider';
+import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 
@@ -12,11 +11,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   }
 
   public async getValue(args: cxschema.VpcContextQuery) {
-    const account: string = args.account!;
-    const region: string = args.region!;
-
-    const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
+    const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
 
     const vpcId = await this.findVpc(ec2, args);
 

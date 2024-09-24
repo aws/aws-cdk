@@ -28,6 +28,9 @@ export * from './states/custom-state';
 export * from './states/map-base';
 export * from './states/task-base';
 export * from './task-credentials';
+export * from './encryption-configuration';
+export * from './customer-managed-key-encryption-configuration';
+export * from './aws-owned-key-encryption-configuration';
 
 // AWS::StepFunctions CloudFormation Resources:
 export * from './stepfunctions.generated';
