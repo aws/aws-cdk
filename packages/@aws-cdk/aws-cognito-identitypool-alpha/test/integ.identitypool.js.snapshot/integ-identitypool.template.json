@@ -252,6 +252,54 @@
      },
      {
       "ClientId": {
+       "Ref": "UserPoolToImportclientToImport6885CDF7"
+      },
+      "ProviderName": {
+       "Fn::Join": [
+        "",
+        [
+         "cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::Select": [
+               5,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::GetAtt": [
+                   "UserPoolToImport1A7C21D3",
+                   "Arn"
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      },
+      "ServerSideTokenCheck": true
+     },
+     {
+      "ClientId": {
        "Ref": "OtherPoolUserPoolAuthenticationProviderClient08F670F8"
       },
       "ProviderName": {

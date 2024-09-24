@@ -24,7 +24,7 @@
 
 Identity Pools are one of the two main components of [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html), which provides authentication, authorization, and
 user management for your web and mobile apps. Your users can sign in through a a trusted identity provider, like a user 
-pool or a SAML 2.0 service.
+pool or a SAML 2.0 service, as well as with third party providers such as Facebook, Amazon, Google or Apple. 
 
 The other main component in Amazon Cognito is [user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html). User Pools are user directories that provide sign-up and
 sign-in options for your app users.
