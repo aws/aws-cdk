@@ -1,0 +1,12 @@
+{
+  "version": "36.0.24",
+  "testCases": {
+    "EnableSumTimeoutInstanceTest/DefaultTest": {
+      "stacks": [
+        "integ-init"
+      ],
+      "assertionStack": "EnableSumTimeoutInstanceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EnableSumTimeoutInstanceTestDefaultTestDeployAssert5CD5B9B5"
+    }
+  }
+}
