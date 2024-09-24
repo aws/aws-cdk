@@ -69,6 +69,16 @@ export interface ConfigurationProps {
  * All sources of settings combined
  */
 export class Configuration {
+
+  public static get(props: ConfigurationProps = {}): Configuration {
+    if (!this._instance) {
+      this._instance = new Configuration(props);
+    }
+    return this._instance;
+  }
+
+  private static _instance: Configuration | undefined;
+
   public settings = new Settings();
   public context = new Context();
 
@@ -85,7 +95,7 @@ export class Configuration {
   private _projectContext?: Settings;
   private loaded = false;
 
-  constructor(private readonly props: ConfigurationProps = {}) {
+  private constructor(private readonly props: ConfigurationProps = {}) {
     this.commandLineArguments = props.commandLineArguments
       ? Settings.fromCommandLineArguments(props.commandLineArguments)
       : new Settings();

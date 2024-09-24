@@ -2,6 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { ISDK } from './aws-auth';
 import { EcrRepositoryInfo, ToolkitInfo } from './toolkit-info';
 import { debug, warning } from '../logging';
+import { displayNotices } from '../notices';
 
 /**
  * Registry class for `EnvironmentResources`.
@@ -73,11 +74,11 @@ export class EnvironmentResources {
       // No requirement
       return;
     }
-    const defExpectedVersion = expectedVersion;
+    // const defExpectedVersion = expectedVersion;
 
     if (ssmParameterName !== undefined) {
       try {
-        doValidate(await this.versionFromSsmParameter(ssmParameterName));
+        await doValidate(await this.versionFromSsmParameter(ssmParameterName));
         return;
       } catch (e: any) {
         if (e.code !== 'AccessDeniedException') { throw e; }
@@ -92,7 +93,7 @@ export class EnvironmentResources {
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
           warning(`Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`);
-          doValidate(bootstrapStack.version);
+          await doValidate(bootstrapStack.version);
           return;
         }
 
@@ -102,12 +103,23 @@ export class EnvironmentResources {
 
     // No SSM parameter
     const bootstrapStack = await this.lookupToolkit();
-    doValidate(bootstrapStack.version);
+    await doValidate(bootstrapStack.version);
 
-    function doValidate(version: number) {
-      if (defExpectedVersion > version) {
-        throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
-      }
+    async function doValidate(version: number) {
+      await displayNotices({
+        // these are already shown before we got here.
+        showCliRelatedNotices: false,
+        showFrameworkRelatedNotices: false,
+
+        // these can only be shown here because its where we know
+        // the bootstrap stack version
+        showBootstrapRelatedNotices: true,
+        bootstrapVersion: version,
+      });
+      throw new Error('Check if notice is displayed');
+      // if (defExpectedVersion > version) {
+      //   throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
+      // }
     }
   }
 

@@ -20,7 +20,7 @@ beforeEach(() => {
   setLogLevel(LogLevel.DEBUG);
 
   sdkProvider = new MockSdkProvider();
-  config = new Configuration();
+  config = Configuration.get();
 
   config.settings.set(['output'], 'cdk.out');
 

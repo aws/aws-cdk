@@ -39,7 +39,7 @@ export class MockCloudExecutable extends CloudExecutable {
   public readonly sdkProvider: MockSdkProvider;
 
   constructor(assembly: TestAssembly, sdkProviderArg?: MockSdkProvider) {
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     const sdkProvider = sdkProviderArg ?? new MockSdkProvider();
 
     super({

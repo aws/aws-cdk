@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from './logging';
+import { Configuration } from './settings';
 import { ConstructTreeNode, loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
@@ -15,13 +16,13 @@ export interface DisplayNoticesProps {
   /**
    * The cloud assembly directory. Usually 'cdk.out'.
    */
-  readonly outdir: string;
+  readonly outdir?: string;
 
   /**
    * Issue numbers of notices that have been acknowledged by a user
    * of the current CDK repository. These notices will be skipped.
    */
-  readonly acknowledgedIssueNumbers: number[];
+  readonly acknowledgedIssueNumbers?: number[];
 
   /**
    * Whether cached notices should be ignored. Setting this property
@@ -37,6 +38,31 @@ export interface DisplayNoticesProps {
    * @default false
    */
   readonly unacknowledged?: boolean;
+
+  /**
+   * Whether to show notices related to the CLI.
+   *
+   * @default true
+   */
+  readonly showCliRelatedNotices?: boolean;
+
+  /**
+   * Whether to show notices related to the CDK Framework.
+   *
+   * @default true
+   */
+  readonly showFrameworkRelatedNotices?: boolean;
+
+  /**
+   * Whether to show notices related to the CDK bootstrap stack version.
+   * If true, `bootstrapVersion` must be set as well.
+   *
+   * @default false
+   */
+  readonly showBootstrapRelatedNotices?: boolean;
+
+  readonly bootstrapVersion?: number;
+
 }
 
 export async function refreshNotices() {
@@ -51,10 +77,18 @@ export async function displayNotices(props: DisplayNoticesProps) {
 }
 
 export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps) {
+
+  const configuration = Configuration.get();
+
   const data = await dataSource.fetch();
   const filteredNotices = filterNotices(data, {
-    outdir: props.outdir,
-    acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
+    outdir: props.outdir ?? (configuration.settings.get(['output']) ?? 'cdk.out'),
+    acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers ?? configuration.context.get('acknowledged-issue-numbers') ?? []),
+    bootstrapVersion: props.bootstrapVersion,
+    cliVersion: versionNumber(),
+    showCliRelatedNotices: props.showCliRelatedNotices ?? true,
+    showFrameworkRelatedNotices: props.showFrameworkRelatedNotices ?? true,
+    showBootstrapRelatedNotices: props.showBootstrapRelatedNotices ?? false,
   });
 
   let messageString: string = '';
@@ -85,17 +119,24 @@ function finalMessage(individualMessages: string[], exampleNumber: number): stri
 }
 
 export interface FilterNoticeOptions {
-  outdir?: string;
-  cliVersion?: string;
-  frameworkVersion?: string;
-  acknowledgedIssueNumbers?: Set<number>;
+  outdir: string;
+  cliVersion: string;
+  acknowledgedIssueNumbers: Set<number>;
+  showCliRelatedNotices: boolean;
+  showFrameworkRelatedNotices: boolean;
+  showBootstrapRelatedNotices: boolean;
+  bootstrapVersion?: number;
 }
 
 export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
-    cliVersion: options.cliVersion ?? versionNumber(),
-    acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
-    tree: loadTreeFromDir(options.outdir ?? 'cdk.out'),
+    cliVersion: options.cliVersion,
+    acknowledgedIssueNumbers: options.acknowledgedIssueNumbers,
+    tree: loadTreeFromDir(options.outdir),
+    showCliRelatedNotices: options.showCliRelatedNotices,
+    showFrameworkRelatedNotices: options.showFrameworkRelatedNotices,
+    showBootstrapRelatedNotices: options.showBootstrapRelatedNotices,
+    bootstrapVersion: options.bootstrapVersion,
   });
   return data.filter(notice => filter.apply(notice));
 }
@@ -245,6 +286,10 @@ export interface NoticeFilterProps {
   cliVersion: string;
   acknowledgedIssueNumbers: Set<number>;
   tree: ConstructTreeNode;
+  showCliRelatedNotices: boolean;
+  showFrameworkRelatedNotices: boolean;
+  showBootstrapRelatedNotices: boolean;
+  bootstrapVersion?: number;
 }
 
 export class NoticeFilter {
@@ -262,14 +307,34 @@ export class NoticeFilter {
       return false;
     }
 
-    return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
-      match(resolveAliases(notice.components), this.props.tree);
+    if (this.props.showBootstrapRelatedNotices && !this.props.bootstrapVersion) {
+      throw new Error('\'bootstrapVersion\' must be set when \'showBootstrapRelatedNotices\' is true');
+    }
+
+    let show = false;
+    if (this.props.showCliRelatedNotices) {
+      show = show || this.applyVersion(notice, 'cli', this.props.cliVersion);
+    }
+    if (this.props.showFrameworkRelatedNotices) {
+      show = show || match(resolveAliases(notice.components), this.props.tree);
+    }
+    if (this.props.showBootstrapRelatedNotices) {
+      // bootstrap stack versions are just integers so we need to coerce to semver
+      // in order to compare them with a range.
+      const semverBootstrapVersion = semver.coerce(this.props.bootstrapVersion);
+      if (!semverBootstrapVersion) {
+        throw new Error(`Cannot coerce bootstrap version '${this.props.bootstrapVersion}' into semver`);
+      }
+      show = show || this.applyVersion(notice, 'bootstrap', semverBootstrapVersion);
+    }
+
+    return show;
   }
 
   /**
    * Returns true if we should show the notice.
    */
-  private applyVersion(notice: Notice, name: string, compareToVersion: string | undefined) {
+  private applyVersion(notice: Notice, name: string, compareToVersion: string | semver.SemVer | undefined) {
     if (compareToVersion === undefined) { return false; }
 
     const affectedComponent = notice.components.find(component => component.name === name);

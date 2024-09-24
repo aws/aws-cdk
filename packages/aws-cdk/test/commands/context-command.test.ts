@@ -5,7 +5,7 @@ import { Configuration, Settings, Context } from '../../lib/settings';
 describe('context --list', () => {
   test('runs', async() => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
 
     expect(configuration.context.all).toEqual({
@@ -23,7 +23,7 @@ describe('context --list', () => {
 describe('context --reset', () => {
   test('can remove a context key', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
     configuration.context.set('baz', 'quux');
 
@@ -46,7 +46,7 @@ describe('context --reset', () => {
 
   test('can remove a context key using number', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
     configuration.context.set('baz', 'quux');
 
@@ -69,7 +69,7 @@ describe('context --reset', () => {
 
   test('can reset matched pattern', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
     configuration.context.set('match-a', 'baz');
     configuration.context.set('match-b', 'qux');
@@ -94,7 +94,7 @@ describe('context --reset', () => {
 
   test('prefers an exact match', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
     configuration.context.set('fo*', 'baz');
 
@@ -117,7 +117,7 @@ describe('context --reset', () => {
 
   test('doesn\'t throw when at least one match is reset', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     const readOnlySettings = new Settings({
       'foo': 'bar',
       'match-a': 'baz',
@@ -140,7 +140,7 @@ describe('context --reset', () => {
 
   test('throws when key not found', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
 
     expect(configuration.context.all).toEqual({
@@ -156,7 +156,7 @@ describe('context --reset', () => {
 
   test('Doesn\'t throw when key not found and --force is set', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
 
     expect(configuration.context.all).toEqual({
@@ -172,7 +172,7 @@ describe('context --reset', () => {
 
   test('throws when no key of index found', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     configuration.context.set('foo', 'bar');
 
     expect(configuration.context.all).toEqual({
@@ -188,7 +188,7 @@ describe('context --reset', () => {
 
   test('throws when resetting read-only values', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     const readOnlySettings = new Settings({
       foo: 'bar',
     }, true);
@@ -207,7 +207,7 @@ describe('context --reset', () => {
 
   test('throws when no matches could be reset', async () => {
     // GIVEN
-    const configuration = new Configuration();
+    const configuration = Configuration.get();
     const readOnlySettings = new Settings({
       'foo': 'bar',
       'match-a': 'baz',

@@ -15,6 +15,17 @@ import {
 } from '../lib/notices';
 import * as version from '../lib/version';
 
+const BOOTSTRAP_NOTICE = {
+  title: 'Exccessive permissions on file asset publishing role',
+  issueNumber: 16600,
+  overview: 'FilePublishingRoleDefaultPolicy has too many permissions',
+  components: [{
+    name: 'bootstrap',
+    version: '<25',
+  }],
+  schemaVersion: '1',
+};
+
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
   issueNumber: 16603,
@@ -150,22 +161,58 @@ describe('cli notices', () => {
   });
 
   describe(filterNotices, () => {
+
+    test('correctly filter notices on bootstrap', () => {
+
+      const notices = [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE, BOOTSTRAP_NOTICE];
+      expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: true,
+        showCliRelatedNotices: false,
+        showFrameworkRelatedNotices: false,
+        bootstrapVersion: 22,
+        cliVersion: '1.0.0',
+        outdir: 'cdk.out',
+      })).toEqual([BOOTSTRAP_NOTICE]);
+
+    });
+
     test('correctly filter notices on cli', () => {
       const notices = [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE];
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
         cliVersion: '1.0.0',
+        outdir: 'cdk.out',
       })).toEqual([BASIC_NOTICE]);
 
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
         cliVersion: '1.129.0',
+        outdir: 'cdk.out',
       })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
 
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
         cliVersion: '1.126.0',
+        outdir: 'cdk.out',
       })).toEqual(notices);
 
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
         cliVersion: '1.130.0',
+        outdir: 'cdk.out',
       })).toEqual([]);
     });
 
@@ -173,10 +220,20 @@ describe('cli notices', () => {
       const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
 
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
+        cliVersion: version.versionNumber(),
         outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0'),
       })).toEqual([]);
 
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
+        cliVersion: version.versionNumber(),
         outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0'),
       })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
     });
@@ -186,21 +243,41 @@ describe('cli notices', () => {
 
       // module-level match
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
+        cliVersion: version.versionNumber(),
         outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
       })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
       expect(filterNotices(notices, {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
+        cliVersion: version.versionNumber(),
         outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0'),
       })).toEqual([]);
 
       // module name mismatch: apigateway != apigatewayv2
       expect(filterNotices([NOTICE_FOR_APIGATEWAY], {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
+        cliVersion: version.versionNumber(),
         outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
       })).toEqual([]);
 
       // construct-level match
       expect(filterNotices([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], {
+        acknowledgedIssueNumbers: new Set(),
+        showBootstrapRelatedNotices: false,
+        showCliRelatedNotices: true,
+        showFrameworkRelatedNotices: true,
+        cliVersion: version.versionNumber(),
         outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
       })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
     });

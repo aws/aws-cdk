@@ -359,7 +359,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const configuration = new Configuration({
+  const configuration = Configuration.get({
     commandLineArguments: {
       ...argv,
       _: argv._ as [Command, ...string[]], // TypeScript at its best
@@ -443,21 +443,16 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     if (shouldDisplayNotices()) {
       if (cmd === 'notices' && argv.unacknowledged === true) {
         await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
           ignoreCache: true,
           unacknowledged: true,
         });
       } else if (cmd === 'notices') {
         await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
           acknowledgedIssueNumbers: [],
           ignoreCache: true,
         });
       } else if (cmd !== 'version') {
         await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
           ignoreCache: false,
         });
       }
