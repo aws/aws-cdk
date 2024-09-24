@@ -3,7 +3,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 /**
  * Configuration interface for logging errors when data transformation or delivery fails.
  *
- * This interface defines whether logging is enabled and optionally allows specifying a 
+ * This interface defines whether logging is enabled and optionally allows specifying a
  * CloudWatch Log Group for storing error logs.
  */
 export interface LoggingConfig {
@@ -21,7 +21,6 @@ export interface LoggingConfig {
      */
   readonly logGroup?: logs.ILogGroup;
 }
-
 
 /**
  * Enables logging for error logs with an optional custom CloudWatch log group.
