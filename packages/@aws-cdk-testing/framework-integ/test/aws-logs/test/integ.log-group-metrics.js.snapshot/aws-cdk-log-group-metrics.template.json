@@ -17,7 +17,7 @@
     "MetricName": "IncomingBytes",
     "Namespace": "AWS/Logs",
     "Period": 300,
-    "Statistic": "Average",
+    "Statistic": "Sum",
     "Threshold": 1
    }
   },
@@ -29,7 +29,7 @@
     "MetricName": "IncomingLogs",
     "Namespace": "AWS/Logs",
     "Period": 300,
-    "Statistic": "Average",
+    "Statistic": "Sum",
     "Threshold": 1
    }
   }

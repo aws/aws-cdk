@@ -413,7 +413,7 @@ test('metricIncomingLogEvents', () => {
     },
     namespace: 'AWS/Logs',
     metricName: 'IncomingLogs',
-    statistic: 'Average',
+    statistic: 'Sum',
   });
 });
 
@@ -434,7 +434,7 @@ test('metricIncomingLogEvents with MetricOptions props', () => {
     },
     namespace: 'AWS/Logs',
     metricName: 'IncomingLogs',
-    statistic: 'Average',
+    statistic: 'Sum',
     label: 'MyMetric',
   });
 });
@@ -453,7 +453,7 @@ test('metricIncomingBytes', () => {
     },
     namespace: 'AWS/Logs',
     metricName: 'IncomingBytes',
-    statistic: 'Average',
+    statistic: 'Sum',
   });
 });
 

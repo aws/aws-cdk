@@ -48,7 +48,7 @@
                     "metricName": "IncomingBytes",
                     "namespace": "AWS/Logs",
                     "period": 300,
-                    "statistic": "Average",
+                    "statistic": "Sum",
                     "threshold": 1
                   }
                 },
@@ -78,7 +78,7 @@
                     "metricName": "IncomingLogs",
                     "namespace": "AWS/Logs",
                     "period": 300,
-                    "statistic": "Average",
+                    "statistic": "Sum",
                     "threshold": 1
                   }
                 },

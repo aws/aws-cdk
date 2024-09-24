@@ -85,25 +85,29 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
    */
   logGroupPhysicalName(): string;
 
-  // /**
-  //  * Return the given named metric for this Log Group
-  //  *
-  //  * @param metricName The name of the metric
-  //  * @param props Properties for the metric
-  //  */
-  // metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  /**
+   * Return the given named metric for this Log Group
+   *
+   * @param metricName The name of the metric
+   * @param props Properties for the metric
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-   * Metric for the number of logs ingested
+   * The number of log events uploaded to CloudWatch Logs.
+   * When used with the LogGroupName dimension, this is the number of
+   * log events uploaded to the log group.
    *
-   * @param props Properties for the metric
+   * @param props Properties for the Cloudwatch metric
    */
   metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-   * Metric for the number of bytes stored
+   * The volume of log events in uncompressed bytes uploaded to CloudWatch Logs.
+   * When used with the LogGroupName dimension, this is the volume of log events
+   * in uncompressed bytes uploaded to the log group.
    *
-   * @param props Properties for the metric
+   * @param props Properties for the Cloudwatch metric
    */
   metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
@@ -281,11 +285,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Example usage:
    * ```
    * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
-   * const incomingEventsMetric = logGroup.metricIncomingLogEvents();
-   * new cloudwatch.Alarm(this, 'HighLogVolumeAlarm', {
-   *   metric: incomingEventsMetric,
-   *   threshold: 1000,
-   *   evaluationPeriods: 1,
+   * logGroup.metricIncomingLogEvents().createAlarm(stack, 'IncomingEventsPerInstanceAlarm', {
+   * threshold: 1,
+   * evaluationPeriods: 1,
    * });
    * ```
    */
@@ -306,10 +308,8 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Example usage:
    * ```
    * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
-   * const incomingBytesMetric = logGroup.metricIncomingBytes();
-   * new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
-   *   metric: incomingBytesMetric,
-   *   threshold: 5000000,  // 5 MB
+   * logGroup.metricIncomingBytes().createAlarm(stack, 'IncomingBytesPerInstanceAlarm', {
+   *   threshold: 1,
    *   evaluationPeriods: 1,
    * });
    * ```
@@ -318,10 +318,28 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     return this.metric('IncomingBytes', props);
   }
 
-  private metric(_metricName: string, _props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  /**
+ * Creates a CloudWatch metric for this log group.
+ *
+ * @param _metricName - The name of the metric to create.
+ * @param _props - Optional. Additional properties to configure the metric.
+ * @returns A CloudWatch Metric object representing the specified metric for this log group.
+ *
+ * This method creates a CloudWatch Metric object with predefined settings for the log group.
+ * It sets the namespace to 'AWS/Logs' and the statistic to 'Sum' by default.
+ *
+ * The created metric is automatically associated with this log group using the `attachTo` method.
+ *
+ * Common metric names for log groups include:
+ * - 'IncomingBytes': The volume of log data in bytes ingested into the log group.
+ * - 'IncomingLogEvents': The number of log events ingested into the log group.
+ * ```
+ */
+  public metric(_metricName: string, _props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Logs',
       metricName: _metricName,
+      statistic: 'Sum',
       ..._props,
     }).attachTo(this);
   }
