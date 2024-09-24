@@ -1033,6 +1033,31 @@ integTest(
 );
 
 integTest(
+  'cdk diff with large changeset does not fail',
+  withDefaultFixture(async (fixture) => {
+    // GIVEN - small initial stack with only ane IAM role
+    await fixture.cdkDeploy('iam-roles', {
+      modEnv: {
+        NUMBER_OF_ROLES: '1',
+      },
+    });
+
+    // WHEN - adding 200 roles to the same stack to create a large diff
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+      verbose: true,
+      modEnv: {
+        NUMBER_OF_ROLES: '200',
+      },
+    });
+
+    // Assert that S3 upload and changeset creation error messages were not thrown:
+    expect(diff).not.toContain('Call failed: getBucketLocation');
+    expect(diff).not.toContain('not authorized to perform: s3:GetBucketLocation on resource');
+    expect(diff).not.toContain('Could not create a change set, will base the diff on template differences');
+  }),
+);
+
+integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
   withDefaultFixture(async (fixture) => {
     const diff = await fixture.cdk([
