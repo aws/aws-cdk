@@ -1152,7 +1152,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this flag is not set, the default behavior for \`TableV2\` is to use
       the use a different \`resourcePolicy\` for all replicas. 
       
-      If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
+      If this flag is set to true, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
 
       This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.`,
     introducedIn: { v2: 'V2NEXT' },
