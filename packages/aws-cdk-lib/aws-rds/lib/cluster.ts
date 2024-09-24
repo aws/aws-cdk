@@ -701,7 +701,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
-    // enableLocalWriteForwarding is not configurable for Aurora clusters other than MySQL.
+    // enableLocalWriteForwarding cannot be configured, including false, on Aurora clusters other than MySQL.
     if (props.enableLocalWriteForwarding !== undefined && !['aurora', 'aurora-mysql'].includes(props.engine.engineType)) {
       throw new Error(`\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: ${props.engine.engineType}`);
     }
