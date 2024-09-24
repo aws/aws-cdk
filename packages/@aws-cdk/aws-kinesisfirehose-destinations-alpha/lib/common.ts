@@ -3,7 +3,7 @@ import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
-import { LoggingConfig } from './logging-config';
+import { ILoggingConfig } from './logging-config';
 
 /**
  * Possible compression options Kinesis Data Firehose can use to compress data on delivery.
@@ -67,7 +67,7 @@ interface DestinationLoggingProps {
    *
    * @default - errors will be logged and a log group will be created for you.
    */
-  readonly loggingConfig?: LoggingConfig;
+  readonly loggingConfig?: ILoggingConfig;
 }
 
 /**

@@ -6,7 +6,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
  * This interface defines whether logging is enabled and optionally allows specifying a
  * CloudWatch Log Group for storing error logs.
  */
-export interface LoggingConfig {
+export interface ILoggingConfig {
   /**
      * If true, log errors when data transformation or data delivery fails.
      *
@@ -30,9 +30,9 @@ export interface LoggingConfig {
  *
  * If no log group is provided, a default one will be created automatically.
  */
-export class EnableLogging implements LoggingConfig {
-  public logGroup?: logs.ILogGroup;
-  public logging: boolean;
+export class EnableLogging implements ILoggingConfig {
+  public readonly logGroup?: logs.ILogGroup;
+  public readonly logging: boolean;
 
   constructor(logGroup?: logs.ILogGroup) {
     this.logGroup = logGroup;
@@ -46,8 +46,8 @@ export class EnableLogging implements LoggingConfig {
  * When this class is used, logging is disabled (`logging: false`)
  * and no CloudWatch log group can be specified.
  */
-export class DisableLogging implements LoggingConfig {
-  public logging: boolean;
+export class DisableLogging implements ILoggingConfig {
+  public readonly logging: boolean;
 
   constructor() {
     this.logging = false;

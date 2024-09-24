@@ -7,7 +7,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct, IDependable, Node } from 'constructs';
 import { DestinationS3BackupProps } from '../common';
-import { LoggingConfig } from '../logging-config';
+import { ILoggingConfig } from '../logging-config';
 
 export interface DestinationLoggingProps {
   /**
@@ -16,7 +16,7 @@ export interface DestinationLoggingProps {
    *
    * @default - errors will be logged and a log group will be created for you.
    */
-  readonly loggingConfig?: LoggingConfig;
+  readonly loggingConfig?: ILoggingConfig;
 
   /**
    * The IAM role associated with this destination.

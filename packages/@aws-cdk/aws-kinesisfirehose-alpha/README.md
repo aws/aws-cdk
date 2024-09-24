@@ -183,7 +183,7 @@ Kinesis Data Firehose will send logs to CloudWatch when data transformation or d
 delivery fails. The CDK will enable logging by default and create a CloudWatch LogGroup
 and LogStream for your Delivery Stream.
 
-When creating a destination, you can provide a `LoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
+When creating a destination, you can provide an `ILoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
 If you use `EnableLogging`, you can specify a log group where the CDK will create log streams to capture and store log events. For example:
 
 ```ts
