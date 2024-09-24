@@ -7,15 +7,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* allow all `sts` options for roles assumed by the cli  ([#31089](https://github.com/aws/aws-cdk/issues/31089)) ([5e95ba2](https://github.com/aws/aws-cdk/commit/5e95ba2b7a24b2598cf00890e1e7d569914f27c9)), closes [/github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml#L429](https://github.com/aws//github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml/issues/L429) [/github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml#L275](https://github.com/aws//github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml/issues/L275) [/github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml#L298](https://github.com/aws//github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml/issues/L298) [/github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml#L321](https://github.com/aws//github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml/issues/L321) [/github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml#L536](https://github.com/aws//github.com/aws/aws-cdk/blob/v2.154.1/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml/issues/L536)
+* allow all `sts` options for roles assumed by the cli  ([#31089](https://github.com/aws/aws-cdk/issues/31089)) ([5e95ba2](https://github.com/aws/aws-cdk/commit/5e95ba2b7a24b2598cf00890e1e7d569914f27c9)), closes [#26157](https://github.com/aws/aws-cdk/issues/26157) [#22535](https://github.com/aws/aws-cdk/issues/22535)
 * update L1 CloudFormation resource definitions ([#31534](https://github.com/aws/aws-cdk/issues/31534)) ([cd17fed](https://github.com/aws/aws-cdk/commit/cd17fed31d5476be06de85ff942ccb4ce2c827d2))
 * **core:** configure Stack SNS notification ARNs on the Stack construct ([#31107](https://github.com/aws/aws-cdk/issues/31107)) ([1593500](https://github.com/aws/aws-cdk/commit/1593500735e6ddbcc087f005c5124f5ec57aec20)), closes [#8581](https://github.com/aws/aws-cdk/issues/8581)
 * **stepfunctions:** add support for EncryptionConfiguration ([#30959](https://github.com/aws/aws-cdk/issues/30959)) ([b49032b](https://github.com/aws/aws-cdk/commit/b49032b3a6e549783b45492ffc76880fbcd58e68))
-
-
-### Reverts
-
-*  fix(ec2): fixing vpc endpoint pattern for ecr and ecr docker ([#31496](https://github.com/aws/aws-cdk/issues/31496)) ([17be13f](https://github.com/aws/aws-cdk/commit/17be13f3e4bb3f6a993873314030ede972216283))
 
 ## [2.159.1](https://github.com/aws/aws-cdk/compare/v2.159.0...v2.159.1) (2024-09-19)
 
