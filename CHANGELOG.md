@@ -8289,7 +8289,7 @@ new Pipeline(this, 'MyCoolPipeline', { artifactsBucket: bucket });
 You can also import a bucket by just specifying its name:
 
 ```typescript
-const bucket = Bucket.import({ bucketName: new BucketName('my-bucket') });
+const bucket = Bucket.import({ bucketName: new BucketName('amzn-s3-demo-bucket') });
 new Pipeline(this, 'MyCoolPipeline', { artifactsBucket: bucket });
 ```
 

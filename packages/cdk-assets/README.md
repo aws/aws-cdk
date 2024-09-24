@@ -80,7 +80,7 @@ An asset manifest looks like this:
         "us-east-1": {
           "region": "us-east-1",
           "assumeRoleArn": "arn:aws:iam::12345789012:role/my-account",
-          "bucketName": "MyBucket",
+          "bucketName": "amzn-s3-demo-bucket",
           "objectKey": "7aac5b80b050e7e4e168f84feffa5893.zip"
         }
       }

@@ -239,7 +239,7 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
   additionalIamStatements: [
     new iam.PolicyStatement({
       actions: ['s3:getObject'],
-      resources: ['arn:aws:s3:::my-bucket/*'],
+      resources: ['arn:aws:s3:::amzn-s3-demo-bucket/*'],
     }),
   ],
 });
@@ -1511,7 +1511,7 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
     },
   }],
   outputDataConfig: {
-    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'mybucket'), 'myoutputpath'),
+    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'), 'myoutputpath'),
   },
   resourceConfig: {
     instanceCount: 1,

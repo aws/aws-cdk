@@ -284,7 +284,7 @@ resource policy.
 ```ts
 declare const fn: lambda.Function;
 const servicePrincipal = new iam.ServicePrincipal('my-service');
-const sourceArn = 'arn:aws:s3:::my-bucket';
+const sourceArn = 'arn:aws:s3:::amzn-s3-demo-bucket';
 const sourceAccount = '111122223333';
 const servicePrincipalWithConditions = servicePrincipal.withConditions({
   ArnLike: {

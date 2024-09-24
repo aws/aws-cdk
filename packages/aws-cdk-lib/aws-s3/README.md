@@ -232,7 +232,7 @@ are not allowed in the bucket name.
 ```ts
 declare const myLambda: lambda.Function;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
 });
 
 // now you can just call methods on the bucket
@@ -246,8 +246,8 @@ Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
 name or ARN respectively:
 
 ```ts
-const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
-const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
+const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'amzn-s3-demo-bucket');
+const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::amzn-s3-demo-bucket');
 ```
 
 The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
@@ -255,10 +255,10 @@ regional properties needs to contain the correct values.
 
 ```ts
 const myCrossRegionBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
   region: 'us-east-1',
 });
-// myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
+// myCrossRegionBucket.bucketRegionalDomainName === 'amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com'
 ```
 
 ## Bucket Notifications
@@ -302,7 +302,7 @@ Adding notifications on existing buckets:
 ```ts
 declare const topic: sns.Topic;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
 });
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
@@ -524,7 +524,7 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
       "Effect": "Allow",
       "Principal": { "Service": "s3.amazonaws.com" },
       "Action": "s3:PutObject",
-      "Resource": ["arn:aws:s3:::destinationBucket/*"]
+      "Resource": ["arn:aws:s3:::amzn-s3-demo-destination-bucket/*"]
     }
   ]
 }

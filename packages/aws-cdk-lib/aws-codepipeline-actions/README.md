@@ -112,7 +112,7 @@ const eventPattern = {
   },
 };
 declare const repo: codecommit.Repository;
-declare const lambdaFuntion: lambda.Function;
+declare const lambdaFunction: lambda.Function;
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'CodeCommit',
@@ -120,7 +120,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput,
   customEventRule: {
     eventPattern,
-    target: new targets.LambdaFunction(lambdaFuntion),
+    target: new targets.LambdaFunction(lambdaFunction),
   }
 });
 ```
@@ -278,7 +278,7 @@ you can specify the region explicitly:
 
 ```ts
 const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
-  bucketName: 'my-bucket',
+  bucketName: 'amzn-s3-demo-bucket',
   region: 'ap-southeast-1',
 });
 ```
