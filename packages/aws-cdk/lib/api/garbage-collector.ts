@@ -1,7 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { S3 } from 'aws-sdk';
+import { CloudFormation, S3 } from 'aws-sdk';
+import path = require('path');
 
 /**
  * Props for the Garbage Collector
@@ -53,7 +54,13 @@ interface GarbageCollectorProps {
   readonly sdkProvider: SdkProvider;
 }
 
+/**
+ * A class to facilitate Garbage Collection of S3 and ECR assets
+ */
 export class GarbageCollector {
+  private readonly inUseHashes: Set<string> = new Set();
+  private readonly objectHashes: Set<string> = new Set();
+
   private garbageCollectS3Assets: boolean;
   private garbageCollectEcrAssets: boolean;
   private resolvedEnvironment: cxapi.Environment;
@@ -65,22 +72,34 @@ export class GarbageCollector {
     this.resolvedEnvironment = props.resolvedEnvironment;
     this.sdkProvider = props.sdkProvider;
 
+    // TODO: ECR garbage collection
     if (this.garbageCollectEcrAssets) {
       throw new Error('ECR garbage collection is not yet supported');
     }
   }
 
+  /**
+   * Perform garbage collection on the resolved environment(s)
+   */
   public async garbageCollect() {
     // set up the sdks used in garbage collection
     const sdk = (await this.sdkProvider.forEnvironment(this.resolvedEnvironment, Mode.ForWriting)).sdk;
-    const { cfn: _cfn, s3 } = this.setUpSDKs(sdk);
+    const { cfn, s3 } = this.setUpSDKs(sdk);
 
     if (this.garbageCollectS3Assets) {
       const bucket = await this.getBootstrapBucket(sdk);
       console.log(bucket);
-      const objects = await this.collectObjects(s3, bucket);
-      console.log(objects);
+      await this.collectObjects(s3, bucket);
+      console.log(this.objectHashes);
     }
+
+    await this.collectHashes(cfn);
+    console.log(this.inUseHashes);
+
+    console.log(setDifference(this.objectHashes, this.inUseHashes));
+
+    // TODO: match asset hashes with object keys
+    // TODO: tag isolated assets 
   }
 
   private setUpSDKs(sdk: ISDK) {
@@ -92,25 +111,44 @@ export class GarbageCollector {
     };
   }
 
+  private async collectHashes(cfn: CloudFormation) {
+    const stackNames: string[] = [];
+    await paginateSdkCall(async (nextToken) => {
+      const response = await cfn.listStacks({ NextToken: nextToken }).promise();
+      stackNames.push(...(response.StackSummaries ?? []).map(s => s.StackId ?? s.StackName));
+      return response.NextToken;
+    });
+
+    console.log(`Parsing through ${stackNames.length} stacks`);
+
+    for (const stack of stackNames) {
+      const template = await cfn.getTemplate({
+        StackName: stack,
+      }).promise();
+
+      const templateHashes = template.TemplateBody?.match(/[a-f0-9]{64}/g);
+      templateHashes?.forEach(this.inUseHashes.add, this.inUseHashes);
+    }
+
+    console.log(`Found ${this.inUseHashes.size} unique hashes`);
+  }
+
   private async getBootstrapBucket(sdk: ISDK) {
     const info = await ToolkitInfo.lookup(this.resolvedEnvironment, sdk, undefined);
     return info.bucketName;
   }
 
   private async collectObjects(s3: S3, bucket: string) {
-    const objects: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await s3.listObjectsV2({
         Bucket: bucket,
         ContinuationToken: nextToken,
       }).promise();
       response.Contents?.forEach((obj) => {
-        objects.push(obj.Key ?? '');
+        this.objectHashes.add(path.parse(obj.Key ?? '').name);
       });
       return response.NextContinuationToken;
     });
-
-    return objects;
   }
 }
 
@@ -123,4 +161,12 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
       finished = true;
     }
   }
+}
+
+function setDifference<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+  let difference = new Set(setA);
+  for (let elem of setB) {
+    difference.delete(elem);
+  }
+  return difference;
 }
