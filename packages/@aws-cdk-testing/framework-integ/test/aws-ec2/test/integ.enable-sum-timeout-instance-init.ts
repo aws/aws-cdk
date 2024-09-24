@@ -8,7 +8,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled': false,
+    '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled': true,
   },
 });
 const stack = new cdk.Stack(app, 'integ-init');
@@ -16,7 +16,7 @@ stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const vpc = new ec2.Vpc(stack, 'IntegInitVpc');
 
-const tmpDir = fs.mkdtempSync('/tmp/cfn-init-test');
+const tmpDir = fs.mkdtempSync('/tmp/cfn-enable-timeout-init-test');
 fs.writeFileSync(path.resolve(tmpDir, 'testFile'), 'Hello World!\n');
 
 new ec2.Instance(stack, 'Instance2', {
@@ -69,7 +69,7 @@ new ec2.Instance(stack, 'Instance2', {
   resourceSignalTimeout: cdk.Duration.minutes(10),
 });
 
-new integ.IntegTest(app, 'instance-init-test', {
+new integ.IntegTest(app, 'EnableSumTimeoutInstanceTest', {
   testCases: [stack],
 });
 
