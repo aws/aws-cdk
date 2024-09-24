@@ -409,11 +409,11 @@ test('metricIncomingLogEvents', () => {
   expect(stack.resolve(logGroup.metricIncomingLogEvents())).toEqual({
     period: {
       amount: 5,
-      unit: { label: 'minutes', inMillis: 300000, isoLabel: 'M' },
+      unit: { label: 'minutes', inMillis: 60000, isoLabel: 'M' },
     },
-    namespace: 'AWS/LogGroup',
-    metricNames: 'IncomingLogEvents',
-    statistics: 'Average',
+    namespace: 'AWS/Logs',
+    metricName: 'IncomingLogs',
+    statistic: 'Average',
   });
 });
 
@@ -427,11 +427,11 @@ test('metricIncomingBytes', () => {
   expect(stack.resolve(logGroup.metricIncomingBytes())).toEqual({
     period: {
       amount: 5,
-      unit: { label: 'minutes', inMillis: 300000, isoLabel: 'M' },
+      unit: { label: 'minutes', inMillis: 60000, isoLabel: 'M' },
     },
-    namespace: 'AWS/LogGroup',
-    metricNames: 'IncomingBytes',
-    statistics: 'Average',
+    namespace: 'AWS/Logs',
+    metricName: 'IncomingBytes',
+    statistic: 'Average',
   });
 });
 

@@ -268,17 +268,59 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     return principal;
   }
 
+  /**
+   * Creates a CloudWatch metric for the number of incoming log events to this log group.
+   *
+   * @param props - Optional. Configuration options for the metric.
+   * @returns A CloudWatch Metric object representing the IncomingLogEvents metric.
+   *
+   * This method allows you to monitor the rate at which log events are being ingested
+   * into the log group. It's useful for understanding the volume of logging activity
+   * and can help in capacity planning or detecting unusual spikes in logging.
+   *
+   * Example usage:
+   * ```
+   * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+   * const incomingEventsMetric = logGroup.metricIncomingLogEvents();
+   * new cloudwatch.Alarm(this, 'HighLogVolumeAlarm', {
+   *   metric: incomingEventsMetric,
+   *   threshold: 1000,
+   *   evaluationPeriods: 1,
+   * });
+   * ```
+   */
   public metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('IncomingLogs', props);
   }
 
+  /**
+   * Creates a CloudWatch metric for the volume of incoming log data in bytes to this log group.
+   *
+   * @param props - Optional. Configuration options for the metric.
+   * @returns A CloudWatch Metric object representing the IncomingBytes metric.
+   *
+   * This method allows you to monitor the volume of data being ingested into the log group.
+   * It's useful for understanding the size of your logs, which can impact storage costs
+   * and help in identifying unexpectedly large log entries.
+   *
+   * Example usage:
+   * ```
+   * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+   * const incomingBytesMetric = logGroup.metricIncomingBytes();
+   * new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
+   *   metric: incomingBytesMetric,
+   *   threshold: 5000000,  // 5 MB
+   *   evaluationPeriods: 1,
+   * });
+   * ```
+  */
   public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('IncomingBytes', props);
   }
 
   private metric(_metricName: string, _props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
-      namespace: 'AWS/LogGroup',
+      namespace: 'AWS/Logs',
       metricName: _metricName,
       ..._props,
     }).attachTo(this);
