@@ -1,26 +1,27 @@
 import * as logs from 'aws-cdk-lib/aws-logs';
 
 /**
- * Represents the logging configuration for error logs.
+ * Configuration interface for logging errors when data transformation or delivery fails.
  *
- * This class defines whether logging is enabled or disabled and holds
- * the CloudWatch log group where error logs are stored if logging is enabled.
+ * This interface defines whether logging is enabled and optionally allows specifying a 
+ * CloudWatch Log Group for storing error logs.
  */
-export abstract class LoggingConfig {
+export interface LoggingConfig {
   /**
      * If true, log errors when data transformation or data delivery fails.
      *
      * `true` when using `EnableLogging`, `false` when using `DisableLogging`.
      */
-  public abstract logging: boolean;
+  readonly logging: boolean;
 
   /**
      * The CloudWatch log group where log streams will be created to hold error logs.
      *
      * @default - if `logging` is set to `true`, a log group will be created for you.
      */
-  public logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroup;
 }
+
 
 /**
  * Enables logging for error logs with an optional custom CloudWatch log group.
@@ -30,12 +31,13 @@ export abstract class LoggingConfig {
  *
  * If no log group is provided, a default one will be created automatically.
  */
-export class EnableLogging extends LoggingConfig {
-  public logging: boolean = true;
+export class EnableLogging implements LoggingConfig {
+  public logGroup?: logs.ILogGroup;
+  public logging: boolean;
 
   constructor(logGroup?: logs.ILogGroup) {
-    super();
     this.logGroup = logGroup;
+    this.logging = true;
   }
 }
 
@@ -45,10 +47,10 @@ export class EnableLogging extends LoggingConfig {
  * When this class is used, logging is disabled (`logging: false`)
  * and no CloudWatch log group can be specified.
  */
-export class DisableLogging extends LoggingConfig {
-  public logging: boolean = false;
+export class DisableLogging implements LoggingConfig {
+  public logging: boolean;
 
   constructor() {
-    super();
+    this.logging = false;
   }
 }
