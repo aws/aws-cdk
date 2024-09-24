@@ -27,7 +27,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   role: insRole,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
   machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2022),
-  minCapacity: 0,
+  minCapacity: 1,
 });
 
 const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
