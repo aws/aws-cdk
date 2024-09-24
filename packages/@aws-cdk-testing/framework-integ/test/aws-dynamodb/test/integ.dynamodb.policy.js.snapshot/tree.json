@@ -59,6 +59,29 @@
                               }
                             },
                             "Resource": "*"
+                          },
+                          {
+                            "Action": "dynamodb:GetItem",
+                            "Effect": "Allow",
+                            "Principal": {
+                              "AWS": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":root"
+                                  ]
+                                ]
+                              }
+                            },
+                            "Resource": "*"
                           }
                         ],
                         "Version": "2012-10-17"
@@ -115,7 +138,7 @@
                       "policyDocument": {
                         "Statement": [
                           {
-                            "Action": "dynamodb:*",
+                            "Action": "dynamodb:PutItem",
                             "Effect": "Allow",
                             "Principal": {
                               "AWS": {
