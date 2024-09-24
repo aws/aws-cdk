@@ -109,6 +109,7 @@ export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNoti
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 export const TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE = '@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue';
+export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1178,6 +1179,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'When disabled, generate the Logical ID of the CDKJsonStringify Custom Resource from a counter.',
   },
 
+  [EC2_SUM_TIMEOUT_ENABLED]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
+    detailsMd: `
+      Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+      only the value from 'resourceSignalTimeout' will be used. 
+      
+      When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: 'V2NEXT' },
+  },
 };
 
 const CURRENT_MV = 'v2';
