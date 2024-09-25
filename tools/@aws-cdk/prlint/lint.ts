@@ -373,17 +373,17 @@ export class PullRequestLinter {
   private async assessNeedsReview(
     pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number'>,
   ): Promise<void> {
-    const reviews = await this.client.pulls.listReviews(this.prParams);
-    console.log(JSON.stringify(reviews.data));
+    const reviewsData = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
+    console.log(JSON.stringify(reviewsData));
 
     // NOTE: MEMBER = a member of the organization that owns the repository
     // COLLABORATOR = has been invited to collaborate on the repository
-    const maintainerRequestedChanges = reviews.data.some(
+    const maintainerRequestedChanges = reviewsData.some(
       review => review.author_association === 'MEMBER'
         && review.user?.login !== 'aws-cdk-automation'
         && review.state === 'CHANGES_REQUESTED',
     );
-    const maintainerApproved = reviews.data.some(
+    const maintainerApproved = reviewsData.some(
       review => review.author_association === 'MEMBER'
         && review.state === 'APPROVED',
     );
@@ -403,7 +403,7 @@ export class PullRequestLinter {
     //         be dismissed by a maintainer to respect another reviewer's requested changes.
     //   5. Checking if any reviewers' most recent review requested changes
     //      -> If so, the PR is considered to still need changes to meet community review.
-    const reviewsByTrustedCommunityMembers = reviews.data
+    const reviewsByTrustedCommunityMembers = reviewsData
       .filter(review => this.getTrustedCommunityMembers().includes(review.user?.login ?? ''))
       .filter(review => review.state !== 'PENDING' && review.state !== 'COMMENTED')
       .reduce((grouping, review) => {
@@ -420,12 +420,12 @@ export class PullRequestLinter {
           ...grouping,
           [review.user!.login]: newest,
         };
-      }, {} as Record<string, typeof reviews.data[0]>);
+      }, {} as Record<string, typeof reviewsData[0]>);
     console.log('raw data: ', JSON.stringify(reviewsByTrustedCommunityMembers));
     const communityApproved = Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'APPROVED');
     const communityRequestedChanges = !communityApproved && Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'CHANGES_REQUESTED')
 
-    const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+    const prLinterFailed = reviewsData.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
     console.log('evaluation: ', JSON.stringify({
       draft: pr.draft,

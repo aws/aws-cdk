@@ -1,0 +1,5766 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "bundled": {
+    "jsonschema": "^1.4.1",
+    "semver": "^7.6.2"
+  },
+  "description": "Cloud Assembly Schema",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "5.4.25 (build 09cecf6)",
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": false
+      }
+    }
+  },
+  "name": "@aws-cdk/cloud-assembly-schema",
+  "readme": {
+    "markdown": "# Cloud Assembly Schema\n\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n## Cloud Assembly\n\nThe *Cloud Assembly* is the output of the synthesis operation. It is produced as part of the\n[`cdk synth`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk#cdk-synthesize)\ncommand, or the [`app.synth()`](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/lib/app.ts#L135) method invocation.\n\nIts essentially a set of files and directories, one of which is the `manifest.json` file. It defines the set of instructions that are\nneeded in order to deploy the assembly directory.\n\n> For example, when `cdk deploy` is executed, the CLI reads this file and performs its instructions:\n>\n> - Build container images.\n> - Upload assets.\n> - Deploy CloudFormation templates.\n\nTherefore, the assembly is how the CDK class library and CDK CLI (or any other consumer) communicate. To ensure compatibility\nbetween the assembly and its consumers, we treat the manifest file as a well defined, versioned schema.\n\n## Schema\n\nThis module contains the typescript structs that comprise the `manifest.json` file, as well as the\ngenerated [*json-schema*](./schema/cloud-assembly.schema.json).\n\n## Versioning\n\nThe schema version is specified in the [`cloud-assembly.version.json`](./schema/cloud-assembly.schema.json) file, under the `version` property.\nIt follows semantic versioning, but with a small twist.\n\nWhen we add instructions to the assembly, they are reflected in the manifest file and the *json-schema* accordingly.\nEvery such instruction, is crucial for ensuring the correct deployment behavior. This means that to properly deploy a cloud assembly,\nconsumers must be aware of every such instruction modification.\n\nFor this reason, every change to the schema, even though it might not strictly break validation of the *json-schema* format,\nis considered `major` version bump.\n\n## How to consume\n\nIf you'd like to consume the [schema file](./schema/cloud-assembly.schema.json) in order to do validations on `manifest.json` files,\nsimply download it from this repo and run it against standard *json-schema* validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).\n\nConsumers must take into account the `major` version of the schema they are consuming. They should reject cloud assemblies\nwith a `major` version that is higher than what they expect. While schema validation might pass on such assemblies, the deployment integrity\ncannot be guaranteed because some instructions will be ignored.\n\n> For example, if your consumer was built when the schema version was 2.0.0, you should reject deploying cloud assemblies with a\n> manifest version of 3.0.0.\n\n## Contributing\n\nSee [Contribution Guide](./CONTRIBUTING.md)\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/cloud-assembly-schema",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.CloudAssembly.Schema",
+      "packageId": "Amazon.CDK.CloudAssembly.Schema"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-cloud-assembly-schema",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.cloudassembly.schema"
+    },
+    "js": {
+      "npm": "@aws-cdk/cloud-assembly-schema"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.cloud-assembly-schema",
+      "module": "aws_cdk.cloud_assembly_schema"
+    }
+  },
+  "types": {
+    "@aws-cdk/cloud-assembly-schema.AmiContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query to AMI context provider."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AmiContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 66
+      },
+      "name": "AmiContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Account to query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 70
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Filters to DescribeImages call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 94
+          },
+          "name": "filters",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Region to query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 75
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 82
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- All owners",
+            "stability": "stable",
+            "summary": "Owners to DescribeImages call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 89
+          },
+          "name": "owners",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:AmiContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.ArtifactManifest": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "A manifest for a single artifact within the cloud assembly."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/schema.ts",
+        "line": 68
+      },
+      "name": "ArtifactManifest",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The type of artifact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 72
+          },
+          "name": "type",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactType"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no dependencies.",
+            "stability": "stable",
+            "summary": "IDs of artifacts that must be deployed before this artifact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 93
+          },
+          "name": "dependencies",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no display name",
+            "remarks": "Should only be used in user interfaces.",
+            "stability": "stable",
+            "summary": "A string that represents this artifact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 107
+          },
+          "name": "displayName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no envrionment.",
+            "stability": "stable",
+            "summary": "The environment into which this artifact is deployed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 79
+          },
+          "name": "environment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no metadata.",
+            "stability": "stable",
+            "summary": "Associated metadata."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 86
+          },
+          "name": "metadata",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/cloud-assembly-schema.MetadataEntry"
+                  },
+                  "kind": "array"
+                }
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no properties.",
+            "stability": "stable",
+            "summary": "The set of properties for this artifact (depends on type)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 100
+          },
+          "name": "properties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.AwsCloudFormationStackProperties"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.AssetManifestProperties"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.TreeArtifactProperties"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.NestedCloudAssemblyProperties"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/schema:ArtifactManifest"
+    },
+    "@aws-cdk/cloud-assembly-schema.ArtifactMetadataEntryType": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "Type of artifact metadata entry."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactMetadataEntryType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/metadata-schema.ts",
+        "line": 271
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Asset in metadata."
+          },
+          "name": "ASSET"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Metadata key used to print INFO-level messages by the toolkit when an app is syntheized."
+          },
+          "name": "INFO"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Metadata key used to print WARNING-level messages by the toolkit when an app is syntheized."
+          },
+          "name": "WARN"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized."
+          },
+          "name": "ERROR"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Represents the CloudFormation logical ID of a resource at a certain path."
+          },
+          "name": "LOGICAL_ID"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Represents tags of a stack."
+          },
+          "name": "STACK_TAGS"
+        }
+      ],
+      "name": "ArtifactMetadataEntryType",
+      "symbolId": "lib/cloud-assembly/metadata-schema:ArtifactMetadataEntryType"
+    },
+    "@aws-cdk/cloud-assembly-schema.ArtifactType": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "Type of cloud artifact."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/schema.ts",
+        "line": 8
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Stub required because of JSII."
+          },
+          "name": "NONE"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The artifact is an AWS CloudFormation stack."
+          },
+          "name": "AWS_CLOUDFORMATION_STACK"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The artifact contains the CDK application's construct tree."
+          },
+          "name": "CDK_TREE"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Manifest for all assets in the Cloud Assembly."
+          },
+          "name": "ASSET_MANIFEST"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Nested Cloud Assembly."
+          },
+          "name": "NESTED_CLOUD_ASSEMBLY"
+        }
+      ],
+      "name": "ArtifactType",
+      "symbolId": "lib/cloud-assembly/schema:ArtifactType"
+    },
+    "@aws-cdk/cloud-assembly-schema.AssemblyManifest": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "A manifest which describes the cloud assembly."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AssemblyManifest",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/schema.ts",
+        "line": 113
+      },
+      "name": "AssemblyManifest",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Protocol version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 117
+          },
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no artifacts.",
+            "stability": "stable",
+            "summary": "The set of artifacts in this assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 124
+          },
+          "name": "artifacts",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.ArtifactManifest"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no missing context.",
+            "remarks": "If this field has values, it means that the\ncloud assembly is not complete and should not be deployed.",
+            "stability": "stable",
+            "summary": "Missing context information."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 132
+          },
+          "name": "missing",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.MissingContext"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no info.",
+            "stability": "stable",
+            "summary": "Runtime information."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 139
+          },
+          "name": "runtime",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.RuntimeInfo"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/schema:AssemblyManifest"
+    },
+    "@aws-cdk/cloud-assembly-schema.AssetManifest": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Definitions for the asset manifest."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AssetManifest",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/schema.ts",
+        "line": 7
+      },
+      "name": "AssetManifest",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Version of the manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/schema.ts",
+            "line": 11
+          },
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No Docker images",
+            "stability": "stable",
+            "summary": "The Docker image assets in this manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/schema.ts",
+            "line": 25
+          },
+          "name": "dockerImages",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.DockerImageAsset"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No files",
+            "stability": "stable",
+            "summary": "The file assets in this manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/schema.ts",
+            "line": 18
+          },
+          "name": "files",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.FileAsset"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/assets/schema:AssetManifest"
+    },
+    "@aws-cdk/cloud-assembly-schema.AssetManifestOptions": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Configuration options for the Asset Manifest."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AssetManifestOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/artifact-schema.ts",
+        "line": 139
+      },
+      "name": "AssetManifestOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Bootstrap stack version number looked up",
+            "remarks": "- If this value is not set, the bootstrap stack name must be known at\n  deployment time so the stack version can be looked up from the stack\n  outputs.\n- If this value is set, the bootstrap stack can have any name because\n  we won't need to look it up.",
+            "stability": "stable",
+            "summary": "SSM parameter where the bootstrap stack version number can be found."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 158
+          },
+          "name": "bootstrapStackVersionSsmParameter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Version 1 (basic modern bootstrap stack)",
+            "stability": "stable",
+            "summary": "Version of bootstrap stack required to deploy this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 145
+          },
+          "name": "requiresBootstrapStackVersion",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/artifact-schema:AssetManifestOptions"
+    },
+    "@aws-cdk/cloud-assembly-schema.AssetManifestProperties": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Artifact properties for the Asset Manifest."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AssetManifestProperties",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.AssetManifestOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/artifact-schema.ts",
+        "line": 164
+      },
+      "name": "AssetManifestProperties",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Filename of the asset manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 168
+          },
+          "name": "file",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/artifact-schema:AssetManifestProperties"
+    },
+    "@aws-cdk/cloud-assembly-schema.AvailabilityZonesContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query to availability zone context provider."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AvailabilityZonesContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 100
+      },
+      "name": "AvailabilityZonesContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 104
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 109
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 116
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:AvailabilityZonesContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.AwsCloudFormationStackProperties": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Artifact properties for CloudFormation stacks."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AwsCloudFormationStackProperties",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/artifact-schema.ts",
+        "line": 38
+      },
+      "name": "AwsCloudFormationStackProperties",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "A file relative to the assembly root which contains the CloudFormation template for this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 42
+          },
+          "name": "templateFile",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No role is assumed (current credentials are used)",
+            "stability": "stable",
+            "summary": "The role that needs to be assumed to deploy the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 76
+          },
+          "name": "assumeRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No external ID",
+            "stability": "stable",
+            "summary": "External ID to use when assuming role for cloudformation deployments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 83
+          },
+          "name": "assumeRoleExternalId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Bootstrap stack version number looked up",
+            "remarks": "Only used if `requiresBootstrapStackVersion` is set.\n\n- If this value is not set, the bootstrap stack name must be known at\n  deployment time so the stack version can be looked up from the stack\n  outputs.\n- If this value is set, the bootstrap stack can have any name because\n  we won't need to look it up.",
+            "stability": "stable",
+            "summary": "SSM parameter where the bootstrap stack version number can be found."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 126
+          },
+          "name": "bootstrapStackVersionSsmParameter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No role is passed (currently assumed role/credentials are used)",
+            "stability": "stable",
+            "summary": "The role that is passed to CloudFormation to execute the change set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 90
+          },
+          "name": "cloudFormationExecutionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No role is assumed (current credentials are used)",
+            "stability": "stable",
+            "summary": "The role to use to look up values from the target AWS account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 97
+          },
+          "name": "lookupRole",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.BootstrapRole"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No parameters",
+            "stability": "stable",
+            "summary": "Values for CloudFormation stack parameters that should be passed when the stack is deployed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 49
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No bootstrap stack required",
+            "stability": "stable",
+            "summary": "Version of bootstrap stack required to deploy this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 111
+          },
+          "name": "requiresBootstrapStackVersion",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- name derived from artifact ID",
+            "stability": "stable",
+            "summary": "The name to use for the CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 62
+          },
+          "name": "stackName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Not uploaded yet, upload just before deploying",
+            "stability": "stable",
+            "summary": "If the stack template has already been included in the asset manifest, its asset URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 104
+          },
+          "name": "stackTemplateAssetObjectUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No tags",
+            "stability": "stable",
+            "summary": "Values for CloudFormation stack tags that should be passed when the stack is deployed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 56
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Whether to enable termination protection for this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 69
+          },
+          "name": "terminationProtection",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- false",
+            "stability": "stable",
+            "summary": "Whether this stack should be validated by the CLI after synthesis."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 133
+          },
+          "name": "validateOnSynth",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/artifact-schema:AwsCloudFormationStackProperties"
+    },
+    "@aws-cdk/cloud-assembly-schema.AwsDestination": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Destination for assets that need to be uploaded to AWS."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.AwsDestination",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/aws-destination.ts",
+        "line": 4
+      },
+      "name": "AwsDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No role will be assumed",
+            "stability": "stable",
+            "summary": "The role that needs to be assumed while publishing this asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/aws-destination.ts",
+            "line": 17
+          },
+          "name": "assumeRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No ExternalId will be supplied",
+            "stability": "stable",
+            "summary": "The ExternalId that needs to be supplied while assuming this role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/aws-destination.ts",
+            "line": 24
+          },
+          "name": "assumeRoleExternalId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Current region",
+            "stability": "stable",
+            "summary": "The region where this asset will need to be published."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/aws-destination.ts",
+            "line": 10
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/assets/aws-destination:AwsDestination"
+    },
+    "@aws-cdk/cloud-assembly-schema.BootstrapRole": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Information needed to access an IAM role created as part of the bootstrap process."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.BootstrapRole",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/artifact-schema.ts",
+        "line": 6
+      },
+      "name": "BootstrapRole",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the IAM role created as part of bootrapping e.g. lookupRoleArn."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 11
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No external ID",
+            "stability": "stable",
+            "summary": "External ID to use when assuming the bootstrap role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 18
+          },
+          "name": "assumeRoleExternalId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Discover SSM parameter by reading stack",
+            "stability": "stable",
+            "summary": "Name of SSM parameter with bootstrap stack version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 32
+          },
+          "name": "bootstrapStackVersionSsmParameter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No bootstrap stack required",
+            "stability": "stable",
+            "summary": "Version of bootstrap stack required to use this role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 25
+          },
+          "name": "requiresBootstrapStackVersion",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/artifact-schema:BootstrapRole"
+    },
+    "@aws-cdk/cloud-assembly-schema.CdkCommand": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents a cdk command i.e. `synth`, `deploy`, & `destroy`."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.CdkCommand",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/test-case.ts",
+        "line": 135
+      },
+      "name": "CdkCommand",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Whether or not to run this command as part of the workflow This can be used if you only want to test some of the workflow for example enable `synth` and disable `deploy` & `destroy` in order to limit the test to synthesis."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 144
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- do not validate message",
+            "stability": "stable",
+            "summary": "This can be used in combination with `expectedError` to validate that a specific message is returned."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 159
+          },
+          "name": "expectedMessage",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "If the runner should expect this command to fail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 151
+          },
+          "name": "expectError",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/test-case:CdkCommand"
+    },
+    "@aws-cdk/cloud-assembly-schema.CdkCommands": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for specific cdk commands that are run as part of the integration test workflow."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.CdkCommands",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/test-case.ts",
+        "line": 192
+      },
+      "name": "CdkCommands",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- default deploy options",
+            "stability": "stable",
+            "summary": "Options to for the cdk deploy command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 198
+          },
+          "name": "deploy",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.DeployCommand"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- default destroy options",
+            "stability": "stable",
+            "summary": "Options to for the cdk destroy command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 205
+          },
+          "name": "destroy",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.DestroyCommand"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/test-case:CdkCommands"
+    },
+    "@aws-cdk/cloud-assembly-schema.ContainerImageAssetCacheOption": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for configuring the Docker cache backend."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.ContainerImageAssetCacheOption",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/metadata-schema.ts",
+        "line": 85
+      },
+      "name": "ContainerImageAssetCacheOption",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- unspecified",
+            "example": "'registry'",
+            "remarks": "Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.",
+            "stability": "stable",
+            "summary": "The type of cache to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 93
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "{} No options provided",
+            "example": "declare const branch: string;\n\nconst params = {\n  ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`,\n  mode: \"max\",\n};",
+            "remarks": "Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.",
+            "stability": "stable",
+            "summary": "Any parameters to pass into the docker cache backend configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 107
+          },
+          "name": "params",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/metadata-schema:ContainerImageAssetCacheOption"
+    },
+    "@aws-cdk/cloud-assembly-schema.ContainerImageAssetMetadataEntry": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "example": "const entry = {\n  packaging: 'container-image',\n  repositoryName: 'repository-name',\n  imageTag: 'tag',\n}",
+        "stability": "stable",
+        "summary": "Metadata Entry spec for container images."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.ContainerImageAssetMetadataEntry",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/metadata-schema.ts",
+        "line": 120
+      },
+      "name": "ContainerImageAssetMetadataEntry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Logical identifier for the asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 13
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Type of asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 124
+          },
+          "name": "packaging",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Path on disk to the asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 23
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The hash of the asset source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 18
+          },
+          "name": "sourceHash",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no build args are passed",
+            "stability": "stable",
+            "summary": "Build args to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 162
+          },
+          "name": "buildArgs",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no build secrets are passed",
+            "stability": "stable",
+            "summary": "Build secrets to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 176
+          },
+          "name": "buildSecrets",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no ssh arg is passed",
+            "stability": "stable",
+            "summary": "SSH agent socket or keys to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 169
+          },
+          "name": "buildSsh",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- cache is used",
+            "stability": "stable",
+            "summary": "Disable the cache and pass `--no-cache` to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 235
+          },
+          "name": "cacheDisabled",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no cache from options are passed to the build command",
+            "see": "https://docs.docker.com/build/cache/backends/",
+            "stability": "stable",
+            "summary": "Cache from options to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 220
+          },
+          "name": "cacheFrom",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.ContainerImageAssetCacheOption"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no cache to options are passed to the build command",
+            "see": "https://docs.docker.com/build/cache/backends/",
+            "stability": "stable",
+            "summary": "Cache to options to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 228
+          },
+          "name": "cacheTo",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.ContainerImageAssetCacheOption"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no file is passed",
+            "stability": "stable",
+            "summary": "Path to the Dockerfile (relative to the directory)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 190
+          },
+          "name": "file",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "undefined If not specified, `repositoryName` and `imageTag` are\nrequired because otherwise how will the stack know where to find the asset,\nha?",
+            "deprecated": "specify `repositoryName` and `imageTag` instead, and then you\nknow where the image will go.",
+            "stability": "deprecated",
+            "summary": "ECR Repository name and repo digest (separated by \"@sha256:\") where this image is stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 136
+          },
+          "name": "imageNameParameter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- this parameter is REQUIRED after 1.21.0",
+            "remarks": "This field is\nrequired if `imageParameterName` is ommited (otherwise, the app won't be\nable to find the image).",
+            "stability": "stable",
+            "summary": "The docker image tag to use for tagging pushed images."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 155
+          },
+          "name": "imageTag",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no networking mode specified",
+            "stability": "stable",
+            "summary": "Networking mode for the RUN commands during build."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 197
+          },
+          "name": "networkMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no outputs are passed to the build command (default outputs are used)",
+            "see": "https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs",
+            "stability": "stable",
+            "summary": "Outputs to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 212
+          },
+          "name": "outputs",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- current machine platform",
+            "remarks": "_Requires Docker Buildx_.",
+            "stability": "stable",
+            "summary": "Platform to build for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 204
+          },
+          "name": "platform",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- this parameter is REQUIRED after 1.21.0",
+            "remarks": "Specify this property if you need to statically address the\nimage, e.g. from a Kubernetes Pod. Note, this is only the repository name,\nwithout the registry and the tag parts.",
+            "stability": "stable",
+            "summary": "ECR repository name, if omitted a default name based on the asset's ID is used instead."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 146
+          },
+          "name": "repositoryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no build target",
+            "stability": "stable",
+            "summary": "Docker target to build to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 183
+          },
+          "name": "target",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/metadata-schema:ContainerImageAssetMetadataEntry"
+    },
+    "@aws-cdk/cloud-assembly-schema.ContextProvider": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "Identifier for the context provider."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.ContextProvider",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 6
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "AMI provider."
+          },
+          "name": "AMI_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "AZ provider."
+          },
+          "name": "AVAILABILITY_ZONE_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Route53 Hosted Zone provider."
+          },
+          "name": "HOSTED_ZONE_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "SSM Parameter Provider."
+          },
+          "name": "SSM_PARAMETER_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "VPC Provider."
+          },
+          "name": "VPC_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "VPC Endpoint Service AZ Provider."
+          },
+          "name": "ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Load balancer provider."
+          },
+          "name": "LOAD_BALANCER_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Load balancer listener provider."
+          },
+          "name": "LOAD_BALANCER_LISTENER_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Security group provider."
+          },
+          "name": "SECURITY_GROUP_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "KMS Key Provider."
+          },
+          "name": "KEY_PROVIDER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "A plugin provider (the actual plugin name will be in the properties)."
+          },
+          "name": "PLUGIN"
+        }
+      ],
+      "name": "ContextProvider",
+      "symbolId": "lib/cloud-assembly/context-queries:ContextProvider"
+    },
+    "@aws-cdk/cloud-assembly-schema.DefaultCdkOptions": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Default CDK CLI options that apply to all commands."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DefaultCdkOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/commands/common.ts",
+        "line": 24
+      },
+      "name": "DefaultCdkOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- false",
+            "remarks": "Requried if `stacks` is not set",
+            "stability": "stable",
+            "summary": "Deploy all stacks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 41
+          },
+          "name": "all",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- read from cdk.json",
+            "stability": "stable",
+            "summary": "command-line for executing your app or a cloud assembly directory e.g. \"node bin/my-app.js\" or \"cdk.out\"."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 51
+          },
+          "name": "app",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Include \"aws:asset:*\" CloudFormation metadata for resources that use assets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 170
+          },
+          "name": "assetMetadata",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- read from AWS_CA_BUNDLE environment variable",
+            "stability": "stable",
+            "summary": "Path to CA certificate to use when validating HTTPS requests."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 142
+          },
+          "name": "caBundlePath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Show colors and other style from console output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 200
+          },
+          "name": "color",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no additional context",
+            "stability": "stable",
+            "summary": "Additional context."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 65
+          },
+          "name": "context",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "enable emission of additional debugging information, such as creation stack traces of tokens."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 119
+          },
+          "name": "debug",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- guess EC2 instance status",
+            "stability": "stable",
+            "summary": "Force trying to fetch EC2 instance credentials."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 149
+          },
+          "name": "ec2Creds",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Ignores synthesis errors, which will likely produce an invalid output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 96
+          },
+          "name": "ignoreErrors",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Use JSON output instead of YAML when templates are printed to STDOUT."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 104
+          },
+          "name": "json",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "Synthesis fails if this is disabled and context lookups need\nto be performed",
+            "stability": "stable",
+            "summary": "Perform context lookups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 89
+          },
+          "name": "lookups",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Show relevant notices."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 193
+          },
+          "name": "notices",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "cdk.out",
+            "stability": "stable",
+            "summary": "Emits the synthesized cloud assembly into a directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 186
+          },
+          "name": "output",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Include \"aws:cdk:path\" CloudFormation metadata for each resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 163
+          },
+          "name": "pathMetadata",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no profile is used",
+            "stability": "stable",
+            "summary": "Use the indicated AWS profile as the default environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 126
+          },
+          "name": "profile",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no proxy",
+            "remarks": "Will read from\nHTTPS_PROXY environment if specified",
+            "stability": "stable",
+            "summary": "Use the indicated proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 134
+          },
+          "name": "proxy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- use the bootstrap cfn-exec role",
+            "stability": "stable",
+            "summary": "Role to pass to CloudFormation for deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 58
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- []",
+            "remarks": "Requried if `all` is not set",
+            "stability": "stable",
+            "summary": "List of stacks to deploy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 32
+          },
+          "name": "stacks",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "Needed for local debugging the source files with SAM CLI",
+            "stability": "stable",
+            "summary": "Copy assets to the output directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 179
+          },
+          "name": "staging",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Do not construct stacks with warnings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 79
+          },
+          "name": "strict",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Print trace for stack warnings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 72
+          },
+          "name": "trace",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "show debug logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 111
+          },
+          "name": "verbose",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Include \"AWS::CDK::Metadata\" resource in synthesized templates."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/common.ts",
+            "line": 156
+          },
+          "name": "versionReporting",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/commands/common:DefaultCdkOptions"
+    },
+    "@aws-cdk/cloud-assembly-schema.DeployCommand": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents a cdk deploy command."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DeployCommand",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.CdkCommand"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/test-case.ts",
+        "line": 165
+      },
+      "name": "DeployCommand",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- only default args are used",
+            "stability": "stable",
+            "summary": "Additional arguments to pass to the command This can be used to test specific CLI functionality."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 172
+          },
+          "name": "args",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.DeployOptions"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/test-case:DeployCommand"
+    },
+    "@aws-cdk/cloud-assembly-schema.DeployOptions": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options to use with cdk deploy."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DeployOptions",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.DefaultCdkOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/commands/deploy.ts",
+        "line": 6
+      },
+      "name": "DeployOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- auto generate a name",
+            "remarks": "If not provided, a name will be generated automatically.",
+            "stability": "stable",
+            "summary": "Optional name to use for the CloudFormation change set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 34
+          },
+          "name": "changeSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Whether we are on a CI system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 96
+          },
+          "name": "ci",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "1",
+            "stability": "stable",
+            "summary": "Deploy multiple stacks in parallel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 103
+          },
+          "name": "concurrency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Only perform action on the given stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 12
+          },
+          "name": "exclusively",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Whether to execute the ChangeSet Not providing `execute` parameter will result in execution of ChangeSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 68
+          },
+          "name": "execute",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Always deploy, even if templates are identical."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 40
+          },
+          "name": "force",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no notifications",
+            "stability": "stable",
+            "summary": "ARNs of SNS topics that CloudFormation will notify with stack related events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 54
+          },
+          "name": "notificationArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Outputs are not written to any file",
+            "stability": "stable",
+            "summary": "Path to file where stack outputs will be written after a successful deploy as JSON."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 89
+          },
+          "name": "outputsFile",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "{}",
+            "stability": "stable",
+            "summary": "Additional parameters for CloudFormation at deploy time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 74
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "RequireApproval.Never",
+            "stability": "stable",
+            "summary": "What kind of security changes require approval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 61
+          },
+          "name": "requireApproval",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.RequireApproval"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- do not reuse assets",
+            "stability": "stable",
+            "summary": "Reuse the assets with the given asset IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 26
+          },
+          "name": "reuseAssets",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Rollback failed deployments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 47
+          },
+          "name": "rollback",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "CDKToolkit",
+            "stability": "stable",
+            "summary": "Name of the toolkit stack to use/deploy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 19
+          },
+          "name": "toolkitStackName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "If not set, all parameters must be specified for every deployment.",
+            "stability": "stable",
+            "summary": "Use previous values for unspecified parameters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/deploy.ts",
+            "line": 83
+          },
+          "name": "usePreviousParameters",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/commands/deploy:DeployOptions"
+    },
+    "@aws-cdk/cloud-assembly-schema.DestroyCommand": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents a cdk destroy command."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DestroyCommand",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.CdkCommand"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/test-case.ts",
+        "line": 178
+      },
+      "name": "DestroyCommand",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- only default args are used",
+            "stability": "stable",
+            "summary": "Additional arguments to pass to the command This can be used to test specific CLI functionality."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 185
+          },
+          "name": "args",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.DestroyOptions"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/test-case:DestroyCommand"
+    },
+    "@aws-cdk/cloud-assembly-schema.DestroyOptions": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options to use with cdk destroy."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DestroyOptions",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.DefaultCdkOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/commands/destroy.ts",
+        "line": 6
+      },
+      "name": "DestroyOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Only destroy the given stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/destroy.ts",
+            "line": 19
+          },
+          "name": "exclusively",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Do not ask for permission before destroying stacks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/commands/destroy.ts",
+            "line": 12
+          },
+          "name": "force",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/commands/destroy:DestroyOptions"
+    },
+    "@aws-cdk/cloud-assembly-schema.DockerCacheOption": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for configuring the Docker cache backend."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DockerCacheOption",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/docker-image-asset.ts",
+        "line": 152
+      },
+      "name": "DockerCacheOption",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- unspecified",
+            "example": "'registry'",
+            "remarks": "Refer to https://docs.docker.com/build/cache/backends/ for full list of backends.",
+            "stability": "stable",
+            "summary": "The type of cache to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 160
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "{} No options provided",
+            "example": "declare const branch: string;\n\nconst params = {\n  ref: `12345678.dkr.ecr.us-west-2.amazonaws.com/cache:${branch}`,\n  mode: \"max\",\n};",
+            "remarks": "Refer to https://docs.docker.com/build/cache/backends/ for cache backend configuration.",
+            "stability": "stable",
+            "summary": "Any parameters to pass into the docker cache backend configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 174
+          },
+          "name": "params",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/assets/docker-image-asset:DockerCacheOption"
+    },
+    "@aws-cdk/cloud-assembly-schema.DockerImageAsset": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "A file asset."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DockerImageAsset",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/docker-image-asset.ts",
+        "line": 6
+      },
+      "name": "DockerImageAsset",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Destinations for this file asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 15
+          },
+          "name": "destinations",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.DockerImageDestination"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Source description for file assets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 10
+          },
+          "name": "source",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.DockerImageSource"
+          }
+        }
+      ],
+      "symbolId": "lib/assets/docker-image-asset:DockerImageAsset"
+    },
+    "@aws-cdk/cloud-assembly-schema.DockerImageDestination": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Where to publish docker images."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DockerImageDestination",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.AwsDestination"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/docker-image-asset.ts",
+        "line": 137
+      },
+      "name": "DockerImageDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Tag of the image to publish."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 146
+          },
+          "name": "imageTag",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Name of the ECR repository to publish to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 141
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/assets/docker-image-asset:DockerImageDestination"
+    },
+    "@aws-cdk/cloud-assembly-schema.DockerImageSource": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties for how to produce a Docker image from a source."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.DockerImageSource",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/docker-image-asset.ts",
+        "line": 21
+      },
+      "name": "DockerImageSource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- cache is used",
+            "stability": "stable",
+            "summary": "Disable the cache and pass `--no-cache` to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 131
+          },
+          "name": "cacheDisabled",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no cache from options are passed to the build command",
+            "see": "https://docs.docker.com/build/cache/backends/",
+            "stability": "stable",
+            "summary": "Cache from options to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 116
+          },
+          "name": "cacheFrom",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.DockerCacheOption"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no cache to options are passed to the build command",
+            "see": "https://docs.docker.com/build/cache/backends/",
+            "stability": "stable",
+            "summary": "Cache to options to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 124
+          },
+          "name": "cacheTo",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.DockerCacheOption"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Exactly one of `directory` and `executable` is required",
+            "remarks": "This path is relative to the asset manifest location.",
+            "stability": "stable",
+            "summary": "The directory containing the Docker image build instructions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 29
+          },
+          "name": "directory",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No additional build arguments",
+            "remarks": "Only allowed when `directory` is set.",
+            "stability": "stable",
+            "summary": "Additional build arguments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 64
+          },
+          "name": "dockerBuildArgs",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No additional build secrets",
+            "remarks": "Only allowed when `directory` is set.",
+            "stability": "stable",
+            "summary": "Additional build secrets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 82
+          },
+          "name": "dockerBuildSecrets",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No ssh flag is set",
+            "remarks": "Requires building with docker buildkit.",
+            "stability": "stable",
+            "summary": "SSH agent socket or keys."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 73
+          },
+          "name": "dockerBuildSsh",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- The last stage in the Dockerfile",
+            "remarks": "Only allowed when `directory` is set.",
+            "stability": "stable",
+            "summary": "Target build stage in a Dockerfile with multiple build stages."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 55
+          },
+          "name": "dockerBuildTarget",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "\"Dockerfile\"",
+            "remarks": "Only allowed when `directory` is set.",
+            "stability": "stable",
+            "summary": "The name of the file with build instructions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 46
+          },
+          "name": "dockerFile",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no outputs are passed to the build command (default outputs are used)",
+            "see": "https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs",
+            "stability": "stable",
+            "summary": "Outputs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 108
+          },
+          "name": "dockerOutputs",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Exactly one of `directory` and `executable` is required",
+            "stability": "stable",
+            "summary": "A command-line executable that returns the name of a local Docker image on stdout after being run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 37
+          },
+          "name": "executable",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no networking mode specified",
+            "remarks": "Specify this property to build images on a specific networking mode.",
+            "stability": "stable",
+            "summary": "Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 91
+          },
+          "name": "networkMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- current machine platform",
+            "remarks": "Specify this property to build images on a specific platform/architecture.",
+            "stability": "stable",
+            "summary": "Platform to build for. _Requires Docker Buildx_."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/docker-image-asset.ts",
+            "line": 100
+          },
+          "name": "platform",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/assets/docker-image-asset:DockerImageSource"
+    },
+    "@aws-cdk/cloud-assembly-schema.EndpointServiceAvailabilityZonesContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query to endpoint service context provider."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.EndpointServiceAvailabilityZonesContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 253
+      },
+      "name": "EndpointServiceAvailabilityZonesContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 257
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 262
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query service name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 274
+          },
+          "name": "serviceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 269
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:EndpointServiceAvailabilityZonesContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.FileAsset": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "A file asset."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.FileAsset",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/file-asset.ts",
+        "line": 6
+      },
+      "name": "FileAsset",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Destinations for this file asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/file-asset.ts",
+            "line": 15
+          },
+          "name": "destinations",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.FileDestination"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Source description for file assets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/file-asset.ts",
+            "line": 10
+          },
+          "name": "source",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.FileSource"
+          }
+        }
+      ],
+      "symbolId": "lib/assets/file-asset:FileAsset"
+    },
+    "@aws-cdk/cloud-assembly-schema.FileAssetMetadataEntry": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "example": "const entry = {\n  packaging: 'file',\n  s3BucketParameter: 'bucket-parameter',\n  s3KeyParamenter: 'key-parameter',\n  artifactHashParameter: 'hash-parameter',\n}",
+        "stability": "stable",
+        "summary": "Metadata Entry spec for files."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.FileAssetMetadataEntry",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/metadata-schema.ts",
+        "line": 37
+      },
+      "name": "FileAssetMetadataEntry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the parameter where the hash of the bundled asset should be passed in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 56
+          },
+          "name": "artifactHashParameter",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Logical identifier for the asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 13
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Requested packaging style."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 41
+          },
+          "name": "packaging",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Path on disk to the asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 23
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Name of parameter where S3 bucket should be passed in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 46
+          },
+          "name": "s3BucketParameter",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Name of parameter where S3 key should be passed in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 51
+          },
+          "name": "s3KeyParameter",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The hash of the asset source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 18
+          },
+          "name": "sourceHash",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/metadata-schema:FileAssetMetadataEntry"
+    },
+    "@aws-cdk/cloud-assembly-schema.FileAssetPackaging": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "Packaging strategy for file assets."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.FileAssetPackaging",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/assets/file-asset.ts",
+        "line": 21
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Upload the given path as a file."
+          },
+          "name": "FILE"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The given path is a directory, zip it and upload."
+          },
+          "name": "ZIP_DIRECTORY"
+        }
+      ],
+      "name": "FileAssetPackaging",
+      "symbolId": "lib/assets/file-asset:FileAssetPackaging"
+    },
+    "@aws-cdk/cloud-assembly-schema.FileDestination": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Where in S3 a file asset needs to be published."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.FileDestination",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.AwsDestination"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/file-asset.ts",
+        "line": 66
+      },
+      "name": "FileDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/file-asset.ts",
+            "line": 70
+          },
+          "name": "bucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The destination object key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/file-asset.ts",
+            "line": 75
+          },
+          "name": "objectKey",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/assets/file-asset:FileDestination"
+    },
+    "@aws-cdk/cloud-assembly-schema.FileSource": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Describe the source of a file asset."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.FileSource",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/assets/file-asset.ts",
+        "line": 36
+      },
+      "name": "FileSource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Exactly one of `executable` and `path` is required.",
+            "stability": "stable",
+            "summary": "External command which will produce the file asset to upload."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/file-asset.ts",
+            "line": 42
+          },
+          "name": "executable",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "FILE",
+            "remarks": "Only allowed when `path` is specified.",
+            "stability": "stable",
+            "summary": "Packaging method."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/file-asset.ts",
+            "line": 60
+          },
+          "name": "packaging",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.FileAssetPackaging"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Exactly one of `executable` and `path` is required.",
+            "remarks": "This path is relative to the asset manifest location.",
+            "stability": "stable",
+            "summary": "The filesystem object to upload."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/assets/file-asset.ts",
+            "line": 51
+          },
+          "name": "path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/assets/file-asset:FileSource"
+    },
+    "@aws-cdk/cloud-assembly-schema.Hooks": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Commands to run at predefined points during the integration test workflow."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.Hooks",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/test-case.ts",
+        "line": 97
+      },
+      "name": "Hooks",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no commands",
+            "stability": "stable",
+            "summary": "Commands to run prior after deploying the cdk stacks in the integration test."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 112
+          },
+          "name": "postDeploy",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no commands",
+            "stability": "stable",
+            "summary": "Commands to run after destroying the cdk stacks in the integration test."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 128
+          },
+          "name": "postDestroy",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no commands",
+            "stability": "stable",
+            "summary": "Commands to run prior to deploying the cdk stacks in the integration test."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 104
+          },
+          "name": "preDeploy",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no commands",
+            "stability": "stable",
+            "summary": "Commands to run prior to destroying the cdk stacks in the integration test."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 120
+          },
+          "name": "preDestroy",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/test-case:Hooks"
+    },
+    "@aws-cdk/cloud-assembly-schema.HostedZoneContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query to hosted zone context provider."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.HostedZoneContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 123
+      },
+      "name": "HostedZoneContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 127
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The domain name e.g. example.com to lookup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 144
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 132
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 139
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "True if the zone you want to find is a private hosted zone."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 151
+          },
+          "name": "privateZone",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Required if privateZone=true",
+            "remarks": "If you provide VPC ID and privateZone is false, this will return no results\nand raise an error.",
+            "stability": "stable",
+            "summary": "The VPC ID to that the private zone must be associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 161
+          },
+          "name": "vpcId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:HostedZoneContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.IntegManifest": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Definitions for the integration testing manifest."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.IntegManifest",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/schema.ts",
+        "line": 5
+      },
+      "name": "IntegManifest",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "test cases."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/schema.ts",
+            "line": 33
+          },
+          "name": "testCases",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.TestCase"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Version of the manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/schema.ts",
+            "line": 9
+          },
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "If lookups are enabled\nthen `stackUpdateWorkflow` must be set to false.\nLookups should only be enabled when you are explicitely testing\nlookups.",
+            "stability": "stable",
+            "summary": "Enable lookups for this test."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/schema.ts",
+            "line": 19
+          },
+          "name": "enableLookups",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no additional context",
+            "remarks": "Any context provided here will override\nany default context",
+            "stability": "stable",
+            "summary": "Additional context to use when performing a synth."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/schema.ts",
+            "line": 28
+          },
+          "name": "synthContext",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/schema:IntegManifest"
+    },
+    "@aws-cdk/cloud-assembly-schema.KeyContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query input for looking up a KMS Key."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.KeyContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 457
+      },
+      "name": "KeyContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 461
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Alias name used to search the Key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 478
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 466
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 473
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:KeyContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.LoadBalancerContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query input for looking up a load balancer."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerContextQuery",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.LoadBalancerFilter"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 317
+      },
+      "name": "LoadBalancerContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 321
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 326
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 333
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:LoadBalancerContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.LoadBalancerFilter": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Filters for selecting load balancers."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerFilter",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 295
+      },
+      "name": "LoadBalancerFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Filter load balancers by their type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 299
+          },
+          "name": "loadBalancerType",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerType"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- does not search by load balancer arn",
+            "stability": "stable",
+            "summary": "Find by load balancer's ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 305
+          },
+          "name": "loadBalancerArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- does not match load balancers by tags",
+            "stability": "stable",
+            "summary": "Match load balancer tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 311
+          },
+          "name": "loadBalancerTags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.Tag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:LoadBalancerFilter"
+    },
+    "@aws-cdk/cloud-assembly-schema.LoadBalancerListenerContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query input for looking up a load balancer listener."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerListenerContextQuery",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.LoadBalancerFilter"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 374
+      },
+      "name": "LoadBalancerListenerContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 378
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 383
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- does not find by listener arn",
+            "stability": "stable",
+            "summary": "Find by listener's arn."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 396
+          },
+          "name": "listenerArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- does not filter by a listener port",
+            "stability": "stable",
+            "summary": "Filter listeners by listener port."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 408
+          },
+          "name": "listenerPort",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- does not filter by listener protocol",
+            "stability": "stable",
+            "summary": "Filter by listener protocol."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 402
+          },
+          "name": "listenerProtocol",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerListenerProtocol"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 390
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:LoadBalancerListenerContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.LoadBalancerListenerProtocol": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "The protocol for connections from clients to the load balancer."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerListenerProtocol",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 339
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "HTTP protocol."
+          },
+          "name": "HTTP"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "HTTPS protocol."
+          },
+          "name": "HTTPS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "TCP protocol."
+          },
+          "name": "TCP"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "TLS protocol."
+          },
+          "name": "TLS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "UDP protocol."
+          },
+          "name": "UDP"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "TCP and UDP protocol."
+          },
+          "name": "TCP_UDP"
+        }
+      ],
+      "name": "LoadBalancerListenerProtocol",
+      "symbolId": "lib/cloud-assembly/context-queries:LoadBalancerListenerProtocol"
+    },
+    "@aws-cdk/cloud-assembly-schema.LoadBalancerType": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "Type of load balancer."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 280
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Network load balancer."
+          },
+          "name": "NETWORK"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Application load balancer."
+          },
+          "name": "APPLICATION"
+        }
+      ],
+      "name": "LoadBalancerType",
+      "symbolId": "lib/cloud-assembly/context-queries:LoadBalancerType"
+    },
+    "@aws-cdk/cloud-assembly-schema.LoadManifestOptions": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for the loadManifest operation."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.LoadManifestOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/manifest.ts",
+        "line": 30
+      },
+      "name": "LoadManifestOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "This means you may read enum values you don't know about yet. Make sure to always\ncheck the values of enums you encounter in the manifest.",
+            "stability": "stable",
+            "summary": "Skip enum checks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 50
+          },
+          "name": "skipEnumCheck",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "This means you may read a newer cloud assembly than the CX API is designed\nto support, and your application may not be aware of all features that in use\nin the Cloud Assembly.",
+            "stability": "stable",
+            "summary": "Skip the version check."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 40
+          },
+          "name": "skipVersionCheck",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "This parameter is only respected by the constructor of `CloudAssembly`. The\nproperty lives here for backwards compatibility reasons.",
+            "stability": "stable",
+            "summary": "Topologically sort all artifacts."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 60
+          },
+          "name": "topoSort",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/manifest:LoadManifestOptions"
+    },
+    "@aws-cdk/cloud-assembly-schema.Manifest": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "Protocol utility class."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.Manifest",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/manifest.ts",
+        "line": 66
+      },
+      "methods": [
+        {
+          "docs": {
+            "deprecated": "use `loadAssemblyManifest()`",
+            "stability": "deprecated",
+            "summary": "Deprecated."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 141
+          },
+          "name": "load",
+          "parameters": [
+            {
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.AssemblyManifest"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Load and validates the cloud assembly manifest from file."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 82
+          },
+          "name": "loadAssemblyManifest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- path to the manifest file."
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.LoadManifestOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.AssemblyManifest"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Load and validates the asset manifest from file."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 101
+          },
+          "name": "loadAssetManifest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- path to the manifest file."
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.AssetManifest"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Load and validates the integ manifest from file."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 120
+          },
+          "name": "loadIntegManifest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- path to the manifest file."
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/cloud-assembly-schema.IntegManifest"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "deprecated": "use `saveAssemblyManifest()`",
+            "stability": "deprecated",
+            "summary": "Deprecated."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 135
+          },
+          "name": "save",
+          "parameters": [
+            {
+              "name": "manifest",
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.AssemblyManifest"
+              }
+            },
+            {
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Validates and saves the cloud assembly manifest to file."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 73
+          },
+          "name": "saveAssemblyManifest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- manifest."
+              },
+              "name": "manifest",
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.AssemblyManifest"
+              }
+            },
+            {
+              "docs": {
+                "summary": "- output file path."
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Validates and saves the asset manifest to file."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 92
+          },
+          "name": "saveAssetManifest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- manifest."
+              },
+              "name": "manifest",
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.AssetManifest"
+              }
+            },
+            {
+              "docs": {
+                "summary": "- output file path."
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Validates and saves the integ manifest to file."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 111
+          },
+          "name": "saveIntegManifest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- manifest."
+              },
+              "name": "manifest",
+              "type": {
+                "fqn": "@aws-cdk/cloud-assembly-schema.IntegManifest"
+              }
+            },
+            {
+              "docs": {
+                "summary": "- output file path."
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Fetch the current schema version number."
+          },
+          "locationInModule": {
+            "filename": "lib/manifest.ts",
+            "line": 127
+          },
+          "name": "version",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "Manifest",
+      "symbolId": "lib/manifest:Manifest"
+    },
+    "@aws-cdk/cloud-assembly-schema.MetadataEntry": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "A metadata entry in a cloud assembly artifact."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.MetadataEntry",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/metadata-schema.ts",
+        "line": 306
+      },
+      "name": "MetadataEntry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The type of the metadata entry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 310
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no data.",
+            "stability": "stable",
+            "summary": "The data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 317
+          },
+          "name": "data",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.FileAssetMetadataEntry"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.ContainerImageAssetMetadataEntry"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "fqn": "@aws-cdk/cloud-assembly-schema.Tag"
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no trace.",
+            "stability": "stable",
+            "summary": "A stack trace for when the entry was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 324
+          },
+          "name": "trace",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/metadata-schema:MetadataEntry"
+    },
+    "@aws-cdk/cloud-assembly-schema.MissingContext": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents a missing piece of context."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.MissingContext",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/schema.ts",
+        "line": 48
+      },
+      "name": "MissingContext",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The missing context key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 52
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "A set of provider-specific options."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 62
+          },
+          "name": "props",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.AmiContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.AvailabilityZonesContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.HostedZoneContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.SSMParameterContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.VpcContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.EndpointServiceAvailabilityZonesContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.LoadBalancerListenerContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.KeyContextQuery"
+                },
+                {
+                  "fqn": "@aws-cdk/cloud-assembly-schema.PluginContextQuery"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The provider from which we expect this context key to be obtained."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 57
+          },
+          "name": "provider",
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.ContextProvider"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/schema:MissingContext"
+    },
+    "@aws-cdk/cloud-assembly-schema.NestedCloudAssemblyProperties": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Artifact properties for nested cloud assemblies."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.NestedCloudAssemblyProperties",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/artifact-schema.ts",
+        "line": 184
+      },
+      "name": "NestedCloudAssemblyProperties",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Relative path to the nested cloud assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 188
+          },
+          "name": "directoryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- The artifact ID",
+            "stability": "stable",
+            "summary": "Display name for the cloud assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 195
+          },
+          "name": "displayName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/artifact-schema:NestedCloudAssemblyProperties"
+    },
+    "@aws-cdk/cloud-assembly-schema.PluginContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "remarks": "This alternate branch is necessary because it needs to be able to escape all type checking\nwe do on on the cloud assembly -- we cannot know the properties that will be used a priori.",
+        "stability": "stable",
+        "summary": "Query input for plugins."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.PluginContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 487
+      },
+      "name": "PluginContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the plugin."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 491
+          },
+          "name": "pluginName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:PluginContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.RequireApproval": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "docs": {
+        "stability": "stable",
+        "summary": "In what scenarios should the CLI ask for approval."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.RequireApproval",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/integ-tests/commands/common.ts",
+        "line": 4
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Never ask for approval."
+          },
+          "name": "NEVER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Prompt for approval for any type  of change to the stack."
+          },
+          "name": "ANYCHANGE"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Only prompt for approval if there are security related changes."
+          },
+          "name": "BROADENING"
+        }
+      ],
+      "name": "RequireApproval",
+      "symbolId": "lib/integ-tests/commands/common:RequireApproval"
+    },
+    "@aws-cdk/cloud-assembly-schema.RuntimeInfo": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Information about the application's runtime components."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.RuntimeInfo",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/schema.ts",
+        "line": 38
+      },
+      "name": "RuntimeInfo",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The list of libraries loaded in the application, associated with their versions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/schema.ts",
+            "line": 42
+          },
+          "name": "libraries",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/schema:RuntimeInfo"
+    },
+    "@aws-cdk/cloud-assembly-schema.SSMParameterContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query to SSM Parameter Context Provider."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.SSMParameterContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 167
+      },
+      "name": "SSMParameterContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 171
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Parameter name to query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 188
+          },
+          "name": "parameterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 176
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 183
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:SSMParameterContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query input for looking up a security group."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 414
+      },
+      "name": "SecurityGroupContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 418
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 423
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 430
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Security group id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 437
+          },
+          "name": "securityGroupId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Security group name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 444
+          },
+          "name": "securityGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "VPC ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 451
+          },
+          "name": "vpcId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:SecurityGroupContextQuery"
+    },
+    "@aws-cdk/cloud-assembly-schema.Tag": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Metadata Entry spec for stack tag."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.Tag",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/metadata-schema.ts",
+        "line": 62
+      },
+      "name": "Tag",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "(In the actual file on disk this will be cased as \"Key\", and the structure is\npatched to match this structure upon loading:\nhttps://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)",
+            "stability": "stable",
+            "summary": "Tag key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 70
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "(In the actual file on disk this will be cased as \"Value\", and the structure is\npatched to match this structure upon loading:\nhttps://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)",
+            "stability": "stable",
+            "summary": "Tag value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/metadata-schema.ts",
+            "line": 79
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/metadata-schema:Tag"
+    },
+    "@aws-cdk/cloud-assembly-schema.TestCase": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents an integration test case."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.TestCase",
+      "interfaces": [
+        "@aws-cdk/cloud-assembly-schema.TestOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/test-case.ts",
+        "line": 68
+      },
+      "name": "TestCase",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Stacks that should be tested as part of this test case The stackNames will be passed as args to the cdk commands so dependent stacks will be automatically deployed unless `exclusively` is passed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 75
+          },
+          "name": "stacks",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no assertion stack",
+            "remarks": "This is the value that can be used to deploy the stack with the CDK CLI",
+            "stability": "stable",
+            "summary": "The node id of the stack that contains assertions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 83
+          },
+          "name": "assertionStack",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no assertion stack",
+            "stability": "stable",
+            "summary": "The name of the stack that contains assertions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 90
+          },
+          "name": "assertionStackName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/test-case:TestCase"
+    },
+    "@aws-cdk/cloud-assembly-schema.TestOptions": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "The set of options to control the workflow of the test runner."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.TestOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/integ-tests/test-case.ts",
+        "line": 6
+      },
+      "name": "TestOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- do not allow destruction of any resources on update",
+            "remarks": "This list should only include resources that for this specific\nintegration test we are sure will not cause errors or an outage if\ndestroyed. For example, maybe we know that a new resource will be created\nfirst before the old resource is destroyed which prevents any outage.\n\ne.g. ['AWS::IAM::Role']",
+            "stability": "stable",
+            "summary": "List of CloudFormation resource types in this stack that can be destroyed as part of an update without failing the test."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 55
+          },
+          "name": "allowDestroy",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- runner default options",
+            "stability": "stable",
+            "summary": "Additional options to use for each CDK command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 21
+          },
+          "name": "cdkCommandOptions",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.CdkCommands"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "For example\nany tests involving custom resources or bundling",
+            "stability": "stable",
+            "summary": "Whether or not to include asset hashes in the diff Asset hashes can introduces a lot of unneccessary noise into tests, but there are some cases where asset hashes _should_ be included."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 40
+          },
+          "name": "diffAssets",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no hooks",
+            "remarks": "e.g. { postDeploy: ['yarn', 'test'] }",
+            "stability": "stable",
+            "summary": "Additional commands to run at predefined points in the test workflow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 30
+          },
+          "name": "hooks",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/cloud-assembly-schema.Hooks"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- can run in any region",
+            "stability": "stable",
+            "summary": "Limit deployment to these regions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 62
+          },
+          "name": "regions",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Run update workflow on this test case This should only be set to false to test scenarios that are not possible to test as part of the update workflow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/integ-tests/test-case.ts",
+            "line": 14
+          },
+          "name": "stackUpdateWorkflow",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/integ-tests/test-case:TestOptions"
+    },
+    "@aws-cdk/cloud-assembly-schema.TreeArtifactProperties": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Artifact properties for the Construct Tree Artifact."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.TreeArtifactProperties",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/artifact-schema.ts",
+        "line": 174
+      },
+      "name": "TreeArtifactProperties",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Filename of the tree artifact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/artifact-schema.ts",
+            "line": 178
+          },
+          "name": "file",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/artifact-schema:TreeArtifactProperties"
+    },
+    "@aws-cdk/cloud-assembly-schema.VpcContextQuery": {
+      "assembly": "@aws-cdk/cloud-assembly-schema",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Query input for looking up a VPC."
+      },
+      "fqn": "@aws-cdk/cloud-assembly-schema.VpcContextQuery",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloud-assembly/context-queries.ts",
+        "line": 194
+      },
+      "name": "VpcContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 198
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Filter parameters are the same as passed to DescribeVpcs.",
+            "see": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVpcs.html",
+            "stability": "stable",
+            "summary": "Filters to apply to the VPC."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 219
+          },
+          "name": "filter",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Query region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 203
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "The ARN of the role that should be used to look up the missing values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 210
+          },
+          "name": "lookupRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Whether to populate the subnetGroups field of the `VpcContextResponse`, which contains potentially asymmetric subnet groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 227
+          },
+          "name": "returnAsymmetricSubnets",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "You can explicitly\ndisable this in order to avoid the lookup if you know the VPC does not have\na VPN Gatway attached.",
+            "stability": "stable",
+            "summary": "Whether to populate the `vpnGatewayId` field of the `VpcContextResponse`, which contains the VPN Gateway ID, if one exists."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 247
+          },
+          "name": "returnVpnGateways",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "'aws-cdk:subnet-name'",
+            "remarks": "If not provided, we'll look at the aws-cdk:subnet-name tag.\nIf the subnet does not have the specified tag,\nwe'll use its type as the name.",
+            "stability": "stable",
+            "summary": "Optional tag for subnet group name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloud-assembly/context-queries.ts",
+            "line": 237
+          },
+          "name": "subnetGroupNameTag",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloud-assembly/context-queries:VpcContextQuery"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "86G47wwyozonYhZH9RFMk4XLBjBe03uQaavdoBq0nQ8="
+}

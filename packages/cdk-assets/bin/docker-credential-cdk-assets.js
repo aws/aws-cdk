@@ -1,0 +1,39 @@
+"use strict";
+/**
+ * Docker Credential Helper to retrieve credentials based on an external configuration file.
+ * Supports loading credentials from ECR repositories and from Secrets Manager,
+ * optionally via an assumed role.
+ *
+ * The only operation currently supported by this credential helper at this time is the `get`
+ * command, which receives a domain name as input on stdin and returns a Username/Secret in
+ * JSON format on stdout.
+ *
+ * IMPORTANT - The credential helper must not output anything else besides the final credentials
+ * in any success case; doing so breaks docker's parsing of the output and causes the login to fail.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs = require("fs");
+const lib_1 = require("../lib");
+const docker_credentials_1 = require("../lib/private/docker-credentials");
+async function main() {
+    // Expected invocation is [node, docker-credential-cdk-assets, get] with input fed via STDIN
+    // For other valid docker commands (store, list, erase), we no-op.
+    if (process.argv.length !== 3 || process.argv[2] !== 'get') {
+        process.exit(0);
+    }
+    const config = (0, docker_credentials_1.cdkCredentialsConfig)();
+    if (!config) {
+        throw new Error(`unable to find CDK Docker credentials at: ${(0, docker_credentials_1.cdkCredentialsConfigFile)()}`);
+    }
+    // Read the domain to fetch from stdin
+    let endpoint = fs.readFileSync(0, { encoding: 'utf-8' }).trim();
+    const credentials = await (0, docker_credentials_1.fetchDockerLoginCredentials)(new lib_1.DefaultAwsClient(), config, endpoint);
+    // Write the credentials back to stdout
+    fs.writeFileSync(1, JSON.stringify(credentials));
+}
+main().catch(e => {
+    // eslint-disable-next-line no-console
+    console.error(e.stack);
+    process.exitCode = 1;
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZG9ja2VyLWNyZWRlbnRpYWwtY2RrLWFzc2V0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImRvY2tlci1jcmVkZW50aWFsLWNkay1hc3NldHMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBOzs7Ozs7Ozs7OztHQVdHOztBQUVILHlCQUF5QjtBQUN6QixnQ0FBMEM7QUFFMUMsMEVBQWdJO0FBRWhJLEtBQUssVUFBVSxJQUFJO0lBQ2pCLDRGQUE0RjtJQUM1RixrRUFBa0U7SUFDbEUsSUFBSSxPQUFPLENBQUMsSUFBSSxDQUFDLE1BQU0sS0FBSyxDQUFDLElBQUksT0FBTyxDQUFDLElBQUksQ0FBQyxDQUFDLENBQUMsS0FBSyxLQUFLLEVBQUUsQ0FBQztRQUMzRCxPQUFPLENBQUMsSUFBSSxDQUFDLENBQUMsQ0FBQyxDQUFDO0lBQ2xCLENBQUM7SUFFRCxNQUFNLE1BQU0sR0FBRyxJQUFBLHlDQUFvQixHQUFFLENBQUM7SUFDdEMsSUFBSSxDQUFDLE1BQU0sRUFBRSxDQUFDO1FBQ1osTUFBTSxJQUFJLEtBQUssQ0FBQyw2Q0FBNkMsSUFBQSw2Q0FBd0IsR0FBRSxFQUFFLENBQUMsQ0FBQztJQUM3RixDQUFDO0lBRUQsc0NBQXNDO0lBQ3RDLElBQUksUUFBUSxHQUFHLEVBQUUsQ0FBQyxZQUFZLENBQUMsQ0FBQyxFQUFFLEVBQUUsUUFBUSxFQUFFLE9BQU8sRUFBRSxDQUFDLENBQUMsSUFBSSxFQUFFLENBQUM7SUFDaEUsTUFBTSxXQUFXLEdBQUcsTUFBTSxJQUFBLGdEQUEyQixFQUFDLElBQUksc0JBQWdCLEVBQUUsRUFBRSxNQUFNLEVBQUUsUUFBUSxDQUFDLENBQUM7SUFDaEcsdUNBQXVDO0lBQ3ZDLEVBQUUsQ0FBQyxhQUFhLENBQUMsQ0FBQyxFQUFFLElBQUksQ0FBQyxTQUFTLENBQUMsV0FBVyxDQUFDLENBQUMsQ0FBQztBQUNuRCxDQUFDO0FBRUQsSUFBSSxFQUFFLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQyxFQUFFO0lBQ2Ysc0NBQXNDO0lBQ3RDLE9BQU8sQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQ3ZCLE9BQU8sQ0FBQyxRQUFRLEdBQUcsQ0FBQyxDQUFDO0FBQ3ZCLENBQUMsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBEb2NrZXIgQ3JlZGVudGlhbCBIZWxwZXIgdG8gcmV0cmlldmUgY3JlZGVudGlhbHMgYmFzZWQgb24gYW4gZXh0ZXJuYWwgY29uZmlndXJhdGlvbiBmaWxlLlxuICogU3VwcG9ydHMgbG9hZGluZyBjcmVkZW50aWFscyBmcm9tIEVDUiByZXBvc2l0b3JpZXMgYW5kIGZyb20gU2VjcmV0cyBNYW5hZ2VyLFxuICogb3B0aW9uYWxseSB2aWEgYW4gYXNzdW1lZCByb2xlLlxuICpcbiAqIFRoZSBvbmx5IG9wZXJhdGlvbiBjdXJyZW50bHkgc3VwcG9ydGVkIGJ5IHRoaXMgY3JlZGVudGlhbCBoZWxwZXIgYXQgdGhpcyB0aW1lIGlzIHRoZSBgZ2V0YFxuICogY29tbWFuZCwgd2hpY2ggcmVjZWl2ZXMgYSBkb21haW4gbmFtZSBhcyBpbnB1dCBvbiBzdGRpbiBhbmQgcmV0dXJucyBhIFVzZXJuYW1lL1NlY3JldCBpblxuICogSlNPTiBmb3JtYXQgb24gc3Rkb3V0LlxuICpcbiAqIElNUE9SVEFOVCAtIFRoZSBjcmVkZW50aWFsIGhlbHBlciBtdXN0IG5vdCBvdXRwdXQgYW55dGhpbmcgZWxzZSBiZXNpZGVzIHRoZSBmaW5hbCBjcmVkZW50aWFsc1xuICogaW4gYW55IHN1Y2Nlc3MgY2FzZTsgZG9pbmcgc28gYnJlYWtzIGRvY2tlcidzIHBhcnNpbmcgb2YgdGhlIG91dHB1dCBhbmQgY2F1c2VzIHRoZSBsb2dpbiB0byBmYWlsLlxuICovXG5cbmltcG9ydCAqIGFzIGZzIGZyb20gJ2ZzJztcbmltcG9ydCB7IERlZmF1bHRBd3NDbGllbnQgfSBmcm9tICcuLi9saWInO1xuXG5pbXBvcnQgeyBjZGtDcmVkZW50aWFsc0NvbmZpZywgY2RrQ3JlZGVudGlhbHNDb25maWdGaWxlLCBmZXRjaERvY2tlckxvZ2luQ3JlZGVudGlhbHMgfSBmcm9tICcuLi9saWIvcHJpdmF0ZS9kb2NrZXItY3JlZGVudGlhbHMnO1xuXG5hc3luYyBmdW5jdGlvbiBtYWluKCkge1xuICAvLyBFeHBlY3RlZCBpbnZvY2F0aW9uIGlzIFtub2RlLCBkb2NrZXItY3JlZGVudGlhbC1jZGstYXNzZXRzLCBnZXRdIHdpdGggaW5wdXQgZmVkIHZpYSBTVERJTlxuICAvLyBGb3Igb3RoZXIgdmFsaWQgZG9ja2VyIGNvbW1hbmRzIChzdG9yZSwgbGlzdCwgZXJhc2UpLCB3ZSBuby1vcC5cbiAgaWYgKHByb2Nlc3MuYXJndi5sZW5ndGggIT09IDMgfHwgcHJvY2Vzcy5hcmd2WzJdICE9PSAnZ2V0Jykge1xuICAgIHByb2Nlc3MuZXhpdCgwKTtcbiAgfVxuXG4gIGNvbnN0IGNvbmZpZyA9IGNka0NyZWRlbnRpYWxzQ29uZmlnKCk7XG4gIGlmICghY29uZmlnKSB7XG4gICAgdGhyb3cgbmV3IEVycm9yKGB1bmFibGUgdG8gZmluZCBDREsgRG9ja2VyIGNyZWRlbnRpYWxzIGF0OiAke2Nka0NyZWRlbnRpYWxzQ29uZmlnRmlsZSgpfWApO1xuICB9XG5cbiAgLy8gUmVhZCB0aGUgZG9tYWluIHRvIGZldGNoIGZyb20gc3RkaW5cbiAgbGV0IGVuZHBvaW50ID0gZnMucmVhZEZpbGVTeW5jKDAsIHsgZW5jb2Rpbmc6ICd1dGYtOCcgfSkudHJpbSgpO1xuICBjb25zdCBjcmVkZW50aWFscyA9IGF3YWl0IGZldGNoRG9ja2VyTG9naW5DcmVkZW50aWFscyhuZXcgRGVmYXVsdEF3c0NsaWVudCgpLCBjb25maWcsIGVuZHBvaW50KTtcbiAgLy8gV3JpdGUgdGhlIGNyZWRlbnRpYWxzIGJhY2sgdG8gc3Rkb3V0XG4gIGZzLndyaXRlRmlsZVN5bmMoMSwgSlNPTi5zdHJpbmdpZnkoY3JlZGVudGlhbHMpKTtcbn1cblxubWFpbigpLmNhdGNoKGUgPT4ge1xuICAvLyBlc2xpbnQtZGlzYWJsZS1uZXh0LWxpbmUgbm8tY29uc29sZVxuICBjb25zb2xlLmVycm9yKGUuc3RhY2spO1xuICBwcm9jZXNzLmV4aXRDb2RlID0gMTtcbn0pO1xuIl19

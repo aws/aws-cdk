@@ -165,6 +165,8 @@ $ # Diff against the currently deployed stack with quiet parameter enabled
 $ cdk diff --quiet --app='node bin/main.js' MyStackName
 ```
 
+Note that the CDK::Metadata resource and the `CheckBootstrapVersion` Rule are excluded from `cdk diff` by default. You can force `cdk diff` to display them by passing the `--strict` flag.
+
 The `change-set` flag will make `diff` create a change set and extract resource replacement data from it. This is a bit slower, but will provide no false positives for resource replacement.
 The `--no-change-set` mode will consider any change to a property that requires replacement to be a resource replacement,
 even if the change is purely cosmetic (like replacing a resource reference with a hardcoded arn).
@@ -959,6 +961,31 @@ NOTICES
 
 
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
+```
+
+List the unacknowledged notices:
+
+```console
+$ cdk notices --unacknowledged
+
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+29483	(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality
+
+	Overview: cdk diff functionality used to rely on assuming lookup-role.
+	          With a recent change present in v2.132.0 and v2.132.1, it is
+	          now trying to assume deploy-role with the lookup-role. This
+	          leads to an authorization error if permissions were not
+	          defined to assume deploy-role.
+
+	Affected versions: cli: >=2.132.0 <=2.132.1
+
+	More information at: https://github.com/aws/aws-cdk/issues/29483
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29483".
+
+There are 1 unacknowledged notice(s).
 ```
 
 ### Bundling

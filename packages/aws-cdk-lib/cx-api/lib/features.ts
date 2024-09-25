@@ -105,6 +105,10 @@ export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
+export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
+export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
+export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1091,6 +1095,67 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.145.0' },
     recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.',
+    detailsMd: `
+      Currently, adding notifications to a bucket where it was created by ourselves will override notification added where it is imported.
+
+      When this feature flag is enabled, adding notifications to a bucket in the current stack will only update notification defined in this stack.
+      Other notifications that are not managed by this stack will be kept.
+    `,
+    introducedIn: { v2: '2.155.0' },
+    recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.',
+    detailsMd: `
+    Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
+    of State Machine Task definition.
+
+    When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
+    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.  
+
+    `,
+    introducedIn: { v2: '2.156.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration',
+    detailsMd: `
+    Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+    specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+    When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+    `,
+    introducedIn: { v2: '2.159.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to continue grant permissions to log group when no log group is specified',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_SUM_TIMEOUT_ENABLED]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
+    detailsMd: `
+      Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+      only the value from 'resourceSignalTimeout' will be used. 
+      
+      When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.160.0' },
   },
 };
 

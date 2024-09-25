@@ -824,3 +824,124 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
   })]),
 });
 ```
+
+#### Custom Resource Config
+
+**This feature is currently experimental**
+
+You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
+
+Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:  
+CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
+
+### Setting Log Retention Lifetime
+
+The following example configures every custom resource in this CDK app to retain its logs for ten years:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const app = new cdk.App();
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+const stack = new cdk.Stack(app, 'Stack');
+
+let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+new s3deploy.BucketDeployment(stack, 's3deploy', {
+  sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+  destinationBucket: websiteBucket,
+});
+```
+
+The following example configures every custom resource in two top-level stacks to retain its log for ten years:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const app = new cdk.App();
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+
+const stackA = new cdk.Stack(app, 'stackA');
+let websiteBucketA = new s3.Bucket(stackA, "WebsiteBucketA", {});
+new s3deploy.BucketDeployment(stackA, "s3deployA", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketA,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+
+const stackB = new cdk.Stack(app, 'stackB');
+let websiteBucketB = new s3.Bucket(stackB, "WebsiteBucketB", {});
+new s3deploy.BucketDeployment(stackB, "s3deployB", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketB,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+
+```
+
+This also applies to nested stacks:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+
+const nestedStackA = new cdk.NestedStack(stack, 'NestedStackA');
+let websiteBucketA = new s3.Bucket(nestedStackA, "WebsiteBucketA", {});
+new s3deploy.BucketDeployment(nestedStackA, "s3deployA", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketA,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+
+const nestedStackB = new cdk.NestedStack(stack, 'NestedStackB');
+let websiteBucketB = new s3.Bucket(nestedStackB, "WebsiteBucketB", {});
+new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketB,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+```
+
+### Setting Log Group Removal Policy
+
+The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with a AWS-vended custom resource lambda.
+The `addRemovalPolicy` method will configure the custom resource lambda log group removal policy to `DESTROY`.
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as ses from 'aws-cdk-lib/aws-ses';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+new ses.ReceiptRuleSet(app, 'RuleSet', {
+  dropSpam: true,
+});    
+```
+
+### Setting Lambda Runtimes
+
+The `addLambdaRuntime` method of `CustomResourceConfig` will set every AWS-vended custom resource to the specified lambda runtime, provided that the custom resource lambda is in the same runtime family as the one you specified. The S3 BucketDeployment construct uses lambda runtime Python 3.9. The following example sets the custom resource lambda runtime to `PYTHON_3_12`:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLambdaRuntime(lambda.Runtime.PYTHON_3_12);
+
+let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+new s3deploy.BucketDeployment(stack, 's3deploy', {
+  sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+  destinationBucket: websiteBucket,
+});
+```

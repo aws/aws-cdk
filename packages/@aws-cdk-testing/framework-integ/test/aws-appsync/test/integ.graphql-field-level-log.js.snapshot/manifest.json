@@ -1,0 +1,161 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "aws-cdk-appsync-graphql-field-level-log.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-appsync-graphql-field-level-log.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-appsync-graphql-field-level-log": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-appsync-graphql-field-level-log.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57fb978b024ca21f315c2ab7a4d2c94dc91e01b0976bbdaaef87d312c7fabd6b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-appsync-graphql-field-level-log.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-appsync-graphql-field-level-log.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-appsync-graphql-field-level-log/LambdaAPI/ApiLogsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPIApiLogsRole4F7D908F"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LambdaAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPID6A5A92B"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LambdaAPI/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPISchemaCC5CA3D2"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LambdaAPI/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPIDefaultApiKey15F6897D"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LambdaAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPILogRetention217BE0A6"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-appsync-graphql-field-level-log/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-appsync-graphql-field-level-log"
+    },
+    "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034.assets"
+      ],
+      "metadata": {
+        "/GraphQLFieldLevelLog/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GraphQLFieldLevelLog/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GraphQLFieldLevelLog/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

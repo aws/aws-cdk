@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@6b2903bdce6310cfbddd87c418f253cf29b2dec9
+        uses: tj-actions/changed-files@48d8f15b2aaa3d255ca5af3eba4870f807ce6b3c
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
@@ -27,13 +27,6 @@ jobs:
               - packages/aws-cdk/bin/**
               - packages/aws-cdk/lib/**
               - packages/aws-cdk/test/**
-              - packages/cdk-assets/bin/**
-              - packages/cdk-assets/lib/**
-              - packages/cdk-assets/test/**
-              - packages/aws-cdk-lib/cloud-assembly-schema/lib/**
-              - packages/aws-cdk-lib/cloud-assembly-schema/schema/**
-              - packages/aws-cdk-lib/cloud-assembly-schema/scripts/**
-              - packages/aws-cdk-lib/cloud-assembly-schema/test/**
               - packages/@aws-cdk/cloudformation-diff/lib/**
               - packages/@aws-cdk/cloudformation-diff/test/**
               - packages/@aws-cdk-testing/cli-integ/bin/**

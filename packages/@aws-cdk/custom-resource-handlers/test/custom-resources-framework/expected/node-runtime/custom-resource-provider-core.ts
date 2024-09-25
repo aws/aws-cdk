@@ -28,5 +28,6 @@ export class TestProvider extends CustomResourceProviderBase {
       "codeDirectory": path.join(__dirname, 'my-handler'),
       "runtimeName": determineLatestNodeRuntimeName(scope)
     });
+    this.node.addMetadata('aws:cdk:is-custom-resource-handler-customResourceProvider', true);
   }
 }

@@ -398,10 +398,47 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },
 });
+
 ```
+### Using Input Path for S3 URI
+
+Provide S3 URI as an input or output path to invoke a model
+
+To specify the S3 URI as JSON path to your input or output fields, use props `s3InputUri` and `s3OutputUri` under BedrockInvokeModelProps and set 
+feature flag `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask` to true.
+
+
+If this flag is not enabled, the code will populate the S3Uri using `InputPath` and `OutputPath` fields, which is not recommended.
+
+```ts
+
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  input : { s3InputUri: sfn.JsonPath.stringAt('$.prompt') },
+  output: { s3OutputUri: sfn.JsonPath.stringAt('$.prompt') },
+});
+
+```
+
 ### Using Input Path
 
 Provide S3 URI as an input or output path to invoke a model
+
+Currently, input and output Path provided in the BedrockInvokeModelProps input is defined as S3URI field under task definition of state machine.
+To modify the existing behaviour, set `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask` to true. 
+
+If this feature flag is enabled, S3URI fields will be generated from other Props(`s3InputUri` and `s3OutputUri`), and the given inputPath, OutputPath will be rendered as 
+it is in the JSON task definition.
+
+If the feature flag is set to `false`, the behavior will be to populate the S3Uri using the `InputPath` and `OutputPath` fields, which is not recommended.
 
 ```ts
 
@@ -701,6 +738,39 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 });
 ```
 
+#### Override CPU and Memory Parameter
+
+By setting the property cpu or memoryMiB, you can override the Fargate or EC2 task instance size at runtime.
+
+see: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+const cluster = new ecs.Cluster(this, 'ECSCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  compatibility: ecs.Compatibility.FARGATE,
+  cpu: '256',
+  memoryMiB: '512'
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+});
+
+const runTask = new tasks.EcsRunTask(this, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
+  cpu: '1024',
+  memoryMiB: '1048'
+});
+```
+
+
 #### ECS enable Exec
 
 By setting the property [`enableExecuteCommand`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-enableExecuteCommand) to `true`, you can enable the [ECS Exec feature](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html) for the task for either Fargate or EC2 launch types.
@@ -822,6 +892,18 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
   instances: {},
   name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
   stepConcurrencyLevel: 10,
+});
+```
+
+If you want to use an [auto-termination policy](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-auto-termination-policy.html),
+you can specify the `autoTerminationPolicyIdleTimeout` property.
+Specifies the amount of idle time after which the cluster automatically terminates. You can specify a minimum of 60 seconds and a maximum of 604800 seconds (seven days).
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: 'ClusterName',
+  autoTerminationPolicyIdleTimeout: Duration.seconds(100),
 });
 ```
 
@@ -1293,7 +1375,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),
