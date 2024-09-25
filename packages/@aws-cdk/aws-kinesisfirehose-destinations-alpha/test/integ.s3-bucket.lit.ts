@@ -46,8 +46,7 @@ const backupKey = new kms.Key(stack, 'BackupKey', {
 
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
   destinations: [new destinations.S3Bucket(bucket, {
-    logging: true,
-    logGroup: logGroup,
+    loggingConfig: new destinations.EnableLogging(logGroup),
     processor: processor,
     compression: destinations.Compression.GZIP,
     dataOutputPrefix: 'regularPrefix',

@@ -7,23 +7,16 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct, IDependable, Node } from 'constructs';
 import { DestinationS3BackupProps } from '../common';
+import { ILoggingConfig } from '../logging-config';
 
 export interface DestinationLoggingProps {
   /**
-   * If true, log errors when data transformation or data delivery fails.
+   * Configuration that determines whether to log errors during data transformation or delivery failures,
+   * and specifies the CloudWatch log group for storing error logs.
    *
-   * If `logGroup` is provided, this will be implicitly set to `true`.
-   *
-   * @default true - errors are logged.
+   * @default - errors will be logged and a log group will be created for you.
    */
-  readonly logging?: boolean;
-
-  /**
-   * The CloudWatch log group where log streams will be created to hold error logs.
-   *
-   * @default - if `logging` is set to `true`, a log group will be created for you.
-   */
-  readonly logGroup?: logs.ILogGroup;
+  readonly loggingConfig?: ILoggingConfig;
 
   /**
    * The IAM role associated with this destination.
@@ -60,11 +53,8 @@ export interface DestinationBackupConfig extends ConfigWithDependables {
 }
 
 export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingConfig | undefined {
-  if (props.logging === false && props.logGroup) {
-    throw new Error('logging cannot be set to false when logGroup is provided');
-  }
-  if (props.logging !== false || props.logGroup) {
-    const logGroup = props.logGroup ?? Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? new logs.LogGroup(scope, 'LogGroup');
+  if (props.loggingConfig?.logging !== false || props.loggingConfig?.logGroup) {
+    const logGroup = props.loggingConfig?.logGroup ?? Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? new logs.LogGroup(scope, 'LogGroup');
     const logGroupGrant = logGroup.grantWrite(props.role);
     return {
       loggingOptions: {
@@ -152,8 +142,7 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
   const bucketGrant = bucket.grantReadWrite(role);
 
   const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
-    logging: props.logging,
-    logGroup: props.logGroup,
+    loggingConfig: props.loggingConfig,
     role,
     streamId: 'S3Backup',
   }) ?? {};
