@@ -270,6 +270,13 @@ export interface RollbackStackOptions {
    *   the resource currently being deployed.
    */
   readonly progress?: StackActivityProgress;
+
+  /**
+   * Whether to validate the version of the bootstrap stack permissions
+   *
+   * @default true
+   */
+  readonly validateBootstrapStackVersion?: boolean;
 }
 
 export interface RollbackStackResult {
@@ -494,12 +501,14 @@ export class Deployments {
       envResources,
     } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
-    // Do a verification of the bootstrap stack version
-    await this.validateBootstrapStackVersion(
-      options.stack.stackName,
-      BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK,
-      options.stack.bootstrapStackVersionSsmParameter,
-      envResources);
+    if (options.validateBootstrapStackVersion ?? true) {
+      // Do a verification of the bootstrap stack version
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK,
+        options.stack.bootstrapStackVersionSsmParameter,
+        envResources);
+    }
 
     const cfn = stackSdk.cloudFormation();
     const deployName = options.stack.stackName;

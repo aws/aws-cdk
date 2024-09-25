@@ -64,13 +64,15 @@ import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { DeployStackResult } from '../lib/api/deploy-stack';
-import { Deployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/deployments';
+import { Deployments, DeployStackOptions, DestroyStackOptions, RollbackStackOptions, RollbackStackResult } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
+import { mocked } from 'jest-mock';
+import { SdkProvider } from '../lib';
 
 process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
@@ -1224,6 +1226,31 @@ describe('synth', () => {
     expect(mockData.mock.calls.length).toEqual(1);
     expect(mockData.mock.calls[0][0]).toBeDefined();
   });
+
+  test('rollback uses deployment role', async () => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+      ],
+    });
+
+    const mockedRollback = jest.spyOn(Deployments.prototype, 'rollbackStack').mockResolvedValue({
+      success: true,
+    });
+
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+    });
+
+    await toolkit.rollback({
+      selector: { patterns: [] },
+    });
+
+    expect(mockedRollback).toHaveBeenCalled();
+  });
 });
 
 class MockStack {
@@ -1397,6 +1424,12 @@ class FakeCloudFormation extends Deployments {
       noOp: false,
       outputs: { StackName: options.stack.stackName },
       stackArtifact: options.stack,
+    });
+  }
+
+  public rollbackStack(_options: RollbackStackOptions): Promise<RollbackStackResult> {
+    return Promise.resolve({
+      success: true,
     });
   }
 
