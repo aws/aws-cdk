@@ -17,10 +17,12 @@ class RollingInstanceUpdateTestStack extends cdk.Stack {
     });
 
     new rds.DatabaseCluster(this, 'DatabaseCluster', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.auroraMysql({
+        version: rds.AuroraMysqlEngineVersion.VER_3_07_1,
+      }),
       instances: 3,
       instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
         vpc,
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,

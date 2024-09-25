@@ -18,9 +18,6 @@
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
@@ -75,12 +75,12 @@
   "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
     }
    },
    "DependsOn": [
@@ -90,9 +90,6 @@
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -116,21 +113,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
@@ -147,12 +147,12 @@
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
     }
    },
    "DependsOn": [
@@ -162,9 +162,6 @@
   "VPCIsolatedSubnet1SubnetEBD00FC6": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -210,7 +207,10 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    },
    "DependsOn": [
     "Ipv6CidrBlock"
@@ -219,15 +219,15 @@
   "VPCIsolatedSubnet1RouteTableEB156210": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C": {
@@ -244,9 +244,6 @@
   "VPCIsolatedSubnet2Subnet4B1C8CAA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -292,7 +289,10 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    },
    "DependsOn": [
     "Ipv6CidrBlock"
@@ -301,15 +301,15 @@
   "VPCIsolatedSubnet2RouteTable9B4F78DC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB": {
@@ -337,21 +337,21 @@
   "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "InternetGatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
    }
   },
   "Ipv6CidrBlock": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
-    },
-    "AmazonProvidedIpv6CidrBlock": true
+    }
    }
   },
   "DualstackClusterSubnets00EA466E": {
@@ -387,15 +387,15 @@
   "DualstackCluster84A5FE37": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
-    "Engine": "aurora-mysql",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
      "Ref": "DualstackClusterSubnets00EA466E"
     },
-    "EngineVersion": "8.0.mysql_aurora.3.02.0",
-    "MasterUsername": "admin",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+    "MasterUsername": "admin",
     "NetworkType": "DUAL",
     "VpcSecurityGroupIds": [
      {
@@ -482,15 +482,15 @@
   "Ipv4Cluster5F67A28A": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
-    "Engine": "aurora-mysql",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
      "Ref": "Ipv4ClusterSubnets5BD573AA"
     },
-    "EngineVersion": "8.0.mysql_aurora.3.02.0",
-    "MasterUsername": "admin",
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+    "MasterUsername": "admin",
     "NetworkType": "IPV4",
     "VpcSecurityGroupIds": [
      {
