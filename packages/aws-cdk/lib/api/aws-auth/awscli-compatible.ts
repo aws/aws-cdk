@@ -2,11 +2,21 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
+import {
+  createCredentialChain,
+  fromContainerMetadata,
+  fromIni,
+  fromInstanceMetadata,
+  fromProcess,
+  fromSSO,
+  fromTokenFile,
+} from '@aws-sdk/credential-providers';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { debug } from './_env';
-import { PatchedSharedIniFileCredentials } from './aws-sdk-inifile';
+import { fromPrefixedEnv } from './from-prefixed-env';
+import { SdkRequestHandler } from './sdk-provider';
 import { SharedIniFile } from './sdk_ini_file';
 
 /**
@@ -41,48 +51,50 @@ export class AwsCliCompatible {
     // we use that to the exclusion of everything else (note: this does not apply
     // to AWS_PROFILE, environment credentials still take precedence over AWS_PROFILE)
     if (options.profile) {
-      return new AWS.CredentialProviderChain(iniFileCredentialFactories(options.profile, options.httpOptions));
+      return createCredentialChain(...iniFileCredentialFactories(options.profile, options.requestHandler));
     }
 
     const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     const sources = [
-      () => new AWS.EnvironmentCredentials('AWS'),
-      () => new AWS.EnvironmentCredentials('AMAZON'),
-      ...iniFileCredentialFactories(implicitProfile, options.httpOptions),
+      fromPrefixedEnv('AWS'),
+      fromPrefixedEnv('AMAZON'),
+      ...iniFileCredentialFactories(implicitProfile, options.requestHandler),
     ];
 
     if (options.containerCreds ?? hasEcsCredentials()) {
-      sources.push(() => new AWS.ECSCredentials());
+      sources.push(fromContainerMetadata());
     } else if (hasWebIdentityCredentials()) {
       // else if: we have found WebIdentityCredentials as provided by EKS ServiceAccounts
-      sources.push(() => new AWS.TokenFileWebIdentityCredentials());
+      sources.push(fromTokenFile());
     } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS or EKS creds
       // ECS and EKS instances also run on EC2 boxes but the creds represent something different.
       // Same behavior as upstream code.
-      sources.push(() => new AWS.EC2MetadataCredentials());
+      sources.push(fromInstanceMetadata());
     }
 
-    return new AWS.CredentialProviderChain(sources);
+    return createCredentialChain(...sources);
 
-    function profileCredentials(profileName: string) {
-      return new PatchedSharedIniFileCredentials({
-        profile: profileName,
-        filename: credentialsFileName(),
-        httpOptions: options.httpOptions,
-        tokenCodeFn,
-      });
-    }
-
-    function iniFileCredentialFactories(theProfile: string, theHttpOptions?: AWS.HTTPOptions) {
+    function iniFileCredentialFactories(theProfile: string, requestHandler?: SdkRequestHandler) {
       return [
-        () => profileCredentials(theProfile),
-        () => new AWS.SsoCredentials({
+        fromIni({
           profile: theProfile,
-          httpOptions: theHttpOptions,
+          filepath: credentialsFileName(),
+          mfaCodeProvider: mfaCodeFn,
+          clientConfig: {
+            requestHandler: requestHandler,
+          },
         }),
-        () => new AWS.ProcessCredentials({ profile: theProfile }),
+        fromSSO({
+          profile: theProfile,
+          clientConfig: {
+            requestHandler: requestHandler,
+          },
+        }),
+        fromProcess({
+          profile: theProfile,
+        }),
       ];
     }
   }
@@ -308,7 +320,9 @@ function matchesRegex(re: RegExp, s: string | undefined) {
  */
 function readIfPossible(filename: string): string | undefined {
   try {
-    if (!fs.pathExistsSync(filename)) { return undefined; }
+    if (!fs.pathExistsSync(filename)) {
+      return undefined;
+    }
     return fs.readFileSync(filename, { encoding: 'utf-8' });
   } catch (e: any) {
     debug(e);
@@ -320,7 +334,7 @@ export interface CredentialChainOptions {
   readonly profile?: string;
   readonly ec2instance?: boolean;
   readonly containerCreds?: boolean;
-  readonly httpOptions?: AWS.HTTPOptions;
+  readonly requestHandler?: SdkRequestHandler;
 }
 
 export interface RegionOptions {
@@ -333,7 +347,7 @@ export interface RegionOptions {
  *
  * Result is send to callback function for SDK to authorize the request
  */
-async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) => void): Promise<void> {
+async function mfaCodeFn(serialArn: string): Promise<string> {
   debug('Require MFA token for serial ARN', serialArn);
   try {
     const token: string = await promptly.prompt(`MFA token for ${serialArn}: `, {
@@ -341,9 +355,9 @@ async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) 
       default: '',
     });
     debug('Successfully got MFA token from user');
-    cb(undefined, token);
+    return token;
   } catch (err: any) {
     debug('Failed to get MFA token', err);
-    cb(err);
+    throw err;
   }
 }

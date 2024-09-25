@@ -1,9 +1,8 @@
 import { inspect } from 'util';
+import { CredentialProviderRegistry, CredentialProviderSource, ContextProviderPlugin, isContextProviderPlugin } from 'cdk-credential-provider';
 import * as chalk from 'chalk';
 
 import { error } from './_env';
-import { ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
-import { CredentialProviderSource } from './credential-provider-source';
 
 /**
  * The basic contract for plug-ins to adhere to::
@@ -40,7 +39,7 @@ export interface Plugin {
  * A utility to manage plug-ins.
  *
  */
-export class PluginHost {
+export class PluginHost implements CredentialProviderRegistry {
   public static instance = new PluginHost();
 
   /**

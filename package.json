@@ -74,6 +74,7 @@
       "packages/cdk",
       "packages/@aws-cdk/*",
       "packages/awslint",
+      "packages/cdk-credential-provider",
       "packages/@aws-cdk-testing/*",
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/@aws-cdk/cdk-build-tools",

@@ -1,0 +1,63 @@
+{
+  "name": "cdk-credential-provider",
+  "version": "0.0.0",
+  "description": "Contract for implementors of CDK CLI plugins",
+  "scripts": {
+    "build": "cdk-build",
+    "lint": "eslint . --ext=.ts && pkglint",
+    "test": "echo ok",
+    "watch": "cdk-watch",
+    "package": "cdk-package",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "pkglint": "pkglint -f",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
+  },
+  "main": "lib/index.js",
+  "devDependencies": {
+    "@aws-cdk/eslint-plugin": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^29.5.12",
+    "@types/yargs": "^15.0.19",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^7.32.0",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-jest": "^24.7.0",
+    "jest": "^29.7.0",
+    "typescript": "~5.4.5",
+    "@aws-cdk/cdk-build-tools": "0.0.0"
+  },
+  "dependencies": {
+    "@smithy/types": "^3.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/cdk-credential-provider"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "maturity": "developer-preview",
+  "stability": "experimental",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "private": true
+}

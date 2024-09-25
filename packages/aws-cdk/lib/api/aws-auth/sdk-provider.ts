@@ -2,17 +2,48 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { HttpHandlerUserInput } from '@smithy/protocol-http';
+import {
+  AwsCredentialIdentityProvider,
+  FetchHttpHandlerOptions,
+  HttpHandlerOptions,
+  NodeHttpHandlerOptions,
+  RequestHandler,
+} from '@smithy/types';
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import * as AWS from 'aws-sdk';
-import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { CdkCredentials, fromAwsCredentialIdentityProvider, toAwsCredentialIdentity } from 'cdk-credential-provider';
 import * as fs from 'fs-extra';
 import { debug, warning } from './_env';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
 import { Mode } from './credentials';
-import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
+import { ISDK, isUnrecoverableAwsError, SDK } from './sdk';
 import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
+
+export type SdkRequestHandler =
+  (NodeHttpHandlerOptions & HttpHandlerUserInput)
+  | (FetchHttpHandlerOptions & HttpHandlerUserInput)
+  | (Record<string, unknown> & HttpHandlerUserInput)
+  | (RequestHandler<any, any, HttpHandlerOptions> & HttpHandlerUserInput);
+
+interface SdkConfigurationOptions {
+  region?: string;
+  credentials?: AWS.Credentials;
+  logger?: {
+    debug: (...messages: any[]) => void;
+    info: (...messages: any[]) => void;
+    warn: (...messages: any[]) => void;
+    error: (...messages: any[]) => void;
+  };
+  retryStrategy?: ConfiguredRetryStrategy;
+  customUserAgent?: string;
+  requestHandler?: SdkRequestHandler;
+}
 
 // Partial because `RoleSessionName` is required in STS, but we have a default value for it.
 export type AssumeRoleAdditionalOptions = Partial<
@@ -150,7 +181,7 @@ export class SdkProvider {
       profile: options.profile,
       ec2instance: options.ec2creds,
       containerCreds: options.containerCreds,
-      httpOptions: sdkOptions.httpOptions,
+      requestHandler: sdkOptions.requestHandler,
     });
     const region = await AwsCliCompatible.region({
       profile: options.profile,
@@ -163,12 +194,12 @@ export class SdkProvider {
   private readonly plugins = new CredentialPlugins();
 
   public constructor(
-    private readonly defaultChain: AWS.CredentialProviderChain,
+    private readonly defaultChain: AwsCredentialIdentityProvider,
     /**
      * Default region
      */
     public readonly defaultRegion: string,
-    private readonly sdkOptions: ConfigurationOptions = {}) {
+    private readonly sdkOptions: SdkConfigurationOptions = {}) {
   }
 
   /**
@@ -348,10 +379,10 @@ export class SdkProvider {
   /**
    * Resolve the default chain to the first set of credentials that is available
    */
-  private defaultCredentials(): Promise<AWS.Credentials> {
+  private defaultCredentials(): Promise<CdkCredentials> {
     return cached(this, CACHED_DEFAULT_CREDENTIALS, () => {
       debug('Resolving default credentials');
-      return this.defaultChain.resolvePromise();
+      return fromAwsCredentialIdentityProvider(this.defaultChain);
     });
   }
 
@@ -371,7 +402,7 @@ export class SdkProvider {
     debug(`Assuming role '${roleArn}'.`);
 
     region = region ?? this.defaultRegion;
-    const creds = new AWS.ChainableTemporaryCredentials({
+    const provider = fromTemporaryCredentials({
       params: {
         RoleArn: roleArn,
         ExternalId: externalId,
@@ -381,13 +412,14 @@ export class SdkProvider {
           : undefined,
         ...(additionalOptions ?? {}),
       },
-      stsConfig: {
+      clientConfig: {
         region,
         ...this.sdkOptions,
       },
-      masterCredentials: masterCredentials.credentials,
+      masterCredentials: toAwsCredentialIdentity(masterCredentials.credentials),
     });
 
+    const creds = await fromAwsCredentialIdentityProvider(provider);
     return new SDK(creds, region, this.sdkOptions, {
       assumeRoleCredentialsSourceDescription: fmtObtainedCredentials(masterCredentials),
     });
@@ -424,23 +456,12 @@ const DEFAULT_TIMEOUT = 300000;
  * `customUserAgent` lives, but `httpOptions` is the most important attribute.
  */
 function parseHttpOptions(options: SdkHttpOptions) {
-  const config: ConfigurationOptions = {};
-  config.httpOptions = {};
-
-  config.httpOptions.connectTimeout = DEFAULT_CONNECTION_TIMEOUT;
-  config.httpOptions.timeout = DEFAULT_TIMEOUT;
-
   let userAgent = options.userAgent;
   if (userAgent == null) {
     userAgent = defaultCliUserAgent();
   }
-  config.customUserAgent = userAgent;
 
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
-  if (caBundlePath) {
-    debug('Using CA bundle path: %s', caBundlePath);
-    (config.httpOptions as any).ca = readIfPossible(caBundlePath);
-  }
 
   if (options.proxyAddress) {
     debug('Proxy server from command-line arguments: %s', options.proxyAddress);
@@ -452,9 +473,35 @@ function parseHttpOptions(options: SdkHttpOptions) {
   //
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { ProxyAgent } = require('proxy-agent');
-  config.httpOptions.agent = new ProxyAgent(options.proxyAddress);
+  const getProxyForUrl = options.proxyAddress != null
+    ? () => Promise.resolve(options.proxyAddress)
+    : undefined;
 
+  const agent = new ProxyAgent({
+    ca: ca(caBundlePath),
+    getProxyForUrl,
+  });
+
+  const requestHandler = new NodeHttpHandler({
+    connectionTimeout: DEFAULT_CONNECTION_TIMEOUT,
+    requestTimeout: DEFAULT_TIMEOUT,
+    httpsAgent: agent,
+    httpAgent: agent,
+  });
+
+  const config: SdkConfigurationOptions = {
+    requestHandler,
+    customUserAgent: userAgent,
+  };
   return config;
+}
+
+function ca(caBundlePath?: string) {
+  if (caBundlePath) {
+    debug('Using CA bundle path: %s', caBundlePath);
+    return readIfPossible(caBundlePath);
+  }
+  return undefined;
 }
 
 /**
@@ -536,9 +583,9 @@ export interface CredentialsOptions {
  * Result of obtaining base credentials
  */
 type ObtainBaseCredentialsResult =
-  { source: 'correctDefault'; credentials: AWS.Credentials }
-  | { source: 'plugin'; pluginName: string; credentials: AWS.Credentials }
-  | { source: 'incorrectDefault'; credentials: AWS.Credentials; accountId: string; unusedPlugins: string[] }
+  { source: 'correctDefault'; credentials: CdkCredentials }
+  | { source: 'plugin'; pluginName: string; credentials: CdkCredentials }
+  | { source: 'incorrectDefault'; credentials: CdkCredentials; accountId: string; unusedPlugins: string[] }
   | { source: 'none'; unusedPlugins: string[] };
 
 /**

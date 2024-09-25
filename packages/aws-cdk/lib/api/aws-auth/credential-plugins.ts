@@ -1,7 +1,8 @@
+import { CredentialProviderSource } from 'cdk-credential-provider';
 import { debug } from './_env';
 import { Mode } from './credentials';
 import { warning } from '../../logging';
-import { CredentialProviderSource, PluginHost } from '../plugin';
+import { PluginHost } from '../plugin';
 
 /**
  * Cache for credential providers.

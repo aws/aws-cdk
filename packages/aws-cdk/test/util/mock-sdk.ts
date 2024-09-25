@@ -1,16 +1,25 @@
 /* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Account, ISDK, SDK, SdkProvider, SdkForEnvironment } from '../../lib/api/aws-auth';
+import { Account, ISDK, SDK, SdkForEnvironment, SdkProvider } from '../../lib/api/aws-auth';
 import { Mode } from '../../lib/api/aws-auth/credentials';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
+import { createCredentialChain } from '@aws-sdk/credential-providers';
+import { CdkCredentials } from 'cdk-credential-provider';
 
-const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
+const FAKE_CREDENTIALS = new class implements CdkCredentials {
+  accessKeyId = 'ACCESS';
+  secretAccessKey = 'SECRET';
+  sessionToken = 'TOKEN';
+  getPromise(): Promise<void> {
+    return Promise.resolve();
+  }
+};
 
-const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
-  () => FAKE_CREDENTIALS,
-]);
+const FAKE_CREDENTIAL_CHAIN = createCredentialChain(
+  () => Promise.resolve(FAKE_CREDENTIALS),
+);
 
 export interface MockSdkProviderOptions {
   /**
@@ -261,19 +270,19 @@ function partialAwsService<S>(fns: SyncHandlerSubsetOf<S>, additionalProperties:
 //
 // Get the first overload and extract the input and output struct types
 type AwsCallInputOutput<T> =
-    T extends {
-      (args: infer INPUT, callback?: ((err: AWS.AWSError, data: any) => void) | undefined): AWS.Request<infer OUTPUT, AWS.AWSError>;
-      (callback?: ((err: AWS.AWSError, data: {}) => void) | undefined): AWS.Request<any, any>;
-    } ? [INPUT, OUTPUT] : T;
+  T extends {
+    (args: infer INPUT, callback?: ((err: AWS.AWSError, data: any) => void) | undefined): AWS.Request<infer OUTPUT, AWS.AWSError>;
+    (callback?: ((err: AWS.AWSError, data: {}) => void) | undefined): AWS.Request<any, any>;
+  } ? [INPUT, OUTPUT] : T;
 
 // Determine the type of the mock handler from the type of the Input/Output type pair.
 // Don't need to worry about the 'never', TypeScript will propagate it upwards making it
 // impossible to specify the field that has 'never' anywhere in its type.
 type MockHandlerType<AI> =
-    AI extends [any, any] ? (input: AI[0]) => AI[1] : AI;
+  AI extends [any, any] ? (input: AI[0]) => AI[1] : AI;
 
 // Any subset of the full type that synchronously returns the output structure is okay
-export type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
+export type SyncHandlerSubsetOf<S> = { [K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>> };
 
 /**
  * Fake AWS response.
@@ -320,12 +329,13 @@ export function mockResolvedEnvironment(): cxapi.Environment {
 // Jest helpers
 
 // An object on which all callables are Jest Mocks
-export type MockedObject<S extends object> = {[K in keyof S]: MockedFunction<Required<S>[K]>};
+export type MockedObject<S extends object> = { [K in keyof S]: MockedFunction<Required<S>[K]> };
 
 // If a function, then a mocked version of it, otherwise just T
 type MockedFunction<T> = T extends (...args: any[]) => any
   ? jest.MockInstance<ReturnType<T>, jest.ArgsType<T>>
   : T;
+
 export function errorWithCode(code: string, message: string) {
   const ret = new Error(message);
   (ret as any).code = code;

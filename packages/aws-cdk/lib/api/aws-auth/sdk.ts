@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { CdkCredentials, toAwsCredentialIdentity } from 'cdk-credential-provider';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
@@ -119,8 +120,9 @@ export class SDK implements ISDK {
    */
   private _credentialsValidated = false;
 
+  // TODO (v3 migration): do this in the new class that Hogan is creating
   constructor(
-    private readonly _credentials: AWS.Credentials,
+    private readonly _credentials: CdkCredentials,
     region: string,
     httpOptions: ConfigurationOptions = {},
     private readonly sdkOptions: SdkOptions = {}) {
@@ -128,7 +130,7 @@ export class SDK implements ISDK {
     this.config = {
       ...httpOptions,
       ...this.retryOptions,
-      credentials: _credentials,
+      credentials: toAwsCredentialIdentity(_credentials),
       region,
       logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
     };
@@ -243,7 +245,7 @@ export class SDK implements ISDK {
    *
    * Don't use -- only used to write tests around assuming roles.
    */
-  public async currentCredentials(): Promise<AWS.Credentials> {
+  public async currentCredentials(): Promise<CdkCredentials> {
     await this.forceCredentialRetrieval();
     return this._credentials;
   }
