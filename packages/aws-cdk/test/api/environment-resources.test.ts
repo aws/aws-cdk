@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { ToolkitInfo } from '../../lib/api';
 import { EnvironmentResourcesRegistry } from '../../lib/api/environment-resources';
-import { Notices } from '../../lib/notices';
+import { Notice, Notices } from '../../lib/notices';
 import { Configuration } from '../../lib/settings';
 import { errorWithCode, mockBootstrapStack, MockSdk } from '../util/mock-sdk';
 import { MockToolkitInfo } from '../util/mock-toolkitinfo';
@@ -79,8 +79,38 @@ describe('validateversion without bootstrap stack', () => {
       },
     });
 
+    // simulate a bootstrap notice
+    const bootstrapNotice: Notice = {
+      components: [{ name: 'bootstrap', version: '<22' }],
+      issueNumber: 1234,
+      title: 'title',
+      overview: 'overview',
+      schemaVersion: '1',
+    };
+
     // THEN
+    const notices = Notices.create({ configuration: new Configuration() });
+    await notices.refresh({ dataSource: { fetch: async () => [bootstrapNotice] } });
     await expect(envResources().validateVersion(8, '/abc')).resolves.toBeUndefined();
+
+    // assert the notices print queue contains our notice
+    notices.print({
+      printer: (message) => {
+        expect(message).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+1234	title
+
+	Overview: overview
+
+	Affected versions: bootstrap: <22
+
+	More information at: https://github.com/aws/aws-cdk/issues/1234
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 1234".`);
+      },
+    });
   });
 
   test('validating version without explicit SSM parameter fails', async () => {
