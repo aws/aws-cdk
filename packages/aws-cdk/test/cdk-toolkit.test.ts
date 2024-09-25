@@ -71,8 +71,6 @@ import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
-import { mocked } from 'jest-mock';
-import { SdkProvider } from '../lib';
 
 process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
