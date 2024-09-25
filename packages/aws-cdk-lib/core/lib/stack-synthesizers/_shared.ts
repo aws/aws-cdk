@@ -3,6 +3,7 @@ import { Node, IConstruct } from 'constructs';
 import { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Stack } from '../stack';
+import { Token } from '../token';
 
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
@@ -20,10 +21,20 @@ export function addStackArtifactToAssembly(
   stackProps: Partial<cxschema.AwsCloudFormationStackProperties>,
   additionalStackDependencies: string[]) {
 
+  const stackTags = stack.tags.tagValues();
+
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource
   // level and are not needed in the cloud assembly.
-  if (stack.tags.hasTags()) {
-    stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, stack.tags.renderTags());
+  if (Object.entries(stackTags).length > 0) {
+    for (const [k, v] of Object.entries(stackTags)) {
+      if (Token.isUnresolved(k) || Token.isUnresolved(v)) {
+        throw new Error(`Stack tags may not contain deploy-time values (tag: ${k}=${v}). Apply tags containing deploy-time values to resources only, avoid tagging stacks.`);
+      }
+    }
+
+    stack.node.addMetadata(
+      cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+      Object.entries(stackTags).map(([key, value]) => ({ Key: key, Value: value })));
   }
 
   const deps = [
@@ -46,8 +57,9 @@ export function addStackArtifactToAssembly(
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
     terminationProtection: stack.terminationProtection,
-    tags: nonEmptyDict(stack.tags.tagValues()),
+    tags: nonEmptyDict(stackTags),
     validateOnSynth: session.validateOnSynth,
+    notificationArns: stack._notificationArns,
     ...stackProps,
     ...stackNameProperty,
   };
