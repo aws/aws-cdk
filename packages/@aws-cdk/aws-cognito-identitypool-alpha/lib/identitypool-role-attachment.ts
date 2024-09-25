@@ -5,34 +5,34 @@ import { Construct } from 'constructs';
 import { IIdentityPool, IdentityPoolProviderUrl } from './identitypool';
 
 /**
- * Represents an identity pool role attachment
+ * Represents an Identity Pool Role Attachment
  */
 export interface IIdentityPoolRoleAttachment extends IResource {
   /**
-   * ID of the attachment's underlying identity pool
+   * ID of the Attachment's underlying Identity Pool
    */
   readonly identityPoolId: string;
 }
 
 /**
- * Props for an identity pool role attachment
+ * Props for an Identity Pool Role Attachment
  */
 export interface IdentityPoolRoleAttachmentProps {
 
   /**
-   * ID of the attachment's underlying identity pool
+   * ID of the Attachment's underlying Identity Pool
    */
   readonly identityPool: IIdentityPool;
 
   /**
-   * Default authenticated (User) role
-   * @default - No default authenticated role will be added
+   * Default authenticated (User) Role
+   * @default - No default authenticated Role will be added
    */
   readonly authenticatedRole?: IRole;
 
   /**
-   * Default unauthenticated (Guest) role
-   * @default - No default unauthenticated role will be added
+   * Default unauthenticated (Guest) Role
+   * @default - No default unauthenticated Role will be added
    */
   readonly unauthenticatedRole?: IRole;
 
@@ -44,12 +44,12 @@ export interface IdentityPoolRoleAttachmentProps {
 }
 
 /**
- * Map roles to users in the identity pool based on claims from the identity provider
+ * Map roles to users in the Identity Pool based on claims from the Identity Provider
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
  */
 export interface IdentityPoolRoleMapping {
   /**
-   * The url of the provider for which the role is mapped
+   * The url of the Provider for which the role is mapped
    */
   readonly providerUrl: IdentityPoolProviderUrl;
 
@@ -60,7 +60,7 @@ export interface IdentityPoolRoleMapping {
   readonly mappingKey?: string;
 
   /**
-   * If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from identity provider.
+   * If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from Identity Provider.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users
    *
    * @default false
@@ -106,11 +106,11 @@ export enum RoleMappingMatchType {
 }
 
 /**
- * Represents an identity pool role attachment role mapping rule
+ * Represents an Identity Pool Role Attachment role mapping rule
  */
 export interface RoleMappingRule {
   /**
-   * The key sent in the token by the federated identity provider
+   * The key sent in the token by the federated Identity Provider
    */
   readonly claim: string;
 
@@ -132,13 +132,13 @@ export interface RoleMappingRule {
 }
 
 /**
- * Defines an identity pool role attachment
+ * Defines an Identity Pool Role Attachment
  *
  * @resource AWS::Cognito::IdentityPoolRoleAttachment
  */
 export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAttachment {
   /**
-   * ID of the underlying identity pool
+   * ID of the underlying Identity Pool
    */
   public readonly identityPoolId: string
 
@@ -163,7 +163,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
   }
 
   /**
-   * Configures role mappings for the identity pool role attachment
+   * Configures role mappings for the Identity Pool Role Attachment
    */
   private configureRoleMappings(
     ...props: IdentityPoolRoleMapping[]

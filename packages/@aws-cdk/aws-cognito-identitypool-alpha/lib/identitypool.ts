@@ -167,7 +167,7 @@ export interface IdentityPoolAmazonLoginProvider {
  */
 export interface IdentityPoolFacebookLoginProvider {
   /**
-   * App ID for Facebook identity dederation
+   * App ID for Facebook identity federation
    */
   readonly appId: string;
 }
@@ -208,7 +208,7 @@ export interface IdentityPoolTwitterLoginProvider {
 }
 
 /**
- * External Authentication providers for usage in Identity Pool.
+ * External Authentication Providers for usage in Identity Pool.
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
 export interface IdentityPoolAuthenticationProviders {
