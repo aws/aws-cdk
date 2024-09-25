@@ -1,5 +1,6 @@
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
@@ -12,6 +13,12 @@ import { Mode } from './credentials';
 import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
 import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
+
+// Partial because `RoleSessionName` is required in STS, but we have a default value for it.
+export type AssumeRoleAdditionalOptions = Partial<
+// cloud-assembly-schema validates that `ExternalId` and `RoleArn` are not configured
+Omit<AWS.STS.Types.AssumeRoleRequest, 'ExternalId' | 'RoleArn'>
+>;
 
 // Some configuration that can only be achieved by setting
 // environment variables.
@@ -195,7 +202,8 @@ export class SdkProvider {
     }
 
     // We will proceed to AssumeRole using whatever we've been given.
-    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
+    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn,
+      options.assumeRoleExternalId, options.assumeRoleAdditionalOptions, env.region);
 
     // Exercise the AssumeRoleCredentialsProvider we've gotten at least once so
     // we can determine whether the AssumeRole call succeeds or not.
@@ -358,16 +366,20 @@ export class SdkProvider {
     masterCredentials: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>,
     roleArn: string,
     externalId: string | undefined,
+    additionalOptions: AssumeRoleAdditionalOptions | undefined,
     region: string | undefined) {
     debug(`Assuming role '${roleArn}'.`);
 
     region = region ?? this.defaultRegion;
-
     const creds = new AWS.ChainableTemporaryCredentials({
       params: {
         RoleArn: roleArn,
-        ...externalId ? { ExternalId: externalId } : {},
+        ExternalId: externalId,
         RoleSessionName: `aws-cdk-${safeUsername()}`,
+        TransitiveTagKeys: additionalOptions?.Tags
+          ? additionalOptions.Tags.map((t) => t.Key)
+          : undefined,
+        ...(additionalOptions ?? {}),
       },
       stsConfig: {
         region,
@@ -513,6 +525,11 @@ export interface CredentialsOptions {
    * External ID required to assume the given role.
    */
   readonly assumeRoleExternalId?: string;
+
+  /**
+   * Session tags required to assume the given role.
+   */
+  readonly assumeRoleAdditionalOptions?: AssumeRoleAdditionalOptions;
 }
 
 /**
@@ -574,4 +591,22 @@ function fmtObtainedCredentials(
 
       return msg.join('');
   }
+}
+
+/**
+ * Instantiate an SDK for context providers. This function ensures that all
+ * lookup assume role options are used when context providers perform lookups.
+ */
+export async function initContextProviderSdk(aws: SdkProvider, options: cxschema.ContextLookupRoleOptions): Promise<ISDK> {
+
+  const account = options.account;
+  const region = options.region;
+
+  const creds: CredentialsOptions = {
+    assumeRoleArn: options.lookupRoleArn,
+    assumeRoleExternalId: options.lookupRoleExternalId,
+    assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
+  };
+
+  return (await aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, creds)).sdk;
 }
