@@ -69,7 +69,6 @@ export interface ConfigurationProps {
  * All sources of settings combined
  */
 export class Configuration {
-
   public settings = new Settings();
   public context = new Context();
 
