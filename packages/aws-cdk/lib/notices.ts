@@ -96,13 +96,22 @@ export interface NoticesRefreshOptions {
   readonly dataSource?: NoticeDataSource;
 }
 
+/**
+ * Provides access to notices the CLI can display.
+ */
 export class Notices {
 
+  /**
+   * Create an instance. Note that this replaces the singleton.
+   */
   public static create(props: NoticesProps): Notices {
     this._instance = new Notices(props);
     return this._instance;
   }
 
+  /**
+   * Get the singleton instance. Note this will throw if `create` was not called.
+   */
   public static get(): Notices {
     if (!this._instance) {
       throw new Error('Notices have not been initialized. Call create.');
@@ -123,20 +132,34 @@ export class Notices {
     this.acknowledgedIssueNumbers = new Set(props.acknowledgedIssueNumbers ?? this.configuration.context.get('acknowledged-issue-numbers') ?? []);
   }
 
+  /**
+   * Refresh the list of notices this instance is aware of.
+   */
   public async refresh(options: NoticesRefreshOptions = {}) {
     const dataSource = options.dataSource ?? new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), options.force ?? false);
-    const data = await dataSource.fetch();
-    this.data = data.filter(notice => !this.acknowledgedIssueNumbers.has(notice.issueNumber));
+    this.data = await dataSource.fetch();
   }
 
+  /**
+   * Determine whether or not notices should be displayed based on the
+   * configuration provided at instantiation time.
+   */
   public shouldDisplay(): boolean {
     return this.configuration.settings.get(['notices']) ?? true;
   }
 
+  /**
+   * Enqueue a notice for print.
+   * Use `print` to actually print them.
+   */
   public enqueuePrint(notices: Notice[]) {
     this.printQueue.push(...notices);
   }
 
+  /**
+   * Print the notices in the queue.
+   * Use `enqueuePrint` to add notices to the queue.
+   */
   public print(options: NoticesPrintOptions = {}) {
 
     let messageString: string = '';
@@ -154,6 +177,9 @@ export class Notices {
 
   }
 
+  /**
+   * Find notices relevant to the cli version.
+   */
   public forCliVersion(options: NoticesForCliVersionOptions = {}): Notice[] {
 
     const compareToVersion = options.cliVersion ?? versionNumber();
@@ -172,6 +198,9 @@ export class Notices {
 
   }
 
+  /**
+   * Find notices relevant to the framework version.
+   */
   public forFrameworkVersion(options: NoticesForFrameworkVersionOptions = {}): Notice[] {
 
     const outDir = options.outDir ?? (this.configuration.settings.get(['output']) ?? 'cdk.out');
@@ -189,6 +218,9 @@ export class Notices {
 
   }
 
+  /**
+   * Find notices relevant to the bootstrap version.
+   */
   public forBootstrapVersion(options: NoticesForBootstrapVersionOptions): Notice[] {
 
     const semverBootstrapVersion = semver.coerce(options.bootstrapVersion);
@@ -366,57 +398,6 @@ export interface NoticeFilterProps {
   matchFrameworkRelatedNotices: boolean;
   matchBootstrapRelatedNotices: boolean;
   bootstrapVersion?: number;
-}
-
-export class NoticeFilter {
-  private readonly acknowledgedIssueNumbers: Set<number>;
-
-  constructor(private readonly props: NoticeFilterProps) {
-    this.acknowledgedIssueNumbers = props.acknowledgedIssueNumbers;
-  }
-
-  /**
-   * Returns true if we should show this notice.
-   */
-  apply(notice: Notice): boolean {
-    if (this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
-      return false;
-    }
-
-    if (this.props.matchBootstrapRelatedNotices && !this.props.bootstrapVersion) {
-      throw new Error('\'bootstrapVersion\' must be set when \'matchBootstrapRelatedNotices\' is true');
-    }
-
-    let filtered = false;
-    if (this.props.matchCliRelatedNotices) {
-      filtered = filtered || this.applyVersion(notice, 'cli', this.props.cliVersion);
-    }
-    if (this.props.matchFrameworkRelatedNotices) {
-      filtered = filtered || match(resolveAliases(notice.components), this.props.tree);
-    }
-    if (this.props.matchBootstrapRelatedNotices) {
-      // bootstrap stack versions are just integers so we need to coerce to semver
-      // in order to compare them with a range.
-      const semverBootstrapVersion = semver.coerce(this.props.bootstrapVersion);
-      if (!semverBootstrapVersion) {
-        throw new Error(`Cannot coerce bootstrap version '${this.props.bootstrapVersion}' into semver`);
-      }
-      filtered = filtered || this.applyVersion(notice, 'bootstrap', semverBootstrapVersion);
-    }
-
-    return filtered;
-  }
-
-  /**
-   * Returns true if we should show the notice.
-   */
-  private applyVersion(notice: Notice, name: string, compareToVersion: string | semver.SemVer | undefined) {
-    if (compareToVersion === undefined) { return false; }
-
-    const affectedComponent = notice.components.find(component => component.name === name);
-    const affectedRange = affectedComponent?.version;
-    return affectedRange != null && semver.satisfies(compareToVersion, affectedRange);
-  }
 }
 
 /**

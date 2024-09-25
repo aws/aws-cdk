@@ -442,31 +442,31 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     if (notices.shouldDisplay()) {
 
+      // note that any bootstrap version related notices are not enqueued here (because we don't know the bootstrap version number here).
+      // they are enqueued to the same `Notices` instance deep inside our 'cdk deploy' call stack.
+
       if (cmd === 'notices') {
+        // we force cache refresh because when user explicitly asks
+        // to see notices, we assume they want us to consider ALL possible notices.
         await notices.refresh({ force: true });
+        notices.enqueuePrint([
+          ...notices.forCliVersion({ onlyUnacknowledged: argv.unacknowledged }),
+          ...notices.forFrameworkVersion({ onlyUnacknowledged: argv.unacknowledged }),
+        ]);
 
-        if (argv.unacknowledged === true) {
+        // we only show the total in this case because the message it prints is specific for "unacknowledged" notices.
+        // unfortunate, but it was introduced this way so we preserve it for now.
+        // see https://github.com/aws/aws-cdk/issues/31250
+        notices.print({ showTotal: argv.unacknowledged });
 
-          const noticesToDisplay = [];
-          noticesToDisplay.push(...notices.forCliVersion({ onlyUnacknowledged: true }));
-          noticesToDisplay.push(...notices.forFrameworkVersion({ onlyUnacknowledged: true }));
-
-          notices.enqueuePrint(noticesToDisplay);
-          notices.print();
-        } else {
-          const noticesToDisplay = [];
-          noticesToDisplay.push(...notices.forCliVersion());
-          noticesToDisplay.push(...notices.forFrameworkVersion());
-
-          notices.enqueuePrint(noticesToDisplay);
-          notices.print();
-        }
       } else if (cmd !== 'version') {
+        // here we don't force refresh because its not an explicit ask
+        // to see notices - so we let the cache play its part.
         await notices.refresh();
-        const noticesToDisplay = [];
-        noticesToDisplay.push(...notices.forCliVersion());
-        noticesToDisplay.push(...notices.forFrameworkVersion());
-        notices.enqueuePrint(noticesToDisplay);
+        notices.enqueuePrint([
+          ...notices.forCliVersion({ onlyUnacknowledged: true }),
+          ...notices.forFrameworkVersion({ onlyUnacknowledged: true }),
+        ]);
         notices.print();
       }
     }

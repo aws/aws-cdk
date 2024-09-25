@@ -516,7 +516,7 @@ describe('mock cdk version 2.132.0', () => {
     await notices.refresh({
       dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
     });
-    notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0' }));
+    notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0', onlyUnacknowledged: true }));
     notices.print({
       printer: (message) => {
 
@@ -556,7 +556,7 @@ test('Shows notices that pass the filter with --unacknowledged one acknowledged 
   await notices.refresh({
     dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
   });
-  notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0' }));
+  notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0', onlyUnacknowledged: true }));
   notices.print({
     printer: (message) => {
       expect(message).toEqual(`
@@ -585,6 +585,7 @@ test('Shows notices that pass the filter with --unacknowledged all acknowledged 
   await notices.refresh({
     dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
   });
+  notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0', onlyUnacknowledged: true }));
   notices.print({
     printer: (message) => {
       expect(message).toEqual('\n\nThere are 0 unacknowledged notice(s).');
