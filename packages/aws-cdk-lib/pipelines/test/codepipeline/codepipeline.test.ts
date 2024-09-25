@@ -523,8 +523,30 @@ test('artifactBucket can be overridden', () => {
   });
 });
 
+test('throws when deploy role session tags are used', () => {
+
+  const synthesizer = new cdk.DefaultStackSynthesizer({
+    deployRoleAdditionalOptions: {
+      Tags: [{ Key: 'Departement', Value: 'Enginerring' }],
+    },
+  });
+
+  expect(() => {
+    new ReuseCodePipelineStack(app, 'PipelineStackA', {
+      env: PIPELINE_ENV,
+      reuseStageProps: {
+        reuseStackProps: {
+          synthesizer,
+        },
+      },
+    });
+  }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags, but assuming roles with session tags is not supported by CodePipeline.');
+
+});
+
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
+  reuseStageProps?: ReuseStageProps;
 }
 class ReuseCodePipelineStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: ReuseCodePipelineStackProps ) {
@@ -559,6 +581,7 @@ class ReuseCodePipelineStack extends cdk.Stack {
       `SampleStage-${testStageEnv.account}-${testStageEnv.region}`,
       {
         env: testStageEnv,
+        ...(props.reuseStageProps ?? {}),
       },
     );
     pipeline.addStage(stage);
@@ -566,10 +589,14 @@ class ReuseCodePipelineStack extends cdk.Stack {
   }
 }
 
+interface ReuseStageProps extends cdk.StageProps {
+  readonly reuseStackProps?: cdk.StackProps;
+}
+
 class ReuseStage extends cdk.Stage {
-  public constructor(scope: Construct, id: string, props: cdk.StageProps) {
+  public constructor(scope: Construct, id: string, props: ReuseStageProps) {
     super(scope, id, props);
-    new ReuseStack(this, 'SampleStack', {});
+    new ReuseStack(this, 'SampleStack', props.reuseStackProps ?? {});
   }
 }
 
