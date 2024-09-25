@@ -30,7 +30,7 @@ test('load settings from both files if available', async () => {
     return GIVEN_CONFIG.get(path);
   });
 
-  const config = await Configuration.get().load();
+  const config = await new Configuration().load();
 
   // THEN
   expect(config.settings.get(['project'])).toBe('foobar');
@@ -63,7 +63,7 @@ test('load context from all 3 files if available', async () => {
     return GIVEN_CONFIG.get(path);
   });
 
-  const config = await Configuration.get().load();
+  const config = await new Configuration().load();
 
   // THEN
   expect(config.context.get('project')).toBe('foobar');
@@ -88,7 +88,7 @@ test('throws an error if the `build` key is specified in the user config', async
   });
 
   // THEN
-  await expect(Configuration.get().load()).rejects.toEqual(new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead'));
+  await expect(new Configuration().load()).rejects.toEqual(new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead'));
 });
 
 test('Can specify the `quiet` key in the user config', async () => {
@@ -108,7 +108,7 @@ test('Can specify the `quiet` key in the user config', async () => {
   });
 
   // THEN
-  const config = await Configuration.get().load();
+  const config = await new Configuration().load();
 
   expect(config.settings.get(['quiet'])).toBe(true);
 });

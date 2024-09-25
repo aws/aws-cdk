@@ -11,12 +11,17 @@ import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
+import { Notices } from '../../lib/notices';
+import { Configuration } from '../../lib/settings';
 
 let sdkProvider: MockSdkProvider;
 let deployments: Deployments;
 let mockToolkitInfoLookup: jest.Mock;
 let currentCfnStackResources: { [key: string]: CloudFormation.StackResourceSummary[] };
 let numberOfTimesListStackResourcesWasCalled: number;
+beforeAll(() => {
+  Notices.create({ configuration: new Configuration() });
+});
 beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();

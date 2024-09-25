@@ -7,15 +7,14 @@ import * as nock from 'nock';
 import * as logging from '../lib/logging';
 import {
   CachedDataSource,
-  filterNotices,
-  formatNotices,
-  generateMessage,
   Notice,
+  Notices,
   WebsiteNoticeDataSource,
 } from '../lib/notices';
 import * as version from '../lib/version';
+import { Configuration } from '../lib/settings';
 
-const BOOTSTRAP_NOTICE = {
+const BASIC_BOOTSTRAP_NOTICE = {
   title: 'Exccessive permissions on file asset publishing role',
   issueNumber: 16600,
   overview: 'FilePublishingRoleDefaultPolicy has too many permissions',
@@ -26,7 +25,7 @@ const BOOTSTRAP_NOTICE = {
   schemaVersion: '1',
 };
 
-const BASIC_NOTICE = {
+const BASIC_CLI_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
   issueNumber: 16603,
   overview: 'If a stack is deployed with an S3 bucket with auto_delete_objects=True, and then re-deployed with auto_delete_objects=False, all the objects in the bucket will be deleted.',
@@ -37,7 +36,7 @@ const BASIC_NOTICE = {
   schemaVersion: '1',
 };
 
-const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
+const MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE = {
   title: 'Error when building EKS cluster with monocdk import',
   issueNumber: 17061,
   overview: 'When using monocdk/aws-eks to build a stack containing an EKS cluster, error is thrown about missing lambda-layer-node-proxy-agent/layer/package.json.',
@@ -129,10 +128,18 @@ describe('cli notices', () => {
     jest.restoreAllMocks();
   });
 
-  describe(formatNotices, () => {
+  describe('print', () => {
     test('correct format', () => {
-      const result = formatNotices([BASIC_NOTICE])[0];
-      expect(result).toEqual(`16603	Toggling off auto_delete_objects for Bucket empties the bucket
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      notices.enqueuePrint([BASIC_CLI_NOTICE]);
+      notices.print({
+        printer: (message) => {
+
+          expect(message).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+16603	Toggling off auto_delete_objects for Bucket empties the bucket
 
 	Overview: If a stack is deployed with an S3 bucket with
 	          auto_delete_objects=True, and then re-deployed with
@@ -142,12 +149,24 @@ describe('cli notices', () => {
 	Affected versions: cli: <=1.126.0
 
 	More information at: https://github.com/aws/aws-cdk/issues/16603
-`);
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
+        },
+      });
     });
 
     test('multiple affect versions', () => {
-      const result = formatNotices([MULTIPLE_AFFECTED_VERSIONS_NOTICE])[0];
-      expect(result).toEqual(`17061	Error when building EKS cluster with monocdk import
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      notices.enqueuePrint([MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
+      notices.print({
+        printer: (message) => {
+
+          expect(message).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+17061	Error when building EKS cluster with monocdk import
 
 	Overview: When using monocdk/aws-eks to build a stack containing an
 	          EKS cluster, error is thrown about missing
@@ -156,130 +175,88 @@ describe('cli notices', () => {
 	Affected versions: cli: <1.130.0 >=1.126.0
 
 	More information at: https://github.com/aws/aws-cdk/issues/17061
-`);
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 17061".`);
+
+        },
+      });
     });
   });
 
-  describe(filterNotices, () => {
+  describe('filter', () => {
 
-    test('correctly filter notices on bootstrap', () => {
+    test('correctly filter notices on bootstrap', async () => {
 
-      const notices = [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE, BOOTSTRAP_NOTICE];
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: true,
-        matchCliRelatedNotices: false,
-        matchFrameworkRelatedNotices: false,
-        bootstrapVersion: 22,
-        cliVersion: '1.0.0',
-        outdir: 'cdk.out',
-      })).toEqual([BOOTSTRAP_NOTICE]);
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE, BASIC_BOOTSTRAP_NOTICE] },
+      });
+
+      expect(notices.forBootstrapVersion({ bootstrapVersion: 22 })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
 
     });
 
-    test('correctly filter notices on cli', () => {
-      const notices = [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE];
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: '1.0.0',
-        outdir: 'cdk.out',
-      })).toEqual([BASIC_NOTICE]);
+    test('correctly filter notices on cli', async () => {
 
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: '1.129.0',
-        outdir: 'cdk.out',
-      })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE] },
+      });
 
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: '1.126.0',
-        outdir: 'cdk.out',
-      })).toEqual(notices);
-
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: '1.130.0',
-        outdir: 'cdk.out',
-      })).toEqual([]);
+      expect(notices.forCliVersion({ cliVersion: '1.0.0' })).toEqual([BASIC_CLI_NOTICE]);
+      expect(notices.forCliVersion({ cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
+      expect(notices.forCliVersion({ cliVersion: '1.126.0' })).toEqual([BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
+      expect(notices.forCliVersion({ cliVersion: '1.130.0' })).toEqual([]);
     });
 
-    test('correctly filter notices on framework', () => {
-      const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
+    test('correctly filter notices on framework', async () => {
 
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: version.versionNumber(),
-        outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0'),
-      })).toEqual([]);
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [FRAMEWORK_2_1_0_AFFECTED_NOTICE] },
+      });
 
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: version.versionNumber(),
-        outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0'),
-      })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
     });
 
-    test('correctly filter notices on arbitrary modules', () => {
-      const notices = [NOTICE_FOR_APIGATEWAYV2];
+    test('correctly filter notices on arbitrary modules', async () => {
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [NOTICE_FOR_APIGATEWAYV2] },
+      });
 
       // module-level match
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: version.versionNumber(),
-        outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
-      })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+      expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
-      expect(filterNotices(notices, {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: version.versionNumber(),
-        outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0'),
-      })).toEqual([]);
+      expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+
+    });
+
+    test('correctly filter notices on module name mismatch', async () => {
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [NOTICE_FOR_APIGATEWAY] },
+      });
 
       // module name mismatch: apigateway != apigatewayv2
-      expect(filterNotices([NOTICE_FOR_APIGATEWAY], {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: version.versionNumber(),
-        outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
-      })).toEqual([]);
+      expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
 
-      // construct-level match
-      expect(filterNotices([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], {
-        acknowledgedIssueNumbers: new Set(),
-        matchBootstrapRelatedNotices: false,
-        matchCliRelatedNotices: true,
-        matchFrameworkRelatedNotices: true,
-        cliVersion: version.versionNumber(),
-        outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
-      })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+    });
+
+    test('correctly filter notices on construct level match', async () => {
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE] },
+      });
+
+      expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+
     });
 
   });
@@ -289,15 +266,15 @@ describe('cli notices', () => {
 
     test('returns data when download succeeds', async () => {
       const result = await mockCall(200, {
-        notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
+        notices: [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE],
       });
 
-      expect(result).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(result).toEqual([BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
     });
 
     test('returns appropriate error when the server returns an unexpected status code', async () => {
       const result = mockCall(500, {
-        notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
+        notices: [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE],
       });
 
       await expect(result).rejects.toThrow(/500/);
@@ -305,7 +282,7 @@ describe('cli notices', () => {
 
     test('returns appropriate error when the server returns an unexpected structure', async () => {
       const result = mockCall(200, {
-        foo: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
+        foo: [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE],
       });
 
       await expect(result).rejects.toThrow(/key is missing/);
@@ -343,7 +320,7 @@ describe('cli notices', () => {
         .get('/notices.json')
         .delayConnection(3500)
         .reply(200, {
-          notices: [BASIC_NOTICE],
+          notices: [BASIC_CLI_NOTICE],
         });
 
       const result = dataSource.fetch();
@@ -356,7 +333,7 @@ describe('cli notices', () => {
         .get('/notices.json')
         .delayBody(3500)
         .reply(200, {
-          notices: [BASIC_NOTICE],
+          notices: [BASIC_CLI_NOTICE],
         });
 
       const result = dataSource.fetch();
@@ -375,8 +352,8 @@ describe('cli notices', () => {
 
   describe(CachedDataSource, () => {
     const fileName = path.join(os.tmpdir(), 'cache.json');
-    const cachedData = [BASIC_NOTICE];
-    const freshData = [MULTIPLE_AFFECTED_VERSIONS_NOTICE];
+    const cachedData = [BASIC_CLI_NOTICE];
+    const freshData = [MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE];
 
     beforeEach(() => {
       fs.writeFileSync(fileName, '');
@@ -471,42 +448,36 @@ describe('cli notices', () => {
     }
   });
 
-  describe(generateMessage, () => {
+  describe('more prints', () => {
     test('does not show anything when there are no notices', async () => {
-      const dataSource = createDataSource();
-      dataSource.fetch.mockResolvedValue([]);
 
-      const result = await generateMessage(dataSource, {
-        acknowledgedIssueNumbers: [],
-        outdir: '/tmp',
+      Notices.create({ configuration: new Configuration() }).print({
+        printer: (message) => {
+          expect(message).toEqual('');
+        },
       });
-
-      expect(result).toEqual('');
     });
 
     test('Shows no notices when there are no notices with --unacknowledged', async () => {
-      const dataSource = createDataSource();
-      dataSource.fetch.mockResolvedValue([]);
-
-      const result = await generateMessage(dataSource, {
-        acknowledgedIssueNumbers: [],
-        outdir: '/tmp',
-        unacknowledged: true,
+      Notices.create({ configuration: new Configuration() }).print({
+        printer: (message) => {
+          expect(message).toEqual('\n\nThere are 0 unacknowledged notice(s).');
+        },
+        showTotal: true,
       });
-
-      expect(result).toEqual('\n\nThere are 0 unacknowledged notice(s).');
     });
 
     test('shows notices that pass the filter', async () => {
-      const dataSource = createDataSource();
-      dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
 
-      const result = await generateMessage(dataSource, {
-        acknowledgedIssueNumbers: [17061],
-        outdir: '/tmp',
+      const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [17061] });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE] },
       });
+      notices.enqueuePrint(notices.forCliVersion({ cliVersion: '1.120.0' }));
+      notices.print({
+        printer: (message) => {
 
-      expect(result).toEqual(`
+          expect(message).toEqual(`
 NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 16603	Toggling off auto_delete_objects for Bucket empties the bucket
@@ -522,13 +493,9 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
+        },
+      });
     });
-
-    function createDataSource() {
-      return {
-        fetch: jest.fn(),
-      };
-    }
   });
 });
 
@@ -543,17 +510,17 @@ describe('mock cdk version 2.132.0', () => {
     jest.restoreAllMocks();
   });
 
-  test('Shows notices that pass the filter with --unacknowledged', async () => {
-    const dataSource = createDataSource();
-    dataSource.fetch.mockResolvedValue([CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2]);
+  test('Shows notices that pass the filter with --unacknowledged no acknowledged issues', async () => {
 
-    const allNotices = await generateMessage(dataSource, {
-      acknowledgedIssueNumbers: [],
-      outdir: '/tmp',
-      unacknowledged: true,
+    const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [] });
+    await notices.refresh({
+      dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
     });
+    notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0' }));
+    notices.print({
+      printer: (message) => {
 
-    expect(allNotices).toEqual(`
+        expect(message).toEqual(`
 NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 29420	(cli): Some bug affecting cdk deploy.
@@ -577,14 +544,22 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29420".
 
 There are 2 unacknowledged notice(s).`);
-
-    const acknowledgeNotice29420 = await generateMessage(dataSource, {
-      acknowledgedIssueNumbers: [29420],
-      outdir: '/tmp',
-      unacknowledged: true,
+      },
+      showTotal: true,
     });
+  });
+});
 
-    expect(acknowledgeNotice29420).toEqual(`
+test('Shows notices that pass the filter with --unacknowledged one acknowledged issue', async () => {
+
+  const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [29420] });
+  await notices.refresh({
+    dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
+  });
+  notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0' }));
+  notices.print({
+    printer: (message) => {
+      expect(message).toEqual(`
 NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 29483	(cli): Some bug affecting cdk diff.
@@ -599,19 +574,21 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29483".
 
 There are 1 unacknowledged notice(s).`);
+    },
+    showTotal: true,
+  });
+});
 
-    const allAcknowledgedNotices = await generateMessage(dataSource, {
-      acknowledgedIssueNumbers: [29420, 29483],
-      outdir: '/tmp',
-      unacknowledged: true,
-    });
+test('Shows notices that pass the filter with --unacknowledged all acknowledged issue', async () => {
 
-    expect(allAcknowledgedNotices).toEqual('\n\nThere are 0 unacknowledged notice(s).');
-
-    function createDataSource() {
-      return {
-        fetch: jest.fn(),
-      };
-    }
+  const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [29420, 29483] });
+  await notices.refresh({
+    dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
+  });
+  notices.print({
+    printer: (message) => {
+      expect(message).toEqual('\n\nThere are 0 unacknowledged notice(s).');
+    },
+    showTotal: true,
   });
 });

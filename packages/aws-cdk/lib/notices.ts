@@ -12,102 +12,205 @@ import { versionNumber } from './version';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
-export interface DisplayNoticesProps {
+export interface NoticesProps {
   /**
-   * The cloud assembly directory. Usually 'cdk.out'.
+   * A `Configuration` instance holding CDK context and settings.
    */
-  readonly outdir?: string;
+  readonly configuration: Configuration;
 
   /**
-   * Issue numbers of notices that have been acknowledged by a user
-   * of the current CDK repository. These notices will be skipped.
+   * List of issues that are already acknowledged. Notices linked to these
+   * issues will be excluded.
+   *
+   * @default - taken from the configuration.
    */
   readonly acknowledgedIssueNumbers?: number[];
 
+}
+
+export interface NoticesPrintOptions {
+
   /**
-   * Whether cached notices should be ignored. Setting this property
-   * to true will force the CLI to download fresh data
+   * Whether to append the total number of unacknowledged notices to the display.
    *
    * @default false
    */
-  readonly ignoreCache?: boolean;
+  readonly showTotal?: boolean;
 
   /**
-   * Whether to append the number of unacknowledged notices to the display.
+   * Printer function.
+   *
+   * @default print
+   */
+  readonly printer?: (message: string) => void;
+
+}
+
+export interface NoticesForCommonOptions {
+  /**
+   * Include only unacknowledged notices.
    *
    * @default false
    */
-  readonly unacknowledged?: boolean;
+  readonly onlyUnacknowledged?: boolean;
+}
 
+export interface NoticesForCliVersionOptions extends NoticesForCommonOptions {
   /**
-   * Whether to show notices related to the CLI.
+   * The version of the CLI to filter notices for.
    *
-   * @default true
+   * @default - The current version of the CLI
    */
-  readonly showCliRelatedNotices?: boolean;
+  readonly cliVersion?: string;
+}
 
+export interface NoticesForBootstrapVersionOptions extends NoticesForCommonOptions {
   /**
-   * Whether to show notices related to the CDK Framework.
+   * The version of Bootstrap to filter notices for.
+   */
+  readonly bootstrapVersion: number;
+}
+
+export interface NoticesForFrameworkVersionOptions extends NoticesForCommonOptions {
+  /**
+   * The directory where the CDK application is synthesized to.
    *
-   * @default true
+   * @default - taken from the configuration or 'cdk.out'
    */
-  readonly showFrameworkRelatedNotices?: boolean;
+  readonly outDir?: string;
+}
 
+export interface NoticesRefreshOptions {
   /**
-   * Whether to show notices related to the CDK bootstrap stack version.
-   * If true, `bootstrapVersion` must be set as well.
+   * Whether to force a cache refresh regardless of expiration time.
    *
    * @default false
    */
-  readonly showBootstrapRelatedNotices?: boolean;
+  readonly force?: boolean;
 
-  readonly bootstrapVersion?: number;
-
+  /**
+   * Data source for fetch notices from.
+   *
+   * @default - CachedDataSource which fetches from our s3 bucket and populates a cache file.
+   */
+  readonly dataSource?: NoticeDataSource;
 }
 
-export async function refreshNotices() {
-  const dataSource = dataSourceReference(false);
-  return dataSource.fetch();
-}
+export class Notices {
 
-export async function displayNotices(props: DisplayNoticesProps) {
-  const dataSource = dataSourceReference(props.ignoreCache ?? false);
-  print(await generateMessage(dataSource, props));
-  return 0;
-}
-
-export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps) {
-
-  const configuration = Configuration.get();
-
-  const data = await dataSource.fetch();
-  const filteredNotices = filterNotices(data, {
-    outdir: props.outdir ?? (configuration.settings.get(['output']) ?? 'cdk.out'),
-    acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers ?? configuration.context.get('acknowledged-issue-numbers') ?? []),
-    bootstrapVersion: props.bootstrapVersion,
-    cliVersion: versionNumber(),
-    matchCliRelatedNotices: props.showCliRelatedNotices ?? true,
-    matchFrameworkRelatedNotices: props.showFrameworkRelatedNotices ?? true,
-    matchBootstrapRelatedNotices: props.showBootstrapRelatedNotices ?? false,
-  });
-
-  let messageString: string = '';
-  if (filteredNotices.length > 0) {
-    messageString = getFilteredMessages(filteredNotices);
+  public static create(props: NoticesProps): Notices {
+    this._instance = new Notices(props);
+    return this._instance;
   }
-  if (props.unacknowledged) {
-    messageString = [messageString, `There are ${filteredNotices.length} unacknowledged notice(s).`].join('\n\n');
+
+  public static get(): Notices {
+    if (!this._instance) {
+      throw new Error('Notices have not been initialized. Call create.');
+    }
+    return this._instance;
   }
-  return messageString;
-}
 
-function getFilteredMessages(filteredNotices: Notice[]): string {
-  const individualMessages = formatNotices(filteredNotices);
-  return finalMessage(individualMessages, filteredNotices[0].issueNumber);
-}
+  private static _instance: Notices | undefined;
 
-function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
-  return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), ignoreCache);
+  private readonly configuration: Configuration;
+  private readonly acknowledgedIssueNumbers: Set<Number>;
+
+  private data: Notice[] = [];
+  private readonly printQueue: Notice[] = [];
+
+  private constructor(props: NoticesProps) {
+    this.configuration = props.configuration;
+    this.acknowledgedIssueNumbers = new Set(props.acknowledgedIssueNumbers ?? this.configuration.context.get('acknowledged-issue-numbers') ?? []);
+  }
+
+  public async refresh(options: NoticesRefreshOptions = {}) {
+    const dataSource = options.dataSource ?? new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), options.force ?? false);
+    const data = await dataSource.fetch();
+    this.data = data.filter(notice => !this.acknowledgedIssueNumbers.has(notice.issueNumber));
+  }
+
+  public shouldDisplay(): boolean {
+    return this.configuration.settings.get(['notices']) ?? true;
+  }
+
+  public enqueuePrint(notices: Notice[]) {
+    this.printQueue.push(...notices);
+  }
+
+  public print(options: NoticesPrintOptions = {}) {
+
+    let messageString: string = '';
+    if (this.printQueue.length > 0) {
+      const individualMessages = this.printQueue.map(formatNotice);
+      messageString = finalMessage(individualMessages, this.printQueue[0].issueNumber);
+    }
+    if (options.showTotal) {
+      messageString = [messageString, `There are ${this.printQueue.length} unacknowledged notice(s).`].join('\n\n');
+    }
+
+    const printer = options.printer ?? print;
+
+    printer(messageString);
+
+  }
+
+  public forCliVersion(options: NoticesForCliVersionOptions = {}): Notice[] {
+
+    const compareToVersion = options.cliVersion ?? versionNumber();
+    const unacknowledged = options.onlyUnacknowledged ?? false;
+
+    return this.data.filter(notice => {
+
+      if (unacknowledged && this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
+        return false;
+      }
+
+      const affectedComponent = notice.components.find(component => component.name === 'cli');
+      const affectedRange = affectedComponent?.version;
+      return affectedRange != null && semver.satisfies(compareToVersion, affectedRange);
+    });
+
+  }
+
+  public forFrameworkVersion(options: NoticesForFrameworkVersionOptions = {}): Notice[] {
+
+    const outDir = options.outDir ?? (this.configuration.settings.get(['output']) ?? 'cdk.out');
+    const tree = loadTreeFromDir(outDir);
+    const unacknowledged = options.onlyUnacknowledged ?? false;
+
+    return this.data.filter(notice => {
+
+      if (unacknowledged && this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
+        return false;
+      }
+
+      return match(resolveAliases(notice.components), tree);
+    });
+
+  }
+
+  public forBootstrapVersion(options: NoticesForBootstrapVersionOptions): Notice[] {
+
+    const semverBootstrapVersion = semver.coerce(options.bootstrapVersion);
+    if (!semverBootstrapVersion) {
+      throw new Error(`Cannot coerce bootstrap version '${options.bootstrapVersion}' into semver`);
+    }
+
+    const unacknowledged = options.onlyUnacknowledged ?? false;
+
+    return this.data.filter(notice => {
+
+      if (unacknowledged && this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
+        return false;
+      }
+
+      const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
+      const affectedRange = affectedComponent?.version;
+      return affectedRange != null && semver.satisfies(semverBootstrapVersion, affectedRange);
+    });
+
+  }
+
 }
 
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
@@ -116,33 +219,6 @@ function finalMessage(individualMessages: string[], exampleNumber: number): stri
     ...individualMessages,
     `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${exampleNumber}".`,
   ].join('\n\n');
-}
-
-export interface FilterNoticeOptions {
-  outdir: string;
-  cliVersion: string;
-  acknowledgedIssueNumbers: Set<number>;
-  matchCliRelatedNotices: boolean;
-  matchFrameworkRelatedNotices: boolean;
-  matchBootstrapRelatedNotices: boolean;
-  bootstrapVersion?: number;
-}
-
-export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
-  const filter = new NoticeFilter({
-    cliVersion: options.cliVersion,
-    acknowledgedIssueNumbers: options.acknowledgedIssueNumbers,
-    tree: loadTreeFromDir(options.outdir),
-    matchCliRelatedNotices: options.matchCliRelatedNotices,
-    matchFrameworkRelatedNotices: options.matchFrameworkRelatedNotices,
-    matchBootstrapRelatedNotices: options.matchBootstrapRelatedNotices,
-    bootstrapVersion: options.bootstrapVersion,
-  });
-  return data.filter(notice => filter.apply(notice));
-}
-
-export function formatNotices(data: Notice[]): string[] {
-  return data.map(formatNotice);
 }
 
 export interface Component {

@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { ISDK } from './aws-auth';
 import { EcrRepositoryInfo, ToolkitInfo } from './toolkit-info';
 import { debug, warning } from '../logging';
-import { displayNotices } from '../notices';
+import { Notices } from '../notices';
 
 /**
  * Registry class for `EnvironmentResources`.
@@ -106,19 +106,11 @@ export class EnvironmentResources {
     await doValidate(bootstrapStack.version);
 
     async function doValidate(version: number) {
-      await displayNotices({
-        // these are already shown before we got here.
-        showCliRelatedNotices: false,
-        showFrameworkRelatedNotices: false,
-
-        // these can only be shown here because its where we know
-        // the bootstrap stack version
-        showBootstrapRelatedNotices: true,
-        bootstrapVersion: version,
-      });
       if (defExpectedVersion > version) {
         throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
       }
+      const notices = Notices.get();
+      notices.enqueuePrint(notices.forBootstrapVersion({ bootstrapVersion: version }));
     }
   }
 

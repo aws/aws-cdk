@@ -1,12 +1,17 @@
 /* eslint-disable import/order */
 import { ToolkitInfo } from '../../lib/api';
 import { EnvironmentResourcesRegistry } from '../../lib/api/environment-resources';
+import { Notices } from '../../lib/notices';
+import { Configuration } from '../../lib/settings';
 import { errorWithCode, mockBootstrapStack, MockSdk } from '../util/mock-sdk';
 import { MockToolkitInfo } from '../util/mock-toolkitinfo';
 
 let mockSdk: MockSdk;
 let envRegistry: EnvironmentResourcesRegistry;
 let toolkitMock: ReturnType<typeof MockToolkitInfo.setup>;
+beforeAll(() => {
+  Notices.create({ configuration: new Configuration() });
+});
 beforeEach(() => {
   mockSdk = new MockSdk();
   envRegistry = new EnvironmentResourcesRegistry();
