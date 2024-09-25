@@ -230,6 +230,10 @@ export class Graph<A> extends GraphNode<A> {
     return this.children.get(name);
   }
 
+  public containsId(id: string) {
+    return this.tryGetChild(id) !== undefined;
+  }
+
   public contains(node: GraphNode<A>) {
     return this.nodes.has(node);
   }
