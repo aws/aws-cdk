@@ -26,15 +26,15 @@ export function addStackArtifactToAssembly(
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource
   // level and are not needed in the cloud assembly.
   if (Object.entries(stackTags).length > 0) {
-    stack.node.addMetadata(
-      cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-      Object.entries(stackTags).map(([key, value]) => ({ Key: key, Value: value })));
-
     for (const [k, v] of Object.entries(stackTags)) {
       if (Token.isUnresolved(k) || Token.isUnresolved(v)) {
         throw new Error(`Stack tags may not contain deploy-time values (tag: ${k}=${v}). Apply tags containing deploy-time values to resources only, avoid tagging stacks.`);
       }
     }
+
+    stack.node.addMetadata(
+      cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+      Object.entries(stackTags).map(([key, value]) => ({ Key: key, Value: value })));
   }
 
   const deps = [
