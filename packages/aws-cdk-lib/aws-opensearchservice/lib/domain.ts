@@ -7,7 +7,7 @@ import { CfnDomain } from './opensearchservice.generated';
 import * as perms from './perms';
 import { EngineVersion } from './version';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, MetricOptions, Statistic } from '../../aws-cloudwatch';
+import { Metric, MetricOptions, Stats } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -1085,7 +1085,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricClusterStatusRed(props?: MetricOptions): Metric {
     return this.metric('ClusterStatus.red', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1097,7 +1097,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricClusterStatusYellow(props?: MetricOptions): Metric {
     return this.metric('ClusterStatus.yellow', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1109,7 +1109,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricFreeStorageSpace(props?: MetricOptions): Metric {
     return this.metric('FreeStorageSpace', {
-      statistic: Statistic.MINIMUM,
+      statistic: Stats.MINIMUM,
       ...props,
     });
   }
@@ -1121,7 +1121,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricClusterIndexWritesBlocked(props?: MetricOptions): Metric {
     return this.metric('ClusterIndexWritesBlocked', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       period: cdk.Duration.minutes(1),
       ...props,
     });
@@ -1134,7 +1134,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricNodes(props?: MetricOptions): Metric {
     return this.metric('Nodes', {
-      statistic: Statistic.MINIMUM,
+      statistic: Stats.MINIMUM,
       period: cdk.Duration.hours(1),
       ...props,
     });
@@ -1147,7 +1147,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricAutomatedSnapshotFailure(props?: MetricOptions): Metric {
     return this.metric('AutomatedSnapshotFailure', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1159,7 +1159,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricCPUUtilization(props?: MetricOptions): Metric {
     return this.metric('CPUUtilization', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1171,7 +1171,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricJVMMemoryPressure(props?: MetricOptions): Metric {
     return this.metric('JVMMemoryPressure', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1183,7 +1183,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricMasterCPUUtilization(props?: MetricOptions): Metric {
     return this.metric('MasterCPUUtilization', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1195,7 +1195,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricMasterJVMMemoryPressure(props?: MetricOptions): Metric {
     return this.metric('MasterJVMMemoryPressure', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1207,7 +1207,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricKMSKeyError(props?: MetricOptions): Metric {
     return this.metric('KMSKeyError', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1219,7 +1219,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricKMSKeyInaccessible(props?: MetricOptions): Metric {
     return this.metric('KMSKeyInaccessible', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1231,7 +1231,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    */
   public metricSearchableDocuments(props?: MetricOptions): Metric {
     return this.metric('SearchableDocuments', {
-      statistic: Statistic.MAXIMUM,
+      statistic: Stats.MAXIMUM,
       ...props,
     });
   }
@@ -1513,15 +1513,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+    }
 
     // Validate feature support for the given Elasticsearch/OpenSearch version, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/features-by-version.html
@@ -1576,8 +1576,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
-    if (isSomeInstanceType('i3', 'r6gd', 'im4gn') && ebsEnabled) {
-      throw new Error('I3, R6GD, and IM4GN instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType('i3', 'r6gd', 'im4gn', 'i4g', 'i4i', 'r7gd') && ebsEnabled) {
+      throw new Error('I3, R6GD, IM4GN, I4G, I4I, and R7GD instance types do not support EBS storage volumes.');
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
@@ -1594,8 +1594,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Only R3, I3, R6GD, and IM4GN support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
-    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd', 'im4gn')) {
-      throw new Error('EBS volumes are required when using instance types other than R3, I3, R6GD, or IM4GN.');
+    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd', 'im4gn', 'i4i', 'i4g', 'r7gd')) {
+      throw new Error('EBS volumes are required when using instance types other than R3, I3, R6GD, IM4GN, I4I, I4G, or R7GD.');
     }
 
     // Only for a valid ebs volume configuration, per
@@ -1738,7 +1738,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.SEARCH_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
@@ -1755,7 +1755,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.INDEX_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
@@ -1772,7 +1772,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
@@ -1789,7 +1789,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.AUDIT_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
@@ -2120,7 +2120,7 @@ function extractNameFromEndpoint(domainEndpoint: string) {
 }
 
 /**
- * Converts an engine version into a into a decimal number with major and minor version i.e x.y.
+ * Converts an engine version into a decimal number with major and minor version i.e x.y.
  *
  * @param version The engine version object
  */
@@ -2169,7 +2169,7 @@ function zoneAwarenessCheckShouldBeSkipped(vpc: ec2.IVpc, vpcSubnets: ec2.Subnet
   for (const selection of vpcSubnets) {
     if (vpc.selectSubnets(selection).isPendingLookup) {
       return true;
-    };
+    }
   }
   return false;
 }
