@@ -10,6 +10,9 @@ let mockSdk: MockSdk;
 let envRegistry: EnvironmentResourcesRegistry;
 let toolkitMock: ReturnType<typeof MockToolkitInfo.setup>;
 beforeAll(() => {
+  // required because we bootstrap version check now possibly enqueues
+  // a notice, so an instance of `Notices` must be available.
+  // in production, this is done in the CLI entry point.
   Notices.create({ configuration: new Configuration() });
 });
 beforeEach(() => {
