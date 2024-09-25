@@ -78,7 +78,7 @@ export class EnvironmentResources {
 
     if (ssmParameterName !== undefined) {
       try {
-        await doValidate(await this.versionFromSsmParameter(ssmParameterName));
+        doValidate(await this.versionFromSsmParameter(ssmParameterName));
         return;
       } catch (e: any) {
         if (e.code !== 'AccessDeniedException') { throw e; }
@@ -93,7 +93,7 @@ export class EnvironmentResources {
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
           warning(`Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`);
-          await doValidate(bootstrapStack.version);
+          doValidate(bootstrapStack.version);
           return;
         }
 
@@ -103,9 +103,9 @@ export class EnvironmentResources {
 
     // No SSM parameter
     const bootstrapStack = await this.lookupToolkit();
-    await doValidate(bootstrapStack.version);
+    doValidate(bootstrapStack.version);
 
-    async function doValidate(version: number) {
+    function doValidate(version: number) {
       if (defExpectedVersion > version) {
         throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
       }
