@@ -1,28 +1,28 @@
 {
   "version": "36.0.5",
   "artifacts": {
-    "aws-cdk-log-retention-integ.assets": {
+    "aws-ecs-task-definition-container-restart-policy.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-log-retention-integ.assets.json",
+        "file": "aws-ecs-task-definition-container-restart-policy.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-log-retention-integ": {
+    "aws-ecs-task-definition-container-restart-policy": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-log-retention-integ.template.json",
+        "templateFile": "aws-ecs-task-definition-container-restart-policy.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/970fc217be55aa821bd02916b85d53b24f93632a9a8005025f7ce5e88388957f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97915316dcb8359e5f057ea5fcf4f55ce45085f3ffe49edde0737f593ef80c7d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-log-retention-integ.assets"
+          "aws-ecs-task-definition-container-restart-policy.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,73 +31,49 @@
         }
       },
       "dependencies": [
-        "aws-cdk-log-retention-integ.assets"
+        "aws-ecs-task-definition-container-restart-policy.assets"
       ],
       "metadata": {
-        "/aws-cdk-log-retention-integ/MyLambda/Resource": [
+        "/aws-ecs-task-definition-container-restart-policy/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCCE802FB"
+            "data": "TaskDefTaskRole1EDB4A67"
           }
         ],
-        "/aws-cdk-log-retention-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+        "/aws-ecs-task-definition-container-restart-policy/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+            "data": "TaskDef54694570"
           }
         ],
-        "/aws-cdk-log-retention-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
-          }
-        ],
-        "/aws-cdk-log-retention-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
-          }
-        ],
-        "/aws-cdk-log-retention-integ/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/aws-cdk-log-retention-integ/MyLambda2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambda2254B54D5"
-          }
-        ],
-        "/aws-cdk-log-retention-integ/BootstrapVersion": [
+        "/aws-ecs-task-definition-container-restart-policy/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-log-retention-integ/CheckBootstrapVersion": [
+        "/aws-ecs-task-definition-container-restart-policy/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-log-retention-integ"
+      "displayName": "aws-ecs-task-definition-container-restart-policy"
     },
-    "LogRetentionIntegDefaultTestDeployAssert6ACC5A74.assets": {
+    "TaskDefinitionContainerRestartPolicyDefaultTestDeployAssert2196C660.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "LogRetentionIntegDefaultTestDeployAssert6ACC5A74.assets.json",
+        "file": "TaskDefinitionContainerRestartPolicyDefaultTestDeployAssert2196C660.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "LogRetentionIntegDefaultTestDeployAssert6ACC5A74": {
+    "TaskDefinitionContainerRestartPolicyDefaultTestDeployAssert2196C660": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "LogRetentionIntegDefaultTestDeployAssert6ACC5A74.template.json",
+        "templateFile": "TaskDefinitionContainerRestartPolicyDefaultTestDeployAssert2196C660.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -106,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "LogRetentionIntegDefaultTestDeployAssert6ACC5A74.assets"
+          "TaskDefinitionContainerRestartPolicyDefaultTestDeployAssert2196C660.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -115,23 +91,23 @@
         }
       },
       "dependencies": [
-        "LogRetentionIntegDefaultTestDeployAssert6ACC5A74.assets"
+        "TaskDefinitionContainerRestartPolicyDefaultTestDeployAssert2196C660.assets"
       ],
       "metadata": {
-        "/LogRetentionInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/TaskDefinitionContainerRestartPolicy/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/LogRetentionInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/TaskDefinitionContainerRestartPolicy/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "LogRetentionInteg/DefaultTest/DeployAssert"
+      "displayName": "TaskDefinitionContainerRestartPolicy/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
