@@ -186,17 +186,6 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
   describe('filter', () => {
 
-    test('correctly filter notices on bootstrap', async () => {
-
-      const notices = Notices.create({ configuration: new Configuration() });
-      await notices.refresh({
-        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE, BASIC_BOOTSTRAP_NOTICE] },
-      });
-
-      expect(notices.forBootstrapVersion({ bootstrapVersion: 22 })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
-
-    });
-
     test('correctly filter notices on cli', async () => {
 
       const notices = Notices.create({ configuration: new Configuration() });
@@ -234,11 +223,6 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
       // no apigatewayv2 in the tree
       expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
 
-    });
-
-    test('correctly filter notices on module name mismatch', async () => {
-
-      const notices = Notices.create({ configuration: new Configuration() });
       await notices.refresh({
         dataSource: { fetch: async () => [NOTICE_FOR_APIGATEWAY] },
       });
@@ -246,16 +230,23 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
       // module name mismatch: apigateway != apigatewayv2
       expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
 
-    });
-
-    test('correctly filter notices on construct level match', async () => {
-
-      const notices = Notices.create({ configuration: new Configuration() });
       await notices.refresh({
         dataSource: { fetch: async () => [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE] },
       });
 
+      // construct-level match
       expect(notices.forFrameworkVersion({ outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+
+    });
+
+    test('correctly filter notices on bootstrap', async () => {
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE, BASIC_BOOTSTRAP_NOTICE] },
+      });
+
+      expect(notices.forBootstrapVersion({ bootstrapVersion: 22 })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
 
     });
 
