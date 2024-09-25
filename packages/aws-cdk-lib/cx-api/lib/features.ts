@@ -1156,7 +1156,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
       `,
     recommendedValue: true,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.160.0' },
   },
 
   //////////////////////////////////////////////////////////////////////

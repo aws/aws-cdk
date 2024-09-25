@@ -1415,7 +1415,7 @@ When this feature flag is enabled, if both initOptions.timeout and resourceSigna
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.160.0 | `false` | `true` |
 
 
 ### @aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue

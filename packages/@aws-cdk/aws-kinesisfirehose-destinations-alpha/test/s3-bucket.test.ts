@@ -107,7 +107,9 @@ describe('S3 destination', () => {
 
   it('bucket and log group grants are depended on by delivery stream', () => {
     const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Log Group', 'evergreen');
-    const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole, logGroup });
+    const destination = new firehosedestinations.S3Bucket(bucket, {
+      role: destinationRole, loggingConfig: new firehosedestinations.EnableLogging(logGroup),
+    });
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destinations: [destination],
     });
@@ -171,7 +173,7 @@ describe('S3 destination', () => {
 
     it('does not create resources or configuration if disabled', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, { logging: false })],
+        destinations: [new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.DisableLogging() })],
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
@@ -186,7 +188,7 @@ describe('S3 destination', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, { logGroup })],
+        destinations: [new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.EnableLogging(logGroup) })],
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
@@ -200,19 +202,13 @@ describe('S3 destination', () => {
       });
     });
 
-    it('throws error if logging disabled but log group provided', () => {
-      const destination = new firehosedestinations.S3Bucket(bucket, { logging: false, logGroup: new logs.LogGroup(stack, 'Log Group') });
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
-      })).toThrowError('logging cannot be set to false when logGroup is provided');
-    });
-
     it('grants log group write permissions to destination role', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, { logGroup, role: destinationRole })],
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          loggingConfig: new firehosedestinations.EnableLogging(logGroup), role: destinationRole,
+        })],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -572,8 +568,7 @@ describe('S3 destination', () => {
           bufferingInterval: cdk.Duration.minutes(1),
           compression: firehosedestinations.Compression.ZIP,
           encryptionKey: key,
-          logging: true,
-          logGroup: logGroup,
+          loggingConfig: new firehosedestinations.EnableLogging(logGroup),
         },
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
