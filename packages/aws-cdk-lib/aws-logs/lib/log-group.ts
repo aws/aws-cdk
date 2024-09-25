@@ -335,12 +335,12 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
  * - 'IncomingLogEvents': The number of log events ingested into the log group.
  * ```
  */
-  public metric(_metricName: string, _props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Logs',
-      metricName: _metricName,
+      metricName,
       statistic: 'Sum',
-      ..._props,
+      ...props,
     }).attachTo(this);
   }
 }
