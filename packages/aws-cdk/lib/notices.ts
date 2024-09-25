@@ -86,9 +86,9 @@ export async function generateMessage(dataSource: NoticeDataSource, props: Displ
     acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers ?? configuration.context.get('acknowledged-issue-numbers') ?? []),
     bootstrapVersion: props.bootstrapVersion,
     cliVersion: versionNumber(),
-    showCliRelatedNotices: props.showCliRelatedNotices ?? true,
-    showFrameworkRelatedNotices: props.showFrameworkRelatedNotices ?? true,
-    showBootstrapRelatedNotices: props.showBootstrapRelatedNotices ?? false,
+    matchCliRelatedNotices: props.showCliRelatedNotices ?? true,
+    matchFrameworkRelatedNotices: props.showFrameworkRelatedNotices ?? true,
+    matchBootstrapRelatedNotices: props.showBootstrapRelatedNotices ?? false,
   });
 
   let messageString: string = '';
@@ -122,9 +122,9 @@ export interface FilterNoticeOptions {
   outdir: string;
   cliVersion: string;
   acknowledgedIssueNumbers: Set<number>;
-  showCliRelatedNotices: boolean;
-  showFrameworkRelatedNotices: boolean;
-  showBootstrapRelatedNotices: boolean;
+  matchCliRelatedNotices: boolean;
+  matchFrameworkRelatedNotices: boolean;
+  matchBootstrapRelatedNotices: boolean;
   bootstrapVersion?: number;
 }
 
@@ -133,9 +133,9 @@ export function filterNotices(data: Notice[], options: FilterNoticeOptions): Not
     cliVersion: options.cliVersion,
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers,
     tree: loadTreeFromDir(options.outdir),
-    showCliRelatedNotices: options.showCliRelatedNotices,
-    showFrameworkRelatedNotices: options.showFrameworkRelatedNotices,
-    showBootstrapRelatedNotices: options.showBootstrapRelatedNotices,
+    matchCliRelatedNotices: options.matchCliRelatedNotices,
+    matchFrameworkRelatedNotices: options.matchFrameworkRelatedNotices,
+    matchBootstrapRelatedNotices: options.matchBootstrapRelatedNotices,
     bootstrapVersion: options.bootstrapVersion,
   });
   return data.filter(notice => filter.apply(notice));
@@ -286,9 +286,9 @@ export interface NoticeFilterProps {
   cliVersion: string;
   acknowledgedIssueNumbers: Set<number>;
   tree: ConstructTreeNode;
-  showCliRelatedNotices: boolean;
-  showFrameworkRelatedNotices: boolean;
-  showBootstrapRelatedNotices: boolean;
+  matchCliRelatedNotices: boolean;
+  matchFrameworkRelatedNotices: boolean;
+  matchBootstrapRelatedNotices: boolean;
   bootstrapVersion?: number;
 }
 
@@ -307,28 +307,28 @@ export class NoticeFilter {
       return false;
     }
 
-    if (this.props.showBootstrapRelatedNotices && !this.props.bootstrapVersion) {
-      throw new Error('\'bootstrapVersion\' must be set when \'showBootstrapRelatedNotices\' is true');
+    if (this.props.matchBootstrapRelatedNotices && !this.props.bootstrapVersion) {
+      throw new Error('\'bootstrapVersion\' must be set when \'matchBootstrapRelatedNotices\' is true');
     }
 
-    let show = false;
-    if (this.props.showCliRelatedNotices) {
-      show = show || this.applyVersion(notice, 'cli', this.props.cliVersion);
+    let filtered = false;
+    if (this.props.matchCliRelatedNotices) {
+      filtered = filtered || this.applyVersion(notice, 'cli', this.props.cliVersion);
     }
-    if (this.props.showFrameworkRelatedNotices) {
-      show = show || match(resolveAliases(notice.components), this.props.tree);
+    if (this.props.matchFrameworkRelatedNotices) {
+      filtered = filtered || match(resolveAliases(notice.components), this.props.tree);
     }
-    if (this.props.showBootstrapRelatedNotices) {
+    if (this.props.matchBootstrapRelatedNotices) {
       // bootstrap stack versions are just integers so we need to coerce to semver
       // in order to compare them with a range.
       const semverBootstrapVersion = semver.coerce(this.props.bootstrapVersion);
       if (!semverBootstrapVersion) {
         throw new Error(`Cannot coerce bootstrap version '${this.props.bootstrapVersion}' into semver`);
       }
-      show = show || this.applyVersion(notice, 'bootstrap', semverBootstrapVersion);
+      filtered = filtered || this.applyVersion(notice, 'bootstrap', semverBootstrapVersion);
     }
 
-    return show;
+    return filtered;
   }
 
   /**

@@ -74,7 +74,7 @@ export class EnvironmentResources {
       // No requirement
       return;
     }
-    // const defExpectedVersion = expectedVersion;
+    const defExpectedVersion = expectedVersion;
 
     if (ssmParameterName !== undefined) {
       try {
@@ -116,10 +116,9 @@ export class EnvironmentResources {
         showBootstrapRelatedNotices: true,
         bootstrapVersion: version,
       });
-      throw new Error('Check if notice is displayed');
-      // if (defExpectedVersion > version) {
-      //   throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
-      // }
+      if (defExpectedVersion > version) {
+        throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
+      }
     }
   }
 
