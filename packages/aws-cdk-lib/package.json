@@ -122,7 +122,7 @@
     "@aws-cdk/asset-awscli-v1": "^2.2.202",
     "@aws-cdk/asset-kubectl-v20": "^2.1.2",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^36.0.24",
+    "@aws-cdk/cloud-assembly-schema": "^38.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.2.0",
@@ -136,7 +136,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.23",
+    "@aws-cdk/aws-service-spec": "^0.1.24",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -169,7 +169,7 @@
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "^3.1.0",
     "aws-sdk-client-mock-jest": "^3.1.0",
-    "cdk8s": "2.68.104",
+    "cdk8s": "2.69.0",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.23.1",
