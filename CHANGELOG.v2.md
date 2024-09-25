@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.160.0](https://github.com/aws/aws-cdk/compare/v2.159.1...v2.160.0) (2024-09-24)
+
+
+### Features
+
+* allow all `sts` options for roles assumed by the cli  ([#31089](https://github.com/aws/aws-cdk/issues/31089)) ([5e95ba2](https://github.com/aws/aws-cdk/commit/5e95ba2b7a24b2598cf00890e1e7d569914f27c9)), closes [#26157](https://github.com/aws/aws-cdk/issues/26157) [#22535](https://github.com/aws/aws-cdk/issues/22535)
+* update L1 CloudFormation resource definitions ([#31534](https://github.com/aws/aws-cdk/issues/31534)) ([cd17fed](https://github.com/aws/aws-cdk/commit/cd17fed31d5476be06de85ff942ccb4ce2c827d2))
+* **core:** configure Stack SNS notification ARNs on the Stack construct ([#31107](https://github.com/aws/aws-cdk/issues/31107)) ([1593500](https://github.com/aws/aws-cdk/commit/1593500735e6ddbcc087f005c5124f5ec57aec20)), closes [#8581](https://github.com/aws/aws-cdk/issues/8581)
+* **stepfunctions:** add support for EncryptionConfiguration ([#30959](https://github.com/aws/aws-cdk/issues/30959)) ([b49032b](https://github.com/aws/aws-cdk/commit/b49032b3a6e549783b45492ffc76880fbcd58e68))
+
 ## [2.159.1](https://github.com/aws/aws-cdk/compare/v2.159.0...v2.159.1) (2024-09-19)
 
 
