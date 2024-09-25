@@ -196,7 +196,7 @@ class LambdaProduct extends servicecatalog.ProductStack {
 }
 
 const userDefinedBucket = new Bucket(this, `UserDefinedBucket`, {
-  bucketName: 'user-defined-bucket-for-product-stack-assets',
+  bucketName: 'amzn-s3-demo-bucket',
 });
 
 const product = new servicecatalog.CloudFormationProduct(this, 'Product', {

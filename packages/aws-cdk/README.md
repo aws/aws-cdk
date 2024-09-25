@@ -757,7 +757,7 @@ In practice this means for any resource in the provided template, for example,
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "MyBucket",
+        "BucketName": "amzn-s3-demo-bucket",
         "AccessControl": "PublicRead",
       },
       "DeletionPolicy": "Retain"
@@ -765,7 +765,7 @@ In practice this means for any resource in the provided template, for example,
 ```
 
 There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
-would be "MyBucket"
+would be "amzn-s3-demo-bucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
@@ -1035,7 +1035,7 @@ Some of the interesting keys that can be used in the JSON configuration files:
     },
     "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
     "toolkitBucket": {
-        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
+        "bucketName": "amzn-s3-demo-bucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=amzn-s3-demo-bucket)
         "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
     },
     "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
