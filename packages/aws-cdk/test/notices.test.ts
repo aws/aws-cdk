@@ -25,7 +25,7 @@ const BASIC_BOOTSTRAP_NOTICE = {
   schemaVersion: '1',
 };
 
-const BASIC_CLI_NOTICE = {
+const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
   issueNumber: 16603,
   overview: 'If a stack is deployed with an S3 bucket with auto_delete_objects=True, and then re-deployed with auto_delete_objects=False, all the objects in the bucket will be deleted.',
@@ -36,7 +36,7 @@ const BASIC_CLI_NOTICE = {
   schemaVersion: '1',
 };
 
-const MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE = {
+const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
   title: 'Error when building EKS cluster with monocdk import',
   issueNumber: 17061,
   overview: 'When using monocdk/aws-eks to build a stack containing an EKS cluster, error is thrown about missing lambda-layer-node-proxy-agent/layer/package.json.',
@@ -132,7 +132,7 @@ describe('cli notices', () => {
     test('correct format', () => {
 
       const notices = Notices.create({ configuration: new Configuration() });
-      notices.enqueuePrint([BASIC_CLI_NOTICE]);
+      notices.enqueuePrint([BASIC_NOTICE]);
       notices.print({
         printer: (message) => {
 
@@ -159,7 +159,7 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
     test('multiple affect versions', () => {
 
       const notices = Notices.create({ configuration: new Configuration() });
-      notices.enqueuePrint([MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
+      notices.enqueuePrint([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
       notices.print({
         printer: (message) => {
 
@@ -190,7 +190,7 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
       const notices = Notices.create({ configuration: new Configuration() });
       await notices.refresh({
-        dataSource: { fetch: async () => [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE, BASIC_BOOTSTRAP_NOTICE] },
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE, BASIC_BOOTSTRAP_NOTICE] },
       });
 
       expect(notices.forBootstrapVersion({ bootstrapVersion: 22 })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
@@ -201,12 +201,12 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
       const notices = Notices.create({ configuration: new Configuration() });
       await notices.refresh({
-        dataSource: { fetch: async () => [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE] },
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
 
-      expect(notices.forCliVersion({ cliVersion: '1.0.0' })).toEqual([BASIC_CLI_NOTICE]);
-      expect(notices.forCliVersion({ cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
-      expect(notices.forCliVersion({ cliVersion: '1.126.0' })).toEqual([BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
+      expect(notices.forCliVersion({ cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
+      expect(notices.forCliVersion({ cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(notices.forCliVersion({ cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
       expect(notices.forCliVersion({ cliVersion: '1.130.0' })).toEqual([]);
     });
 
@@ -266,15 +266,15 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
     test('returns data when download succeeds', async () => {
       const result = await mockCall(200, {
-        notices: [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE],
+        notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
       });
 
-      expect(result).toEqual([BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE]);
+      expect(result).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
     });
 
     test('returns appropriate error when the server returns an unexpected status code', async () => {
       const result = mockCall(500, {
-        notices: [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE],
+        notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
       });
 
       await expect(result).rejects.toThrow(/500/);
@@ -282,7 +282,7 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
     test('returns appropriate error when the server returns an unexpected structure', async () => {
       const result = mockCall(200, {
-        foo: [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE],
+        foo: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
       });
 
       await expect(result).rejects.toThrow(/key is missing/);
@@ -320,7 +320,7 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
         .get('/notices.json')
         .delayConnection(3500)
         .reply(200, {
-          notices: [BASIC_CLI_NOTICE],
+          notices: [BASIC_NOTICE],
         });
 
       const result = dataSource.fetch();
@@ -333,7 +333,7 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
         .get('/notices.json')
         .delayBody(3500)
         .reply(200, {
-          notices: [BASIC_CLI_NOTICE],
+          notices: [BASIC_NOTICE],
         });
 
       const result = dataSource.fetch();
@@ -352,8 +352,8 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
   describe(CachedDataSource, () => {
     const fileName = path.join(os.tmpdir(), 'cache.json');
-    const cachedData = [BASIC_CLI_NOTICE];
-    const freshData = [MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE];
+    const cachedData = [BASIC_NOTICE];
+    const freshData = [MULTIPLE_AFFECTED_VERSIONS_NOTICE];
 
     beforeEach(() => {
       fs.writeFileSync(fileName, '');
@@ -471,7 +471,7 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
       const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [17061] });
       await notices.refresh({
-        dataSource: { fetch: async () => [BASIC_CLI_NOTICE, MULTIPLE_AFFECTED_VERSIONS_CLI_NOTICE] },
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
       notices.enqueuePrint(notices.forCliVersion({ cliVersion: '1.120.0' }));
       notices.print({
