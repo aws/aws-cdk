@@ -222,9 +222,9 @@ export class Subscription extends Resource {
         // minDelayTarget, maxDelayTarget and numRetries are (empirically) mandatory when healthyRetryPolicy is specified,
         // but for user-friendliness we allow them to be undefined and set them here instead.
         // The defaults we use here are the same used in the event healthyRetryPolicy is not specified, see https://docs.aws.amazon.com/sns/latest/dg/creating-delivery-policy.html.
-        minDelayTarget: (healthyRetryPolicy.minDelayTarget === undefined)? 20 : healthyRetryPolicy.minDelayTarget.toSeconds(),
-        maxDelayTarget: (healthyRetryPolicy.maxDelayTarget === undefined)? 20 : healthyRetryPolicy.maxDelayTarget.toSeconds(),
-        numRetries: (healthyRetryPolicy.numRetries === undefined)? 3: healthyRetryPolicy.numRetries,
+        minDelayTarget: (healthyRetryPolicy.minDelayTarget === undefined) ? 20 : healthyRetryPolicy.minDelayTarget.toSeconds(),
+        maxDelayTarget: (healthyRetryPolicy.maxDelayTarget === undefined) ? 20 : healthyRetryPolicy.maxDelayTarget.toSeconds(),
+        numRetries: (healthyRetryPolicy.numRetries === undefined) ? 3: healthyRetryPolicy.numRetries,
         numNoDelayRetries: healthyRetryPolicy.numNoDelayRetries,
         numMinDelayRetries: healthyRetryPolicy.numMinDelayRetries,
         numMaxDelayRetries: healthyRetryPolicy.numMaxDelayRetries,
