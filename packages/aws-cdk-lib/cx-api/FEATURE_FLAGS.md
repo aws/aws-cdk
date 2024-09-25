@@ -74,8 +74,8 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
 | [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
-| [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | V2NEXT | (fix) |
-| [@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue](#aws-cdkcoregeneratetokenawarestringifylogicalidfromtokenvalue) | When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value. | 2.158.0 | (fix) |
+| [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | 2.160.0 | (fix) |
+| [@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue](#aws-cdkcoregeneratetokenawarestringifylogicalidfromtokenvalue) | When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1450,8 +1450,9 @@ which makes this logical ID no longer instantiation-order dependent.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.158.0 | `false` | `true` |
+| V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** When disabled, generate the Logical ID of the CDKJsonStringify Custom Resource from a counter.
+
 
 <!-- END details -->
