@@ -73,9 +73,9 @@ Flags come in three types:
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
-| [@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue](#aws-cdkcoregeneratetokenawarestringifylogicalidfromtokenvalue) | When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value. | 2.158.0 | (fix) |
 | [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
 | [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | V2NEXT | (fix) |
+| [@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue](#aws-cdkcoregeneratetokenawarestringifylogicalidfromtokenvalue) | When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value. | 2.158.0 | (fix) |
 
 <!-- END table -->
 
@@ -139,8 +139,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
-    "@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue": true,
-    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue": true
   }
 }
 ```
@@ -1384,6 +1384,40 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
 
 
+### @aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions
+
+*When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration* (fix)
+
+Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.159.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to continue grant permissions to log group when no log group is specified
+
+
+### @aws-cdk/aws-ec2:ec2SumTImeoutEnabled
+
+*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
+
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+only the value from 'resourceSignalTimeout' will be used. 
+
+When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
 ### @aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue
 
 *When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value.* (fix)
@@ -1419,40 +1453,5 @@ which makes this logical ID no longer instantiation-order dependent.
 | 2.158.0 | `false` | `true` |
 
 **Compatibility with old behavior:** When disabled, generate the Logical ID of the CDKJsonStringify Custom Resource from a counter.
-
-
-### @aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions
-
-*When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration* (fix)
-
-Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
-specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
-
-When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.159.0 | `false` | `true` |
-
-**Compatibility with old behavior:** Disable the feature flag to continue grant permissions to log group when no log group is specified
-
-
-### @aws-cdk/aws-ec2:ec2SumTImeoutEnabled
-
-*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
-
-Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
-only the value from 'resourceSignalTimeout' will be used. 
-
-When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
 
 <!-- END details -->
