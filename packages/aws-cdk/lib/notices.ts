@@ -390,16 +390,6 @@ export class CachedDataSource implements NoticeDataSource {
   }
 }
 
-export interface NoticeFilterProps {
-  cliVersion: string;
-  acknowledgedIssueNumbers: Set<number>;
-  tree: ConstructTreeNode;
-  matchCliRelatedNotices: boolean;
-  matchFrameworkRelatedNotices: boolean;
-  matchBootstrapRelatedNotices: boolean;
-  bootstrapVersion?: number;
-}
-
 /**
  * Some component names are aliases to actual component names. For example "framework"
  * is an alias for either the core library (v1) or the whole CDK library (v2).
