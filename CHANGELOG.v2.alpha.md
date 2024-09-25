@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.159.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.159.0-alpha.0...v2.159.1-alpha.0) (2024-09-19)
+
+## [2.159.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.158.0-alpha.0...v2.159.0-alpha.0) (2024-09-18)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **kinesisfirehose-alpha:** `encryptionKey` property is removed and `encryption` property type has changed from the `StreamEncryption` enum to the `StreamEncryption` class. 
+
+To pass in a KMS key for the customer managed key case, use `StreamEncryption.customerManagedKey(key)`
+
+#### Details
+Replaced `encryption` and `encryptionKey` properties with a single property `encryption` of type `StreamEncryption` and is used by calling one of the 3 methods:
+```ts
+SreamEncryption.unencrypted()
+StreamEncryption.awsOwnedKey()
+StreamEncryption.customerManagedKey(key?: IKey)
+```
+
+This makes it so it's not longer possible to pass in a key when the encryption type is AWS owned or unencrypted. The `key` is an optional parameter in `StreamEncryption.customerManagedKey(key?: IKey)` so following the previous behaviour, if a key is provided it will be used, otherwise a key will be created for the user. 
+### Description of how you validated changes
+
+Generated templates do not change so behaviour remains the same. 
+
+Updated integ/unit tests. 
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Features
+
+* **ivs:** support RTMP ingest for IVS channel ([#31380](https://github.com/aws/aws-cdk/issues/31380)) ([a907a7e](https://github.com/aws/aws-cdk/commit/a907a7eb0a54f51b6e77ff57cac278de9574eee2))
+
+
+### Bug Fixes
+
+* **ec2:** fixing vpc endpoint pattern for ecr and ecr docker ([#31434](https://github.com/aws/aws-cdk/issues/31434)) ([95c49ab](https://github.com/aws/aws-cdk/commit/95c49abdfa4ad77a0c0fcb82a230778dcc2ea59a))
+
+
+### Miscellaneous Chores
+
+* **kinesisfirehose-alpha:** refactor encryption property to combine encryptionKey ([#31430](https://github.com/aws/aws-cdk/issues/31430)) ([8e92185](https://github.com/aws/aws-cdk/commit/8e9218525b606d72b2dfe55933fa1c515d26d386))
+
+## [2.158.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.157.0-alpha.0...v2.158.0-alpha.0) (2024-09-11)
+
+
+### Features
+
+* **amplify:** support cache configuration for app ([#31381](https://github.com/aws/aws-cdk/issues/31381)) ([b7bd041](https://github.com/aws/aws-cdk/commit/b7bd0416dc1f809eac22b9dbc49a1947e1cfc262))
+* **iot:** configure IoT Logging ([#31352](https://github.com/aws/aws-cdk/issues/31352)) ([6348717](https://github.com/aws/aws-cdk/commit/63487174736236e329488f4d06b29110d910a031)), closes [#31357](https://github.com/aws/aws-cdk/issues/31357)
+
+## [2.157.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.156.0-alpha.0...v2.157.0-alpha.0) (2024-09-09)
+
 ## [2.156.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.155.0-alpha.0...v2.156.0-alpha.0) (2024-09-05)
 
 
