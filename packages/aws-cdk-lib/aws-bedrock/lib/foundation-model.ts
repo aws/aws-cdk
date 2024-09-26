@@ -83,6 +83,12 @@ export class FoundationModelIdentifier {
   /** Base model "ai21.jamba-instruct-v1:0". */
   public static readonly AI21_J2_JAMBA_INSTRUCT_V1_0 = new FoundationModelIdentifier('ai21.jamba-instruct-v1:0');
 
+  /** Base model "ai21.jamba-1-5-large-v1:0". */
+  public static readonly AI21_JAMBA_1_5_LARGE_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-large-v1:0');
+
+  /** Base model "ai21.jamba-1-5-mini-v1:0". */
+  public static readonly AI21_JAMBA_1_5_MINI_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-mini-v1:0');
+
   /**
    * Base model "anthropic.claude-v1".
    * @deprecated use latest version of the model
