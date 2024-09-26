@@ -50,8 +50,7 @@ const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
 };
 
 /**
- * Perform a hotswap deployment,
- * short-circuiting CloudFormation if possible.
+ * Perform a hotswap deployment, short-circuiting CloudFormation if possible.
  * If it's not possible to short-circuit the deployment
  * (because the CDK Stack contains changes that cannot be deployed without CloudFormation),
  * returns `undefined`.
