@@ -1359,8 +1359,11 @@ describe('instance', () => {
     expect(() => { instance.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
   });
 
-  test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is enabled by default', () => {
+  test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is enabled', () => {
     const cloudwatchTraceLog = 'trace';
+    const app = new cdk.App({ context: { [cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: true } });
+    stack = new cdk.Stack(app);
+    vpc = new ec2.Vpc( stack, 'VPC' );
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1419,9 +1422,9 @@ describe('instance', () => {
     });
   });
 
-  test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is disabled', () => {
+  test('createGrant - creates IAM policy for instance replica when the USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY feature flag is disabled by default', () => {
     const cloudwatchTraceLog = 'trace';
-    const app = new cdk.App({ context: { [cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: false } });
+    const app = new cdk.App();
     stack = new cdk.Stack(app);
     vpc = new ec2.Vpc( stack, 'VPC' );
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
