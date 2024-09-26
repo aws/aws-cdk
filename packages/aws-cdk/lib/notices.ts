@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from './logging';
 import { Configuration } from './settings';
-import { ConstructTreeNode, loadTreeFromDir, some } from './tree';
+import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -125,8 +125,34 @@ export class NoticesFilter {
   }
 
   private static findForFrameworkVersion(data: Notice[], outDir: string): Notice[] {
+    const tree = loadTreeFromDir(outDir);
     return data.filter(notice => {
-      return match(resolveAliases(notice.components), loadTreeFromDir(outDir));
+
+      //  A match happens when:
+      //
+      //  1. The version of the node matches the version in the notice, interpreted
+      //  as a semver range.
+      //
+      //  AND
+      //
+      //  2. The name in the notice is a prefix of the node name when the query ends in '.',
+      //  or the two names are exactly the same, otherwise.
+
+      return some(tree, node => {
+        return this.resolveAliases(notice.components).some(component =>
+          compareNames(component.name, node.constructInfo?.fqn) &&
+          compareVersions(component.version, node.constructInfo?.version));
+      });
+
+      function compareNames(pattern: string, target: string | undefined): boolean {
+        if (target == null) { return false; }
+        return pattern.endsWith('.') ? target.startsWith(pattern) : pattern === target;
+      }
+
+      function compareVersions(pattern: string, target: string | undefined): boolean {
+        return semver.satisfies(target ?? '', pattern);
+      }
+
     });
 
   }
@@ -143,6 +169,22 @@ export class NoticesFilter {
       const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
       const affectedRange = affectedComponent?.version;
       return affectedRange != null && semver.satisfies(semverBootstrapVersion, affectedRange);
+    });
+  }
+
+  private static resolveAliases(components: Component[]): Component[] {
+    return flatMap(components, component => {
+      if (component.name === 'framework') {
+        return [{
+          name: '@aws-cdk/core.',
+          version: component.version,
+        }, {
+          name: 'aws-cdk-lib.',
+          version: component.version,
+        }];
+      } else {
+        return [component];
+      }
     });
   }
 
@@ -379,58 +421,5 @@ export class CachedDataSource implements NoticeDataSource {
     } catch (e) {
       debug(`Failed to store notices in the cache: ${e}`);
     }
-  }
-}
-
-/**
- * Some component names are aliases to actual component names. For example "framework"
- * is an alias for either the core library (v1) or the whole CDK library (v2).
- *
- * This function converts all aliases to their actual counterpart names, to be used to
- * match against the construct tree.
- *
- * @param components a list of components. Components whose name is an alias will be
- * transformed and all others will be left intact.
- */
-function resolveAliases(components: Component[]): Component[] {
-  return flatMap(components, component => {
-    if (component.name === 'framework') {
-      return [{
-        name: '@aws-cdk/core.',
-        version: component.version,
-      }, {
-        name: 'aws-cdk-lib.',
-        version: component.version,
-      }];
-    } else {
-      return [component];
-    }
-  });
-}
-
-/**
- * Whether any component in the tree matches any component in the query.
- * A match happens when:
- *
- * 1. The version of the node matches the version in the query, interpreted
- * as a semver range.
- *
- * 2. The name in the query is a prefix of the node name when the query ends in '.',
- * or the two names are exactly the same, otherwise.
- */
-function match(query: Component[], tree: ConstructTreeNode): boolean {
-  return some(tree, node => {
-    return query.some(component =>
-      compareNames(component.name, node.constructInfo?.fqn) &&
-      compareVersions(component.version, node.constructInfo?.version));
-  });
-
-  function compareNames(pattern: string, target: string | undefined): boolean {
-    if (target == null) { return false; }
-    return pattern.endsWith('.') ? target.startsWith(pattern) : pattern === target;
-  }
-
-  function compareVersions(pattern: string, target: string | undefined): boolean {
-    return semver.satisfies(target ?? '', pattern);
   }
 }
