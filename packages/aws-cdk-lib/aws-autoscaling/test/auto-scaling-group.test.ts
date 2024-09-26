@@ -8,7 +8,7 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
@@ -2481,6 +2481,38 @@ describe('auto scaling group', () => {
     }).toThrow("Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set");
   });
 
+  test('complex intrinsics are forbidden in update policies when the FF is enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    const vpc = mockVpc(stack);
+
+    const condition = new cdk.CfnCondition(stack, 'SomeCondition', {
+      expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(stack.region, cdk.Aws.REGION)),
+    });
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+      vpc,
+      machineImage: new ec2.AmazonLinuxImage(),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      updatePolicy: {
+        _renderUpdatePolicy(): cdk.CfnUpdatePolicy {
+          return {
+            autoScalingReplacingUpdate: cdk.Fn.conditionIf(condition.logicalId,
+              { willReplace: true },
+              { willReplace: false },
+            ) as any,
+          };
+        },
+      },
+    });
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow('bad');
+  });
 });
 
 function mockVpc(stack: cdk.Stack) {
