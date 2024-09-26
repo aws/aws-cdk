@@ -1,0 +1,34 @@
+{
+  "Parameters": {
+    "ApplicationName": {
+      "Type": "String"
+    },
+    "DeploymentGroupName": {
+      "Type": "String"
+    },
+    "BeforeAllowTrafficHook": {
+      "Type": "String"
+    },
+    "AfterAllowTrafficHook": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "Alias": {
+      "Type": "AWS::Lambda::Alias",
+      "Properties": {
+        "FunctionName": "SomeLambda",
+        "FunctionVersion": "SomeVersion",
+        "Name": "MyAlias"
+      },
+      "UpdatePolicy": {
+        "CodeDeployLambdaAliasUpdate": {
+          "ApplicationName": { "Ref": "ApplicationName" },
+          "DeploymentGroupName": { "Ref": "DeploymentGroupName" },
+          "BeforeAllowTrafficHook": { "Ref": "BeforeAllowTrafficHook" },
+          "AfterAllowTrafficHook": { "Ref": "AfterAllowTrafficHook" }
+        }
+      }
+    }
+  }
+}

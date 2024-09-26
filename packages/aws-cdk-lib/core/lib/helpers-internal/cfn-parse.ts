@@ -383,6 +383,8 @@ export class CfnParser {
 
   private parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
+    this.throwIfIsIntrinsic(policy);
+    const self = this;
 
     // change simple JS values to their CDK equivalents
     policy = this.parseValue(policy);
@@ -393,6 +395,7 @@ export class CfnParser {
     });
 
     function parseAutoScalingCreationPolicy(p: any): CfnResourceAutoScalingCreationPolicy | undefined {
+      self.throwIfIsIntrinsic(p);
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
@@ -402,6 +405,7 @@ export class CfnParser {
 
     function parseResourceSignal(p: any): CfnResourceSignal | undefined {
       if (typeof p !== 'object') { return undefined; }
+      self.throwIfIsIntrinsic(p);
 
       return undefinedIfAllValuesAreEmpty({
         count: FromCloudFormation.getNumber(p.Count).value,
@@ -412,6 +416,8 @@ export class CfnParser {
 
   private parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
+    this.throwIfIsIntrinsic(policy);
+    const self = this;
 
     // change simple JS values to their CDK equivalents
     policy = this.parseValue(policy);
@@ -427,6 +433,7 @@ export class CfnParser {
 
     function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
       if (typeof p !== 'object') { return undefined; }
+      self.throwIfIsIntrinsic(p);
 
       return undefinedIfAllValuesAreEmpty({
         willReplace: p.WillReplace,
@@ -435,6 +442,7 @@ export class CfnParser {
 
     function parseAutoScalingRollingUpdate(p: any): CfnAutoScalingRollingUpdate | undefined {
       if (typeof p !== 'object') { return undefined; }
+      self.throwIfIsIntrinsic(p);
 
       return undefinedIfAllValuesAreEmpty({
         maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize).value,
@@ -447,6 +455,7 @@ export class CfnParser {
     }
 
     function parseCodeDeployLambdaAliasUpdate(p: any): CfnCodeDeployLambdaAliasUpdate | undefined {
+      self.throwIfIsIntrinsic(p);
       if (typeof p !== 'object') { return undefined; }
 
       return {
@@ -458,6 +467,7 @@ export class CfnParser {
     }
 
     function parseAutoScalingScheduledAction(p: any): CfnAutoScalingScheduledAction | undefined {
+      self.throwIfIsIntrinsic(p);
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
@@ -671,6 +681,15 @@ export class CfnParser {
         } else {
           throw new Error(`Unsupported CloudFormation function '${key}'`);
         }
+    }
+  }
+
+  private throwIfIsIntrinsic(object: object): void {
+    // Top-level parsing functions check before we call `parseValue`, which requires
+    // calling `looksLikeCfnIntrinsic`. Helper parsing functions check after we call
+    // `parseValue`, which requires calling `isResolvableObject`.
+    if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
+      throw new Error('intrinsics cannot be used in update, deletion, or update-replace policies.');
     }
   }
 

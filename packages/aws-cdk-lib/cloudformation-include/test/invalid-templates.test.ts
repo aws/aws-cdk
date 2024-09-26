@@ -251,6 +251,54 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'tags-with-invalid-intrinsics.json');
     }).toThrow(/expression does not exist in the template/);
   });
+
+  test('non-leaf Intrinsics cannot be used in the top-level creation policy', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-create-policy.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('Intrinsics cannot be used in the autoscaling creation policy', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-create-policy-autoscaling.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('Intrinsics cannot be used in the create policy resource signal', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-create-policy-resource-signal.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('Intrinsics cannot be used in the top-level update policy', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('Intrinsics cannot be used in the auto scaling rolling update update policy', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-rolling-update.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('Intrinsics cannot be used in the auto scaling replacing update update policy', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-replacing-update.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('Intrinsics cannot be used in the auto scaling scheduled action update policy', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-scheduled-action.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('Intrinsics cannot be used in the code deploy lambda alias update policy', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
+    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
 });
 
 interface IncludeTestTemplateProps {

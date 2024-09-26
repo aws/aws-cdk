@@ -1,0 +1,32 @@
+{
+  "Conditions": {
+    "SomeCondition": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MaxSize": 10,
+        "MinSize": 1
+      },
+      "UpdatePolicy": {
+        "AutoScalingScheduledAction": {
+          "Fn::If": [
+            "SomeCondition",
+            {
+                "IgnoreUnmodifiedGroupSizeProperties" : true
+            },
+            {
+              "IgnoreUnmodifiedGroupSizeProperties" : false
+            }
+          ]
+        }
+      }
+    }
+  }
+}
