@@ -23,7 +23,7 @@ export interface ApiDestinationTargetParameters {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargethttpparameters.html#cfn-pipes-pipe-pipetargethttpparameters-headerparameters
    * @default - none
    */
-  readonly headerParameters?: Record<string, string>;
+  readonly headerParameters?: { [key: string]: string };
 
   /**
    * The path parameter values used to populate the EventBridge API destination path wildcards ("*").
