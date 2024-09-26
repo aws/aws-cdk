@@ -239,7 +239,7 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
   additionalIamStatements: [
     new iam.PolicyStatement({
       actions: ['s3:getObject'],
-      resources: ['arn:aws:s3:::my-bucket/*'],
+      resources: ['arn:aws:s3:::amzn-s3-demo-bucket/*'],
     }),
   ],
 });

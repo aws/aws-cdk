@@ -85,7 +85,7 @@ for example, the name of the bucket can be changed:
 ```ts
 declare const cfnTemplate: cfn_inc.CfnInclude;
 const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
-cfnBucket.bucketName = 'my-bucket-name';
+cfnBucket.bucketName = 'amzn-s3-demo-bucket';
 ```
 
 You can also refer to the resource when defining other constructs,
