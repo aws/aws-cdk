@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, SynthesizeStackArtifactOptions } from '../../lib';
 import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
@@ -105,6 +105,66 @@ describe('new style synthesis', () => {
 
   });
 
+  test('can set role additional options tags on default stack synthesizer', () => {
+    // GIVEN
+    stack = new Stack(app, 'SessionTagsStack', {
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-DeployRoleTag' }],
+        },
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-FileAssetTag' }],
+        },
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }],
+        },
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering-LookupRoleTag' }],
+        },
+      }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
+    });
+
+    stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'fileHash',
+    });
+
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'dockerHash',
+    });
+
+    ContextProvider.getValue(stack, {
+      provider: cxschema.ContextProvider.VPC_PROVIDER,
+      props: {},
+      dummyValue: undefined,
+    }).value;
+
+    // THEN
+    const asm = app.synth();
+    const manifest = asm.getStackByName('SessionTagsStack').manifest;
+    // Validates that the deploy and lookup role session tags were set in the Manifest:
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-DeployRoleTag' }]);
+    expect((manifest.properties as cxschema.AwsCloudFormationStackProperties).lookupRole?.assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-LookupRoleTag' }]);
+
+    const assetManifest = getAssetManifest(asm);
+    const assetManifestJSON = readAssetManifest(assetManifest);
+
+    // Validates that the image and file asset session tags were set in the asset manifest:
+    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['111111111111-us-east-1'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }]);
+    expect(assetManifestJSON.files?.fileHash.destinations['111111111111-us-east-1'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-FileAssetTag' }]);
+
+    // assert that lookup role options are added to the missing lookup context
+    expect(asm.manifest.missing![0].props.assumeRoleAdditionalOptions).toEqual({
+      Tags: [{ Key: 'Department', Value: 'Engineering-LookupRoleTag' }],
+    });
+
+  });
+
   test('customize version parameter', () => {
     // GIVEN
     const myapp = new App();
@@ -185,6 +245,29 @@ describe('new style synthesis', () => {
     // THEN
     const assembly = app.synth();
     expect(assembly.manifest.missing![0].props.lookupRoleArn).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
+
+  });
+
+  test('generates missing context with the lookup role external id as one of the missing context properties', () => {
+    // GIVEN
+    stack = new Stack(app, 'Stack2', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+        lookupRoleExternalId: 'External',
+      }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
+    });
+    ContextProvider.getValue(stack, {
+      provider: cxschema.ContextProvider.VPC_PROVIDER,
+      props: {},
+      dummyValue: undefined,
+    }).value;
+
+    // THEN
+    const assembly = app.synth();
+    expect(assembly.manifest.missing![0].props.lookupRoleExternalId).toEqual('External');
 
   });
 

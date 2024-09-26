@@ -277,6 +277,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -300,6 +307,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -323,6 +337,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -431,6 +452,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -623,7 +651,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '21'
+      Value: '22'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack
