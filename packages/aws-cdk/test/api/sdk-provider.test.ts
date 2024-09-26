@@ -11,6 +11,7 @@ import { ISDK, Mode, SDK, SdkProvider, defaultCliUserAgent } from '../../lib/api
 import { PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
 import { withMocked } from '../util';
+import { FakeMetadataService } from './fake-metadata-service';
 
 jest.mock('promptly', () => ({
   prompt: jest.fn().mockResolvedValue('1234'),
@@ -72,9 +73,13 @@ describe('with intercepted network calls', () => {
   // that the right HTTP `Agent` is used.
 
   let fakeSts: FakeSts;
+  let fakeMetadataService: FakeMetadataService;
   beforeEach(() => {
     fakeSts = new FakeSts();
     fakeSts.begin();
+
+    fakeMetadataService = new FakeMetadataService();
+    fakeMetadataService.begin();
 
     // Make sure the KeyID returned by the plugin is recognized
     fakeSts.registerUser(uniq('99999'), uniq('plugin_key'));
@@ -82,6 +87,7 @@ describe('with intercepted network calls', () => {
 
   afterEach(() => {
     fakeSts.restore();
+    fakeMetadataService.restore();
   });
 
   // Set of tests where the CDK will not trigger assume-role
@@ -526,45 +532,51 @@ describe('with intercepted network calls', () => {
         // THEN
         expect(needsRefresh).toHaveBeenCalled();
       });
-
     });
 
     test('can assume role with ec2 credentials', async () => {
-      return withMocked(AWS.EC2MetadataCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-        // GIVEN
-        prepareCreds({
-          config: {
-            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Ec2InstanceMetadata', $account: '22222' },
-          },
-        });
-        const provider = await providerFromProfile('ecs');
-
-        // WHEN
-        await provider.defaultAccount();
-
-        // THEN
-        expect(needsRefresh).toHaveBeenCalled();
-
+      // GIVEN
+      fakeMetadataService.registerRole('arn:aws:iam::12356789012:role/InstanceRole');
+      fakeMetadataService.registerCredentials('SOMEKEY', 'some/secret');
+      prepareCreds({
+        config: {
+          'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Ec2InstanceMetadata', $account: '22222' },
+        },
       });
+      const provider = await providerFromProfile('ecs');
 
+      // WHEN
+      await provider.defaultAccount();
+
+      // THEN
+      expect(fakeSts.requests[0].parsedBody.Action).toEqual('AssumeRole');
+      expect(fakeSts.requests[0].headers.authorization).toMatch('Credential=SOMEKEY');
     });
 
     test('can assume role with env credentials', async () => {
-      return withMocked(AWS.EnvironmentCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-        // GIVEN
-        prepareCreds({
-          config: {
-            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Environment', $account: '22222' },
-          },
-        });
-        const provider = await providerFromProfile('ecs');
+      // GIVEN
+      process.env.AWS_ACCESS_KEY_ID = 'SOMEKEY';
+      process.env.AWS_SECRET_ACCESS_KEY = 'xyz';
+      const account = uniq('99999');
+      fakeSts.registerUser(account, process.env.AWS_ACCESS_KEY_ID);
+      fakeSts.registerRole(account, 'arn:aws:iam::12356789012:role/Assumable');
 
-        // WHEN
-        await provider.defaultAccount();
-
-        // THEN
-        expect(needsRefresh).toHaveBeenCalled();
+      prepareCreds({
+        config: {
+          'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Environment', $account: '22222' },
+        },
       });
+      const provider = await providerFromProfile('ecs');
+
+      // WHEN
+      await provider.defaultAccount();
+
+      // THEN
+      expect(fakeSts.requests[0].parsedBody.Action).toEqual('AssumeRole');
+      expect(fakeSts.requests[0].headers.authorization).toMatch(`Credential=${process.env.AWS_ACCESS_KEY_ID}`);
+
+      delete process.env.AWS_ACCESS_KEY_ID;
+      delete process.env.AWS_SECRET_ACCESS_KEY;
     });
 
     test('assume fails with unsupported credential_source', async () => {

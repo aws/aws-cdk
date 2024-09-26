@@ -1,5 +1,6 @@
 import { CredentialProviderOptions } from '@aws-sdk/types';
 import { AwsCredentialIdentityProvider } from '@smithy/types';
+import { CredentialsProviderError } from "@smithy/property-provider";
 
 export interface FromPrefixedEnvInit extends CredentialProviderOptions {
   prefix: string;
@@ -34,18 +35,8 @@ export const fromPrefixedEnv =
         };
       }
 
-      throw new PrefixedEnvError('Unable to find environment variable credentials.');
+      throw new CredentialsProviderError('Unable to find environment variable credentials.', true);
     };
 
 const prefixAppender: (prefix: string) => (name: string) => string =
   (prefix: string) => (name: string) => `${prefix}_${name}`;
-
-class PrefixedEnvError extends Error {
-  constructor(message?: string) {
-    super(message);
-  }
-
-  get tryNextLink() {
-    return true;
-  }
-}

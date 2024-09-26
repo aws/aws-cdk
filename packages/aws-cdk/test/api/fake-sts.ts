@@ -41,6 +41,7 @@ export class FakeSts {
 
   private identities: Record<string, RegisteredIdentity> = {};
   private roles: Record<string, RegisteredRole> = {};
+  private _requests: MockRequest[] = [];
 
   constructor() {
   }
@@ -126,7 +127,12 @@ export class FakeSts {
     };
   }
 
+  get requests(): MockRequest[] {
+    return this._requests;
+  }
+
   private handleRequest(mockRequest: MockRequest): Record<string, any> {
+    this.requests.push(mockRequest);
     const response = (() => {
       const identity = this.identity(mockRequest);
 
@@ -227,9 +233,9 @@ export class FakeSts {
           },
           PackedPolicySize: 6,
         },
-      },
-      ResponseMetadata: {
-        RequestId: '1',
+        ResponseMetadata: {
+          RequestId: '1',
+        },
       },
     };
   }
@@ -276,7 +282,7 @@ export interface RegisterRoleOptions {
   readonly partition?: string;
 }
 
-interface MockRequest {
+export interface MockRequest {
   readonly host: string;
   readonly uri: string;
   readonly headers: Record<string, string>;
