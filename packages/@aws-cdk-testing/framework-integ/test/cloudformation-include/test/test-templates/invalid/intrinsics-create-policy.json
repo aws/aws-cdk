@@ -1,0 +1,42 @@
+{
+  "Parameters": {
+    "CountParameter": {
+      "Type": "Number",
+      "Default": 3
+    }
+  },
+  "Conditions": {
+    "SomeCondition": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "CreationPolicyIntrinsic": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": 1,
+        "MaxSize": 5
+      },
+      "CreationPolicy": {
+        "Fn::If": [
+          "SomeCondition",
+          {
+            "AutoScalingCreationPolicy": {
+              "MinSuccessfulInstancesPercent": 50
+            },
+            "ResourceSignal": {
+              "Count": 5,
+              "Timeout": "PT5H4M3S"
+            }
+          },
+          {
+            "Ref": "AWS::NoValue"
+          }
+        ]
+      }
+    }
+  }
+}
