@@ -440,7 +440,90 @@ describe(CachedDataSource, () => {
 describe(Notices, () => {
 
   beforeEach(() => {
+
+    // disable caching
+    jest.spyOn(CachedDataSource.prototype as any, 'save').mockImplementation((_: any) => Promise.resolve());
+    jest.spyOn(CachedDataSource.prototype as any, 'load').mockImplementation(() => Promise.resolve({ expiration: 0, notices: [] }));
+
     jest.clearAllMocks();
+  });
+
+  describe('shouldDisplay', () => {
+
+    test('default is true', () => {
+      expect(Notices.create({ configuration: new Configuration() }).shouldDisplay()).toBeTruthy();
+    });
+
+    test('is controlled by settings', () => {
+
+      const settings: any = { notices: false };
+      const configuration = new Configuration();
+      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
+
+      expect(Notices.create({ configuration }).shouldDisplay()).toBeFalsy();
+
+    });
+  });
+
+  describe('bootstrapVersion', () => {
+
+    test('can only be set to a single value', () => {
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      expect(() => notices.bootstrapVersion = 10).not.toThrow();
+      expect(() => notices.bootstrapVersion = 10).not.toThrow();
+      expect(() => notices.bootstrapVersion = 11).toThrow(/Cannot change bootstrap version once set/);
+
+    });
+
+  });
+
+  describe('refresh', () => {
+
+    test('filters out acknowledged notices by default', async () => {
+
+      // within the affected version range of both notices
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
+
+      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
+      const configuration = new Configuration();
+      (configuration.context as any) = { get: (key: string) => context[key] };
+
+      const notices = Notices.create({ configuration });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
+
+    test('preserves acknowledged notices if requested', async () => {
+
+      // within the affected version range of both notices
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
+
+      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
+      const configuration = new Configuration();
+      (configuration.context as any) = { get: (key: string) => context[key] };
+
+      const notices = Notices.create({ configuration, includeAcknowlegded: true });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]));
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
+
   });
 
   describe('display', () => {
@@ -529,95 +612,3 @@ describe(Notices, () => {
 
   });
 });
-
-// describe('mock cdk version 2.132.0', () => {
-//   beforeAll(() => {
-//     jest
-//       .spyOn(version, 'versionNumber')
-//       .mockImplementation(() => '2.132.0');
-//   });
-
-//   afterAll(() => {
-//     jest.restoreAllMocks();
-//   });
-
-//   test('Shows notices that pass the filter with --unacknowledged no acknowledged issues', async () => {
-
-//     const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [] });
-//     await notices.refresh({
-//       dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
-//     });
-//     notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0', onlyUnacknowledged: true }));
-//     notices.display({
-//       printer: (message) => {
-
-//         expect(message).toEqual(`
-// NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-// 29420	(cli): Some bug affecting cdk deploy.
-
-// 	Overview: cdk deploy bug
-
-// 	Affected versions: cli: 2.132.0
-
-// 	More information at: https://github.com/aws/aws-cdk/issues/29420
-
-// 29483	(cli): Some bug affecting cdk diff.
-
-// 	Overview: cdk diff bug
-
-// 	Affected versions: cli: >=2.132.0 <=2.132.1
-
-// 	More information at: https://github.com/aws/aws-cdk/issues/29483
-
-// If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29420".
-
-// There are 2 unacknowledged notice(s).`);
-//       },
-//       showTotal: true,
-//     });
-//   });
-// });
-
-// test('Shows notices that pass the filter with --unacknowledged one acknowledged issue', async () => {
-
-//   const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [29420] });
-//   await notices.refresh({
-//     dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
-//   });
-//   notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0', onlyUnacknowledged: true }));
-//   notices.display({
-//     printer: (message) => {
-//       expect(message).toEqual(`
-// NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-// 29483	(cli): Some bug affecting cdk diff.
-
-// 	Overview: cdk diff bug
-
-// 	Affected versions: cli: >=2.132.0 <=2.132.1
-
-// 	More information at: https://github.com/aws/aws-cdk/issues/29483
-
-// If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29483".
-
-// There are 1 unacknowledged notice(s).`);
-//     },
-//     showTotal: true,
-//   });
-// });
-
-// test('Shows notices that pass the filter with --unacknowledged all acknowledged issue', async () => {
-
-//   const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [29420, 29483] });
-//   await notices.refresh({
-//     dataSource: { fetch: async () => [CLI_2_132_AFFECTED_NOTICE_1, CLI_2_132_AFFECTED_NOTICE_2] },
-//   });
-//   notices.enqueuePrint(notices.forCliVersion({ cliVersion: '2.132.0', onlyUnacknowledged: true }));
-//   notices.display({
-//     printer: (message) => {
-//       expect(message).toEqual('\n\nThere are 0 unacknowledged notice(s).');
-//     },
-//     showTotal: true,
-//   });
-// });

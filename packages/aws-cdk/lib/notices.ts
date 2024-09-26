@@ -49,7 +49,7 @@ export interface NoticesRefreshOptions {
   /**
    * Data source for fetch notices from.
    *
-   * @default - CachedDataSource which fetches from our s3 bucket and populates a cache file.
+   * @default - WebsiteNoticeDataSource
    */
   readonly dataSource?: NoticeDataSource;
 }
@@ -186,6 +186,9 @@ export class Notices {
     this.includeAcknowlegded = props.includeAcknowlegded ?? false;
   }
 
+  // lazy constructor property since this is not known at
+  // instatiation time. its ok because there can only be a single
+  // value per process.
   public set bootstrapVersion(version: number) {
     if (this._bootstrapVersion && version != this._bootstrapVersion) {
       throw new Error('Cannot change bootstrap version once set');
@@ -197,7 +200,7 @@ export class Notices {
    * Refresh the list of notices this instance is aware of.
    */
   public async refresh(options: NoticesRefreshOptions = {}) {
-    const dataSource = options.dataSource ?? new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), options.force ?? false);
+    const dataSource = new CachedDataSource(CACHE_FILE_PATH, options.dataSource ?? new WebsiteNoticeDataSource(), options.force ?? false);
     const notices = await dataSource.fetch();
     this.data.push(...(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber))));
   }
