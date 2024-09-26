@@ -58,37 +58,42 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
 
-  // Acquire a read lock on the output directory
+  // Acquire a lock on the output directory
   const writerLock = await new RWLock(outdir).acquireWrite();
 
-  // Send version information
-  env[cxapi.CLI_ASM_VERSION_ENV] = cxschema.Manifest.version();
-  env[cxapi.CLI_VERSION_ENV] = versionNumber();
+  try {
+    // Send version information
+    env[cxapi.CLI_ASM_VERSION_ENV] = cxschema.Manifest.version();
+    env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
-  debug('env:', env);
+    debug('env:', env);
 
-  const envVariableSizeLimit = os.platform() === 'win32' ? 32760 : 131072;
-  const [smallContext, overflow] = splitBySize(context, spaceAvailableForContext(env, envVariableSizeLimit));
+    const envVariableSizeLimit = os.platform() === 'win32' ? 32760 : 131072;
+    const [smallContext, overflow] = splitBySize(context, spaceAvailableForContext(env, envVariableSizeLimit));
 
-  // Store the safe part in the environment variable
-  env[cxapi.CONTEXT_ENV] = JSON.stringify(smallContext);
+    // Store the safe part in the environment variable
+    env[cxapi.CONTEXT_ENV] = JSON.stringify(smallContext);
 
-  // If there was any overflow, write it to a temporary file
-  let contextOverflowLocation;
-  if (Object.keys(overflow ?? {}).length > 0) {
-    const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
-    contextOverflowLocation = path.join(contextDir, 'context-overflow.json');
-    fs.writeJSONSync(contextOverflowLocation, overflow);
-    env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextOverflowLocation;
+    // If there was any overflow, write it to a temporary file
+    let contextOverflowLocation;
+    if (Object.keys(overflow ?? {}).length > 0) {
+      const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+      contextOverflowLocation = path.join(contextDir, 'context-overflow.json');
+      fs.writeJSONSync(contextOverflowLocation, overflow);
+      env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextOverflowLocation;
+    }
+
+    await exec(commandLine.join(' '));
+
+    const assembly = createAssembly(outdir);
+
+    contextOverflowCleanup(contextOverflowLocation, assembly);
+
+    return { assembly, lock: await writerLock.convertToReaderLock() };
+  } catch (e) {
+    await writerLock.release();
+    throw e;
   }
-
-  await exec(commandLine.join(' '));
-
-  const assembly = createAssembly(outdir);
-
-  contextOverflowCleanup(contextOverflowLocation, assembly);
-
-  return { assembly, lock: await writerLock.convertToReaderLock() };
 
   async function exec(commandAndArgs: string) {
     return new Promise<void>((ok, fail) => {

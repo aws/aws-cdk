@@ -1,4 +1,4 @@
-import { GetSchemaCreationStatusRequest, GetSchemaCreationStatusResponse } from 'aws-sdk/clients/appsync';
+import { GetSchemaCreationStatusRequest, GetSchemaCreationStatusResponse, ListFunctionsResponse, FunctionConfiguration } from 'aws-sdk/clients/appsync';
 import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 import { ISDK } from '../aws-auth';
 
@@ -96,7 +96,7 @@ export async function isHotswappableAppSyncChange(
             delete sdkRequestObject.runtime;
           }
 
-          const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
+          const functions = await getAppSyncFunctions(sdk, sdkRequestObject.apiId);
           const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
           // Updating multiple functions at the same time or along with graphql schema results in `ConcurrentModificationException`
           await simpleRetry(
@@ -154,4 +154,19 @@ async function simpleRetry(fn: () => Promise<any>, numOfRetries: number, errorCo
 
 async function sleep(ms: number) {
   return new Promise(ok => setTimeout(ok, ms));
+}
+
+/**
+ * Get all functions for a given AppSync API by iterating through the paginated list of functions
+ */
+async function getAppSyncFunctions(sdk: ISDK, apiId: string, nextToken?: string): Promise<FunctionConfiguration[]> {
+  const ret = new Array<FunctionConfiguration>();
+  return sdk.appsync().listFunctions({ apiId, nextToken }).promise()
+    .then(async (listFunctionsResponse: ListFunctionsResponse) => {
+      ret.push(...(listFunctionsResponse.functions ?? []));
+      if (listFunctionsResponse.nextToken) {
+        ret.push(...await getAppSyncFunctions(sdk, apiId, listFunctionsResponse.nextToken));
+      }
+      return ret;
+    });
 }

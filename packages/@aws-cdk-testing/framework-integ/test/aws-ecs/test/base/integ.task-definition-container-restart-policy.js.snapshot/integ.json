@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "TaskDefinitionContainerRestartPolicy/DefaultTest": {
+      "stacks": [
+        "aws-ecs-task-definition-container-restart-policy"
+      ],
+      "assertionStack": "TaskDefinitionContainerRestartPolicy/DefaultTest/DeployAssert",
+      "assertionStackName": "TaskDefinitionContainerRestartPolicyDefaultTestDeployAssert2196C660"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { singletonEventRole } from './util';
+import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
@@ -6,7 +6,7 @@ import * as kinesis from '../../aws-kinesis';
 /**
  * Customize the Kinesis Stream Event Target
  */
-export interface KinesisStreamProps {
+export interface KinesisStreamProps extends TargetBaseProps {
   /**
    * Partition Key Path for records sent to this stream
    *
@@ -52,6 +52,7 @@ export class KinesisStream implements events.IRuleTarget {
     }));
 
     return {
+      ...bindBaseTargetConfig(this.props),
       arn: this.stream.streamArn,
       role,
       input: this.props.message,

@@ -43,118 +43,83 @@ describe('EC2 Routing', () => {
     const eigw = new route.EgressOnlyInternetGateway(stack, 'TestEIGW', {
       vpc: myVpc,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: eigw },
+    routeTable.addRoute('Route', '::/0', { gateway: eigw });
+
+    const template = Template.fromStack(stack);
+    // EIGW should be in stack
+    template.hasResourceProperties('AWS::EC2::EgressOnlyInternetGateway', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678', 'VpcId',
+        ],
+      },
     });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // EIGW should be in stack
-        TestEIGW4E4CDA8D: {
-          Type: 'AWS::EC2::EgressOnlyInternetGateway',
-          Properties: {
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678', 'VpcId',
-              ],
-            },
-          },
-        },
-        // Route linking IP to EIGW should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            EgressOnlyInternetGatewayId: {
-              'Fn::GetAtt': [
-                'TestEIGW4E4CDA8D', 'Id',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C', 'RouteTableId',
-              ],
-            },
-          },
-        },
+    // Route linking IP to EIGW should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationIpv6CidrBlock: '::/0',
+      EgressOnlyInternetGatewayId: {
+        'Fn::GetAtt': [
+          'TestEIGW4E4CDA8D', 'Id',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C', 'RouteTableId',
+        ],
       },
     });
   });
 
   test('Route to VPN Gateway', () => {
-    const vpngw = new route.VPNGateway(stack, 'TestVpnGw', {
+    const vpngw = new route.VPNGatewayV2(stack, 'TestVpnGw', {
       type: VpnConnectionType.IPSEC_1,
       vpc: myVpc,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: vpngw },
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: vpngw });
+    const template = Template.fromStack(stack);
+    // VPN Gateway should be in stack
+    template.hasResourceProperties('AWS::EC2::VPNGateway', {
+      Type: 'ipsec.1',
     });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // VPN Gateway should be in stack
-        TestVpnGwIGW11AF5344: {
-          Type: 'AWS::EC2::VPNGateway',
-          Properties: {
-            Type: 'ipsec.1',
-          },
-        },
-        // Route linking IP to VPN GW should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            GatewayId: {
-              'Fn::GetAtt': [
-                'TestVpnGwIGW11AF5344', 'VPNGatewayId',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C', 'RouteTableId',
-              ],
-            },
-          },
-        },
-        // Route Gateway attachment should be in stack
-        TestRouteGWAttachmentDD69361B: {
-          Type: 'AWS::EC2::VPCGatewayAttachment',
-          Properties: {
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678', 'VpcId',
-              ],
-            },
-            VpnGatewayId: {
-              'Fn::GetAtt': [
-                'TestVpnGwIGW11AF5344', 'VPNGatewayId',
-              ],
-            },
-          },
-        },
+    // Route linking IP to VPN GW should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationCidrBlock: '0.0.0.0/0',
+      GatewayId: {
+        'Fn::GetAtt': [
+          'TestVpnGwIGW11AF5344', 'VPNGatewayId',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C', 'RouteTableId',
+        ],
+      },
+    });
+    // Route Gateway attachment should be in stack
+    template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678', 'VpcId',
+        ],
+      },
+      VpnGatewayId: {
+        'Fn::GetAtt': [
+          'TestVpnGwIGW11AF5344', 'VPNGatewayId',
+        ],
       },
     });
   }),
 
   test('Route to VPN Gateway with optional properties', () => {
-    new route.VPNGateway(stack, 'TestVpnGw', {
+    new route.VPNGatewayV2(stack, 'TestVpnGw', {
       type: VpnConnectionType.IPSEC_1,
       vpc: myVpc,
       amazonSideAsn: 12345678,
     });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // VPN Gateway should be in stack
-        TestVpnGwIGW11AF5344: {
-          Type: 'AWS::EC2::VPNGateway',
-          Properties: {
-            AmazonSideAsn: 12345678,
-            Type: 'ipsec.1',
-          },
-        },
-      },
+    // VPN Gateway should be in stack
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNGateway', {
+      AmazonSideAsn: 12345678,
+      Type: 'ipsec.1',
     });
   }),
 
@@ -162,50 +127,35 @@ describe('EC2 Routing', () => {
     const igw = new route.InternetGateway(stack, 'TestIGW', {
       vpc: myVpc,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: igw },
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: igw });
+    const template = Template.fromStack(stack);
+    // Internet Gateway should be in stack
+    template.hasResource('AWS::EC2::InternetGateway', {});
+    // Route linking IP to IGW should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationCidrBlock: '0.0.0.0/0',
+      GatewayId: {
+        'Fn::GetAtt': [
+          'TestIGW1B4DB37D', 'InternetGatewayId',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C', 'RouteTableId',
+        ],
+      },
     });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // Internet Gateway should be in stack
-        TestIGW1B4DB37D: {
-          Type: 'AWS::EC2::InternetGateway',
-        },
-        // Route linking IP to IGW should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            GatewayId: {
-              'Fn::GetAtt': [
-                'TestIGW1B4DB37D', 'InternetGatewayId',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C', 'RouteTableId',
-              ],
-            },
-          },
-        },
-        // Route Gateway attachment should be in stack
-        TestRouteGWAttachmentDD69361B: {
-          Type: 'AWS::EC2::VPCGatewayAttachment',
-          Properties: {
-            InternetGatewayId: {
-              'Fn::GetAtt': [
-                'TestIGW1B4DB37D', 'InternetGatewayId',
-              ],
-            },
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678', 'VpcId',
-              ],
-            },
-          },
-        },
+    // Route Gateway attachment should be in stack
+    template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678', 'VpcId',
+        ],
+      },
+      InternetGatewayId: {
+        'Fn::GetAtt': [
+          'TestIGW1B4DB37D', 'InternetGatewayId',
+        ],
       },
     });
   });
@@ -216,46 +166,34 @@ describe('EC2 Routing', () => {
       connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: natgw },
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'private',
+        PrivateIpAddress: '10.0.0.42',
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
     });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // NAT Gateway should be in stack
-        TestNATGWNATGatewayBE4F6F2D: {
-          Type: 'AWS::EC2::NatGateway',
-          Properties: {
-            ConnectivityType: 'private',
-            PrivateIpAddress: '10.0.0.42',
-            SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA',
-            },
-          },
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
-        },
-        // Route linking private IP to NAT Gateway should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: {
-              'Fn::GetAtt': [
-                'TestNATGWNATGatewayBE4F6F2D',
-                'NatGatewayId',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C',
-                'RouteTableId',
-              ],
-            },
-          },
-        },
+    // Route linking private IP to NAT Gateway should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationCidrBlock: '0.0.0.0/0',
+      NatGatewayId: {
+        'Fn::GetAtt': [
+          'TestNATGWNATGatewayBE4F6F2D',
+          'NatGatewayId',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C',
+          'RouteTableId',
+        ],
       },
     });
   });
@@ -270,33 +208,24 @@ describe('EC2 Routing', () => {
         '10.0.2.0/28',
       ],
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: natgw },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // NAT Gateway should be in stack
-        TestNATGWNATGatewayBE4F6F2D: {
-          Type: 'AWS::EC2::NatGateway',
-          Properties: {
-            ConnectivityType: 'private',
-            PrivateIpAddress: '10.0.0.42',
-            SecondaryPrivateIpAddresses: [
-              '10.0.1.0/28',
-              '10.0.2.0/28',
-            ],
-            SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA',
-            },
-          },
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'private',
+        PrivateIpAddress: '10.0.0.42',
+        SecondaryPrivateIpAddresses: [
+          '10.0.1.0/28',
+          '10.0.2.0/28',
+        ],
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
         },
-
       },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
     });
   });
 
@@ -307,47 +236,36 @@ describe('EC2 Routing', () => {
       privateIpAddress: '10.0.0.42',
       secondaryPrivateIpAddressCount: 2,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: natgw },
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'private',
+        PrivateIpAddress: '10.0.0.42',
+        SecondaryPrivateIpAddressCount: 2,
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
     });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // NAT Gateway should be in stack
-        TestNATGWNATGatewayBE4F6F2D: {
-          Type: 'AWS::EC2::NatGateway',
-          Properties: {
-            ConnectivityType: 'private',
-            PrivateIpAddress: '10.0.0.42',
-            SecondaryPrivateIpAddressCount: 2,
-            SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA',
-            },
-          },
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
-        },
-        // Route linking private IP to NAT Gateway should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: {
-              'Fn::GetAtt': [
-                'TestNATGWNATGatewayBE4F6F2D',
-                'NatGatewayId',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C',
-                'RouteTableId',
-              ],
-            },
-          },
-        },
+    // Route linking private IP to NAT Gateway should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationCidrBlock: '0.0.0.0/0',
+      NatGatewayId: {
+        'Fn::GetAtt': [
+          'TestNATGWNATGatewayBE4F6F2D',
+          'NatGatewayId',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C',
+          'RouteTableId',
+        ],
       },
     });
   });
@@ -355,53 +273,42 @@ describe('EC2 Routing', () => {
   test('Route to public NAT Gateway', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
       subnet: mySubnet,
+      vpc: myVpc,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: natgw },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // NAT Gateway should be in stack
-        TestNATGWNATGatewayBE4F6F2D: {
-          Type: 'AWS::EC2::NatGateway',
-          Properties: {
-            SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA',
-            },
-          },
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
-        },
-        // Route linking private IP to NAT Gateway should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: {
-              'Fn::GetAtt': [
-                'TestNATGWNATGatewayBE4F6F2D',
-                'NatGatewayId',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C',
-                'RouteTableId',
-              ],
-            },
-          },
-        },
-        // EIP should be created when not provided
-        TestNATGWEIP0A279819: {
-          Type: 'AWS::EC2::EIP',
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
         },
       },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+    // Route linking private IP to NAT Gateway should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationCidrBlock: '0.0.0.0/0',
+      NatGatewayId: {
+        'Fn::GetAtt': [
+          'TestNATGWNATGatewayBE4F6F2D',
+          'NatGatewayId',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C',
+          'RouteTableId',
+        ],
+      },
+    });
+    // EIP should be created when not provided
+    template.hasResource('AWS::EC2::EIP', {
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
     });
   });
 
@@ -413,56 +320,41 @@ describe('EC2 Routing', () => {
       subnet: mySubnet,
       allocationId: eip.attrAllocationId,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: natgw },
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
+        },
+      },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
     });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // NAT Gateway should be in stack
-        TestNATGWNATGatewayBE4F6F2D: {
-          Type: 'AWS::EC2::NatGateway',
-          Properties: {
-            SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA',
-            },
-          },
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
-        },
-        // Route linking private IP to NAT Gateway should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: {
-              'Fn::GetAtt': [
-                'TestNATGWNATGatewayBE4F6F2D',
-                'NatGatewayId',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C',
-                'RouteTableId',
-              ],
-            },
-          },
-        },
-        // EIP should be in stack
-        MyEIP: {
-          Type: 'AWS::EC2::EIP',
-          Properties: {
-            Domain: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
-            },
-          },
-        },
+    // Route linking private IP to NAT Gateway should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationCidrBlock: '0.0.0.0/0',
+      NatGatewayId: {
+        'Fn::GetAtt': [
+          'TestNATGWNATGatewayBE4F6F2D',
+          'NatGatewayId',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C',
+          'RouteTableId',
+        ],
+      },
+    });
+    // EIP should be in stack
+    template.hasResourceProperties('AWS::EC2::EIP', {
+      Domain: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
       },
     });
   });
@@ -472,61 +364,44 @@ describe('EC2 Routing', () => {
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PUBLIC,
       maxDrainDuration: cdk.Duration.seconds(2001),
+      vpc: myVpc,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { gateway: natgw },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // NAT Gateway should be in stack
-        TestNATGWNATGatewayBE4F6F2D: {
-          Type: 'AWS::EC2::NatGateway',
-          Properties: {
-            AllocationId: {
-              'Fn::GetAtt': [
-                'TestNATGWEIP0A279819',
-                'AllocationId',
-              ],
-            },
-            ConnectivityType: 'public',
-            MaxDrainDurationSeconds: 2001,
-            SubnetId: {
-              Ref: 'TestSubnet2A4BE4CA',
-            },
-          },
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
-        },
-        // Route linking private IP to NAT Gateway should be in stack
-        TestRoute4CB59404: {
-          Type: 'AWS::EC2::Route',
-          Properties: {
-            DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: {
-              'Fn::GetAtt': [
-                'TestNATGWNATGatewayBE4F6F2D',
-                'NatGatewayId',
-              ],
-            },
-            RouteTableId: {
-              'Fn::GetAtt': [
-                'TestRouteTableC34C2E1C',
-                'RouteTableId',
-              ],
-            },
-          },
-        },
-        // EIP should be created when not provided
-        TestNATGWEIP0A279819: {
-          Type: 'AWS::EC2::EIP',
-          DependsOn: [
-            'TestSubnetRouteTableAssociationFE267B30',
-          ],
+    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
+    const template = Template.fromStack(stack);
+    // NAT Gateway should be in stack
+    template.hasResource('AWS::EC2::NatGateway', {
+      Properties: {
+        ConnectivityType: 'public',
+        MaxDrainDurationSeconds: 2001,
+        SubnetId: {
+          Ref: 'TestSubnet2A4BE4CA',
         },
       },
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
+    });
+    // Route linking private IP to NAT Gateway should be in stack
+    template.hasResourceProperties('AWS::EC2::Route', {
+      DestinationCidrBlock: '0.0.0.0/0',
+      NatGatewayId: {
+        'Fn::GetAtt': [
+          'TestNATGWNATGatewayBE4F6F2D',
+          'NatGatewayId',
+        ],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': [
+          'TestRouteTableC34C2E1C',
+          'RouteTableId',
+        ],
+      },
+    });
+    // EIP should be created when not provided
+    template.hasResource('AWS::EC2::EIP', {
+      DependsOn: [
+        'TestSubnetRouteTableAssociationFE267B30',
+      ],
     });
   });
 
@@ -535,44 +410,33 @@ describe('EC2 Routing', () => {
       vpc: myVpc,
       service: GatewayVpcEndpointAwsService.DYNAMODB,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { endpoint: dynamodb },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // DynamoDB endpoint should be in stack
-        TestDB27CDA92F: {
-          Type: 'AWS::EC2::VPCEndpoint',
-          Properties: {
-            RouteTableIds: [
-              {
-                'Fn::GetAtt': [
-                  'TestRouteTableC34C2E1C',
-                  'RouteTableId',
-                ],
-              },
-            ],
-            ServiceName: {
-              'Fn::Join': [
-                '',
-                [
-                  'com.amazonaws.',
-                  { Ref: 'AWS::Region' },
-                  '.dynamodb',
-                ],
-              ],
-            },
-            VpcEndpointType: 'Gateway',
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
-            },
-          },
+    routeTable.addRoute('Route', '0.0.0.0/0', { endpoint: dynamodb });
+    // DynamoDB endpoint should be in stack
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+      RouteTableIds: [
+        {
+          'Fn::GetAtt': [
+            'TestRouteTableC34C2E1C',
+            'RouteTableId',
+          ],
         },
+      ],
+      ServiceName: {
+        'Fn::Join': [
+          '',
+          [
+            'com.amazonaws.',
+            { Ref: 'AWS::Region' },
+            '.dynamodb',
+          ],
+        ],
+      },
+      VpcEndpointType: 'Gateway',
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
       },
     });
   });
@@ -582,44 +446,33 @@ describe('EC2 Routing', () => {
       vpc: myVpc,
       service: GatewayVpcEndpointAwsService.S3,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { endpoint: dynamodb },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // S3 endpoint should be in stack
-        TestS38FCC715C: {
-          Type: 'AWS::EC2::VPCEndpoint',
-          Properties: {
-            RouteTableIds: [
-              {
-                'Fn::GetAtt': [
-                  'TestRouteTableC34C2E1C',
-                  'RouteTableId',
-                ],
-              },
-            ],
-            ServiceName: {
-              'Fn::Join': [
-                '',
-                [
-                  'com.amazonaws.',
-                  { Ref: 'AWS::Region' },
-                  '.s3',
-                ],
-              ],
-            },
-            VpcEndpointType: 'Gateway',
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
-            },
-          },
+    routeTable.addRoute('Route', '0.0.0.0/0', { endpoint: dynamodb });
+    // S3 endpoint should be in stack
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+      RouteTableIds: [
+        {
+          'Fn::GetAtt': [
+            'TestRouteTableC34C2E1C',
+            'RouteTableId',
+          ],
         },
+      ],
+      ServiceName: {
+        'Fn::Join': [
+          '',
+          [
+            'com.amazonaws.',
+            { Ref: 'AWS::Region' },
+            '.s3',
+          ],
+        ],
+      },
+      VpcEndpointType: 'Gateway',
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
       },
     });
   });
@@ -629,44 +482,33 @@ describe('EC2 Routing', () => {
       vpc: myVpc,
       service: GatewayVpcEndpointAwsService.S3_EXPRESS,
     });
-    new route.Route(stack, 'TestRoute', {
-      routeTable: routeTable,
-      destination: '0.0.0.0/0',
-      target: { endpoint: dynamodb },
-    });
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        // S3 endpoint should be in stack
-        TestS3E055E5994: {
-          Type: 'AWS::EC2::VPCEndpoint',
-          Properties: {
-            RouteTableIds: [
-              {
-                'Fn::GetAtt': [
-                  'TestRouteTableC34C2E1C',
-                  'RouteTableId',
-                ],
-              },
-            ],
-            ServiceName: {
-              'Fn::Join': [
-                '',
-                [
-                  'com.amazonaws.',
-                  { Ref: 'AWS::Region' },
-                  '.s3express',
-                ],
-              ],
-            },
-            VpcEndpointType: 'Gateway',
-            VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
-            },
-          },
+    routeTable.addRoute('Route', '0.0.0.0/0', { endpoint: dynamodb });
+    // S3 endpoint should be in stack
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+      RouteTableIds: [
+        {
+          'Fn::GetAtt': [
+            'TestRouteTableC34C2E1C',
+            'RouteTableId',
+          ],
         },
+      ],
+      ServiceName: {
+        'Fn::Join': [
+          '',
+          [
+            'com.amazonaws.',
+            { Ref: 'AWS::Region' },
+            '.s3express',
+          ],
+        ],
+      },
+      VpcEndpointType: 'Gateway',
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
       },
     });
   });
