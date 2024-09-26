@@ -56,8 +56,8 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
   /**
    * Create a Lambda Function URL Origin with Origin Access Control (OAC) configured
    */
-  public static withOriginAccessControl(url: lambda.IFunctionUrl, props?: FunctionUrlOriginWithOACProps): cloudfront.IOrigin {
-    return new FunctionUrlOriginWithOAC(url, props);
+  public static withOriginAccessControl(lambdaFunctionUrl: lambda.IFunctionUrl, props?: FunctionUrlOriginWithOACProps): cloudfront.IOrigin {
+    return new FunctionUrlOriginWithOAC(lambdaFunctionUrl, props);
   }
 
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, private readonly props: FunctionUrlOriginProps = {}) {
