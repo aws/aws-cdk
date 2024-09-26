@@ -61,3 +61,44 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
+### Amazon Kinesis
+
+A Kinesis stream can be used as a source for a pipe. The stream will be polled for new messages and the messages will be sent to the pipe.
+
+```ts
+declare const sourceStream: kinesis.Stream;
+declare const targetQueue: sqs.Queue;
+
+const pipeSource = new sources.KinesisSource(sourceStream, {
+  startingPosition: sources.KinesisStartingPosition.LATEST,
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: pipeSource,
+  target: new SomeTarget(targetQueue)
+});
+```
+
+### Amazon DynamoDB
+
+A DynamoDB stream can be used as a source for a pipe. The stream will be polled for new messages and the messages will be sent to the pipe.
+
+```ts
+const table = new ddb.TableV2(this, 'MyTable', {
+  partitionKey: {
+    name: 'id',
+    type: ddb.AttributeType.STRING,
+  },
+  dynamoStream: ddb.StreamViewType.NEW_IMAGE,
+});
+declare const targetQueue: sqs.Queue;
+
+const pipeSource = new sources.DynamoDBSource(table, {
+  startingPosition: sources.DynamoDBStartingPosition.LATEST,
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: pipeSource,
+  target: new SomeTarget(targetQueue)
+});
+```

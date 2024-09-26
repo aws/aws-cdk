@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-pipe-source-dynamodb/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-sources-dynamodb"
+      ],
+      "assertionStack": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipesourcedynamodbDefaultTestDeployAssertD62992D6"
+    }
+  }
+}
