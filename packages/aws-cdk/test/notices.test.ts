@@ -49,32 +49,6 @@ const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
   schemaVersion: '1',
 };
 
-// const CLI_2_132_AFFECTED_NOTICE_1 = {
-//   title: '(cli): Some bug affecting cdk deploy.',
-//   issueNumber: 29420,
-//   overview: 'cdk deploy bug',
-//   components: [
-//     {
-//       name: 'cli',
-//       version: '2.132.0',
-//     },
-//   ],
-//   schemaVersion: '1',
-// };
-
-// const CLI_2_132_AFFECTED_NOTICE_2 = {
-//   title: '(cli): Some bug affecting cdk diff.',
-//   issueNumber: 29483,
-//   overview: 'cdk diff bug',
-//   components: [
-//     {
-//       name: 'cli',
-//       version: '>=2.132.0 <=2.132.1',
-//     },
-//   ],
-//   schemaVersion: '1',
-// };
-
 const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
   title: 'Regression on module foobar',
   issueNumber: 1234,
@@ -183,6 +157,12 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
 
 There are 1 unacknowledged notice(s).`);
     });
+
+    test('showTotal even if zero', () => {
+
+      expect(NoticesFormatter.format([], true)).toEqual('\n\nThere are 0 unacknowledged notice(s).');
+    });
+
   });
 
 });
