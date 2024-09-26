@@ -60,7 +60,13 @@
       "Arn"
      ]
     },
-    "Principal": "appsync.amazonaws.com"
+    "Principal": "appsync.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "Arn"
+     ]
+    }
    }
   },
   "apiC8550315": {

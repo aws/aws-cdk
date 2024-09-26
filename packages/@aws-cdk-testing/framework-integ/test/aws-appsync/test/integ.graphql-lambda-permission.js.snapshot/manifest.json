@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26efd5844480bb7b196c2b3473145267d604d70f7072f47ebbe80ff053613309.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88f8b6f143ea53b46d93da4b1faa520ca524dd12b86713226337cbcf866bcae6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,7 +50,10 @@
         "/aws-graphql-lambda-permissions/AuthorizerFunction/api-appsync": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionapiappsync4E3369BF"
+            "data": "AuthorizerFunctionapiappsync4E3369BF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-graphql-lambda-permissions/api/Resource": [

@@ -5,7 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
-const myFeatureFlag = { [cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: false };
+const myFeatureFlag = { [cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: true };
 
 const app = new cdk.App({
   context: myFeatureFlag,
