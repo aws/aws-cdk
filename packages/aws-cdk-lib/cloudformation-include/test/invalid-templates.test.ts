@@ -253,51 +253,66 @@ describe('CDK Include', () => {
   });
 
   test('non-leaf Intrinsics cannot be used in the top-level creation policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-create-policy.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
   });
 
   test('Intrinsics cannot be used in the autoscaling creation policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-create-policy-autoscaling.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
   });
 
   test('Intrinsics cannot be used in the create policy resource signal', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-create-policy-resource-signal.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
   });
 
   test('Intrinsics cannot be used in the top-level update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
   });
 
   test('Intrinsics cannot be used in the auto scaling rolling update update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-rolling-update.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
   });
 
   test('Intrinsics cannot be used in the auto scaling replacing update update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-replacing-update.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
   });
 
   test('Intrinsics cannot be used in the auto scaling scheduled action update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-scheduled-action.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
   });
 
   test('Intrinsics cannot be used in the code deploy lambda alias update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
     }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+  });
+
+  test('FF toggles error checking', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, false);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
+    }).not.toThrow();
   });
 });
 

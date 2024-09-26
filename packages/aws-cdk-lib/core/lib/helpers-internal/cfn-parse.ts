@@ -1,3 +1,4 @@
+import { CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS } from '../../../cx-api';
 import { CfnCondition } from '../cfn-condition';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
@@ -9,10 +10,12 @@ import {
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
 } from '../cfn-resource-policy';
 import { CfnTag } from '../cfn-tag';
+import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
 import { IResolvable } from '../resolvable';
 import { Validator } from '../runtime';
+import { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';
 
@@ -343,6 +346,7 @@ export interface ParseCfnOptions {
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
+  private stack?: Stack;
 
   constructor(options: ParseCfnOptions) {
     this.options = options;
@@ -350,6 +354,7 @@ export class CfnParser {
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const cfnOptions = resource.cfnOptions;
+    this.stack = Stack.of(resource);
 
     cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
     cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
@@ -688,8 +693,13 @@ export class CfnParser {
     // Top-level parsing functions check before we call `parseValue`, which requires
     // calling `looksLikeCfnIntrinsic`. Helper parsing functions check after we call
     // `parseValue`, which requires calling `isResolvableObject`.
-    if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
-      throw new Error('intrinsics cannot be used in update, deletion, or update-replace policies.');
+    if (!this.stack) {
+      throw new Error('cannot call this method before handleAttributes!');
+    }
+    if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
+      if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
+        throw new Error('intrinsics cannot be used in update, deletion, or update-replace policies.');
+      }
     }
   }
 

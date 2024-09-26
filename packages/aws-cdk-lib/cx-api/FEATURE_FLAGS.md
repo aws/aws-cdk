@@ -1415,5 +1415,21 @@ When this feature flag is enabled, if both initOptions.timeout and resourceSigna
 | (not in v1) |  |  |
 | 2.160.0 | `false` | `true` |
 
+### @aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics
+
+*When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.* (fix)
+
+Without enabling this feature flag, `cfn-include` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
+
+Enabling this feature flag will make `cfn-include` reject these templates.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to silently drop these policies instead of throwing errors.
+
 
 <!-- END details -->

@@ -109,6 +109,7 @@ export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNoti
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
+export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1153,6 +1154,19 @@ export const FLAGS: Record<string, FlagInfo> = {
       only the value from 'resourceSignalTimeout' will be used. 
       
       When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.160.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.',
+    detailsMd: `
+    Without enabling this feature flag, \`cfn-include\` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
+
+    Enabling this feature flag will make \`cfn-include\` throw on these templates.
       `,
     recommendedValue: true,
     introducedIn: { v2: '2.160.0' },
