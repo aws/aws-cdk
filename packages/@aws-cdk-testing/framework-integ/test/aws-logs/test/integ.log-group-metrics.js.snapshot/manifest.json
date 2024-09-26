@@ -1,29 +1,29 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets": {
+    "aws-cdk-log-group-metrics.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets.json",
+        "file": "aws-cdk-log-group-metrics.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-stepfunctions-tasks-bedrock-invoke-model-integ": {
+    "aws-cdk-log-group-metrics": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
+        "templateFile": "aws-cdk-log-group-metrics.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/582882a43e46336bf196e3d6ce641f77b803ad0beb1c85f9944a32aca0947480.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71b53c3965d74bf965044819161cded75e176bd07805af4fceff5dcda7eab49e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets"
+          "aws-cdk-log-group-metrics.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -32,73 +32,55 @@
         }
       },
       "dependencies": [
-        "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets"
+        "aws-cdk-log-group-metrics.assets"
       ],
       "metadata": {
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/Resource": [
+        "/aws-cdk-log-group-metrics/MyLogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleB840431D"
+            "data": "MyLogGroup5C0DAD85"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-log-group-metrics/IncomingBytesPerInstanceAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+            "data": "IncomingBytesPerInstanceAlarmFA8EEFDB"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Resource": [
+        "/aws-cdk-log-group-metrics/IncomingEventsPerInstanceAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachine2E01A3A5"
+            "data": "IncomingEventsPerInstanceAlarmA9670D55"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LlamaStateMachineRoleA1E51172"
-          }
-        ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LlamaStateMachineRoleDefaultPolicy36666B63"
-          }
-        ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LlamaStateMachineD0B74BA3"
-          }
-        ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/BootstrapVersion": [
+        "/aws-cdk-log-group-metrics/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CheckBootstrapVersion": [
+        "/aws-cdk-log-group-metrics/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ"
+      "displayName": "aws-cdk-log-group-metrics"
     },
-    "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets": {
+    "LogGroupMetricsDefaultTestDeployAssertF61C3BCA.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets.json",
+        "file": "LogGroupMetricsDefaultTestDeployAssertF61C3BCA.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "InvokeModelDefaultTestDeployAssert9C0D2DFC": {
+    "LogGroupMetricsDefaultTestDeployAssertF61C3BCA": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "InvokeModelDefaultTestDeployAssert9C0D2DFC.template.json",
+        "templateFile": "LogGroupMetricsDefaultTestDeployAssertF61C3BCA.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
@@ -108,7 +90,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets"
+          "LogGroupMetricsDefaultTestDeployAssertF61C3BCA.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -117,23 +99,23 @@
         }
       },
       "dependencies": [
-        "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets"
+        "LogGroupMetricsDefaultTestDeployAssertF61C3BCA.assets"
       ],
       "metadata": {
-        "/InvokeModel/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/LogGroupMetrics/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/InvokeModel/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/LogGroupMetrics/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "InvokeModel/DefaultTest/DeployAssert"
+      "displayName": "LogGroupMetrics/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
