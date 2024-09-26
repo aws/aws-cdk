@@ -8,13 +8,13 @@ import * as logging from '../lib/logging';
 import {
   CachedDataSource,
   Notice,
-  // Notices,
+  Notices,
   NoticesFilter,
   NoticesFormatter,
   WebsiteNoticeDataSource,
 } from '../lib/notices';
-// import * as version from '../lib/version';
-// import { Configuration } from '../lib/settings';
+import * as version from '../lib/version';
+import { Configuration } from '../lib/settings';
 
 const BASIC_BOOTSTRAP_NOTICE = {
   title: 'Exccessive permissions on file asset publishing role',
@@ -437,58 +437,98 @@ describe(CachedDataSource, () => {
   }
 });
 
-// describe(Notices, () => {
+describe(Notices, () => {
 
-//   describe(Notices.prototype.display, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     test('does not show anything when there are no notices', async () => {
+  describe('display', () => {
 
-//       Notices.create({ configuration: new Configuration() }).display({
-//         printer: (message) => {
-//           expect(message).toEqual('');
-//         },
-//       });
-//     });
+    test('nothing when there are no notices', async () => {
 
-//     test('Shows no notices when there are no notices with --unacknowledged', async () => {
-//       Notices.create({ configuration: new Configuration() }).display({
-//         printer: (message) => {
-//           expect(message).toEqual('\n\nThere are 0 unacknowledged notice(s).');
-//         },
-//         showTotal: true,
-//       });
-//     });
+      const print = jest.spyOn(logging, 'print');
 
-//     test('shows notices that pass the filter', async () => {
+      Notices.create({ configuration: new Configuration() }).display();
+      expect(print).toHaveBeenCalledWith('');
+      expect(print).toHaveBeenCalledTimes(1);
 
-//       const notices = Notices.create({ configuration: new Configuration(), acknowledgedIssueNumbers: [17061] });
-//       await notices.refresh({
-//         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
-//       });
-//       notices.enqueuePrint(notices.forCliVersion({ cliVersion: '1.120.0' }));
-//       notices.display({
-//         printer: (message) => {
+    });
 
-//           expect(message).toEqual(`
-// NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+    test('total count when show total is true', async () => {
 
-// 16603	Toggling off auto_delete_objects for Bucket empties the bucket
+      const print = jest.spyOn(logging, 'print');
 
-// 	Overview: If a stack is deployed with an S3 bucket with
-// 	          auto_delete_objects=True, and then re-deployed with
-// 	          auto_delete_objects=False, all the objects in the bucket
-// 	          will be deleted.
+      Notices.create({ configuration: new Configuration() }).display({ showTotal: true });
+      expect(print).toHaveBeenCalledWith('\n\nThere are 0 unacknowledged notice(s).');
+      expect(print).toHaveBeenCalledTimes(1);
 
-// 	Affected versions: cli: <=1.126.0
+    });
 
-// 	More information at: https://github.com/aws/aws-cdk/issues/16603
+    test('only relevant notices', async () => {
 
-// If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
-//         },
-//       });
-//     });
-//   });
-// });
+      // within the affected version range of the notice
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
+
+    test('only unacknowledged notices', async () => {
+
+      // within the affected version range of both notices
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
+
+      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
+      const configuration = new Configuration();
+      (configuration.context as any) = { get: (key: string) => context[key] };
+
+      const notices = Notices.create({ configuration });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
+
+    test('can include acknowledged notices if requested', async () => {
+
+      // within the affected version range of both notices
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
+
+      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
+      const configuration = new Configuration();
+      (configuration.context as any) = { get: (key: string) => context[key] };
+
+      const notices = Notices.create({ configuration, includeAcknowlegded: true });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]));
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
+
+  });
+});
 
 // describe('mock cdk version 2.132.0', () => {
 //   beforeAll(() => {
