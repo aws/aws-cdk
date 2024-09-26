@@ -428,23 +428,6 @@ describe(Notices, () => {
     jest.clearAllMocks();
   });
 
-  describe('shouldDisplay', () => {
-
-    test('default is true', () => {
-      expect(Notices.create({ configuration: new Configuration() }).shouldDisplay()).toBeTruthy();
-    });
-
-    test('is controlled by settings', () => {
-
-      const settings: any = { notices: false };
-      const configuration = new Configuration();
-      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
-
-      expect(Notices.create({ configuration }).shouldDisplay()).toBeFalsy();
-
-    });
-  });
-
   describe('bootstrapVersion', () => {
 
     test('can only be set to a single value', () => {
@@ -459,6 +442,41 @@ describe(Notices, () => {
   });
 
   describe('refresh', () => {
+
+    test('doesnt throw', async () => {
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: {
+          fetch: async () => {
+            throw new Error('Should not fail refresh');
+          },
+        },
+      });
+
+    });
+
+    test('does nothing when we shouldnt display', async () => {
+
+      const settings: any = { notices: false };
+      const configuration = new Configuration();
+      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
+
+      let refreshCalled = false;
+
+      const notices = Notices.create({ configuration });
+      await notices.refresh({
+        dataSource: {
+          fetch: async () => {
+            refreshCalled = true;
+            return Promise.resolve([]);
+          },
+        },
+      });
+
+      expect(refreshCalled).toBeFalsy();
+
+    });
 
     test('filters out acknowledged notices by default', async () => {
 
@@ -507,6 +525,22 @@ describe(Notices, () => {
   });
 
   describe('display', () => {
+
+    test('does nothing when we shouldnt display', async () => {
+
+      const settings: any = { notices: false };
+      const configuration = new Configuration();
+      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
+
+      const notices = Notices.create({ configuration });
+      await notices.refresh({ dataSource: { fetch: async () => [BASIC_NOTICE] } });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledTimes(0);
+
+    });
 
     test('nothing when there are no notices', async () => {
 

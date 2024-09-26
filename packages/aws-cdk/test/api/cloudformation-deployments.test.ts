@@ -11,8 +11,6 @@ import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
-import { Notices } from '../../lib/notices';
-import { Configuration } from '../../lib/settings';
 
 let sdkProvider: MockSdkProvider;
 let deployments: Deployments;
@@ -40,12 +38,6 @@ beforeEach(() => {
   });
 
   ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
-
-  // required because we bootstrap version check now possibly enqueues
-  // a notice, so an instance of `Notices` must be available.
-  // in production, this is done in the CLI entry point.
-  Notices.create({ configuration: new Configuration() });
-
 });
 
 function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {

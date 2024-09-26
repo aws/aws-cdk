@@ -370,9 +370,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   const cmd = argv._[0];
 
   const notices = Notices.create({ configuration, includeAcknowlegded: cmd === 'notices' ? !argv.unacknowledged : false });
-  if (notices.shouldDisplay()) {
-    void notices.refresh().catch(e => debug(`Could not refresh notices: ${e}`));
-  }
+  await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
@@ -440,17 +438,13 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     // Do PSAs here
     await version.displayVersionMessage();
 
-    if (notices.shouldDisplay()) {
+    if (cmd === 'notices') {
+      await notices.refresh({ force: true });
+      notices.display({ showTotal: argv.unacknowledged });
 
-      if (cmd === 'notices') {
-        await notices.refresh({ force: true });
-        notices.display({ showTotal: argv.unacknowledged });
-
-      } else if (cmd !== 'version') {
-        await notices.refresh();
-        notices.display();
-      }
-
+    } else if (cmd !== 'version') {
+      await notices.refresh();
+      notices.display();
     }
 
   }

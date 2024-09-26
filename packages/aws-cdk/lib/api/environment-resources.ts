@@ -106,7 +106,12 @@ export class EnvironmentResources {
     doValidate(bootstrapStack.version);
 
     function doValidate(version: number) {
-      Notices.get().bootstrapVersion = version;
+      const notices = Notices.get();
+      if (notices) {
+        // if `Notices` hasn't been initialized there is probably a good
+        // reason for it. handle gracefully.
+        notices.bootstrapVersion = version;
+      }
       if (defExpectedVersion > version) {
         throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
       }

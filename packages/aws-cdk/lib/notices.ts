@@ -162,12 +162,9 @@ export class Notices {
   }
 
   /**
-   * Get the singleton instance. Note this will throw if `create` was not called.
+   * Get the singleton instance. May return `undefined` if `create` has not been called.
    */
-  public static get(): Notices {
-    if (!this._instance) {
-      throw new Error('Notices have not been initialized. Call create.');
-    }
+  public static get(): Notices | undefined {
     return this._instance;
   }
 
@@ -198,25 +195,34 @@ export class Notices {
 
   /**
    * Refresh the list of notices this instance is aware of.
+   * To make sure this never crashes the CLI process, all failures are caught and
+   * slitently logged.
+   *
+   * If context is configured to not display notices, this will no-op.
    */
   public async refresh(options: NoticesRefreshOptions = {}) {
-    const dataSource = new CachedDataSource(CACHE_FILE_PATH, options.dataSource ?? new WebsiteNoticeDataSource(), options.force ?? false);
-    const notices = await dataSource.fetch();
-    this.data.push(...(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber))));
+
+    if (!this.shouldDisplay()) {
+      return;
+    }
+
+    try {
+      const dataSource = new CachedDataSource(CACHE_FILE_PATH, options.dataSource ?? new WebsiteNoticeDataSource(), options.force ?? false);
+      const notices = await dataSource.fetch();
+      this.data.push(...(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber))));
+    } catch (e: any) {
+      debug(`Could not refresh notices: ${e}`);
+    }
   }
 
   /**
-   * Determine whether or not notices should be displayed based on the
-   * configuration provided at instantiation time.
-   */
-  public shouldDisplay(): boolean {
-    return this.configuration.settings.get(['notices']) ?? true;
-  }
-
-  /**
-   * Display the relevant notices.
+   * Display the relevant notices (unless context dictates we shouldn't).
    */
   public display(options: NoticesPrintOptions = {}) {
+
+    if (!this.shouldDisplay()) {
+      return;
+    }
 
     const notices = NoticesFilter.filter({
       data: this.data,
@@ -227,6 +233,14 @@ export class Notices {
 
     print(NoticesFormatter.format(notices, options.showTotal));
 
+  }
+
+  /**
+   * Determine whether or not notices should be displayed based on the
+   * configuration provided at instantiation time.
+   */
+  private shouldDisplay(): boolean {
+    return this.configuration.settings.get(['notices']) ?? true;
   }
 
 }
