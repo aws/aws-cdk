@@ -75,7 +75,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
 | [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
 | [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | 2.160.0 | (fix) |
-| [@aws-cdk-/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission](#aws-cdk-aws-appsyncappsyncgraphqlapiscopelambdapermission) | When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn. | V2NEXT | (fix) |
+| [@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission](#aws-cdkaws-appsyncappsyncgraphqlapiscopelambdapermission) | When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -140,7 +140,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
-    "@aws-cdk-/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true
+    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true
   }
 }
 ```
@@ -1418,7 +1418,7 @@ When this feature flag is enabled, if both initOptions.timeout and resourceSigna
 | 2.160.0 | `false` | `true` |
 
 
-### @aws-cdk-/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission
+### @aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission
 
 *When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.* (fix)
 
