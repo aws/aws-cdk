@@ -645,7 +645,7 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
       "Effect": "Allow",
       "Principal": { "Service": "s3.amazonaws.com" },
       "Action": "s3:PutObject",
-      "Resource": ["arn:aws:s3:::destinationBucket/*"]
+      "Resource": ["arn:aws:s3:::amzn-s3-demo-destination-bucket/*"]
     }
   ]
 }
