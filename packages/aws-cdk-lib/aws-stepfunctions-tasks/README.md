@@ -1593,7 +1593,7 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
     },
   }],
   outputDataConfig: {
-    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'mybucket'), 'myoutputpath'),
+    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'), 'myoutputpath'),
   },
   resourceConfig: {
     instanceCount: 1,

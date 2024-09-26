@@ -757,7 +757,7 @@ In practice this means for any resource in the provided template, for example,
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "MyBucket",
+        "BucketName": "amzn-s3-demo-bucket",
         "AccessControl": "PublicRead",
       },
       "DeletionPolicy": "Retain"
@@ -765,7 +765,7 @@ In practice this means for any resource in the provided template, for example,
 ```
 
 There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
-would be "MyBucket"
+would be "amzn-s3-demo-bucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
