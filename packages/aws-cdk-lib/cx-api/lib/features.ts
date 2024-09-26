@@ -1169,7 +1169,6 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
     `,
     introducedIn: { v2: 'V2NEXT' },
-    defaults: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`',
   },
