@@ -83,6 +83,27 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 
 For more information about dual-stack mode, see [Working with a DB cluster in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
 
+If you want to issue read/write transactions directly on an Aurora Replica, you can use [local write forwarding](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html).
+Local write forwarding allows read replicas to accept write transactions and forward them to the writer DB instance to be committed.
+
+To enable local write forwarding, set the `enableLocalWriteForwarding` property to `true`:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  readers: [
+    rds.ClusterInstance.serverlessV2('readerInstance1'),
+  ],
+  vpc,
+  enableLocalWriteForwarding: true,
+});
+```
+
+**Note**: Local write forwarding is only supported for Aurora MySQL 3.04 and higher.
+
 Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 
 ```ts
