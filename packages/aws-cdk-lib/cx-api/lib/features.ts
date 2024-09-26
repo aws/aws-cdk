@@ -1172,7 +1172,6 @@ export const FLAGS: Record<string, FlagInfo> = {
         specific AppSync GraphQL API.
         `,
     recommendedValue: true,
-    defaults: { v2: false },
     introducedIn: { v2: 'V2NEXT' },
   },
 };
