@@ -143,7 +143,7 @@ describe('FunctionUrlOriginAccessControl', () => {
     });
   });
 
-  test('Correctly configures CloudFront Distribution with Origin Access Control', () => {
+  test('Creates Lambda Function URL origin with default Origin Access Control', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
