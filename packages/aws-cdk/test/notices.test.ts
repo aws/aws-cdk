@@ -443,6 +443,42 @@ describe(Notices, () => {
 
   describe('refresh', () => {
 
+    test('deduplicates notices', async () => {
+
+      // within the affected version range of the notice
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
+
+    test('clears notices if empty', async () => {
+
+      // within the affected version range of the notice
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display({ showTotal: true });
+      expect(print).toHaveBeenCalledWith('\n\nThere are 0 unacknowledged notice(s).');
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
+
     test('doesnt throw', async () => {
 
       const notices = Notices.create({ configuration: new Configuration() });
@@ -525,6 +561,24 @@ describe(Notices, () => {
   });
 
   describe('display', () => {
+
+    test('deduplicates notices', async () => {
+
+      // within the affected version range of the notice
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
+      expect(print).toHaveBeenCalledTimes(1);
+
+    });
 
     test('does nothing when we shouldnt display', async () => {
 

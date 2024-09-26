@@ -174,7 +174,7 @@ export class Notices {
   private readonly acknowledgedIssueNumbers: Set<Number>;
   private readonly includeAcknowlegded: boolean;
 
-  private readonly data: Notice[] = [];
+  private data: Set<Notice> = new Set();
   private _bootstrapVersion?: number;
 
   private constructor(props: NoticesProps) {
@@ -209,7 +209,7 @@ export class Notices {
     try {
       const dataSource = new CachedDataSource(CACHE_FILE_PATH, options.dataSource ?? new WebsiteNoticeDataSource(), options.force ?? false);
       const notices = await dataSource.fetch();
-      this.data.push(...(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber))));
+      this.data = new Set(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber)));
     } catch (e: any) {
       debug(`Could not refresh notices: ${e}`);
     }
@@ -225,7 +225,7 @@ export class Notices {
     }
 
     const notices = NoticesFilter.filter({
-      data: this.data,
+      data: Array.from(this.data),
       cliVersion: versionNumber(),
       outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
       bootstrapVersion: this._bootstrapVersion,
