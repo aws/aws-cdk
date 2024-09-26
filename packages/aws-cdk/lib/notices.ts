@@ -124,7 +124,7 @@ export class Notices {
   private readonly configuration: Configuration;
   private readonly acknowledgedIssueNumbers: Set<Number>;
 
-  private data: Notice[] = [];
+  private readonly data: Notice[] = [];
   private readonly printQueue: Notice[] = [];
 
   private constructor(props: NoticesProps) {
@@ -137,7 +137,7 @@ export class Notices {
    */
   public async refresh(options: NoticesRefreshOptions = {}) {
     const dataSource = options.dataSource ?? new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), options.force ?? false);
-    this.data = await dataSource.fetch();
+    this.data.push(...await dataSource.fetch());
   }
 
   /**
@@ -174,6 +174,8 @@ export class Notices {
     const printer = options.printer ?? print;
 
     printer(messageString);
+
+    this.printQueue.length = 0;
 
   }
 
