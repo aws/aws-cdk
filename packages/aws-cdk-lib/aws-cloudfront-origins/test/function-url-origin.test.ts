@@ -295,4 +295,44 @@ describe('FunctionUrlOriginAccessControl', () => {
       },
     });
   });
+  test('Correctly creates a Lambda Function URL Origin with default properties', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = FunctionUrlOrigin.withOriginAccessControl(fnUrl);
+
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
+      id: 'StackOriginLambdaFunctionURL',
+      domainName: {
+        'Fn::Select': [
+          2,
+          {
+            'Fn::Split': [
+              '/',
+              { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
+            ],
+          },
+        ],
+      },
+      customOriginConfig: {
+        originProtocolPolicy: 'https-only',
+        originSslProtocols: ['TLSv1.2'],
+      },
+      originAccessControlId: {
+        'Fn::GetAtt': [
+          'FunctionUrlOriginAccessControlC9E60518',
+          'Id',
+        ],
+      },
+    });
+  });
 });
