@@ -2184,7 +2184,7 @@ integTest(
 
 integTest(
   'hotswap deployment for ecs service detects failed deployment and errors',
-  withDefaultFixture(async (fixture) => {
+  withExtendedTimeoutFixture(async (fixture) => {
     // GIVEN
     await fixture.cdkDeploy('ecs-hotswap');
 
