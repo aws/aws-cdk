@@ -53,7 +53,7 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
 const myFeatureFlag = { [cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: false };
 
 const app = new cdk.App({
-  context: myFeatureFlag,
+  postCliContext: myFeatureFlag,
 });
 const testCase = new GraphQLApiLambdaAuthStack(app);
 new IntegTest(app, 'GraphQlApiLambdaAuth', {
