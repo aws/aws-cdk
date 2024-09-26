@@ -367,7 +367,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   });
   await configuration.load();
 
-  const notices = Notices.create({ configuration });
+  const cmd = argv._[0];
+
+  const notices = Notices.create({ configuration, includeAcknowlegded: cmd === 'notices' ? !argv.unacknowledged : false });
   if (notices.shouldDisplay()) {
     void notices.refresh().catch(e => debug(`Could not refresh notices: ${e}`));
   }
@@ -422,8 +424,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   loadPlugins(configuration.settings);
 
-  const cmd = argv._[0];
-
   if (typeof(cmd) !== 'string') {
     throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
@@ -444,21 +444,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       if (cmd === 'notices') {
         await notices.refresh({ force: true });
-        notices.enqueuePrint([
-          ...notices.forCliVersion({ onlyUnacknowledged: argv.unacknowledged }),
-          ...notices.forFrameworkVersion({ onlyUnacknowledged: argv.unacknowledged }),
-        ]);
-        notices.print({ showTotal: argv.unacknowledged });
+        notices.display({ showTotal: argv.unacknowledged });
 
       } else if (cmd !== 'version') {
         await notices.refresh();
-        notices.enqueuePrint([
-          ...notices.forCliVersion({ onlyUnacknowledged: true }),
-          ...notices.forFrameworkVersion({ onlyUnacknowledged: true }),
-        ]);
-        notices.print();
+        notices.display();
       }
+
     }
+
   }
 
   async function main(command: string, args: any): Promise<number | void> {

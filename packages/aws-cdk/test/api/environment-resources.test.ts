@@ -9,16 +9,16 @@ import { MockToolkitInfo } from '../util/mock-toolkitinfo';
 let mockSdk: MockSdk;
 let envRegistry: EnvironmentResourcesRegistry;
 let toolkitMock: ReturnType<typeof MockToolkitInfo.setup>;
-beforeAll(() => {
-  // required because we bootstrap version check now possibly enqueues
-  // a notice, so an instance of `Notices` must be available.
-  // in production, this is done in the CLI entry point.
-  Notices.create({ configuration: new Configuration() });
-});
 beforeEach(() => {
   mockSdk = new MockSdk();
   envRegistry = new EnvironmentResourcesRegistry();
   toolkitMock = MockToolkitInfo.setup();
+
+  // required because we bootstrap version check now possibly enqueues
+  // a notice, so an instance of `Notices` must be available.
+  // in production, this is done in the CLI entry point.
+  Notices.create({ configuration: new Configuration() });
+
 });
 
 afterEach(() => {
@@ -96,24 +96,9 @@ describe('validateversion without bootstrap stack', () => {
     await notices.refresh({ dataSource: { fetch: async () => [bootstrapNotice] } });
     await expect(envResources().validateVersion(8, '/abc')).resolves.toBeUndefined();
 
-    // assert the notices print queue contains our notice
-    notices.print({
-      printer: (message) => {
-        expect(message).toEqual(`
-NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-1234	title
-
-	Overview: overview
-
-	Affected versions: bootstrap: <22
-
-	More information at: https://github.com/aws/aws-cdk/issues/1234
-
-
-If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 1234".`);
-      },
-    });
+    // this means the bootstrap check correctly set the bootstrap version number on the notices instance
+    expect(() => notices.bootstrapVersion = 100).toThrow(/Cannot change bootstrap version once set/);
+    expect(() => notices.bootstrapVersion = 10).not.toThrow();
   });
 
   test('validating version without explicit SSM parameter fails', async () => {

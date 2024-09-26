@@ -19,12 +19,11 @@ export interface NoticesProps {
   readonly configuration: Configuration;
 
   /**
-   * List of issues that are already acknowledged. Notices linked to these
-   * issues will be excluded.
+   * Include notices that have already been acknowledged.
    *
-   * @default - taken from the configuration.
+   * @default false
    */
-  readonly acknowledgedIssueNumbers?: number[];
+  readonly includeAcknowlegded?: boolean;
 
 }
 
@@ -37,47 +36,6 @@ export interface NoticesPrintOptions {
    */
   readonly showTotal?: boolean;
 
-  /**
-   * Printer function.
-   *
-   * @default print
-   */
-  readonly printer?: (message: string) => void;
-
-}
-
-export interface NoticesForCommonOptions {
-  /**
-   * Include only unacknowledged notices.
-   *
-   * @default false
-   */
-  readonly onlyUnacknowledged?: boolean;
-}
-
-export interface NoticesForCliVersionOptions extends NoticesForCommonOptions {
-  /**
-   * The version of the CLI to filter notices for.
-   *
-   * @default - The current version of the CLI
-   */
-  readonly cliVersion?: string;
-}
-
-export interface NoticesForBootstrapVersionOptions extends NoticesForCommonOptions {
-  /**
-   * The version of Bootstrap to filter notices for.
-   */
-  readonly bootstrapVersion: number;
-}
-
-export interface NoticesForFrameworkVersionOptions extends NoticesForCommonOptions {
-  /**
-   * The directory where the CDK application is synthesized to.
-   *
-   * @default - taken from the configuration or 'cdk.out'
-   */
-  readonly outDir?: string;
 }
 
 export interface NoticesRefreshOptions {
@@ -94,6 +52,100 @@ export interface NoticesRefreshOptions {
    * @default - CachedDataSource which fetches from our s3 bucket and populates a cache file.
    */
   readonly dataSource?: NoticeDataSource;
+}
+
+export class NoticesFormatter {
+
+  public static format(notices: Notice[], showTotal?: boolean): string {
+
+    let messageString: string = '';
+    if (notices.length > 0) {
+      messageString = [
+        '\nNOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)',
+        ...notices.map(NoticesFormatter.formatBody),
+        `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${notices[0].issueNumber}".`,
+      ].join('\n\n');
+    }
+    if (showTotal ?? false) {
+      messageString = [messageString, `There are ${notices.length} unacknowledged notice(s).`].join('\n\n');
+    }
+
+    return messageString;
+
+  }
+
+  private static formatBody(notice: Notice): string {
+    const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
+    return [
+      `${notice.issueNumber}\t${notice.title}`,
+      NoticesFormatter.formatOverview(notice),
+      `\tAffected versions: ${componentsValue}`,
+      `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
+    ].join('\n\n') + '\n';
+  }
+
+  private static formatOverview(notice: Notice) {
+    const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
+
+    const heading = 'Overview: ';
+    const separator = `\n\t${' '.repeat(heading.length)}`;
+    const content = wrap(notice.overview)
+      .split('\n')
+      .join(separator);
+
+    return '\t' + heading + content;
+  }
+
+}
+
+export interface NoticesFilterFilterOptions {
+  readonly data: Notice[];
+  readonly cliVersion: string;
+  readonly outDir: string;
+  readonly bootstrapVersion?: number;
+}
+
+export class NoticesFilter {
+
+  public static filter(options: NoticesFilterFilterOptions): Notice[] {
+    return [
+      ...this.findForCliVersion(options.data, options.cliVersion),
+      ...this.findForFrameworkVersion(options.data, options.outDir),
+      ...(options.bootstrapVersion ? this.findForBootstrapVersion(options.data, options.bootstrapVersion) : []),
+    ];
+  }
+
+  private static findForCliVersion(data: Notice[], cliVersion: string): Notice[] {
+    return data.filter(notice => {
+      const affectedComponent = notice.components.find(component => component.name === 'cli');
+      const affectedRange = affectedComponent?.version;
+      return affectedRange != null && semver.satisfies(cliVersion, affectedRange);
+    });
+
+  }
+
+  private static findForFrameworkVersion(data: Notice[], outDir: string): Notice[] {
+    return data.filter(notice => {
+      return match(resolveAliases(notice.components), loadTreeFromDir(outDir));
+    });
+
+  }
+
+  private static findForBootstrapVersion(data: Notice[], bootstrapVersion: number): Notice[] {
+
+    const semverBootstrapVersion = semver.coerce(bootstrapVersion);
+    if (!semverBootstrapVersion) {
+      throw new Error(`Cannot coerce bootstrap version '${bootstrapVersion}' into semver`);
+    }
+
+    return data.filter(notice => {
+
+      const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
+      const affectedRange = affectedComponent?.version;
+      return affectedRange != null && semver.satisfies(semverBootstrapVersion, affectedRange);
+    });
+  }
+
 }
 
 /**
@@ -123,13 +175,22 @@ export class Notices {
 
   private readonly configuration: Configuration;
   private readonly acknowledgedIssueNumbers: Set<Number>;
+  private readonly includeAcknowlegded: boolean;
 
   private readonly data: Notice[] = [];
-  private readonly printQueue: Notice[] = [];
+  private _bootstrapVersion?: number;
 
   private constructor(props: NoticesProps) {
     this.configuration = props.configuration;
-    this.acknowledgedIssueNumbers = new Set(props.acknowledgedIssueNumbers ?? this.configuration.context.get('acknowledged-issue-numbers') ?? []);
+    this.acknowledgedIssueNumbers = new Set(this.configuration.context.get('acknowledged-issue-numbers') ?? []);
+    this.includeAcknowlegded = props.includeAcknowlegded ?? false;
+  }
+
+  public set bootstrapVersion(version: number) {
+    if (this._bootstrapVersion && version != this._bootstrapVersion) {
+      throw new Error('Cannot change bootstrap version once set');
+    }
+    this._bootstrapVersion = version;
   }
 
   /**
@@ -137,7 +198,8 @@ export class Notices {
    */
   public async refresh(options: NoticesRefreshOptions = {}) {
     const dataSource = options.dataSource ?? new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), options.force ?? false);
-    this.data.push(...await dataSource.fetch());
+    const notices = await dataSource.fetch();
+    this.data.push(...(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber))));
   }
 
   /**
@@ -149,110 +211,21 @@ export class Notices {
   }
 
   /**
-   * Enqueue a notice for print.
-   * Use `print` to actually print them.
+   * Display the relevant notices.
    */
-  public enqueuePrint(notices: Notice[]) {
-    this.printQueue.push(...notices);
-  }
+  public display(options: NoticesPrintOptions = {}) {
 
-  /**
-   * Print the notices in the queue.
-   * Use `enqueuePrint` to add notices to the queue.
-   */
-  public print(options: NoticesPrintOptions = {}) {
-
-    let messageString: string = '';
-    if (this.printQueue.length > 0) {
-      const individualMessages = this.printQueue.map(formatNotice);
-      messageString = finalMessage(individualMessages, this.printQueue[0].issueNumber);
-    }
-    if (options.showTotal) {
-      messageString = [messageString, `There are ${this.printQueue.length} unacknowledged notice(s).`].join('\n\n');
-    }
-
-    const printer = options.printer ?? print;
-
-    printer(messageString);
-
-    this.printQueue.length = 0;
-
-  }
-
-  /**
-   * Find notices relevant to the cli version.
-   */
-  public forCliVersion(options: NoticesForCliVersionOptions = {}): Notice[] {
-
-    const compareToVersion = options.cliVersion ?? versionNumber();
-    const unacknowledged = options.onlyUnacknowledged ?? false;
-
-    return this.data.filter(notice => {
-
-      if (unacknowledged && this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
-        return false;
-      }
-
-      const affectedComponent = notice.components.find(component => component.name === 'cli');
-      const affectedRange = affectedComponent?.version;
-      return affectedRange != null && semver.satisfies(compareToVersion, affectedRange);
+    const notices = NoticesFilter.filter({
+      data: this.data,
+      cliVersion: versionNumber(),
+      outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
+      bootstrapVersion: this._bootstrapVersion,
     });
 
-  }
-
-  /**
-   * Find notices relevant to the framework version.
-   */
-  public forFrameworkVersion(options: NoticesForFrameworkVersionOptions = {}): Notice[] {
-
-    const outDir = options.outDir ?? (this.configuration.settings.get(['output']) ?? 'cdk.out');
-    const tree = loadTreeFromDir(outDir);
-    const unacknowledged = options.onlyUnacknowledged ?? false;
-
-    return this.data.filter(notice => {
-
-      if (unacknowledged && this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
-        return false;
-      }
-
-      return match(resolveAliases(notice.components), tree);
-    });
+    print(NoticesFormatter.format(notices, options.showTotal));
 
   }
 
-  /**
-   * Find notices relevant to the bootstrap version.
-   */
-  public forBootstrapVersion(options: NoticesForBootstrapVersionOptions): Notice[] {
-
-    const semverBootstrapVersion = semver.coerce(options.bootstrapVersion);
-    if (!semverBootstrapVersion) {
-      throw new Error(`Cannot coerce bootstrap version '${options.bootstrapVersion}' into semver`);
-    }
-
-    const unacknowledged = options.onlyUnacknowledged ?? false;
-
-    return this.data.filter(notice => {
-
-      if (unacknowledged && this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
-        return false;
-      }
-
-      const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
-      const affectedRange = affectedComponent?.version;
-      return affectedRange != null && semver.satisfies(semverBootstrapVersion, affectedRange);
-    });
-
-  }
-
-}
-
-function finalMessage(individualMessages: string[], exampleNumber: number): string {
-  return [
-    '\nNOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)',
-    ...individualMessages,
-    `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${exampleNumber}".`,
-  ].join('\n\n');
 }
 
 export interface Component {
@@ -416,28 +389,6 @@ function resolveAliases(components: Component[]): Component[] {
       return [component];
     }
   });
-}
-
-function formatNotice(notice: Notice): string {
-  const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
-  return [
-    `${notice.issueNumber}\t${notice.title}`,
-    formatOverview(notice.overview),
-    `\tAffected versions: ${componentsValue}`,
-    `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
-  ].join('\n\n') + '\n';
-}
-
-function formatOverview(text: string) {
-  const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
-
-  const heading = 'Overview: ';
-  const separator = `\n\t${' '.repeat(heading.length)}`;
-  const content = wrap(text)
-    .split('\n')
-    .join(separator);
-
-  return '\t' + heading + content;
 }
 
 /**
