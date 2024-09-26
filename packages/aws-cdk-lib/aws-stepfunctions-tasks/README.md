@@ -284,7 +284,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
       encryptionOption: tasks.EncryptionOption.S3_MANAGED,
     },
     outputLocation: {
-      bucketName: 'query-results-bucket',
+      bucketName: 'amzn-s3-demo-bucket',
       objectKey: 'folder',
     },
   },

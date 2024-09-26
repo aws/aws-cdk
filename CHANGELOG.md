@@ -7484,10 +7484,10 @@ const bucket = new s3.Bucket(this, 'L2Bucket');
 const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
 
 // strongly-typed overrides
-bucketResource.propertyOverrides.bucketName = 'NewBucketName';
+bucketResource.propertyOverrides.bucketName = 'amzn-s3-demo-bucket';
 
 // weakly-typed overrides
-bucketResource.addPropertyOverride('BucketName', 'NewerBucketName');
+bucketResource.addPropertyOverride('BucketName', 'amzn-s3-demo-bucket1');
 ```
 
 ### Bug Fixes

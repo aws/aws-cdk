@@ -1028,17 +1028,17 @@ Some of the interesting keys that can be used in the JSON configuration files:
 
 ```json5
 {
-    "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
-    "build": "mvn package",           // Specify pre-synth build           (--build='mvn package')
-    "context": {                      // Context entries                   (--context=key=value)
+    "app": "node bin/main.js",                  // Command to start the CDK app      (--app='node bin/main.js')
+    "build": "mvn package",                     // Specify pre-synth build           (--build='mvn package')
+    "context": {                                // Context entries                   (--context=key=value)
         "key": "value"
     },
-    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
+    "toolkitStackName": "foo",                  // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
     "toolkitBucket": {
-        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+        "bucketName": "amzn-s3-demo-bucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=amzn-s3-demo-bucket)
+        "kmsKeyId": "fooKMSKey"                 // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
     },
-    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
+    "versionReporting": false,                  // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 

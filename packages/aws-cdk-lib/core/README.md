@@ -1256,7 +1256,7 @@ The `CfnResource` class allows emitting arbitrary entries in the
 new CfnResource(this, 'ResourceId', {
   type: 'AWS::S3::Bucket',
   properties: {
-    BucketName: 'bucket-name'
+    BucketName: 'amzn-s3-demo-bucket'
   },
 });
 ```
