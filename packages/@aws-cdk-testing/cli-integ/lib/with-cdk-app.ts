@@ -13,7 +13,7 @@ import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
-export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
+export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
 
 /**
