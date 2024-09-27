@@ -48,7 +48,7 @@ export interface ApiDestinationTargetParameters {
 export class ApiDestinationTarget implements ITarget {
   private destination: IApiDestination;
   private apiParameters?: ApiDestinationTargetParameters;
-  public readonly targetArn;
+  public readonly targetArn: string;
 
   constructor(destination: IApiDestination, parameters?: ApiDestinationTargetParameters) {
     this.destination = destination;
