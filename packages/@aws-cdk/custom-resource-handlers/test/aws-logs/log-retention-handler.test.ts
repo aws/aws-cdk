@@ -5,6 +5,8 @@ import 'aws-sdk-client-mock-jest';
 import * as nock from 'nock';
 import * as provider from '../../lib/aws-logs/log-retention-handler/index';
 
+provider.disableSleepForTesting();
+
 const cloudwatchLogsMock = mockClient(CloudWatchLogsClient);
 const OPERATION_ABORTED = new OperationAbortedException({ message: '', $metadata: {} });
 const RESOURCE_ALREADY_EXISTS = new ResourceAlreadyExistsException({ message: '', $metadata: {} });
