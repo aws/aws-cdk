@@ -109,6 +109,7 @@ export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNoti
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
+export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
 export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1157,6 +1158,22 @@ export const FLAGS: Record<string, FlagInfo> = {
       `,
     recommendedValue: true,
     introducedIn: { v2: '2.160.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.',
+    detailsMd: `
+        Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission 
+        to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning 
+        it allows invocations from any source.
+
+        When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the 
+        specific AppSync GraphQL API.
+        `,
+    recommendedValue: true,
+    introducedIn: { v2: 'V2NEXT' },
   },
 
   //////////////////////////////////////////////////////////////////////
