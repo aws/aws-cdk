@@ -29,13 +29,13 @@ const sourceBucket = new s3.Bucket(stack, 'SourceBucket', {
   encryptionKey: sourceKmsKey,
   replicationRules: [
     {
-      destination: s3.ReplicationDestination.sameAccount(destinationBucket1),
+      destination: destinationBucket1,
       priority: 2,
       sseKmsEncryptedObjects: true,
       kmsKey: destinationKmsKey,
     },
     {
-      destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
+      destination: destinationBucket2,
       replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       kmsKey: destinationKmsKey,

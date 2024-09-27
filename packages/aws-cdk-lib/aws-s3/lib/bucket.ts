@@ -1423,9 +1423,14 @@ export class ReplicationTimeValue {
  */
 export interface ReplicationRule {
   /**
-   * A container for information about the replication destination.
+   * The destination bucket for the replicated objects.
    *
    * The destination can be either in the same AWS account or a cross account.
+   *
+   * If you want to configure cross-account replication,
+   * the destination bucket must have a policy that allows the source bucket to replicate objects to it.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
    */
   readonly destination: IBucket;
 
@@ -1544,45 +1549,6 @@ export interface Filter {
    * @default - applies to all objects
    */
   readonly tags?: Tag[];
-}
-
-/**
- * A container for information about the replication destination.
- */
-export class ReplicationDestination {
-  /**
-   * Replicate to another bucket in the same account.
-   *
-   * @param bucket the destination bucket
-   */
-  public static sameAccount(bucket: IBucket): ReplicationDestination {
-    return new ReplicationDestination(bucket);
-  }
-
-  /**
-   * Replicate to another bucket in a different account.
-   *
-   * When performing cross-account replication,
-   * you need to configure access permissions for the replication role in the bucket policy of the destination bucket.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   *
-   * @param bucket the destination bucket
-   * @param account the account to replicate to
-   * @param accessControlTransition whether to want to change replica ownership to the AWS account that owns the destination bucket. The replicas are owned by same AWS account that owns the source object by default.
-   */
-  public static crossAccount(bucket: IBucket, account: string, accessControlTransition?: boolean): ReplicationDestination {
-    return new ReplicationDestination(bucket, account, accessControlTransition);
-  }
-
-  /**
-   * Replicate to another bucket in the same or different account.
-   *
-   * @param bucket the destination bucket
-   * @param account the account to replicate to
-   * @param accessControlTransition whether to want to change replica ownership to the AWS account that owns the destination bucket. The replicas are owned by same AWS account that owns the source object by default.
-   */
-  private constructor(public readonly bucket: IBucket, public readonly account?: string, public readonly accessControlTransition?: boolean) {}
 }
 
 export interface BucketProps {
@@ -2745,8 +2711,9 @@ export class Bucket extends BucketBase {
 
         const sourceAccount = Stack.of(this).account;
         const destinationAccount = rule.destination.env.account;
+        const isCrossAccount = sourceAccount !== destinationAccount;
 
-        if (sourceAccount !== destinationAccount) {
+        if (isCrossAccount) {
           Annotations.of(this).addInfo(`Cross-account S3 replication is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(role.roleArn)}.`);
         } else if (rule.accessControlTransition) {
           throw new Error('accessControlTranslation is only supported for cross-account replication');
@@ -2758,7 +2725,7 @@ export class Bucket extends BucketBase {
           status: 'Enabled',
           destination: {
             bucket: rule.destination.bucketArn,
-            account: rule.destination.env.account,
+            account: isCrossAccount ? destinationAccount : undefined,
             storageClass: rule.storageClass?.toString(),
             accessControlTranslation: rule.accessControlTransition ? {
               owner: 'Destination',
