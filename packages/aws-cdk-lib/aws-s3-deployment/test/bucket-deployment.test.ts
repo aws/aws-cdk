@@ -1376,6 +1376,7 @@ test('"SourceMarkers" is not included if none of the sources have markers', () =
     'SourceObjectKeys',
     'DestinationBucketName',
     'Prune',
+    'OutputObjectKeys',
   ]);
 });
 
@@ -1707,5 +1708,32 @@ test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {
         'Arn',
       ],
     },
+  });
+});
+
+test('outputObjectKeys to control SourceObjectKeys being sent back', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    outputObjectKeys: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectKeys: false,
+  });
+});
+
+test('outputObjectKeys default value is true', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectKeys: true,
   });
 });
