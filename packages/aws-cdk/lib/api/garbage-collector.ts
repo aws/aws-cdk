@@ -28,7 +28,7 @@ class ActiveAssets {
 class S3Asset {
   private tags: S3.TagSet | undefined = undefined;
 
-  public constructor(private readonly bucket: string, private readonly key: string) {}
+  public constructor(private readonly bucket: string, public readonly key: string) {}
 
   public getHash(): string {
     return path.parse(this.key).name;
@@ -149,7 +149,7 @@ export class GarbageCollector {
       await refreshStacks();
 
       const bucket = await this.getBootstrapBucketName(sdk);
-      // Process objects in batches of 10,000
+      // Process objects in batches of 1000
       for await (const batch of this.readBucketInBatches(s3, bucket)) {
         print(chalk.red(batch.length));
         const currentTime = Date.now();
@@ -158,15 +158,16 @@ export class GarbageCollector {
           return !activeAssets.contains(obj.getHash());
         });
 
-        const deletables = graceDays > 0 
-          ? await Promise.all(isolated.map(async (obj) => {
-              const tagTime = await obj.getTag(s3, ISOLATED_TAG);
-              if (tagTime) {
-                return olderThan(Number(tagTime), currentTime, graceDays) ? obj : null;
-              } else {
+        const deletables: S3Asset[] = graceDays > 0 
+          ? await Promise.all(
+              isolated.map(async (obj) => {
+                const tagTime = await obj.getTag(s3, ISOLATED_TAG);
+                if (tagTime && olderThan(Number(tagTime), currentTime, graceDays)) {
+                  return obj;
+                }
                 return null;
-              }
-            })).then(results => results.filter(Boolean))
+              })
+            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
           : isolated;
 
         const taggables = graceDays > 0 
@@ -176,12 +177,36 @@ export class GarbageCollector {
             })).then(results => results.filter(Boolean))
           : [];
 
-
         print(chalk.blue(deletables.length));
         print(chalk.white(taggables.length));
+
+        if (!this.props.dryRun) {
+          this.parallelDelete(s3, bucket, deletables);
+          // parallelTag(taggables, ISOLATED_TAG)
+        }
+
+        // TODO: maybe undelete
       }
     } finally {
       clearInterval(timer);
+    }
+  }
+
+  private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[]) {
+    const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
+      Key: asset.key,
+    }));
+
+    try { 
+      await s3.deleteObjects({
+        Bucket: bucket,
+        Delete: {
+          Objects: objectsToDelete,
+          Quiet: true,
+        },
+      }).promise();
+    } catch (err) {
+      console.error(`Error deleting objects: ${err}`);
     }
   }
 
@@ -190,7 +215,7 @@ export class GarbageCollector {
     return info.bucketName;
   }
 
-  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 10000): AsyncGenerator<S3Asset[]> {
+  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000): AsyncGenerator<S3Asset[]> {
     let continuationToken: string | undefined;
   
     do {
