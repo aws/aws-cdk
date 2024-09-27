@@ -185,7 +185,7 @@ declare const dest: events.ApiDestination;
 const apiTarget = new targets.ApiDestinationTarget(dest);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: apiTarget,
 });
 ```
@@ -201,7 +201,7 @@ const apiTarget = new targets.ApiDestinationTarget(dest, {
 });
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: apiTarget,
 });
 ```

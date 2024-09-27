@@ -1,4 +1,6 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
@@ -17,23 +19,6 @@ const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
  * SQS (pipe source) --> EventBridge API destination (pipe target)
  * --> API Gateway HTTP API --> Lambda function
  */
-
-class TestSource implements ISource {
-  sourceArn: string;
-  sourceParameters = undefined;
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-  bind(_pipe: IPipe): SourceConfig {
-    return {
-      sourceParameters: this.sourceParameters,
-    };
-  }
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
 
 const fn = new lambda.Function(stack, 'ConnectHandler', {
   runtime: lambda.Runtime.NODEJS_LATEST,
@@ -69,7 +54,7 @@ const destination = new cdk.aws_events.ApiDestination(stack, 'MyDestination', {
 });
 
 new Pipe(stack, 'Pipe', {
-  source: new TestSource(sourceQueue),
+  source: new SqsSource(sourceQueue),
   target: new ApiDestinationTarget(destination, {
     headerParameters: {
       'x-header': 'myheader',
