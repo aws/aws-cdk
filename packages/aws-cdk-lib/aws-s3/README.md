@@ -816,7 +816,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       priority: 2,
       // Whether to specify S3 Replication Time Control (S3 RTC).
       replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
-      // Wherther to enable replication metrics.
+      // Whether to enable replication metrics.
       metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       // The kms key to use for the destination bucket.
       kmsKey,
