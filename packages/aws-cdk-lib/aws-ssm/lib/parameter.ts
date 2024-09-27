@@ -585,10 +585,10 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: {
         parameterName,
-        additionalCacheKey,
       },
       dummyValue: defaultValue || `dummy-value-for-${parameterName}`,
       ignoreErrorOnMissingContext: defaultValue !== undefined,
+      additionalCacheKey,
     }).value;
 
     return value;

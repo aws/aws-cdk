@@ -117,10 +117,11 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
-      // build a version of the props which includes the dummyValue and ignoreError flag
+      // build a version of the props which includes any additional props extensions
       const extendedProps: { [p: string]: any } = {
         dummyValue: options.dummyValue,
         ignoreErrorOnMissingContext: options.ignoreErrorOnMissingContext,
+        ...(options.additionalCacheKey ? { additionalCacheKey: options.additionalCacheKey } : {}),
         ...props,
       };
 
