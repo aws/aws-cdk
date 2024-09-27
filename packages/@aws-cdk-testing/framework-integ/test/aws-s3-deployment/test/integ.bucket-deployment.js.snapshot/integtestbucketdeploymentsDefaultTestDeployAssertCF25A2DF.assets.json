@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "38.0.1",
   "files": {
     "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "ee119c57175f70338fd2f07969b3b82d56f910ab59a2c0ef7992986778f9e90e": {
+    "32cf82c61cbe47fcf30d02254aaf61b58eb1024202e63fc3bef185cc0356f449": {
       "source": {
         "path": "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ee119c57175f70338fd2f07969b3b82d56f910ab59a2c0ef7992986778f9e90e.json",
+          "objectKey": "32cf82c61cbe47fcf30d02254aaf61b58eb1024202e63fc3bef185cc0356f449.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

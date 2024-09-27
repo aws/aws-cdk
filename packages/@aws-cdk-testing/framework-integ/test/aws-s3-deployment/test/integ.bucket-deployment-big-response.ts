@@ -40,7 +40,9 @@ class TestBucketDeployment extends cdk.Stack {
     });
 
     new CfnOutput(this, 'customResourceData', {
-      value: Fn.join(',', deploymentBucket.objectKeys),
+      value: Fn.sub('Object Keys are${keys}', {
+        keys: Fn.join(',', deploymentBucket.objectKeys),
+      }),
     });
   }
 }
@@ -48,12 +50,12 @@ class TestBucketDeployment extends cdk.Stack {
 const app = new cdk.App();
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployments-too-many-sources');
 
-// Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
 const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
   diffAssets: true,
 });
 
+// Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
 for (let i = 0; i < numFiles; i++) {
   const apiCall = integTest.assertions.awsApiCall('S3', 'getObject', {
     Bucket: testCase.destinationBucket.bucketName,
@@ -66,5 +68,13 @@ for (let i = 0; i < numFiles; i++) {
   });
   apiCall.assertAtPath('Body', ExpectedResult.stringLikeRegexp(`This is file number ${i + 1}`));
 }
+
+// Assert that there is no object keys returned from the custom resource
+const describe = integTest.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+  StackName: 'test-bucket-deployments-too-many-sources',
+});
+
+describe.assertAtPath('Stacks.0.Outputs.0.OutputKey', ExpectedResult.stringLikeRegexp('customResourceData'));
+describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', ExpectedResult.stringLikeRegexp('Object Keys are'));
 
 app.synth();

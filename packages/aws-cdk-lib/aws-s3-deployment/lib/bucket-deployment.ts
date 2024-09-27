@@ -432,7 +432,7 @@ export class BucketDeployment extends Construct {
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
-        OutputObjectKeys: props.outputObjectKeys,
+        OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },

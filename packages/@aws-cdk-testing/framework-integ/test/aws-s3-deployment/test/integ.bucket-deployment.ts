@@ -100,6 +100,12 @@ class TestBucketDeployment extends cdk.Stack {
     });
     deploy5.addSource(s3deploy.Source.data('some-key', 'helloworld'));
 
+    new cdk.CfnOutput(this, 'customResourceData', {
+      value: cdk.Fn.sub('Object Keys are ${keys}', {
+        keys: cdk.Fn.join(',', deploy5.objectKeys),
+      }),
+    });
+
     const bucket6 = new s3.Bucket(this, 'Destination6', {
       publicReadAccess: false,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -116,7 +122,7 @@ class TestBucketDeployment extends cdk.Stack {
 }
 
 const app = new cdk.App();
-const testCase = new TestBucketDeployment(app, 'test-bucket-deployments-2');
+const testCase = new TestBucketDeployment(app, 'test-bucket-deployments');
 
 // Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
 const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
@@ -143,5 +149,13 @@ listObjectsCall.expect(integ.ExpectedResult.objectLike({
     ],
   ),
 }));
+
+// Assert that there is no object keys returned from the custom resource
+const describe = integTest.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+  StackName: 'test-bucket-deployments',
+});
+
+describe.assertAtPath('Stacks.0.Outputs.0.OutputKey', integ.ExpectedResult.stringLikeRegexp('customResourceData'));
+describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', integ.ExpectedResult.stringLikeRegexp('Object Keys are ([0-9a-f])+\.zip'));
 
 app.synth();

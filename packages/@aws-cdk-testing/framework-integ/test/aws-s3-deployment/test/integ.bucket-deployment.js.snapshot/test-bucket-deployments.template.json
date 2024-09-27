@@ -9,19 +9,19 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:12c80047",
+      "Key": "aws-cdk:cr-owned:4a53c04c",
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:c06dfca0",
+      "Key": "aws-cdk:cr-owned:675f2a55",
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:efs/:a01ecd3e",
+      "Key": "aws-cdk:cr-owned:ba312369",
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:f8ab5a69",
+      "Key": "aws-cdk:cr-owned:efs/:180cbe84",
       "Value": "true"
      }
     ],
@@ -202,7 +202,8 @@
      "Ref": "Destination920A3C57"
     },
     "RetainOnDelete": false,
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -476,7 +477,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc"
+      "Value": "test-bucket-deployments/InlineVpc"
      }
     ]
    }
@@ -505,7 +506,7 @@
      },
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -519,7 +520,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -560,7 +561,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
      }
     ]
    }
@@ -580,7 +581,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
      }
     ]
    },
@@ -613,7 +614,7 @@
      },
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -627,7 +628,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -668,7 +669,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
      }
     ]
    }
@@ -688,7 +689,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+      "Value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
      }
     ]
    },
@@ -721,7 +722,7 @@
      },
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
+      "Value": "test-bucket-deployments/InlineVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -735,7 +736,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
+      "Value": "test-bucket-deployments/InlineVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -790,7 +791,7 @@
      },
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
+      "Value": "test-bucket-deployments/InlineVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -804,7 +805,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
+      "Value": "test-bucket-deployments/InlineVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -841,7 +842,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/InlineVpc"
+      "Value": "test-bucket-deployments/InlineVpc"
      }
     ]
    }
@@ -894,12 +895,12 @@
     "InlineVpcVPCGWE98B1862"
    ]
   },
-  "DeployMeWithEfsStorageCustomResourcec8e45d2d82aec23f89c7172e7e6f994ff3d9c444faC9646D53": {
+  "DeployMeWithEfsStorageCustomResourcec84ffe8a457bee0fd39689d96b787dc2cec93d55902CC55394": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa03838EC0",
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d55901F85F433",
       "Arn"
      ]
     },
@@ -916,7 +917,8 @@
     },
     "DestinationBucketKeyPrefix": "efs/",
     "RetainOnDelete": false,
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "DependsOn": [
     "InlineVpcIGW515300DC",
@@ -946,7 +948,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B": {
+  "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12": {
    "Type": "AWS::EFS::FileSystem",
    "Properties": {
     "Encrypted": true,
@@ -973,17 +975,17 @@
     "FileSystemTags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa"
+      "Value": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1": {
+  "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroup0940F1A5": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup",
+    "GroupDescription": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/EfsSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -994,7 +996,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa"
+      "Value": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590"
      }
     ],
     "VpcId": {
@@ -1002,37 +1004,37 @@
     }
    }
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF20498CD714A7": {
+  "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroupfromtestbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroupDE025112204948578118": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "Description": "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049",
+    "Description": "from testbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroupDE025112:2049",
     "FromPort": 2049,
     "GroupId": {
      "Fn::GetAtt": [
-      "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1",
+      "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroup0940F1A5",
       "GroupId"
      ]
     },
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A",
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroup616D369D",
       "GroupId"
      ]
     },
     "ToPort": 2049
    }
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08": {
+  "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet1DE4E35F0": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
-     "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+     "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
     },
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
-       "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1",
+       "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroup0940F1A5",
        "GroupId"
       ]
      }
@@ -1042,16 +1044,16 @@
     }
    }
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E": {
+  "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet2107675EB": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
-     "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+     "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
     },
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
-       "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1",
+       "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroup0940F1A5",
        "GroupId"
       ]
      }
@@ -1061,17 +1063,17 @@
     }
    }
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25": {
+  "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590AccessPoint0AEEB06F": {
    "Type": "AWS::EFS::AccessPoint",
    "Properties": {
     "AccessPointTags": [
      {
       "Key": "Name",
-      "Value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint"
+      "Value": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/AccessPoint"
      }
     ],
     "FileSystemId": {
-     "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+     "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
     },
     "PosixUser": {
      "Gid": "1001",
@@ -1087,11 +1089,11 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E"
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet1DE4E35F0",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet2107675EB"
    ]
   },
-  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4": {
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRole3667986B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1134,15 +1136,15 @@
     ]
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet1DE4E35F0",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet2107675EB",
     "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
     "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
     "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
     "InlineVpcPrivateSubnet2RouteTableAssociation6D6562EB"
    ]
   },
-  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRoleDefaultPolicyDE2C8526": {
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRoleDefaultPolicyE349CB03": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1169,7 +1171,7 @@
             },
             ":access-point/",
             {
-             "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25"
+             "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590AccessPoint0AEEB06F"
             }
            ]
           ]
@@ -1200,7 +1202,7 @@
           },
           ":file-system/",
           {
-           "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+           "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
           }
          ]
         ]
@@ -1287,26 +1289,26 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "tomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRoleDefaultPolicyDE2C8526",
+    "PolicyName": "tomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRoleDefaultPolicyE349CB03",
     "Roles": [
      {
-      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4"
+      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRole3667986B"
      }
     ]
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet1DE4E35F0",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet2107675EB",
     "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
     "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
     "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
     "InlineVpcPrivateSubnet2RouteTableAssociation6D6562EB"
    ]
   },
-  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A": {
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroup616D369D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faB7A82630",
+    "GroupDescription": "Automatic security group for Lambda Function testbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d55907BD97AD6",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -1319,15 +1321,15 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet1DE4E35F0",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet2107675EB",
     "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
     "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
     "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
     "InlineVpcPrivateSubnet2RouteTableAssociation6D6562EB"
    ]
   },
-  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa03838EC0": {
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d55901F85F433": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -1362,7 +1364,7 @@
          },
          ":access-point/",
          {
-          "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25"
+          "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590AccessPoint0AEEB06F"
          }
         ]
        ]
@@ -1378,7 +1380,7 @@
     ],
     "Role": {
      "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRole3667986B",
       "Arn"
      ]
     },
@@ -1388,7 +1390,7 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroup616D369D",
         "GroupId"
        ]
       }
@@ -1404,11 +1406,11 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF20498CD714A7",
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRoleDefaultPolicyDE2C8526",
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet1DE4E35F0",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsMountTargetPrivateSubnet2107675EB",
+    "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroupfromtestbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroupDE025112204948578118",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRoleDefaultPolicyE349CB03",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRole3667986B",
     "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
     "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
     "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
@@ -1424,7 +1426,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:deploy/here/:272e95d8",
+      "Key": "aws-cdk:cr-owned:deploy/here/:6a07859b",
       "Value": "true"
      }
     ]
@@ -1537,7 +1539,8 @@
     },
     "DestinationBucketKeyPrefix": "deploy/here/",
     "RetainOnDelete": false,
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1551,7 +1554,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:9eca9fb3",
+      "Key": "aws-cdk:cr-owned:d2606971",
       "Value": "true"
      }
     ]
@@ -1672,7 +1675,8 @@
     "SystemMetadata": {
      "cache-control": "public, max-age=60",
      "content-type": "text/html"
-    }
+    },
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1710,7 +1714,8 @@
      "Ref": "Destination920A3C57"
     },
     "RetainOnDelete": false,
-    "Prune": false
+    "Prune": false,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1751,7 +1756,8 @@
     "Prune": true,
     "Exclude": [
      "*.gif"
-    ]
+    ],
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1765,7 +1771,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:0ac1b9c4",
+      "Key": "aws-cdk:cr-owned:915be5e8",
       "Value": "true"
      }
     ]
@@ -1878,7 +1884,8 @@
     },
     "RetainOnDelete": false,
     "Extract": false,
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1892,7 +1899,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:761027a6",
+      "Key": "aws-cdk:cr-owned:e9b4bf0b",
       "Value": "true"
      }
     ]
@@ -2012,7 +2019,8 @@
      "Ref": "Destination52A57FAA3"
     },
     "RetainOnDelete": false,
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2026,7 +2034,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:9940c0c6",
+      "Key": "aws-cdk:cr-owned:420a9c48",
       "Value": "true"
      }
     ]
@@ -2270,12 +2278,32 @@
   }
  },
  "Outputs": {
+  "customResourceData": {
+   "Value": {
+    "Fn::Sub": [
+     "Object Keys are ${keys}",
+     {
+      "keys": {
+       "Fn::Join": [
+        ",",
+        {
+         "Fn::GetAtt": [
+          "DeployMe5CustomResource44BEE629",
+          "SourceObjectKeys"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
   "ExportsOutputRefDestination52A57FAA3531B2DE2": {
    "Value": {
     "Ref": "Destination52A57FAA3"
    },
    "Export": {
-    "Name": "test-bucket-deployments-2:ExportsOutputRefDestination52A57FAA3531B2DE2"
+    "Name": "test-bucket-deployments:ExportsOutputRefDestination52A57FAA3531B2DE2"
    }
   }
  },

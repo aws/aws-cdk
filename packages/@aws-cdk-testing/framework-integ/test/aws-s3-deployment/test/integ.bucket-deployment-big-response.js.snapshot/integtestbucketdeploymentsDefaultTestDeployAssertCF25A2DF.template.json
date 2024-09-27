@@ -32,7 +32,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895830"
+    "salt": "1727402734068"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1012,6 +1012,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -1079,7 +1088,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895830"
+    "salt": "1727402734070"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1116,7 +1125,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895831"
+    "salt": "1727402734071"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1153,7 +1162,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895832"
+    "salt": "1727402734071"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1190,7 +1199,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895833"
+    "salt": "1727402734071"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1227,7 +1236,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895833"
+    "salt": "1727402734071"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1264,7 +1273,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895833"
+    "salt": "1727402734072"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1301,7 +1310,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895833"
+    "salt": "1727402734072"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1338,7 +1347,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895833"
+    "salt": "1727402734072"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1375,7 +1384,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895833"
+    "salt": "1727402734072"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1412,7 +1421,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734072"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1449,7 +1458,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734072"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1486,7 +1495,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1523,7 +1532,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1560,7 +1569,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1597,7 +1606,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1634,7 +1643,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1671,7 +1680,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1708,7 +1717,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1745,7 +1754,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1782,7 +1791,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1819,7 +1828,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895834"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1856,7 +1865,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1893,7 +1902,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1930,7 +1939,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1967,7 +1976,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734073"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2004,7 +2013,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2041,7 +2050,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2078,7 +2087,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2115,7 +2124,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2152,7 +2161,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2189,7 +2198,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2226,7 +2235,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2263,7 +2272,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2300,7 +2309,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2337,7 +2346,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2374,7 +2383,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734074"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2411,7 +2420,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895835"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2448,7 +2457,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2485,7 +2494,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2522,7 +2531,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2559,7 +2568,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2596,7 +2605,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2633,7 +2642,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2670,7 +2679,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2707,7 +2716,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2744,7 +2753,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2781,7 +2790,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2818,7 +2827,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2855,7 +2864,33 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1726461895836"
+    "salt": "1727402734075"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$StringLike\":\"Object Keys are\"}",
+    "actualPath": "Stacks.0.Outputs.0.OutputValue",
+    "parameters": {
+     "StackName": "\"test-bucket-deployments-too-many-sources\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Stacks.0.Outputs.0.OutputKey",
+     "Stacks.0.Outputs.0.OutputValue"
+    ],
+    "salt": "1727402734075"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3258,6 +3293,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c",
      "assertion"
     ]
    }

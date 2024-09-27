@@ -847,13 +847,20 @@
  "Outputs": {
   "customResourceData": {
    "Value": {
-    "Fn::Join": [
-     ",",
+    "Fn::Sub": [
+     "Object Keys are${keys}",
      {
-      "Fn::GetAtt": [
-       "DeployMeCustomResource2048MiBEF8BA27E",
-       "SourceObjectKeys"
-      ]
+      "keys": {
+       "Fn::Join": [
+        ",",
+        {
+         "Fn::GetAtt": [
+          "DeployMeCustomResource2048MiBEF8BA27E",
+          "SourceObjectKeys"
+         ]
+        }
+       ]
+      }
      }
     ]
    }
