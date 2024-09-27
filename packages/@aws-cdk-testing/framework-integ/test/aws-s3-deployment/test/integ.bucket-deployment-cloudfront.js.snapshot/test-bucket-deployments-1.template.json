@@ -241,7 +241,8 @@
     },
     "DistributionPaths": [
      "/images/*.png"
-    ]
+    ],
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

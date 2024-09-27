@@ -188,6 +188,7 @@
     },
     "RetainOnDelete": false,
     "Prune": true,
+    "OutputObjectKeys": true,
     "DestinationBucketArn": {
      "Fn::GetAtt": [
       "Destination920A3C57",

@@ -190,7 +190,8 @@
      "Ref": "PipelineBucketB967BD35"
     },
     "Extract": false,
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -1211,7 +1211,8 @@
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
     },
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

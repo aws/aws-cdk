@@ -217,7 +217,8 @@
     },
     "RetainOnDelete": false,
     "Prune": true,
-    "SignContent": true
+    "SignContent": true,
+    "OutputObjectKeys": true
    },
    "DependsOn": [
     "DestinationPolicy7982387E"
