@@ -1456,35 +1456,4 @@ When this feature flag is enabled, the value of that property will be as expecte
 
 **Compatibility with old behavior:** Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`
 
-
-### @aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue
-
-*When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value.* (fix)
-
-Any stringified value containing an intrinsic will use a custom resource to resolve this value at deploy time.
-
-Without enabling this feature flag, this custom resource's logical ID will take the form `'CDKJsonStringify<number>'`,
-where <number> is a counter incremented for each stringified value. This results in resource replacement updates for the custom resource
-when the order of construct instantiation is changed, like changing this:
-```
-const app = new App();
-new SomeStack(app, 'Stack1');
-new SomeStack(app, 'Stack2');
-```
-
-to:
-
-```
-const app = new App();
-new SomeStack(app, 'Stack2');
-new SomeStack(app, 'Stack1');
-```
-
-This only happens if `SomeStack` stringifies a token, which some CDK constructs will do automatically.
-
-Enabling this feature flag will generate a unique identifier from the token's value instead of a counter,
-which makes this logical ID no longer instantiation-order dependent.
-
-**Compatibility with old behavior:** When disabled, generate the Logical ID of the CDKJsonStringify Custom Resource from a counter.
-
 <!-- END details -->

@@ -111,7 +111,6 @@ export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduc
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
 export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
 export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
-export const TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE = '@aws-cdk/core:generateTokenAwareStringifyLogicalIdFromTokenValue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1189,40 +1188,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`',
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE]: {
-    type: FlagType.BugFix,
-    summary: "When enabled, generate the Logical ID of the CDKJsonStringify Custom Resource from the Intrinsic's unresovled value.",
-    detailsMd: `
-      Any stringified value containing an intrinsic will use a custom resource to resolve this value at deploy time.
-
-      Without enabling this feature flag, this custom resource's logical ID will take the form \`'CDKJsonStringify<number>'\`,
-      where <number> is a counter incremented for each stringified value. This results in resource replacement updates for the custom resource
-      when the order of construct instantiation is changed, like changing this:
-      \`\`\`
-      const app = new App();
-      new SomeStack(app, 'Stack1');
-      new SomeStack(app, 'Stack2');
-      \`\`\`
-
-      to:
-
-      \`\`\`
-      const app = new App();
-      new SomeStack(app, 'Stack2');
-      new SomeStack(app, 'Stack1');
-      \`\`\`
-
-      This only happens if \`SomeStack\` stringifies a token, which some CDK constructs will do automatically.
-
-      Enabling this feature flag will generate a unique identifier from the token's value instead of a counter,
-      which makes this logical ID no longer instantiation-order dependent.
-    `,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'When disabled, generate the Logical ID of the CDKJsonStringify Custom Resource from a counter.',
   },
 };
 

@@ -1,28 +1,29 @@
 {
-  "version": "36.0.24",
+  "version": "38.0.1",
   "artifacts": {
-    "FFEnabledStack.assets": {
+    "Stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "FFEnabledStack.assets.json",
+        "file": "Stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "FFEnabledStack": {
+    "Stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "FFEnabledStack.template.json",
+        "templateFile": "Stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d75f30eb205dbea25df5f717466155bbf9c7eae973cd98110aa5a1df97642cf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d7d860285945fa7e049778d16b7ad69bd87d5e1d5f5debeeb670b06c36efdba4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "FFEnabledStack.assets"
+          "Stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,202 +32,202 @@
         }
       },
       "dependencies": [
-        "FFEnabledStack.assets"
+        "Stack.assets"
       ],
       "metadata": {
-        "/FFEnabledStack/MyVpc/Resource": [
+        "/Stack/MyVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcF9F0CA6F"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet1/Subnet": [
+        "/Stack/MyVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet1SubnetF6608456"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet1/RouteTable": [
+        "/Stack/MyVpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet1RouteTableC46AB2F4"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet1/RouteTableAssociation": [
+        "/Stack/MyVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet1/DefaultRoute": [
+        "/Stack/MyVpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet1/EIP": [
+        "/Stack/MyVpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet1EIP096967CB"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet1/NATGateway": [
+        "/Stack/MyVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet1NATGatewayAD3400C1"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet2/Subnet": [
+        "/Stack/MyVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet2Subnet492B6BFB"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet2/RouteTable": [
+        "/Stack/MyVpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet2RouteTable1DF17386"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet2/RouteTableAssociation": [
+        "/Stack/MyVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet2/DefaultRoute": [
+        "/Stack/MyVpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet2DefaultRoute052936F6"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet2/EIP": [
+        "/Stack/MyVpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet2EIP8CCBA239"
           }
         ],
-        "/FFEnabledStack/MyVpc/PublicSubnet2/NATGateway": [
+        "/Stack/MyVpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPublicSubnet2NATGateway91BFBEC9"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet1/Subnet": [
+        "/Stack/MyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet1/RouteTable": [
+        "/Stack/MyVpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet1RouteTable8819E6E2"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet1/RouteTableAssociation": [
+        "/Stack/MyVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet1/DefaultRoute": [
+        "/Stack/MyVpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet2/Subnet": [
+        "/Stack/MyVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet2Subnet0040C983"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet2/RouteTable": [
+        "/Stack/MyVpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet2/RouteTableAssociation": [
+        "/Stack/MyVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
           }
         ],
-        "/FFEnabledStack/MyVpc/PrivateSubnet2/DefaultRoute": [
+        "/Stack/MyVpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294"
           }
         ],
-        "/FFEnabledStack/MyVpc/IGW": [
+        "/Stack/MyVpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcIGW5C4A4F63"
           }
         ],
-        "/FFEnabledStack/MyVpc/VPCGW": [
+        "/Stack/MyVpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcVPCGW488ACE0D"
           }
         ],
-        "/FFEnabledStack/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/Stack/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62"
           }
         ],
-        "/FFEnabledStack/LatestNodeRuntimeMap": [
+        "/Stack/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/FFEnabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+        "/Stack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/FFEnabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/Stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/FFEnabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/Stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/FFEnabledStack/MyVpcEndpoint/SecurityGroup/Resource": [
+        "/Stack/MyVpcEndpoint/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcEndpointSecurityGroup7FA5CF8F"
           }
         ],
-        "/FFEnabledStack/MyVpcEndpoint/Resource": [
+        "/Stack/MyVpcEndpoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcEndpoint9E60B996"
           }
         ],
-        "/FFEnabledStack/GetEndpointIp/Resource/Default": [
+        "/Stack/GetEndpointIp/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GetEndpointIpA49EAB18"
           }
         ],
-        "/FFEnabledStack/GetEndpointIp/CustomResourcePolicy/Resource": [
+        "/Stack/GetEndpointIp/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GetEndpointIpCustomResourcePolicyAC2A32E8"
           }
         ],
-        "/FFEnabledStack/AWS679f53fac002430cb0da5b7982bd2287": [
+        "/Stack/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
@@ -236,342 +237,56 @@
             "data": 0
           }
         ],
-        "/FFEnabledStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+        "/Stack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ],
-        "/FFEnabledStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+        "/Stack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/FFEnabledStack/AWSCDKCfnUtilsProviderCustomResourceProvider": [
+        "/Stack/AWSCDKCfnUtilsProviderCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/FFEnabledStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
+        "/Stack/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
           }
         ],
-        "/FFEnabledStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
+        "/Stack/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
           }
         ],
-        "/FFEnabledStack/CdkJsonStringifyFnGetAttMyVpcEndpoint9E60B996NetworkInterfaceIds01EA7160/Default": [
+        "/Stack/CdkJsonStringifyFnGetAttMyVpcEndpoint9E60B996NetworkInterfaceIds01EA7160/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkJsonStringifyFnGetAttMyVpcEndpoint9E60B996NetworkInterfaceIds01EA7160"
           }
         ],
-        "/FFEnabledStack/BootstrapVersion": [
+        "/Stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/FFEnabledStack/CheckBootstrapVersion": [
+        "/Stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "FFEnabledStack"
-    },
-    "FFDisabledStack.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "FFDisabledStack.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "FFDisabledStack": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "FFDisabledStack.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71cf6327d1de0bbb72385116865a174870a9640eb050d2ed8d0cc9024e1b6a87.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "FFDisabledStack.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "FFDisabledStack.assets"
-      ],
-      "metadata": {
-        "/FFDisabledStack/MyVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcF9F0CA6F"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1SubnetF6608456"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1RouteTableC46AB2F4"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1EIP096967CB"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2RouteTable1DF17386"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2DefaultRoute052936F6"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2EIP8CCBA239"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1RouteTable8819E6E2"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2Subnet0040C983"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcIGW5C4A4F63"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcVPCGW488ACE0D"
-          }
-        ],
-        "/FFDisabledStack/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62"
-          }
-        ],
-        "/FFDisabledStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/FFDisabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/FFDisabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/FFDisabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/FFDisabledStack/MyVpcEndpoint/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcEndpointSecurityGroup7FA5CF8F"
-          }
-        ],
-        "/FFDisabledStack/MyVpcEndpoint/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcEndpoint9E60B996"
-          }
-        ],
-        "/FFDisabledStack/GetEndpointIp/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetEndpointIpA49EAB18"
-          }
-        ],
-        "/FFDisabledStack/GetEndpointIp/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetEndpointIpCustomResourcePolicyAC2A32E8"
-          }
-        ],
-        "/FFDisabledStack/AWS679f53fac002430cb0da5b7982bd2287": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-singleton",
-            "data": true
-          },
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 0
-          }
-        ],
-        "/FFDisabledStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ],
-        "/FFDisabledStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-          }
-        ],
-        "/FFDisabledStack/AWSCDKCfnUtilsProviderCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/FFDisabledStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
-          }
-        ],
-        "/FFDisabledStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
-          }
-        ],
-        "/FFDisabledStack/CdkJsonStringify1/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkJsonStringify1"
-          }
-        ],
-        "/FFDisabledStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/FFDisabledStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "FFDisabledStack"
+      "displayName": "Stack"
     },
     "TokenAwareStringifyLogicalIdsDefaultTestDeployAssert787DCCE3.assets": {
       "type": "cdk:asset-manifest",
@@ -588,6 +303,7 @@
         "templateFile": "TokenAwareStringifyLogicalIdsDefaultTestDeployAssert787DCCE3.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
