@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "ClusterWindowsServer/DefaultTest": {
+      "stacks": [
+        "integ-ecs-windows-server-ami"
+      ],
+      "assertionStack": "ClusterWindowsServer/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterWindowsServerDefaultTestDeployAssertC6412DEB"
+    }
+  }
+}
