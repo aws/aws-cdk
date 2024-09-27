@@ -24,6 +24,7 @@ import { Mode } from './credentials';
 import { ISDK, isUnrecoverableAwsError, SDK } from './sdk';
 import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
+import { ExpiredTokenException } from "@aws-sdk/client-sts";
 
 export type SdkRequestHandler =
   (NodeHttpHandlerOptions & HttpHandlerUserInput)
@@ -326,7 +327,7 @@ export class SdkProvider {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
         // the current situation is probably undesirable, but we don't fail.
-        if (e.code === 'ExpiredToken') {
+        if (e.code === 'ExpiredToken' || e instanceof ExpiredTokenException) {
           warning('There are expired AWS credentials in your environment. The CDK app will synth without current account information.');
           return undefined;
         }

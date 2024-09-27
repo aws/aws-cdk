@@ -81,10 +81,12 @@ export class AwsCliCompatible {
         fromIni({
           profile: theProfile,
           filepath: credentialsFileName(),
+          configFilepath: configFileName(),
           mfaCodeProvider: mfaCodeFn,
           clientConfig: {
             requestHandler: requestHandler,
           },
+          ignoreCache: true,
         }),
         fromSSO({
           profile: theProfile,

@@ -12,6 +12,7 @@ import { PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
 import { withMocked } from '../util';
 import { FakeMetadataService } from './fake-metadata-service';
+import * as fs from 'fs';
 
 jest.mock('promptly', () => ({
   prompt: jest.fn().mockResolvedValue('1234'),
@@ -517,21 +518,25 @@ describe('with intercepted network calls', () => {
 
   describe('support for credential_source', () => {
     test('can assume role with ecs credentials', async () => {
-      return withMocked(AWS.ECSCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-        // GIVEN
-        prepareCreds({
-          config: {
-            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'EcsContainer', $account: '22222' },
-          },
-        });
-        const provider = await providerFromProfile('ecs');
+      // GIVEN
+      process.env.AWS_CONTAINER_CREDENTIALS_FULL_URI = 'https://169.254.170.2/container-credentials';
+      fakeMetadataService.registerRole('arn:aws:iam::12356789012:role/InstanceRole');
+      fakeMetadataService.registerCredentials('SOMEKEY', 'some/secret');
 
-        // WHEN
-        await provider.defaultAccount();
-
-        // THEN
-        expect(needsRefresh).toHaveBeenCalled();
+      prepareCreds({
+        config: {
+          'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'EcsContainer', $account: '22222' },
+        },
       });
+      const provider = await providerFromProfile('ecs');
+
+      // WHEN
+      await provider.defaultAccount();
+
+      // THEN
+      expect(fakeSts.requests[0].parsedBody.Action).toEqual('AssumeRole');
+      expect(fakeSts.requests[0].headers.authorization).toMatch('Credential=SOMEKEY');
+      delete process.env.AWS_CONTAINER_CREDENTIALS_FULL_URI;
     });
 
     test('can assume role with ec2 credentials', async () => {
@@ -540,10 +545,10 @@ describe('with intercepted network calls', () => {
       fakeMetadataService.registerCredentials('SOMEKEY', 'some/secret');
       prepareCreds({
         config: {
-          'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Ec2InstanceMetadata', $account: '22222' },
+          'profile ec2': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Ec2InstanceMetadata', $account: '22222' },
         },
       });
-      const provider = await providerFromProfile('ecs');
+      const provider = await providerFromProfile('ec2');
 
       // WHEN
       await provider.defaultAccount();

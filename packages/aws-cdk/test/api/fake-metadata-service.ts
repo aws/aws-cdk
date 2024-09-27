@@ -32,6 +32,20 @@ export class FakeMetadataService {
           Token: 'abcdefghijklmnopqrst',
           Expiration: '2017-05-17T15:09:54Z',
         }]);
+        // TODO Mock this properly, without explicitly comparing host
+      } else if (this.req.headers.host === '169.254.170.2' && uri === '/container-credentials') {
+        if (self.accessKeyId == null) {
+          throw new Error('FakeMetadataService cannot return a result because the accessKeyId has not been set');
+        }
+        if (self.secretAccessKey == null) {
+          throw new Error('FakeMetadataService cannot return a result because the secretAccessKey has not been set');
+        }
+        cb(null, [200, {
+          AccessKeyId: self.accessKeyId,
+          SecretAccessKey: self.secretAccessKey,
+          Token: 'abcdefghijklmnopqrst',
+          Expiration: '2017-05-17T15:09:54Z',
+        }]);
       }
     });
   }
