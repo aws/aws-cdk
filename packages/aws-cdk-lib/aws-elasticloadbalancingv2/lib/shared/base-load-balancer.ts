@@ -154,7 +154,6 @@ export abstract class BaseLoadBalancer extends Resource {
         loadBalancerArn: options.userOptions.loadBalancerArn,
         loadBalancerTags: cxschemaTags,
         loadBalancerType: options.loadBalancerType,
-        additionalCacheKey: options.userOptions.additionalCacheKey,
       } as cxschema.LoadBalancerContextQuery,
       dummyValue: {
         ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,
@@ -165,6 +164,7 @@ export abstract class BaseLoadBalancer extends Resource {
         securityGroupIds: ['sg-1234'],
         vpcId: 'vpc-12345',
       } as cxapi.LoadBalancerContextResponse,
+      additionalCacheKey: options.userOptions.additionalCacheKey,
     }).value;
 
     return props;

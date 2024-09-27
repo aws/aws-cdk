@@ -681,11 +681,11 @@ export class Key extends KeyBase {
       provider: cxschema.ContextProvider.KEY_PROVIDER,
       props: {
         aliasName: options.aliasName,
-        additionalCacheKey: options.additionalCacheKey,
       } as cxschema.KeyContextQuery,
       dummyValue: {
         keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
       },
+      additionalCacheKey: options.additionalCacheKey,
     }).value;
 
     return new Import(attributes.keyId,

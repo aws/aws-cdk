@@ -777,7 +777,6 @@ test('fromLookup will use the SSM context provider to read value during synthesi
         account: '12344',
         region: 'us-east-1',
         parameterName: 'my-param-name',
-        additionalCacheKey: 'extraKey',
       },
       provider: 'ssm',
     },

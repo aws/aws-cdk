@@ -706,9 +706,9 @@ export class LookupMachineImage implements IMachineImage {
       props: {
         owners: this.props.owners,
         filters,
-        additionalCacheKey: this.props.additionalCacheKey,
       } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
+      additionalCacheKey: this.props.additionalCacheKey,
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {

@@ -1351,9 +1351,9 @@ export class Vpc extends VpcBase {
         returnAsymmetricSubnets: true,
         returnVpnGateways: options.returnVpnGateways,
         subnetGroupNameTag: options.subnetGroupNameTag,
-        additionalCacheKey: options.additionalCacheKey,
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,
+      additionalCacheKey: options.additionalCacheKey,
     }).value;
 
     return new LookedUpVpc(scope, id, attributes ?? DUMMY_VPC_PROPS, attributes === undefined);

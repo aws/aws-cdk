@@ -104,7 +104,6 @@ export abstract class BaseListener extends Resource implements IListener {
         loadBalancerArn: options.userOptions.loadBalancerArn,
         loadBalancerTags: cxschemaTags,
         loadBalancerType: options.loadBalancerType,
-        additionalCacheKey: options.userOptions.additionalCacheKey,
       } as cxschema.LoadBalancerListenerContextQuery,
       dummyValue: {
         // eslint-disable-next-line @aws-cdk/no-literal-partition
@@ -112,6 +111,7 @@ export abstract class BaseListener extends Resource implements IListener {
         listenerPort: 80,
         securityGroupIds: ['sg-123456789012'],
       } as cxapi.LoadBalancerListenerContextResponse,
+      additionalCacheKey: options.userOptions.additionalCacheKey,
     }).value;
 
     return props;

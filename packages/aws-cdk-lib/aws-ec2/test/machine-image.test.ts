@@ -224,7 +224,6 @@ test('cached lookups of Amazon Linux linked to scope', () => {
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
-        additionalCacheKey: 'extraKey',
       },
       provider: 'ssm',
     },

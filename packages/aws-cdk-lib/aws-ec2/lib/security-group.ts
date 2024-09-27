@@ -444,12 +444,12 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: options.securityGroupId,
         securityGroupName: options.securityGroupName,
         vpcId: options.vpc?.vpcId,
-        additionalCacheKey: options.additionalCacheKey,
       },
       dummyValue: {
         securityGroupId: 'sg-12345678',
         allowAllOutbound: true,
       } as cxapi.SecurityGroupContextResponse,
+      additionalCacheKey: options.additionalCacheKey,
     }).value;
 
     return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
