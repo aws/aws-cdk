@@ -109,6 +109,8 @@ export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNoti
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
+export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
+export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1155,7 +1157,37 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
       `,
     recommendedValue: true,
+    introducedIn: { v2: '2.160.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.',
+    detailsMd: `
+        Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission 
+        to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning 
+        it allows invocations from any source.
+
+        When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the 
+        specific AppSync GraphQL API.
+        `,
+    recommendedValue: true,
     introducedIn: { v2: 'V2NEXT' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`',
+    detailsMd: `
+      Currently, the value of the property 'instanceResourceId' in construct 'DatabaseInstanceReadReplica' is not correct, and set to 'DbInstanceArn' which is not correct when it is used to create the IAM Policy in the grantConnect method.
+      
+      When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`',
   },
 };
 
