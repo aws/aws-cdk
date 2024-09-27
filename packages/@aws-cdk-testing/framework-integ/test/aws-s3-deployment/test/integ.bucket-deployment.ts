@@ -150,7 +150,7 @@ listObjectsCall.expect(integ.ExpectedResult.objectLike({
   ),
 }));
 
-// Assert that there is no object keys returned from the custom resource
+// Assert that there is one object key returned from the custom resource
 const describe = integTest.assertions.awsApiCall('CloudFormation', 'describeStacks', {
   StackName: 'test-bucket-deployments',
 });
