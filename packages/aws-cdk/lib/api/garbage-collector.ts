@@ -1,12 +1,59 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { ISDK, Mode, SdkProvider } from './aws-auth';
-import { ToolkitInfo } from './toolkit-info';
+import {  ISDK, Mode, SdkProvider } from './aws-auth';
 import { print } from '../logging';
 import { CloudFormation, S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
-import * as path from 'path';
+import { ToolkitInfo } from './toolkit-info';
+import path = require('path');
 
 const ISOLATED_TAG = 'awscdk.isolated';
+
+class ActiveAssets {
+  private readonly stacks: Set<string> = new Set();
+
+  public rememberStack(stackTemplate: string) {
+    this.stacks.add(stackTemplate);
+  }
+
+  public contains(asset: string): boolean {
+    for (const stack of this.stacks) {
+      if (stack.includes(asset)) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+class S3Asset {
+  private tags: S3.TagSet | undefined = undefined;
+
+  public constructor(private readonly bucket: string, private readonly key: string) {}
+
+  public getHash(): string {
+    return path.parse(this.key).name;
+  }
+
+  public async getAllTags(s3: S3) {
+    if (this.tags) {
+      return this.tags;
+    }
+  
+    const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key }).promise();
+    this.tags = response.TagSet;
+    return response.TagSet;
+  }
+
+  public async getTag(s3: S3, tag: string) {
+    const tags = await this.getAllTags(s3);
+    return tags.find(t => t.Key === tag)?.Value;
+  }
+
+  public async hasTag(s3: S3, tag: string) {
+    const tags = await this.getAllTags(s3);
+    return tags.some(t => t.Key === tag);
+  }
+}
 
 /**
  * Props for the Garbage Collector
@@ -62,10 +109,6 @@ interface GarbageCollectorProps {
  * A class to facilitate Garbage Collection of S3 and ECR assets
  */
 export class GarbageCollector {
-  private readonly activeHashes = new Set<string>();
-  private readonly objects = new Map<string, S3Object>();
-  private bootstrapBucketName: string | undefined =  undefined;
-
   private garbageCollectS3Assets: boolean;
   private garbageCollectEcrAssets: boolean;
 
@@ -83,52 +126,101 @@ export class GarbageCollector {
    * Perform garbage collection on the resolved environment(s)
    */
   public async garbageCollect() {
-    print(chalk.green(`Garbage collecting for ${this.props.resolvedEnvironment.account} in ${this.props.resolvedEnvironment.region}`));
-  
-    // set up the sdks used in garbage collection
+    console.log(this.garbageCollectS3Assets);
+    // SDKs
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
-    const { cfn, s3 } = this.setUpSDKs(sdk);
-
-    if (this.garbageCollectS3Assets) {
-      print(chalk.green('Getting bootstrap bucket'));
-      const bucket = await this.getBootstrapBucket(sdk);
-      print(chalk.green(`Bootstrap Bucket ${bucket}`));
-      await this.collectObjects(s3, bucket);
-      print(chalk.blue(`Object hashes: ${this.objects.size}`));
-    }
-
-    await this.collectHashes(cfn);
-    print(chalk.green(`Hashes in use: ${this.activeHashes.size}`));
-
-    for (const hash of this.activeHashes) {
-      const obj = this.objects.get(hash);
-      if (obj) {
-        obj.isolated = false;
-      }
-    }
-    const isolatedObjects = Array.from(this.objects.values())
-      .filter(obj => obj.isolated === true);
-
-    print(chalk.red(`Isolated hashes: ${isolatedObjects.length}`));
-
-    if (!this.props.dryRun) {
-      if (this.garbageCollectS3Assets) {
-        print(chalk.green('Tagging Isolated Objects'));
-        this.tagObjects(s3, await this.getBootstrapBucket(sdk));
-      }
-    }
-  }
-
-  private setUpSDKs(sdk: ISDK) {
     const cfn = sdk.cloudFormation();
     const s3 = sdk.s3();
-    return {
-      cfn,
-      s3,
+
+    const activeAssets = new ActiveAssets();
+
+    const refreshStacks = async () => {
+      const stacks = await this.fetchAllStackTemplates(cfn);
+      for (const stack of stacks) {
+        activeAssets.rememberStack(stack);
+      }
     };
+
+    // Refresh stacks every 5 minutes
+    const timer = setInterval(refreshStacks, 30_000);
+
+    try {
+      // Grab stack templates first
+      await refreshStacks();
+
+      const bucket = await this.getBootstrapBucketName(sdk);
+      // Process objects in batches of 10,000
+      for await (const batch of this.readBucketInBatches(s3, bucket)) {
+        print(chalk.red(batch.length));
+        const currentTime = Date.now();
+        const graceDays = this.props.isolationDays;
+        const isolated = batch.filter((obj) => {
+          return !activeAssets.contains(obj.getHash());
+        });
+
+        const deletables = graceDays > 0 
+          ? await Promise.all(isolated.map(async (obj) => {
+              const tagTime = await obj.getTag(s3, ISOLATED_TAG);
+              if (tagTime) {
+                return olderThan(Number(tagTime), currentTime, graceDays) ? obj : null;
+              } else {
+                return null;
+              }
+            })).then(results => results.filter(Boolean))
+          : isolated;
+
+        const taggables = graceDays > 0 
+          ? await Promise.all(isolated.map(async (obj) => {
+              const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
+              return !hasTag ? obj : null;
+            })).then(results => results.filter(Boolean))
+          : [];
+
+
+        print(chalk.blue(deletables.length));
+        print(chalk.white(taggables.length));
+      }
+    } finally {
+      clearInterval(timer);
+    }
   }
 
-  private async collectHashes(cfn: CloudFormation) {
+  private async getBootstrapBucketName(sdk: ISDK): Promise<string> {
+    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined);
+    return info.bucketName;
+  }
+
+  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 10000): AsyncGenerator<S3Asset[]> {
+    let continuationToken: string | undefined;
+  
+    do {
+      const batch: S3Asset[] = [];
+      
+      while (batch.length < batchSize) {
+        const response = await s3.listObjectsV2({
+          Bucket: bucket,
+          ContinuationToken: continuationToken,
+          MaxKeys: batchSize - batch.length
+        }).promise();
+
+        response.Contents?.forEach((obj) => {
+          if (obj.Key) {
+            batch.push(new S3Asset(bucket, obj.Key));
+          }
+        });
+
+        continuationToken = response.NextContinuationToken;
+        
+        if (!continuationToken) break; // No more objects to fetch
+      }
+
+      if (batch.length > 0) {
+        yield batch;
+      }
+    } while (continuationToken);
+  }
+
+  private async fetchAllStackTemplates(cfn: CloudFormation) {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await cfn.listStacks({ NextToken: nextToken }).promise();
@@ -138,135 +230,21 @@ export class GarbageCollector {
 
     print(chalk.blue(`Parsing through ${stackNames.length} stacks`));
 
+    const templates: string[] = [];
     for (const stack of stackNames) {
+      const summary = await cfn.getTemplateSummary({
+        StackName: stack,
+      }).promise();
       const template = await cfn.getTemplate({
         StackName: stack,
       }).promise();
 
-      const templateHashes = template.TemplateBody?.match(/[a-f0-9]{64}/g);
-      templateHashes?.forEach(this.activeHashes.add, this.activeHashes);
+      templates.push(template.TemplateBody ?? '' + summary.Parameters);
     }
 
-    print(chalk.blue(`Found ${this.activeHashes.size} unique hashes`));
-  }
+    print(chalk.red('Done parsing through stacks'));
 
-  private async getBootstrapBucket(sdk: ISDK): Promise<string> {
-    if (!this.bootstrapBucketName) { 
-      const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined);
-      this.bootstrapBucketName = info.bucketName;
-    }
-    return this.bootstrapBucketName;
-  }
-
-  private async collectObjects(s3: S3, bucket: string) {
-    await paginateSdkCall(async (nextToken) => {
-      const response = await s3.listObjectsV2({
-        Bucket: bucket,
-        ContinuationToken: nextToken,
-      }).promise();
-      response.Contents?.forEach((obj) => {
-        let key = obj.Key;
-        if (key) {
-          let hash = path.parse(key).name;
-          this.objects.set(hash, {
-            key,
-            hash,
-            isolated: true, // Default is isolated
-          });
-        }
-      });
-      return response.NextContinuationToken;
-    });
-  }
-
-  private async tagObjects(s3: S3, bucket: string) {
-    let newlyTagged = 0;
-    let alreadyTagged = 0;
-    let newlyUntagged = 0;
-    let alreadyUntagged = 0;
-    for (const [_, obj] of this.objects) {
-      if (obj.isolated) {
-        const result = await this.tagIsolatedObject(s3, bucket, obj);
-        if (result) {
-          newlyTagged++;
-        } else {
-          alreadyTagged++;
-        }
-      } else {
-        const result = await this.untagActiveObject(s3, bucket, obj);
-        if (result) {
-          newlyUntagged++;
-        } else {
-          alreadyUntagged++;
-        }
-      }
-    }
-
-    print(chalk.white(`Newly Tagged: ${newlyTagged}\nAlready Tagged: ${alreadyTagged}\nNewly Untagged: ${newlyUntagged}\nAlready Untagged: ${alreadyUntagged}`));
-  }
-
-  /**
-   * Returns true if object gets tagged (was previously untagged but is now isolated)
-   */
-  private async tagIsolatedObject(s3: S3, bucket: string, object: S3Object) {
-    const response = await s3.getObjectTagging({
-      Bucket: bucket,
-      Key: object.key,
-    }).promise();
-    const isolatedTag = await this.getIsolatedTag(response.TagSet);
-  
-    // tag new objects with the current date
-    if (!isolatedTag) {
-      await s3.putObjectTagging({
-        Bucket: bucket,
-        Key: object.key,
-        Tagging: {
-          TagSet: [{
-            Key: ISOLATED_TAG,
-            Value: Date.now().toString(),
-          }],
-        },
-      }).promise();
-
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Returns true if object gets untagged (was previously tagged but is now active)
-   */
-  private async untagActiveObject(s3: S3, bucket: string, object: S3Object) {
-    const response = await s3.getObjectTagging({
-      Bucket: bucket,
-      Key: object.key,
-    }).promise();
-    const isolatedTag = await this.getIsolatedTag(response.TagSet);
-
-    // remove isolated tag and put any other tags back
-    if (isolatedTag) {
-      const newTags = response.TagSet?.filter(tag => tag.Key !== ISOLATED_TAG);
-      // TODO: double check what happens when newTags = []
-      await s3.putObjectTagging({
-        Bucket: bucket,
-        Key: object.key,
-        Tagging: {
-          TagSet: newTags,
-        },
-      }).promise();
-
-      return true;
-    }
-    return false;
-  }
-
-  private async getIsolatedTag(tags: S3.TagSet): Promise<string | undefined> {
-    for (const tag of tags) {
-      if (tag.Key === ISOLATED_TAG) {
-        return tag.Value;
-      }
-    }
-    return;
+    return templates;
   }
 }
 
@@ -281,8 +259,8 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
   }
 }
 
-interface S3Object {
-  readonly key: string;
-  readonly hash: string;
-  isolated: boolean;
+function olderThan(originalTime: number, currentTime: number, graceDays: number) {
+  const diff = currentTime - originalTime;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  return days >= graceDays;
 }
