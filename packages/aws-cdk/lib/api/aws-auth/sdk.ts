@@ -1,4 +1,3 @@
-
 import { AppSync } from '@aws-sdk/client-appsync';
 import { CloudFormation } from '@aws-sdk/client-cloudformation';
 import { CloudWatchLogs } from '@aws-sdk/client-cloudwatch-logs';
@@ -146,6 +145,13 @@ export interface SdkOptions {
    * Will be printed in an error message to help users diagnose auth problems.
    */
   readonly assumeRoleCredentialsSourceDescription?: string;
+
+  /**
+     * Sets a custom User-Agent string.
+     * In node environments this will set the User-Agent header, but
+     * browser environments this will set the X-Amz-User-Agent header.
+     */
+  customUserAgent?: string;
 }
 
 /**
@@ -222,7 +228,7 @@ export class SDKv3 implements ISDKv3 {
       credentials: this._credentials,
       logger: this.logger,
       retryStrategy: this.retryStrategy,
-      customUserAgent: undefined,
+      customUserAgent: this.sdkOptions.customUserAgent,
     };
     this.currentRegion = region;
   }

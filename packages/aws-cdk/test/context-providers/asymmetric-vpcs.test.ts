@@ -2,7 +2,7 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
-import { MockSdkProvider } from '../util/mock-sdk';
+import { MockSdkProviderv3 } from '../util/mock-sdk';
 
 // If the 'aws-sdk' package imported here and the 'aws-sdk' package imported by 'aws-sdk-mock' aren't
 // the same physical package on disk (if version mismatches cause hoisting/deduping to not happen),
@@ -15,7 +15,7 @@ afterEach(done => {
   done();
 });
 
-const mockSDK = new MockSdkProvider();
+const mockSDK = new MockSdkProviderv3();
 
 type AwsCallback<T> = (err: Error | null, val: T) => void;
 
