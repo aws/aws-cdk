@@ -156,9 +156,12 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-To customize the cache key use the `additionalCacheKey` parameter.
-This can be useful if you want to scope the context variable to a construct 
-(eg, using `additionalCacheKey: this.node.path`).
+To customize the cache key, use the `additionalCacheKey` parameter.
+This allows you to have multiple lookups with the same parameters
+cache their values separately. This can be useful if you want to
+scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+so that if the value in the cache needs to be updated, it does not need to be updated
+for all constructs at the same time.
 
 ```ts
 declare const vpc: ec2.Vpc;
