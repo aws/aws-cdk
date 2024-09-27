@@ -3862,7 +3862,7 @@ describe('bucket', () => {
       new s3.Bucket(stack, 'SrcBucket', {
         versioned: true,
         replicationRules: [
-          { destination: s3.ReplicationDestination.sameAccount(dstBucket) },
+          { destination: dstBucket },
         ],
       });
 
@@ -3981,7 +3981,7 @@ describe('bucket', () => {
         versioned: true,
         replicationRules: [
           {
-            destination: s3.ReplicationDestination.sameAccount(dstBucket),
+            destination: dstBucket,
             replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
             metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
             kmsKey,
@@ -4140,13 +4140,27 @@ describe('bucket', () => {
 
     test('cross account', () => {
       const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
-      const dstBucket = s3.Bucket.fromBucketArn(stack, 'DstBucket', 'arn:aws:s3:::another-account-dst-bucket');
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '111111111111',
+        },
+      });
+      const anotherStack = new cdk.Stack(app, 'AnotherStack', {
+        env: {
+          account: '222222222222',
+        },
+      });
+      const dstBucket = new s3.Bucket(anotherStack, 'DstBucket', {
+        bucketName: 'another-account-dst-bucket',
+      });
 
       new s3.Bucket(stack, 'SrcBucket', {
         versioned: true,
         replicationRules: [
-          { destination: s3.ReplicationDestination.crossAccount(dstBucket, '123456789012', true) },
+          {
+            destination: dstBucket,
+            accessControlTransition: true,
+          },
         ],
       });
 
@@ -4159,8 +4173,19 @@ describe('bucket', () => {
           Rules: [
             {
               Destination: {
-                Bucket: 'arn:aws:s3:::another-account-dst-bucket',
-                Account: '123456789012',
+                Bucket: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':s3:::another-account-dst-bucket',
+                    ],
+                  ],
+                },
+                Account: '222222222222',
                 AccessControlTranslation: {
                   Owner: 'Destination',
                 },
@@ -4217,7 +4242,18 @@ describe('bucket', () => {
                 's3:ObjectOwnerOverrideToBucketOwner',
               ],
               Effect: 'Allow',
-              Resource: 'arn:aws:s3:::another-account-dst-bucket/*',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':s3:::another-account-dst-bucket/*',
+                  ],
+                ],
+              },
             },
           ],
           'Version': '2012-10-17',
@@ -4228,6 +4264,24 @@ describe('bucket', () => {
           },
         ],
       });
+    });
+
+    test('throw error for enabled accessControlTransition with same account replication', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+      expect(() => {
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              accessControlTransition: true,
+            },
+          ],
+        });
+      }).toThrow('accessControlTranslation is only supported for cross-account replication');
     });
 
     test('source object encryption', () => {
@@ -4241,7 +4295,7 @@ describe('bucket', () => {
         encryption: s3.BucketEncryption.KMS,
         encryptionKey: kmsKey,
         replicationRules: [
-          { destination: s3.ReplicationDestination.sameAccount(dstBucket) },
+          { destination: dstBucket },
         ],
       });
 
@@ -4351,7 +4405,7 @@ describe('bucket', () => {
           versioned: true,
           replicationRules: [
             {
-              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              destination: dstBucket,
               filter: { prefix: 'filterWord' },
             },
           ],
@@ -4392,7 +4446,7 @@ describe('bucket', () => {
           versioned: true,
           replicationRules: [
             {
-              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              destination: dstBucket,
               filter: {
                 tags: [{ key: 'filterKey', value: 'filterValue' }],
               },
@@ -4438,7 +4492,7 @@ describe('bucket', () => {
           versioned: true,
           replicationRules: [
             {
-              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              destination: dstBucket,
               filter: {
                 tags: [
                   { key: 'filterKey1', value: 'filterValue1' },
@@ -4490,7 +4544,7 @@ describe('bucket', () => {
           versioned: true,
           replicationRules: [
             {
-              destination: s3.ReplicationDestination.sameAccount(dstBucket),
+              destination: dstBucket,
               filter: {
                 prefix: 'filterWord',
                 tags: [{ key: 'filterKey', value: 'filterValue' }],
@@ -4538,7 +4592,7 @@ describe('bucket', () => {
             versioned: true,
             replicationRules: [
               {
-                destination: s3.ReplicationDestination.sameAccount(dstBucket),
+                destination: dstBucket,
                 deleteMarkerReplication: true,
                 filter: {
                   tags: [{ key: 'filterKey', value: 'filterValue' }],

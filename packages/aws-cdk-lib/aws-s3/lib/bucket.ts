@@ -1427,7 +1427,16 @@ export interface ReplicationRule {
    *
    * The destination can be either in the same AWS account or a cross account.
    */
-  readonly destination: ReplicationDestination;
+  readonly destination: IBucket;
+
+  /**
+   * Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+   *
+   * This can only be specified if the source bucket and the destination bucket are not in the same AWS account.
+   *
+   * @default - The replicas are owned by same AWS account that owns the source object
+   */
+  readonly accessControlTransition?: boolean;
 
   /**
    * Specifying S3 Replication Time Control (S3 RTC),
@@ -2675,7 +2684,7 @@ export class Bucket extends BucketBase {
       }
     });
 
-    const destinationBuckets = props.replicationRules.map(rule => rule.destination.bucket);
+    const destinationBuckets = props.replicationRules.map(rule => rule.destination);
     const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
     const role = new iam.Role(this, 'ReplicationRole', {
@@ -2734,8 +2743,13 @@ export class Bucket extends BucketBase {
           prefix,
         };
 
-        if (rule.destination.account !== undefined && rule.destination.account !== Stack.of(this).account) {
+        const sourceAccount = Stack.of(this).account;
+        const destinationAccount = rule.destination.env.account;
+
+        if (sourceAccount !== destinationAccount) {
           Annotations.of(this).addInfo(`Cross-account S3 replication is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(role.roleArn)}.`);
+        } else if (rule.accessControlTransition) {
+          throw new Error('accessControlTranslation is only supported for cross-account replication');
         }
 
         return {
@@ -2743,10 +2757,10 @@ export class Bucket extends BucketBase {
           priority: rule.priority,
           status: 'Enabled',
           destination: {
-            bucket: rule.destination.bucket.bucketArn,
-            account: rule.destination.account,
+            bucket: rule.destination.bucketArn,
+            account: rule.destination.env.account,
             storageClass: rule.storageClass?.toString(),
-            accessControlTranslation: rule.destination.accessControlTransition ? {
+            accessControlTranslation: rule.accessControlTransition ? {
               owner: 'Destination',
             } : undefined,
             encryptionConfiguration: rule.kmsKey ? {
