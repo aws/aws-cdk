@@ -1,12 +1,12 @@
 {
   "version": "36.0.24",
   "testCases": {
-    "lambda-url-origin-oac/DefaultTest": {
+    "lambda-url-origin-custom-oac/DefaultTest": {
       "stacks": [
-        "integ-cloudfront-function-url-origin-oac"
+        "integ-cloudfront-function-url-origin-custom-oac"
       ],
-      "assertionStack": "lambda-url-origin-oac/DefaultTest/DeployAssert",
-      "assertionStackName": "lambdaurloriginoacDefaultTestDeployAssert0BF569B3"
+      "assertionStack": "lambda-url-origin-custom-oac/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaurlorigincustomoacDefaultTestDeployAssertD8D04E3C"
     }
   }
 }

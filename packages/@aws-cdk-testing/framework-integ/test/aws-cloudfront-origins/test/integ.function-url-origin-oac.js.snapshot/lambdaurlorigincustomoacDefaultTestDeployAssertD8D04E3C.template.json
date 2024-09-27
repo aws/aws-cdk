@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
+         "Fn::ImportValue": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputRefDistribution830FAC524DF81588"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1727410197174"
+    "salt": "1727410197181"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +137,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
+         "Fn::ImportValue": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputRefDistribution830FAC524DF81588"
         },
         "\""
        ]
@@ -148,7 +148,7 @@
     "outputPaths": [
      "DistributionConfig.Origins.Items.0.OriginAccessControlId"
     ],
-    "salt": "1727410197174"
+    "salt": "1727410197182"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -164,7 +164,7 @@
     },
     "service": "CloudFront",
     "api": "getOriginAccessControlConfig",
-    "expected": "{\"$ObjectLike\":{\"OriginAccessControlConfig\":{\"SigningProtocol\":\"sigv4\",\"SigningBehavior\":\"always\",\"OriginAccessControlOriginType\":\"lambda\"}}}",
+    "expected": "{\"$ObjectLike\":{\"OriginAccessControlConfig\":{\"Name\":\"CustomLambdaOAC\",\"SigningProtocol\":\"sigv4\",\"SigningBehavior\":\"always\",\"OriginAccessControlOriginType\":\"lambda\"}}}",
     "parameters": {
      "Id": {
       "Fn::Join": [
@@ -183,7 +183,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1727410197175"
+    "salt": "1727410197182"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -204,14 +204,14 @@
        [
         "https://",
         {
-         "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
+         "Fn::ImportValue": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
         }
        ]
       ]
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":\"Hello!!\"}}",
-    "salt": "1727410197176"
+    "salt": "1727410197183"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

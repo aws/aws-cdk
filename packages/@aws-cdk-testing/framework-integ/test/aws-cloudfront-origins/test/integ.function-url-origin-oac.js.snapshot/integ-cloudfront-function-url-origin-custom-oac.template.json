@@ -62,18 +62,7 @@
     }
    }
   },
-  "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55": {
-   "Type": "AWS::CloudFront::OriginAccessControl",
-   "Properties": {
-    "OriginAccessControlConfig": {
-     "Name": "integcloudfrontfunctionurlornctionUrlOriginAccessControlABD689FE",
-     "OriginAccessControlOriginType": "lambda",
-     "SigningBehavior": "always",
-     "SigningProtocol": "sigv4"
-    }
-   }
-  },
-  "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D87785748A6F": {
+  "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C7850B1CA": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",
@@ -112,7 +101,7 @@
      "DefaultCacheBehavior": {
       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
-      "TargetOriginId": "integcloudfrontfunctionurloriginoacDistributionOrigin112C3D877",
+      "TargetOriginId": "integcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C",
       "ViewerProtocolPolicy": "allow-all"
      },
      "Enabled": true,
@@ -142,26 +131,12 @@
          }
         ]
        },
-       "Id": "integcloudfrontfunctionurloriginoacDistributionOrigin112C3D877",
+       "Id": "integcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C",
        "OriginAccessControlId": {
-        "Fn::GetAtt": [
-         "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55",
-         "Id"
-        ]
+        "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttCustomOACCBB5FFDDId76513771"
        }
       }
      ]
-    }
-   }
-  },
-  "CustomOACCBB5FFDD": {
-   "Type": "AWS::CloudFront::OriginAccessControl",
-   "Properties": {
-    "OriginAccessControlConfig": {
-     "Name": "CustomLambdaOAC",
-     "OriginAccessControlOriginType": "lambda",
-     "SigningBehavior": "always",
-     "SigningProtocol": "sigv4"
     }
    }
   }
@@ -175,7 +150,7 @@
     ]
    },
    "Export": {
-    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttMyFunctionFunctionUrlFF6DE78CFunctionUrl4035958E"
+    "Name": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputFnGetAttMyFunctionFunctionUrlFF6DE78CFunctionUrl4035958E"
    }
   },
   "ExportsOutputRefDistribution830FAC524DF81588": {
@@ -183,7 +158,7 @@
     "Ref": "Distribution830FAC52"
    },
    "Export": {
-    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
+    "Name": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputRefDistribution830FAC524DF81588"
    }
   },
   "ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30": {
@@ -194,18 +169,7 @@
     ]
    },
    "Export": {
-    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
-   }
-  },
-  "ExportsOutputFnGetAttCustomOACCBB5FFDDId76513771": {
-   "Value": {
-    "Fn::GetAtt": [
-     "CustomOACCBB5FFDD",
-     "Id"
-    ]
-   },
-   "Export": {
-    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttCustomOACCBB5FFDDId76513771"
+    "Name": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
    }
   }
  },
