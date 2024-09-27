@@ -1191,12 +1191,11 @@ function renderInstances(
     throw new Error('Cannot mix ARM and x86 instance types or classes');
   }
 
-  if (hasArmInstances && (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined)) {
-    Annotations.of(scope).addWarningV2('@aws-cdk/aws-batch:optimalNotSupportedWithARM', '\'optimal\' instance types are not supported with ARM instance types or classes, setting useOptimalInstanceClasses to false');
-    useOptimalInstanceClasses = false;
+  if (hasArmInstances && useOptimalInstanceClasses) {
+    Annotations.of(scope).addWarningV2('@aws-cdk/aws-batch:optimalNotSupportedWithARM', '\'optimal\' instance types are not supported with ARM instance types or classes. Deploying will cause an error, please set useOptimalInstanceClasses to false');
   }
 
-  if (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined) {
+  if (useOptimalInstanceClasses || (!hasArmInstances && useOptimalInstanceClasses === undefined)) {
     instances.push('optimal');
   }
 

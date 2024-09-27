@@ -336,6 +336,28 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('respects useOptimalInstanceClasses: false for ARM instances', () => {
+    // WHEN
+    const myCE = new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      useOptimalInstanceClasses: false,
+    });
+
+    myCE.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        InstanceTypes: [
+          'a1.large',
+        ],
+      },
+    });
+  });
+
   test('does not throw with useOptimalInstanceClasses: false and a call to addInstanceClass()', () => {
     // WHEN
     const myCE = new ComputeEnvironment(stack, 'MyCE', {
@@ -394,8 +416,29 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
 
     // THEN
     Annotations.fromStack(stack).hasWarning('*',
-      '\'optimal\' instance types are not supported with ARM instance types or classes, setting useOptimalInstanceClasses to false [ack: @aws-cdk/aws-batch:optimalNotSupportedWithARM]',
+      '\'optimal\' instance types are not supported with ARM instance types or classes. Deploying will cause an error, please set useOptimalInstanceClasses to false [ack: @aws-cdk/aws-batch:optimalNotSupportedWithARM]',
     );
+  });
+
+  test('no warning when optimal instance classes is undefined with ARM instances', () => {
+    // WHEN
+    const myCE = new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+    });
+
+    myCE.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.ARM1, ec2.InstanceSize.LARGE));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        InstanceTypes: [
+          'a1.large',
+        ],
+      },
+    });
   });
 
   test('mixing ARM and x86 instance classes should throw an error', () => {
