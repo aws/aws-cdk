@@ -258,3 +258,19 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
     target: eventBusTarget,
 });
 ```
+
+The input to the target event bus can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetEventBus: events.EventBus;
+
+const eventBusTarget = new targets.EventBridgeTarget(targetEventBus{
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: eventBusTarget,
+});
+```

@@ -1,4 +1,6 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { EventBridgeTarget } from '../lib/event-bridge';
@@ -8,27 +10,8 @@ const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-event-bridge');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetEventBus = new cdk.aws_events.EventBus(stack, 'TargetEventBus');
 
-class TestSource implements ISource {
-  sourceArn: string;
-
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-
-  bind(_pipe: IPipe): SourceConfig {
-    return {
-      sourceParameters: { sqsQueueParameters: { batchSize: 1 } },
-    };
-  }
-
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
-
 new Pipe(stack, 'Pipe', {
-  source: new TestSource(sourceQueue),
+  source: new SqsSource(sourceQueue),
   target: new EventBridgeTarget(targetEventBus, {}),
 });
 
