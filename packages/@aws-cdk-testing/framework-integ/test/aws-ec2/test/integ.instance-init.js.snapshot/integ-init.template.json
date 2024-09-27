@@ -18,9 +18,6 @@
   "IntegInitVpcPublicSubnet1Subnet41A6F6D4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPublicSubnet1RouteTable837CD5FB": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPublicSubnet1RouteTableAssociation00D33741": {
@@ -75,12 +75,12 @@
   "IntegInitVpcPublicSubnet1DefaultRoute5BB90E8C": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegInitVpcPublicSubnet1RouteTable837CD5FB"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "IntegInitVpcIGWF019AC85"
+    },
+    "RouteTableId": {
+     "Ref": "IntegInitVpcPublicSubnet1RouteTable837CD5FB"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "IntegInitVpcPublicSubnet1NATGateway46F32F7F": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "IntegInitVpcPublicSubnet1Subnet41A6F6D4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "IntegInitVpcPublicSubnet1EIP46FCC3D6",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "IntegInitVpcPublicSubnet1Subnet41A6F6D4"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "IntegInitVpcPublicSubnet2Subnet9A384F16": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPublicSubnet2RouteTableF7E8F920": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPublicSubnet2RouteTableAssociationB816F9F3": {
@@ -183,12 +183,12 @@
   "IntegInitVpcPublicSubnet2DefaultRoute2393995F": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegInitVpcPublicSubnet2RouteTableF7E8F920"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "IntegInitVpcIGWF019AC85"
+    },
+    "RouteTableId": {
+     "Ref": "IntegInitVpcPublicSubnet2RouteTableF7E8F920"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "IntegInitVpcPublicSubnet2NATGateway9CCB4A9C": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "IntegInitVpcPublicSubnet2Subnet9A384F16"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "IntegInitVpcPublicSubnet2EIP553B40DC",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "IntegInitVpcPublicSubnet2Subnet9A384F16"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "IntegInitVpcPrivateSubnet1Subnet259B51C1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPrivateSubnet1RouteTableCB37994B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPrivateSubnet1RouteTableAssociation067DEF9D": {
@@ -291,21 +291,18 @@
   "IntegInitVpcPrivateSubnet1DefaultRoute654ACECF": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegInitVpcPrivateSubnet1RouteTableCB37994B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "IntegInitVpcPublicSubnet1NATGateway46F32F7F"
+    },
+    "RouteTableId": {
+     "Ref": "IntegInitVpcPrivateSubnet1RouteTableCB37994B"
     }
    }
   },
   "IntegInitVpcPrivateSubnet2Subnet1643B059": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPrivateSubnet2RouteTable030EC93B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-init/IntegInitVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
+    }
    }
   },
   "IntegInitVpcPrivateSubnet2RouteTableAssociation6B52BD72": {
@@ -360,12 +360,12 @@
   "IntegInitVpcPrivateSubnet2DefaultRoute6A10B6EA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegInitVpcPrivateSubnet2RouteTable030EC93B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "IntegInitVpcPublicSubnet2NATGateway9CCB4A9C"
+    },
+    "RouteTableId": {
+     "Ref": "IntegInitVpcPrivateSubnet2RouteTable030EC93B"
     }
    }
   },
@@ -383,11 +383,11 @@
   "IntegInitVpcVPCGW85EDC292": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegInitVpc0D4FCCB3"
-    },
     "InternetGatewayId": {
      "Ref": "IntegInitVpcIGWF019AC85"
+    },
+    "VpcId": {
+     "Ref": "IntegInitVpc0D4FCCB3"
     }
    }
   },
@@ -513,7 +513,7 @@
     ]
    }
   },
-  "Instance255F35265a0c5f577d761edb0": {
+  "Instance255F3526574cbd507dfce8b71": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
     "AvailabilityZone": {
@@ -553,7 +553,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: 89cb2e09a1c3d4c8\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: 4f2827c68bde31b4\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -561,7 +561,7 @@
         {
          "Ref": "AWS::StackName"
         },
-        " --resource Instance255F35265a0c5f577d761edb0 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
+        " --resource Instance255F3526574cbd507dfce8b71 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -569,7 +569,7 @@
         {
          "Ref": "AWS::StackName"
         },
-        " --resource Instance255F35265a0c5f577d761edb0\n  cat /var/log/cfn-init.log >&2\n)"
+        " --resource Instance255F3526574cbd507dfce8b71\n  cat /var/log/cfn-init.log >&2\n)"
        ]
       ]
      }
@@ -582,7 +582,7 @@
    "CreationPolicy": {
     "ResourceSignal": {
      "Count": 1,
-     "Timeout": "PT30M"
+     "Timeout": "PT10M"
     }
    },
    "Metadata": {
@@ -636,6 +636,24 @@
          "boolProperty": true,
          "numProperty": 58.23
         },
+        "mode": "000644",
+        "owner": "root",
+        "group": "root"
+       }
+      }
+     },
+     "service": {
+      "files": {
+       "/myvars.env": {
+        "content": "OTHER_VAR=\"im from the file :3\"",
+        "encoding": "plain",
+        "mode": "000644",
+        "owner": "root",
+        "group": "root"
+       },
+       "/etc/systemd/system/myapp.service": {
+        "content": "[Unit]\nAfter=network.target\n[Service]\nExecStart=/bin/bash -c \"echo HELLO_WORLD=${MY_VAR} | FROM_FILE=${OTHER_VAR}\"\nRestart=always\nEnvironmentFile=/myvars.env\nEnvironment=\"MY_VAR=its me :)\"\n[Install]\nWantedBy=multi-user.target",
+        "encoding": "plain",
         "mode": "000644",
         "owner": "root",
         "group": "root"

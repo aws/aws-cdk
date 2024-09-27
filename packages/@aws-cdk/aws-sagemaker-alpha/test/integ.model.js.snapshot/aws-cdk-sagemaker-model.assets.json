@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "files": {
     "126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "be0577003620b4cc844de880dc7d01b90719400dea1cc12c03d93a3ac8e451a3": {
+    "2bf7be4479c7f2590f4e7436df08e6f6516adf0e7234bfcfd7ea7115c7e6dfb6": {
       "source": {
         "path": "aws-cdk-sagemaker-model.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "be0577003620b4cc844de880dc7d01b90719400dea1cc12c03d93a3ac8e451a3.json",
+          "objectKey": "2bf7be4479c7f2590f4e7436df08e6f6516adf0e7234bfcfd7ea7115c7e6dfb6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

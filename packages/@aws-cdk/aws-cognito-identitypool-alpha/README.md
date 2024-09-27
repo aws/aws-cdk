@@ -23,8 +23,8 @@
 [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html) enable you to grant your users access to other AWS services.
 
 Identity Pools are one of the two main components of [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html), which provides authentication, authorization, and
-user management for your web and mobile apps. Your users can sign in directly with a user name and password, or through
-a third party such as Facebook, Amazon, Google or Apple.
+user management for your web and mobile apps. Your users can sign in through a a trusted identity provider, like a user 
+pool or a SAML 2.0 service, as well as with third party providers such as Facebook, Amazon, Google or Apple. 
 
 The other main component in Amazon Cognito is [user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html). User Pools are user directories that provide sign-up and
 sign-in options for your app users.
@@ -53,8 +53,9 @@ import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cogni
 
 ## Identity Pools
 
-Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been  
-authenticated and received a token. An identity pool is a store of user identity data specific to an account.
+Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have 
+authenticated by presenting a token from another identity provider. An identity pool is a store of user identity data 
+specific to an account.
 
 Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers  
 directly. Learn more at [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html).
@@ -329,7 +330,7 @@ new IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-For identity providers that don't have static Urls, a custom Url or User Pool Client Url can be supplied:
+For identity providers that don't have static Urls, a custom Url can be supplied:
 
 ```ts
 import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
@@ -337,10 +338,6 @@ import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [
-    {
-      providerUrl: IdentityPoolProviderUrl.userPool('cognito-idp.my-idp-region.amazonaws.com/my-idp-region_abcdefghi:app_client_id'),
-      useToken: true,
-    },
     {
       providerUrl: IdentityPoolProviderUrl.custom('my-custom-provider.com'),
       useToken: true,
@@ -354,15 +351,16 @@ This is because by default, the key in the Cloudformation role mapping hash is t
 cannot be references. For example:
 
 ```ts
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
-declare const userPool : UserPool;
+declare const userPool: UserPool;
+declare const userPoolClient: UserPoolClient;
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [{
     mappingKey: 'cognito',
-    providerUrl: IdentityPoolProviderUrl.userPool(userPool.userPoolProviderUrl),
+    providerUrl: IdentityPoolProviderUrl.userPool(userPool, userPoolClient),
     useToken: true,
   }],
 });
@@ -399,4 +397,3 @@ IdentityPool.fromIdentityPoolId(this, 'my-imported-identity-pool',
 IdentityPool.fromIdentityPoolArn(this, 'my-imported-identity-pool',
   'arn:aws:cognito-identity:us-east-1:123456789012:identitypool/us-east-1:dj2823ryiwuhef937');
 ```
-

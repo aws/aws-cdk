@@ -55,6 +55,7 @@ const definition = new sfn.Pass(stack, 'Start', {
       },
     ],
     launchTarget: new tasks.EcsEc2LaunchTarget(),
+    enableExecuteCommand: true,
   }),
 );
 

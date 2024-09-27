@@ -1,9 +1,10 @@
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved } from '../../core';
+import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * NodeGroup interface
@@ -244,7 +245,7 @@ export interface NodegroupOptions {
   /**
    * The instance types to use for your node group.
    * @default t3.medium will be used according to the cloudformation document.
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
    */
   readonly instanceTypes?: InstanceType[];
   /**
@@ -292,7 +293,7 @@ export interface NodegroupOptions {
   readonly tags?: { [name: string]: string };
   /**
    * Launch template specification used for the nodegroup
-   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
   readonly launchTemplateSpec?: LaunchTemplateSpec;
@@ -517,14 +518,17 @@ export class Nodegroup extends Resource implements INodegroup {
     // its state for consistency.
     if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.cluster.awsAuth.addRoleMapping(this.role, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-        ],
-      });
-
+      // only when ConfigMap is supported
+      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+      if (supportConfigMap) {
+        this.cluster.awsAuth.addRoleMapping(this.role, {
+          username: 'system:node:{{EC2PrivateDNSName}}',
+          groups: [
+            'system:bootstrappers',
+            'system:nodes',
+          ],
+        });
+      }
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
       if (this.cluster.albController) {
@@ -537,7 +541,12 @@ export class Nodegroup extends Resource implements INodegroup {
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-    this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
+      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
+    } else {
+      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+    }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
@@ -563,15 +572,31 @@ export class Nodegroup extends Resource implements INodegroup {
  * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
-const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, NodegroupAmiType.BOTTLEROCKET_ARM_64];
-const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2019_X86_64, NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2019_X86_64, NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU,
-  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA, NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA];
+const arm64AmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_ARM_64,
+  NodegroupAmiType.AL2023_ARM_64_STANDARD,
+  NodegroupAmiType.BOTTLEROCKET_ARM_64,
+];
+const x8664AmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_X86_64,
+  NodegroupAmiType.AL2023_X86_64_STANDARD,
+  NodegroupAmiType.BOTTLEROCKET_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+];
+const windowsAmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+];
+const gpuAmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
+  NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
+];
 
 /**
  * This function check if the instanceType is GPU instance.

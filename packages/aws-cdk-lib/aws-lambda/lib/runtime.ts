@@ -1,4 +1,6 @@
-import { BundlingDockerImage, DockerImage } from '../../core';
+import { Construct } from 'constructs';
+import { BundlingDockerImage, DockerImage, Stack } from '../../core';
+import { FactName } from '../../region-info';
 
 export interface LambdaRuntimeProps {
   /**
@@ -96,6 +98,7 @@ export class Runtime {
 
   /**
    * The NodeJS 16.x runtime (nodejs16.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -279,6 +282,11 @@ export class Runtime {
   public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
 
   /**
+  * The Ruby 3.3 runtime (ruby3.3)
+  */
+  public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
+
+  /**
    * The custom provided runtime (provided)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */
@@ -365,4 +373,14 @@ export class Runtime {
       other.family === this.family &&
       other.supportsInlineCode === this.supportsInlineCode;
   }
+}
+
+/**
+ * The latest Lambda node runtime available by AWS region.
+ */
+export function determineLatestNodeRuntime(scope: Construct): Runtime {
+  // Runtime regional fact should always return a known runtime string that Runtime can index off, but for type
+  // safety we also default it here.
+  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_18_X.name);
+  return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 }

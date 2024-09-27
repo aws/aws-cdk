@@ -1,4 +1,7 @@
 import { Construct } from 'constructs';
+import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
+import { EncryptionConfiguration } from './encryption-configuration';
+import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
@@ -153,6 +156,13 @@ export interface StateMachineProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Configures server-side encryption of the state machine definition and execution history.
+   *
+   * @default - data is transparently encrypted using an AWS owned key
+   */
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
 
 /**
@@ -452,19 +462,63 @@ export class StateMachine extends StateMachineBase {
       }
     }
 
+    if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'kms:Decrypt', 'kms:GenerateDataKey',
+        ],
+        resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
+        conditions: {
+          StringEquals: {
+            'kms:EncryptionContext:aws:states:stateMachineArn': Stack.of(this).formatArn({
+              service: 'states',
+              resource: 'stateMachine',
+              sep: ':',
+              resourceName: this.physicalName,
+            }),
+          },
+        },
+      }));
+
+      if (props.logs && props.logs.level !== LogLevel.OFF) {
+        this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: [
+            'kms:GenerateDataKey',
+          ],
+          resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
+          conditions: {
+            StringEquals: {
+              'kms:EncryptionContext:SourceArn': Stack.of(this).formatArn({
+                service: 'logs',
+                resource: '*',
+                sep: ':',
+              }),
+            },
+          },
+        }));
+        props.encryptionConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['kms:Decrypt*'],
+          principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
+        }));
+      }
+    }
+
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
-      tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
+      tracingConfiguration: this.buildTracingConfiguration(props.tracingEnabled),
       ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
+      encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
-
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
@@ -532,21 +586,27 @@ export class StateMachine extends StateMachineBase {
     };
   }
 
-  private buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
-    this.addToRolePolicy(new iam.PolicyStatement({
-      // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
-      // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
-      actions: [
-        'xray:PutTraceSegments',
-        'xray:PutTelemetryRecords',
-        'xray:GetSamplingRules',
-        'xray:GetSamplingTargets',
-      ],
-      resources: ['*'],
-    }));
+  private buildTracingConfiguration(isTracing?: boolean): CfnStateMachine.TracingConfigurationProperty | undefined {
+    if (isTracing === undefined) {
+      return undefined;
+    }
+
+    if (isTracing) {
+      this.addToRolePolicy(new iam.PolicyStatement({
+        // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
+        // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
+        actions: [
+          'xray:PutTraceSegments',
+          'xray:PutTelemetryRecords',
+          'xray:GetSamplingRules',
+          'xray:GetSamplingTargets',
+        ],
+        resources: ['*'],
+      }));
+    }
 
     return {
-      enabled: true,
+      enabled: isTracing,
     };
   }
 }

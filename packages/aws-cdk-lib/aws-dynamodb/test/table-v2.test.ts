@@ -1,4 +1,5 @@
 import { Match, Template } from '../../assertions';
+import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
@@ -1028,6 +1029,161 @@ describe('table', () => {
       table.replica('us-west-2');
     }).toThrow('Replica tables are not supported in a region agnostic stack');
   });
+
+  test('with on-demand maximum throughput', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.onDemand({
+        maxReadRequestUnits: 10,
+        maxWriteRequestUnits: 10,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      WriteOnDemandThroughputSettings: {
+        MaxWriteRequestUnits: 10,
+      },
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ReadOnDemandThroughputSettings: {
+            MaxReadRequestUnits: 10,
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('with on-demand maximum throughput - read only', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.onDemand({
+        maxReadRequestUnits: 10,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ReadOnDemandThroughputSettings: {
+            MaxReadRequestUnits: 10,
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('with on-demand maximum throughput - index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          maxReadRequestUnits: 100,
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          maxReadRequestUnits: 1,
+          maxWriteRequestUnits: 1,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi1',
+          KeySchema: [
+            { AttributeName: 'pk', KeyType: 'HASH' },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+        {
+          IndexName: 'gsi2',
+          KeySchema: [
+            { AttributeName: 'pk', KeyType: 'HASH' },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          WriteOnDemandThroughputSettings: {
+            MaxWriteRequestUnits: 1,
+          },
+        },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          GlobalSecondaryIndexes: [{
+            IndexName: 'gsi1',
+            ReadOnDemandThroughputSettings: {
+              MaxReadRequestUnits: 100,
+            },
+          },
+          {
+            IndexName: 'gsi2',
+            ReadOnDemandThroughputSettings: {
+              MaxReadRequestUnits: 1,
+            },
+          }],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
 });
 
 describe('replica tables', () => {
@@ -2803,5 +2959,52 @@ describe('imports', () => {
         tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/',
       });
     }).toThrow('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+  });
+});
+
+test('Resource policy test', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+    resourcePolicy: doc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'dynamodb:GetItem',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: 'arn:aws:iam::111122223333:user/foobar',
+                },
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        },
+      },
+    ],
   });
 });

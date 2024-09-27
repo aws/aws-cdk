@@ -107,11 +107,6 @@
                       },
                       "s3Key": "2344c8450ec3c069ed98fedf1714f33c31b9f3c8e0d295ea361224732e1fef37.zip"
                     },
-                    "environment": {
-                      "variables": {
-                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-                      }
-                    },
                     "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
@@ -232,11 +227,6 @@
                       },
                       "s3Key": "112c693f98d7e411850f8d441167216bdfe392567d99a11e03b6cd921e36398b.zip"
                     },
-                    "environment": {
-                      "variables": {
-                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-                      }
-                    },
                     "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
@@ -285,7 +275,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

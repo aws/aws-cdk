@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "75abc911f81a105e413804f854c13bb3f9e9048243cbe8dd43389d60f26f033c": {
+      "source": {
+        "path": "cdk-integ-lambda-bucket-s3-notifications.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "75abc911f81a105e413804f854c13bb3f9e9048243cbe8dd43389d60f26f033c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

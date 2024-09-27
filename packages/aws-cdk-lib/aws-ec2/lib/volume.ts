@@ -3,8 +3,9 @@ import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '../../core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import * as cxapi from '../../cx-api';
 
 /**
  * Block device
@@ -65,9 +66,24 @@ export interface EbsDeviceOptionsBase {
    * The EBS volume type
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    *
-   * @default `EbsDeviceVolumeType.GP2`
+   * @default `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` or `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3` if
+   * `@aws-cdk/aws-ec2:ebsDefaultGp3Volume` is enabled.
    */
   readonly volumeType?: EbsDeviceVolumeType;
+
+  /**
+   * The throughput to provision for a `gp3` volume.
+   *
+   * Valid Range: Minimum value of 125. Maximum value of 1000.
+   *
+   * `gp3` volumes deliver a consistent baseline throughput performance of 125 MiB/s.
+   * You can provision additional throughput for an additional cost at a ratio of 0.25 MiB/s per provisioned IOPS.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html#gp3-performance
+   *
+   * @default - 125 MiB/s.
+   */
+  readonly throughput?: number;
 }
 
 /**
@@ -621,7 +637,9 @@ export class Volume extends VolumeBase {
       size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
       throughput: props.throughput,
-      volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      volumeType: props.volumeType ??
+        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
+          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 

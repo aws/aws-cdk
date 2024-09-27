@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { CfnEnvironment } from './appconfig.generated';
+import { CfnDeployment, CfnEnvironment } from './appconfig.generated';
 import { IApplication } from './application';
+import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -47,7 +48,38 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   public abstract applicationId: string;
   public abstract environmentId: string;
   public abstract environmentArn: string;
+  public abstract name?: string;
   protected extensible!: ExtensibleBase;
+  protected deploymentQueue: Array<CfnDeployment> = [];
+
+  public addDeployment(configuration: IConfiguration): void {
+    if (this.name === undefined) {
+      throw new Error('Environment name must be known to add a Deployment');
+    }
+
+    const queueSize = this.deploymentQueue.push(
+      new CfnDeployment(configuration, `Deployment${getHash(this.name)}`, {
+        applicationId: configuration.application.applicationId,
+        configurationProfileId: configuration.configurationProfileId,
+        deploymentStrategyId: configuration.deploymentStrategy!.deploymentStrategyId,
+        environmentId: this.environmentId,
+        configurationVersion: configuration.versionNumber!,
+        description: configuration.description,
+        kmsKeyIdentifier: configuration.deploymentKey?.keyArn,
+      }),
+    );
+
+    // This internal member is used to keep track of configuration deployments
+    // as they are requested. Each element in this queue will depend on its
+    // predecessor, ensuring that the deployments occur sequentially in Cfn.
+    if (queueSize > 1) {
+      this.deploymentQueue[queueSize - 1].addDependency(this.deploymentQueue[queueSize - 2]);
+    }
+  }
+
+  public addDeployments(...configurations: IConfiguration[]): void {
+    configurations.forEach((config) => this.addDeployment(config));
+  }
 
   public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.on(actionPoint, eventDestination, options);
@@ -83,6 +115,25 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
 
   public addExtension(extension: IExtension) {
     this.extensible.addExtension(extension);
+  }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.environmentArn],
+    });
+  }
+
+  public grantReadConfig(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'appconfig:GetLatestConfiguration',
+        'appconfig:StartConfigurationSession',
+      ],
+      resourceArns: [`${this.environmentArn}/configuration/*`],
+    });
   }
 }
 
@@ -154,6 +205,7 @@ export class Environment extends EnvironmentBase {
       public readonly applicationId = applicationId;
       public readonly environmentId = environmentId;
       public readonly environmentArn = environmentArn;
+      public readonly name?: string;
     }
 
     return new Import(scope, id, {
@@ -414,6 +466,24 @@ export interface IEnvironment extends IResource {
   readonly environmentArn: string;
 
   /**
+   * Creates a deployment of the supplied configuration to this environment.
+   * Note that you can only deploy one configuration at a time to an environment.
+   * However, you can deploy one configuration each to different environments at the same time.
+   * If more than one deployment is requested for this environment, they will occur in the same order they were provided.
+   *
+   * @param configuration The configuration that will be deployed to this environment.
+   */
+  addDeployment(configuration: IConfiguration): void;
+
+  /**
+   * Creates a deployment for each of the supplied configurations to this environment.
+   * These configurations will be deployed in the same order as the input array.
+   *
+   * @param configurations The configurations that will be deployed to this environment.
+   */
+  addDeployments(...configurations: Array<IConfiguration>): void;
+
+  /**
    * Adds an extension defined by the action point and event destination and also
    * creates an extension association to the environment.
    *
@@ -492,4 +562,21 @@ export interface IEnvironment extends IResource {
    * @param extension The extension to create an association for
    */
   addExtension(extension: IExtension): void;
+
+  /**
+   * Adds an IAM policy statement associated with this environment to an IAM principal's policy.
+   *
+   * @param grantee the principal (no-op if undefined)
+   * @param actions the set of actions to allow (i.e., 'appconfig:GetLatestConfiguration', 'appconfig:StartConfigurationSession', etc.)
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Permits an IAM principal to perform read operations on this environment's configurations.
+   *
+   * Actions: GetLatestConfiguration, StartConfigurationSession.
+   *
+   * @param grantee Principal to grant read rights to
+   */
+  grantReadConfig(grantee: iam.IGrantable): iam.Grant;
 }

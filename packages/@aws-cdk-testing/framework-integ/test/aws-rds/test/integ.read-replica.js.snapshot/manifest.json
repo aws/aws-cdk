@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "cdk-rds-read-replica.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-rds-read-replica.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/924d330ee4b0b69f04863e4ca1069a308a62febaad8665a67387961f0c9e5344.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f2dcd7b7c7528c9dc40a786b8e94ed681d7edf1f42b9ca16d0d3e6ab419c019.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +178,24 @@
             "data": "MysqlReplica87D29F78"
           }
         ],
+        "/cdk-rds-read-replica/DBRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBRole890CB76D"
+          }
+        ],
+        "/cdk-rds-read-replica/DBRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBRoleDefaultPolicyDBB64848"
+          }
+        ],
+        "/cdk-rds-read-replica/DBUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBUser03089649"
+          }
+        ],
         "/cdk-rds-read-replica/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -191,6 +210,54 @@
         ]
       },
       "displayName": "cdk-rds-read-replica"
+    },
+    "instancedualtestDefaultTestDeployAssertD87FA35D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "instancedualtestDefaultTestDeployAssertD87FA35D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "instancedualtestDefaultTestDeployAssertD87FA35D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "instancedualtestDefaultTestDeployAssertD87FA35D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "instancedualtestDefaultTestDeployAssertD87FA35D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "instancedualtestDefaultTestDeployAssertD87FA35D.assets"
+      ],
+      "metadata": {
+        "/instance-dual-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/instance-dual-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "instance-dual-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

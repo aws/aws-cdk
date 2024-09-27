@@ -128,6 +128,13 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 
   /**
+   * SNS Topic ARNs that will receive stack events.
+   *
+   * @default - no notfication arns.
+   */
+  readonly notificationArns?: string[];
+
+  /**
    * Synthesis method to use while deploying this stack
    *
    * The Stack Synthesizer controls aspects of synthesis and deployment,
@@ -365,6 +372,13 @@ export class Stack extends Construct implements ITaggable {
   public readonly _crossRegionReferences: boolean;
 
   /**
+   * SNS Notification ARNs to receive stack events.
+   *
+   * @internal
+   */
+  public readonly _notificationArns: string[];
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -450,6 +464,14 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
     }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
+
+    for (const notificationArn of props.notificationArns ?? []) {
+      if (Token.isUnresolved(notificationArn)) {
+        throw new Error(`Stack '${id}' includes one or more tokens in its notification ARNs: ${props.notificationArns}`);
+      }
+    }
+
+    this._notificationArns = props.notificationArns ?? [];
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`);
@@ -1061,7 +1083,10 @@ export class Stack extends Construct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
+  public _synthesizeTemplate(session: ISynthesisSession,
+    lookupRoleArn?: string,
+    lookupRoleExternalId?: string,
+    lookupRoleAdditionalOptions?: { [key: string]: any }): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -1104,11 +1129,17 @@ export class Stack extends Construct implements ITaggable {
     fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
-      if (lookupRoleArn != null) {
-        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn } });
-      } else {
-        builder.addMissing(ctx);
-      }
+
+      // 'account' and 'region' are added to the schema at tree instantiation time.
+      // these options however are only known at synthesis, so are added here.
+      // see https://github.com/aws/aws-cdk/blob/v2.158.0/packages/aws-cdk-lib/core/lib/context-provider.ts#L71
+      const queryLookupOptions: Omit<cxschema.ContextLookupRoleOptions, 'account' | 'region'> = {
+        lookupRoleArn,
+        lookupRoleExternalId,
+        assumeRoleAdditionalOptions: lookupRoleAdditionalOptions,
+      };
+
+      builder.addMissing({ ...ctx, props: { ...ctx.props, ...queryLookupOptions } });
     }
   }
 
@@ -1171,8 +1202,6 @@ export class Stack extends Construct implements ITaggable {
    * remove the reference from the consuming stack. After that, you can remove
    * the resource and the manual export.
    *
-   * ## Example
-   *
    * Here is how the process works. Let's say there are two stacks,
    * `producerStack` and `consumerStack`, and `producerStack` has a bucket
    * called `bucket`, which is referenced by `consumerStack` (perhaps because
@@ -1183,7 +1212,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * Instead, the process takes two deployments:
    *
-   * ### Deployment 1: break the relationship
+   * **Deployment 1: break the relationship**:
    *
    * - Make sure `consumerStack` no longer references `bucket.bucketName` (maybe the consumer
    *   stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
@@ -1193,7 +1222,7 @@ export class Stack extends Construct implements ITaggable {
    *   between the two stacks is being broken.
    * - Deploy (this will effectively only change the `consumerStack`, but it's safe to deploy both).
    *
-   * ### Deployment 2: remove the bucket resource
+   * **Deployment 2: remove the bucket resource**:
    *
    * - You are now free to remove the `bucket` resource from `producerStack`.
    * - Don't forget to remove the `exportValue()` call as well.

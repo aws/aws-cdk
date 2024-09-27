@@ -6,6 +6,7 @@ Define a KMS key:
 ```ts
 new kms.Key(this, 'MyKey', {
   enableKeyRotation: true,
+  rotationPeriod: Duration.days(180), // Default is 365 days
 });
 ```
 
@@ -37,6 +38,15 @@ Valid `keySpec` values depends on `keyUsage` value.
 const key = new kms.Key(this, 'MyKey', {
   keySpec: kms.KeySpec.ECC_SECG_P256K1, // Default to SYMMETRIC_DEFAULT
   keyUsage: kms.KeyUsage.SIGN_VERIFY,    // and ENCRYPT_DECRYPT
+});
+```
+
+
+Create a multi-Region primary key:
+
+```ts
+const key = new kms.Key(this, 'MyKey', {
+  multiRegion: true, // Default is false
 });
 ```
 

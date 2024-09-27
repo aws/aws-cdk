@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ivs from '../lib';
 
@@ -10,7 +10,7 @@ EPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM
 
 let stack: Stack;
 
-beforeEach( () => {
+beforeEach(() => {
   const app = new App({
     context: {
       '@aws-cdk/core:newStyleStackSynthesis': false,
@@ -163,4 +163,51 @@ test('channel from invalid channel arn resource throws error', () => {
   expect(
     () => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ivs:us-west-2:123456789012:stream-key/abcdABCDefgh'))
     .toThrow('Invalid resource, expected \'channel\', got \'stream-key\'');
+});
+
+test('channel type advanced without preset setting', () => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.ADVANCED_SD,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'ADVANCED_SD',
+    Preset: Match.absent(),
+  });
+});
+
+test('channel type advanced with preset setting', () => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.ADVANCED_HD,
+    preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'ADVANCED_HD',
+    Preset: 'CONSTRAINED_BANDWIDTH_DELIVERY',
+  });
+});
+
+test('the preset with the STANDARD or BASIC channel type is overwritten with an empty string.', () => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.STANDARD,
+    preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'STANDARD',
+    Preset: '',
+  });
+});
+
+test.each([true, false])('channel with insecureIngest set to %s.', (insecureIngest) => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.STANDARD,
+    insecureIngest,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'STANDARD',
+    InsecureIngest: insecureIngest,
+  });
 });

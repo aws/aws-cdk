@@ -2,12 +2,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, IConstruct } from 'constructs';
-import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from './appconfig.generated';
+import { CfnConfigurationProfile, CfnHostedConfigurationVersion } from './appconfig.generated';
 import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
-import { getHash } from './private/hash';
 import * as cp from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -62,7 +61,10 @@ export interface ConfigurationOptions {
    * The list of environments to deploy the configuration to.
    *
    * If this parameter is not specified, then there will be no
-   * deployment.
+   * deployment created alongside this configuration.
+   *
+   * Deployments can be added later using the `IEnvironment.addDeployment` or
+   * `IEnvironment.addDeployments` methods.
    *
    * @default - None.
    */
@@ -319,15 +321,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
-      new CfnDeployment(this, `Deployment${getHash(environment.name!)}`, {
-        applicationId: this.application.applicationId,
-        configurationProfileId: this.configurationProfileId,
-        deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-        environmentId: environment.environmentId,
-        configurationVersion: this.versionNumber!,
-        description: this.description,
-        kmsKeyIdentifier: this.deploymentKey?.keyArn,
-      });
+      environment.addDeployment(this);
     });
   }
 }
@@ -518,7 +512,7 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
   /**
    * The IAM role to retrieve the configuration.
    *
-   * @default - A role is generated.
+   * @default - Auto generated if location type is not ConfigurationSourceType.CODE_PIPELINE otherwise no role specified.
    */
   readonly retrievalRole?: iam.IRole;
 }
@@ -570,16 +564,7 @@ export class SourcedConfiguration extends ConfigurationBase {
     this.locationUri = this.location.locationUri;
     this.versionNumber = props.versionNumber;
     this.sourceKey = this.location.key;
-    this.retrievalRole = props.retrievalRole || this.location.type != ConfigurationSourceType.CODE_PIPELINE
-      ? new iam.Role(this, 'Role', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
-        inlinePolicies: {
-          ['AllowAppConfigReadFromSourcePolicy']: this.getPolicyForRole(),
-        },
-      })
-      : undefined;
-
+    this.retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
     this._cfnConfigurationProfile = new CfnConfigurationProfile(this, 'Resource', {
       applicationId: this.applicationId,
       locationUri: this.locationUri,
@@ -600,6 +585,22 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
+  }
+
+  private getRetrievalRole(): iam.Role | undefined {
+    // Check if the configuration source is not from CodePipeline
+    if (this.location.type != ConfigurationSourceType.CODE_PIPELINE) {
+      return new iam.Role(this, 'Role', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+        inlinePolicies: {
+          ['AllowAppConfigReadFromSourcePolicy']: this.getPolicyForRole(),
+        },
+      });
+    } else {
+      // No role is needed if the configuration source is from CodePipeline
+      return undefined;
+    }
   }
 
   private getPolicyForRole(): iam.PolicyDocument {

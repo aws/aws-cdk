@@ -111,6 +111,23 @@ computeEnv.addInstanceClass(ec2.InstanceClass.M4);
 computeEnv.addInstanceClass(ec2.InstanceClass.R4);
 ```
 
+#### Configure AMIs
+
+You can configure Amazon Machine Images (AMIs). This example configures your `ComputeEnvironment` to use Amazon Linux 2023.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  vpc,
+  images: [
+    {
+      imageType: batch.EcsMachineImageType.ECS_AL2023,
+    },
+  ],
+});
+```
+
 #### Allocation Strategies
 
 | Allocation Strategy           | Optimized for              | Downsides                     |
@@ -178,7 +195,7 @@ const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2Compute
 You can specify the maximum and minimum vCPUs a managed `ComputeEnvironment` can have at any given time.
 Batch will *always* maintain `minvCpus` worth of instances in your ComputeEnvironment, even if it is not executing any jobs,
 and even if it is disabled. Batch will scale the instances up to `maxvCpus` worth of instances as
-jobs exit the JobQueue and enter the ComputeEnvironment. If you use `AllocationStrategy.BEST_FIT_PROGRESSIVE`, 
+jobs exit the JobQueue and enter the ComputeEnvironment. If you use `AllocationStrategy.BEST_FIT_PROGRESSIVE`,
 `AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED`, or `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`,
 batch may exceed `maxvCpus`; it will never exceed `maxvCpus` by more than a single instance type. This example configures a
 `minvCpus` of 10 and a `maxvCpus` of 100:
@@ -232,6 +249,25 @@ const highPriorityQueue = new batch.JobQueue(this, 'JobQueue', {
 });
 lowPriorityQueue.addComputeEnvironment(sharedComputeEnv, 1);
 highPriorityQueue.addComputeEnvironment(sharedComputeEnv, 1);
+```
+
+### React to jobs stuck in RUNNABLE state
+
+You can react to jobs stuck in RUNNABLE state by setting a `jobStateTimeLimitActions` in `JobQueue`.
+Specifies actions that AWS Batch will take after the job has remained at the head of the queue in the
+specified state for longer than the specified time.
+
+```ts
+new batch.JobQueue(this, 'JobQueue', {
+    jobStateTimeLimitActions: [
+      {
+        action: batch.JobStateTimeLimitActionsAction.CANCEL,
+        maxTime: cdk.Duration.minutes(10),
+        reason: batch.JobStateTimeLimitActionsReason.INSUFFICIENT_INSTANCE_CAPACITY,
+        state: batch.JobStateTimeLimitActionsState.RUNNABLE,
+      },
+    ]
+});
 ```
 
 ### Fairshare Scheduling

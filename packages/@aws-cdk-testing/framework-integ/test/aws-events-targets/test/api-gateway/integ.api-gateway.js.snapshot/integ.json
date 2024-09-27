@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ApiGatewayTarget/DefaultTest": {
+      "stacks": [
+        "aws-events-targets-api-gateway-integ"
+      ],
+      "assertionStack": "ApiGatewayTarget/DefaultTest/DeployAssert",
+      "assertionStackName": "ApiGatewayTargetDefaultTestDeployAssert33F7AF34"
+    }
+  }
+}

@@ -193,6 +193,8 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
+**Note**: The `path` parameter must start with a `/`.
+
 ### Application Load Balancer attributes
 
 You can modify attributes of Application Load Balancers:
@@ -221,15 +223,91 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // The type of IP addresses to use.
   ipAddressType: elbv2.IpAddressType.IPV4,
 
+  // The duration of client keep-alive connections
+  clientKeepAlive: Duration.seconds(500),
+
   // Whether cross-zone load balancing is enabled.
   crossZoneEnabled: true,
 
   // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
-  denyAllIgwTraffic: false
+  denyAllIgwTraffic: false,
+
+  // Whether to preserve host header in the request to the target
+  preserveHostHeader: true,
+
+  // Whether to add the TLS information header to the request
+  xAmznTlsVersionAndCipherSuiteHeaders: true,
+
+  // Whether the X-Forwarded-For header should preserve the source port
+  preserveXffClientPort: true,
+
+  // The processing mode for X-Forwarded-For headers
+  xffHeaderProcessingMode: elbv2.XffHeaderProcessingMode.APPEND,
+
+  // Whether to allow a load balancer to route requests to targets if it is unable to forward the request to AWS WAF.
+  wafFailOpen: true,
 });
 ```
 
 For more information, see [Load balancer attributes](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes)
+
+### Setting up Access Log Bucket on Application Load Balancer
+
+The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
+Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+
+```ts
+
+declare const vpc: ec2.Vpc;
+
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{
+  encryption: s3.BucketEncryption.S3_MANAGED,
+  });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
+lb.logAccessLogs(bucket);
+
+```
+
+### Setting up Connection Log Bucket on Application Load Balancer
+
+Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
+Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{
+  encryption: s3.BucketEncryption.S3_MANAGED,
+});
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
+lb.logConnectionLogs(bucket);
+```
+
+### Dualstack Application Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+});
+```
 
 ## Defining a Network Load Balancer
 
@@ -260,6 +338,21 @@ const listener = lb.addListener('Listener', {
 listener.addTargets('AppFleet', {
   port: 443,
   targets: [asg]
+});
+```
+
+### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
+
+You can indicate whether to evaluate inbound security group rules for traffic
+sent to a Network Load Balancer through AWS PrivateLink.
+The evaluation is enabled by default.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
 });
 ```
 
@@ -407,6 +500,26 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
 });
 ```
 
+### Weighted random routing algorithms and automatic target weights for your Application Load Balancer
+
+You can use the `weighted_random` routing algorithms by setting the `loadBalancingAlgorithmType` property.
+
+When using this algorithm, Automatic Target Weights (ATW) anomaly mitigation can be used by setting `enableAnomalyMitigation` to `true`.
+
+Also you can't use this algorithm with slow start mode.
+
+For more information, see [Routing algorithms](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#modify-routing-algorithm) and [Automatic Target Weights (ATW)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+  enableAnomalyMitigation: true,
+});
+```
+
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the
@@ -466,7 +579,7 @@ const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
 const listener = nlb.addListener('listener', { port: 80 });
 
 listener.addTargets('Targets', {
-  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  targets: [new targets.AlbListenerTarget(svc.listener)],
   port: 80,
 });
 
@@ -744,4 +857,70 @@ const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this,
 });
 
 const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics; // throws an Error()
+```
+
+## logicalIds on ExternalApplicationListener.addTargetGroups() and .addAction()
+
+By default, the `addTargetGroups()` method does not follow the standard behavior
+of adding a `Rule` suffix to the logicalId of the `ListenerRule` it creates.
+If you are deploying new `ListenerRule`s using `addTargetGroups()` the recommendation
+is to set the `removeRuleSuffixFromLogicalId: false` property.
+If you have `ListenerRule`s deployed using the legacy behavior of `addTargetGroups()`,
+which you need to switch over to being managed by the `addAction()` method,
+then you will need to enable the `removeRuleSuffixFromLogicalId: true` property in the `addAction()` method.
+
+`ListenerRule`s have a unique `priority` for a given `Listener`.
+Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.
+
+## Configuring Mutual authentication with TLS in Application Load Balancer
+
+You can configure Mutual authentication with TLS (mTLS) for Application Load Balancer.
+
+To set mTLS, you must create an instance of `TrustStore` and set it to `ApplicationListener`.
+
+For more information, see [Mutual authentication with TLS in Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html)
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.Certificate;
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const bucket: s3.Bucket;
+
+const trustStore = new elbv2.TrustStore(this, 'Store', {
+  bucket,
+  key: 'rootCA_cert.pem',
+});
+
+lb.addListener('Listener', {
+  port: 443,
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  certificates: [certificate],
+  // mTLS settings
+  mutualAuthentication: {
+    ignoreClientCertificateExpiry: false,
+    mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+    trustStore,
+  },
+  defaultAction: elbv2.ListenerAction.fixedResponse(200,
+    { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+});
+```
+
+Optionally, you can create a certificate revocation list for a trust store by creating an instance of `TrustStoreRevocation`.
+
+```ts
+declare const trustStore: elbv2.TrustStore;
+declare const bucket: s3.Bucket;
+
+new elbv2.TrustStoreRevocation(this, 'Revocation', {
+  trustStore,
+  revocationContents: [
+    {
+      revocationType: elbv2.RevocationType.CRL,
+      bucket,
+      key: 'crl.pem',
+    },
+  ],
+});
 ```

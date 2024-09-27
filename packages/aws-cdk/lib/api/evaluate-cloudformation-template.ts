@@ -314,6 +314,10 @@ export class EvaluateCloudFormationTemplate {
     return cfnExpression;
   }
 
+  public getResourceProperty(logicalId: string, propertyName: string): any {
+    return this.template.Resources?.[logicalId]?.Properties?.[propertyName];
+  }
+
   private references(logicalId: string, templateElement: any): boolean {
     if (typeof templateElement === 'string') {
       return logicalId === templateElement;
@@ -500,6 +504,7 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
   'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
   'AWS::AppSync::FunctionConfiguration': { FunctionId: appsyncGraphQlFunctionIDFmt },
   'AWS::AppSync::DataSource': { Name: appsyncGraphQlDataSourceNameFmt },
+  'AWS::KMS::Key': { Arn: stdSlashResourceArnFmt },
 };
 
 function iamArnFmt(parts: ArnParts): string {

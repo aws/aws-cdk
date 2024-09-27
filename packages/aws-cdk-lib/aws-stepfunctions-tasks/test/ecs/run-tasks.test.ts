@@ -209,6 +209,60 @@ test('Running a task with NONE as propagated tag source', () => {
     }).toStateJson())).toHaveProperty('Parameters.PropagateTags', 'NONE');
 });
 
+test('Running a task with cpu parameter', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '1024',
+    cpu: '512',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      cpu: '1024',
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson())).toHaveProperty('Parameters.Overrides.Cpu', '1024');
+});
+
+test('Running a task with memory parameter', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '1024',
+    cpu: '512',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      memoryMiB: '2048',
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson())).toHaveProperty('Parameters.Overrides.Memory', '2048');
+});
+
 test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
@@ -289,26 +343,7 @@ test('Running a Fargate Task', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: [{
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-                '/',
-                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-              ],
-            ],
-          },
-          {
+          Resource: {
             'Fn::Join': [
               '',
               [
@@ -327,7 +362,7 @@ test('Running a Fargate Task', () => {
                 ':*',
               ],
             ],
-          }],
+          },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -431,26 +466,7 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: [{
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
-                ':',
-                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-                '/',
-                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
-              ],
-            ],
-          },
-          {
+          Resource: {
             'Fn::Join': [
               '',
               [
@@ -469,7 +485,7 @@ test('Running an EC2 Task with bridge network', () => {
                 ':*',
               ],
             ],
-          }],
+          },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -686,7 +702,7 @@ test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', ()
   })).not.toThrow();
 });
 
-test('Set revision number of ECS task denition family', () => {
+test('Set revision number of ECS task definition family', () => {
   // When
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
@@ -753,4 +769,51 @@ test('Set revision number of ECS task denition family', () => {
       Type: 'Task',
     },
   );
+});
+
+test('set enableExecuteCommand', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    compatibility: ecs.Compatibility.EC2,
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+    cluster,
+    taskDefinition,
+    enableExecuteCommand: true,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'EC2',
+      TaskDefinition: 'TD',
+      EnableExecuteCommand: true,
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.sync',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
 });

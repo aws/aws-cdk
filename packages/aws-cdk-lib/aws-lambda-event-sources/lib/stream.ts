@@ -1,4 +1,5 @@
 import { S3OnFailureDestination } from './s3-onfailuire-destination';
+import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Duration } from '../../core';
 
@@ -63,7 +64,11 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default - the retention period configured on the stream
+   * The default value is -1, which sets the maximum age to infinite.
+   * When the value is set to infinite, Lambda never discards old records.
+   * Record are valid until it expires in the event source.
+   *
+   * @default -1
    */
   readonly maxRecordAge?: Duration;
 
@@ -73,7 +78,11 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default - retry until the record expires
+   * The default value is -1, which sets the maximum number of retries to infinite.
+   * When MaximumRetryAttempts is infinite, Lambda retries failed records until
+   * the record expires in the event source.
+   *
+   * @default -1
    */
   readonly retryAttempts?: number;
 
@@ -117,6 +126,17 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * @default - None
    */
   readonly filters?: Array<{[key: string]: any}>;
+
+  /**
+   * Add Customer managed KMS key to encrypt Filter Criteria.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * By default, Lambda will encrypt Filter Criteria using AWS managed keys
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk
+   *
+   * @default - none
+   */
+  readonly filterEncryption?: IKey;
+
 }
 
 /**
@@ -147,6 +167,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
       filters: this.props.filters,
+      filterEncryption: this.props.filterEncryption,
     };
   }
 }

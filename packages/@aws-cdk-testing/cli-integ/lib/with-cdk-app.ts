@@ -2,8 +2,10 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { DescribeStacksCommand, Stack } from '@aws-sdk/client-cloudformation';
 import { outputFromStack, AwsClients } from './aws';
 import { TestContext } from './integ-test';
+import { findYarnPackages } from './package-sources/repo-source';
 import { IPackageSource } from './package-sources/source';
 import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
@@ -11,7 +13,7 @@ import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
-export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
+export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
 
 /**
@@ -231,6 +233,13 @@ export async function cloneDirectory(source: string, target: string, output?: No
 }
 
 interface CommonCdkBootstrapCommandOptions {
+  /**
+   * Path to a custom bootstrap template.
+   *
+   * @default - the default CDK bootstrap template.
+   */
+  readonly bootstrapTemplate?: string;
+
   readonly toolkitStackName: string;
 
   /**
@@ -420,6 +429,9 @@ export class TestFixture extends ShellHelper {
     if (options.usePreviousParameters === false) {
       args.push('--no-previous-parameters');
     }
+    if (options.bootstrapTemplate) {
+      args.push('--template', options.bootstrapTemplate);
+    }
 
     return this.cdk(args, {
       ...options.cliOptions,
@@ -510,7 +522,14 @@ export class TestFixture extends ShellHelper {
     const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
     await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
 
-    await this.aws.deleteStacks(...stacksToDelete.map(s => s.StackName));
+    await this.aws.deleteStacks(
+      ...stacksToDelete.map((s) => {
+        if (!s.StackName) {
+          throw new Error('Stack name is required to delete a stack.');
+        }
+        return s.StackName;
+      }),
+    );
 
     // We might have leaked some buckets by upgrading the bootstrap stack. Be
     // sure to clean everything.
@@ -528,7 +547,7 @@ export class TestFixture extends ShellHelper {
   /**
    * Return the stacks starting with our testing prefix that should be deleted
    */
-  private async deleteableStacks(prefix: string): Promise<AWS.CloudFormation.Stack[]> {
+  private async deleteableStacks(prefix: string): Promise<Stack[]> {
     const statusFilter = [
       'CREATE_IN_PROGRESS', 'CREATE_FAILED', 'CREATE_COMPLETE',
       'ROLLBACK_IN_PROGRESS', 'ROLLBACK_FAILED', 'ROLLBACK_COMPLETE',
@@ -543,16 +562,21 @@ export class TestFixture extends ShellHelper {
       'IMPORT_ROLLBACK_COMPLETE',
     ];
 
-    const response = await this.aws.cloudFormation('describeStacks', {});
+    const response = await this.aws.cloudFormation.send(new DescribeStacksCommand({}));
 
     return (response.Stacks ?? [])
-      .filter(s => s.StackName.startsWith(prefix))
-      .filter(s => statusFilter.includes(s.StackStatus))
-      .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
+      .filter((s) => s.StackName && s.StackName.startsWith(prefix))
+      .filter((s) => s.StackStatus && statusFilter.includes(s.StackStatus))
+      .filter((s) => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
   }
 
-  private sortBootstrapStacksToTheEnd(stacks: AWS.CloudFormation.Stack[]) {
+  private sortBootstrapStacksToTheEnd(stacks: Stack[]) {
     stacks.sort((a, b) => {
+
+      if (!a.StackName || !b.StackName) {
+        throw new Error('Stack names do not exists. These are required for sorting the bootstrap stacks.');
+      }
+
       const aBs = a.StackName.startsWith(this.bootstrapStackName);
       const bBs = b.StackName.startsWith(this.bootstrapStackName);
 
@@ -612,6 +636,17 @@ function defined<A>(x: A): x is NonNullable<A> {
  * for Node's dependency lookup mechanism).
  */
 export async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+  if (process.env.REPO_ROOT) {
+    const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
+
+    // Replace the install target with the physical location of this package
+    for (const key of Object.keys(packages)) {
+      if (key in monoRepo) {
+        packages[key] = monoRepo[key];
+      }
+    }
+  }
+
   fs.writeFileSync(path.join(fixture.integTestDir, 'package.json'), JSON.stringify({
     name: 'cdk-integ-tests',
     private: true,

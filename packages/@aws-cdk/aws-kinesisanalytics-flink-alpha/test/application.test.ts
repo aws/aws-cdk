@@ -21,21 +21,32 @@ describe('Application', () => {
     stack = new core.Stack();
     bucket = new s3.Bucket(stack, 'CodeBucket');
     requiredProps = {
-      runtime: flink.Runtime.FLINK_1_11,
+      runtime: flink.Runtime.FLINK_1_20,
       code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
     };
   });
 
-  test('default Flink Application', () => {
+  const flinkRuntimes = [
+    flink.Runtime.FLINK_1_6,
+    flink.Runtime.FLINK_1_8,
+    flink.Runtime.FLINK_1_11,
+    flink.Runtime.FLINK_1_13,
+    flink.Runtime.FLINK_1_15,
+    flink.Runtime.FLINK_1_18,
+    flink.Runtime.FLINK_1_19,
+    flink.Runtime.FLINK_1_20,
+  ];
+
+  test.each(flinkRuntimes)('Flink Application with %s', (runtime) => {
     new flink.Application(stack, 'FlinkApplication', {
-      runtime: flink.Runtime.FLINK_1_11,
+      runtime,
       code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
       applicationName: 'MyFlinkApplication',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationName: 'MyFlinkApplication',
-      RuntimeEnvironment: 'FLINK-1_11',
+      RuntimeEnvironment: runtime.value,
       ServiceExecutionRole: {
         'Fn::GetAtt': [
           'FlinkApplicationRole2F7BCBF6',

@@ -7,7 +7,7 @@ import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
-import { Arn, Aws, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack } from '../../core';
 
 /**
  * Represents an IAM user
@@ -180,7 +180,7 @@ export class User extends Resource implements IIdentity, IUser {
   public static fromUserAttributes(scope: Construct, id: string, attrs: UserAttributes): IUser {
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
-      public readonly principalAccount = Aws.ACCOUNT_ID;
+      public readonly principalAccount = Stack.of(scope).splitArn(attrs.userArn, ArnFormat.SLASH_RESOURCE_NAME).account;
       // Resource name with path can have multiple elements separated by slash.
       // Therefore, use element after last slash as userName. Happens to work for Tokens since
       // they don't have a '/' in them.

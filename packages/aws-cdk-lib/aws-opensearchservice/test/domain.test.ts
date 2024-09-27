@@ -42,6 +42,8 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_9,
   EngineVersion.OPENSEARCH_2_10,
   EngineVersion.OPENSEARCH_2_11,
+  EngineVersion.OPENSEARCH_2_13,
+  EngineVersion.OPENSEARCH_2_15,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -207,6 +209,8 @@ each([
   [EngineVersion.OPENSEARCH_2_9, 'OpenSearch_2.9'],
   [EngineVersion.OPENSEARCH_2_10, 'OpenSearch_2.10'],
   [EngineVersion.OPENSEARCH_2_11, 'OpenSearch_2.11'],
+  [EngineVersion.OPENSEARCH_2_13, 'OpenSearch_2.13'],
+  [EngineVersion.OPENSEARCH_2_15, 'OpenSearch_2.15'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -406,6 +410,27 @@ each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in 
       MultiAZWithStandbyEnabled: true,
     },
   });
+});
+
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (data node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      dataNodeInstanceType: 't3.medium.search',
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+});
+
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (master node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      masterNodeInstanceType: 't3.medium.search',
+      masterNodes: 1,
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
 });
 
 each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {

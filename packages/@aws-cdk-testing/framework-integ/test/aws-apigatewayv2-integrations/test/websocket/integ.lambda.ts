@@ -1,6 +1,6 @@
-import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { ContentHandling, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 /*
@@ -41,7 +41,12 @@ const messageHandler = new lambda.Function(stack, 'MessageHandler', {
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
   connectRouteOptions: { integration: new WebSocketLambdaIntegration('ConnectIntegration', connectHandler) },
   disconnectRouteOptions: { integration: new WebSocketLambdaIntegration('DisconnectIntegration', disconnetHandler) },
-  defaultRouteOptions: { integration: new WebSocketLambdaIntegration('DefaultIntegration', defaultHandler) },
+  defaultRouteOptions: {
+    integration: new WebSocketLambdaIntegration('DefaultIntegration', defaultHandler, {
+      timeout: Duration.seconds(10),
+      contentHandling: ContentHandling.CONVERT_TO_TEXT,
+    }),
+  },
 });
 const stage = new WebSocketStage(stack, 'mystage', {
   webSocketApi,
