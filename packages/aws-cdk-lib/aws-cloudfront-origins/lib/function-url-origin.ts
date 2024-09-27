@@ -92,6 +92,8 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
     super(domainName, props);
     this.functionUrl = lambdaFunctionUrl;
+    this.originAccessControl = props?.originAccessControl;
+
     this.props = props;
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
