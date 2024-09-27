@@ -1,25 +1,8 @@
-import {
-  UserPool,
-  UserPoolIdentityProviderGoogle,
-  UserPoolIdentityProviderAmazon,
-  ProviderAttribute,
-  UserPoolClient,
-} from 'aws-cdk-lib/aws-cognito';
-import {
-  Effect,
-  PolicyStatement,
-} from 'aws-cdk-lib/aws-iam';
-import {
-  App,
-  Stack,
-} from 'aws-cdk-lib';
-import {
-  IdentityPool,
-  IdentityPoolProviderUrl,
-} from '../lib/identitypool';
-import {
-  UserPoolAuthenticationProvider,
-} from '../lib/identitypool-user-pool-authentication-provider';
+import { UserPool, UserPoolIdentityProviderGoogle, UserPoolIdentityProviderAmazon, ProviderAttribute, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { App, SecretValue, Stack } from 'aws-cdk-lib';
+import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
+import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
 const app = new App();
 const stack = new Stack(app, 'integ-identitypool');
@@ -28,7 +11,7 @@ const userPool = new UserPool(stack, 'Pool');
 new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
   userPool,
   clientId: 'google-client-id',
-  clientSecret: 'google-client-secret',
+  clientSecretValue: new SecretValue('google-client-secret-value'),
   attributeMapping: {
     givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
     familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
