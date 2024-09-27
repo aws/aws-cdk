@@ -104,6 +104,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
         serverSideEncryption: this.serverSideEncryption,
         serverSideEncryptionAwsKmsKeyId: this.serverSideEncryptionAwsKmsKeyId,
         memoryLimit: this.memoryLimit,
+        outputObjectKeys: false,
       });
     bucketDeployment.addSource(source);
 
