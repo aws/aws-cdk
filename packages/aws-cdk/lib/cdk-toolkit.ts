@@ -12,7 +12,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { Deployments } from './api/deployments';
-import { HotswapMode, HotswapProperties, EcsHotswapProperties } from './api/hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
@@ -247,15 +247,11 @@ export class CdkToolkit {
 
     let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
 
-    let hotswapProperties = new HotswapProperties();
-    hotswapProperties.ecsHotswapProperties = new EcsHotswapProperties(
+    let hotswapPropertyOverrides = new HotswapPropertyOverrides();
+    hotswapPropertyOverrides.ecsHotswapProperties = new EcsHotswapProperties(
       hotswapPropertiesFromSettings.ecs?.minimumHealthyPercent,
       hotswapPropertiesFromSettings.ecs?.maximumHealthyPercent,
     );
-
-    if (!hotswapProperties.ecsHotswapProperties.isEmpty() && options.hotswap == HotswapMode.FULL_DEPLOYMENT) {
-      warning('⚠️ Hotswap properties defined while not in hotswap mode will be ignored.');
-    }
 
     const stacks = stackCollection.stackArtifacts;
 
@@ -359,7 +355,7 @@ export class CdkToolkit {
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
-          hotswapProperties: hotswapProperties,
+          hotswapPropertyOverrides: hotswapPropertyOverrides,
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,

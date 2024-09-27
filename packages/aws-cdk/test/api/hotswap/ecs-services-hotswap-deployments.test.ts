@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
-import { EcsHotswapProperties, HotswapMode, HotswapProperties } from '../../../lib/api/hotswap/common';
+import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
 import { Configuration } from '../../../lib/settings';
 import { silentTest } from '../../util/silent';
 
@@ -700,7 +700,7 @@ describe.each([
       HotswapMode.HOTSWAP_ONLY,
       cdkStackArtifact,
       {},
-      new HotswapProperties(ecsHotswapProperties),
+      new HotswapPropertyOverrides(ecsHotswapProperties),
     );
 
     // THEN

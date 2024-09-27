@@ -99,9 +99,9 @@ export class HotswappableChangeCandidate {
 type Exclude = { [key: string]: Exclude | true }
 
 /**
- * Represents configuration properties for hotswap deployments
+ * Represents configuration property overrides for hotswap deployments
  */
-export class HotswapProperties {
+export class HotswapPropertyOverrides {
   // Each supported resource type will have its own properties. Currently this is ECS
   ecsHotswapProperties?: EcsHotswapProperties;
 

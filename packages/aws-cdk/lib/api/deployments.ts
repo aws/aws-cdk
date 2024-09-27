@@ -8,7 +8,7 @@ import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { HotswapMode, HotswapProperties } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
@@ -177,7 +177,7 @@ export interface DeployStackOptions {
   /**
   * Properties that configure hotswap behavior
   */
-  readonly hotswapProperties?: HotswapProperties;
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -415,7 +415,7 @@ export class Deployments {
       ci: options.ci,
       rollback: options.rollback,
       hotswap: options.hotswap,
-      hotswapProperties: options.hotswapProperties,
+      hotswapPropertyOverrides: options.hotswapPropertyOverrides,
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,

@@ -1,10 +1,13 @@
 import * as AWS from 'aws-sdk';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, HotswapProperties, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, HotswapPropertyOverrides, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableEcsServiceChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapProperties: HotswapProperties,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<ChangeHotswapResult> {
   // the only resource change we can evaluate here is an ECS TaskDefinition
   if (change.newValue.Type !== 'AWS::ECS::TaskDefinition') {
@@ -83,7 +86,7 @@ export async function isHotswappableEcsServiceChange(
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
-        let ecsHotswapProperties = hotswapProperties.ecsHotswapProperties;
+        let ecsHotswapProperties = hotswapPropertyOverrides.ecsHotswapProperties;
         let minimumHealthyPercent = ecsHotswapProperties?.minimumHealthyPercent;
         let maximumHealthyPercent = ecsHotswapProperties?.maximumHealthyPercent;
 
