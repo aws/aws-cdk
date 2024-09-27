@@ -449,14 +449,9 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       instanceClasses: [ec2.InstanceClass.M6G, ec2.InstanceClass.C4],
     });
 
-    expect(() => {
-      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-        ...expectedProps,
-        ComputeResources: {
-          ...defaultComputeResources,
-        },
-      });
-    }).toThrow(/Cannot mix ARM and x86 instance types or classes/);
+    Annotations.fromStack(stack).hasWarning('*',
+      'Cannot mix ARM and x86 instance types or classes, deploying will cause an error [ack: @aws-cdk/aws-batch:mixingARMAndx86InstancesNotSupported]',
+    );
   });
 
   test('mixing ARM and x86 instance types should throw an error', () => {
@@ -470,14 +465,9 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ],
     });
 
-    expect(() => {
-      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-        ...expectedProps,
-        ComputeResources: {
-          ...defaultComputeResources,
-        },
-      });
-    }).toThrow(/Cannot mix ARM and x86 instance types or classes/);
+    Annotations.fromStack(stack).hasWarning('*',
+      'Cannot mix ARM and x86 instance types or classes, deploying will cause an error [ack: @aws-cdk/aws-batch:mixingARMAndx86InstancesNotSupported]',
+    );
   });
 
   test('mixing ARM and x86 instance classes and types should throw an error', () => {
@@ -489,14 +479,9 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M3, ec2.InstanceSize.LARGE)],
     });
 
-    expect(() => {
-      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-        ...expectedProps,
-        ComputeResources: {
-          ...defaultComputeResources,
-        },
-      });
-    }).toThrow(/Cannot mix ARM and x86 instance types or classes/);
+    Annotations.fromStack(stack).hasWarning('*',
+      'Cannot mix ARM and x86 instance types or classes, deploying will cause an error [ack: @aws-cdk/aws-batch:mixingARMAndx86InstancesNotSupported]',
+    );
   });
 
   test('creates and uses instanceProfile, even when instanceRole is specified', () => {

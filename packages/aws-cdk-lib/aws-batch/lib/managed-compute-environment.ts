@@ -1188,7 +1188,7 @@ function renderInstances(
   }
 
   if (hasArmInstances && hasX86Instances) {
-    throw new Error('Cannot mix ARM and x86 instance types or classes');
+    Annotations.of(scope).addWarningV2('@aws-cdk/aws-batch:mixingARMAndx86InstancesNotSupported', 'Cannot mix ARM and x86 instance types or classes, deploying will cause an error');
   }
 
   if (hasArmInstances && useOptimalInstanceClasses) {
