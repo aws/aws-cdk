@@ -321,8 +321,8 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
  * Creates a CloudWatch metric for this log group.
  *
- * @param _metricName - The name of the metric to create.
- * @param _props - Optional. Additional properties to configure the metric.
+ * @param metricName - The name of the metric to create.
+ * @param props - Optional. Additional properties to configure the metric.
  * @returns A CloudWatch Metric object representing the specified metric for this log group.
  *
  * This method creates a CloudWatch Metric object with predefined settings for the log group.
