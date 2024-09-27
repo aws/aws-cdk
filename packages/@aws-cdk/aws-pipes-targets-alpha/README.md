@@ -29,7 +29,7 @@ Pipe targets are the end point of a EventBridge Pipe.
 
 The following targets are supported:
 
-1. `targets.SqsTarget`: [Send event source to a Queue](#amazon-sqs)
+1. `targets.SqsTarget`: [Send event source to an SQS queue](#amazon-sqs)
 2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
 3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
 4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
