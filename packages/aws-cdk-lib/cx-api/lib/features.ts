@@ -1174,6 +1174,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         `,
     recommendedValue: true,
     introducedIn: { v2: 'V2NEXT' },
+  },
 
   //////////////////////////////////////////////////////////////////////
   [USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: {
