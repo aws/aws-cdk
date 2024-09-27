@@ -151,7 +151,7 @@ describe('FunctionUrlOriginAccessControl', () => {
     });
 
     const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+      authType: lambda.FunctionUrlAuthType.NONE,
     });
 
     new cloudfront.Distribution(stack, 'MyDistribution', {
