@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "GraphqlApiLambdaPermissionTest/DefaultTest": {
+      "stacks": [
+        "aws-graphql-lambda-permissions"
+      ],
+      "assertionStack": "GraphqlApiLambdaPermissionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GraphqlApiLambdaPermissionTestDefaultTestDeployAssert7720B39B"
+    }
+  }
+}
