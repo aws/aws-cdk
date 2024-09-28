@@ -193,7 +193,15 @@
                         "Arn"
                       ]
                     },
-                    "targetParameters": {}
+                    "targetParameters": {
+                      "inputTemplate": "<$.body>",
+                      "sqsQueueParameters": {
+                        "inputTransformation": {
+                          "type": "Text",
+                          "inputTemplate": "<$.body>"
+                        }
+                      }
+                    }
                   }
                 },
                 "constructInfo": {
@@ -275,17 +283,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73": {
-                    "id": "AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73",
-                    "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73",
+                  "AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35": {
+                    "id": "AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35",
+                    "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73/SdkProvider",
+                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -299,11 +307,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73/Default",
+                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73/Default/Default",
+                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"

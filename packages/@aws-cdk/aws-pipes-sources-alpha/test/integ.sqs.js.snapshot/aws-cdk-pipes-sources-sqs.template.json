@@ -100,7 +100,10 @@
       "Arn"
      ]
     },
-    "TargetParameters": {}
+    "TargetParameters": {
+     "InputTemplate": "<$.body>",
+     "SqsQueueParameters": {}
+    }
    }
   }
  },

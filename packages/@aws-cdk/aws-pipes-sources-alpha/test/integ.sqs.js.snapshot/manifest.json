@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd9e8bf485463d22bd20ff49edb54bc40cbf85a8e526b468de4ae5105435d4a0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4ae2c5f9a79d76f0912e400b9e57c9ad2ce8a7e7dc4f30034dd7f9633c1091c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -110,7 +110,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a91c933ecb0a04c6091744964bb7f87eb58aa90db842c655c6d172f577bc2ea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8953ba957eec7cc619c2c07670ed3abec52d1560835f9f57b58856546f805c1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -127,10 +127,10 @@
         "integtestpipesourcesqsDefaultTestDeployAssertD36A35C2.assets"
       ],
       "metadata": {
-        "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73/Default/Default": [
+        "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73"
+            "data": "AwsApiCallSQSsendMessage44407ea1e4c273895d863f5e1cf6eb35"
           }
         ],
         "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

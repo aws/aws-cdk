@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { Pipe } from '@aws-cdk/aws-pipes-alpha';
+import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SqsTarget } from '@aws-cdk/aws-pipes-targets-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -18,7 +18,9 @@ const sourceUnderTest = new SqsSource(sourceQueue, {
 
 new Pipe(stack, 'Pipe', {
   source: sourceUnderTest,
-  target: new SqsTarget(targetQueue),
+  target: new SqsTarget(targetQueue, {
+    inputTransformation: InputTransformation.fromEventPath('$.body'),
+  }),
 });
 
 const test = new IntegTest(app, 'integtest-pipe-source-sqs', {
@@ -35,7 +37,7 @@ const message = test.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: targetQueue.queueUrl,
 });
 
-message.assertAtPath('Messages.0.Body.body', ExpectedResult.stringLikeRegexp(uniqueIdentifier)).waitForAssertions({
+message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp(uniqueIdentifier)).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(2),
   interval: cdk.Duration.seconds(15),
 });
