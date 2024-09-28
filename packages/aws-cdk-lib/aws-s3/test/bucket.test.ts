@@ -4145,12 +4145,12 @@ describe('bucket', () => {
           account: '111111111111',
         },
       });
-      const anotherStack = new cdk.Stack(app, 'AnotherStack', {
+      const dstStack = new cdk.Stack(app, 'DstStack', {
         env: {
           account: '222222222222',
         },
       });
-      const dstBucket = new s3.Bucket(anotherStack, 'DstBucket', {
+      const dstBucket = new s3.Bucket(dstStack, 'DstBucket', {
         bucketName: 'another-account-dst-bucket',
       });
 
@@ -4261,6 +4261,76 @@ describe('bucket', () => {
         Roles: [
           {
             'Ref': 'SrcBucketReplicationRole5B31865A',
+          },
+        ],
+      });
+
+      Template.fromStack(dstStack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':s3:::another-account-dst-bucket',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:GetObjectVersionForReplication',
+                's3:GetObjectVersionAcl',
+                's3:GetObjectVersionTagging',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':s3:::another-account-dst-bucket/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                's3:ReplicateObject',
+                's3:ReplicateDelete',
+                's3:ReplicateTags',
+                's3:ObjectOwnerOverrideToBucketOwner',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':s3:::another-account-dst-bucket/*',
+                  ],
+                ],
+              },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        Roles: [
+          {
+            'Ref': 'DstBucketReplicationRoleC1D8E0A3',
           },
         ],
       });

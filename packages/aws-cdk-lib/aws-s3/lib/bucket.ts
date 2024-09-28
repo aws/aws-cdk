@@ -2714,7 +2714,32 @@ export class Bucket extends BucketBase {
         const isCrossAccount = sourceAccount !== destinationAccount;
 
         if (isCrossAccount) {
-          Annotations.of(this).addInfo(`Cross-account S3 replication is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(role.roleArn)}.`);
+          const results: boolean[] = [];
+          // Add permissions to the destination bucket for cross-account replication
+          // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+          results.push(rule.destination.addToResourcePolicy(new iam.PolicyStatement({
+            actions: ['s3:ReplicateObject', 's3:ReplicateDelete'],
+            resources: [rule.destination.arnForObjects('*')],
+            principals: [new iam.ArnPrincipal(role.roleArn)],
+          })).statementAdded);
+          results.push(rule.destination.addToResourcePolicy(new iam.PolicyStatement({
+            actions: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+            resources: [rule.destination.bucketArn],
+            principals: [new iam.ArnPrincipal(role.roleArn)],
+          })).statementAdded);
+          // Adding permission in the destination bucket policy to allow changing replica ownership
+          // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
+          if (rule.accessControlTransition) {
+            results.push(rule.destination.addToResourcePolicy(new iam.PolicyStatement({
+              actions: ['s3:ObjectOwnerOverrideToBucketOwner'],
+              resources: [rule.destination.arnForObjects('*')],
+              principals: [new iam.AccountPrincipal(sourceAccount)],
+            })).statementAdded);
+          }
+          // If the destination bucket is a referenced bucket, add a notification for configuring destination bucket policy.
+          if (results.includes(false)) {
+            Annotations.of(this).addInfo(`Cross-account S3 replication is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(role.roleArn)}.`);
+          }
         } else if (rule.accessControlTransition) {
           throw new Error('accessControlTranslation is only supported for cross-account replication');
         }
