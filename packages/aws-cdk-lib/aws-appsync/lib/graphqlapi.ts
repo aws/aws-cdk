@@ -630,7 +630,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (props.resolverCountLimit !== undefined && (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)) {
       throw new Error('You must specify a resolver count limit between 0 and 10000.');
     }
-    if (props.ownerContact !== undefined && (props.ownerContact.length > 256)) {
+    if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && (props.ownerContact.length > 256)) {
       throw new Error('You must specify `ownerContact` as a string of 256 characters or less.');
     }
 
