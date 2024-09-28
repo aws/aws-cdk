@@ -31,8 +31,8 @@ The following targets are supported:
 
 1. `targets.SqsTarget`: [Send event source to an SQS queue](#amazon-sqs)
 2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
-3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
-4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
+3. `targets.LambdaFunction`: [Send event source to a Lambda function](#aws-lambda-function)
+4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API destination](#amazon-eventbridge-api-destination)
 5. `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
 6. `targets.EventBridgeTarget`: [Send event soruce to an EventBridge event bus](#amazon-eventbridge-event-bus)
 
@@ -100,7 +100,6 @@ const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
       invocationType: targets.StateMachineInvocationType.FIRE_AND_FORGET,
     }
 );
-
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
@@ -265,7 +264,7 @@ The input to the target event bus can be transformed:
 declare const sourceQueue: sqs.Queue;
 declare const targetEventBus: events.EventBus;
 
-const eventBusTarget = new targets.EventBridgeTarget(targetEventBus{
+const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {
   inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
 });
 
