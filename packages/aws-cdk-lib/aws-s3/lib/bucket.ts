@@ -25,6 +25,7 @@ import {
   Token,
   Tokenization,
   Annotations,
+  PhysicalName,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
@@ -2655,6 +2656,9 @@ export class Bucket extends BucketBase {
 
     const role = new iam.Role(this, 'ReplicationRole', {
       assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      // To avoid the error where the replication role cannot be used during cross-account replication,
+      // it is necessary to set `PhysicalName.GENERATE_IF_NEEDED` for the `roleName`.
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
     });
 
     // add permissions to the role

@@ -4143,6 +4143,8 @@ describe('bucket', () => {
       const stack = new cdk.Stack(app, 'stack', {
         env: {
           account: '111111111111',
+          // To avoid generating replication role name error, we need to set the region explicitly
+          region: 'us-east-1',
         },
       });
       const dstStack = new cdk.Stack(app, 'DstStack', {
@@ -4202,22 +4204,14 @@ describe('bucket', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      Template.fromStack(dstStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        Bucket: {
+          Ref: 'DstBucket3E241BF2',
+        },
         PolicyDocument: {
           Statement: [
             {
-              Action: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['SrcBucket613E28A1', 'Arn'],
-              },
-            },
-            {
-              Action: [
-                's3:GetObjectVersionForReplication',
-                's3:GetObjectVersionAcl',
-                's3:GetObjectVersionTagging',
-              ],
+              Action: ['s3:ReplicateObject', 's3:ReplicateDelete'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -4225,7 +4219,7 @@ describe('bucket', () => {
                   [
                     {
                       'Fn::GetAtt': [
-                        'SrcBucket613E28A1',
+                        'DstBucket3E241BF2',
                         'Arn',
                       ],
                     },
@@ -4233,106 +4227,76 @@ describe('bucket', () => {
                   ],
                 ],
               },
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
+                    ],
+                  ],
+                },
+              },
             },
             {
-              Action: [
-                's3:ReplicateObject',
-                's3:ReplicateDelete',
-                's3:ReplicateTags',
-                's3:ObjectOwnerOverrideToBucketOwner',
-              ],
+              Action: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+              },
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
+                    ],
+                  ],
+                },
+              },
+            },
+            {
+              Action: 's3:ObjectOwnerOverrideToBucketOwner',
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:',
                     {
-                      'Ref': 'AWS::Partition',
+                      'Fn::GetAtt': [
+                        'DstBucket3E241BF2',
+                        'Arn',
+                      ],
                     },
-                    ':s3:::another-account-dst-bucket/*',
+                    '/*',
                   ],
                 ],
+              },
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::111111111111:root',
+                    ],
+                  ],
+                },
               },
             },
           ],
-          'Version': '2012-10-17',
         },
-        Roles: [
-          {
-            'Ref': 'SrcBucketReplicationRole5B31865A',
-          },
-        ],
-      });
-
-      Template.fromStack(dstStack).hasResourceProperties('AWS::IAM::Policy', {
-        PolicyDocument: {
-          Statement: [
-            {
-              Action: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':s3:::another-account-dst-bucket',
-                  ],
-                ],
-              },
-            },
-            {
-              Action: [
-                's3:GetObjectVersionForReplication',
-                's3:GetObjectVersionAcl',
-                's3:GetObjectVersionTagging',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':s3:::another-account-dst-bucket/*',
-                  ],
-                ],
-              },
-            },
-            {
-              Action: [
-                's3:ReplicateObject',
-                's3:ReplicateDelete',
-                's3:ReplicateTags',
-                's3:ObjectOwnerOverrideToBucketOwner',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':s3:::another-account-dst-bucket/*',
-                  ],
-                ],
-              },
-            },
-          ],
-          'Version': '2012-10-17',
-        },
-        Roles: [
-          {
-            'Ref': 'DstBucketReplicationRoleC1D8E0A3',
-          },
-        ],
       });
     });
 
