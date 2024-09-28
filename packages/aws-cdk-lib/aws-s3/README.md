@@ -914,7 +914,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   replicationRules: [
     {
       // The destination bucket for the replication rule.
-      destination: s3.ReplicationDestination.sameAccount(destinationBucket1),
+      destination: destinationBucket1,
       // The priority of the rule.
       // Amazon S3 will attempt to replicate objects according to all replication rules.
       // However, if there are two or more rules with the same destination bucket, then objects will be replicated according to the rule with the highest priority.
@@ -923,7 +923,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       priority: 1,
     },
     {
-      destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
+      destination: destinationBucket2,
       priority: 2,
       // Whether to specify S3 Replication Time Control (S3 RTC).
       // S3 RTC replicates most objects that you upload to Amazon S3 in seconds,
@@ -964,21 +964,27 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 
 ### Cross Account Replication
 
-You can replicate objects to a destination bucket in a different account by specifying the `ReplicationDestination.crossAccount()` method:
+You can also set a destination bucket from a different account as the replication destination.
+
+In this case, the bucket policy for the destination bucket is required, but CDK will automatically configure it.
+
+However, if the destination bucket is a referenced bucket, CDK cannot set the bucket policy,
+so you will need to [configure the necessary bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html) separately.
 
 ```ts
+// The destination bucket in a different account.
 declare const destinationBucket: s3.IBucket;
 
-const destination = s3.ReplicationDestination.crossAccount(
-  // The destination bucket for the replication rule.
-  destinationBucket,
-  // The account ID of the destination bucket owner.
-  '123456789012',
-  // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
-  // The replicas are owned by same AWS account that owns the source object by default.
-  true,
-);
+const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+  versioned: true,
+  replicationRules: [
+    {
+      destination: destinationBucket1,
+      priority: 1,
+      // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+      // The replicas are owned by same AWS account that owns the source object by default.
+      accessControlTransition: true,
+    },
+  ],
+});
 ```
-
-**Note**: For the cross account replication, the owner of the destination bucket must also add a bucket policy to grant the owner of the source bucket permissions to perform replication actions.
-Details on how to configure the bucket policy can be found in the [Amazon S3 User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html).
