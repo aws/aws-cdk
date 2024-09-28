@@ -222,7 +222,7 @@ describe('FunctionUrlOriginAccessControl', () => {
     });
   });
 
-  test('Correctly configures CloudFront Distribution with a custom Origin Access Control', () => {
+  test('Correctly configures CloudFront Distribution with a custom Origin Access Control without signing prop defined', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
@@ -233,10 +233,9 @@ describe('FunctionUrlOriginAccessControl', () => {
       authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
 
-    // Custom OAC configuration
+    // Custom OAC configuration without defining `signing`
     const oac = new cloudfront.FunctionUrlOriginAccessControl(stack, 'CustomOAC', {
       originAccessControlName: 'CustomLambdaOAC',
-      signing: cloudfront.Signing.SIGV4_ALWAYS,
     });
 
     new cloudfront.Distribution(stack, 'MyDistribution', {
@@ -249,11 +248,50 @@ describe('FunctionUrlOriginAccessControl', () => {
 
     const template = Template.fromStack(stack);
 
+    // Validate the default signing behavior is SIGV4_ALWAYS
     template.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
       OriginAccessControlConfig: {
         Name: 'CustomLambdaOAC',
         OriginAccessControlOriginType: 'lambda',
         SigningBehavior: 'always',
+        SigningProtocol: 'sigv4',
+      },
+    });
+  });
+
+  test('Correctly configures CloudFront Distribution with a custom Origin Access Control with signing prop defined', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    // Custom OAC configuration with signing defined as SIGV4_NO_OVERRIDE
+    const oac = new cloudfront.FunctionUrlOriginAccessControl(stack, 'CustomOAC', {
+      originAccessControlName: 'CustomLambdaOAC',
+      signing: cloudfront.Signing.SIGV4_NO_OVERRIDE,
+    });
+
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+          originAccessControl: oac,
+        }),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Validate the signing behavior is correctly set to SIGV4_NO_OVERRIDE
+    template.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        Name: 'CustomLambdaOAC',
+        OriginAccessControlOriginType: 'lambda',
+        SigningBehavior: 'no-override',
         SigningProtocol: 'sigv4',
       },
     });
