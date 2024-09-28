@@ -104,6 +104,13 @@ export interface Login {
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Characters to not include in the generated password.
+   *
+   * @default '"@/\\\ \''
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -527,6 +534,7 @@ export class Cluster extends ClusterBase {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.masterUsername,
         encryptionKey: props.masterUser.encryptionKey,
+        excludeCharacters: props.masterUser.excludeCharacters,
       });
     }
 
