@@ -4161,6 +4161,132 @@ describe('bucket', () => {
         replicationRules: [
           {
             destination: dstBucket,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        VersioningConfiguration: { Status: 'Enabled' },
+        ReplicationConfiguration: {
+          Role: {
+            'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+          },
+          Rules: [
+            {
+              Destination: {
+                Bucket: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':s3:::another-account-dst-bucket',
+                    ],
+                  ],
+                },
+                Account: '222222222222',
+              },
+              Status: 'Enabled',
+              Filter: {
+                Prefix: '',
+              },
+              DeleteMarkerReplication: {
+                Status: 'Disabled',
+              },
+            },
+          ],
+        },
+      });
+
+      Template.fromStack(dstStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        Bucket: {
+          Ref: 'DstBucket3E241BF2',
+        },
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['s3:ReplicateObject', 's3:ReplicateDelete'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'DstBucket3E241BF2',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
+                    ],
+                  ],
+                },
+              },
+            },
+            {
+              Action: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+              },
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('cross account with accessControlTransition', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '111111111111',
+          // To avoid generating replication role name error, we need to set the region explicitly
+          region: 'us-east-1',
+        },
+      });
+      const dstStack = new cdk.Stack(app, 'DstStack', {
+        env: {
+          account: '222222222222',
+        },
+      });
+      const dstBucket = new s3.Bucket(dstStack, 'DstBucket', {
+        bucketName: 'another-account-dst-bucket',
+      });
+
+      new s3.Bucket(stack, 'SrcBucket', {
+        versioned: true,
+        replicationRules: [
+          {
+            destination: dstBucket,
             accessControlTransition: true,
           },
         ],

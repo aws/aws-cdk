@@ -2742,7 +2742,7 @@ export class Bucket extends BucketBase {
           }
           // If the destination bucket is a referenced bucket, add a notification for configuring destination bucket policy.
           if (results.includes(false)) {
-            Annotations.of(this).addInfo(`Cross-account S3 replication is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(role.roleArn)}.`);
+            Annotations.of(this).addInfo(`Cross-account S3 replication for a referenced destination bucket is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(role.roleArn)}.`);
           }
         } else if (rule.accessControlTransition) {
           throw new Error('accessControlTranslation is only supported for cross-account replication');
