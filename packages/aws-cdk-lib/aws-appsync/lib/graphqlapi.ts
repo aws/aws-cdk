@@ -445,7 +445,7 @@ export interface GraphqlApiProps {
    *
    * This field accepts any string input with a length of 0 - 256 characters.
    *
-   * @default -No owner contact.
+   * @default - No owner contact.
    */
   readonly ownerContact?: string;
 }
