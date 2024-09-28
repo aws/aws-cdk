@@ -105,7 +105,10 @@ test('throws when no such VPC is found', async () => {
   const filter = { foo: 'bar' };
   const provider = new VpcNetworkContextProviderPlugin(mockSDK);
 
-  ec2Mock.on(DescribeVpcsCommand).resolves({});
+  ec2Mock.on(DescribeVpcsCommand).callsFake(params => {
+    expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
+    return {};
+  });
 
   // WHEN
   await expect(provider.getValue({
@@ -259,7 +262,10 @@ test('throws when multiple VPCs are found', async () => {
   const filter = { foo: 'bar' };
   const provider = new VpcNetworkContextProviderPlugin(mockSDK);
 
-  ec2Mock.on(DescribeVpcsCommand).resolves({ Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }] });
+  ec2Mock.on(DescribeVpcsCommand).callsFake(params => {
+    expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
+    return { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }] };
+  });
 
   // WHEN
   await expect(provider.getValue({
@@ -600,19 +606,29 @@ interface VpcLookupOptions {
 function mockVpcLookup(options: VpcLookupOptions) {
   const VpcId = 'vpc-1234567';
 
-  ec2Mock.on(DescribeVpcsCommand).resolves({
-    Vpcs: [{ VpcId, CidrBlock: '1.1.1.1/16', OwnerId: '123456789012' }],
+  ec2Mock.on(DescribeVpcsCommand).callsFake(params => {
+    expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
+    return {
+      Vpcs: [{ VpcId, CidrBlock: '1.1.1.1/16', OwnerId: '123456789012' }],
+    };
   });
 
-  ec2Mock.on(DescribeSubnetsCommand).resolves({
-    Subnets: options.subnets,
+  ec2Mock.on(DescribeSubnetsCommand).callsFake(params => {
+    expect(params.Filters).toEqual([{ Name: 'vpc-id', Values: [VpcId] }]);
+    return { Subnets: options.subnets };
   });
 
-  ec2Mock.on(DescribeRouteTablesCommand).resolves({
-    RouteTables: options.routeTables,
+  ec2Mock.on(DescribeRouteTablesCommand).callsFake(params => {
+    expect(params.Filters).toEqual([{ Name: 'vpc-id', Values: [VpcId] }]);
+    return { RouteTables: options.routeTables };
   });
 
-  ec2Mock.on(DescribeVpnGatewaysCommand).resolves({
-    VpnGateways: options.vpnGateways,
+  ec2Mock.on(DescribeVpnGatewaysCommand).callsFake(params => {
+    expect(params.Filters).toEqual([
+      { Name: 'attachment.vpc-id', Values: [VpcId] },
+      { Name: 'attachment.state', Values: ['attached'] },
+      { Name: 'state', Values: ['available'] },
+    ]);
+    return { VpnGateways: options.vpnGateways };
   });
 }
