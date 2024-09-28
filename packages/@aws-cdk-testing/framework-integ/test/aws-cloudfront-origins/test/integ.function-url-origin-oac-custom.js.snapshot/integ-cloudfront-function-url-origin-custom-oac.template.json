@@ -62,6 +62,17 @@
     }
    }
   },
+  "CustomOACCBB5FFDD": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "CustomLambdaOAC",
+     "OriginAccessControlOriginType": "lambda",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
   "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C7850B1CA": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
@@ -133,7 +144,10 @@
        },
        "Id": "integcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C",
        "OriginAccessControlId": {
-        "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttCustomOACCBB5FFDDId76513771"
+        "Fn::GetAtt": [
+         "CustomOACCBB5FFDD",
+         "Id"
+        ]
        }
       }
      ]

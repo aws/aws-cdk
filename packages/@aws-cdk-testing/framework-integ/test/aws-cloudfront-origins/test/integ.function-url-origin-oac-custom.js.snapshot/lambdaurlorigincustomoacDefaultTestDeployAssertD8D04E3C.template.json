@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "HttpApiCallcc1a8c33fcbd74d9d0035a54ae029c9f": {
-   "Type": "Custom::DeployAssert@HttpCall",
+  "AwsApiCallCloudFrontgetDistributionConfig79bf50e1496bccffb5e8c50edf178426": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistributionConfig",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,13 +9,25 @@
       "Arn"
      ]
     },
+    "service": "CloudFront",
+    "api": "getDistributionConfig",
+    "expected": "{\"$ObjectLike\":{\"DistributionConfig\":{\"$ObjectLike\":{\"Origins\":{\"Quantity\":1,\"Items\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CustomOriginConfig\":{\"OriginProtocolPolicy\":\"https-only\"},\"OriginAccessControlId\":{\"$StringLike\":\"^[A-Z0-9]+$\"}}}]}}}}}}",
     "parameters": {
-     "url": {
-      "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttMyFunctionFunctionUrlFF6DE78CFunctionUrl4035958E"
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputRefDistribution830FAC524DF81588"
+        },
+        "\""
+       ]
+      ]
      }
     },
-    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":\"Hello!!\"}}",
-    "salt": "1727496832612"
+    "flattenResponse": "false",
+    "salt": "1727496829585"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -38,6 +50,43 @@
     "ManagedPolicyArns": [
      {
       "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudfront:GetDistributionConfig"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudfront:GetDistributionConfig"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudfront:GetOriginAccessControlConfig"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
      }
     ]
    }
@@ -70,7 +119,76 @@
     }
    }
   },
-  "HttpApiCallcc1a8c33fcbd74d9d0035a54ae029c9f1": {
+  "AwsApiCallCloudFrontgetDistributionConfig79bf50e1496bccffb5e8c50edf1784261": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistributionConfig",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "getDistributionConfig",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputRefDistribution830FAC524DF81588"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "DistributionConfig.Origins.Items.0.OriginAccessControlId"
+    ],
+    "salt": "1727496829586"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFrontgetOriginAccessControlConfig56a7e5cef1aef611fe864ba9fac7fd53": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetOriginAccessControl",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "getOriginAccessControlConfig",
+    "expected": "{\"$ObjectLike\":{\"OriginAccessControlConfig\":{\"Name\":\"CustomLambdaOAC\",\"SigningProtocol\":\"sigv4\",\"SigningBehavior\":\"always\",\"OriginAccessControlOriginType\":\"lambda\"}}}",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallCloudFrontgetDistributionConfig79bf50e1496bccffb5e8c50edf1784261",
+          "apiCallResponse.DistributionConfig.Origins.Items.0.OriginAccessControlId"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1727496829587"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -81,29 +199,45 @@
     },
     "parameters": {
      "url": {
-      "Fn::ImportValue": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttMyFunctionFunctionUrlFF6DE78CFunctionUrl4035958E"
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "integ-cloudfront-function-url-origin-custom-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
+        }
+       ]
+      ]
      }
     },
-    "expected": "{\"$ObjectLike\":{\"status\":403,\"body\":\"Forbidden\"}}",
-    "salt": "1727496832631"
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":\"Hello!!\"}}",
+    "salt": "1727496829587"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsHttpApiCallcc1a8c33fcbd74d9d0035a54ae029c9f": {
+  "AssertionResultsAwsApiCallCloudFrontgetDistributionConfig79bf50e1496bccffb5e8c50edf178426": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCallcc1a8c33fcbd74d9d0035a54ae029c9f",
+     "AwsApiCallCloudFrontgetDistributionConfig79bf50e1496bccffb5e8c50edf178426",
      "assertion"
     ]
    }
   },
-  "AssertionResultsHttpApiCallcc1a8c33fcbd74d9d0035a54ae029c9f1": {
+  "AssertionResultsAwsApiCallCloudFrontgetOriginAccessControlConfig56a7e5cef1aef611fe864ba9fac7fd53": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCallcc1a8c33fcbd74d9d0035a54ae029c9f1",
+     "AwsApiCallCloudFrontgetOriginAccessControlConfig56a7e5cef1aef611fe864ba9fac7fd53",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall7ee8727392631b1a9bf9268f5e1c4e43": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall7ee8727392631b1a9bf9268f5e1c4e43",
      "assertion"
     ]
    }

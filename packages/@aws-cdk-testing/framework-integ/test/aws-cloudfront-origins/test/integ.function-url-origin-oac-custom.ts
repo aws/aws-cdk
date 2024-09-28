@@ -96,4 +96,9 @@ customOacHttpCall.expect(ExpectedResult.objectLike({
   body: 'Hello!!',
 }));
 
+customOacLambdaUrlHttpCall.assertions.httpApiCall(customOacFnUrl.url).expect(ExpectedResult.objectLike({
+  status: 403,
+  body: 'Forbidden',
+}));
+
 app.synth();

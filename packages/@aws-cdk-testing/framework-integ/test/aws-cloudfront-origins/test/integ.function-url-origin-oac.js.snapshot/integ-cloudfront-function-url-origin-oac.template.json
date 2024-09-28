@@ -153,17 +153,6 @@
      ]
     }
    }
-  },
-  "CustomOACCBB5FFDD": {
-   "Type": "AWS::CloudFront::OriginAccessControl",
-   "Properties": {
-    "OriginAccessControlConfig": {
-     "Name": "CustomLambdaOAC",
-     "OriginAccessControlOriginType": "lambda",
-     "SigningBehavior": "always",
-     "SigningProtocol": "sigv4"
-    }
-   }
   }
  },
  "Outputs": {
@@ -195,17 +184,6 @@
    },
    "Export": {
     "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
-   }
-  },
-  "ExportsOutputFnGetAttCustomOACCBB5FFDDId76513771": {
-   "Value": {
-    "Fn::GetAtt": [
-     "CustomOACCBB5FFDD",
-     "Id"
-    ]
-   },
-   "Export": {
-    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttCustomOACCBB5FFDDId76513771"
    }
   }
  },

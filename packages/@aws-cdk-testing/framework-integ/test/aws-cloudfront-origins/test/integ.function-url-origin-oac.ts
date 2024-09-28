@@ -82,10 +82,15 @@ integ.assertions.awsApiCall('CloudFront', 'getOriginAccessControlConfig', {
 }));
 
 // Make an HTTP call to the CloudFront distribution and verify the response
-const httpCall = integ.assertions.httpApiCall(`https://${distribution.distributionDomainName}`);
-httpCall.expect(ExpectedResult.objectLike({
+const distHttpCall = integ.assertions.httpApiCall(`https://${distribution.distributionDomainName}`);
+distHttpCall.expect(ExpectedResult.objectLike({
   status: 200,
   body: 'Hello!!',
+}));
+
+lambdaUrlHttpCall.assertions.httpApiCall(fnUrl.url).expect(ExpectedResult.objectLike({
+  status: 403,
+  body: 'Forbidden',
 }));
 
 app.synth();
