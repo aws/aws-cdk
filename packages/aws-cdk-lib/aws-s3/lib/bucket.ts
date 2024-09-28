@@ -1455,6 +1455,8 @@ export interface ReplicationRule {
   /**
    * A container specifying replication metrics-related settings enabling replication metrics and events.
    *
+   * When a value is set, metrics will be output to indicate whether the replication took longer than the specified time.
+   *
    * @default - Replication metrics are not enabled
    */
   readonly metrics?: ReplicationTimeValue;
@@ -1510,7 +1512,9 @@ export interface ReplicationRule {
   /**
    * Specifies whether Amazon S3 replicates delete markers.
    *
-   * @default false
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/delete-marker-replication.html
+   *
+   * @default - delete markers in source bucket is not replicated to destination bucket
    */
   readonly deleteMarkerReplication?: boolean;
 

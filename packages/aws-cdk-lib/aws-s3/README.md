@@ -926,8 +926,11 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       destination: s3.ReplicationDestination.sameAccount(destinationBucket2),
       priority: 2,
       // Whether to specify S3 Replication Time Control (S3 RTC).
+      // S3 RTC replicates most objects that you upload to Amazon S3 in seconds,
+      // and 99.99 percent of those objects within specified time.
       replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
-      // Whether to enable replication metrics.
+      // Whether to enable replication metrics about S3 RTC.
+      // If set, metrics will be output to indicate whether replication by S3 RTC took longer than the configured time.
       metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       // The kms key to use for the destination bucket.
       kmsKey,
