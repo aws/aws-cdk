@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-pipes-sources-sqs.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-pipes-sources-sqs.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40fbcc74597de8bd5b9d83ce90c36daa8308fa62070731b84e79609c716c74ec.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd9e8bf485463d22bd20ff49edb54bc40cbf85a8e526b468de4ae5105435d4a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -106,9 +107,10 @@
         "templateFile": "integtestpipesourcesqsDefaultTestDeployAssertD36A35C2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/246e91761f1079995b772fd19d0409b206419391d8bb8c55eb262b8c76ec274f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a91c933ecb0a04c6091744964bb7f87eb58aa90db842c655c6d172f577bc2ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -125,10 +127,10 @@
         "integtestpipesourcesqsDefaultTestDeployAssertD36A35C2.assets"
       ],
       "metadata": {
-        "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea9993138a87c9b8b8f9bc6e175ae3c52/Default/Default": [
+        "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessagea9993138a87c9b8b8f9bc6e175ae3c52"
+            "data": "AwsApiCallSQSsendMessage66c040176614148c1dcb7f00e3102d73"
           }
         ],
         "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -141,6 +143,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default/Default": [

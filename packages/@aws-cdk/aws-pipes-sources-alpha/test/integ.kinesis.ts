@@ -1,5 +1,7 @@
 import { randomUUID } from 'crypto';
-import { ITarget, Pipe, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsTarget } from '@aws-cdk/aws-pipes-targets-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { KinesisSource, KinesisStartingPosition, OnPartialBatchItemFailure } from '../lib';
@@ -8,25 +10,6 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-kinesis');
 const sourceKinesisStream = new cdk.aws_kinesis.Stream(stack, 'SourceKinesisStream');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
-
-class TestTarget implements ITarget {
-  targetArn: string;
-
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.targetArn = queue.queueArn;
-  }
-
-  bind(_pipe: Pipe): TargetConfig {
-    return {
-      targetParameters: {},
-    };
-  }
-
-  grantPush(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantSendMessages(pipeRole);
-  }
-}
 
 const sourceUnderTest = new KinesisSource(sourceKinesisStream, {
   batchSize: 1,
@@ -41,7 +24,7 @@ const sourceUnderTest = new KinesisSource(sourceKinesisStream, {
 
 new Pipe(stack, 'Pipe', {
   source: sourceUnderTest,
-  target: new TestTarget(targetQueue),
+  target: new SqsTarget(targetQueue),
 });
 
 const test = new IntegTest(app, 'integtest-pipe-source-kinesis', {

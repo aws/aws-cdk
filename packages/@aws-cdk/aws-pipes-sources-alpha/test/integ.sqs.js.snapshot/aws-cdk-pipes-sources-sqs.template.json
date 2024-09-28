@@ -100,9 +100,7 @@
       "Arn"
      ]
     },
-    "TargetParameters": {
-     "InputTemplate": "<$.body>"
-    }
+    "TargetParameters": {}
    }
   }
  },
