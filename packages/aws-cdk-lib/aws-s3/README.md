@@ -979,7 +979,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   versioned: true,
   replicationRules: [
     {
-      destination: destinationBucket1,
+      destination: destinationBucket,
       priority: 1,
       // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
       // The replicas are owned by same AWS account that owns the source object by default.
