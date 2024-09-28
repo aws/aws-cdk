@@ -1,23 +1,26 @@
 /* eslint-disable import/order */
-import * as aws from 'aws-sdk';
-import * as AWS from 'aws-sdk-mock';
+import {
+  DescribeVpcsCommand,
+  DescribeSubnetsCommand,
+  DescribeRouteTablesCommand,
+  DescribeVpnGatewaysCommand,
+  RouteTable,
+  Subnet,
+  VpnGateway,
+  EC2Client,
+} from '@aws-sdk/client-ec2';
+
+import { mockClient } from 'aws-sdk-client-mock';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
 import { MockSdkProviderv3 } from '../util/mock-sdk';
 
-// If the 'aws-sdk' package imported here and the 'aws-sdk' package imported by 'aws-sdk-mock' aren't
-// the same physical package on disk (if version mismatches cause hoisting/deduping to not happen),
-// the type check here takes too long and makes the TypeScript compiler fail.
-// Suppress the type check using 'as any' to make this more robust.
-AWS.setSDKInstance(aws as any);
+const ec2Mock = mockClient(EC2Client);
 
-afterEach(done => {
-  AWS.restore();
-  done();
+beforeEach(() => {
+  ec2Mock.reset();
 });
 
 const mockSDK = new MockSdkProviderv3();
-
-type AwsCallback<T> = (err: Error | null, val: T) => void;
 
 test('looks up the requested (symmetric) VPC', async () => {
   mockVpcLookup({
@@ -118,10 +121,7 @@ test('looks up the requested (symmetric) VPC', async () => {
 });
 
 test('throws when no such VPC is found', async () => {
-  AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
-    expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, {});
-  });
+  ec2Mock.on(DescribeVpcsCommand).resolves({});
 
   await expect(new VpcNetworkContextProviderPlugin(mockSDK).getValue({
     account: '1234',
@@ -132,13 +132,8 @@ test('throws when no such VPC is found', async () => {
 });
 
 test('throws when multiple VPCs are found', async () => {
-  // GIVEN
-  AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
-    expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }] });
-  });
+  ec2Mock.on(DescribeVpcsCommand).resolves({ Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }] });
 
-  // WHEN
   await expect(new VpcNetworkContextProviderPlugin(mockSDK).getValue({
     account: '1234',
     region: 'us-east-1',
@@ -684,35 +679,27 @@ test('allows specifying the subnet group name tag', async () => {
 });
 
 interface VpcLookupOptions {
-  subnets: aws.EC2.Subnet[];
-  routeTables: aws.EC2.RouteTable[];
-  vpnGateways?: aws.EC2.VpnGateway[];
+  subnets: Subnet[];
+  routeTables: RouteTable[];
+  vpnGateways?: VpnGateway[];
 }
 
 function mockVpcLookup(options: VpcLookupOptions) {
   const VpcId = 'vpc-1234567';
 
-  AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
-    expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId, CidrBlock: '1.1.1.1/16' }] });
+  ec2Mock.on(DescribeVpcsCommand).resolves({
+    Vpcs: [{ VpcId, CidrBlock: '1.1.1.1/16' }],
   });
 
-  AWS.mock('EC2', 'describeSubnets', (params: aws.EC2.DescribeSubnetsRequest, cb: AwsCallback<aws.EC2.DescribeSubnetsResult>) => {
-    expect(params.Filters).toEqual([{ Name: 'vpc-id', Values: [VpcId] }]);
-    return cb(null, { Subnets: options.subnets });
+  ec2Mock.on(DescribeSubnetsCommand).resolves({
+    Subnets: options.subnets,
   });
 
-  AWS.mock('EC2', 'describeRouteTables', (params: aws.EC2.DescribeRouteTablesRequest, cb: AwsCallback<aws.EC2.DescribeRouteTablesResult>) => {
-    expect(params.Filters).toEqual([{ Name: 'vpc-id', Values: [VpcId] }]);
-    return cb(null, { RouteTables: options.routeTables });
+  ec2Mock.on(DescribeRouteTablesCommand).resolves({
+    RouteTables: options.routeTables,
   });
 
-  AWS.mock('EC2', 'describeVpnGateways', (params: aws.EC2.DescribeVpnGatewaysRequest, cb: AwsCallback<aws.EC2.DescribeVpnGatewaysResult>) => {
-    expect(params.Filters).toEqual([
-      { Name: 'attachment.vpc-id', Values: [VpcId] },
-      { Name: 'attachment.state', Values: ['attached'] },
-      { Name: 'state', Values: ['available'] },
-    ]);
-    return cb(null, { VpnGateways: options.vpnGateways });
+  ec2Mock.on(DescribeVpnGatewaysCommand).resolves({
+    VpnGateways: options.vpnGateways,
   });
 }
