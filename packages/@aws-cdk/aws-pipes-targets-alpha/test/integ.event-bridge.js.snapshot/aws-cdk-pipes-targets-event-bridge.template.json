@@ -85,11 +85,7 @@
       "Arn"
      ]
     },
-    "SourceParameters": {
-     "SqsQueueParameters": {
-      "BatchSize": 1
-     }
-    },
+    "SourceParameters": {},
     "Target": {
      "Fn::GetAtt": [
       "TargetEventBus43DE6DE2",
