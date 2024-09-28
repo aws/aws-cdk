@@ -419,5 +419,5 @@ test('when owner contact exceeds 256 characters, it throws an error', () => {
     });
   };
 
-  expect(() => buildWithOwnerContact()).toThrow('You must specify a owner contact as a string of 256 characters or less.');
+  expect(() => buildWithOwnerContact()).toThrow('You must specify `ownerContact` as a string of 256 characters or less.');
 });
