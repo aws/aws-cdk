@@ -202,9 +202,12 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
    */
   public readonly functionArn: string;
 
-  private readonly function: IFunction;
-
+  /**
+   * The authentication type used for this Function URL
+   */
   public readonly authType: FunctionUrlAuthType;
+
+  private readonly function: IFunction;
 
   constructor(scope: Construct, id: string, props: FunctionUrlProps) {
     super(scope, id);
