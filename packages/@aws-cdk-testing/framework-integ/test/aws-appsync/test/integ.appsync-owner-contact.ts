@@ -19,5 +19,3 @@ api.addNoneDataSource('NoneDS', {
 new IntegTest(app, 'api', {
   testCases: [stack],
 });
-
-app.synth();
