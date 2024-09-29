@@ -55,38 +55,6 @@ export interface NoticesRefreshOptions {
   readonly dataSource?: NoticeDataSource;
 }
 
-export class NoticesFormatter {
-
-  public static format(notice: FilteredNotice): string {
-    const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
-    return NoticesFormatter.resolve([
-      `${notice.issueNumber}\t${notice.title}`,
-      NoticesFormatter.formatOverview(notice),
-      `\tAffected versions: ${componentsValue}`,
-      `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
-    ].join('\n\n') + '\n', notice.__dynamicValues ?? {});
-  }
-
-  private static formatOverview(notice: FilteredNotice) {
-    const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
-
-    const heading = 'Overview: ';
-    const separator = `\n\t${' '.repeat(heading.length)}`;
-    const content = wrap(notice.overview)
-      .split('\n')
-      .join(separator);
-
-    return '\t' + heading + content;
-  }
-
-  private static resolve(input: string, dynamicValues: { [key: string]: string }): string {
-    const prefixed = Object.fromEntries(Object.entries(dynamicValues).map(([k, v]) => ([`{resolve:${k}}`, v])));
-    const pattern = new RegExp(Object.keys(prefixed).join('|'), 'g');
-    return input.replace(pattern, (matched) => prefixed[matched] ?? matched);
-  }
-
-}
-
 export interface NoticesFilterFilterOptions {
   readonly data: Notice[];
   readonly cliVersion: string;
@@ -105,17 +73,26 @@ export class NoticesFilter {
   }
 
   private static findForCliVersion(data: Notice[], cliVersion: string): FilteredNotice[] {
-    return data.filter(notice => {
+    return flatMap(data, notice => {
       const affectedComponent = notice.components.find(component => component.name === 'cli');
       const affectedRange = affectedComponent?.version;
-      return affectedRange != null && semver.satisfies(cliVersion, affectedRange);
+
+      if (affectedRange == null) {
+        return [];
+      }
+
+      if (!semver.satisfies(cliVersion, affectedRange)) {
+        return [];
+      }
+
+      return [new FilteredNotice(notice)];
     });
 
   }
 
   private static findForFrameworkVersion(data: Notice[], outDir: string): FilteredNotice[] {
     const tree = loadTreeFromDir(outDir);
-    return data.filter(notice => {
+    return flatMap(data, notice => {
 
       //  A match happens when:
       //
@@ -127,11 +104,17 @@ export class NoticesFilter {
       //  2. The name in the notice is a prefix of the node name when the query ends in '.',
       //  or the two names are exactly the same, otherwise.
 
-      return some(tree, node => {
+      const matched = some(tree, node => {
         return this.resolveAliases(notice.components).some(component =>
           compareNames(component.name, node.constructInfo?.fqn) &&
           compareVersions(component.version, node.constructInfo?.version));
       });
+
+      if (!matched) {
+        return [];
+      }
+
+      return [new FilteredNotice(notice)];
 
       function compareNames(pattern: string, target: string | undefined): boolean {
         if (target == null) { return false; }
@@ -146,7 +129,7 @@ export class NoticesFilter {
 
   }
 
-  private static findForBootstrapVersion(data: Notice[], bootstrapInfos: BootstrappedEnvironment[]): FilteredNotice[] {
+  private static findForBootstrapVersion(data: Notice[], bootstrappedEnvironments: BootstrappedEnvironment[]): FilteredNotice[] {
     return flatMap(data, notice => {
       const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
       const affectedRange = affectedComponent?.version;
@@ -155,8 +138,7 @@ export class NoticesFilter {
         return [];
       }
 
-      // find all susceptible bootstrap stacks
-      const susceptibleBootstrapStacks = bootstrapInfos.filter(i => {
+      const affected = bootstrappedEnvironments.filter(i => {
 
         const semverBootstrapVersion = semver.coerce(i.bootstrapStackVersion);
         if (!semverBootstrapVersion) {
@@ -169,11 +151,14 @@ export class NoticesFilter {
 
       });
 
-      if (susceptibleBootstrapStacks.length === 0) {
+      if (affected.length === 0) {
         return [];
       }
 
-      return [{ ...notice, __dynamicValues: { ENVIRONMENTS: susceptibleBootstrapStacks.map(s => s.environment.name).join(',') } }];
+      const filtered = new FilteredNotice(notice);
+      filtered.addDynamicValue('ENVIRONMENTS', affected.map(s => s.environment.name).join(','));
+
+      return [filtered];
 
     });
   }
@@ -278,20 +263,20 @@ export class Notices {
       return;
     }
 
-    const notices = NoticesFilter.filter({
+    const filteredNotices = NoticesFilter.filter({
       data: Array.from(this.data),
       cliVersion: versionNumber(),
       outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
       bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments),
     });
 
-    if (notices.length > 0) {
+    if (filteredNotices.length > 0) {
       print('');
       print('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
       print('');
-      for (const notice of notices) {
-        const formatted = NoticesFormatter.format(notice);
-        switch (notice.severity) {
+      for (const filtered of filteredNotices) {
+        const formatted = filtered.format();
+        switch (filtered.notice.severity) {
           case 'warning':
             warning(formatted);
             break;
@@ -303,12 +288,12 @@ export class Notices {
         }
         print('');
       }
-      print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${notices[0].issueNumber}".`);
+      print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${filteredNotices[0].notice.issueNumber}".`);
     }
 
     if (options.showTotal ?? false) {
       print('');
-      print(`There are ${notices.length} unacknowledged notice(s).`);
+      print(`There are ${filteredNotices.length} unacknowledged notice(s).`);
     }
 
   }
@@ -338,16 +323,48 @@ export interface Notice {
 }
 
 /**
- * Notice after passing the filter.
+ * Notice after passing the filter. A filter can augment a notice with
+ * dynamic values as it has access to the dynamic matching data.
  */
-export interface FilteredNotice extends Notice {
-  /**
-   * A filter can augment a notice with dynamic values as it has
-   * access to the matching properties. Give it a funky name so this
-   * doesn't conflict with any pre-filter notice properties.
-   *
-   */
-  readonly __dynamicValues?: { [key: string]: string };
+export class FilteredNotice {
+
+  private readonly dynamicValues: { [key: string]: string } = {};
+
+  public constructor(public readonly notice: Notice) {}
+
+  public addDynamicValue(key: string, value: string) {
+    this.dynamicValues[`{resolve:${key}}`] = value;
+  }
+
+  public format(): string {
+
+    const componentsValue = this.notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
+    return this.resolveDynamicValues([
+      `${this.notice.issueNumber}\t${this.notice.title}`,
+      this.formatOverview(),
+      `\tAffected versions: ${componentsValue}`,
+      `\tMore information at: https://github.com/aws/aws-cdk/issues/${this.notice.issueNumber}`,
+    ].join('\n\n') + '\n');
+
+  }
+
+  private formatOverview() {
+    const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
+
+    const heading = 'Overview: ';
+    const separator = `\n\t${' '.repeat(heading.length)}`;
+    const content = wrap(this.notice.overview)
+      .split('\n')
+      .join(separator);
+
+    return '\t' + heading + content;
+  }
+
+  private resolveDynamicValues(input: string): string {
+    const pattern = new RegExp(Object.keys(this.dynamicValues).join('|'), 'g');
+    return input.replace(pattern, (matched) => this.dynamicValues[matched] ?? matched);
+  }
+
 }
 
 export interface NoticeDataSource {

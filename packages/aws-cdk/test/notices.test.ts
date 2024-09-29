@@ -10,7 +10,6 @@ import {
   Notice,
   Notices,
   NoticesFilter,
-  NoticesFormatter,
   FilteredNotice,
   WebsiteNoticeDataSource,
   BootstrappedEnvironment,
@@ -152,19 +151,17 @@ const NOTICE_FOR_APIGATEWAYV2_CFN_STAGE = {
   schemaVersion: '1',
 };
 
-describe(NoticesFormatter, () => {
+describe(FilteredNotice, () => {
 
   describe('format', () => {
 
     test('resolves dynamic values', () => {
 
-      const filteredNotice: FilteredNotice = {
-        ...BASIC_DYNAMIC_NOTICE,
-        __dynamicValues: { DYNAMIC1: 'dynamic-value1', DYNAMIC2: 'dynamic-value2' },
+      const filteredNotice = new FilteredNotice(BASIC_DYNAMIC_NOTICE);
+      filteredNotice.addDynamicValue('DYNAMIC1', 'dynamic-value1');
+      filteredNotice.addDynamicValue('DYNAMIC2', 'dynamic-value2');
 
-      };
-
-      expect(NoticesFormatter.format(filteredNotice)).toMatchInlineSnapshot(`
+      expect(filteredNotice.format()).toMatchInlineSnapshot(`
 "16603	Toggling off auto_delete_objects for Bucket empties the bucket
 
 	Overview: dynamic-value1 this is a notice with dynamic values
@@ -179,7 +176,7 @@ describe(NoticesFormatter, () => {
 
     test('single version range', () => {
 
-      expect(NoticesFormatter.format(BASIC_NOTICE)).toMatchInlineSnapshot(`
+      expect(new FilteredNotice(BASIC_NOTICE).format()).toMatchInlineSnapshot(`
 "16603	Toggling off auto_delete_objects for Bucket empties the bucket
 
 	Overview: If a stack is deployed with an S3 bucket with
@@ -196,7 +193,7 @@ describe(NoticesFormatter, () => {
 
     test('multiple version ranges', () => {
 
-      expect(NoticesFormatter.format(MULTIPLE_AFFECTED_VERSIONS_NOTICE)).toMatchInlineSnapshot(`
+      expect(new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format()).toMatchInlineSnapshot(`
 "17061	Error when building EKS cluster with monocdk import
 
 	Overview: When using monocdk/aws-eks to build a stack containing an
@@ -225,10 +222,10 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has CLI notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
 
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.130.0' })).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.0.0' }).map(f => f.notice)).toEqual([BASIC_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.129.0' }).map(f => f.notice)).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.126.0' }).map(f => f.notice)).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.130.0' }).map(f => f.notice)).toEqual([]);
 
     });
 
@@ -239,8 +236,8 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has framework notices
       const cliVersion = '1.0.0';
 
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') }).map(f => f.notice)).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') }).map(f => f.notice)).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
 
     });
 
@@ -250,16 +247,16 @@ describe(NoticesFilter, () => {
       const cliVersion = '1.0.0';
 
       // module-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') }).map(f => f.notice)).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') }).map(f => f.notice)).toEqual([]);
 
       // module name mismatch: apigateway != apigatewayv2
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') }).map(f => f.notice)).toEqual([]);
 
       // construct-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') }).map(f => f.notice)).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
 
     });
 
@@ -304,12 +301,7 @@ describe(NoticesFilter, () => {
         cliVersion,
         outDir,
         bootstrappedEnvironments: bootstrappedEnvironments,
-      })).toEqual([{
-        ...BASIC_BOOTSTRAP_NOTICE,
-        __dynamicValues: {
-          ENVIRONMENTS: 'env1,env2',
-        },
-      }]);
+      }).map(f => f.notice)).toEqual([BASIC_BOOTSTRAP_NOTICE]);
 
     });
 
@@ -324,7 +316,7 @@ describe(NoticesFilter, () => {
         cliVersion,
         outDir,
         bootstrappedEnvironments: [{ bootstrapStackVersion: NaN, environment: { account: 'account', region: 'region', name: 'env' } }],
-      })).toEqual([]);
+      }).map(f => f.notice)).toEqual([]);
 
     });
 
@@ -547,8 +539,8 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BOOTSTRAP_NOTICE_V10));
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BOOTSTRAP_NOTICE_V11));
+      expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
+      expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V11).format());
 
     });
 
@@ -569,7 +561,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
 
     });
 
@@ -644,7 +636,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
 
     });
@@ -666,8 +658,8 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BASIC_NOTICE));
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(MULTIPLE_AFFECTED_VERSIONS_NOTICE));
+      expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
+      expect(print).toHaveBeenCalledWith(new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
 
     });
 
@@ -706,7 +698,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
 
     });
@@ -758,7 +750,7 @@ describe(Notices, () => {
       const warning = jest.spyOn(logging, 'warning');
 
       notices.display();
-      expect(warning).toHaveBeenNthCalledWith(1, NoticesFormatter.format(BASIC_NOTICE));
+      expect(warning).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(warning).toHaveBeenCalledTimes(1);
 
     });
@@ -776,7 +768,7 @@ describe(Notices, () => {
       const error = jest.spyOn(logging, 'error');
 
       notices.display();
-      expect(error).toHaveBeenNthCalledWith(1, NoticesFormatter.format(BASIC_NOTICE));
+      expect(error).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(error).toHaveBeenCalledTimes(1);
 
     });
@@ -794,7 +786,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
 
     });
 
@@ -815,7 +807,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
 
     });
 
@@ -836,8 +828,8 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
-      expect(print).toHaveBeenNthCalledWith(6, NoticesFormatter.format(MULTIPLE_AFFECTED_VERSIONS_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
+      expect(print).toHaveBeenNthCalledWith(6, new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
 
     });
 
