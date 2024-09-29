@@ -299,7 +299,7 @@ declare const targetLogGroup: logs.LogGroup;
 
 const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup, {
   inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
-}
+});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
