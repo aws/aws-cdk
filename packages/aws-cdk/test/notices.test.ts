@@ -200,10 +200,10 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has CLI notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
 
-      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.130.0' })).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.130.0' })).toEqual([]);
 
     });
 
@@ -214,8 +214,8 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has framework notices
       const cliVersion = '1.0.0';
 
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
 
     });
 
@@ -225,16 +225,16 @@ describe(NoticesFilter, () => {
       const cliVersion = '1.0.0';
 
       // module-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
 
       // module name mismatch: apigateway != apigatewayv2
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
 
       // construct-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
 
     });
 
@@ -248,7 +248,7 @@ describe(NoticesFilter, () => {
         data: [BASIC_BOOTSTRAP_NOTICE],
         cliVersion,
         outDir,
-        bootstrapVersions: [22],
+        bootstrapInfos: [{ version: 22, account: 'account', region: 'region' }],
       })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
 
     });
@@ -263,7 +263,7 @@ describe(NoticesFilter, () => {
         data: [BASIC_BOOTSTRAP_NOTICE],
         cliVersion,
         outDir,
-        bootstrapVersions: [NaN],
+        bootstrapInfos: [{ version: NaN, account: 'account', region: 'region' }],
       })).toEqual([]);
 
     });
@@ -476,9 +476,9 @@ describe(Notices, () => {
 
     test('can add multiple values', async () => {
       const notices = Notices.create({ configuration: new Configuration() });
-      notices.addBootstrapVersion(10);
-      notices.addBootstrapVersion(10);
-      notices.addBootstrapVersion(11);
+      notices.addBootstrapInfo({ version: 10, account: 'account', region: 'region' });
+      notices.addBootstrapInfo({ version: 10, account: 'account', region: 'region' });
+      notices.addBootstrapInfo({ version: 11, account: 'account', region: 'region' });
 
       await notices.refresh({
         dataSource: { fetch: async () => [BOOTSTRAP_NOTICE_V10, BOOTSTRAP_NOTICE_V11] },

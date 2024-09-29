@@ -102,7 +102,7 @@ export interface NoticesFilterFilterOptions {
   readonly data: Notice[];
   readonly cliVersion: string;
   readonly outDir: string;
-  readonly bootstrapVersions: number[];
+  readonly bootstrapInfos: BootstrapInfo[];
 }
 
 export class NoticesFilter {
@@ -111,7 +111,7 @@ export class NoticesFilter {
     return [
       ...this.findForCliVersion(options.data, options.cliVersion),
       ...this.findForFrameworkVersion(options.data, options.outDir),
-      ...this.findForBootstrapVersion(options.data, options.bootstrapVersions),
+      ...this.findForBootstrapVersion(options.data, options.bootstrapInfos),
     ];
   }
 
@@ -157,22 +157,41 @@ export class NoticesFilter {
 
   }
 
-  private static findForBootstrapVersion(data: Notice[], bootstrapVersions: number[]): Notice[] {
-    return data.filter(notice => {
+  private static findForBootstrapVersion(data: Notice[], bootstrapInfos: BootstrapInfo[]): Notice[] {
+    return flatMap(data, notice => {
       const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
       const affectedRange = affectedComponent?.version;
-      return affectedRange != null && bootstrapVersions.some(v => {
 
-        const semverBootstrapVersion = semver.coerce(v);
+      if (affectedRange == null) {
+        return [];
+      }
+
+      // find all susceptible bootstrap stacks
+      const susceptibleBootstrapStacks = bootstrapInfos.filter(i => {
+
+        const semverBootstrapVersion = semver.coerce(i.version);
         if (!semverBootstrapVersion) {
           // we don't throw because notices should never crash the cli.
-          warning(`While filtering notices, could not coerce bootstrap version '${v}' into semver`);
+          warning(`While filtering notices, could not coerce bootstrap version '${i.version}' into semver`);
           return false;
         }
 
         return semver.satisfies(semverBootstrapVersion, affectedRange);
 
       });
+
+      if (susceptibleBootstrapStacks.length === 0) {
+        return [];
+      }
+
+      return [{
+        components: notice.components,
+        issueNumber: notice.issueNumber,
+        overview: `${notice.overview}\n\nAffected Environments: ${susceptibleBootstrapStacks.map(i => `aws://${i.account}/${i.region}`).join(',')}`,
+        schemaVersion: notice.schemaVersion,
+        title: notice.title,
+      }];
+
     });
   }
 
@@ -192,6 +211,15 @@ export class NoticesFilter {
     });
   }
 
+}
+
+/**
+ * Bootstrap stack information
+ */
+export interface BootstrapInfo {
+  readonly version: number;
+  readonly account: string;
+  readonly region: string;
 }
 
 /**
@@ -221,7 +249,7 @@ export class Notices {
   private readonly includeAcknowlegded: boolean;
 
   private data: Set<Notice> = new Set();
-  private readonly bootstrapVersions: number[] = [];
+  private readonly bootstrapInfos: BootstrapInfo[] = [];
 
   private constructor(props: NoticesProps) {
     this.configuration = props.configuration;
@@ -230,11 +258,11 @@ export class Notices {
   }
 
   /**
-   * Add a bootstrap version to filter on. Can have multiple values
+   * Add a bootstrap information to filter on. Can have multiple values
    * in case of multi-environment deployments.
    */
-  public addBootstrapVersion(version: number) {
-    this.bootstrapVersions.push(version);
+  public addBootstrapInfo(info: BootstrapInfo) {
+    this.bootstrapInfos.push(info);
   }
 
   /**
@@ -272,7 +300,7 @@ export class Notices {
       data: Array.from(this.data),
       cliVersion: versionNumber(),
       outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
-      bootstrapVersions: this.bootstrapVersions,
+      bootstrapInfos: this.bootstrapInfos,
     });
 
     print(NoticesFormatter.format(notices, options.showTotal));

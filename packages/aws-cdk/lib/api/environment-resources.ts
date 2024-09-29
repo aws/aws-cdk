@@ -78,7 +78,7 @@ export class EnvironmentResources {
 
     if (ssmParameterName !== undefined) {
       try {
-        doValidate(await this.versionFromSsmParameter(ssmParameterName));
+        doValidate(await this.versionFromSsmParameter(ssmParameterName), this.environment);
         return;
       } catch (e: any) {
         if (e.code !== 'AccessDeniedException') { throw e; }
@@ -93,7 +93,7 @@ export class EnvironmentResources {
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
           warning(`Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`);
-          doValidate(bootstrapStack.version);
+          doValidate(bootstrapStack.version, this.environment);
           return;
         }
 
@@ -103,14 +103,14 @@ export class EnvironmentResources {
 
     // No SSM parameter
     const bootstrapStack = await this.lookupToolkit();
-    doValidate(bootstrapStack.version);
+    doValidate(bootstrapStack.version, this.environment);
 
-    function doValidate(version: number) {
+    function doValidate(version: number, environment: cxapi.Environment) {
       const notices = Notices.get();
       if (notices) {
         // if `Notices` hasn't been initialized there is probably a good
         // reason for it. handle gracefully.
-        notices.addBootstrapVersion(version);
+        notices.addBootstrapInfo({ version, account: environment.account, region: environment.region });
       }
       if (defExpectedVersion > version) {
         throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
