@@ -104,11 +104,7 @@
       "Arn"
      ]
     },
-    "SourceParameters": {
-     "SqsQueueParameters": {
-      "BatchSize": 1
-     }
-    },
+    "SourceParameters": {},
     "Target": {
      "Fn::GetAtt": [
       "TargetStream3B4B2880",

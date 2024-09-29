@@ -220,7 +220,24 @@ const streamTarget = new targets.KinesisTarget(targetStream, {
 });
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
+    target: streamTarget,
+});
+```
+
+The input to the target data stream can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: kinesis.Stream;
+
+const streamTarget = new targets.KinesisTarget(targetStream, {
+    partitionKey: 'pk',
+    inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
     target: streamTarget,
 });
 ```
