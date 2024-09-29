@@ -98,7 +98,14 @@ describe('validateversion without bootstrap stack', () => {
 
     expect(filter).toHaveBeenCalledTimes(1);
     expect(filter).toHaveBeenCalledWith({
-      bootstrapVersions: [10],
+      bootstrappedEnvironments: [{
+        bootstrapStackVersion: 10,
+        environment: {
+          account: '11111111',
+          region: 'us-nowhere',
+          name: 'aws://11111111/us-nowhere',
+        },
+      }],
       cliVersion: '1.0.0',
       data: [],
       outDir: 'cdk.out',

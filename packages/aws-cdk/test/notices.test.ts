@@ -11,7 +11,9 @@ import {
   Notices,
   NoticesFilter,
   NoticesFormatter,
+  FilteredNotice,
   WebsiteNoticeDataSource,
+  BootstrappedEnvironment,
 } from '../lib/notices';
 import * as version from '../lib/version';
 import { Configuration } from '../lib/settings';
@@ -45,6 +47,17 @@ const BOOTSTRAP_NOTICE_V11 = {
   components: [{
     name: 'bootstrap',
     version: '=11',
+  }],
+  schemaVersion: '1',
+};
+
+const BASIC_DYNAMIC_NOTICE = {
+  title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
+  issueNumber: 16603,
+  overview: '{resolve:DYNAMIC1} this is a notice with dynamic values {resolve:DYNAMIC2}',
+  components: [{
+    name: 'cli',
+    version: '<=1.126.0',
   }],
   schemaVersion: '1',
 };
@@ -118,6 +131,30 @@ const NOTICE_FOR_APIGATEWAYV2_CFN_STAGE = {
 describe(NoticesFormatter, () => {
 
   describe('format', () => {
+
+    test('resolves dynamic values', () => {
+
+      const filteredNotice: FilteredNotice = {
+        ...BASIC_DYNAMIC_NOTICE,
+        __dynamicValues: { DYNAMIC1: 'dynamic-value1', DYNAMIC2: 'dynamic-value2' },
+
+      };
+
+      expect(NoticesFormatter.format([filteredNotice])).toEqual(`
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+16603	Toggling off auto_delete_objects for Bucket empties the bucket
+
+	Overview: dynamic-value1 this is a notice with dynamic values
+	          dynamic-value2
+
+	Affected versions: cli: <=1.126.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/16603
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
+    });
 
     test('single version range', () => {
 
@@ -200,10 +237,10 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has CLI notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
 
-      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrapInfos: [], outDir, cliVersion: '1.130.0' })).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.130.0' })).toEqual([]);
 
     });
 
@@ -214,8 +251,8 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has framework notices
       const cliVersion = '1.0.0';
 
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
 
     });
 
@@ -225,16 +262,16 @@ describe(NoticesFilter, () => {
       const cliVersion = '1.0.0';
 
       // module-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
 
       // module name mismatch: apigateway != apigatewayv2
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
 
       // construct-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrapInfos: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
 
     });
 
@@ -244,12 +281,47 @@ describe(NoticesFilter, () => {
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
       const cliVersion = '1.0.0';
 
+      const bootstrappedEnvironments: BootstrappedEnvironment[] = [
+        {
+          // affected
+          bootstrapStackVersion: 22,
+          environment: {
+            account: 'account',
+            region: 'region1',
+            name: 'env1',
+          },
+        },
+        {
+          // affected
+          bootstrapStackVersion: 21,
+          environment: {
+            account: 'account',
+            region: 'region2',
+            name: 'env2',
+          },
+        },
+        {
+          // not affected
+          bootstrapStackVersion: 28,
+          environment: {
+            account: 'account',
+            region: 'region3',
+            name: 'env3',
+          },
+        },
+      ];
+
       expect(NoticesFilter.filter({
         data: [BASIC_BOOTSTRAP_NOTICE],
         cliVersion,
         outDir,
-        bootstrapInfos: [{ version: 22, account: 'account', region: 'region' }],
-      })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
+        bootstrappedEnvironments: bootstrappedEnvironments,
+      })).toEqual([{
+        ...BASIC_BOOTSTRAP_NOTICE,
+        __dynamicValues: {
+          ENVIRONMENTS: 'env1,env2',
+        },
+      }]);
 
     });
 
@@ -263,7 +335,7 @@ describe(NoticesFilter, () => {
         data: [BASIC_BOOTSTRAP_NOTICE],
         cliVersion,
         outDir,
-        bootstrapInfos: [{ version: NaN, account: 'account', region: 'region' }],
+        bootstrappedEnvironments: [{ bootstrapStackVersion: NaN, environment: { account: 'account', region: 'region', name: 'env' } }],
       })).toEqual([]);
 
     });
@@ -476,9 +548,9 @@ describe(Notices, () => {
 
     test('can add multiple values', async () => {
       const notices = Notices.create({ configuration: new Configuration() });
-      notices.addBootstrapInfo({ version: 10, account: 'account', region: 'region' });
-      notices.addBootstrapInfo({ version: 10, account: 'account', region: 'region' });
-      notices.addBootstrapInfo({ version: 11, account: 'account', region: 'region' });
+      notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
+      notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
+      notices.addBootstrappedEnvironment({ bootstrapStackVersion: 11, environment: { account: 'account', region: 'region', name: 'env' } });
 
       await notices.refresh({
         dataSource: { fetch: async () => [BOOTSTRAP_NOTICE_V10, BOOTSTRAP_NOTICE_V11] },

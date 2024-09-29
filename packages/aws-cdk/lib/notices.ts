@@ -1,6 +1,7 @@
 import { ClientRequest } from 'http';
 import * as https from 'https';
 import * as path from 'path';
+import type { Environment } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print, warning } from './logging';
@@ -56,7 +57,7 @@ export interface NoticesRefreshOptions {
 
 export class NoticesFormatter {
 
-  public static format(notices: Notice[], showTotal?: boolean): string {
+  public static format(notices: FilteredNotice[], showTotal?: boolean): string {
 
     let messageString: string = '';
     if (notices.length > 0) {
@@ -74,17 +75,17 @@ export class NoticesFormatter {
 
   }
 
-  private static formatBody(notice: Notice): string {
+  private static formatBody(notice: FilteredNotice): string {
     const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
-    return [
+    return NoticesFormatter.resolve([
       `${notice.issueNumber}\t${notice.title}`,
       NoticesFormatter.formatOverview(notice),
       `\tAffected versions: ${componentsValue}`,
       `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
-    ].join('\n\n') + '\n';
+    ].join('\n\n') + '\n', notice.__dynamicValues ?? {});
   }
 
-  private static formatOverview(notice: Notice) {
+  private static formatOverview(notice: FilteredNotice) {
     const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
 
     const heading = 'Overview: ';
@@ -96,26 +97,32 @@ export class NoticesFormatter {
     return '\t' + heading + content;
   }
 
+  private static resolve(input: string, dynamicValues: { [key: string]: string }): string {
+    const prefixed = Object.fromEntries(Object.entries(dynamicValues).map(([k, v]) => ([`{resolve:${k}}`, v])));
+    const pattern = new RegExp(Object.keys(prefixed).join('|'), 'g');
+    return input.replace(pattern, (matched) => prefixed[matched] ?? matched);
+  }
+
 }
 
 export interface NoticesFilterFilterOptions {
   readonly data: Notice[];
   readonly cliVersion: string;
   readonly outDir: string;
-  readonly bootstrapInfos: BootstrapInfo[];
+  readonly bootstrappedEnvironments: BootstrappedEnvironment[];
 }
 
 export class NoticesFilter {
 
-  public static filter(options: NoticesFilterFilterOptions): Notice[] {
+  public static filter(options: NoticesFilterFilterOptions): FilteredNotice[] {
     return [
       ...this.findForCliVersion(options.data, options.cliVersion),
       ...this.findForFrameworkVersion(options.data, options.outDir),
-      ...this.findForBootstrapVersion(options.data, options.bootstrapInfos),
+      ...this.findForBootstrapVersion(options.data, options.bootstrappedEnvironments),
     ];
   }
 
-  private static findForCliVersion(data: Notice[], cliVersion: string): Notice[] {
+  private static findForCliVersion(data: Notice[], cliVersion: string): FilteredNotice[] {
     return data.filter(notice => {
       const affectedComponent = notice.components.find(component => component.name === 'cli');
       const affectedRange = affectedComponent?.version;
@@ -124,7 +131,7 @@ export class NoticesFilter {
 
   }
 
-  private static findForFrameworkVersion(data: Notice[], outDir: string): Notice[] {
+  private static findForFrameworkVersion(data: Notice[], outDir: string): FilteredNotice[] {
     const tree = loadTreeFromDir(outDir);
     return data.filter(notice => {
 
@@ -157,7 +164,7 @@ export class NoticesFilter {
 
   }
 
-  private static findForBootstrapVersion(data: Notice[], bootstrapInfos: BootstrapInfo[]): Notice[] {
+  private static findForBootstrapVersion(data: Notice[], bootstrapInfos: BootstrappedEnvironment[]): FilteredNotice[] {
     return flatMap(data, notice => {
       const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
       const affectedRange = affectedComponent?.version;
@@ -169,10 +176,10 @@ export class NoticesFilter {
       // find all susceptible bootstrap stacks
       const susceptibleBootstrapStacks = bootstrapInfos.filter(i => {
 
-        const semverBootstrapVersion = semver.coerce(i.version);
+        const semverBootstrapVersion = semver.coerce(i.bootstrapStackVersion);
         if (!semverBootstrapVersion) {
           // we don't throw because notices should never crash the cli.
-          warning(`While filtering notices, could not coerce bootstrap version '${i.version}' into semver`);
+          warning(`While filtering notices, could not coerce bootstrap version '${i.bootstrapStackVersion}' into semver`);
           return false;
         }
 
@@ -184,13 +191,7 @@ export class NoticesFilter {
         return [];
       }
 
-      return [{
-        components: notice.components,
-        issueNumber: notice.issueNumber,
-        overview: `${notice.overview}\n\nAffected Environments: ${susceptibleBootstrapStacks.map(i => `aws://${i.account}/${i.region}`).join(',')}`,
-        schemaVersion: notice.schemaVersion,
-        title: notice.title,
-      }];
+      return [{ ...notice, __dynamicValues: { ENVIRONMENTS: susceptibleBootstrapStacks.map(s => s.environment.name).join(',') } }];
 
     });
   }
@@ -214,12 +215,11 @@ export class NoticesFilter {
 }
 
 /**
- * Bootstrap stack information
+ * Infomration about a bootstrapped environment.
  */
-export interface BootstrapInfo {
-  readonly version: number;
-  readonly account: string;
-  readonly region: string;
+export interface BootstrappedEnvironment {
+  readonly bootstrapStackVersion: number;
+  readonly environment: Environment;
 }
 
 /**
@@ -249,7 +249,7 @@ export class Notices {
   private readonly includeAcknowlegded: boolean;
 
   private data: Set<Notice> = new Set();
-  private readonly bootstrapInfos: BootstrapInfo[] = [];
+  private readonly bootstrappedEnvironments: Set<BootstrappedEnvironment> = new Set();
 
   private constructor(props: NoticesProps) {
     this.configuration = props.configuration;
@@ -261,8 +261,8 @@ export class Notices {
    * Add a bootstrap information to filter on. Can have multiple values
    * in case of multi-environment deployments.
    */
-  public addBootstrapInfo(info: BootstrapInfo) {
-    this.bootstrapInfos.push(info);
+  public addBootstrappedEnvironment(info: BootstrappedEnvironment) {
+    this.bootstrappedEnvironments.add(info);
   }
 
   /**
@@ -300,7 +300,7 @@ export class Notices {
       data: Array.from(this.data),
       cliVersion: versionNumber(),
       outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
-      bootstrapInfos: this.bootstrapInfos,
+      bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments),
     });
 
     print(NoticesFormatter.format(notices, options.showTotal));
@@ -328,6 +328,19 @@ export interface Notice {
   overview: string;
   components: Component[];
   schemaVersion: string;
+}
+
+/**
+ * Notice after passing the filter.
+ */
+export interface FilteredNotice extends Notice {
+  /**
+   * A filter can augment a notice with dynamic values as it has
+   * access to the matching properties. Give it a funky name so this
+   * doesn't conflict with any pre-filter notice properties.
+   *
+   */
+  readonly __dynamicValues?: { [key: string]: string };
 }
 
 export interface NoticeDataSource {

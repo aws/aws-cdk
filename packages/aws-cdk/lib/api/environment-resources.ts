@@ -110,7 +110,7 @@ export class EnvironmentResources {
       if (notices) {
         // if `Notices` hasn't been initialized there is probably a good
         // reason for it. handle gracefully.
-        notices.addBootstrapInfo({ version, account: environment.account, region: environment.region });
+        notices.addBootstrappedEnvironment({ bootstrapStackVersion: version, environment });
       }
       if (defExpectedVersion > version) {
         throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
