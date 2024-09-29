@@ -111,7 +111,8 @@
     "TargetParameters": {
      "CloudWatchLogsParameters": {
       "LogStreamName": "Mexico"
-     }
+     },
+     "InputTemplate": "<$.body>"
     }
    }
   }

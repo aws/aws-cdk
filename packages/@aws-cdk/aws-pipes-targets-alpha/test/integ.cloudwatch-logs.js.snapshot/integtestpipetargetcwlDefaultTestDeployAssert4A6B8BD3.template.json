@@ -27,7 +27,7 @@
      "MessageBody": "\"Cozumel\""
     },
     "flattenResponse": "false",
-    "salt": "1719373358184"
+    "salt": "1727631464032"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -107,7 +107,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -131,7 +131,7 @@
     "service": "CloudWatchLogs",
     "api": "filterLogEvents",
     "expected": "{\"$StringLike\":\"Cozumel\"}",
-    "actualPath": "events.0.message.body",
+    "actualPath": "events.0.message",
     "stateMachineArn": {
      "Ref": "AwsApiCallCloudWatchLogsfilterLogEventsf72abe9cea0ccef787067c053b60d3f1WaitForE11DA0A7"
     },
@@ -153,9 +153,9 @@
     },
     "flattenResponse": "true",
     "outputPaths": [
-     "events.0.message.body"
+     "events.0.message"
     ],
-    "salt": "1719373358184"
+    "salt": "1727631464033"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessage09e328f9c64f2b7d7048c21f46ec7a09"
@@ -347,7 +347,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -397,7 +397,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -445,7 +445,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -459,6 +468,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -485,6 +497,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {

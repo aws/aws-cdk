@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
-    "6dc8b332f25b429f02277e3482630c76658e4b269c158d85cd38a5dadf622688": {
+    "beb1478a39fdf09fe9c215a3edbefebdeb94a062ac9525d43322bfbc180f15a3": {
       "source": {
         "path": "aws-cdk-pipes-targets-cwl.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6dc8b332f25b429f02277e3482630c76658e4b269c158d85cd38a5dadf622688.json",
+          "objectKey": "beb1478a39fdf09fe9c215a3edbefebdeb94a062ac9525d43322bfbc180f15a3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -283,10 +283,26 @@ A log group can be used as a target for a pipe. The log will receive the (enrich
 declare const sourceQueue: sqs.Queue;
 declare const targetLogGroup: logs.LogGroup;
 
-const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup, {});
+const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
+    target: logGroupTarget,
+});
+```
+
+The input to the target log group can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetLogGroup: logs.LogGroup;
+
+const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+}
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
     target: logGroupTarget,
 });
 ```

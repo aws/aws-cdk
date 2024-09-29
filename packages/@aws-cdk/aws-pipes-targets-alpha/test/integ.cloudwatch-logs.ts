@@ -1,4 +1,6 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { CloudWatchLogsTarget } from '../lib';
@@ -10,32 +12,17 @@ const targetLogGroup = new cdk.aws_logs.LogGroup(stack, 'TargetLogGroup');
 const logStreamName = 'Mexico';
 const body = 'Cozumel';
 
-class TestSource implements ISource {
-  sourceArn: string;
-  sourceParameters = undefined;
-
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-
-  bind(_pipe: IPipe): SourceConfig {
-    return { sourceParameters: this.sourceParameters };
-  }
-
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
-
 new cdk.aws_logs.LogStream(stack, 'TargetLogStream', {
   logGroup: targetLogGroup,
   logStreamName: logStreamName,
 });
 
 new Pipe(stack, 'Pipe', {
-  source: new TestSource(sourceQueue),
-  target: new CloudWatchLogsTarget(targetLogGroup, { logStreamName }),
+  source: new SqsSource(sourceQueue),
+  target: new CloudWatchLogsTarget(targetLogGroup, {
+    logStreamName,
+    inputTransformation: InputTransformation.fromEventPath('$.body'),
+  }),
 });
 
 const test = new IntegTest(app, 'integtest-pipe-target-cwl', {
@@ -55,7 +42,7 @@ const logEvents = test.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents'
 
 const message = putMessageOnQueue.next(logEvents);
 
-message.assertAtPath('events.0.message.body', ExpectedResult.stringLikeRegexp(body)).waitForAssertions({
+message.assertAtPath('events.0.message', ExpectedResult.stringLikeRegexp(body)).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(1),
   interval: cdk.Duration.seconds(15),
 });
