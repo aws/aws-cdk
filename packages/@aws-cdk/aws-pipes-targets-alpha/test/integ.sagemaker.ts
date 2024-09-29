@@ -1,4 +1,6 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -10,26 +12,6 @@ import { SageMakerTarget } from '../lib/sagemaker';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-sagemaker');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
-
-class TestSource implements ISource {
-  sourceArn: string;
-  sourceParameters = undefined;
-
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-
-  bind(_pipe: IPipe): SourceConfig {
-    return {
-      sourceParameters: this.sourceParameters,
-    };
-  }
-
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
 
 interface FakePipelineProps {
   readonly pipelineName: string;
@@ -133,7 +115,7 @@ const targetPipeline = new FakePipeline(stack, 'Pipeline', {
 });
 
 new Pipe(stack, 'Pipe', {
-  source: new TestSource(sourceQueue),
+  source: new SqsSource(sourceQueue),
   target: new SageMakerTarget(targetPipeline, {
     pipelineParameters: {
       foor: 'bar',
@@ -157,7 +139,7 @@ const message = putMessageOnQueue.next(test.assertions.awsApiCall('SageMaker', '
 // The pipeline won't succeed, but we want to test that it was started.
 message.assertAtPath('PipelineExecutionSummaries.0.PipelineExecutionArn', ExpectedResult.stringLikeRegexp(targetPipeline.pipelineArn))
   .waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(1),
+    totalTimeout: cdk.Duration.minutes(2),
     interval: cdk.Duration.seconds(10),
   });
 
