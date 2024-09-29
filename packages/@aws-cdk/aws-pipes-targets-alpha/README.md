@@ -218,7 +218,7 @@ const fn = new lambda.Function( this, 'MyFunc', {
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_LATEST,
   code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
-} );
+});
 
 const restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );
 const apiTarget = new targets.ApiGatewayTarget(restApi);
@@ -238,12 +238,12 @@ const fn = new lambda.Function( this, 'MyFunc', {
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_LATEST,
   code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
-} );
+});
 
 const restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );
-const apiTarget = new targets.ApiGatewayTarget(restApi), {
+const apiTarget = new targets.ApiGatewayTarget(restApi, {
   inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
-};
+});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
