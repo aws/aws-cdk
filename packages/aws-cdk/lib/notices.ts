@@ -4,7 +4,7 @@ import * as path from 'path';
 import type { Environment } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print, warning } from './logging';
+import { debug, print, warning, error } from './logging';
 import { Configuration } from './settings';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
@@ -57,25 +57,7 @@ export interface NoticesRefreshOptions {
 
 export class NoticesFormatter {
 
-  public static format(notices: FilteredNotice[], showTotal?: boolean): string {
-
-    let messageString: string = '';
-    if (notices.length > 0) {
-      messageString = [
-        '\nNOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)',
-        ...notices.map(NoticesFormatter.formatBody),
-        `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${notices[0].issueNumber}".`,
-      ].join('\n\n');
-    }
-    if (showTotal ?? false) {
-      messageString = [messageString, `There are ${notices.length} unacknowledged notice(s).`].join('\n\n');
-    }
-
-    return messageString;
-
-  }
-
-  private static formatBody(notice: FilteredNotice): string {
+  public static format(notice: FilteredNotice): string {
     const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
     return NoticesFormatter.resolve([
       `${notice.issueNumber}\t${notice.title}`,
@@ -303,7 +285,31 @@ export class Notices {
       bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments),
     });
 
-    print(NoticesFormatter.format(notices, options.showTotal));
+    if (notices.length > 0) {
+      print('');
+      print('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
+      print('');
+      for (const notice of notices) {
+        const formatted = NoticesFormatter.format(notice);
+        switch (notice.severity) {
+          case 'warning':
+            warning(formatted);
+            break;
+          case 'error':
+            error(formatted);
+            break;
+          default:
+            print(formatted);
+        }
+        print('');
+      }
+      print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${notices[0].issueNumber}".`);
+    }
+
+    if (options.showTotal ?? false) {
+      print('');
+      print(`There are ${notices.length} unacknowledged notice(s).`);
+    }
 
   }
 
@@ -328,6 +334,7 @@ export interface Notice {
   overview: string;
   components: Component[];
   schemaVersion: string;
+  severity?: string;
 }
 
 /**

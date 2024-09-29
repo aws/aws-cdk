@@ -73,6 +73,30 @@ const BASIC_NOTICE = {
   schemaVersion: '1',
 };
 
+const BASIC_WARNING_NOTICE = {
+  title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
+  issueNumber: 16603,
+  overview: 'If a stack is deployed with an S3 bucket with auto_delete_objects=True, and then re-deployed with auto_delete_objects=False, all the objects in the bucket will be deleted.',
+  components: [{
+    name: 'cli',
+    version: '<=1.126.0',
+  }],
+  schemaVersion: '1',
+  severity: 'warning',
+};
+
+const BASIC_ERROR_NOTICE = {
+  title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
+  issueNumber: 16603,
+  overview: 'If a stack is deployed with an S3 bucket with auto_delete_objects=True, and then re-deployed with auto_delete_objects=False, all the objects in the bucket will be deleted.',
+  components: [{
+    name: 'cli',
+    version: '<=1.126.0',
+  }],
+  schemaVersion: '1',
+  severity: 'error',
+};
+
 const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
   title: 'Error when building EKS cluster with monocdk import',
   issueNumber: 17061,
@@ -140,10 +164,8 @@ describe(NoticesFormatter, () => {
 
       };
 
-      expect(NoticesFormatter.format([filteredNotice])).toEqual(`
-NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-16603	Toggling off auto_delete_objects for Bucket empties the bucket
+      expect(NoticesFormatter.format(filteredNotice)).toMatchInlineSnapshot(`
+"16603	Toggling off auto_delete_objects for Bucket empties the bucket
 
 	Overview: dynamic-value1 this is a notice with dynamic values
 	          dynamic-value2
@@ -151,17 +173,14 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 	Affected versions: cli: <=1.126.0
 
 	More information at: https://github.com/aws/aws-cdk/issues/16603
-
-
-If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
+"
+`);
     });
 
     test('single version range', () => {
 
-      expect(NoticesFormatter.format([BASIC_NOTICE])).toEqual(`
-NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-16603	Toggling off auto_delete_objects for Bucket empties the bucket
+      expect(NoticesFormatter.format(BASIC_NOTICE)).toMatchInlineSnapshot(`
+"16603	Toggling off auto_delete_objects for Bucket empties the bucket
 
 	Overview: If a stack is deployed with an S3 bucket with
 	          auto_delete_objects=True, and then re-deployed with
@@ -171,17 +190,14 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 	Affected versions: cli: <=1.126.0
 
 	More information at: https://github.com/aws/aws-cdk/issues/16603
-
-
-If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
+"
+`);
     });
 
     test('multiple version ranges', () => {
 
-      expect(NoticesFormatter.format([MULTIPLE_AFFECTED_VERSIONS_NOTICE])).toEqual(`
-NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-17061	Error when building EKS cluster with monocdk import
+      expect(NoticesFormatter.format(MULTIPLE_AFFECTED_VERSIONS_NOTICE)).toMatchInlineSnapshot(`
+"17061	Error when building EKS cluster with monocdk import
 
 	Overview: When using monocdk/aws-eks to build a stack containing an
 	          EKS cluster, error is thrown about missing
@@ -190,36 +206,8 @@ NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 	Affected versions: cli: <1.130.0 >=1.126.0
 
 	More information at: https://github.com/aws/aws-cdk/issues/17061
-
-
-If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 17061".`);
-    });
-
-    test('showTotal', () => {
-
-      expect(NoticesFormatter.format([BASIC_NOTICE], true)).toEqual(`
-NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
-
-16603	Toggling off auto_delete_objects for Bucket empties the bucket
-
-	Overview: If a stack is deployed with an S3 bucket with
-	          auto_delete_objects=True, and then re-deployed with
-	          auto_delete_objects=False, all the objects in the bucket
-	          will be deleted.
-
-	Affected versions: cli: <=1.126.0
-
-	More information at: https://github.com/aws/aws-cdk/issues/16603
-
-
-If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
-
-There are 1 unacknowledged notice(s).`);
-    });
-
-    test('showTotal even if zero', () => {
-
-      expect(NoticesFormatter.format([], true)).toEqual('\n\nThere are 0 unacknowledged notice(s).');
+"
+`);
     });
 
   });
@@ -559,8 +547,8 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BOOTSTRAP_NOTICE_V10, BOOTSTRAP_NOTICE_V11]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BOOTSTRAP_NOTICE_V10));
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BOOTSTRAP_NOTICE_V11));
 
     });
 
@@ -581,8 +569,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BASIC_NOTICE));
 
     });
 
@@ -599,8 +586,9 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display({ showTotal: true });
-      expect(print).toHaveBeenCalledWith('\n\nThere are 0 unacknowledged notice(s).');
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenNthCalledWith(1, '');
+      expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
+      expect(print).toHaveBeenCalledTimes(2);
 
     });
 
@@ -656,8 +644,8 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
 
     });
 
@@ -678,14 +666,32 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format(MULTIPLE_AFFECTED_VERSIONS_NOTICE));
 
     });
 
   });
 
   describe('display', () => {
+
+    test('notices envelop', async () => {
+
+      // within the affected version range of the notice
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenNthCalledWith(2, 'NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
+      expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
+
+    });
 
     test('deduplicates notices', async () => {
 
@@ -700,8 +706,8 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
 
     });
 
@@ -726,8 +732,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       Notices.create({ configuration: new Configuration() }).display();
-      expect(print).toHaveBeenCalledWith('');
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenCalledTimes(0);
 
     });
 
@@ -736,8 +741,43 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       Notices.create({ configuration: new Configuration() }).display({ showTotal: true });
-      expect(print).toHaveBeenCalledWith('\n\nThere are 0 unacknowledged notice(s).');
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
+
+    });
+
+    test('warning', async () => {
+
+      // within the affected version range of the notice
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_WARNING_NOTICE] },
+      });
+
+      const warning = jest.spyOn(logging, 'warning');
+
+      notices.display();
+      expect(warning).toHaveBeenNthCalledWith(1, NoticesFormatter.format(BASIC_NOTICE));
+      expect(warning).toHaveBeenCalledTimes(1);
+
+    });
+
+    test('error', async () => {
+
+      // within the affected version range of the notice
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      const notices = Notices.create({ configuration: new Configuration() });
+      await notices.refresh({
+        dataSource: { fetch: async () => [BASIC_ERROR_NOTICE] },
+      });
+
+      const error = jest.spyOn(logging, 'error');
+
+      notices.display();
+      expect(error).toHaveBeenNthCalledWith(1, NoticesFormatter.format(BASIC_NOTICE));
+      expect(error).toHaveBeenCalledTimes(1);
 
     });
 
@@ -754,8 +794,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
 
     });
 
@@ -776,8 +815,7 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
 
     });
 
@@ -798,8 +836,8 @@ describe(Notices, () => {
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
-      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]));
-      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenNthCalledWith(4, NoticesFormatter.format(BASIC_NOTICE));
+      expect(print).toHaveBeenNthCalledWith(6, NoticesFormatter.format(MULTIPLE_AFFECTED_VERSIONS_NOTICE));
 
     });
 
