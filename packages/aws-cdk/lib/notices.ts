@@ -3,7 +3,7 @@ import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print } from './logging';
+import { debug, print, warning } from './logging';
 import { Configuration } from './settings';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
@@ -102,7 +102,7 @@ export interface NoticesFilterFilterOptions {
   readonly data: Notice[];
   readonly cliVersion: string;
   readonly outDir: string;
-  readonly bootstrapVersion?: number;
+  readonly bootstrapVersions: number[];
 }
 
 export class NoticesFilter {
@@ -111,7 +111,7 @@ export class NoticesFilter {
     return [
       ...this.findForCliVersion(options.data, options.cliVersion),
       ...this.findForFrameworkVersion(options.data, options.outDir),
-      ...(options.bootstrapVersion ? this.findForBootstrapVersion(options.data, options.bootstrapVersion) : []),
+      ...this.findForBootstrapVersion(options.data, options.bootstrapVersions),
     ];
   }
 
@@ -157,18 +157,22 @@ export class NoticesFilter {
 
   }
 
-  private static findForBootstrapVersion(data: Notice[], bootstrapVersion: number): Notice[] {
-
-    const semverBootstrapVersion = semver.coerce(bootstrapVersion);
-    if (!semverBootstrapVersion) {
-      throw new Error(`Cannot coerce bootstrap version '${bootstrapVersion}' into semver`);
-    }
-
+  private static findForBootstrapVersion(data: Notice[], bootstrapVersions: number[]): Notice[] {
     return data.filter(notice => {
-
       const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
       const affectedRange = affectedComponent?.version;
-      return affectedRange != null && semver.satisfies(semverBootstrapVersion, affectedRange);
+      return affectedRange != null && bootstrapVersions.some(v => {
+
+        const semverBootstrapVersion = semver.coerce(v);
+        if (!semverBootstrapVersion) {
+          // we don't throw because notices should never crash the cli.
+          warning(`While filtering notices, could not coerce bootstrap version '${v}' into semver`);
+          return false;
+        }
+
+        return semver.satisfies(semverBootstrapVersion, affectedRange);
+
+      });
     });
   }
 
@@ -217,7 +221,7 @@ export class Notices {
   private readonly includeAcknowlegded: boolean;
 
   private data: Set<Notice> = new Set();
-  private _bootstrapVersion?: number;
+  private readonly bootstrapVersions: number[] = [];
 
   private constructor(props: NoticesProps) {
     this.configuration = props.configuration;
@@ -225,14 +229,12 @@ export class Notices {
     this.includeAcknowlegded = props.includeAcknowlegded ?? false;
   }
 
-  // lazy constructor property since this is not known at
-  // instatiation time. its ok because there can only be a single
-  // value per process.
-  public set bootstrapVersion(version: number) {
-    if (this._bootstrapVersion && version != this._bootstrapVersion) {
-      throw new Error('Cannot change bootstrap version once set');
-    }
-    this._bootstrapVersion = version;
+  /**
+   * Add a bootstrap version to filter on. Can have multiple values
+   * in case of multi-environment deployments.
+   */
+  public addBootstrapVersion(version: number) {
+    this.bootstrapVersions.push(version);
   }
 
   /**
@@ -270,7 +272,7 @@ export class Notices {
       data: Array.from(this.data),
       cliVersion: versionNumber(),
       outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
-      bootstrapVersion: this._bootstrapVersion,
+      bootstrapVersions: this.bootstrapVersions,
     });
 
     print(NoticesFormatter.format(notices, options.showTotal));

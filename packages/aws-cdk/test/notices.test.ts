@@ -27,6 +27,28 @@ const BASIC_BOOTSTRAP_NOTICE = {
   schemaVersion: '1',
 };
 
+const BOOTSTRAP_NOTICE_V10 = {
+  title: 'Bootstrap version 10 is no good',
+  issueNumber: 16600,
+  overview: 'overview',
+  components: [{
+    name: 'bootstrap',
+    version: '=10',
+  }],
+  schemaVersion: '1',
+};
+
+const BOOTSTRAP_NOTICE_V11 = {
+  title: 'Bootstrap version 11 is no good',
+  issueNumber: 16600,
+  overview: 'overview',
+  components: [{
+    name: 'bootstrap',
+    version: '=11',
+  }],
+  schemaVersion: '1',
+};
+
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
   issueNumber: 16603,
@@ -178,10 +200,10 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has CLI notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
 
-      expect(NoticesFilter.filter({ data: notices, outDir, cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, outDir, cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, outDir, cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, outDir, cliVersion: '1.130.0' })).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.0.0' })).toEqual([BASIC_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.129.0' })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.126.0' })).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, bootstrapVersions: [], outDir, cliVersion: '1.130.0' })).toEqual([]);
 
     });
 
@@ -192,8 +214,8 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has framework notices
       const cliVersion = '1.0.0';
 
-      expect(NoticesFilter.filter({ data: notices, cliVersion, outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
-      expect(NoticesFilter.filter({ data: notices, cliVersion, outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
 
     });
 
@@ -203,16 +225,16 @@ describe(NoticesFilter, () => {
       const cliVersion = '1.0.0';
 
       // module-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).toEqual([]);
 
       // module name mismatch: apigateway != apigatewayv2
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([]);
 
       // construct-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrapVersions: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
 
     });
 
@@ -222,7 +244,27 @@ describe(NoticesFilter, () => {
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
       const cliVersion = '1.0.0';
 
-      expect(NoticesFilter.filter({ data: [BASIC_BOOTSTRAP_NOTICE], cliVersion, outDir, bootstrapVersion: 22 })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
+      expect(NoticesFilter.filter({
+        data: [BASIC_BOOTSTRAP_NOTICE],
+        cliVersion,
+        outDir,
+        bootstrapVersions: [22],
+      })).toEqual([BASIC_BOOTSTRAP_NOTICE]);
+
+    });
+
+    test('ignores invalid bootstrap versions', () => {
+
+      // doesn't matter for this test because our data only has bootstrap notices
+      const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
+      const cliVersion = '1.0.0';
+
+      expect(NoticesFilter.filter({
+        data: [BASIC_BOOTSTRAP_NOTICE],
+        cliVersion,
+        outDir,
+        bootstrapVersions: [NaN],
+      })).toEqual([]);
 
     });
 
@@ -420,22 +462,33 @@ describe(CachedDataSource, () => {
 describe(Notices, () => {
 
   beforeEach(() => {
-
     // disable caching
     jest.spyOn(CachedDataSource.prototype as any, 'save').mockImplementation((_: any) => Promise.resolve());
     jest.spyOn(CachedDataSource.prototype as any, 'load').mockImplementation(() => Promise.resolve({ expiration: 0, notices: [] }));
 
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('bootstrapVersion', () => {
+  describe('addBootstrapVersion', () => {
 
-    test('can only be set to a single value', () => {
-
+    test('can add multiple values', async () => {
       const notices = Notices.create({ configuration: new Configuration() });
-      expect(() => notices.bootstrapVersion = 10).not.toThrow();
-      expect(() => notices.bootstrapVersion = 10).not.toThrow();
-      expect(() => notices.bootstrapVersion = 11).toThrow(/Cannot change bootstrap version once set/);
+      notices.addBootstrapVersion(10);
+      notices.addBootstrapVersion(10);
+      notices.addBootstrapVersion(11);
+
+      await notices.refresh({
+        dataSource: { fetch: async () => [BOOTSTRAP_NOTICE_V10, BOOTSTRAP_NOTICE_V11] },
+      });
+
+      const print = jest.spyOn(logging, 'print');
+
+      notices.display();
+      expect(print).toHaveBeenCalledWith(NoticesFormatter.format([BOOTSTRAP_NOTICE_V10, BOOTSTRAP_NOTICE_V11]));
+      expect(print).toHaveBeenCalledTimes(1);
 
     });
 

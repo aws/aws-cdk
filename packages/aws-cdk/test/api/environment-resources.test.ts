@@ -1,9 +1,10 @@
 /* eslint-disable import/order */
 import { ToolkitInfo } from '../../lib/api';
 import { EnvironmentResourcesRegistry } from '../../lib/api/environment-resources';
-import { Notice, Notices } from '../../lib/notices';
+import { CachedDataSource, Notices, NoticesFilter } from '../../lib/notices';
 import { Configuration } from '../../lib/settings';
 import { errorWithCode, mockBootstrapStack, MockSdk } from '../util/mock-sdk';
+import * as version from '../../lib/version';
 import { MockToolkitInfo } from '../util/mock-toolkitinfo';
 
 let mockSdk: MockSdk;
@@ -68,6 +69,10 @@ describe('validateversion without bootstrap stack', () => {
     mockToolkitInfo(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   test('validating version with explicit SSM parameter succeeds', async () => {
     // GIVEN
     mockSdk.stubSsm({
@@ -76,23 +81,28 @@ describe('validateversion without bootstrap stack', () => {
       },
     });
 
-    // simulate a bootstrap notice
-    const bootstrapNotice: Notice = {
-      components: [{ name: 'bootstrap', version: '<22' }],
-      issueNumber: 1234,
-      title: 'title',
-      overview: 'overview',
-      schemaVersion: '1',
-    };
+    // disable notices caching
+    jest.spyOn(CachedDataSource.prototype as any, 'save').mockImplementation((_: any) => Promise.resolve());
+    jest.spyOn(CachedDataSource.prototype as any, 'load').mockImplementation(() => Promise.resolve({ expiration: 0, notices: [] }));
+
+    // mock cli version number
+    jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
     // THEN
     const notices = Notices.create({ configuration: new Configuration() });
-    await notices.refresh({ dataSource: { fetch: async () => [bootstrapNotice] } });
+    await notices.refresh({ dataSource: { fetch: async () => [] } });
     await expect(envResources().validateVersion(8, '/abc')).resolves.toBeUndefined();
 
-    // this means the bootstrap check correctly set the bootstrap version number on the notices instance
-    expect(() => notices.bootstrapVersion = 100).toThrow(/Cannot change bootstrap version once set/);
-    expect(() => notices.bootstrapVersion = 10).not.toThrow();
+    const filter = jest.spyOn(NoticesFilter, 'filter');
+    notices.display();
+
+    expect(filter).toHaveBeenCalledTimes(1);
+    expect(filter).toHaveBeenCalledWith({
+      bootstrapVersions: [10],
+      cliVersion: '1.0.0',
+      data: [],
+      outDir: 'cdk.out',
+    });
   });
 
   test('validating version without explicit SSM parameter fails', async () => {
