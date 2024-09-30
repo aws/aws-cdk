@@ -3,7 +3,7 @@ import { promisify } from 'util';
 import * as fs from 'fs-extra';
 import * as _glob from 'glob';
 import * as pLimit from 'p-limit';
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 
 const glob = promisify(_glob);
 

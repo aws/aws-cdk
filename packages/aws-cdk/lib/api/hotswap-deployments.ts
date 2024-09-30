@@ -1,5 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as pLimit from 'p-limit';
 import * as chalk from 'chalk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
@@ -331,9 +332,11 @@ async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: Hotsw
   if (hotswappableChanges.length > 0) {
     print(`\n${ICON} hotswapping resources:`);
   }
-  return Promise.all(hotswappableChanges.map(hotswapOperation => {
+  const limit = pLimit(10);
+  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  return Promise.all(hotswappableChanges.map(hotswapOperation => limit(() => {
     return applyHotswappableChange(sdk, hotswapOperation);
-  }));
+  })));
 }
 
 async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswappableChange): Promise<void> {
