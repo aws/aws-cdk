@@ -23,14 +23,16 @@ export type ProviderMapv3 = {[name: string]: ContextProviderFactoryv3};
 
 const PLUGIN_PROVIDER_PREFIX = 'plugin';
 
+type SdkProviderType = SdkProvider | SdkProviderv3;
+
 /**
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
  */
-export async function provideContextValues(
+export async function provideContextValues<T extends SdkProviderType>(
   missingValues: cxschema.MissingContext[],
   context: Context,
-  sdk: SdkProvider) {
-
+  sdk: T,
+) {
   for (const missingContext of missingValues) {
     const key = missingContext.key;
 
@@ -38,18 +40,16 @@ export async function provideContextValues(
       ? `${PLUGIN_PROVIDER_PREFIX}:${(missingContext.props as cxschema.PluginContextQuery).pluginName}`
       : missingContext.provider;
 
-    let factory;
+    let factory: (sdk: T) => ContextProviderPlugin;
     if (providerName.startsWith(`${PLUGIN_PROVIDER_PREFIX}:`)) {
       const plugin = PluginHost.instance.contextProviderPlugins[providerName.substring(PLUGIN_PROVIDER_PREFIX.length + 1)];
       if (!plugin) {
-        // eslint-disable-next-line max-len
         throw new Error(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
       }
       factory = () => plugin;
     } else {
-      factory = availableContextProviders[providerName];
+      factory = combinedContextProviders[providerName] as (sdk: T) => ContextProviderPlugin;
       if (!factory) {
-        // eslint-disable-next-line max-len
         throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
       }
     }
@@ -66,19 +66,26 @@ export async function provideContextValues(
         ? await sdk.resolveEnvironment(environment)
         : { account: '?', region: '?', name: '?' };
 
-      const arns = await replaceEnvPlaceholders({
-        lookupRoleArn: missingContext.props.lookupRoleArn,
-      }, resolvedEnvironment, sdk);
+      const arns = isSdkProviderV3(sdk)
+        ? await replaceEnvPlaceholdersv3({
+          lookupRoleArn: missingContext.props.lookupRoleArn,
+        }, resolvedEnvironment, sdk)
+        : await replaceEnvPlaceholders({
+          lookupRoleArn: missingContext.props.lookupRoleArn,
+        }, resolvedEnvironment, sdk);
 
       value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
     } catch (e: any) {
-      // Set a specially formatted provider value which will be interpreted
-      // as a lookup failure in the toolkit.
       value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
     }
     context.set(key, value);
     debug(`Setting "${key}" context to ${JSON.stringify(value)}`);
   }
+}
+
+// Type guard to check if the sdk is SdkProviderv3
+function isSdkProviderV3(sdk: SdkProvider | SdkProviderv3): sdk is SdkProviderv3 {
+  return 'pluginsv3' in sdk;
 }
 
 /**
@@ -180,4 +187,15 @@ const availableContextProviders: ProviderMap = {
 
 const availableContextProvidersv3: ProviderMapv3 = {
   [cxschema.ContextProvider.VPC_PROVIDER]: (s) => new VpcNetworkContextProviderPlugin(s),
+};
+
+type CombinedContextProviderFactory = ContextProviderFactory | ContextProviderFactoryv3;
+
+type CombinedProviderMap = {
+  [key: string]: CombinedContextProviderFactory;
+};
+
+const combinedContextProviders: CombinedProviderMap = {
+  ...availableContextProviders,
+  ...availableContextProvidersv3,
 };
