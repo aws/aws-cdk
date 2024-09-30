@@ -1054,6 +1054,10 @@ integTest(
     expect(diff).not.toContain('Call failed: getBucketLocation');
     expect(diff).not.toContain('not authorized to perform: s3:GetBucketLocation on resource');
     expect(diff).not.toContain('Could not create a change set, will base the diff on template differences');
+
+    // Assert that the CLI assumes the file publishing role:
+    expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+    expect(diff).toContain('success: Published');
   }),
 );
 
