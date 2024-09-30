@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { evaluateCFN } from './evaluate-cfn';
-import { TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE } from '../../cx-api';
 import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, StackProps, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
@@ -128,7 +127,6 @@ describe('tokens that return literals', () => {
   test("Intrinsic-resolving List Tokens generate the custom resource's logical ID from the Intrisic's stringified value", () => {
     // GIVEN
     const someList = Token.asList(new Intrinsic({ Ref: 'Thing' }));
-    stack.node.setContext(TOKEN_AWARE_STRINGIFY_LOGICAL_ID_FROM_TOKEN_VALUE, true);
 
     // WHEN
     new CfnResource(stack, 'Resource', {
