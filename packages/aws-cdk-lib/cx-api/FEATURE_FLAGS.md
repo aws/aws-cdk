@@ -75,12 +75,9 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
 | [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
 | [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | 2.160.0 | (fix) |
-<<<<<<< HEAD
-| [@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics](#aws-cdkcorecfnincluderejectcomplexresourceupdatecreatepolicyintrinsics) | When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values. | 2.160.0 | (fix) |
-=======
 | [@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission](#aws-cdkaws-appsyncappsyncgraphqlapiscopelambdapermission) | When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn. | V2NEXT | (fix) |
 | [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | V2NEXT | (fix) |
->>>>>>> b0e4a544aecce86e8b41e7cd148a139c2e34bfbd
+| [@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics](#aws-cdkcorecfnincluderejectcomplexresourceupdatecreatepolicyintrinsics) | When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values. | 2.160.0 | (fix) |
 
 <!-- END table -->
 
