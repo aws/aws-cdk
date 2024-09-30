@@ -73,6 +73,10 @@ Flags come in three types:
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 | [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
+| [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
+| [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | 2.160.0 | (fix) |
+| [@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission](#aws-cdkaws-appsyncappsyncgraphqlapiscopelambdapermission) | When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn. | V2NEXT | (fix) |
+| [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -134,7 +138,11 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true
   }
 }
 ```
@@ -1376,6 +1384,75 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 | 2.156.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
+
+
+### @aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions
+
+*When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration* (fix)
+
+Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.159.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to continue grant permissions to log group when no log group is specified
+
+
+### @aws-cdk/aws-ec2:ec2SumTImeoutEnabled
+
+*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
+
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+only the value from 'resourceSignalTimeout' will be used. 
+
+When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.160.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission
+
+*When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.* (fix)
+
+Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission 
+to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning 
+it allows invocations from any source.
+
+When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the 
+specific AppSync GraphQL API.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId
+
+*When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
+
+Currently, the value of the property 'instanceResourceId' in construct 'DatabaseInstanceReadReplica' is not correct, and set to 'DbInstanceArn' which is not correct when it is used to create the IAM Policy in the grantConnect method.
+
+When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`
 
 
 <!-- END details -->

@@ -99,11 +99,30 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
     deploy5.addSource(s3deploy.Source.data('some-key', 'helloworld'));
+
+    new cdk.CfnOutput(this, 'customResourceData', {
+      value: cdk.Fn.sub('Object Keys are ${keys}', {
+        keys: cdk.Fn.join(',', deploy5.objectKeys),
+      }),
+    });
+
+    const bucket6 = new s3.Bucket(this, 'Destination6', {
+      publicReadAccess: false,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    });
+
+    new s3deploy.BucketDeployment(this, 'DeployMe6', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website-second'))],
+      destinationBucket: bucket6,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      outputObjectKeys: false,
+    });
   }
 }
 
 const app = new cdk.App();
-const testCase = new TestBucketDeployment(app, 'test-bucket-deployments-2');
+const testCase = new TestBucketDeployment(app, 'test-bucket-deployments');
 
 // Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
 const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
@@ -130,5 +149,13 @@ listObjectsCall.expect(integ.ExpectedResult.objectLike({
     ],
   ),
 }));
+
+// Assert that there is one object key returned from the custom resource
+const describe = integTest.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+  StackName: 'test-bucket-deployments',
+});
+
+describe.assertAtPath('Stacks.0.Outputs.0.OutputKey', integ.ExpectedResult.stringLikeRegexp('customResourceData'));
+describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', integ.ExpectedResult.stringLikeRegexp('Object Keys are ([0-9a-f])+\.zip'));
 
 app.synth();

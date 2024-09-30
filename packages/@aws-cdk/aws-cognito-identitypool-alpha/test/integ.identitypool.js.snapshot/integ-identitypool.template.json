@@ -34,9 +34,6 @@
   "PooltestClientFE8D4935": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "PoolD3F588B8"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -57,17 +54,15 @@
       "Ref": "PoolProviderGoogle76A1E8D0"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
+    }
    }
   },
   "PoolProviderGoogle76A1E8D0": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "Google",
-    "ProviderType": "Google",
-    "UserPoolId": {
-     "Ref": "PoolD3F588B8"
-    },
     "AttributeMapping": {
      "given_name": "given_name",
      "family_name": "family_name",
@@ -77,8 +72,13 @@
     },
     "ProviderDetails": {
      "client_id": "google-client-id",
-     "client_secret": "google-client-secret",
+     "client_secret": "google-client-secret-value",
      "authorize_scopes": "profile"
+    },
+    "ProviderName": "Google",
+    "ProviderType": "Google",
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
     }
    }
   },
@@ -116,9 +116,6 @@
   "OtherPoolUserPoolAuthenticationProviderClient08F670F8": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "OtherPool7DA7F2F7"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -139,17 +136,15 @@
       "Ref": "OtherPoolProviderAmazon4EB0592F"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "OtherPool7DA7F2F7"
+    }
    }
   },
   "OtherPoolProviderAmazon4EB0592F": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "LoginWithAmazon",
-    "ProviderType": "LoginWithAmazon",
-    "UserPoolId": {
-     "Ref": "OtherPool7DA7F2F7"
-    },
     "AttributeMapping": {
      "given_name": "name",
      "email": "email",
@@ -159,14 +154,76 @@
      "client_id": "amzn-client-id",
      "client_secret": "amzn-client-secret",
      "authorize_scopes": "profile"
+    },
+    "ProviderName": "LoginWithAmazon",
+    "ProviderType": "LoginWithAmazon",
+    "UserPoolId": {
+     "Ref": "OtherPool7DA7F2F7"
+    }
+   }
+  },
+  "UserPoolToImport1A7C21D3": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "UserPoolToImportclientToImport6885CDF7": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "UserPoolToImport1A7C21D3"
     }
    }
   },
   "identitypoolE2A6D099": {
    "Type": "AWS::Cognito::IdentityPool",
    "Properties": {
-    "AllowUnauthenticatedIdentities": false,
     "AllowClassicFlow": true,
+    "AllowUnauthenticatedIdentities": false,
     "CognitoIdentityProviders": [
      {
       "ClientId": {
@@ -187,6 +244,54 @@
          "/",
          {
           "Ref": "PoolD3F588B8"
+         }
+        ]
+       ]
+      },
+      "ServerSideTokenCheck": true
+     },
+     {
+      "ClientId": {
+       "Ref": "UserPoolToImportclientToImport6885CDF7"
+      },
+      "ProviderName": {
+       "Fn::Join": [
+        "",
+        [
+         "cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::Select": [
+               5,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::GetAtt": [
+                   "UserPoolToImport1A7C21D3",
+                   "Arn"
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
          }
         ]
        ]
@@ -402,6 +507,69 @@
          ":",
          {
           "Ref": "PooltestClientFE8D4935"
+         }
+        ]
+       ]
+      },
+      "Type": "Token"
+     },
+     "importedUserPool": {
+      "AmbiguousRoleResolution": "Deny",
+      "IdentityProvider": {
+       "Fn::Join": [
+        "",
+        [
+         "cognito-idp.",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "UserPoolToImport1A7C21D3",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::Select": [
+               5,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::GetAtt": [
+                   "UserPoolToImport1A7C21D3",
+                   "Arn"
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ":",
+         {
+          "Ref": "UserPoolToImportclientToImport6885CDF7"
          }
         ]
        ]
