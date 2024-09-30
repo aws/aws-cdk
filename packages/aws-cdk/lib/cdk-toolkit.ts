@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
+import * as pLimit from 'p-limit';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { DeploymentMethod } from './api';
@@ -744,7 +745,10 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    await Promise.all(environments.map(async (environment) => {
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment) => limit(async () => {
       success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
         const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
@@ -756,7 +760,7 @@ export class CdkToolkit {
         error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
         throw e;
       }
-    }));
+    })));
   }
 
   /**

@@ -1,6 +1,7 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
+import * as pLimit from 'p-limit';
 import { ExportReaderCRProps, CrossRegionExports } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -46,7 +47,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
  * Add tag to parameters for existing exports
  */
 async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
-  await Promise.all(parameters.map(async name => {
+  const limit = pLimit(10);
+  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  await Promise.all(parameters.map((name) => limit(async () => {
     try {
       return await ssm.addTagsToResource({
         ResourceId: name,
@@ -59,14 +62,16 @@ async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise
     } catch (e) {
       throw new Error(`Error importing ${name}: ${e}`);
     }
-  }));
+  })));
 }
 
 /**
  * Remove tags from parameters
  */
 async function removeTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
-  await Promise.all(parameters.map(async name => {
+  const limit = pLimit(10);
+  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  await Promise.all(parameters.map(name => limit(async() => {
     try {
       return await ssm.removeTagsFromResource({
         TagKeys: [keyName],
@@ -80,7 +85,7 @@ async function removeTags(ssm: SSM, parameters: string[], keyName: string): Prom
         throw new Error(`Error releasing import ${name}: ${e}`);
       }
     }
-  }));
+  })));
 }
 
 /**

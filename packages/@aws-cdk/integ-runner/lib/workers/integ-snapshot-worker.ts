@@ -1,3 +1,4 @@
+import * as pLimit from 'p-limit';
 import * as workerpool from 'workerpool';
 import { printSummary, printResults, IntegTestWorkerConfig, SnapshotVerificationOptions, printLaggards } from './common';
 import * as logger from '../logger';
@@ -20,13 +21,15 @@ export async function runSnapshotTests(
     onTimeout: printLaggards,
   });
 
+  const limit = pLimit(50);
+  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
   const failedTests: IntegTestWorkerConfig[][] = await Promise.all(
-    tests.map((test) => pool.exec('snapshotTestWorker', [test.info /* Dehydrate class -> data */, options], {
+    tests.map((test) => limit(() => pool.exec('snapshotTestWorker', [test.info /* Dehydrate class -> data */, options], {
       on: (x) => {
         todo.crossOff(x.testName);
         printResults(x);
       },
-    })),
+    }))),
   );
   todo.done();
   const testsToRun = flatten(failedTests);

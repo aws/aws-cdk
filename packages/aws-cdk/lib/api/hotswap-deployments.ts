@@ -156,6 +156,8 @@ async function classifyResourceChanges(
   // resolve all detector results
   const changesDetectionResults: Array<ChangeHotswapResult> = [];
   for (const detectorResultPromises of promises) {
+    // Constant set of promises per resource
+    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
     const hotswapDetectionResults = await Promise.all(await detectorResultPromises());
     changesDetectionResults.push(hotswapDetectionResults);
   }
