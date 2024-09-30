@@ -1,5 +1,7 @@
 import { TagType } from '../lib/cfn-resource';
 import { TagManager } from '../lib/tag-manager';
+import * as cdk from '../../../aws-cdk-lib';
+import { Construct } from 'constructs';
 
 describe('tag manager', () => {
   test('TagManagerOptions can set tagPropertyName', () => {
@@ -225,4 +227,39 @@ describe('tag manager', () => {
     expect(true).toEqual(mgr.applyTagAspectHere(['AWS::Fake::Resource'], []));
     expect(false).toEqual(mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
   });
+
+  test('isTaggable function works', () => {
+    const app = new cdk.App();
+    const taggableConstruct = new TaggableConstruct(app, 'MyConstruct');
+    const nonTaggableConstruct = new NonTaggableConstruct(app, 'NonTaggableConstruct');
+
+    // Assert that isTaggable returns true for a taggable construct
+    expect(TagManager.isTaggable(taggableConstruct)).toEqual(true);
+
+    // Assert that isTaggable returns false (not undefined) for a non-taggable construct
+    expect(TagManager.isTaggable(nonTaggableConstruct)).not.toEqual(undefined);
+    expect(TagManager.isTaggable(nonTaggableConstruct)).toEqual(false);
+  });
 });
+
+// `Stack` extends ITaggable so this construct is Taggable by default
+class TaggableConstruct extends cdk.Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    new cdk.CfnResource(this, 'Resource', {
+      type: 'Whatever::The::Type',
+      properties: {
+        Tags: this.tags.renderedTags,
+      },
+    });
+  }
+}
+
+// Simple Construct that does not extend ITaggable
+class NonTaggableConstruct extends Construct {
+  public readonly id: string;
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    this.id = id;
+  }
+}
