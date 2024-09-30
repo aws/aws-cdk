@@ -1,5 +1,6 @@
 import { Rule } from 'eslint';
-import { isIdentifier, isMemberExpression } from '../private/type-checkers';
+import { matchIdentifier, matchMemberExpression } from '../private/type-checkers';
+import { match } from '../private/match-ast';
 
 /**
  * Get the programmer to acknowledge that `Promise.all()` is potentially dangerous.
@@ -26,15 +27,13 @@ import { isIdentifier, isMemberExpression } from '../private/type-checkers';
 export function create(context: Rule.RuleContext): Rule.NodeListener {
   return {
     CallExpression: node => {
-      if (isMemberExpression(node.callee)
-        && isIdentifier(node.callee.object)
-        && node.callee.object.name === 'Promise'
-        && isIdentifier(node.callee.property)
-        && node.callee.property.name === 'all') {
-
-          context.report({
-            message: 'Ensure the number of awaited promises does not depend on program input, or their parallelism is limited using something like \'p-limit\' or similar. Acknowledge this message using \'// eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism\'',
-            node,
+      if (match(node.callee, matchMemberExpression({
+        object: matchIdentifier('Promise'),
+        property: matchIdentifier('all'),
+      }))) {
+        context.report({
+          message: 'Ensure the number of awaited promises does not depend on program input, or their parallelism is limited using something like \'p-limit\' or similar. Acknowledge this message using \'// eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism\'',
+          node,
         });
       }
     },
