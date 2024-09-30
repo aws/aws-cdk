@@ -2259,3 +2259,34 @@ integTest(
     expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
   }),
 );
+
+integTest('cdk notices for bootstrap', withDefaultFixture(async (fixture) => {
+
+  const cache = {
+    expiration: 4125963264000, // year 2100 so we never overwrite the cache
+    notices: [{
+      title: 'Bootstrap stack outdated',
+      issueNumber: 16600,
+      overview: 'Your environments "{resolve:ENVIRONMENTS}" are running an outdated bootstrap stack.',
+      components: [{
+        name: 'bootstrap',
+        version: '<2000',
+      }],
+      schemaVersion: '1',
+    }],
+  };
+
+  const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
+  await fs.mkdir(cdkCacheDir);
+  await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
+
+  const output = await fixture.cdkDeploy('test-2', {
+    verbose: false,
+    modEnv: {
+      CDK_HOME: fixture.integTestDir,
+    },
+  });
+
+  expect(output).toContain('Your environments \"aws://');
+
+}));
