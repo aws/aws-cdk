@@ -529,7 +529,6 @@ describe(Notices, () => {
     test('can add multiple values', async () => {
       const notices = Notices.create({ configuration: new Configuration() });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
-      notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 11, environment: { account: 'account', region: 'region', name: 'env' } });
 
       await notices.refresh({
@@ -541,6 +540,36 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V11).format());
+
+    });
+
+    test('deduplicates', async () => {
+      const notices = Notices.create({ configuration: new Configuration() });
+      notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
+      notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
+
+      // mock cli version number
+      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
+      notices.display();
+
+      const filter = jest.spyOn(NoticesFilter, 'filter');
+      notices.display();
+
+      expect(filter).toHaveBeenCalledTimes(1);
+      expect(filter).toHaveBeenCalledWith({
+        bootstrappedEnvironments: [{
+          bootstrapStackVersion: 10,
+          environment: {
+            account: 'account',
+            region: 'region',
+            name: 'env',
+          },
+        }],
+        cliVersion: '1.0.0',
+        data: [],
+        outDir: 'cdk.out',
+      });
 
     });
 

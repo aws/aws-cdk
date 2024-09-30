@@ -216,7 +216,9 @@ export class Notices {
   private readonly includeAcknowlegded: boolean;
 
   private data: Set<Notice> = new Set();
-  private readonly bootstrappedEnvironments: Set<BootstrappedEnvironment> = new Set();
+
+  // sets don't deduplicate interfaces, so we use a map.
+  private readonly bootstrappedEnvironments: Map<string, BootstrappedEnvironment> = new Map();
 
   private constructor(props: NoticesProps) {
     this.configuration = props.configuration;
@@ -228,8 +230,14 @@ export class Notices {
    * Add a bootstrap information to filter on. Can have multiple values
    * in case of multi-environment deployments.
    */
-  public addBootstrappedEnvironment(info: BootstrappedEnvironment) {
-    this.bootstrappedEnvironments.add(info);
+  public addBootstrappedEnvironment(bootstrapped: BootstrappedEnvironment) {
+    const key = [
+      bootstrapped.bootstrapStackVersion,
+      bootstrapped.environment.account,
+      bootstrapped.environment.region,
+      bootstrapped.environment.name,
+    ].join(':');
+    this.bootstrappedEnvironments.set(key, bootstrapped);
   }
 
   /**
@@ -267,7 +275,7 @@ export class Notices {
       data: Array.from(this.data),
       cliVersion: versionNumber(),
       outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
-      bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments),
+      bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments.values()),
     });
 
     if (filteredNotices.length > 0) {
