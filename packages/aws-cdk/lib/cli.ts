@@ -114,6 +114,14 @@ async function parseCommandLineArguments(args: string[]) {
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
+    .command('gc [ENVIRONMENTS..]', 'Garbage collect assets', (yargs: Argv) => yargs
+      .option('dry-run', { type: 'boolean', desc: 'List assets instead of garbage collecting them', default: false })
+      .option('tag-only', { type: 'boolean', desc: 'Tag assets as isolated without deleting them', default: false })
+      .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
+      .option('days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
+      .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
+      .option('bootstrap-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true }),
+    )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
@@ -271,11 +279,6 @@ async function parseCommandLineArguments(args: string[]) {
     .command('notices', 'Returns a list of relevant notices', (yargs: Argv) => yargs
       .option('unacknowledged', { type: 'boolean', alias: 'u', default: false, desc: 'Returns a list of unacknowledged notices' }),
     )
-    .command('gc [ENVIRONMENTS..]', 'Garbage collect assets', (yargs: Argv) => yargs
-      .option('dry-run', { type: 'boolean', desc: 'List assets instead of garbage collecting them', default: false })
-      .option('tag-only', { type: 'boolean', desc: 'Tag assets as isolated without deleting them', default: false })
-      .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
-      .option('days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 }))
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
@@ -676,6 +679,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           tagOnly: args['tag-only'],
           type: args.type,
           days: args.days,
+          bootstrapStackName: args.bootstrapStackName,
         });
 
       case 'synthesize':

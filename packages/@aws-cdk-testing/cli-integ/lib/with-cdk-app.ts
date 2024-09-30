@@ -321,6 +321,11 @@ export interface CdkGarbageCollectionCommandOptions {
    * @default 'all'
    */
   readonly type?: 'ecr' | 's3' | 'all';
+
+  /**
+   * @default 'CdkToolkit'
+   */
+  readonly bootstrapStackName?: string;
 }
 
 export class TestFixture extends ShellHelper {
@@ -463,6 +468,9 @@ export class TestFixture extends ShellHelper {
     }
     if (options.type) {
       args.push('--type', options.type);
+    }
+    if (options.bootstrapStackName) {
+      args.push('--bootstrapStackName', options.bootstrapStackName);
     }
 
     return this.cdk(args);

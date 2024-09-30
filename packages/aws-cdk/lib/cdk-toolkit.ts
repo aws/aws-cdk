@@ -9,10 +9,10 @@ import * as uuid from 'uuid';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
-import { GarbageCollector } from './api/garbage-collector';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { Deployments } from './api/deployments';
+import { GarbageCollector } from './api/garbage-collector';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
@@ -776,6 +776,8 @@ export class CdkToolkit {
     // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
+    // eslint-disable-next-line no-console
+    console.log(environmentSpecs);
     // Partition into globs and non-globs (this will mutate environmentSpecs).
     const globSpecs = partition(environmentSpecs, looksLikeGlob);
     if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
@@ -792,11 +794,21 @@ export class CdkToolkit {
       ...environmentsFromDescriptors(environmentSpecs),
     ];
 
+    if (this.props.cloudExecutable.hasApp) {
+      environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
+    }
+
+    // eslint-disable-next-line no-console
+    console.log('E', environments);
+
     await Promise.all(environments.map(async (environment) => {
+      // eslint-disable-next-line no-console
+      console.log('EE', environment);
       success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
       const gc = new GarbageCollector({
         sdkProvider: this.props.sdkProvider,
         resolvedEnvironment: environment,
+        bootstrapStackName: options.bootstrapStackName,
         isolationDays: options.days,
         dryRun: options.dryRun ?? false,
         tagOnly: options.tagOnly ?? false,
@@ -1455,6 +1467,7 @@ export interface GarbageCollectionOptions {
   readonly tagOnly?: boolean;
   readonly type: 'ecr' | 's3' | 'all';
   readonly days: number;
+  readonly bootstrapStackName?: string;
 }
 
 export interface MigrateOptions {

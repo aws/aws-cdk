@@ -1,10 +1,10 @@
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import {  ISDK, Mode, SdkProvider } from './aws-auth';
-import { print } from '../logging';
 import { CloudFormation, S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
+import { ISDK, Mode, SdkProvider } from './aws-auth';
+import { print } from '../logging';
 import { ToolkitInfo } from './toolkit-info';
-import path = require('path');
 
 const ISOLATED_TAG = 'awscdk.isolated';
 
@@ -38,7 +38,7 @@ class S3Asset {
     if (this.tags) {
       return this.tags;
     }
-  
+
     const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key }).promise();
     this.tags = response.TagSet;
     return response.TagSet;
@@ -103,6 +103,8 @@ interface GarbageCollectorProps {
     * Will be used to make SDK calls to CloudFormation, S3, and ECR.
     */
   readonly sdkProvider: SdkProvider;
+
+  readonly bootstrapStackName?: string;
 }
 
 /**
@@ -111,10 +113,12 @@ interface GarbageCollectorProps {
 export class GarbageCollector {
   private garbageCollectS3Assets: boolean;
   private garbageCollectEcrAssets: boolean;
+  private bootstrapStackName: string;
 
   public constructor(readonly props: GarbageCollectorProps) {
     this.garbageCollectS3Assets = props.type === 's3' || props.type === 'all';
     this.garbageCollectEcrAssets = props.type === 'ecr' || props.type === 'all';
+    this.bootstrapStackName = props.bootstrapStackName ?? 'CdkToolkit';
 
     // TODO: ECR garbage collection
     if (this.garbageCollectEcrAssets) {
@@ -126,7 +130,7 @@ export class GarbageCollector {
    * Perform garbage collection on the resolved environment(s)
    */
   public async garbageCollect() {
-    console.log(this.garbageCollectS3Assets);
+    print(chalk.black(this.garbageCollectS3Assets));
     // SDKs
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
@@ -148,7 +152,7 @@ export class GarbageCollector {
       // Grab stack templates first
       await refreshStacks();
 
-      const bucket = await this.getBootstrapBucketName(sdk);
+      const bucket = await this.getBootstrapBucketName(sdk, this.bootstrapStackName);
       // Process objects in batches of 1000
       for await (const batch of this.readBucketInBatches(s3, bucket)) {
         print(chalk.red(batch.length));
@@ -158,30 +162,30 @@ export class GarbageCollector {
           return !activeAssets.contains(obj.getHash());
         });
 
-        const deletables: S3Asset[] = graceDays > 0 
+        const deletables: S3Asset[] = graceDays > 0
           ? await Promise.all(
-              isolated.map(async (obj) => {
-                const tagTime = await obj.getTag(s3, ISOLATED_TAG);
-                if (tagTime && olderThan(Number(tagTime), currentTime, graceDays)) {
-                  return obj;
-                }
-                return null;
-              })
-            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
+            isolated.map(async (obj) => {
+              const tagTime = await obj.getTag(s3, ISOLATED_TAG);
+              if (tagTime && olderThan(Number(tagTime), currentTime, graceDays)) {
+                return obj;
+              }
+              return null;
+            }),
+          ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
           : isolated;
 
-        const taggables = graceDays > 0 
+        const taggables = graceDays > 0
           ? await Promise.all(isolated.map(async (obj) => {
-              const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
-              return !hasTag ? obj : null;
-            })).then(results => results.filter(Boolean))
+            const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
+            return !hasTag ? obj : null;
+          })).then(results => results.filter(Boolean))
           : [];
 
         print(chalk.blue(deletables.length));
         print(chalk.white(taggables.length));
 
         if (!this.props.dryRun) {
-          this.parallelDelete(s3, bucket, deletables);
+          await this.parallelDelete(s3, bucket, deletables);
           // parallelTag(taggables, ISOLATED_TAG)
         }
 
@@ -197,7 +201,10 @@ export class GarbageCollector {
       Key: asset.key,
     }));
 
-    try { 
+    // eslint-disable-next-line no-console
+    console.log('O', objectsToDelete);
+
+    try {
       await s3.deleteObjects({
         Bucket: bucket,
         Delete: {
@@ -206,26 +213,26 @@ export class GarbageCollector {
         },
       }).promise();
     } catch (err) {
-      console.error(`Error deleting objects: ${err}`);
+      print(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 
-  private async getBootstrapBucketName(sdk: ISDK): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined);
+  private async getBootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bucketName;
   }
 
   private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000): AsyncGenerator<S3Asset[]> {
     let continuationToken: string | undefined;
-  
+
     do {
       const batch: S3Asset[] = [];
-      
+
       while (batch.length < batchSize) {
         const response = await s3.listObjectsV2({
           Bucket: bucket,
           ContinuationToken: continuationToken,
-          MaxKeys: batchSize - batch.length
+          MaxKeys: batchSize - batch.length,
         }).promise();
 
         response.Contents?.forEach((obj) => {
@@ -235,7 +242,7 @@ export class GarbageCollector {
         });
 
         continuationToken = response.NextContinuationToken;
-        
+
         if (!continuationToken) break; // No more objects to fetch
       }
 
@@ -249,7 +256,9 @@ export class GarbageCollector {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await cfn.listStacks({ NextToken: nextToken }).promise();
-      stackNames.push(...(response.StackSummaries ?? []).map(s => s.StackId ?? s.StackName));
+      // Deleted stacks are ignored
+      // TODO: need to filter for bootstrap version!!!
+      stackNames.push(...(response.StackSummaries ?? []).filter(s => !['DELETE_COMPLETE', 'DELETE_IN_PROGRESS'].includes(s.StackStatus)).map(s => s.StackId ?? s.StackName));
       return response.NextToken;
     });
 
@@ -257,14 +266,15 @@ export class GarbageCollector {
 
     const templates: string[] = [];
     for (const stack of stackNames) {
-      const summary = await cfn.getTemplateSummary({
+      let summary;
+      summary = await cfn.getTemplateSummary({
         StackName: stack,
       }).promise();
       const template = await cfn.getTemplate({
         StackName: stack,
       }).promise();
 
-      templates.push(template.TemplateBody ?? '' + summary.Parameters);
+      templates.push(template.TemplateBody ?? '' + summary?.Parameters);
     }
 
     print(chalk.red('Done parsing through stacks'));
