@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62df9989dce7c1c326116355048d41f0060c074ddc0a003cd37f281e7230f4ec.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0161bac43ff9cc4f7fc053c5d59ed55fdea47032d666d39f2f545416284dc1d7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -184,6 +184,12 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -304,12 +310,6 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/tls-network-load-balanced-ecs-service/myCert/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myCert34176BC9"
-          }
-        ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -380,6 +380,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "myCert34176BC9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myCert34176BC9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

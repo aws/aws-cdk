@@ -1525,48 +1525,11 @@
               "version": "0.0.0"
             }
           },
-          "HostedZone": {
-            "id": "HostedZone",
-            "path": "tls-network-load-balanced-ecs-service/HostedZone",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
-            }
-          },
           "myCert": {
             "id": "myCert",
             "path": "tls-network-load-balanced-ecs-service/myCert",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "tls-network-load-balanced-ecs-service/myCert/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
-                  "aws:cdk:cloudformation:props": {
-                    "domainName": "*.example.com",
-                    "domainValidationOptions": [
-                      {
-                        "domainName": "*.example.com",
-                        "hostedZoneId": "Z23ABC4XYZL05B"
-                      }
-                    ],
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "tls-network-load-balanced-ecs-service/myCert"
-                      }
-                    ],
-                    "validationMethod": "DNS"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_certificatemanager.CfnCertificate",
-                  "version": "0.0.0"
-                }
-              }
-            },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_certificatemanager.Certificate",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -1619,9 +1582,7 @@
                           "aws:cdk:cloudformation:props": {
                             "certificates": [
                               {
-                                "certificateArn": {
-                                  "Ref": "myCert34176BC9"
-                                }
+                                "certificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z"
                               }
                             ],
                             "defaultActions": [
