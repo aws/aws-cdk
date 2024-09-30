@@ -1,5 +1,5 @@
-import * as cdk from '../../../aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as cdk from '../../../aws-cdk-lib';
 import { TagType } from '../lib/cfn-resource';
 import { TagManager } from '../lib/tag-manager';
 
