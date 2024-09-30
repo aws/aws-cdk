@@ -518,25 +518,6 @@
   "ClusterEB0386A7": {
    "Type": "AWS::ECS::Cluster"
   },
-  "myCert34176BC9": {
-   "Type": "AWS::CertificateManager::Certificate",
-   "Properties": {
-    "DomainName": "*.example.com",
-    "DomainValidationOptions": [
-     {
-      "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "tls-network-load-balanced-fargate-service/myCert"
-     }
-    ],
-    "ValidationMethod": "DNS"
-   }
-  },
   "myServiceWithTlsLB43A9E2DA": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -569,9 +550,7 @@
    "Properties": {
     "Certificates": [
      {
-      "CertificateArn": {
-       "Ref": "myCert34176BC9"
-      }
+      "CertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z"
      }
     ],
     "DefaultActions": [
