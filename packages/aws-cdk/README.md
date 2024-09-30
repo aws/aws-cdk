@@ -879,33 +879,39 @@ $ cdk deploy
 
 NOTICES
 
-16603   Toggling off auto_delete_objects for Bucket empties the bucket
+22090   cli: cdk init produces EACCES: permission denied and does not fill the directory
 
-        Overview: If a stack is deployed with an S3 bucket with
-                  auto_delete_objects=True, and then re-deployed with
-                  auto_delete_objects=False, all the objects in the bucket
-                  will be deleted.
+        Overview: The CLI is unable to initialize new apps if CDK is
+                  installed globally in a directory owned by root
 
-        Affected versions: <1.126.0.
+        Affected versions: cli: 2.42.0.
 
-        More information at: https://github.com/aws/aws-cdk/issues/16603
+        More information at: https://github.com/aws/aws-cdk/issues/22090
 
 
-17061   Error when building EKS cluster with monocdk import
+27547   Incorrect action in policy of Bucket `grantRead` method
 
-        Overview: When using monocdk/aws-eks to build a stack containing
-                  an EKS cluster, error is thrown about missing
-                  lambda-layer-node-proxy-agent/layer/package.json.
+        Overview: Using the `grantRead` method on `aws-cdk-lib/aws-s3.Bucket`
+                  results in an invalid action attached to the resource policy
+                  which can cause unexpected failures when interacting
+                  with the bucket.
 
-        Affected versions: >=1.126.0 <=1.130.0.
+        Affected versions: aws-cdk-lib.aws_s3.Bucket: 2.101.0.
 
-        More information at: https://github.com/aws/aws-cdk/issues/17061
+        More information at: https://github.com/aws/aws-cdk/issues/27547
 
 
-If you don’t want to see an notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
+If you don’t want to see a notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
 ```
 
-You can suppress warnings in a variety of ways:
+There are several types of notices you may encounter, differentiated by the affected component:
+
+- **cli**: notifies you about issues related to your CLI version.
+- **framework**: notifies you about issues related to your version of core constructs (e.g `Stack`).
+- **aws-cdk-lib.{module}.{construct}**: notifies you about issue related to your version of a specific construct (e.g `aws-cdk-lib.aws_s3.Bucket`)
+- **bootstrap**: notifies you about issues related to your version of the bootstrap stack. Note that these types of notices are only shown during the `cdk deploy` command.
+
+You can suppress notices in a variety of ways:
 
 - per individual execution:
 

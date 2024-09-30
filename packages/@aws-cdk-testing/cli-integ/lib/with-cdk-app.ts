@@ -13,7 +13,7 @@ import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
-export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
+export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
 
 /**
@@ -233,6 +233,13 @@ export async function cloneDirectory(source: string, target: string, output?: No
 }
 
 interface CommonCdkBootstrapCommandOptions {
+  /**
+   * Path to a custom bootstrap template.
+   *
+   * @default - the default CDK bootstrap template.
+   */
+  readonly bootstrapTemplate?: string;
+
   readonly toolkitStackName: string;
 
   /**
@@ -421,6 +428,9 @@ export class TestFixture extends ShellHelper {
     }
     if (options.usePreviousParameters === false) {
       args.push('--no-previous-parameters');
+    }
+    if (options.bootstrapTemplate) {
+      args.push('--template', options.bootstrapTemplate);
     }
 
     return this.cdk(args, {

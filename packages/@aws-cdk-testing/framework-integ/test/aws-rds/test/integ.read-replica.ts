@@ -1,8 +1,10 @@
 import { InstanceClass, InstanceSize, InstanceType, SubnetSelection, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -53,7 +55,7 @@ class TestStack extends Stack {
       },
     });
 
-    new rds.DatabaseInstanceReadReplica(this, 'MysqlReplica', {
+    const mysqlReadReplicaInstance = new rds.DatabaseInstanceReadReplica(this, 'MysqlReplica', {
       sourceDatabaseInstance: mysqlSource,
       backupRetention: Duration.days(3),
       instanceType,
@@ -61,10 +63,20 @@ class TestStack extends Stack {
       vpcSubnets,
       parameterGroup,
     });
+
+    const role = new iam.Role(this, 'DBRole', {
+      assumedBy: new iam.AccountPrincipal(this.account),
+    });
+
+    const user = new iam.User(this, 'DBUser', {
+      userName: 'dbuser',
+    });
+
+    mysqlReadReplicaInstance.grantConnect(role, user.userName);
   }
 }
 
-const app = new App();
+const app = new App({ context: { [cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: true } });
 const stack = new TestStack(app, 'cdk-rds-read-replica');
 
 new IntegTest(app, 'instance-dual-test', {
