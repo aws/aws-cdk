@@ -1424,14 +1424,13 @@ When this feature flag is enabled, if both initOptions.timeout and resourceSigna
 
 Without enabling this feature flag, `cfn-include` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
 
-Enabling this feature flag will make `cfn-include` reject these templates.
+Enabling this feature flag will make `cfn-include` throw on these templates.
 
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.160.0 | `false` | `true` |
 
-**Compatibility with old behavior:** Disable the feature flag to silently drop these policies instead of throwing errors.
 
 <!-- END details -->

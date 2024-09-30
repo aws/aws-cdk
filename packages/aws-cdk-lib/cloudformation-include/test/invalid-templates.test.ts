@@ -256,56 +256,56 @@ describe('CDK Include', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-create-policy.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'CreationPolicyIntrinsic' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'CreationPolicyIntrinsic' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('Intrinsics cannot be used in the autoscaling creation policy', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-create-policy-autoscaling.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'AutoScalingCreationPolicyIntrinsic' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'AutoScalingCreationPolicyIntrinsic' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('Intrinsics cannot be used in the create policy resource signal', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-create-policy-resource-signal.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'ResourceSignalIntrinsic' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ResourceSignalIntrinsic' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('Intrinsics cannot be used in the top-level update policy', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'ASG' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('Intrinsics cannot be used in the auto scaling rolling update update policy', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-rolling-update.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'ASG' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('Intrinsics cannot be used in the auto scaling replacing update update policy', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-replacing-update.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'ASG' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('Intrinsics cannot be used in the auto scaling scheduled action update policy', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-scheduled-action.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'ASG' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('Intrinsics cannot be used in the code deploy lambda alias update policy', () => {
     stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
     expect(() => {
       includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
-    }).toThrow(/intrinsics cannot be used in update, deletion, or update-replace policies./);
+    }).toThrow(/Resource 'Alias' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'Alias' in the 'unhydratedResources' prop to include this resource./);
   });
 
   test('FF toggles error checking', () => {
@@ -314,17 +314,39 @@ describe('CDK Include', () => {
       includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
     }).not.toThrow();
   });
+
+  test('FF disabled with unhydratedResources does not throw', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, false);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json', {
+        unhydratedResources: ['Alias'],
+      });
+    }).not.toThrow();
+  });
+
+  test('unhydrated resources appear in the template', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json', {
+      unhydratedResources: ['Alias'],
+    });
+
+    expect(Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {}));
+  });
 });
 
 interface IncludeTestTemplateProps {
   /** @default false */
   readonly allowCyclicalReferences?: boolean;
+
+  /** @default none */
+  readonly unhydratedResources?: string[];
 }
 
 function includeTestTemplate(scope: constructs.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
     allowCyclicalReferences: props.allowCyclicalReferences,
+    unhydratedResources: props.unhydratedResources,
   });
 }
 

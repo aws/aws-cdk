@@ -66,6 +66,15 @@ export interface CfnIncludeProps {
    * @default - will throw an error on detecting any cyclical references
    */
   readonly allowCyclicalReferences?: boolean;
+
+  /**
+   * Specifies a list of LogicalIDs for resources that will be included in the CDK Stack,
+   * but which will not be accessible through `getResource` or other accessors.
+   *
+   * This allows you to use CFN templates that rely on Intrinsic placement that `cfn-include`
+   * will not parse, such as non-primitive values in resource update policies.
+   */
+  readonly unhydratedResources?: string[];
 }
 
 /**
@@ -109,6 +118,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
   private readonly allowCyclicalReferences: boolean;
+  private readonly unhydratedResources?: string[];
   private logicalIdToPlaceholderMap: Map<string, string>;
 
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
@@ -124,6 +134,8 @@ export class CfnInclude extends core.CfnElement {
     this.template = futils.readYamlSync(props.templateFile);
 
     this.preserveLogicalIds = props.preserveLogicalIds ?? true;
+
+    this.unhydratedResources = props.unhydratedResources;
 
     // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(this.parametersToReplace)) {
@@ -659,6 +671,7 @@ export class CfnInclude extends core.CfnElement {
     const cfnParser = new cfn_parse.CfnParser({
       finder,
       parameters: this.parametersToReplace,
+      unhydratedResources: this.unhydratedResources,
     });
 
     const resourceAttributes: any = this.template.Resources[logicalId];
