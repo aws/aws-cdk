@@ -1,0 +1,3467 @@
+{
+ "Resources": {
+  "AwsApiCallS3getObject6a3d5f37b0006bfef2ceb557be92af83": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 1\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"1.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616836"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallS3getObject425e9b97eb49a3538fe79384e9958548": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 2\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"2.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616837"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject00cb0ca4623057f8b812a34465870f7e": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 3\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"3.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616837"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject5ce447e051ecb69f3d807f4394b5b46c": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 4\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"4.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616839"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject8fbdfb3ab3a4709bba9b8ee0a0860bad": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 5\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"5.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616839"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject165bb563bd44d396beed1fe93a53bf91": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 6\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"6.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616839"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjecte85f88d6c0d27672799bde5799928630": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 7\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"7.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616840"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectc2c988a4b26c10ed6b496d0b59c9c3e3": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 8\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"8.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616840"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectfab0cd33f825dd802cc9566094a07640": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 9\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"9.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616840"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectf623bea8843ae0c2c3dab6846999d83f": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 10\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"10.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616840"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject42adc036c88af67f2be90f074b51502f": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 11\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"11.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616840"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject4f107fe8b41fa77377ffb3777ba9366e": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 12\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"12.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616840"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectc16bf111fbffed1fe8b98fa9b90e7ba3": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 13\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"13.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616840"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectfde82f764b77352599218ace408376af": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 14\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"14.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectd589ac20f4fbabd547db198ef005093d": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 15\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"15.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject1cb8066ea50423e08d71948c9288136b": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 16\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"16.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectf75115ac22e308b12653034f82a365a1": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 17\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"17.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject42e54704a8195966f57edaa19075d065": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 18\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"18.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectf6c8aeb1b544fa2b3a3b4eae7a204548": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 19\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"19.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject14f64c9a786da7cd3a92af4962993375": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 20\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"20.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectbe155bb34b914a0e0946bacb4d39cb70": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 21\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"21.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject1b8c3a29d08f6e7e00cb32bcfe66e51b": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 22\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"22.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject44538a10982fb955fe82894ea0aad525": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 23\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"23.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjecte23e5faf7dcfdc4c32d328969bbfd138": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 24\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"24.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject90fdb07b28f6731fdf7143a2279047e8": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 25\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"25.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectafb7f8046ceb8a393f0c98321424fed6": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 26\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"26.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject20f6d03497f071656729121ad70585e6": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 27\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"27.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectdb7679e1e1f42b7223212bf1e9751c35": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 28\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"28.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616841"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectdcaa3aca9c5034b8dc305f59fbfb9c96": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 29\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"29.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectfa41d5a4a3a6391d0fdea7b8c0ea125d": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 30\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"30.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject2acf8df2873f0193990ca37709d1ccb7": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 31\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"31.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject171e0774b61223367b3845f943820220": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 32\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"32.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject1dd45f0c7c3c3aab390ca9ec50e6257e": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 33\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"33.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject56ed3fe5313d8ed4f4987671afbe2671": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 34\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"34.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject564950231086338c3be77dc3b0c7ea80": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 35\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"35.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject81348f47a054eb2ae709dfba7fd225f6": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 36\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"36.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject48cbe15d6ce7edc21f95f2af2b8af868": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 37\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"37.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject19681224410d52b7f08b179de9aa9407": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 38\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"38.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject453bcd989937931086613deda948d2fb": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 39\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"39.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectbc4220034fde35aa40955a730d95cf06": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 40\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"40.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject3cad1680cdc1237ea85b1ac72b342605": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 41\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"41.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject4b19aae9dfab36f3533354f5d174894b": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 42\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"42.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject6962a2038a29ee048ef81298fd430024": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 43\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"43.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectf135ba74ce87f205af3a4bc840fee481": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 44\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"44.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject14323974399cf7a40be3e5edcc2e4c86": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 45\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"45.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616842"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjecte46fe02df915633605532a55738c6ac9": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 46\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"46.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616843"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject22f6a1c5aa9beb50d7ba0d606a880fc8": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 47\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"47.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616843"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjecte252c57deee82f88e98a1bfed707a7f3": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 48\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"48.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616843"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject2ec61809a1ff58bef0e500f83d0b1134": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 49\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"49.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616843"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$StringLike\":\"This is file number 50\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-too-many-sources:ExportsOutputRefDestination920A3C5768120A9A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"50.txt\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1727420616843"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$StringLike\":\"Object Keys are\"}",
+    "actualPath": "Stacks.0.Outputs.0.OutputValue",
+    "parameters": {
+     "StackName": "\"test-bucket-deployments-too-many-sources\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Stacks.0.Outputs.0.OutputKey",
+     "Stacks.0.Outputs.0.OutputValue"
+    ],
+    "salt": "1727420616843"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallS3getObject6a3d5f37b0006bfef2ceb557be92af83": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject6a3d5f37b0006bfef2ceb557be92af83",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject425e9b97eb49a3538fe79384e9958548": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject425e9b97eb49a3538fe79384e9958548",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject00cb0ca4623057f8b812a34465870f7e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject00cb0ca4623057f8b812a34465870f7e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject5ce447e051ecb69f3d807f4394b5b46c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject5ce447e051ecb69f3d807f4394b5b46c",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject8fbdfb3ab3a4709bba9b8ee0a0860bad": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject8fbdfb3ab3a4709bba9b8ee0a0860bad",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject165bb563bd44d396beed1fe93a53bf91": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject165bb563bd44d396beed1fe93a53bf91",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjecte85f88d6c0d27672799bde5799928630": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjecte85f88d6c0d27672799bde5799928630",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectc2c988a4b26c10ed6b496d0b59c9c3e3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectc2c988a4b26c10ed6b496d0b59c9c3e3",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectfab0cd33f825dd802cc9566094a07640": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectfab0cd33f825dd802cc9566094a07640",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectf623bea8843ae0c2c3dab6846999d83f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectf623bea8843ae0c2c3dab6846999d83f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject42adc036c88af67f2be90f074b51502f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject42adc036c88af67f2be90f074b51502f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject4f107fe8b41fa77377ffb3777ba9366e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject4f107fe8b41fa77377ffb3777ba9366e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectc16bf111fbffed1fe8b98fa9b90e7ba3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectc16bf111fbffed1fe8b98fa9b90e7ba3",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectfde82f764b77352599218ace408376af": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectfde82f764b77352599218ace408376af",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectd589ac20f4fbabd547db198ef005093d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectd589ac20f4fbabd547db198ef005093d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject1cb8066ea50423e08d71948c9288136b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject1cb8066ea50423e08d71948c9288136b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectf75115ac22e308b12653034f82a365a1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectf75115ac22e308b12653034f82a365a1",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject42e54704a8195966f57edaa19075d065": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject42e54704a8195966f57edaa19075d065",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectf6c8aeb1b544fa2b3a3b4eae7a204548": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectf6c8aeb1b544fa2b3a3b4eae7a204548",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject14f64c9a786da7cd3a92af4962993375": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject14f64c9a786da7cd3a92af4962993375",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectbe155bb34b914a0e0946bacb4d39cb70": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectbe155bb34b914a0e0946bacb4d39cb70",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject1b8c3a29d08f6e7e00cb32bcfe66e51b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject1b8c3a29d08f6e7e00cb32bcfe66e51b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject44538a10982fb955fe82894ea0aad525": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject44538a10982fb955fe82894ea0aad525",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjecte23e5faf7dcfdc4c32d328969bbfd138": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjecte23e5faf7dcfdc4c32d328969bbfd138",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject90fdb07b28f6731fdf7143a2279047e8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject90fdb07b28f6731fdf7143a2279047e8",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectafb7f8046ceb8a393f0c98321424fed6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectafb7f8046ceb8a393f0c98321424fed6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject20f6d03497f071656729121ad70585e6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject20f6d03497f071656729121ad70585e6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectdb7679e1e1f42b7223212bf1e9751c35": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectdb7679e1e1f42b7223212bf1e9751c35",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectdcaa3aca9c5034b8dc305f59fbfb9c96": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectdcaa3aca9c5034b8dc305f59fbfb9c96",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectfa41d5a4a3a6391d0fdea7b8c0ea125d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectfa41d5a4a3a6391d0fdea7b8c0ea125d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject2acf8df2873f0193990ca37709d1ccb7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject2acf8df2873f0193990ca37709d1ccb7",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject171e0774b61223367b3845f943820220": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject171e0774b61223367b3845f943820220",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject1dd45f0c7c3c3aab390ca9ec50e6257e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject1dd45f0c7c3c3aab390ca9ec50e6257e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject56ed3fe5313d8ed4f4987671afbe2671": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject56ed3fe5313d8ed4f4987671afbe2671",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject564950231086338c3be77dc3b0c7ea80": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject564950231086338c3be77dc3b0c7ea80",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject81348f47a054eb2ae709dfba7fd225f6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject81348f47a054eb2ae709dfba7fd225f6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject48cbe15d6ce7edc21f95f2af2b8af868": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject48cbe15d6ce7edc21f95f2af2b8af868",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject19681224410d52b7f08b179de9aa9407": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject19681224410d52b7f08b179de9aa9407",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject453bcd989937931086613deda948d2fb": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject453bcd989937931086613deda948d2fb",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectbc4220034fde35aa40955a730d95cf06": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectbc4220034fde35aa40955a730d95cf06",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject3cad1680cdc1237ea85b1ac72b342605": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject3cad1680cdc1237ea85b1ac72b342605",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject4b19aae9dfab36f3533354f5d174894b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject4b19aae9dfab36f3533354f5d174894b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject6962a2038a29ee048ef81298fd430024": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject6962a2038a29ee048ef81298fd430024",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectf135ba74ce87f205af3a4bc840fee481": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectf135ba74ce87f205af3a4bc840fee481",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject14323974399cf7a40be3e5edcc2e4c86": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject14323974399cf7a40be3e5edcc2e4c86",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjecte46fe02df915633605532a55738c6ac9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjecte46fe02df915633605532a55738c6ac9",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject22f6a1c5aa9beb50d7ba0d606a880fc8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject22f6a1c5aa9beb50d7ba0d606a880fc8",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjecte252c57deee82f88e98a1bfed707a7f3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjecte252c57deee82f88e98a1bfed707a7f3",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject2ec61809a1ff58bef0e500f83d0b1134": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject2ec61809a1ff58bef0e500f83d0b1134",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

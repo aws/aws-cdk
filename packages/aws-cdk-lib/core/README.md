@@ -155,6 +155,86 @@ new MyStack(app, 'MyStack', {
 For more information on bootstrapping accounts and customizing synthesis,
 see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
+### STS Role Options
+
+You can configure STS options that instruct the CDK CLI on which configuration should it use when assuming 
+the various roles that are involved in a deployment operation.
+
+> See https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles
+
+These options are available via the `DefaultStackSynthesizer` properties:
+
+```ts
+class MyStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleExternalId: '',
+        deployRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        fileAssetPublishingExternalId: '',
+        fileAssetPublishingRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        imageAssetPublishingExternalId: '',
+        imageAssetPublishingRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        lookupRoleExternalId: '',
+        lookupRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+      })
+    });
+  }
+}
+```
+
+> Note that the `*additionalOptions` property does not allow passing `ExternalId` or `RoleArn`, as these options
+> have dedicated properties that configure them.
+
+#### Session Tags
+
+STS session tags are used to implement [Attribute-Based Access Control](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html) (ABAC).
+
+> See [IAM tutorial: Define permissions to access AWS resources based on tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_attribute-based-access-control.html)
+
+You can pass session tags for each [role created during bootstrap](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles) via the `*additionalOptions` property:
+
+```ts
+class MyStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+      })
+    });
+  }
+}
+```
+
+This will cause the CDK CLI to include session tags when assuming each of these roles during deployment. 
+Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+
+> See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+
+- If you are using a custom bootstrap template, make sure the template includes these permissions.
+- If you are using the default bootstrap template from a CDK version lower than XXXX, you will need to rebootstrap your enviroment (once).
+
 ## Nested Stacks
 
 [Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
@@ -1241,6 +1321,18 @@ const stack = new Stack(app, 'StackName', {
   description: 'This is a description.',
 });
 ```
+
+### Receiving CloudFormation Stack Events
+
+You can add one or more SNS Topic ARNs to any Stack:
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  notificationArns: ['arn:aws:sns:us-east-1:23456789012:Topic'],
+});
+```
+
+Stack events will be sent to any SNS Topics in this list.
 
 ### CfnJson
 
