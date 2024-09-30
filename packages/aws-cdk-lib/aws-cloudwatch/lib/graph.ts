@@ -18,7 +18,8 @@ export interface MetricWidgetProps {
   /**
    * Account ID for the metrics of this widget
    *
-   * @default - None
+   * @default - If no accountId is specified, the current account is used as the default.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Dashboard-Body-Structure.html#CloudWatch-Dashboard-Properties-Metric-Widget-Object
    */
   readonly accountId?: string;
 
