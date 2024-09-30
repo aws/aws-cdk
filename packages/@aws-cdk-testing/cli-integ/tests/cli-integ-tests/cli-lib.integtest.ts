@@ -75,7 +75,7 @@ integTest(
       'This deployment will make potentially sensitive changes according to your current security approval level',
     );
     expect(stdErr).toContain(
-      'Deployment failed: Error: "--require-approval" is enabled and stack includes security-sensitive updates',
+      '"--require-approval" is enabled and stack includes security-sensitive updates',
     );
 
     // Ensure stack was not deployed

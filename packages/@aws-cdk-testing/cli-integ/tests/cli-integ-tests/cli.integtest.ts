@@ -19,7 +19,6 @@ import {
 import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import * as chalk from 'chalk';
 import {
   integTest,
   cloneDirectory,
@@ -2185,7 +2184,7 @@ integTest(
 
 integTest(
   'hotswap deployment for ecs service detects failed deployment and errors',
-  withDefaultFixture(async (fixture) => {
+  withExtendedTimeoutFixture(async (fixture) => {
     // GIVEN
     await fixture.cdkDeploy('ecs-hotswap');
 
@@ -2198,8 +2197,7 @@ integTest(
       allowErrExit: true,
     });
 
-    const stackName = `${fixture.stackNamePrefix}-ecs-hotswap`;
-    const expectedSubstring = `❌  ${chalk.bold(stackName)} failed: ResourceNotReady: Resource is not in the state deploymentCompleted`;
+    const expectedSubstring = 'Resource is not in the state deploymentCompleted';
 
     expect(deployOutput).toContain(expectedSubstring);
     expect(deployOutput).not.toContain('hotswapped!');
@@ -2261,3 +2259,34 @@ integTest(
     expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
   }),
 );
+
+integTest('cdk notices for bootstrap', withDefaultFixture(async (fixture) => {
+
+  const cache = {
+    expiration: 4125963264000, // year 2100 so we never overwrite the cache
+    notices: [{
+      title: 'Bootstrap stack outdated',
+      issueNumber: 16600,
+      overview: 'Your environments "{resolve:ENVIRONMENTS}" are running an outdated bootstrap stack.',
+      components: [{
+        name: 'bootstrap',
+        version: '<2000',
+      }],
+      schemaVersion: '1',
+    }],
+  };
+
+  const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
+  await fs.mkdir(cdkCacheDir);
+  await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
+
+  const output = await fixture.cdkDeploy('test-2', {
+    verbose: false,
+    modEnv: {
+      CDK_HOME: fixture.integTestDir,
+    },
+  });
+
+  expect(output).toContain('Your environments \"aws://');
+
+}));
