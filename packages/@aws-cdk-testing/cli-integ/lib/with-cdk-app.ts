@@ -311,6 +311,18 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
   readonly usePreviousParameters?: boolean;
 }
 
+export interface CdkGarbageCollectionCommandOptions {
+  /**
+   * @default 0
+   */
+  readonly days?: number;
+
+  /**
+   * @default 'all'
+   */
+  readonly type?: 'ecr' | 's3' | 'all';
+}
+
 export class TestFixture extends ShellHelper {
   public readonly qualifier = this.randomString.slice(0, 10);
   private readonly bucketsToDelete = new Array<string>();
@@ -442,6 +454,18 @@ export class TestFixture extends ShellHelper {
         CDK_NEW_BOOTSTRAP: '1',
       },
     });
+  }
+
+  public async cdkGarbageCollect(options: CdkGarbageCollectionCommandOptions): Promise<string> {
+    const args = ['gc'];
+    if (options.days) {
+      args.push('--days', String(options.days));
+    }
+    if (options.type) {
+      args.push('--type', options.type);
+    }
+
+    return this.cdk(args);
   }
 
   public async cdkMigrate(language: string, stackName: string, inputPath?: string, options?: CdkCliOptions) {
@@ -610,6 +634,7 @@ async function ensureBootstrapped(fixture: TestFixture) {
       CDK_NEW_BOOTSTRAP: '1',
     },
   });
+
   ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
 }
 
