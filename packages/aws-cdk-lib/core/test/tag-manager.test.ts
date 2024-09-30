@@ -1,7 +1,7 @@
-import { TagType } from '../lib/cfn-resource';
-import { TagManager } from '../lib/tag-manager';
 import * as cdk from '../../../aws-cdk-lib';
 import { Construct } from 'constructs';
+import { TagType } from '../lib/cfn-resource';
+import { TagManager } from '../lib/tag-manager';
 
 describe('tag manager', () => {
   test('TagManagerOptions can set tagPropertyName', () => {
