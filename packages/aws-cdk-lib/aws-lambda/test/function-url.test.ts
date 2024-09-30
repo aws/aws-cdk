@@ -236,11 +236,7 @@ describe('FunctionUrl', () => {
       invokeMode: lambda.InvokeMode.BUFFERED,
     });
 
-    if (fnUrl.authType === lambda.FunctionUrlAuthType.NONE) {
-      ; // ok
-    } else {
-      throw new Error('AuthType must be NONE');
-    }
+    expect(fnUrl.authType).toBe(lambda.FunctionUrlAuthType.NONE);
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Url', {
