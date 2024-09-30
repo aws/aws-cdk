@@ -69,10 +69,9 @@ export interface CfnIncludeProps {
 
   /**
    * Specifies a list of LogicalIDs for resources that will be included in the CDK Stack,
-   * but which will not be accessible through `getResource` or other accessors.
-   *
-   * This allows you to use CFN templates that rely on Intrinsic placement that `cfn-include`
-   * will not parse, such as non-primitive values in resource update policies.
+   * but will not be parsed and converted to CDK types. This allows you to use CFN templates
+   * that rely on Intrinsic placement that `cfn-include`
+   * would otherwise reject, such as non-primitive values in resource update policies.
    */
   readonly unhydratedResources?: string[];
 }
