@@ -341,7 +341,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
 }
 
 /**
- * Returns all file entires from an AssetManifestArtifact. This is used in the
+ * Returns all file entries from an AssetManifestArtifact. This is used in the
  * `uploadBodyParameterAndCreateChangeSet` function to find all template asset files to build and publish.
  *
  * Returns a tuple of [AssetManifest, FileManifestEntry[]]
