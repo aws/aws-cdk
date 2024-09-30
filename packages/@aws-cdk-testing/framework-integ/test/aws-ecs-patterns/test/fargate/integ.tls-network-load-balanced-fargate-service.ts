@@ -3,40 +3,25 @@ import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { NetworkLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
-import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
-import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 
 /**
- * In order to test this you need
- * to have a valid public hosted zone that you can use
- * to request certificates for.
- *
-*/
-const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
-if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
-const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
-if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
-const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
-if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
+ * In order to test this you need prepare a certificate.
+ */
+const certArn = process.env.CDK_INTEG_CERT_ARN || process.env.CERT_ARN;
+if (!certArn) throw new Error('For this test you must provide your own Certificate as an env var "CERT_ARN". See framework-integ/README.md for details.');
 
 const app = new App();
 const stack = new Stack(app, 'tls-network-load-balanced-fargate-service');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
-const hostedZone = PublicHostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-  hostedZoneId,
-  zoneName: hostedZoneName,
-});
-const validation = CertificateValidation.fromDns(hostedZone);
+const listenerCertificate = Certificate.fromCertificateArn(stack, 'myCert', certArn);
 
 // Fargate and NLB with TLS listener
 new NetworkLoadBalancedFargateService(stack, 'myServiceWithTls', {
   cluster,
-  listenerCertificate: new Certificate(stack, 'myCert', {
-    domainName,
-    validation,
-  }),
+  listenerCertificate,
   taskImageOptions: {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
