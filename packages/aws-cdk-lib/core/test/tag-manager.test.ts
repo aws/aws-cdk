@@ -228,7 +228,7 @@ describe('tag manager', () => {
     expect(false).toEqual(mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
   });
 
-  test('isTaggable function works', () => {
+  test('isTaggable function works as expected', () => {
     const app = new cdk.App();
     const taggableConstruct = new TaggableConstruct(app, 'MyConstruct');
     const nonTaggableConstruct = new NonTaggableConstruct(app, 'NonTaggableConstruct');

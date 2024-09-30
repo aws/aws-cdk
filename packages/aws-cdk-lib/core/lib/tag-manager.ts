@@ -303,7 +303,7 @@ export class TagManager {
    */
   public static isTaggable(construct: any): construct is ITaggable {
     const tags = (construct as any).tags;
-    return tags !== undefined && typeof tags === 'object' && (tags as any)[TAG_MANAGER_SYM];
+    return typeof tags === 'object' && (tags as any)[TAG_MANAGER_SYM];
   }
 
   /**
