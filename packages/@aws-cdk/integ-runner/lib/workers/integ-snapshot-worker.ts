@@ -4,10 +4,6 @@ import * as logger from '../logger';
 import { IntegTest } from '../runner/integration-tests';
 import { flatten, WorkList } from '../utils';
 
-// Must use a require() otherwise esbuild complains about calling a namespace
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pLimit: typeof import('p-limit') = require('p-limit');
-
 /**
  * Run Snapshot tests
  * First batch up the tests. By default there will be 3 tests per batch.
@@ -24,15 +20,15 @@ export async function runSnapshotTests(
     onTimeout: printLaggards,
   });
 
-  const limit = pLimit(50);
+  // The worker pool is already limited
   // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
   const failedTests: IntegTestWorkerConfig[][] = await Promise.all(
-    tests.map((test) => limit(() => pool.exec('snapshotTestWorker', [test.info /* Dehydrate class -> data */, options], {
+    tests.map((test) => pool.exec('snapshotTestWorker', [test.info /* Dehydrate class -> data */, options], {
       on: (x) => {
         todo.crossOff(x.testName);
         printResults(x);
       },
-    }))),
+    })),
   );
   todo.done();
   const testsToRun = flatten(failedTests);
