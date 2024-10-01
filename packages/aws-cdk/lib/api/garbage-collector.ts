@@ -110,7 +110,7 @@ interface GarbageCollectorProps {
 
   /**
    * The name of the bootstrap stack to look for.
-   * 
+   *
    * @default DEFAULT_TOOLKIT_STACK_NAME
    */
   readonly bootstrapStackName?: string;
@@ -176,7 +176,7 @@ export class GarbageCollector {
         });
 
         let deletables: S3Asset[] = [];
-        
+
         // no items are deletable if tagOnly is set
         if (this.props.tagOnly) {
           deletables = graceDays > 0
@@ -194,11 +194,11 @@ export class GarbageCollector {
 
         const taggables: S3Asset[] = graceDays > 0
           ? await Promise.all(
-              isolated.map(async (obj) => {
-                  const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
-                  return hasTag ? null : obj;
-                }),
-            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
+            isolated.map(async (obj) => {
+              const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
+              return hasTag ? null : obj;
+            }),
+          ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
           : [];
 
         print(chalk.blue(`${deletables.length} deletable assets`));
@@ -226,7 +226,7 @@ export class GarbageCollector {
    */
   private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[]) {
     const limit = pLimit(5);
-  
+
     for (const obj of taggables) {
       await limit(() =>
         s3.putObjectTagging({
@@ -243,7 +243,7 @@ export class GarbageCollector {
         }).promise(),
       );
     }
-  
+
     print(chalk.green(`Tagged ${taggables.length} assets`));
   }
 
@@ -317,7 +317,7 @@ export class GarbageCollector {
    * Fetches all relevant stack templates from CloudFormation. It ignores the following stacks:
    * - stacks in DELETE_COMPLETE or DELET_IN_PROGRES stage
    * - stacks that are using a different bootstrap qualifier
-   * 
+   *
    * It fails on the following stacks because we cannot get the template and therefore have an imcomplete
    * understanding of what assets are being used.
    * - stacks in REVIEW_IN_PROGRESS stage
@@ -337,7 +337,7 @@ export class GarbageCollector {
       stackNames.push(
         ...(response.StackSummaries ?? [])
           .filter(s => s.StackStatus !== 'DELETE_COMPLETE' && s.StackStatus !== 'DELETE_IN_PROGRESS')
-          .map(s => s.StackId ?? s.StackName)
+          .map(s => s.StackId ?? s.StackName),
       );
 
       return response.NextToken;
@@ -364,7 +364,7 @@ export class GarbageCollector {
         const template = await cfn.getTemplate({
           StackName: stack,
         }).promise();
-  
+
         templates.push(template.TemplateBody ?? '' + summary?.Parameters);
       }
     }
