@@ -108,6 +108,11 @@ interface GarbageCollectorProps {
     */
   readonly sdkProvider: SdkProvider;
 
+  /**
+   * The name of the bootstrap stack to look for.
+   * 
+   * @default DEFAULT_TOOLKIT_STACK_NAME
+   */
   readonly bootstrapStackName?: string;
 }
 
@@ -131,7 +136,7 @@ export class GarbageCollector {
   }
 
   /**
-   * Perform garbage collection on the resolved environment(s)
+   * Perform garbage collection on the resolved environment.
    */
   public async garbageCollect() {
     print(chalk.black(this.garbageCollectS3Assets));
@@ -192,8 +197,8 @@ export class GarbageCollector {
           : [];
         
 
-        print(chalk.blue(deletables.length));
-        print(chalk.white(taggables.length));
+        print(chalk.blue(`${deletables.length} deletable assets`));
+        print(chalk.white(`${taggables.length} taggable assets`));
 
         if (!this.props.dryRun) {
           if (deletables.length > 0) {
@@ -211,6 +216,10 @@ export class GarbageCollector {
     }
   }
 
+  /**
+   * Tag objects in parallel using p-limit. The putObjectTagging API does not
+   * support batch tagging so we must handle the parallelism client-side.
+   */
   private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[]) {
     const limit = pLimit(5);
 
@@ -237,6 +246,9 @@ export class GarbageCollector {
     print(chalk.green(`Tagged ${taggables.length} assets`));
   }
 
+  /**
+   * Delete objects in parallel. The deleteObjects API supports batches of 1000.
+   */
   private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[]) {
     const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
       Key: asset.key,
@@ -267,6 +279,9 @@ export class GarbageCollector {
     return info.bootstrapStack.parameters.Qualifier;
   }
 
+  /**
+   * Generator function that reads objects from the S3 Bucket in batches.
+   */
   private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000): AsyncGenerator<S3Asset[]> {
     let continuationToken: string | undefined;
 
@@ -297,6 +312,15 @@ export class GarbageCollector {
     } while (continuationToken);
   }
 
+  /**
+   * Fetches all relevant stack templates from CloudFormation. It ignores the following stacks:
+   * - stacks in DELETE_COMPLETE or DELET_IN_PROGRES stage
+   * - stacks that are using a different bootstrap qualifier
+   * 
+   * It fails on the following stacks because we cannot get the template and therefore have an imcomplete
+   * understanding of what assets are being used.
+   * - stacks in REVIEW_IN_PROGRESS stage
+   */
   private async fetchAllStackTemplates(cfn: CloudFormation, qualifier: string) {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
