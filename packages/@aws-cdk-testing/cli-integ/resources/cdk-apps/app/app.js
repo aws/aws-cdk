@@ -431,6 +431,21 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
+class LambdaStackWithAsset extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+    });
+
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.asset(String(process.env.LAMBDA_ASSET_PATH) ),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler'
+    });
+    // new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
+  }
+}
+
 class SessionTagsStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, {
@@ -777,6 +792,8 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+
+    new LambdaStackWithAsset(app, `${stackPrefix}-lambda-with-asset`);
 
     if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
       // this stack performs a VPC lookup so we gate synth

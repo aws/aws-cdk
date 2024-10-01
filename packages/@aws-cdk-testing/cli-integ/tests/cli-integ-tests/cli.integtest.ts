@@ -2336,3 +2336,82 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
   expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
 
 }));
+
+integTest(
+  'cdk destroy with deleted lambda asset succeeds',
+  withDefaultFixture(async (fixture) => {
+    // const tmpDir = path.join(os.tmpdir(), 'cdk-lambda-destroy');
+    // const testAssetDir = path.join(RESOURCES_DIR, 'cdk-apps/app/');
+
+    // // eslint-disable-next-line no-console
+    // console.log('HELLO!');
+    // // eslint-disable-next-line no-console
+    // console.log(tmpDir);
+    // fixture.log('SZOBO');
+    // fixture.log(tmpDir);
+    // fixture.log(testAssetDir);
+    // await cloneDirectory(testAssetDir, tmpDir);
+    // fixture.log()
+    const stackArn = await fixture.cdkDeploy('lambda', { captureStderr: false });
+    expect(stackArn).toBeTruthy();
+    // await fixture.cdkDeploy('lambda', {
+    //   verbose: true,
+    //   // modEnv: {
+    //   //   LAMBDA_ASSET_PATH: path.join(tmpDir, 'index.js'),
+    //   // },
+    // });
+    //console.log(fixture);
+    // for (const dir of await listChildDirs(testAssetDir)) {
+
+    // }
+    //   fixture.log(`ASSEMBLY ${asmdir}`);
+    //   await cloneDirectory(asmdir, cxAsmDir);
+    //   // Some files in the asm directory that have a .js extension are
+    //   // actually treated as templates. Evaluate them using NodeJS.
+    //   const templates = await listChildren(cxAsmDir, (fullPath) => Promise.resolve(fullPath.endsWith('.js')));
+    //   for (const template of templates) {
+    //     const targetName = template.replace(/.js$/, '');
+    //     await shell([process.execPath, template, '>', targetName], {
+    //       cwd: cxAsmDir,
+    //       output: fixture.output,
+    //       modEnv: {
+    //         TEST_ACCOUNT: await fixture.aws.account(),
+    //         TEST_REGION: fixture.aws.region,
+    //       },
+    //     });
+    //   }
+    //   // Use this directory as a Cloud Assembly
+    //   const output = await fixture.cdk(['--app', cxAsmDir, '-v', 'synth']);
+    //   // Assert that there was no providerError in CDK's stderr
+    //   // Because we rely on the app/framework to actually error in case the
+    //   // provider fails, we inspect the logs here.
+    //   expect(output).not.toContain('$providerError');
+    // }
+  }),
+);
+
+// withDefaultFixture(async (fixture) => {
+//   // GIVEN - small initial stack with only ane IAM role
+
+//   await fixture.cdkDeploy('iam-roles', {
+//     modEnv: {
+//       NUMBER_OF_ROLES: '1',
+//     },
+//   });
+
+//   // WHEN - adding 200 roles to the same stack to create a large diff
+//   const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+//     verbose: true,
+//     modEnv: {
+//       NUMBER_OF_ROLES: '200',
+//     },
+//   });
+
+//   // Assert that the CLI assumes the file publishing role:
+//   expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+//   expect(diff).toContain('success: Published');
+// }),
+// );
+
+// integTest(
+// 'can still load old assemblies',
