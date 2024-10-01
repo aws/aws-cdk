@@ -371,7 +371,7 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       }
 
       // Build and publish each file entry of the Asset Manifest Artifact:
-      const [assetManifest, file_entries] = entriesFromAssetManifestArtifact(artifact);
+      const [assetManifest, file_entries] = fileEntriesFromAssetManifestArtifact(artifact);
       for (const entry of file_entries) {
         await options.deployments.buildSingleAsset(artifact, assetManifest, entry, {
           stack: options.stack,
