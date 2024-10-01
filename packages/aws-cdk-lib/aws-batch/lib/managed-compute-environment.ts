@@ -718,13 +718,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
-    checkArchitectureConsistency(instanceType, this.instanceTypes, this.instanceClasses);
     this.instanceTypes.push(instanceType);
   }
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    const tempInstanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
-    checkArchitectureConsistency(tempInstanceType, this.instanceTypes, this.instanceClasses);
     this.instanceClasses.push(instanceClass);
   }
 }
@@ -1070,13 +1067,10 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   }
 
   public addInstanceType(instanceType: ec2.InstanceType): void {
-    checkArchitectureConsistency(instanceType, this.instanceTypes, this.instanceClasses);
     this.instanceTypes.push(instanceType);
   }
 
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    const tempInstanceType = new ec2.InstanceType(`${instanceClass.toString()}.large`);
-    checkArchitectureConsistency(tempInstanceType, this.instanceTypes, this.instanceClasses);
     this.instanceClasses.push(instanceClass);
   }
 }
@@ -1138,28 +1132,6 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       resource: 'compute-environment',
       resourceName: this.physicalName,
     });
-  }
-}
-
-function checkArchitectureConsistency(
-  newInstanceType: ec2.InstanceType,
-  existingTypes: ec2.InstanceType[],
-  existingClasses: ec2.InstanceClass[],
-): void {
-  const newArchitecture = newInstanceType.architecture;
-
-  for (const existingType of existingTypes ?? []) {
-    if (existingType.architecture !== newArchitecture) {
-      throw new Error(`Cannot add instance type ${newInstanceType.toString()} with architecture ${newArchitecture}. It conflicts with existing instance type ${existingType.toString()} with architecture ${existingType.architecture}.`);
-    }
-  }
-
-  for (const existingClass of existingClasses ?? []) {
-    const tempInstanceType = new ec2.InstanceType(`${existingClass.toString()}.large`);
-    const existingClassArchitecture = tempInstanceType.architecture;
-    if (existingClassArchitecture !== newArchitecture) {
-      throw new Error(`Cannot add instance type ${newInstanceType.toString()} with architecture ${newArchitecture}. It conflicts with existing instance class ${existingClass} with architecture ${existingClassArchitecture}.`);
-    }
   }
 }
 

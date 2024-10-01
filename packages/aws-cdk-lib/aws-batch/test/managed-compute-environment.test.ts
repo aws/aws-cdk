@@ -257,38 +257,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('throws error when adding instance type with conflicting architecture', () => {
-    // WHEN
-    const ce = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE)], // x86 architecture
-    });
-
-    // THEN
-    expect(() => {
-      ce.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.ARM1, ec2.InstanceSize.LARGE)); // ARM architecture
-    }).toThrow(
-      new Error('Cannot add instance type a1.large with architecture arm64. It conflicts with existing instance type r4.large with architecture x86_64.'),
-    );
-  });
-
-  test('instance types throw error on conflicting architectures', () => {
-    // WHEN
-    const ce = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE)],
-    });
-
-    // THEN
-    expect(() => {
-      ce.addInstanceClass(ec2.InstanceClass.STANDARD6_GRAVITON);
-    }).toThrow(
-      new Error('Cannot add instance type standard6-graviton.large with architecture arm64. It conflicts with existing instance type r4.large with architecture x86_64.'),
-    );
-  });
-
   test('instance types are correctly rendered', () => {
     // WHEN
     const ce = new ComputeEnvironment(stack, 'MyCE', {
