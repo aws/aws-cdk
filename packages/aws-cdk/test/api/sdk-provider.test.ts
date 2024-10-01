@@ -3,16 +3,14 @@ import * as os from 'os';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
-import { ISDK, Mode, SDK, SdkProvider, defaultCliUserAgent } from '../../lib/api/aws-auth';
+import { defaultCliUserAgent, ISDK, Mode, SDK, SdkConfigurationOptions, SdkProvider } from '../../lib/api/aws-auth';
 import { PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
 import { withMocked } from '../util';
 import { FakeMetadataService } from './fake-metadata-service';
-import * as fs from 'fs';
 
 jest.mock('promptly', () => ({
   prompt: jest.fn().mockResolvedValue('1234'),
@@ -113,7 +111,8 @@ describe('with intercepted network calls', () => {
 
       // Ask for a different region
       const sdk = (await provider.forEnvironment({ ...env(uniq('11111')), region: 'rgn' }, Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      const credentialsProvider = sdkConfig(sdk).credentials!;
+      expect((await credentialsProvider()).accessKeyId).toEqual(uniq('access'));
       expect(sdk.currentRegion).toEqual('rgn');
     });
 
@@ -145,7 +144,8 @@ describe('with intercepted network calls', () => {
 
       // THEN
       const sdk = (await provider.forEnvironment(cxapi.EnvironmentUtils.make(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      const credentialsProvider = sdkConfig(sdk).credentials!;
+      expect((await credentialsProvider()).accessKeyId).toEqual(uniq('access'));
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('11111'));
       expect(sdk.currentRegion).toEqual('eu-bla-5');
     });
@@ -191,7 +191,8 @@ describe('with intercepted network calls', () => {
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
       const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
+      const credentialsProvider = sdkConfig(sdk).credentials!;
+      expect((await credentialsProvider()).accessKeyId).toEqual(uniq('fooccess'));
     });
 
     test('supports profile only in config_file', async () => {
@@ -210,7 +211,8 @@ describe('with intercepted network calls', () => {
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
       const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
+      const credentialsProvider = sdkConfig(sdk).credentials!;
+      expect((await credentialsProvider()).accessKeyId).toEqual(uniq('fooccess'));
     });
 
     test('can assume-role configured in config', async () => {
@@ -681,7 +683,7 @@ test('default useragent is reasonable', () => {
 /**
  * Use object hackery to get the credentials out of the SDK object
  */
-function sdkConfig(sdk: ISDK): ConfigurationOptions {
+function sdkConfig(sdk: ISDK): SdkConfigurationOptions {
   return (sdk as any).config;
 }
 

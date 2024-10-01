@@ -8,7 +8,7 @@
  * break dependencies and replace these functions.
  */
 
-export { debug, warning, trace } from '../../logging';
+export { debug, warning, trace, error, print } from '../../logging';
 
 import { cdkCacheDir } from '../../util/directories';
 

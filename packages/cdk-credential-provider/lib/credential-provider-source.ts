@@ -9,25 +9,39 @@ export interface CdkCredentials {
   getPromise(): Promise<void>;
 }
 
-// TODO (v3 migration): rename
-class CdkCredentialsImpl implements CdkCredentials {
-  private _accessKeyId: string;
-  private _secretAccessKey: string;
+/**
+ * This class provides a layer of backwards compatibility with the SDK v2. In v2,
+ * the `AWS.Credentials` class is both a container and a provider of credentials.
+ * To read the credentials off of it, you use properties such as `accessKeyId`,
+ * and if you want to refresh the credentials, we use the `getPromise()` method
+ * (although other methods with slightly different semantics are available).
+ *
+ * In v3, these concepts were split into `AwsCredentialIdentity` (the container)
+ * and `AwsCredentialIdentityProvider`. This class wraps an
+ * `AwsCredentialIdentityProvider` and offers the same behavior as
+ * `AWS.Credentials` did, via accessors and an implementation of `getPromise()`
+ * that respects the expiration time of the previously acquired credentials.
+ */
+class CredentialIdentityProviderAdapter implements CdkCredentials {
+  private _accessKeyId?: string;
+  private _secretAccessKey?: string;
   private _sessionToken?: string;
+  private nextExpiration?: Date;
 
-  constructor(private readonly provider: AwsCredentialIdentityProvider, identity: AwsCredentialIdentity) {
-    this._accessKeyId = identity.accessKeyId;
-    this._secretAccessKey = identity.secretAccessKey;
-    this._sessionToken = identity.sessionToken;
-  }
+  constructor(private readonly provider: AwsCredentialIdentityProvider) {}
 
   async getPromise(): Promise<void> {
-    const identity: AwsCredentialIdentity = await this.provider();
-    this._accessKeyId = identity.accessKeyId;
+    if (this.nextExpiration == null || new Date() > this.nextExpiration) {
+      const identity: AwsCredentialIdentity = await this.provider();
+      this.nextExpiration = identity.expiration;
+      this._accessKeyId = identity.accessKeyId;
+      this._secretAccessKey = identity.secretAccessKey;
+      this._sessionToken = identity.sessionToken;
+    }
   }
 
   get accessKeyId(): string {
-    return this._accessKeyId;
+    return this._accessKeyId!;
   }
 
   get sessionToken(): string | undefined {
@@ -35,7 +49,7 @@ class CdkCredentialsImpl implements CdkCredentials {
   }
 
   get secretAccessKey(): string {
-    return this._secretAccessKey;
+    return this._secretAccessKey!;
   }
 }
 
@@ -44,17 +58,24 @@ export enum Mode {
   ForWriting,
 }
 
-export async function fromAwsCredentialIdentityProvider(provider: AwsCredentialIdentityProvider): Promise<CdkCredentials> {
-  const identity: AwsCredentialIdentity = await provider();
-  return new CdkCredentialsImpl(provider, identity);
+/**
+ * Produces an instance of `CdkCredentials` from an `AwsCredentialIdentityProvider`.
+ * This is a utility function to be used by plugin writers using AWS SDK v3.
+ */
+export function fromAwsCredentialIdentityProvider(provider: AwsCredentialIdentityProvider): CdkCredentials {
+  return new CredentialIdentityProviderAdapter(provider);
 }
 
-export function toAwsCredentialIdentity(creds: CdkCredentials): AwsCredentialIdentity {
-  return {
+/**
+ * Produces an instance of `AwsCredentialIdentityProvider` from a `CdkCredentials`.
+ * This utility function is intended to be used internally by the CLI.
+ */
+export function toAwsCredentialIdentityProvider(creds: CdkCredentials): AwsCredentialIdentityProvider {
+  return () => Promise.resolve({
     accessKeyId: creds.accessKeyId,
     secretAccessKey: creds.secretAccessKey,
     sessionToken: creds.sessionToken,
-  };
+  });
 }
 
 export interface CredentialProviderRegistry {

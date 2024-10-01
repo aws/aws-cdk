@@ -1,10 +1,10 @@
+import { ExpiredTokenException, STS } from '@aws-sdk/client-sts';
 import * as AWS from 'aws-sdk';
-import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
-import { CdkCredentials, toAwsCredentialIdentity } from 'cdk-credential-provider';
-import { debug, trace } from './_env';
+import { CdkCredentials, toAwsCredentialIdentityProvider } from 'cdk-credential-provider';
+import { debug, error, print as info, warning as warn } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
-import { Account } from './sdk-provider';
+import { Account, SdkConfigurationOptions } from './sdk-provider';
 import { traceMethods } from '../../util/tracing';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
@@ -82,6 +82,7 @@ export interface SdkOptions {
   readonly assumeRoleCredentialsSourceDescription?: string;
 }
 
+// TODO (v3 migration): Revert the SDK class to its main branch state
 /**
  * Base functionality of SDK without credential fetching
  */
@@ -91,7 +92,7 @@ export class SDK implements ISDK {
 
   public readonly currentRegion: string;
 
-  private readonly config: ConfigurationOptions;
+  private readonly config: SdkConfigurationOptions;
 
   /**
    * Default retry options for SDK clients.
@@ -124,15 +125,17 @@ export class SDK implements ISDK {
   constructor(
     private readonly _credentials: CdkCredentials,
     region: string,
-    httpOptions: ConfigurationOptions = {},
+    httpOptions: SdkConfigurationOptions = {},
     private readonly sdkOptions: SdkOptions = {}) {
 
     this.config = {
       ...httpOptions,
       ...this.retryOptions,
-      credentials: toAwsCredentialIdentity(_credentials),
+      credentials: toAwsCredentialIdentityProvider(_credentials),
       region,
-      logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
+      logger: {
+        debug, info, error, warn,
+      },
     };
     this.currentRegion = region;
   }
@@ -153,91 +156,93 @@ export class SDK implements ISDK {
   }
 
   public lambda(): AWS.Lambda {
-    return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
+    return this.wrapServiceErrorHandling(new AWS.Lambda({}));
   }
 
   public cloudFormation(): AWS.CloudFormation {
     return this.wrapServiceErrorHandling(new AWS.CloudFormation({
-      ...this.config,
+      ...{},
       ...this.cloudFormationRetryOptions,
     }));
   }
 
   public ec2(): AWS.EC2 {
-    return this.wrapServiceErrorHandling(new AWS.EC2(this.config));
+    return this.wrapServiceErrorHandling(new AWS.EC2({}));
   }
 
   public iam(): AWS.IAM {
-    return this.wrapServiceErrorHandling(new AWS.IAM(this.config));
+    return this.wrapServiceErrorHandling(new AWS.IAM({}));
   }
 
   public ssm(): AWS.SSM {
-    return this.wrapServiceErrorHandling(new AWS.SSM(this.config));
+    return this.wrapServiceErrorHandling(new AWS.SSM({}));
   }
 
   public s3(): AWS.S3 {
-    return this.wrapServiceErrorHandling(new AWS.S3(this.config));
+    return this.wrapServiceErrorHandling(new AWS.S3({}));
   }
 
   public route53(): AWS.Route53 {
-    return this.wrapServiceErrorHandling(new AWS.Route53(this.config));
+    return this.wrapServiceErrorHandling(new AWS.Route53({}));
   }
 
   public ecr(): AWS.ECR {
-    return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
+    return this.wrapServiceErrorHandling(new AWS.ECR({}));
   }
 
   public ecs(): AWS.ECS {
-    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
+    return this.wrapServiceErrorHandling(new AWS.ECS({}));
   }
 
   public elbv2(): AWS.ELBv2 {
-    return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
+    return this.wrapServiceErrorHandling(new AWS.ELBv2({}));
   }
 
   public secretsManager(): AWS.SecretsManager {
-    return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+    return this.wrapServiceErrorHandling(new AWS.SecretsManager({}));
   }
 
   public kms(): AWS.KMS {
-    return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+    return this.wrapServiceErrorHandling(new AWS.KMS({}));
   }
 
   public stepFunctions(): AWS.StepFunctions {
-    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
+    return this.wrapServiceErrorHandling(new AWS.StepFunctions({}));
   }
 
   public codeBuild(): AWS.CodeBuild {
-    return this.wrapServiceErrorHandling(new AWS.CodeBuild(this.config));
+    return this.wrapServiceErrorHandling(new AWS.CodeBuild({}));
   }
 
   public cloudWatchLogs(): AWS.CloudWatchLogs {
-    return this.wrapServiceErrorHandling(new AWS.CloudWatchLogs(this.config));
+    return this.wrapServiceErrorHandling(new AWS.CloudWatchLogs({}));
   }
 
   public appsync(): AWS.AppSync {
-    return this.wrapServiceErrorHandling(new AWS.AppSync(this.config));
+    return this.wrapServiceErrorHandling(new AWS.AppSync({}));
   }
 
   public async currentAccount(): Promise<Account> {
     // Get/refresh if necessary before we can access `accessKeyId`
     await this.forceCredentialRetrieval();
 
-    return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
-      // if we don't have one, resolve from STS and store in cache.
-      debug('Looking up default account ID from STS');
-      const result = await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
-      const accountId = result.Account;
-      const partition = result.Arn!.split(':')[1];
-      if (!accountId) {
-        throw new Error('STS didn\'t return an account ID');
-      }
-      debug('Default account ID:', accountId);
+    return cached(this, CURRENT_ACCOUNT_KEY, async () => {
+      return SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
+        // if we don't have one, resolve from STS and store in cache.
+        debug('Looking up default account ID from STS');
+        const result = await new STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity();
+        const accountId = result.Account;
+        const partition = result.Arn!.split(':')[1];
+        if (!accountId) {
+          throw new Error('STS didn\'t return an account ID');
+        }
+        debug('Default account ID:', accountId);
 
-      // Save another STS call later if this one already succeeded
-      this._credentialsValidated = true;
-      return { accountId, partition };
-    }));
+        // Save another STS call later if this one already succeeded
+        this._credentialsValidated = true;
+        return { accountId, partition };
+      });
+    });
   }
 
   /**
@@ -288,7 +293,7 @@ export class SDK implements ISDK {
       return;
     }
 
-    await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
+    await new STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity();
     this._credentialsValidated = true;
   }
 
@@ -422,5 +427,5 @@ function allChainedExceptionMessages(e: Error | undefined) {
  * Return whether an error should not be recovered from
  */
 export function isUnrecoverableAwsError(e: Error) {
-  return (e as any).code === 'ExpiredToken';
+  return (e as any).code === 'ExpiredToken' || (e as any).Code === 'ExpiredToken' || e instanceof ExpiredTokenException;
 }

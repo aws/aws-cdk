@@ -5,21 +5,16 @@ import { Account, ISDK, SDK, SdkForEnvironment, SdkProvider } from '../../lib/ap
 import { Mode } from '../../lib/api/aws-auth/credentials';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
-import { createCredentialChain } from '@aws-sdk/credential-providers';
-import { CdkCredentials } from 'cdk-credential-provider';
+import { toAwsCredentialIdentityProvider } from 'cdk-credential-provider';
 
-const FAKE_CREDENTIALS = new class implements CdkCredentials {
-  accessKeyId = 'ACCESS';
-  secretAccessKey = 'SECRET';
-  sessionToken = 'TOKEN';
+const FAKE_CREDENTIAL = {
+  accessKeyId: 'ACCESS',
+  secretAccessKey: 'SECRET',
+  sessionToken: 'TOKEN',
   getPromise(): Promise<void> {
     return Promise.resolve();
-  }
+  },
 };
-
-const FAKE_CREDENTIAL_CHAIN = createCredentialChain(
-  () => Promise.resolve(FAKE_CREDENTIALS),
-);
 
 export interface MockSdkProviderOptions {
   /**
@@ -44,12 +39,12 @@ export class MockSdkProvider extends SdkProvider {
   private readonly _mockSdk?: MockSdk;
 
   constructor(options: MockSdkProviderOptions = {}) {
-    super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
+    super(toAwsCredentialIdentityProvider(FAKE_CREDENTIAL), 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
 
     // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
     // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
     if (options.realSdk ?? true) {
-      this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
+      this.sdk = new SDK(FAKE_CREDENTIAL, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
     } else {
       this.sdk = this._mockSdk = new MockSdk();
     }

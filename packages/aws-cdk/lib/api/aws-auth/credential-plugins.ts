@@ -1,4 +1,4 @@
-import { CredentialProviderSource } from 'cdk-credential-provider';
+import { CdkCredentials, CredentialProviderSource } from 'cdk-credential-provider';
 import { debug } from './_env';
 import { Mode } from './credentials';
 import { warning } from '../../logging';
@@ -72,6 +72,6 @@ export class CredentialPlugins {
 }
 
 export interface PluginCredentials {
-  readonly credentials: AWS.Credentials;
+  readonly credentials: CdkCredentials;
   readonly pluginName: string;
 }

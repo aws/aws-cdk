@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { ExpiredTokenException } from '@aws-sdk/client-sts';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { HttpHandlerUserInput } from '@smithy/protocol-http';
@@ -14,7 +15,7 @@ import {
 } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import * as AWS from 'aws-sdk';
-import { CdkCredentials, fromAwsCredentialIdentityProvider, toAwsCredentialIdentity } from 'cdk-credential-provider';
+import { CdkCredentials, fromAwsCredentialIdentityProvider } from 'cdk-credential-provider';
 import * as fs from 'fs-extra';
 import { debug, warning } from './_env';
 import { AwsCliCompatible } from './awscli-compatible';
@@ -24,7 +25,6 @@ import { Mode } from './credentials';
 import { ISDK, isUnrecoverableAwsError, SDK } from './sdk';
 import { rootDir } from '../../util/directories';
 import { traceMethods } from '../../util/tracing';
-import { ExpiredTokenException } from "@aws-sdk/client-sts";
 
 export type SdkRequestHandler =
   (NodeHttpHandlerOptions & HttpHandlerUserInput)
@@ -32,9 +32,9 @@ export type SdkRequestHandler =
   | (Record<string, unknown> & HttpHandlerUserInput)
   | (RequestHandler<any, any, HttpHandlerOptions> & HttpHandlerUserInput);
 
-interface SdkConfigurationOptions {
+export interface SdkConfigurationOptions {
   region?: string;
-  credentials?: AWS.Credentials;
+  credentials?: AwsCredentialIdentityProvider;
   logger?: {
     debug: (...messages: any[]) => void;
     info: (...messages: any[]) => void;
@@ -219,12 +219,16 @@ export class SdkProvider {
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
     // At this point, we need at least SOME credentials
-    if (baseCreds.source === 'none') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+    if (baseCreds.source === 'none') {
+      throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+    }
 
     // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
     // account.
     if (options?.assumeRoleArn === undefined) {
-      if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+      if (baseCreds.source === 'incorrectDefault') {
+        throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+      }
 
       // Our current credentials must be valid and not expired. Confirm that before we get into doing
       // actual CloudFormation calls, which might take a long time to hang.
@@ -270,7 +274,9 @@ export class SdkProvider {
   public async baseCredentialsPartition(environment: cxapi.Environment, mode: Mode): Promise<string | undefined> {
     const env = await this.resolveEnvironment(environment);
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
-    if (baseCreds.source === 'none') { return undefined; }
+    if (baseCreds.source === 'none') {
+      return undefined;
+    }
     return (await new SDK(baseCreds.credentials, env.region, this.sdkOptions).currentAccount()).partition;
   }
 
@@ -380,10 +386,12 @@ export class SdkProvider {
   /**
    * Resolve the default chain to the first set of credentials that is available
    */
-  private defaultCredentials(): Promise<CdkCredentials> {
-    return cached(this, CACHED_DEFAULT_CREDENTIALS, () => {
+  private async defaultCredentials(): Promise<CdkCredentials> {
+    return cached(this, CACHED_DEFAULT_CREDENTIALS, async () => {
       debug('Resolving default credentials');
-      return fromAwsCredentialIdentityProvider(this.defaultChain);
+      const credentials = fromAwsCredentialIdentityProvider(this.defaultChain);
+      await credentials.getPromise();
+      return credentials;
     });
   }
 
@@ -417,10 +425,10 @@ export class SdkProvider {
         region,
         ...this.sdkOptions,
       },
-      masterCredentials: toAwsCredentialIdentity(masterCredentials.credentials),
+      masterCredentials: masterCredentials.credentials,
     });
 
-    const creds = await fromAwsCredentialIdentityProvider(provider);
+    const creds = fromAwsCredentialIdentityProvider(provider);
     return new SDK(creds, region, this.sdkOptions, {
       assumeRoleCredentialsSourceDescription: fmtObtainedCredentials(masterCredentials),
     });
@@ -539,7 +547,9 @@ function caBundlePathFromEnvironment(): string | undefined {
  */
 function readIfPossible(filename: string): string | undefined {
   try {
-    if (!fs.pathExistsSync(filename)) { return undefined; }
+    if (!fs.pathExistsSync(filename)) {
+      return undefined;
+    }
     return fs.readFileSync(filename, { encoding: 'utf-8' });
   } catch (e: any) {
     debug(e);
@@ -597,7 +607,9 @@ type ObtainBaseCredentialsResult =
  * - No credentials are available at all
  * - Default credentials are for the wrong account
  */
-function fmtObtainCredentialsError(targetAccountId: string, obtainResult: ObtainBaseCredentialsResult & { source: 'none' | 'incorrectDefault' }): string {
+function fmtObtainCredentialsError(targetAccountId: string, obtainResult: ObtainBaseCredentialsResult & {
+  source: 'none' | 'incorrectDefault';
+}): string {
   const msg = [`Need to perform AWS calls for account ${targetAccountId}`];
   switch (obtainResult.source) {
     case 'incorrectDefault':
