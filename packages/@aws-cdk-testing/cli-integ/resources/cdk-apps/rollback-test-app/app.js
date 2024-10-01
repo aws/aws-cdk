@@ -36,7 +36,11 @@ class RollbacktestStack extends cdk.Stack {
       case '1':
         // Normal deployment
         break;
-      case '2':
+      case '2a':
+        // r1 updates normally, r2 fails updating
+        r2props.FailUpdate = true;
+        break;
+      case '2b':
         // r1 updates normally, r2 fails updating, r1 fails rollback
         r1props.FailRollback = true;
         r2props.FailUpdate = true;
