@@ -36,26 +36,27 @@ export async function loadAwsSdk(
   let awsSdk: AwsSdk;
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
+      // Try to install the latest version
       try {
         installLatestSdk(packageName);
-        // MUST use require here. Dynamic import() do not support importing from directories
-        // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
-        awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
         console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
-        // MUST use require as dynamic import() does not support importing from directories
-        // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
-        return require(packageName); // Fallback to pre-installed version
       }
-
-    } else if (installedSdk[packageName]) {
-      // MUST use require here. Dynamic import() do not support importing from directories
-      // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
-      awsSdk = require(`/tmp/node_modules/${packageName}`);
-    } else {
-      // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
-      awsSdk = require(packageName);
     }
+
+    if (installedSdk[packageName]) {
+      // Try to load the installed version
+      try {
+        // MUST use require here. Dynamic import() do not support importing from directories
+        // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
+        return require(`/tmp/node_modules/${packageName}`);
+      } catch (e) {
+        console.log(`Failed to load latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
+      }
+    }
+    // MUST use require as dynamic import() does not support importing from directories
+    // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
+    return require(packageName); // Fallback to pre-installed version
   } catch (error) {
     throw Error(`Package ${packageName} does not exist.`);
   }
