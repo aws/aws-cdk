@@ -567,6 +567,9 @@ export class Deployments {
           }).promise();
           break;
 
+        case RollbackChoice.ROLLBACK_FAILED:
+          throw new Error(`Stack ${deployName} failed creation and rollback. This state cannot be rolled back. You can recreate this stack by running 'cdk deploy'.`);
+
         default:
           throw new Error(`Unexpected rollback choice: ${cloudFormationStack.stackStatus.rollbackChoice}`);
       }

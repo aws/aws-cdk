@@ -61,7 +61,7 @@ export class StackStatus {
       case 'ROLLBACK_FAILED':
         // Unfortunately there is no option to continue a failed rollback without
         // a stable target state.
-        return RollbackChoice.NONE;
+        return RollbackChoice.ROLLBACK_FAILED;
       default:
         return RollbackChoice.NONE;
     }
@@ -78,5 +78,11 @@ export class StackStatus {
 export enum RollbackChoice {
   START_ROLLBACK,
   CONTINUE_UPDATE_ROLLBACK,
+  /**
+   * A sign that stack creation AND its rollback have failed.
+   *
+   * There is no way to recover from this, other than recreating the stack.
+   */
+  ROLLBACK_FAILED,
   NONE,
 }
