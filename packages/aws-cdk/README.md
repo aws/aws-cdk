@@ -401,20 +401,20 @@ unmanaged resources in your account.
 Reduces the manual effort of import operations and avoids
 deployment failures due to naming conflicts with unmanaged resources in your account.
 
-Use `--method=prepare-change-set` flag to review which resources are imported or not before deploying
+Use `--method=prepare-change-set` flag to review which resources are imported or not before deploying a changeset.
 You can inspect the change set created by CDK from the management console or other external tools.
 
 ```console
 $ cdk deploy --import-existing-resources --method=prepare-change-set
 ```
 
-Use the `--exclusively` flag to enable this feature for a specific stack
+Use the `--exclusively` flag to enable this feature for a specific stack.
 
 ```console
 $ cdk deploy --import-existing-resources --exclusively StackName
 ```
 
-Only resources that have custom names can be imported using `--import-existing-resources`
+Only resources that have custom names can be imported using `--import-existing-resources`.
 For more information, see [name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html). 
 To import resources that do not accept custom names, such as EC2 instances,
 use the `cdk import` instead. 
