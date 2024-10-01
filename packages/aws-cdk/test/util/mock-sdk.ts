@@ -1,6 +1,7 @@
 /* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
+import { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { Account, ISDK, SDK, SdkProvider, SdkForEnvironment, ISDKv3, SDKv3, SdkProviderv3, SdkForEnvironmentv3 } from '../../lib/api/aws-auth';
 import { Mode } from '../../lib/api/aws-auth/credentials';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
@@ -8,9 +9,22 @@ import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
 
+const FAKE_CREDENTIALS_V3: AwsCredentialIdentity = {
+  accessKeyId: 'ACCESS',
+  secretAccessKey: 'SECRET',
+  sessionToken: 'TOKEN',
+};
+
 const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
   () => FAKE_CREDENTIALS,
 ]);
+
+const FAKE_CREDENTIAL_PROVIDER_V3: AwsCredentialIdentityProvider = async (
+  _identityProperties?: Record<string, any>,
+): Promise<AwsCredentialIdentity> => {
+  // You can use identityProperties here if needed
+  return FAKE_CREDENTIALS;
+};
 
 export interface MockSdkProviderOptions {
   /**
@@ -145,12 +159,12 @@ export class MockSdkProviderv3 extends SdkProviderv3 {
   private readonly _mockSdk?: MockSdkv3;
 
   constructor(options: MockSdkProviderOptions = {}) {
-    super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
+    super(FAKE_CREDENTIAL_PROVIDER_V3, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
 
     // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
     // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
     if (options.realSdk ?? true) {
-      this.sdk = new SDKv3(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
+      this.sdk = new SDKv3(FAKE_CREDENTIALS_V3, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' }, FAKE_CREDENTIAL_PROVIDER_V3);
     } else {
       this.sdk = this._mockSdk = new MockSdkv3();
     }

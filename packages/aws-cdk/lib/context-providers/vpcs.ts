@@ -13,6 +13,20 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   public async getValue(args: cxschema.VpcContextQuery) {
     const ec2 = (await initContextProviderSdkv3(this.aws, args)).ec2();
 
+    try {
+      const response = await ec2.describeVpcs();
+
+      debug('hogantest');
+      debug('VPCs found:', response.Vpcs?.length);
+      debug('Raw response:', JSON.stringify(response, null, 2));
+
+      if (response.Vpcs && response.Vpcs.length > 0) {
+        debug('First VPC ID:', response.Vpcs[0].VpcId);
+      }
+    } catch (error) {
+      debug('Error calling EC2:', error);
+    }
+
     const vpcId = await this.findVpc(ec2, args);
 
     return this.readVpcProps(ec2, vpcId, args);
@@ -25,7 +39,10 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     debug(`Listing VPCs in ${args.account}:${args.region}`);
     const response = await ec2.describeVpcs({ Filters: filters });
 
+    debug(`hogan: response ${JSON.stringify(response, null, 2)}`);
+
     const vpcs = response.Vpcs || [];
+    debug(`hogan: vpcs ${JSON.stringify(vpcs, null, 2)}`);
     if (vpcs.length === 0) {
       throw new Error(`Could not find any VPCs matching ${JSON.stringify(args)}`);
     }

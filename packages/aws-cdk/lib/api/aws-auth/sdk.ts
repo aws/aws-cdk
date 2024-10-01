@@ -15,6 +15,7 @@ import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 import { SFN } from '@aws-sdk/client-sfn';
 import { SSM } from '@aws-sdk/client-ssm';
 import { STS } from '@aws-sdk/client-sts';
+import { AwsCredentialIdentityProvider, AwsCredentialIdentity } from '@aws-sdk/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
@@ -165,7 +166,7 @@ export class SDKv3 implements ISDKv3 {
 
   private config: {
     region: string;
-    credentials: AWS.Credentials;
+    credentials: AwsCredentialIdentity;
     logger: {
       debug: (...messages: any[]) => void;
       info: (...messages: any[]) => void;
@@ -219,9 +220,10 @@ export class SDKv3 implements ISDKv3 {
   private _credentialsValidated = false;
 
   constructor(
-    private readonly _credentials: AWS.Credentials,
+    private _credentials: AwsCredentialIdentity,
     region: string,
-    private readonly sdkOptions: SdkOptions = {}) {
+    private readonly sdkOptions: SdkOptions = {},
+    private readonly provider: AwsCredentialIdentityProvider) {
 
     this.config = {
       region,
@@ -342,7 +344,7 @@ export class SDKv3 implements ISDKv3 {
    *
    * Don't use -- only used to write tests around assuming roles.
    */
-  public async currentCredentials(): Promise<AWS.Credentials> {
+  public async currentCredentials(): Promise<AwsCredentialIdentity> {
     await this.forceCredentialRetrieval();
     return this._credentials;
   }
@@ -356,7 +358,7 @@ export class SDKv3 implements ISDKv3 {
    */
   public async forceCredentialRetrieval() {
     try {
-      await this._credentials.getPromise();
+      this._credentials = await this.provider();
     } catch (e: any) {
       if (isUnrecoverableAwsError(e)) {
         throw e;

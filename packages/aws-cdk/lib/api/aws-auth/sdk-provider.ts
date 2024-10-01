@@ -2,13 +2,15 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
 import { debug, warning } from './_env';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
-import { CredentialPlugins } from './credential-plugins';
+import { CredentialPlugins, CredentialPluginsv3 } from './credential-plugins';
 import { Mode } from './credentials';
 import { SDK, ISDK, isUnrecoverableAwsError, SDKv3, ISDKv3, SdkOptions } from './sdk';
 import { rootDir } from '../../util/directories';
@@ -24,6 +26,10 @@ Omit<AWS.STS.Types.AssumeRoleRequest, 'ExternalId' | 'RoleArn'>
 // environment variables.
 process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
 process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
+
+export interface IBaseCredentialsPartitionProvider {
+  baseCredentialsPartition(environment: cxapi.Environment, mode: Mode): Promise<string | undefined>;
+}
 
 /**
  * Options for the default SDK provider
@@ -151,7 +157,7 @@ export interface SdkForEnvironmentv3 {
  *       role doesn't have `sts:AssumeRole` and will fail for no real good reason.
  */
 @traceMethods
-export class SdkProvider {
+export class SdkProvider implements IBaseCredentialsPartitionProvider {
   /**
    * Create a new SdkProvider which gets its defaults in a way that behaves like the AWS CLI does
    *
@@ -410,7 +416,7 @@ export class SdkProvider {
 }
 
 @traceMethods
-export class SdkProviderv3 {
+export class SdkProviderv3 implements IBaseCredentialsPartitionProvider {
   /**
    * Create a new SdkProvider which gets its defaults in a way that behaves like the AWS CLI does
    *
@@ -434,10 +440,10 @@ export class SdkProviderv3 {
     return new SdkProvider(chain, region, sdkOptions);
   }
 
-  private readonly plugins = new CredentialPlugins();
+  private readonly plugins = new CredentialPluginsv3();
 
   public constructor(
-    private readonly defaultChain: AWS.CredentialProviderChain,
+    private readonly defaultChain: AwsCredentialIdentityProvider,
     /**
      * Default region
      */
@@ -466,11 +472,11 @@ export class SdkProviderv3 {
     // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
     // account.
     if (options?.assumeRoleArn === undefined) {
-      if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+      if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsErrorv3(env.account, baseCreds)); }
 
       // Our current credentials must be valid and not expired. Confirm that before we get into doing
       // actual CloudFormation calls, which might take a long time to hang.
-      const sdk = new SDKv3(baseCreds.credentials, env.region, this.sdkOptions);
+      const sdk = new SDKv3(baseCreds.credentials, env.region, this.sdkOptions, this.defaultChain);
       await sdk.validateCredentials();
       return { sdk, didAssumeRole: false };
     }
@@ -496,8 +502,8 @@ export class SdkProviderv3 {
       if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
         debug(e.message);
         const logger = quiet ? debug : warning;
-        logger(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
-        return { sdk: new SDKv3(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
+        logger(`${fmtObtainedCredentialsv3(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
+        return { sdk: new SDKv3(baseCreds.credentials, env.region, this.sdkOptions, this.defaultChain), didAssumeRole: false };
       }
 
       throw e;
@@ -513,7 +519,7 @@ export class SdkProviderv3 {
     const env = await this.resolveEnvironment(environment);
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
     if (baseCreds.source === 'none') { return undefined; }
-    return (await new SDKv3(baseCreds.credentials, env.region, this.sdkOptions).currentAccount()).partition;
+    return (await new SDKv3(baseCreds.credentials, env.region, this.sdkOptions, this.defaultChain).currentAccount()).partition;
   }
 
   /**
@@ -564,7 +570,7 @@ export class SdkProviderv3 {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return await new SDKv3(creds, this.defaultRegion, this.sdkOptions).currentAccount();
+        return await new SDKv3(creds, this.defaultRegion, this.sdkOptions, this.defaultChain).currentAccount();
       } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
@@ -589,7 +595,7 @@ export class SdkProviderv3 {
    * 3. Fail if neither of these yield any credentials.
    * 4. Return a failure if any of them returned credentials
    */
-  private async obtainBaseCredentials(accountId: string, mode: Mode): Promise<ObtainBaseCredentialsResult> {
+  private async obtainBaseCredentials(accountId: string, mode: Mode): Promise<ObtainBaseCredentialsResultv3> {
     // First try 'current' credentials
     const defaultAccountId = (await this.defaultAccount())?.accountId;
     if (defaultAccountId === accountId) {
@@ -622,10 +628,10 @@ export class SdkProviderv3 {
   /**
    * Resolve the default chain to the first set of credentials that is available
    */
-  private defaultCredentials(): Promise<AWS.Credentials> {
+  private defaultCredentials(): Promise<AwsCredentialIdentity> {
     return cached(this, CACHED_DEFAULT_CREDENTIALS, () => {
       debug('Resolving default credentials');
-      return this.defaultChain.resolvePromise();
+      return this.defaultChain();
     });
   }
 
@@ -637,7 +643,7 @@ export class SdkProviderv3 {
    * otherwise it will be the current credentials.
    */
   private async withAssumedRole(
-    masterCredentials: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>,
+    masterCredentials: Exclude<ObtainBaseCredentialsResultv3, { source: 'none' }>,
     roleArn: string,
     externalId: string | undefined,
     additionalOptions: AssumeRoleAdditionalOptions | undefined,
@@ -645,7 +651,7 @@ export class SdkProviderv3 {
     debug(`Assuming role '${roleArn}'.`);
 
     region = region ?? this.defaultRegion;
-    const creds = new AWS.ChainableTemporaryCredentials({
+    const creds = await fromTemporaryCredentials({
       params: {
         RoleArn: roleArn,
         ExternalId: externalId,
@@ -655,16 +661,16 @@ export class SdkProviderv3 {
           : undefined,
         ...(additionalOptions ?? {}),
       },
-      stsConfig: {
+      clientConfig: {
         region,
         ...this.sdkOptions,
       },
       masterCredentials: masterCredentials.credentials,
-    });
+    })();
 
     return new SDKv3(creds, region, {
-      assumeRoleCredentialsSourceDescription: fmtObtainedCredentials(masterCredentials),
-    });
+      assumeRoleCredentialsSourceDescription: fmtObtainedCredentialsv3(masterCredentials),
+    }, this.defaultChain);
   }
 }
 
@@ -815,6 +821,12 @@ type ObtainBaseCredentialsResult =
   | { source: 'incorrectDefault'; credentials: AWS.Credentials; accountId: string; unusedPlugins: string[] }
   | { source: 'none'; unusedPlugins: string[] };
 
+type ObtainBaseCredentialsResultv3 =
+  { source: 'correctDefault'; credentials: AwsCredentialIdentity }
+  | { source: 'plugin'; pluginName: string; credentials: AwsCredentialIdentity }
+  | { source: 'incorrectDefault'; credentials: AwsCredentialIdentity; accountId: string; unusedPlugins: string[] }
+  | { source: 'none'; unusedPlugins: string[] };
+
 /**
  * Isolating the code that translates calculation errors into human error messages
  *
@@ -824,6 +836,21 @@ type ObtainBaseCredentialsResult =
  * - Default credentials are for the wrong account
  */
 function fmtObtainCredentialsError(targetAccountId: string, obtainResult: ObtainBaseCredentialsResult & { source: 'none' | 'incorrectDefault' }): string {
+  const msg = [`Need to perform AWS calls for account ${targetAccountId}`];
+  switch (obtainResult.source) {
+    case 'incorrectDefault':
+      msg.push(`but the current credentials are for ${obtainResult.accountId}`);
+      break;
+    case 'none':
+      msg.push('but no credentials have been configured');
+  }
+  if (obtainResult.unusedPlugins.length > 0) {
+    msg.push(`and none of these plugins found any: ${obtainResult.unusedPlugins.join(', ')}`);
+  }
+  return msg.join(', ');
+}
+
+function fmtObtainCredentialsErrorv3(targetAccountId: string, obtainResult: ObtainBaseCredentialsResultv3 & { source: 'none' | 'incorrectDefault' }): string {
   const msg = [`Need to perform AWS calls for account ${targetAccountId}`];
   switch (obtainResult.source) {
     case 'incorrectDefault':
@@ -849,6 +876,26 @@ function fmtObtainCredentialsError(targetAccountId: string, obtainResult: Obtain
  */
 function fmtObtainedCredentials(
   obtainResult: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>): string {
+  switch (obtainResult.source) {
+    case 'correctDefault':
+      return 'current credentials';
+    case 'plugin':
+      return `credentials returned by plugin '${obtainResult.pluginName}'`;
+    case 'incorrectDefault':
+      const msg = [];
+      msg.push(`current credentials (which are for account ${obtainResult.accountId}`);
+
+      if (obtainResult.unusedPlugins.length > 0) {
+        msg.push(`, and none of the following plugins provided credentials: ${obtainResult.unusedPlugins.join(', ')}`);
+      }
+      msg.push(')');
+
+      return msg.join('');
+  }
+}
+
+function fmtObtainedCredentialsv3(
+  obtainResult: Exclude<ObtainBaseCredentialsResultv3, { source: 'none' }>): string {
   switch (obtainResult.source) {
     case 'correctDefault':
       return 'current credentials';

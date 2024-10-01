@@ -1,7 +1,8 @@
+import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { debug } from './_env';
 import { Mode } from './credentials';
 import { warning } from '../../logging';
-import { CredentialProviderSource, PluginHost } from '../plugin';
+import { PluginHost, CredentialProviderSourcev3, PluginHostv3 } from '../plugin';
 
 /**
  * Cache for credential providers.
@@ -31,7 +32,7 @@ export class CredentialPlugins {
   }
 
   private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<PluginCredentials | undefined> {
-    const triedSources: CredentialProviderSource[] = [];
+    const triedSources: CredentialProviderSourcev3[] = [];
     // Otherwise, inspect the various credential sources we have
     for (const source of PluginHost.instance.credentialProviderSources) {
       let available: boolean;
@@ -68,6 +69,66 @@ export class CredentialPlugins {
     }
     return undefined;
   }
+}
+
+export class CredentialPluginsv3 {
+  private readonly cache: {[key: string]: PluginCredentialsv3 | undefined} = {};
+
+  public async fetchCredentialsFor(awsAccountId: string, mode: Mode): Promise<PluginCredentialsv3 | undefined> {
+    const key = `${awsAccountId}-${mode}`;
+    if (!(key in this.cache)) {
+      this.cache[key] = await this.lookupCredentials(awsAccountId, mode);
+    }
+    return this.cache[key];
+  }
+
+  public get availablePluginNames(): string[] {
+    return PluginHostv3.instance.credentialProviderSources.map(s => s.name);
+  }
+
+  private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<PluginCredentialsv3 | undefined> {
+    const triedSources: CredentialProviderSourcev3[] = [];
+    // Otherwise, inspect the various credential sources we have
+    for (const source of PluginHostv3.instance.credentialProviderSources) {
+      let available: boolean;
+      try {
+        available = await source.isAvailable();
+      } catch (e: any) {
+        // This shouldn't happen, but let's guard against it anyway
+        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        available = false;
+      }
+
+      if (!available) {
+        debug('Credentials source %s is not available, ignoring it.', source.name);
+        continue;
+      }
+      triedSources.push(source);
+      let canProvide: boolean;
+      try {
+        canProvide = await source.canProvideCredentials(awsAccountId);
+      } catch (e: any) {
+        // This shouldn't happen, but let's guard against it anyway
+        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        canProvide = false;
+      }
+      if (!canProvide) { continue; }
+      debug(`Using ${source.name} credentials for account ${awsAccountId}`);
+      const providerOrCreds = await source.getProvider(awsAccountId, mode);
+
+      // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
+      // Otherwise it must have returned credentials.
+      const credentials = (providerOrCreds as any).resolvePromise ? await (providerOrCreds as any).resolvePromise() : providerOrCreds;
+
+      return { credentials, pluginName: source.name };
+    }
+    return undefined;
+  }
+}
+
+export interface PluginCredentialsv3 {
+  readonly credentials: AwsCredentialIdentity;
+  readonly pluginName: string;
 }
 
 export interface PluginCredentials {

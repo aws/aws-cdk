@@ -12,7 +12,7 @@ import { VpcNetworkContextProviderPlugin } from './vpcs';
 import { SdkProvider, SdkProviderv3 } from '../api';
 import { PluginHost } from '../api/plugin';
 import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
-import { replaceEnvPlaceholders, replaceEnvPlaceholdersv3 } from '../api/util/placeholders';
+import { replaceEnvPlaceholders } from '../api/util/placeholders';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 
@@ -48,7 +48,8 @@ export async function provideContextValues<T extends SdkProviderType>(
       }
       factory = () => plugin;
     } else {
-      factory = combinedContextProviders[providerName] as (sdk: T) => ContextProviderPlugin;
+      factory = availableContextProviders[providerName] as (sdk: T) => ContextProviderPlugin
+      || availableContextProvidersv3[providerName] as (sdk: T) => ContextProviderPlugin;
       if (!factory) {
         throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
       }
@@ -66,79 +67,12 @@ export async function provideContextValues<T extends SdkProviderType>(
         ? await sdk.resolveEnvironment(environment)
         : { account: '?', region: '?', name: '?' };
 
-      const arns = isSdkProviderV3(sdk)
-        ? await replaceEnvPlaceholdersv3({
-          lookupRoleArn: missingContext.props.lookupRoleArn,
-        }, resolvedEnvironment, sdk)
-        : await replaceEnvPlaceholders({
-          lookupRoleArn: missingContext.props.lookupRoleArn,
-        }, resolvedEnvironment, sdk);
-
-      value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
-    } catch (e: any) {
-      value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
-    }
-    context.set(key, value);
-    debug(`Setting "${key}" context to ${JSON.stringify(value)}`);
-  }
-}
-
-// Type guard to check if the sdk is SdkProviderv3
-function isSdkProviderV3(sdk: SdkProvider | SdkProviderv3): sdk is SdkProviderv3 {
-  return 'pluginsv3' in sdk;
-}
-
-/**
- * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
- */
-export async function provideContextValuesv3(
-  missingValues: cxschema.MissingContext[],
-  context: Context,
-  sdk: SdkProviderv3) {
-
-  for (const missingContext of missingValues) {
-    const key = missingContext.key;
-
-    const providerName = missingContext.provider === cxschema.ContextProvider.PLUGIN
-      ? `${PLUGIN_PROVIDER_PREFIX}:${(missingContext.props as cxschema.PluginContextQuery).pluginName}`
-      : missingContext.provider;
-
-    let factoryv3;
-    if (providerName.startsWith(`${PLUGIN_PROVIDER_PREFIX}:`)) {
-      const plugin = PluginHost.instance.contextProviderPlugins[providerName.substring(PLUGIN_PROVIDER_PREFIX.length + 1)];
-      if (!plugin) {
-        // eslint-disable-next-line max-len
-        throw new Error(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
-      }
-      factoryv3 = () => plugin;
-    } else {
-      factoryv3 = availableContextProvidersv3[providerName];
-      if (!factoryv3) {
-        // eslint-disable-next-line max-len
-        throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
-      }
-    }
-
-    const provider = factoryv3(sdk);
-
-    let value;
-    try {
-      const environment = missingContext.props.account && missingContext.props.region
-        ? cxapi.EnvironmentUtils.make(missingContext.props.account, missingContext.props.region)
-        : undefined;
-
-      const resolvedEnvironment: cxapi.Environment = environment
-        ? await sdk.resolveEnvironment(environment)
-        : { account: '?', region: '?', name: '?' };
-
-      const arns = await replaceEnvPlaceholdersv3({
+      const arns = await replaceEnvPlaceholders({
         lookupRoleArn: missingContext.props.lookupRoleArn,
       }, resolvedEnvironment, sdk);
 
       value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
     } catch (e: any) {
-      // Set a specially formatted provider value which will be interpreted
-      // as a lookup failure in the toolkit.
       value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
     }
     context.set(key, value);
@@ -153,6 +87,7 @@ export async function provideContextValuesv3(
  */
 export function registerContextProvider(name: string, provider: ContextProviderPlugin) {
   availableContextProviders[name] = () => provider;
+  combinedContextProviders[name] = () => provider;
 }
 
 /**
