@@ -1,9 +1,12 @@
-import * as pLimit from 'p-limit';
 import * as workerpool from 'workerpool';
 import { printSummary, printResults, IntegTestWorkerConfig, SnapshotVerificationOptions, printLaggards } from './common';
 import * as logger from '../logger';
 import { IntegTest } from '../runner/integration-tests';
 import { flatten, WorkList } from '../utils';
+
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
 
 /**
  * Run Snapshot tests
