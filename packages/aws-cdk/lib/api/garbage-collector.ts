@@ -222,11 +222,9 @@ export class GarbageCollector {
    */
   private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[]) {
     const limit = pLimit(5);
-
-    const input = [];
-
+  
     for (const obj of taggables) {
-      input.push(limit(() => {
+      await limit(() =>
         s3.putObjectTagging({
           Bucket: bucket,
           Key: obj.key,
@@ -238,11 +236,10 @@ export class GarbageCollector {
               },
             ],
           },
-        })
-      }));
+        }).promise(),
+      );
     }
-
-    await Promise.all(input);
+  
     print(chalk.green(`Tagged ${taggables.length} assets`));
   }
 

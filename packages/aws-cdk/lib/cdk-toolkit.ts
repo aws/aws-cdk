@@ -798,12 +798,7 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    // eslint-disable-next-line no-console
-    console.log('E', environments);
-
     await Promise.all(environments.map(async (environment) => {
-      // eslint-disable-next-line no-console
-      console.log('EE', environment);
       success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
       const gc = new GarbageCollector({
         sdkProvider: this.props.sdkProvider,
