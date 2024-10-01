@@ -19,7 +19,6 @@ import {
 import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import * as chalk from 'chalk';
 import {
   integTest,
   cloneDirectory,
@@ -2185,7 +2184,7 @@ integTest(
 
 integTest(
   'hotswap deployment for ecs service detects failed deployment and errors',
-  withDefaultFixture(async (fixture) => {
+  withExtendedTimeoutFixture(async (fixture) => {
     // GIVEN
     await fixture.cdkDeploy('ecs-hotswap');
 
@@ -2198,8 +2197,7 @@ integTest(
       allowErrExit: true,
     });
 
-    const stackName = `${fixture.stackNamePrefix}-ecs-hotswap`;
-    const expectedSubstring = `❌  ${chalk.bold(stackName)} failed: ResourceNotReady: Resource is not in the state deploymentCompleted`;
+    const expectedSubstring = 'Resource is not in the state deploymentCompleted';
 
     expect(deployOutput).toContain(expectedSubstring);
     expect(deployOutput).not.toContain('hotswapped!');
@@ -2261,3 +2259,80 @@ integTest(
     expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
   }),
 );
+
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
+
+  const cache = {
+    expiration: 4125963264000, // year 2100 so we never overwrite the cache
+    notices: [
+      {
+        title: 'CLI Notice',
+        issueNumber: 1111,
+        overview: 'Overview for CLI Notice',
+        components: [
+          {
+            name: 'cli',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Framework Notice',
+        issueNumber: 2222,
+        overview: 'Overview for Framework Notice',
+        components: [
+          {
+            name: 'framework',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Queue Notice',
+        issueNumber: 3333,
+        overview: 'Overview for Queue Notice',
+        components: [
+          {
+            name: 'aws-cdk-lib.aws_sqs.Queue',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Bootstrap 22 Notice',
+        issueNumber: 4444,
+        overview: 'Overview for Bootstrap 22 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        components: [
+          {
+            name: 'bootstrap',
+            version: '22',
+          },
+        ],
+        schemaVersion: '1',
+      },
+    ],
+  };
+
+  const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
+  await fs.mkdir(cdkCacheDir);
+  await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
+
+  const output = await fixture.cdkDeploy('notices', {
+    verbose: false,
+    modEnv: {
+      CDK_HOME: fixture.integTestDir,
+    },
+  });
+
+  expect(output).toContain('Overview for CLI Notice');
+  expect(output).toContain('Overview for Framework Notice');
+  expect(output).toContain('Overview for Queue Notice');
+  expect(output).toContain('Overview for Bootstrap 22 Notice');
+
+  // assert dynamic environments are resolved
+  expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
+
+}));

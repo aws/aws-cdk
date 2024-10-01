@@ -32,6 +32,13 @@ export interface UserProps extends DatabaseOptions {
   readonly encryptionKey?: kms.IKey;
 
   /**
+   * Characters to not include in the generated password.
+   *
+   * @default '"@/\\\ \''
+   */
+  readonly excludeCharacters?: string;
+
+  /**
    * The policy to apply when this resource is removed from the application.
    *
    * @default cdk.RemovalPolicy.Destroy
@@ -153,6 +160,7 @@ export class User extends UserBase {
     const secret = new DatabaseSecret(this, 'Secret', {
       username,
       encryptionKey: props.encryptionKey,
+      excludeCharacters: props.excludeCharacters,
     });
     const attachedSecret = secret.attach(props.cluster);
     this.password = attachedSecret.secretValueFromJson('password');

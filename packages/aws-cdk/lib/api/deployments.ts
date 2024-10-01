@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
+import * as chalk from 'chalk';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning, error } from '../logging';
 import { Mode } from './aws-auth/credentials';
@@ -700,7 +701,7 @@ export class Deployments {
     if (existing) {
       return existing;
     }
-    const prefix = stackName ? `${stackName}: ` : '';
+    const prefix = stackName ? `${chalk.bold(stackName)}: ` : '';
     const publisher = new cdk_assets.AssetPublishing(assetManifest, {
       aws: new PublishingAws(this.sdkProvider, env),
       progressListener: new ParallelSafeAssetProgress(prefix, this.props.quiet ?? false),
@@ -719,7 +720,7 @@ class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
 
   public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
-    handler(`${this.prefix} ${type}: ${event.message}`);
+    handler(`${this.prefix}${type}: ${event.message}`);
   }
 }
 
