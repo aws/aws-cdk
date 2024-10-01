@@ -520,7 +520,8 @@ export class Deployments {
     const deployName = options.stack.stackName;
 
     // We loop in case of `--force` and the stack ends up in `CONTINUE_UPDATE_ROLLBACK`.
-    while (true) {
+    let maxLoops = 10;
+    while (maxLoops--) {
       let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
       switch (cloudFormationStack.stackStatus.rollbackChoice) {
@@ -605,6 +606,7 @@ export class Deployments {
 
       throw new Error(`${stackErrorMessage} (fix problem and retry, or orphan these resources using --orphan or --force)`);;
     }
+    throw new Error('Rollback did not finish after a large number of iterations; stopping because it looks like we\'re not making progress anymore. You can retry if rollback was progressing as expected.');
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
