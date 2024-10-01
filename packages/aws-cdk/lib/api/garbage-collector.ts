@@ -6,6 +6,10 @@ import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { print } from '../logging';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from './toolkit-info';
 
+// Must use a require() otherwise esbuild complains
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
+
 const ISOLATED_TAG = 'awscdk.isolated';
 
 class ActiveAssets {
@@ -178,19 +182,26 @@ export class GarbageCollector {
           ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
           : isolated;
 
-        const taggables = graceDays > 0
-          ? await Promise.all(isolated.map(async (obj) => {
-            const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
-            return !hasTag ? obj : null;
-          })).then(results => results.filter(Boolean))
+          const taggables: S3Asset[] = graceDays > 0
+          ? await Promise.all(
+              isolated.map(async (obj) => {
+                  const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
+                  return hasTag ? null : obj;
+                }),
+            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
           : [];
+        
 
         print(chalk.blue(deletables.length));
         print(chalk.white(taggables.length));
 
-        if (!this.props.dryRun && deletables.length > 0) {
-          await this.parallelDelete(s3, bucket, deletables);
-          // parallelTag(taggables, ISOLATED_TAG)
+        if (!this.props.dryRun) {
+          if (deletables.length > 0) {
+            await this.parallelDelete(s3, bucket, deletables);
+          }
+          if (taggables.length > 0) {
+            await this.parallelTag(s3, bucket, taggables);
+          }
         }
 
         // TODO: maybe undelete
@@ -200,13 +211,36 @@ export class GarbageCollector {
     }
   }
 
+  private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[]) {
+    const limit = pLimit(5);
+
+    const input = [];
+
+    for (const obj of taggables) {
+      input.push(limit(() => {
+        s3.putObjectTagging({
+          Bucket: bucket,
+          Key: obj.key,
+          Tagging: {
+            TagSet: [
+              {
+                Key: ISOLATED_TAG,
+                Value: String(Date.now()),
+              },
+            ],
+          },
+        })
+      }));
+    }
+
+    await Promise.all(input);
+    print(chalk.green(`Tagged ${taggables.length} assets`));
+  }
+
   private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[]) {
     const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
       Key: asset.key,
     }));
-
-    // eslint-disable-next-line no-console
-    console.log('O', objectsToDelete);
 
     try {
       await s3.deleteObjects({
@@ -216,6 +250,8 @@ export class GarbageCollector {
           Quiet: true,
         },
       }).promise();
+
+      print(chalk.green(`Deleted ${deletables.length} assets`));
     } catch (err) {
       print(chalk.red(`Error deleting objects: ${err}`));
     }
@@ -223,13 +259,11 @@ export class GarbageCollector {
 
   private async getBootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    print(chalk.blue(JSON.stringify(info.bootstrapStack.parameters)));
     return info.bucketName;
   }
 
   private async getBootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    print(chalk.blue(JSON.stringify(info.bootstrapStack.parameters)));
     return info.bootstrapStack.parameters.Qualifier;
   }
 
