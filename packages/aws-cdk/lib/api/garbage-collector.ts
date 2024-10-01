@@ -156,6 +156,8 @@ export class GarbageCollector {
 
       const bucket = await this.getBootstrapBucketName(sdk, this.bootstrapStackName);
       // Process objects in batches of 1000
+      // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
+      // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket)) {
         print(chalk.red(batch.length));
         const currentTime = Date.now();
@@ -291,11 +293,15 @@ export class GarbageCollector {
         StackName: stack,
       }).promise();
 
-      // TODO: triple check that this all stacks have this parameter
+      // Filter out stacks that we KNOW are using a different bootstrap qualifier
+      // This is necessary because a stack under a different bootstrap could coincidentally reference the same hash
+      // and cause a false negative (cause an asset to be preserved when its isolated)
       const bootstrapVersion = summary?.Parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
       const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
-      if (splitBootstrapVersion && splitBootstrapVersion.length == 4 && splitBootstrapVersion[2] == qualifier) {
-        // This stack is bootstrapped to the right version we are searching for
+      if (splitBootstrapVersion && splitBootstrapVersion.length == 4 && splitBootstrapVersion[2] != qualifier) {
+        // This stack is definitely bootstrapped to a different qualifier so we can safely ignore it
+        continue;
+      } else {
         const template = await cfn.getTemplate({
           StackName: stack,
         }).promise();
