@@ -19,7 +19,7 @@ import { replaceEnvPlaceholders } from './util/placeholders';
 import { makeBodyParameterAndUpload } from './util/template-body-parameter';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
 
-const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 22;
+const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
 
 /**
  * SDK obtained by assuming the lookup role
@@ -494,6 +494,11 @@ export class Deployments {
   }
 
   public async rollbackStack(options: RollbackStackOptions): Promise<RollbackStackResult> {
+    let resourcesToSkip: string[] = options.orphanLogicalIds ?? [];
+    if (options.force && resourcesToSkip.length > 0) {
+      throw new Error('Cannot combine --force with --orphan');
+    }
+
     const {
       stackSdk,
       resolvedEnvironment: _,
@@ -513,11 +518,10 @@ export class Deployments {
     const cfn = stackSdk.cloudFormation();
     const deployName = options.stack.stackName;
 
+    // We loop in case of `--force` and the stack ends up in `CONTINUE_UPDATE_ROLLBACK`.
     while (true) {
       let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
-      // TODO: currently, we only roll back UPDATE_FAILED and CREATE_FAILED stacks. Conceivably, we could also
-      // handle UPDATE_ROLLBACK_FAILED by offering some option like "force rollback".
       switch (cloudFormationStack.stackStatus.rollbackChoice) {
         case RollbackChoice.NONE:
           warning(`Stack ${deployName} does not need a rollback: ${cloudFormationStack.stackStatus}`);
@@ -535,11 +539,6 @@ export class Deployments {
           break;
 
         case RollbackChoice.CONTINUE_UPDATE_ROLLBACK:
-          let resourcesToSkip: string[] = options.orphanLogicalIds ?? [];
-
-          if (options.force && resourcesToSkip.length > 0) {
-            throw new Error('Cannot combine --force with --orphan');
-          }
           if (options.force) {
             // Find the failed resources from the deployment and automatically skip them
             // (Using deployment log because we definitely have `DescribeStackEvents` permissions, and we might not have

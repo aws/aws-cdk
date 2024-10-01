@@ -178,11 +178,15 @@ async function parseCommandLineArguments(args: string[]) {
     )
     .command('rollback [STACKS..]', 'Rolls back the stack(s) named STACKS to their last stable state', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Roll back all available stacks' })
-      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack the environment is bootstrapped with', requiresArg: true })
       .option('force', {
         alias: 'f',
         type: 'boolean',
         desc: 'Orphan all resources for which the rollback operation fails.',
+      })
+      .option('validate-bootstrap-version', {
+        type: 'boolean',
+        desc: 'Whether to validate the bootstrap stack version. Defaults to \'true\', disable with --no-validate-bootstrap-version.',
       })
       .option('orphan', {
         // alias: 'o' conflicts with --output
@@ -638,6 +642,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           toolkitStackName,
           roleArn: args.roleArn,
           force: args.force,
+          validateBootstrapStackVersion: args['validate-bootstrap-version'],
+          orphanLogicalIds: args.orphan,
         });
 
       case 'import':

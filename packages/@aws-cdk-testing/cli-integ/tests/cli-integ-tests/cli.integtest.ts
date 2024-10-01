@@ -2284,9 +2284,8 @@ integTest(
         verbose: false,
         allowErrExit: true,
       });
-      if (!deployOutput.includes('UPDATE_FAILED')) {
-        throw new Error(`Expected output to contain UPDATE_FAILED, got: ${deployOutput}`);
-      }
+
+      expect(deployOutput).toContain('UPDATE_FAILED');
 
       // Should still fail
       const rollbackOutput = await fixture.cdk(['rollback'], {
@@ -2294,9 +2293,8 @@ integTest(
         verbose: false,
         allowErrExit: true,
       });
-      if (!rollbackOutput.includes('Failing rollback')) {
-        throw new Error(`Expected output to contain "Failing rollback", got: ${rollbackOutput}`);
-      }
+
+      expect(rollbackOutput).toContain('Failing rollback');
 
       // Rollback and force cleanup
       await fixture.cdk(['rollback', '--force'], {

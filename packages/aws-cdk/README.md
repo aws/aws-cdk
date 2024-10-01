@@ -482,8 +482,12 @@ To roll the deployment back, use `cdk rollback`. This will initiate a rollback
 to the last stable state of your stack.
 
 Some resources may fail to roll back. If they do, you can try again by calling
-`cdk rollback --orphan <LogicalId>`. Or, run `cdk rollback --force` to have
-the CDK CLI automatically orphan all failing resources.
+`cdk rollback --orphan <LogicalId>` (can be specified multiple times). Or, run
+`cdk rollback --force` to have the CDK CLI automatically orphan all failing
+resources.
+
+(`cdk rollback` requires version 23 of the bootstrap stack, since it depends on
+new permissions necessary to call the appropriate CloudFormation APIs)
 
 ### `cdk watch`
 

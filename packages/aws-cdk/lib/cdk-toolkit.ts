@@ -449,22 +449,32 @@ export class CdkToolkit {
       return;
     }
 
+    let anyRollbackable = false;
+
     for (const stack of stackCollection.stackArtifacts) {
       print('Rolling back %s', chalk.bold(stack.displayName));
       const startRollbackTime = new Date().getTime();
       try {
-        await this.props.deployments.rollbackStack({
+        const result = await this.props.deployments.rollbackStack({
           stack,
           roleArn: options.roleArn,
           toolkitStackName: options.toolkitStackName,
           force: options.force,
+          validateBootstrapStackVersion: options.validateBootstrapStackVersion,
+          orphanLogicalIds: options.orphanLogicalIds,
         });
+        if (!result.notInRollbackableState) {
+          anyRollbackable = true;
+        }
         const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
         print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
       } catch (e: any) {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
         throw new Error('Rollback failed (use --force to orphan failing resources)');
       }
+    }
+    if (!anyRollbackable) {
+      throw new Error('No stacks were in a state that could be rolled back');
     }
   }
 
@@ -1409,6 +1419,20 @@ export interface RollbackOptions {
    * @default false
    */
   readonly force?: boolean;
+
+  /**
+   * Logical IDs of resources to orphan
+   *
+   * @default - No orphaning
+   */
+  readonly orphanLogicalIds?: string[];
+
+  /**
+   * Whether to validate the version of the bootstrap stack permissions
+   *
+   * @default true
+   */
+  readonly validateBootstrapStackVersion?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
