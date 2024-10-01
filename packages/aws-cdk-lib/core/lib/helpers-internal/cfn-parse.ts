@@ -315,11 +315,6 @@ export enum CfnParsingContext {
  */
 export interface ParseCfnOptions {
   /**
-   * resources to not parse some data for
-   */
-  unhydratedResources?: string[];
-
-  /**
    * The finder interface used to resolve references in the template.
    */
   readonly finder: ICfnFinder;
@@ -351,24 +346,18 @@ export interface ParseCfnOptions {
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
-  private readonly unhydratedResources: string[];
   private stack?: Stack;
 
   constructor(options: ParseCfnOptions) {
     this.options = options;
-    this.unhydratedResources = options.unhydratedResources ?? [];
   }
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const cfnOptions = resource.cfnOptions;
     this.stack = Stack.of(resource);
 
-    cfnOptions.creationPolicy = this.unhydratedResources.includes(logicalId)
-      ? resourceAttributes.CreationPolicy
-      : this.parseCreationPolicy(resourceAttributes.CreationPolicy, logicalId);
-    cfnOptions.updatePolicy = this.unhydratedResources.includes(logicalId)
-      ? resourceAttributes.UpdatePolicy
-      : this.parseUpdatePolicy(resourceAttributes.UpdatePolicy, logicalId);
+    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy, logicalId);
+    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy, logicalId);
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
     cfnOptions.version = this.parseValue(resourceAttributes.Version);
@@ -709,7 +698,7 @@ export class CfnParser {
     }
     if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
       if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
-        throw new Error(`Resource '${logicalId}' uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'unhydratedResources' prop to include this resource.`);
+        throw new Error(`Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
       }
     }
   }
