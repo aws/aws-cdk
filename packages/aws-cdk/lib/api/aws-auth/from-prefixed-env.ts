@@ -1,6 +1,6 @@
 import { CredentialProviderOptions } from '@aws-sdk/types';
+import { CredentialsProviderError } from '@smithy/property-provider';
 import { AwsCredentialIdentityProvider } from '@smithy/types';
-import { CredentialsProviderError } from "@smithy/property-provider";
 
 export interface FromPrefixedEnvInit extends CredentialProviderOptions {
   prefix: string;

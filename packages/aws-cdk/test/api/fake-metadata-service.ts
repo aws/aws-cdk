@@ -1,4 +1,4 @@
-import * as nock from "nock";
+import * as nock from 'nock';
 
 export class FakeMetadataService {
   private accessKeyId?: string;

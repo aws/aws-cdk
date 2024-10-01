@@ -23,6 +23,7 @@ interface AssumedRole {
   readonly roleSessionName: string;
   readonly tags?: AWS.STS.Tag[];
   readonly transitiveTagKeys?: string[];
+  readonly webIdentityToken?: string;
 }
 
 /**
@@ -134,14 +135,19 @@ export class FakeSts {
   private handleRequest(mockRequest: MockRequest): Record<string, any> {
     this.requests.push(mockRequest);
     const response = (() => {
-      const identity = this.identity(mockRequest);
+      let identity: RegisteredIdentity;
 
       switch (mockRequest.parsedBody.Action) {
         case 'GetCallerIdentity':
+          identity = this.identity(mockRequest);
           return this.handleGetCallerIdentity(identity);
 
         case 'AssumeRole':
+          identity = this.identity(mockRequest);
           return this.handleAssumeRole(identity, mockRequest);
+
+        case 'AssumeRoleWithWebIdentity':
+          return this.handleAssumeRoleWithWebIdentity(mockRequest.parsedBody.RoleArn);
       }
 
       throw new Error(`Unrecognized Action in MockAwsHttp: ${mockRequest.parsedBody.Action}`);
@@ -198,6 +204,7 @@ export class FakeSts {
       tokenCode: mockRequest.parsedBody.TokenCode,
       tags: this.decodeMapFromRequestBody('Tags', mockRequest.parsedBody),
       transitiveTagKeys: this.decodeListKeysFromRequestBody('TransitiveTagKeys', mockRequest.parsedBody),
+      webIdentityToken: mockRequest.parsedBody.WebIdentityToken,
     });
 
     const roleArn = mockRequest.parsedBody.RoleArn;
@@ -238,6 +245,31 @@ export class FakeSts {
         },
       },
     };
+  }
+
+  private handleAssumeRoleWithWebIdentity(roleArn: string) {
+    return {
+      AssumeRoleWithWebIdentityResponse: {
+        _attributes: { xmlns: 'https://sts.amazonaws.com/doc/2011-06-15/' },
+        AssumeRoleWithWebIdentityResult: {
+          AssumedRoleUser: {
+            Arn: roleArn,
+            AssumedRoleId: 'foo:bar',
+          },
+          Credentials: {
+            AccessKeyId: 'abcd',
+            SecretAccessKey: 'Secret',
+            SessionToken: 'Token',
+            Expiration: new Date(Date.now() + 3600 * 1000).toISOString(),
+          },
+          PackedPolicySize: 6,
+        },
+        ResponseMetadata: {
+          RequestId: '1',
+        },
+      },
+    };
+
   }
 
   private checkForFailure(s: string) {

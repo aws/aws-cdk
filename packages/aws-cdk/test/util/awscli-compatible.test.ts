@@ -2,6 +2,8 @@
 import * as AWS from 'aws-sdk';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { withMockedClassSingleton } from '../util';
+import { FakeSts } from '../api/fake-sts';
+import { bockfs } from '@aws-cdk/cdk-build-tools';
 
 beforeEach(() => {
   // Set to paths that don't exist so the SDK doesn't accidentally load this config
@@ -19,31 +21,44 @@ test('on an EC2 instance, region lookup queries IMDS', async () => {
   return withMockedClassSingleton(AWS, 'MetadataService', async (mdService) => {
     mdService.request
       // First call for a token
-      .mockImplementationOnce((_1, _2, cb) => { cb(undefined as any, 'token'); })
+      .mockImplementationOnce((_1, _2, cb) => {
+        cb(undefined as any, 'token');
+      })
       // Second call for the region
-      .mockImplementationOnce((_1, _2, cb) => { cb(undefined as any, JSON.stringify({ region: 'some-region' })); });
+      .mockImplementationOnce((_1, _2, cb) => {
+        cb(undefined as any, JSON.stringify({ region: 'some-region' }));
+      });
 
     const region = await AwsCliCompatible.region({ ec2instance: true });
     expect(region).toEqual('some-region');
   });
 });
 
-// TODO (v3 migration): uncomment this test
-// test('Use web identity when available', async () => {
-//
-//   // Scrub some environment variables that are maybe set for Ecs Credentials
-//   delete process.env.ECS_CONTAINER_METADATA_URI_V4;
-//   delete process.env.ECS_CONTAINER_METADATA_URI;
-//   delete process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;
-//
-//   // create and configure the web identity token file
-//   process.env.AWS_WEB_IDENTITY_TOKEN_FILE = 'some-value';
-//   process.env.AWS_ROLE_ARN = 'some-value';
-//
-//   // create the chain
-//   const providers = (await AwsCliCompatible.credentialChain()).providers;
-//
-//   // make sure the web identity provider is in the chain
-//   const webIdentify = (providers[5] as Function)();
-//   expect(webIdentify).toBeInstanceOf(AWS.TokenFileWebIdentityCredentials);
-// });
+test('Use web identity when available', async () => {
+  const fakeSts = new FakeSts();
+  fakeSts.begin();
+
+  bockfs({
+    '/home/me/.bxt/web-identity': 'some random token',
+  });
+
+  // Scrub some environment variables that are maybe set for Ecs Credentials
+  delete process.env.ECS_CONTAINER_METADATA_URI_V4;
+  delete process.env.ECS_CONTAINER_METADATA_URI;
+  delete process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;
+
+  // create and configure the web identity token file
+  process.env.AWS_WEB_IDENTITY_TOKEN_FILE = bockfs.path('/home/me/.bxt/web-identity');
+  process.env.AWS_ROLE_ARN = 'some-value';
+
+  // create the chain
+  const chain = await AwsCliCompatible.credentialChain();
+  await chain();
+
+  expect(fakeSts.requests[0]).toMatchObject({
+    parsedBody: {
+      RoleArn: 'some-value',
+      WebIdentityToken: 'some random token',
+    },
+  });
+});
