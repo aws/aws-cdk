@@ -4,7 +4,7 @@ import { CloudFormation, S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { print } from '../logging';
-import { ToolkitInfo } from './toolkit-info';
+import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from './toolkit-info';
 
 const ISOLATED_TAG = 'awscdk.isolated';
 
@@ -118,7 +118,7 @@ export class GarbageCollector {
   public constructor(readonly props: GarbageCollectorProps) {
     this.garbageCollectS3Assets = props.type === 's3' || props.type === 'all';
     this.garbageCollectEcrAssets = props.type === 'ecr' || props.type === 'all';
-    this.bootstrapStackName = props.bootstrapStackName ?? 'CdkToolkit';
+    this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
     // TODO: ECR garbage collection
     if (this.garbageCollectEcrAssets) {
@@ -136,10 +136,12 @@ export class GarbageCollector {
     const cfn = sdk.cloudFormation();
     const s3 = sdk.s3();
 
+    const qualifier = await this.getBootstrapQualifier(sdk, this.bootstrapStackName);
+
     const activeAssets = new ActiveAssets();
 
     const refreshStacks = async () => {
-      const stacks = await this.fetchAllStackTemplates(cfn);
+      const stacks = await this.fetchAllStackTemplates(cfn, qualifier);
       for (const stack of stacks) {
         activeAssets.rememberStack(stack);
       }
@@ -184,7 +186,7 @@ export class GarbageCollector {
         print(chalk.blue(deletables.length));
         print(chalk.white(taggables.length));
 
-        if (!this.props.dryRun) {
+        if (!this.props.dryRun && deletables.length > 0) {
           await this.parallelDelete(s3, bucket, deletables);
           // parallelTag(taggables, ISOLATED_TAG)
         }
@@ -219,7 +221,14 @@ export class GarbageCollector {
 
   private async getBootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    print(chalk.blue(JSON.stringify(info.bootstrapStack.parameters)));
     return info.bucketName;
+  }
+
+  private async getBootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    print(chalk.blue(JSON.stringify(info.bootstrapStack.parameters)));
+    return info.bootstrapStack.parameters.Qualifier;
   }
 
   private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000): AsyncGenerator<S3Asset[]> {
@@ -252,13 +261,24 @@ export class GarbageCollector {
     } while (continuationToken);
   }
 
-  private async fetchAllStackTemplates(cfn: CloudFormation) {
+  private async fetchAllStackTemplates(cfn: CloudFormation, qualifier: string) {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await cfn.listStacks({ NextToken: nextToken }).promise();
+
+      // We cannot operate on REVIEW_IN_PROGRESS stacks because we do not know what the template looks like in this case
+      const reviewInProgressStacks = response.StackSummaries?.filter(s => s.StackStatus === 'REVIEW_IN_PROGRESS') ?? [];
+      if (reviewInProgressStacks.length > 0) {
+        throw new Error(`Stacks in REVIEW_IN_PROGRESS state are not allowed: ${reviewInProgressStacks.map(s => s.StackName).join(', ')}`);
+      }
+
       // Deleted stacks are ignored
-      // TODO: need to filter for bootstrap version!!!
-      stackNames.push(...(response.StackSummaries ?? []).filter(s => !['DELETE_COMPLETE', 'DELETE_IN_PROGRESS'].includes(s.StackStatus)).map(s => s.StackId ?? s.StackName));
+      stackNames.push(
+        ...(response.StackSummaries ?? [])
+          .filter(s => s.StackStatus !== 'DELETE_COMPLETE' && s.StackStatus !== 'DELETE_IN_PROGRESS')
+          .map(s => s.StackId ?? s.StackName)
+      );
+
       return response.NextToken;
     });
 
@@ -270,11 +290,18 @@ export class GarbageCollector {
       summary = await cfn.getTemplateSummary({
         StackName: stack,
       }).promise();
-      const template = await cfn.getTemplate({
-        StackName: stack,
-      }).promise();
 
-      templates.push(template.TemplateBody ?? '' + summary?.Parameters);
+      // TODO: triple check that this all stacks have this parameter
+      const bootstrapVersion = summary?.Parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
+      const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
+      if (splitBootstrapVersion && splitBootstrapVersion.length == 4 && splitBootstrapVersion[2] == qualifier) {
+        // This stack is bootstrapped to the right version we are searching for
+        const template = await cfn.getTemplate({
+          StackName: stack,
+        }).promise();
+  
+        templates.push(template.TemplateBody ?? '' + summary?.Parameters);
+      }
     }
 
     print(chalk.red('Done parsing through stacks'));

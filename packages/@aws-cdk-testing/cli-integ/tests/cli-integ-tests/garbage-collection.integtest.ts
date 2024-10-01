@@ -44,7 +44,6 @@ integTest(
     // assert that the bootstrap bucket is empty
     await fixture.aws.s3.send(new ListObjectsV2Command({ Bucket: bootstrapBucketName }))
       .then((result) => {
-        fixture.log(JSON.stringify(result));
         expect(result.Contents).toBeUndefined();
       });
   }),
@@ -55,7 +54,7 @@ integTest(
   withoutBootstrap(async (fixture) => {
     const toolkitStackName = fixture.bootstrapStackName;
     const bootstrapBucketName = `aws-cdk-garbage-collect-integ-test-bckt-${randomString()}`;
-    // fixture.rememberToDeleteBucket(bootstrapBucketName); // just in case
+    fixture.rememberToDeleteBucket(bootstrapBucketName); // just in case
 
     await fixture.cdkBootstrapModern({
       toolkitStackName,
@@ -82,7 +81,6 @@ integTest(
     // assert that the bootstrap bucket is empty
     await fixture.aws.s3.send(new ListObjectsV2Command({ Bucket: bootstrapBucketName }))
       .then((result) => {
-        fixture.log(JSON.stringify(result));
         expect(result.Contents).toHaveLength(2);
       });
 
