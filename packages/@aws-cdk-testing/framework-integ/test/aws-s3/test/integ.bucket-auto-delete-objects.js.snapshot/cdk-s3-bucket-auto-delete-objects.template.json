@@ -348,11 +348,11 @@
        {
         "Ref": "RemovedBucket4FCCEBAD"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DeleteBucketCustomResourcePolicy99AB6B27"
