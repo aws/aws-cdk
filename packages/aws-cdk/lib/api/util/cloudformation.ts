@@ -346,7 +346,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
  *
  * Returns a tuple of [AssetManifest, FileManifestEntry[]]
  */
-function entriesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): [AssetManifest, FileManifestEntry[]] {
+function fileEntriesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): [AssetManifest, FileManifestEntry[]] {
   const assets: (FileManifestEntry)[] = [];
   const fileName = artifact.file;
   const assetManifest = AssetManifest.fromFile(fileName);
