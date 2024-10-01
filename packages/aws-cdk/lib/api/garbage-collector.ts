@@ -102,10 +102,10 @@ interface GarbageCollectorProps {
   readonly resolvedEnvironment: cxapi.Environment;
 
   /**
-    * SDK provider (seeded with default credentials)
-    *
-    * Will be used to make SDK calls to CloudFormation, S3, and ECR.
-    */
+   * SDK provider (seeded with default credentials)
+   *
+   * Will be used to make SDK calls to CloudFormation, S3, and ECR.
+   */
   readonly sdkProvider: SdkProvider;
 
   /**
@@ -201,7 +201,7 @@ export class GarbageCollector {
         print(chalk.white(`${taggables.length} taggable assets`));
 
         if (!this.props.dryRun) {
-          if (deletables.length > 0) {
+          if (!this.props.tagOnly && deletables.length > 0) {
             await this.parallelDelete(s3, bucket, deletables);
           }
           if (taggables.length > 0) {

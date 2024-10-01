@@ -725,6 +725,46 @@ export class CdkToolkit {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
+    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+
+    await Promise.all(environments.map(async (environment) => {
+      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
+      try {
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
+        const message = result.noOp
+          ? ' ✅  Environment %s bootstrapped (no changes).'
+          : ' ✅  Environment %s bootstrapped.';
+        success(message, chalk.blue(environment.name));
+      } catch (e) {
+        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
+        throw e;
+      }
+    }));
+  }
+
+  /**
+   * Garbage collects assets from a CDK app's environment
+   * @param options Options for Garbage Collection
+   */
+  public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
+    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+
+    await Promise.all(environments.map(async (environment) => {
+      success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
+      const gc = new GarbageCollector({
+        sdkProvider: this.props.sdkProvider,
+        resolvedEnvironment: environment,
+        bootstrapStackName: options.bootstrapStackName,
+        isolationDays: options.days,
+        dryRun: options.dryRun ?? false,
+        tagOnly: options.tagOnly ?? false,
+        type: options.type ?? 'all',
+      });
+      await gc.garbageCollect();
+    }));
+  }
+
+  private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
     // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
@@ -749,68 +789,7 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    await Promise.all(environments.map(async (environment) => {
-      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
-      try {
-        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
-        const message = result.noOp
-          ? ' ✅  Environment %s bootstrapped (no changes).'
-          : ' ✅  Environment %s bootstrapped.';
-        success(message, chalk.blue(environment.name));
-      } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
-        throw e;
-      }
-    }));
-  }
-
-  /**
-   * Garbage collects assets from a CDK app's environment
-   * @param options Options for Garbage Collection
-   */
-  public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
-    // eslint-disable-next-line no-console
-    console.log(userEnvironmentSpecs, options);
-
-    // TODO: copied from bootstrap, make into function
-    // By default, glob for everything
-    const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
-
-    // eslint-disable-next-line no-console
-    console.log(environmentSpecs);
-    // Partition into globs and non-globs (this will mutate environmentSpecs).
-    const globSpecs = partition(environmentSpecs, looksLikeGlob);
-    if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
-      if (userEnvironmentSpecs.length > 0) {
-        // User did request this glob
-        throw new Error(`'${globSpecs}' is not an environment name. Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json' to use wildcards.`);
-      } else {
-        // User did not request anything
-        throw new Error('Specify an environment name like \'aws://123456789012/us-east-1\', or run in a directory with \'cdk.json\'.');
-      }
-    }
-
-    const environments: cxapi.Environment[] = [
-      ...environmentsFromDescriptors(environmentSpecs),
-    ];
-
-    if (this.props.cloudExecutable.hasApp) {
-      environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
-    }
-
-    await Promise.all(environments.map(async (environment) => {
-      success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
-      const gc = new GarbageCollector({
-        sdkProvider: this.props.sdkProvider,
-        resolvedEnvironment: environment,
-        bootstrapStackName: options.bootstrapStackName,
-        isolationDays: options.days,
-        dryRun: options.dryRun ?? false,
-        tagOnly: options.tagOnly ?? false,
-        type: options.type ?? 'all',
-      });
-      await gc.garbageCollect();
-    }));
+    return environments;
   }
 
   /**
@@ -1457,11 +1436,45 @@ export interface DestroyOptions {
   readonly ci?: boolean;
 }
 
+/**
+ * Options for the garbage collection
+ */
 export interface GarbageCollectionOptions {
+  /**
+   * Whether to perform a dry run or not.
+   * A dry run means that isolated objects are printed to stdout
+   * but not tagged or deleted
+   *
+   * @default false
+   */
   readonly dryRun?: boolean;
+
+  /**
+   * Whether to only perform tagging. If this is set, no deletion happens
+   *
+   * @default false
+   */
   readonly tagOnly?: boolean;
+
+  /**
+   * The type of the assets to be garbage collected.
+   *
+   * @default 'all'
+   */
   readonly type: 'ecr' | 's3' | 'all';
+
+  /**
+   * Elapsed time between an asset being marked as isolated and actually deleted.
+   *
+   * @default 0
+   */
   readonly days: number;
+
+  /**
+   * The stack name of the bootstrap stack.
+   *
+   * @default DEFAULT_TOOLKIT_STACK_NAME
+   */
   readonly bootstrapStackName?: string;
 }
 

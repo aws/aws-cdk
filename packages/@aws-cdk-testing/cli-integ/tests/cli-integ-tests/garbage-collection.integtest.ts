@@ -137,8 +137,6 @@ integTest(
     // assert that the bootstrap bucket is empty
     await fixture.aws.s3.send(new ListObjectsV2Command({ Bucket: bootstrapBucketName }))
       .then(async (result) => {
-        // eslint-disable-next-line no-console
-        console.log(JSON.stringify(result.Contents));
         expect(result.Contents).toHaveLength(2);
         const key = result.Contents![0].Key;
         const tags = await fixture.aws.s3.send(new GetObjectTaggingCommand({ Bucket: bootstrapBucketName, Key: key }));
