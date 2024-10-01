@@ -26,7 +26,7 @@ import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
-import { displayNotices, refreshNotices } from '../lib/notices';
+import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
@@ -367,10 +367,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   });
   await configuration.load();
 
-  if (shouldDisplayNotices()) {
-    void refreshNotices()
-      .catch(e => debug(`Could not refresh notices: ${e}`));
-  }
+  const cmd = argv._[0];
+
+  const notices = Notices.create({ configuration, includeAcknowlegded: cmd === 'notices' ? !argv.unacknowledged : false });
+  await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
@@ -422,8 +422,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   loadPlugins(configuration.settings);
 
-  const cmd = argv._[0];
-
   if (typeof(cmd) !== 'string') {
     throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
@@ -440,32 +438,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     // Do PSAs here
     await version.displayVersionMessage();
 
-    if (shouldDisplayNotices()) {
-      if (cmd === 'notices' && argv.unacknowledged === true) {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
-          ignoreCache: true,
-          unacknowledged: true,
-        });
-      } else if (cmd === 'notices') {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: [],
-          ignoreCache: true,
-        });
-      } else if (cmd !== 'version') {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
-          ignoreCache: false,
-        });
-      }
-    }
-  }
+    if (cmd === 'notices') {
+      await notices.refresh({ force: true });
+      notices.display({ showTotal: argv.unacknowledged });
 
-  function shouldDisplayNotices(): boolean {
-    return configuration.settings.get(['notices']) ?? true;
+    } else if (cmd !== 'version') {
+      await notices.refresh();
+      notices.display();
+    }
+
   }
 
   async function main(command: string, args: any): Promise<number | void> {
