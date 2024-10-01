@@ -462,7 +462,7 @@ export class TestFixture extends ShellHelper {
   }
 
   public async cdkGarbageCollect(options: CdkGarbageCollectionCommandOptions): Promise<string> {
-    const args = ['gc'];
+    const args = ['gc', '--unstable=gc']; // TODO: remove when stabilizing
     if (options.days) {
       args.push('--days', String(options.days));
     }

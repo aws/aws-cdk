@@ -115,6 +115,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
     .command('gc [ENVIRONMENTS..]', 'Garbage collect assets', (yargs: Argv) => yargs
+      .option('unstable', { type: 'array', desc: 'Opt in to specific unstable features. Can be specified multiple times.', default: [] })
       .option('dry-run', { type: 'boolean', desc: 'List assets instead of garbage collecting them', default: false })
       .option('tag-only', { type: 'boolean', desc: 'Tag assets as isolated without deleting them', default: false })
       .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
@@ -674,6 +675,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'gc':
+        if (!args.unstable.includes('gc')) {
+          throw new Error('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
+        }
         return cli.garbageCollect(args.ENVIRONMENTS, {
           dryRun: args['dry-run'],
           tagOnly: args['tag-only'],

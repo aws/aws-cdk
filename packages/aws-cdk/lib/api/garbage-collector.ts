@@ -175,19 +175,24 @@ export class GarbageCollector {
           return !activeAssets.contains(obj.getHash());
         });
 
-        const deletables: S3Asset[] = graceDays > 0
-          ? await Promise.all(
-            isolated.map(async (obj) => {
-              const tagTime = await obj.getTag(s3, ISOLATED_TAG);
-              if (tagTime && olderThan(Number(tagTime), currentTime, graceDays)) {
-                return obj;
-              }
-              return null;
-            }),
-          ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
-          : isolated;
+        let deletables: S3Asset[] = [];
+        
+        // no items are deletable if tagOnly is set
+        if (this.props.tagOnly) {
+          deletables = graceDays > 0
+            ? await Promise.all(
+              isolated.map(async (obj) => {
+                const tagTime = await obj.getTag(s3, ISOLATED_TAG);
+                if (tagTime && olderThan(Number(tagTime), currentTime, graceDays)) {
+                  return obj;
+                }
+                return null;
+              }),
+            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
+            : isolated;
+        }
 
-          const taggables: S3Asset[] = graceDays > 0
+        const taggables: S3Asset[] = graceDays > 0
           ? await Promise.all(
               isolated.map(async (obj) => {
                   const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
@@ -195,7 +200,6 @@ export class GarbageCollector {
                 }),
             ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
           : [];
-        
 
         print(chalk.blue(`${deletables.length} deletable assets`));
         print(chalk.white(`${taggables.length} taggable assets`));
