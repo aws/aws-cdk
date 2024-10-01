@@ -954,6 +954,24 @@ grantAwesomePowerBeta1()
 When we decide it's time to graduate the API, the latest preview version will
 be deprecated and the final version - `grantAwesomePower` will be added.
 
+### Adding new experimental CLI features
+
+In order to move fast when developing new CLI features, we may decide to release 
+functionality as "experimental" or "incremental." In this scenario we can utilize
+explicit opt-in via an `--unstable` flag.
+
+Explicit opt-ins would look something like this:
+
+```bash
+cdk new-command --unstable='new-command'
+
+cdk bootstrap --unstable='new-funky-bootstrap'
+```
+
+And can be simply added as an additional flag on the CLI command that is being worked on.
+When the time comes to stabilize the command, we remove the requirement that such a flag
+is set.
+
 ## Documentation
 
 Every module's README is rendered as the landing page of the official documentation. For example, this is
