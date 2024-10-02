@@ -166,12 +166,18 @@ export class PublishingAws implements cdk_assets.IAws {
       region: options.region ?? this.targetEnv.region, // Default: same region as the stack
     };
 
-    const cacheKey = JSON.stringify({
+    const cacheKeyMap: any = {
       env, // region, name, account
       assumeRuleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
       quiet: options.quiet,
-    });
+    };
+
+    if (options.assumeRoleAdditionalOptions) {
+      cacheKeyMap.assumeRoleAdditionalOptions = options.assumeRoleAdditionalOptions;
+    }
+
+    const cacheKey = JSON.stringify(cacheKeyMap);
 
     const maybeSdk = this.sdkCache.get(cacheKey);
     if (maybeSdk) {
@@ -181,6 +187,7 @@ export class PublishingAws implements cdk_assets.IAws {
     const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
+      assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
     }, options.quiet)).sdk;
     this.sdkCache.set(cacheKey, sdk);
 
