@@ -10,9 +10,9 @@ import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from './toolkit-info';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pLimit: typeof import('p-limit') = require('p-limit');
 
-const ISOLATED_TAG = 'awscdk.isolated';
+const ISOLATED_TAG = 'aws-cdk:isolated';
 
-class ActiveAssets {
+class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();
 
   public rememberStack(stackTemplate: string) {
@@ -30,31 +30,31 @@ class ActiveAssets {
 }
 
 class S3Asset {
-  private tags: S3.TagSet | undefined = undefined;
+  private cached_tags: S3.TagSet | undefined = undefined;
 
   public constructor(private readonly bucket: string, public readonly key: string) {}
 
-  public getHash(): string {
+  public hash(): string {
     return path.parse(this.key).name;
   }
 
-  public async getAllTags(s3: S3) {
-    if (this.tags) {
-      return this.tags;
+  public async allTags(s3: S3) {
+    if (this.cached_tags) {
+      return this.cached_tags;
     }
 
     const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key }).promise();
-    this.tags = response.TagSet;
+    this.cached_tags = response.TagSet;
     return response.TagSet;
   }
 
   public async getTag(s3: S3, tag: string) {
-    const tags = await this.getAllTags(s3);
+    const tags = await this.allTags(s3);
     return tags.find(t => t.Key === tag)?.Value;
   }
 
   public async hasTag(s3: S3, tag: string) {
-    const tags = await this.getAllTags(s3);
+    const tags = await this.allTags(s3);
     return tags.some(t => t.Key === tag);
   }
 }
@@ -145,9 +145,9 @@ export class GarbageCollector {
     const cfn = sdk.cloudFormation();
     const s3 = sdk.s3();
 
-    const qualifier = await this.getBootstrapQualifier(sdk, this.bootstrapStackName);
+    const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
 
-    const activeAssets = new ActiveAssets();
+    const activeAssets = new ActiveAssetCache();
 
     const refreshStacks = async () => {
       const stacks = await this.fetchAllStackTemplates(cfn, qualifier);
@@ -163,7 +163,7 @@ export class GarbageCollector {
       // Grab stack templates first
       await refreshStacks();
 
-      const bucket = await this.getBootstrapBucketName(sdk, this.bootstrapStackName);
+      const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
@@ -172,7 +172,7 @@ export class GarbageCollector {
         const currentTime = Date.now();
         const graceDays = this.props.isolationDays;
         const isolated = batch.filter((obj) => {
-          return !activeAssets.contains(obj.getHash());
+          return !activeAssets.contains(obj.hash());
         });
 
         let deletables: S3Asset[] = [];
@@ -270,12 +270,12 @@ export class GarbageCollector {
     }
   }
 
-  private async getBootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+  private async bootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bucketName;
   }
 
-  private async getBootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+  private async bootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bootstrapStack.parameters.Qualifier;
   }
