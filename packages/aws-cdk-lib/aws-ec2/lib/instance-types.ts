@@ -1171,6 +1171,16 @@ export enum InstanceClass {
   MAC2_M2PRO = 'mac2-m2pro',
 
   /**
+   * Macintosh instances built on 2022 Mac Studio hardware powered by Apple silicon M1 Ultra processors
+   */
+  MACINTOSH2_M1_ULTRA = 'macintosh2-m1-ultra',
+
+  /**
+   * Macintosh instances built on 2022 Mac Studio hardware powered by Apple silicon M1 Ultra processors
+   */
+  MAC2_M1ULTRA = 'mac2-m1ultra',
+
+  /**
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VIDEO_TRANSCODING1 = 'video-transcoding1',
@@ -1632,6 +1642,8 @@ export class InstanceType {
       [InstanceClass.MAC2_M2]: 'mac2-m2',
       [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
       [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
+      [InstanceClass.MACINTOSH2_M1_ULTRA]: 'mac2-m1ultra',
+      [InstanceClass.MAC2_M1ULTRA]: 'mac2-m1ultra',
       [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
       [InstanceClass.VT1]: 'vt1',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',

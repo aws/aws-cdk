@@ -186,15 +186,23 @@ export interface AuthorizationConfig {
  */
 export enum FieldLogLevel {
   /**
-   * No logging
+   * Resolver logging is disabled
    */
   NONE = 'NONE',
   /**
-   * Error logging
+   * Only Error messages appear in logs
    */
   ERROR = 'ERROR',
   /**
-   * All logging
+   * Info and Error messages appear in logs
+   */
+  INFO = 'INFO',
+  /**
+   * Debug, Info, and Error messages, appear in logs
+   */
+  DEBUG = 'DEBUG',
+  /**
+   * All messages (Debug, Error, Info, and Trace) appear in logs
    */
   ALL = 'ALL',
 }
@@ -688,10 +696,19 @@ export class GraphqlApi extends GraphqlApiBase {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
       })?.lambdaAuthorizerConfig;
-      config?.handler.addPermission(`${id}-appsync`, {
-        principal: new ServicePrincipal('appsync.amazonaws.com'),
-        action: 'lambda:InvokeFunction',
-      });
+
+      if (FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION)) {
+        config?.handler.addPermission(`${id}-appsync`, {
+          principal: new ServicePrincipal('appsync.amazonaws.com'),
+          action: 'lambda:InvokeFunction',
+          sourceArn: this.arn,
+        });
+      } else {
+        config?.handler.addPermission(`${id}-appsync`, {
+          principal: new ServicePrincipal('appsync.amazonaws.com'),
+          action: 'lambda:InvokeFunction',
+        });
+      }
     }
 
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;

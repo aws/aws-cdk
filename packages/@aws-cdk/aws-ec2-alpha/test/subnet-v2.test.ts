@@ -201,7 +201,9 @@ describe('Subnet V2 with custom IP and routing', () => {
           Properties:
                     {
                       AddressFamily: 'ipv6',
-                      IpamScopeId: 'DefaultPublicScope',
+                      IpamScopeId: {
+                        'Fn::GetAtt': ['TestIpamDBF92BA8', 'PublicDefaultScopeId'],
+                      },
                     },
         },
         TestVPCD26570D8: { Type: 'AWS::EC2::VPC' },
@@ -299,5 +301,4 @@ describe('Subnet V2 with custom IP and routing', () => {
 
     expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetNetworkAclAssociation', {}));
   });
-
 });

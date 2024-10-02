@@ -221,6 +221,24 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test('cluster with port', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      port: 1234,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      DBPort: 1234,
+    });
+  });
+
   test('cluster with imported parameter group', () => {
     // GIVEN
     const stack = testStack();

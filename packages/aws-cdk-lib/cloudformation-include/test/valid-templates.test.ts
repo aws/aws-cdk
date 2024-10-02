@@ -1121,6 +1121,20 @@ describe('CDK Include', () => {
       loadTestFileToJsObject('fn-select-with-novalue.json'),
     );
   });
+
+  test('Fn::If can be used in Tags', () => {
+    includeTestTemplate(stack, 'tags-with-intrinsics.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('tags-with-intrinsics.json'),
+    );
+  });
+
+  test('throws an exception if Tags contains invalid intrinsics', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'tags-with-invalid-intrinsics.json');
+    }).toThrow(/expression does not exist in the template/);
+  });
 });
 
 interface IncludeTestTemplateProps {

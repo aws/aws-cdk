@@ -505,7 +505,7 @@ To grant a principal permission to run your `TaskDefinition`, you can use the `T
 ```ts
 declare const role: iam.IGrantable;
 const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
-  cpu: '256',
+  cpu: '512',
   memoryMiB: '512',
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
@@ -616,6 +616,22 @@ taskDefinition.addContainer('container', {
       value: '1',
     },
   ],
+});
+```
+
+### Restart policy
+
+To enable a restart policy for the container, set `enableRestartPolicy` to true and also specify
+`restartIgnoredExitCodes` and `restartAttemptPeriod` if necessary.
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  enableRestartPolicy: true,
+  restartIgnoredExitCodes: [0, 127],
+  restartAttemptPeriod: Duration.seconds(360),
 });
 ```
 

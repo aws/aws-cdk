@@ -1,0 +1,126 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-location-route-calculator": {
+        "id": "cdk-integ-location-route-calculator",
+        "path": "cdk-integ-location-route-calculator",
+        "children": {
+          "RouteCalculator": {
+            "id": "RouteCalculator",
+            "path": "cdk-integ-location-route-calculator/RouteCalculator",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-route-calculator/RouteCalculator/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::RouteCalculator",
+                  "aws:cdk:cloudformation:props": {
+                    "calculatorName": "cdkinteglocationroutecalculatorRouteCalculator916939B5",
+                    "dataSource": "Esri"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnRouteCalculator",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-location-route-calculator/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-location-route-calculator/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "RouteCalculatorTest": {
+        "id": "RouteCalculatorTest",
+        "path": "RouteCalculatorTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "RouteCalculatorTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "RouteCalculatorTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "RouteCalculatorTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "RouteCalculatorTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "RouteCalculatorTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

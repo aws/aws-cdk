@@ -371,3 +371,27 @@ test('when resolver limit is out of range, it throws an error', () => {
   expect(() => buildWithLimit('resolver-limit-high', 10001)).toThrow(errorString);
 
 });
+
+test.each([
+  [appsync.FieldLogLevel.ALL],
+  [appsync.FieldLogLevel.ERROR],
+  [appsync.FieldLogLevel.NONE],
+  [appsync.FieldLogLevel.INFO],
+  [appsync.FieldLogLevel.DEBUG],
+])('GraphQLApi with LogLevel %s', (fieldLogLevel) => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'GraphQLApi', {
+    name: 'api',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {
+      fieldLogLevel,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    LogConfig: {
+      FieldLogLevel: fieldLogLevel,
+    },
+  });
+});
