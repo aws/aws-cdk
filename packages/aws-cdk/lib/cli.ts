@@ -119,7 +119,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('dry-run', { type: 'boolean', desc: 'List assets instead of garbage collecting them', default: false })
       .option('tag-only', { type: 'boolean', desc: 'Tag assets as isolated without deleting them', default: false })
       .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
-      .option('days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
+      .option('rollback-buffer-days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('bootstrap-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true }),
     )
@@ -663,7 +663,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           dryRun: args['dry-run'],
           tagOnly: args['tag-only'],
           type: args.type,
-          days: args.days,
+          rollbackBufferDays: args['rollback-buffer-days'],
           bootstrapStackName: args.bootstrapStackName,
         });
 

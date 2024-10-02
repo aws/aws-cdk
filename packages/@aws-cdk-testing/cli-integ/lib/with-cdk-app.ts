@@ -313,16 +313,23 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
 
 export interface CdkGarbageCollectionCommandOptions {
   /**
+   * The amount of days an asset should stay isolated before deletion, to
+   * guard against some pipeline rollback scenarios
+   *
    * @default 0
    */
-  readonly days?: number;
+  readonly rollbackBufferDays?: number;
 
   /**
+   * The type of asset that is getting garbage collected.
+   *
    * @default 'all'
    */
   readonly type?: 'ecr' | 's3' | 'all';
 
   /**
+   * The name of the bootstrap stack
+   *
    * @default 'CdkToolkit'
    */
   readonly bootstrapStackName?: string;
@@ -463,8 +470,8 @@ export class TestFixture extends ShellHelper {
 
   public async cdkGarbageCollect(options: CdkGarbageCollectionCommandOptions): Promise<string> {
     const args = ['gc', '--unstable=gc']; // TODO: remove when stabilizing
-    if (options.days) {
-      args.push('--days', String(options.days));
+    if (options.rollbackBufferDays) {
+      args.push('--days', String(options.rollbackBufferDays));
     }
     if (options.type) {
       args.push('--type', options.type);

@@ -35,7 +35,7 @@ integTest(
     });
 
     await fixture.cdkGarbageCollect({
-      days: 0,
+      rollbackBufferDays: 0,
       type: 's3',
       bootstrapStackName: toolkitStackName,
     });
@@ -72,7 +72,7 @@ integTest(
     fixture.log('Setup complete!');
 
     await fixture.cdkGarbageCollect({
-      days: 0,
+      rollbackBufferDays: 0,
       type: 's3',
       bootstrapStackName: toolkitStackName,
     });
@@ -128,7 +128,7 @@ integTest(
     });
 
     await fixture.cdkGarbageCollect({
-      days: 100, // this will ensure that we do not delete assets immediately (and just tag them)
+      rollbackBufferDays: 100, // this will ensure that we do not delete assets immediately (and just tag them)
       type: 's3',
       bootstrapStackName: toolkitStackName,
     });

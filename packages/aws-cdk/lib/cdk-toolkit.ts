@@ -751,7 +751,7 @@ export class CdkToolkit {
         sdkProvider: this.props.sdkProvider,
         resolvedEnvironment: environment,
         bootstrapStackName: options.bootstrapStackName,
-        isolationDays: options.days,
+        isolationDays: options.rollbackBufferDays,
         dryRun: options.dryRun ?? false,
         tagOnly: options.tagOnly ?? false,
         type: options.type ?? 'all',
@@ -1464,7 +1464,7 @@ export interface GarbageCollectionOptions {
    *
    * @default 0
    */
-  readonly days: number;
+  readonly rollbackBufferDays: number;
 
   /**
    * The stack name of the bootstrap stack.
