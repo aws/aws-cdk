@@ -8,19 +8,20 @@ const cr = require('aws-cdk-lib/custom-resources');
  * It contains resources r1 and r2, where r1 gets deployed first.
  *
  * - PHASE = 1: both resources deploy regularly.
- * - PHASE = 2: r1 gets updated, r2 will fail to update, and r1 will fail its rollback.
+ * - PHASE = 2a: r1 gets updated, r2 will fail to update
+ * - PHASE = 2b: r1 gets updated, r2 will fail to update, and r1 will fail its rollback.
  *
  * To exercise this app:
  *
  * ```
  * env PHASE=1 npx cdk deploy
- * env PHASE=2 npx cdk deploy --no-rollback
+ * env PHASE=2b npx cdk deploy --no-rollback
  * # This will leave the stack in UPDATE_FAILED
  *
- * env PHASE=2 npx cdk rollback
+ * env PHASE=2b npx cdk rollback
  * # This will start a rollback that will fail because r1 fails its rollabck
  *
- * env PHASE=2 npx cdk rollback --force
+ * env PHASE=2b npx cdk rollback --force
  * # This will retry the rollabck and skip r1
  * ```
  */
