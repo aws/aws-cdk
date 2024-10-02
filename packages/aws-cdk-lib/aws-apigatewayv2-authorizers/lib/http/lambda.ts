@@ -67,7 +67,7 @@ export interface HttpLambdaAuthorizerProps {
 export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
   private httpApi?: IHttpApi;
-
+  public readonly authorizationType = 'CUSTOM';
   /**
    * Initialize a lambda authorizer to be bound with HTTP route.
    * @param id The id of the underlying construct
@@ -78,6 +78,18 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
     private readonly id: string,
     private readonly handler: IFunction,
     private readonly props: HttpLambdaAuthorizerProps = {}) {
+  }
+
+  /**
+   * Return the id of the authorizer if it's been constructed
+   */
+  public get authorizerId(): string {
+    if (!this.authorizer) {
+      throw new Error(
+        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
+      );
+    }
+    return this.authorizer.authorizerId;
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
@@ -116,7 +128,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: 'CUSTOM',
+      authorizationType: this.authorizationType,
     };
   }
 }

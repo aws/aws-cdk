@@ -38,7 +38,7 @@ export interface HttpUserPoolAuthorizerProps {
  */
 export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
-
+  public readonly authorizationType = 'JWT';
   /**
    * Initialize a Cognito user pool authorizer to be bound with HTTP route.
    * @param id The id of the underlying construct
@@ -49,6 +49,18 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
     private readonly id: string,
     private readonly pool: IUserPool,
     private readonly props: HttpUserPoolAuthorizerProps = {}) {
+  }
+
+  /**
+   * Return the id of the authorizer if it's been constructed
+   */
+  public get authorizerId(): string {
+    if (!this.authorizer) {
+      throw new Error(
+        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
+      );
+    }
+    return this.authorizer.authorizerId;
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
@@ -68,7 +80,7 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: 'JWT',
+      authorizationType: this.authorizationType,
     };
   }
 }
