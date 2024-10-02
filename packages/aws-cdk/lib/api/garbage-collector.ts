@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation, S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
@@ -34,8 +33,8 @@ class S3Asset {
 
   public constructor(private readonly bucket: string, public readonly key: string) {}
 
-  public hash(): string {
-    return path.parse(this.key).name;
+  public fileName(): string {
+    return this.key.split('.')[0];
   }
 
   public async allTags(s3: S3) {
@@ -64,20 +63,12 @@ class S3Asset {
  */
 interface GarbageCollectorProps {
   /**
-   * If this property is set, then instead of garbage collecting, we will
-   * print the isolated asset hashes.
+   * The action to perform. Specify this if you want to perform a truncated set
+   * of actions available.
    *
-   * @default false
+   * @default 'full'
    */
-  readonly dryRun: boolean;
-
-  /**
-   * If this property is set, then we will tag assets as isolated but skip
-   * the actual asset deletion process.
-   *
-   * @default false
-   */
-  readonly tagOnly: boolean;
+  readonly action: 'print' | 'tag' | 'delete-tagged' | 'full';
 
   /**
    * The type of asset to garbage collect.
@@ -156,13 +147,13 @@ export class GarbageCollector {
       }
     };
 
+    // Grab stack templates first
+    await refreshStacks();
+
     // Refresh stacks every 5 minutes
     const timer = setInterval(refreshStacks, 30_000);
 
     try {
-      // Grab stack templates first
-      await refreshStacks();
-
       const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
@@ -172,13 +163,13 @@ export class GarbageCollector {
         const currentTime = Date.now();
         const graceDays = this.props.isolationDays;
         const isolated = batch.filter((obj) => {
-          return !activeAssets.contains(obj.hash());
+          return !activeAssets.contains(obj.fileName());
         });
 
         let deletables: S3Asset[] = [];
 
         // no items are deletable if tagOnly is set
-        if (this.props.tagOnly) {
+        if (this.props.action == 'tag') {
           deletables = graceDays > 0
             ? await Promise.all(
               isolated.map(async (obj) => {
@@ -204,8 +195,8 @@ export class GarbageCollector {
         print(chalk.blue(`${deletables.length} deletable assets`));
         print(chalk.white(`${taggables.length} taggable assets`));
 
-        if (!this.props.dryRun) {
-          if (!this.props.tagOnly && deletables.length > 0) {
+        if (this.props.action != 'print') {
+          if (deletables.length > 0) {
             await this.parallelDelete(s3, bucket, deletables);
           }
           if (taggables.length > 0) {

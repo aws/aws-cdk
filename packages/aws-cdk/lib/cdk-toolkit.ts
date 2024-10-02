@@ -796,8 +796,7 @@ export class CdkToolkit {
         resolvedEnvironment: environment,
         bootstrapStackName: options.bootstrapStackName,
         isolationDays: options.rollbackBufferDays,
-        dryRun: options.dryRun ?? false,
-        tagOnly: options.tagOnly ?? false,
+        action: options.action ?? 'full',
         type: options.type ?? 'all',
       });
       await gc.garbageCollect();
@@ -1523,27 +1522,18 @@ export interface DestroyOptions {
  */
 export interface GarbageCollectionOptions {
   /**
-   * Whether to perform a dry run or not.
-   * A dry run means that isolated objects are printed to stdout
-   * but not tagged or deleted
+   * The action to perform.
    *
-   * @default false
+   * @default 'full'
    */
-  readonly dryRun?: boolean;
-
-  /**
-   * Whether to only perform tagging. If this is set, no deletion happens
-   *
-   * @default false
-   */
-  readonly tagOnly?: boolean;
+  readonly action: 'print' | 'tag' | 'delete-tagged' | 'full';
 
   /**
    * The type of the assets to be garbage collected.
    *
    * @default 'all'
    */
-  readonly type: 'ecr' | 's3' | 'all';
+  readonly type: 's3' | 'ecr' | 'all';
 
   /**
    * Elapsed time between an asset being marked as isolated and actually deleted.

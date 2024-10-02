@@ -486,7 +486,7 @@ export class TestFixture extends ShellHelper {
   public async cdkGarbageCollect(options: CdkGarbageCollectionCommandOptions): Promise<string> {
     const args = ['gc', '--unstable=gc']; // TODO: remove when stabilizing
     if (options.rollbackBufferDays) {
-      args.push('--days', String(options.rollbackBufferDays));
+      args.push('--rollback-buffer-days', String(options.rollbackBufferDays));
     }
     if (options.type) {
       args.push('--type', options.type);
