@@ -189,7 +189,7 @@ export interface DeliveryStreamProps {
    *
    * Only a singleton array is supported at this time.
    */
-  readonly destinations: IDestination[];
+  readonly destinations: IDestination;
 
   /**
    * A name for the delivery stream.
@@ -324,10 +324,6 @@ export class DeliveryStream extends DeliveryStreamBase {
 
     this._role = props.role;
 
-    if (props.destinations.length !== 1) {
-      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
-    }
-
     if (props.encryption?.encryptionKey || props.sourceStream) {
       this._role = this._role ?? new iam.Role(this, 'Service Role', {
         assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
@@ -369,7 +365,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       readStreamGrant = props.sourceStream.grantRead(this._role);
     }
 
-    const destinationConfig = props.destinations[0].bind(this, {});
+    const destinationConfig = props.destinations.bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
