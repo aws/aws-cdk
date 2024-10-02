@@ -4,7 +4,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
+  },
+});
 const stack = new Stack(app, 'aws-ecs-patterns-alb-with-custom-storage');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 

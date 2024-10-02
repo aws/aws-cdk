@@ -13,6 +13,9 @@
 - [WebSocket APIs](#websocket-apis)
   - [Lambda Authorizer](#lambda-authorizer)
   - [IAM Authorizers](#iam-authorizer)
+- [Import Issues](#import-issues)
+  - [DotNet Namespace](#dotnet-namespace)
+  - [Java Package](#java-package)
 
 ## Introduction
 
@@ -279,4 +282,27 @@ user.attachInlinePolicy(new iam.Policy(this, 'AllowInvoke', {
   ],
 }));
 
+```
+
+## Import Issues
+
+`jsiirc.json` file is missing during the stablization process of this module, which caused import issues for DotNet and Java users who attempt to use this module. Unfortunately, to guarantee backward compatibility, we cannot simply correct the namespace for DotNet or package for Java. The following outlines the workaround.
+
+### DotNet Namespace
+
+Instead of the conventional namespace `Amazon.CDK.AWS.Apigatewayv2.Authorizers`, you would need to use the following namespace:
+
+```cs
+using Amazon.CDK.AwsApigatewayv2Authorizers;;
+```
+
+### Java Package
+
+Instead of conventional package `import software.amazon.awscdk.services.apigatewayv2_authorizers.*`, you would need to use the following package:
+
+```java
+import software.amazon.awscdk.aws_apigatewayv2_authorizers.*;
+
+// If you want to import a specific construct
+import software.amazon.awscdk.aws_apigatewayv2_authorizers.WebSocketIamAuthorizer;
 ```

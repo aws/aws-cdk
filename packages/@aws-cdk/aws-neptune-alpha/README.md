@@ -25,7 +25,7 @@ import * as neptune from '@aws-cdk/aws-neptune-alpha';
 
 ## Starting a Neptune Database
 
-To set up a Neptune database, define a `DatabaseCluster`. You must always launch a database in a VPC. 
+To set up a Neptune database, define a `DatabaseCluster`. You must always launch a database in a VPC.
 
 ```ts
 const cluster = new neptune.DatabaseCluster(this, 'Database', {
@@ -126,15 +126,27 @@ const replica1 = new neptune.DatabaseInstance(this, 'Instance', {
 
 ## Automatic minor version upgrades
 
-By setting `autoMinorVersionUpgrade` to true, Neptune will automatically update 
-the engine of the entire cluster to the latest minor version after a stabilization 
-window of 2 to 3 weeks. 
+By setting `autoMinorVersionUpgrade` to true, Neptune will automatically update
+the engine of the entire cluster to the latest minor version after a stabilization
+window of 2 to 3 weeks.
 
 ```ts
 new neptune.DatabaseCluster(this, 'Cluster', {
   vpc,
   instanceType: neptune.InstanceType.R5_LARGE,
   autoMinorVersionUpgrade: true,
+});
+```
+
+## Port
+
+By default, Neptune uses port `8182`. You can override the default port by specifying the `port` property:
+
+```ts
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  port: 12345,
 });
 ```
 
@@ -184,9 +196,21 @@ instance.metric('SparqlRequestsPerSec') // instance-level SparqlErrors metric
 
 For more details on the available metrics, refer to https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
 
+## Copy tags to snapshot
+
+By setting `copyTagsToSnapshot` to true, all tags of the cluster are copied to the snapshots when they are created.
+
+```ts
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  copyTagsToSnapshot: true  // whether to save the cluster tags when creating the snapshot.
+});
+```
+
 ## Neptune Serverless
 
-You can configure a Neptune Serverless cluster using the dedicated instance type along with the 
+You can configure a Neptune Serverless cluster using the dedicated instance type along with the
 `serverlessScalingConfiguration` property.
 
 > Visit [Using Amazon Neptune Serverless](https://docs.aws.amazon.com/neptune/latest/userguide/neptune-serverless-using.html) for more details.

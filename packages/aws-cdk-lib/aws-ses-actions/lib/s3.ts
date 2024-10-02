@@ -42,12 +42,32 @@ export interface S3Props {
  * a notification to Amazon SNS.
  */
 export class S3 implements ses.IReceiptRuleAction {
-  private rule?: ses.IReceiptRule;
+
   constructor(private readonly props: S3Props) {
   }
 
   public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
-    this.rule = rule;
+    // Allow SES to write to S3 bucket
+    // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
+    const keyPattern = this.props.objectKeyPrefix || '';
+    const s3Statement = new iam.PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
+      resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
+      conditions: {
+        StringEquals: {
+          'aws:Referer': cdk.Aws.ACCOUNT_ID,
+        },
+      },
+    });
+    this.props.bucket.addToResourcePolicy(s3Statement);
+
+    const policy = this.props.bucket.node.tryFindChild('Policy') as s3.BucketPolicy;
+    if (policy) { // The bucket could be imported
+      rule.node.addDependency(policy);
+    } else {
+      cdk.Annotations.of(rule).addWarningV2('@aws-cdk/s3:AddBucketPermissions', 'This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
+    }
 
     // Allow SES to use KMS master key
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-kms
@@ -78,42 +98,5 @@ export class S3 implements ses.IReceiptRuleAction {
         topicArn: this.props.topic?.topicArn,
       },
     };
-  }
-
-  /**
-   * Generate and apply the receipt rule action statement
-   *
-   * @param ruleSet The rule set the rule is being added to
-   * @internal
-   */
-  public _applyPolicyStatement(receiptRuleSet: ses.IReceiptRuleSet): void {
-    if (!this.rule) {
-      throw new Error('Cannot apply policy statement before binding the action to a receipt rule');
-    }
-
-    // Allow SES to write to S3 bucket
-    // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
-    const keyPattern = this.props.objectKeyPrefix || '';
-    const s3Statement = new iam.PolicyStatement({
-      actions: ['s3:PutObject'],
-      principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
-      resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': cdk.Aws.ACCOUNT_ID,
-          'aws:SourceArn': cdk.Arn.format({
-            partition: cdk.Aws.PARTITION,
-            service: 'ses',
-            region: cdk.Aws.REGION,
-            account: cdk.Aws.ACCOUNT_ID,
-            resource: [
-              `receipt-rule-set/${receiptRuleSet.receiptRuleSetName}`,
-              `receipt-rule/${this.rule.receiptRuleName}`,
-            ].join(':'),
-          }),
-        },
-      },
-    });
-    this.props.bucket.addToResourcePolicy(s3Statement);
   }
 }

@@ -385,6 +385,35 @@ describe('ProductStack', () => {
     });
   });
 
+  test('BucketDeployment with custom memoryLimit', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+      memoryLimit: 256,
+    });
+
+    new lambda.Function(productStack, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    expect(productStack._getAssetBucket()).toBeDefined();
+    const mainStackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8'));
+    Template.fromJSON(mainStackTemplate).hasResourceProperties('AWS::Lambda::Function', {
+      MemorySize: 256,
+    });
+  });
+
   test('Two product stacks with assets in the same portfolio', () => {
     // GIVEN
     const app = new cdk.App();

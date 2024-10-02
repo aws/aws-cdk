@@ -1,7 +1,21 @@
 {
   "version": "36.0.0",
   "files": {
-    "56fdc835ae6a670f2f958a73f56b508710e57cbe667bc0c562ed7a04dadd5cc4": {
+    "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1": {
+      "source": {
+        "path": "asset.bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "12345678-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
+        }
+      }
+    },
+    "3f1315b27c99d1b75dccc6f588b8886eedd87e0ca51af42a9c519db49f6ba80f": {
       "source": {
         "path": "parent-stack.template.json",
         "packaging": "file"
@@ -9,7 +23,7 @@
       "destinations": {
         "12345678-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
-          "objectKey": "56fdc835ae6a670f2f958a73f56b508710e57cbe667bc0c562ed7a04dadd5cc4.json",
+          "objectKey": "3f1315b27c99d1b75dccc6f588b8886eedd87e0ca51af42a9c519db49f6ba80f.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
         }

@@ -683,11 +683,11 @@
        {
         "Ref": "UserPool6BA7E5F2"
        },
-       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"},\"logApiResponseData\":true}"
+       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139"
@@ -745,11 +745,11 @@
          "User.Username"
         ]
        },
-       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"},\"logApiResponseData\":true}"
+       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139",
@@ -827,7 +827,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "aa903f33cd9fe411974d9bc150e046dc03dd0d7ee4d5934f7e2c172b2f61650e.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -836,7 +836,15 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Timeout": 120
    },
    "DependsOn": [
@@ -925,6 +933,130 @@
    },
    "Export": {
     "Name": "integ-cognito:ExportsOutputRefUserPool6BA7E5F296FD7236"
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
    }
   }
  },

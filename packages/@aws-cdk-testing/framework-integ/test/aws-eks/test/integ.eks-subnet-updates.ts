@@ -12,7 +12,7 @@ class EksClusterStack extends Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
     new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_29),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       defaultCapacity: 0,
       endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
       vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],

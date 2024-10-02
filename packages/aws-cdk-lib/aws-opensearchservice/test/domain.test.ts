@@ -42,6 +42,8 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_9,
   EngineVersion.OPENSEARCH_2_10,
   EngineVersion.OPENSEARCH_2_11,
+  EngineVersion.OPENSEARCH_2_13,
+  EngineVersion.OPENSEARCH_2_15,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -207,6 +209,8 @@ each([
   [EngineVersion.OPENSEARCH_2_9, 'OpenSearch_2.9'],
   [EngineVersion.OPENSEARCH_2_10, 'OpenSearch_2.10'],
   [EngineVersion.OPENSEARCH_2_11, 'OpenSearch_2.11'],
+  [EngineVersion.OPENSEARCH_2_13, 'OpenSearch_2.13'],
+  [EngineVersion.OPENSEARCH_2_15, 'OpenSearch_2.15'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -295,7 +299,7 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
         {
           Ref: 'Domain66AC69E0',
         },
-        'AccessPolicy"},"logApiResponseData":true}',
+        'AccessPolicy"}}',
       ],
     ],
   };
@@ -675,7 +679,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"},"logApiResponseData":true}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"}}',
           ],
         ],
       },
@@ -693,7 +697,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"},"logApiResponseData":true}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"}}',
           ],
         ],
       },

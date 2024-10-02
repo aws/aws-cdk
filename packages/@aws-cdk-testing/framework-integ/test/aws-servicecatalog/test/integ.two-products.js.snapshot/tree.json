@@ -90,7 +90,7 @@
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:8a3b3620",
+                        "key": "aws-cdk:cr-owned:978d2e9b",
                         "value": "true"
                       }
                     ]
@@ -255,13 +255,13 @@
                       "version": "0.0.0"
                     }
                   },
-                  "CustomResource": {
-                    "id": "CustomResource",
-                    "path": "integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResource",
+                  "CustomResource-256MiB": {
+                    "id": "CustomResource-256MiB",
+                    "path": "integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResource-256MiB",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResource/Default",
+                        "path": "integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResource-256MiB/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -455,17 +455,17 @@
               "version": "0.0.0"
             }
           },
-          "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": {
-            "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
-            "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
+          "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB": {
+            "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB",
+            "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole",
+                "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
+                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -473,7 +473,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource",
+                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -512,11 +512,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy",
+                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource",
+                        "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -596,10 +596,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+                            "policyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiBServiceRoleDefaultPolicyE5468F0E",
                             "roles": [
                               {
-                                "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+                                "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiBServiceRoleF991ED9F"
                               }
                             ]
                           }
@@ -623,11 +623,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
+                "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
+                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -635,7 +635,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
+                    "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -649,13 +649,13 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+                "path": "integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-                      "s3Key": "2d56e153cac88d3e0c2f842e8e6f6783b8725bf91f95e0673b4725448a56e96d.zip"
+                      "s3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
                     },
                     "environment": {
                       "variables": {
@@ -668,13 +668,14 @@
                         "Ref": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
                       }
                     ],
+                    "memorySize": 256,
                     "role": {
                       "Fn::GetAtt": [
-                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiBServiceRoleF991ED9F",
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.9",
+                    "runtime": "python3.11",
                     "timeout": 900
                   }
                 },

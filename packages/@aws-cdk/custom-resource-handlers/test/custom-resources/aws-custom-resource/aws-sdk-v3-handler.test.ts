@@ -1,29 +1,28 @@
 /* eslint-disable import/no-extraneous-dependencies */
 process.env.AWS_REGION = 'us-east-1';
 
+import { execSync } from 'child_process';
 import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
 import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import * as S3 from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
-import { v3handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
-import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/aws-sdk-v3-handler';
+import { handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
 import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/load-sdk';
 import 'aws-sdk-client-mock-jest' ;
 
 // This test performs an 'npm install' which may take longer than the default
 // 5s timeout
 jest.setTimeout(60_000);
 
-const mockExecSync = jest.fn();
+const mockExecSync = jest.mocked(execSync);
 jest.mock('child_process', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      ...(jest.requireActual('child_process')),
-      execSync: mockExecSync,
-    };
-  });
+  return {
+    ...(jest.requireActual('child_process')),
+    execSync: jest.fn(),
+  };
 });
 
 beforeEach(() => {
@@ -108,7 +107,6 @@ test('create event with physical resource id path', async () => {
           Bucket: 'my-bucket',
         },
         physicalResourceId: { responsePath: 'Contents.1.ETag' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -146,7 +144,6 @@ test('update event with physical resource id', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'key' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -177,7 +174,6 @@ test('delete event', async () => {
           Bucket: 'my-bucket',
         },
         physicalResourceId: { responsePath: 'Contents.1.ETag' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -212,7 +208,6 @@ test('delete event with Delete call and no physical resource id in call', async 
           Bucket: 'my-bucket',
           Key: 'my-object',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -248,7 +243,6 @@ test('create event with Delete call only', async () => {
           Bucket: 'my-bucket',
           Key: 'my-object',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -284,7 +278,6 @@ test('catch errors - name property', async () => {
         },
         physicalResourceId: { id: 'physicalResourceId' },
         ignoreErrorCodesMatching: 'NoSuchBucket',
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -322,7 +315,6 @@ test('catch errors - constructor name', async () => {
         },
         physicalResourceId: { id: 'physicalResourceId' },
         ignoreErrorCodesMatching: 'S3ServiceException',
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -365,7 +357,6 @@ test('restrict output path', async () => {
         },
         physicalResourceId: { id: 'id' },
         outputPath: 'Contents.0',
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -409,7 +400,6 @@ test('restrict output paths', async () => {
         },
         physicalResourceId: { id: 'id' },
         outputPaths: ['Contents.0.Key', 'Contents.1.Key'],
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -446,7 +436,6 @@ test('can specify apiVersion and region', async () => {
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -456,6 +445,34 @@ test('can specify apiVersion and region', async () => {
     body.Data!.apiVersion === '2010-03-31' &&
     body.Data!.region === 'eu-west-1',
   );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
+test('logApiResponseData can be false', async () => {
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        logApiResponseData: false,
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body => body.Status === 'SUCCESS');
 
   await handler(event, {} as AWSLambda.Context);
 
@@ -475,6 +492,9 @@ test('installs the latest SDK', async () => {
   // Now remove the symlink and let the handler install it
   await fs.unlink(tmpPath);
 
+  // unmock execSync for this test only
+  mockExecSync.mockImplementationOnce(jest.requireActual('child_process').execSync);
+
   localS3MockClient.on(localAwsSdk.GetObjectCommand).resolves({});
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
@@ -490,7 +510,6 @@ test('installs the latest SDK', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
       InstallLatestAwsSdk: 'true',
     },
@@ -506,6 +525,9 @@ test('installs the latest SDK', async () => {
 
   expect(request.isDone()).toBeTruthy();
 
+  // require cache may succeed even if the path doesn't exist,
+  // so we check both
+  expect(await fs.pathExists(tmpPath)).toBeTruthy();
   expect(() => require.resolve(tmpPath)).not.toThrow();
 
   // clean up aws-sdk install
@@ -532,7 +554,6 @@ test('falls back to installed sdk if installation fails', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
       InstallLatestAwsSdk: 'true',
     },
@@ -546,6 +567,68 @@ test('falls back to installed sdk if installation fails', async () => {
   forceSdkInstallation();
   await handler(event, {} as AWSLambda.Context);
 
+  expect(request.isDone()).toBeTruthy();
+});
+
+test('falls back to installed sdk if installing dependency fails', async () => {
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+
+  const firstEvent: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        physicalResourceId: { id: 'id' },
+        logApiResponseData: true,
+      } satisfies AwsSdkCall),
+      InstallLatestAwsSdk: 'true',
+    },
+  };
+
+  // handler will invoke execSync mock to install @aws-sdk/client-s3
+  // the mock will not throw an error, so it will mark it as installed
+  // the require will fail, because the mock didn't *actually* install
+  // the package, and will fall back to the pre-installed version
+  createRequest(body =>
+    body.Status === 'SUCCESS',
+  );
+  await handler(firstEvent, {} as AWSLambda.Context);
+
+  const secondEvent: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        physicalResourceId: { id: 'id' },
+        logApiResponseData: true,
+      } satisfies AwsSdkCall),
+      InstallLatestAwsSdk: 'true',
+    },
+  };
+
+  // second handler will see that install had been successful, but its
+  // require will fail and fall back to the pre-installed version
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS',
+  );
+  await handler(secondEvent, {} as AWSLambda.Context);
+
+  // Reset to 'false' so that the next run will reinstall aws-sdk
+  forceSdkInstallation();
   expect(request.isDone()).toBeTruthy();
 });
 
@@ -647,7 +730,6 @@ test('Being able to call the AWS SDK v2 format', async () => {
           Bucket: 'foo',
           Key: 'bar',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -682,7 +764,6 @@ test('invalid v3 package name throws explicit error', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -713,7 +794,6 @@ test('invalid v2 service name throws explicit error', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -748,7 +828,6 @@ test('automatic Uint8Array conversion when necessary', async () => {
           KeyId: 'key-id',
           Plaintext: 'dummy-data',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   }, {} as AWSLambda.Context);
@@ -808,7 +887,6 @@ test('automatic Date conversion when necessary', async () => {
           StartTime: new Date('2023-01-01'),
           EndTime: new Date('2023-01-02'),
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   }, {} as AWSLambda.Context);

@@ -72,6 +72,25 @@ describe('rule', () => {
     });
   });
 
+  test('rule cannot have more than 5 targets', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const resource = new Construct(stack, 'Resource');
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      targets: [
+        new SomeTarget('T1', resource),
+        new SomeTarget('T2', resource),
+        new SomeTarget('T3', resource),
+        new SomeTarget('T4', resource),
+        new SomeTarget('T5', resource),
+        new SomeTarget('T6', resource),
+      ],
+    });
+
+    expect(() => app.synth()).toThrow(/Event rule cannot have more than 5 targets./);
+  });
+
   test('get rate as token', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyScheduledStack');
@@ -661,6 +680,49 @@ describe('rule', () => {
           'Id': 'Target0',
           'SqsParameters': {
             'MessageGroupId': 'messageGroupId',
+          },
+        },
+      ],
+    });
+  });
+
+  test('redshiftDataParameters are generated when they are specified in target props', () => {
+    const stack = new cdk.Stack();
+    const t1: IRuleTarget = {
+      bind: () => ({
+        id: '',
+        arn: 'ARN1',
+        redshiftDataParameters: {
+          database: 'database',
+          dbUser: 'dbUser',
+          secretManagerArn: 'secretManagerArn',
+          sqls: ['sqls'],
+          statementName: 'statementName',
+          withEvent: true,
+        },
+      }),
+    };
+
+    new Rule(stack, 'EventRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      targets: [t1],
+    });
+
+    // eslint-disable-next-line no-console
+    console.log(Template.fromStack(stack).toJSON().Resources.EventRule5A491D2C.Properties.Targets[0]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          'Arn': 'ARN1',
+          'Id': 'Target0',
+          'RedshiftDataParameters': {
+            'Database': 'database',
+            'DbUser': 'dbUser',
+            'SecretManagerArn': 'secretManagerArn',
+            'Sqls': ['sqls'],
+            'StatementName': 'statementName',
+            'WithEvent': true,
           },
         },
       ],

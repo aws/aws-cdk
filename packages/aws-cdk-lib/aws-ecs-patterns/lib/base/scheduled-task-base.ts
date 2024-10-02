@@ -96,6 +96,13 @@ export interface ScheduledTaskImageProps {
   readonly image: ContainerImage;
 
   /**
+   * Optional name for the container added
+   *
+   * @default - ScheduledContainer
+   */
+  readonly containerName?: string;
+
+  /**
    * The command that is passed to the container.
    *
    * If you provide a shell command as a single string, you have to quote command-line arguments.

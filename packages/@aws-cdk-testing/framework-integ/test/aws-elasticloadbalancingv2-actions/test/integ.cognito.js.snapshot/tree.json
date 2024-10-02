@@ -669,11 +669,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "certificate-name.kornherm.people.aws.dev",
+                    "domainName": "*.example.com",
                     "domainValidationOptions": [
                       {
-                        "domainName": "certificate-name.kornherm.people.aws.dev",
-                        "hostedZoneId": "Z06808741Y2D4FYJCD0JO"
+                        "domainName": "*.example.com",
+                        "hostedZoneId": "Z23ABC4XYZL05B"
                       }
                     ],
                     "tags": [
@@ -986,7 +986,7 @@
                       "openid"
                     ],
                     "callbackUrLs": [
-                      "https://certificate-name.kornherm.people.aws.dev/oauth2/idpresponse"
+                      "https://*.example.com/oauth2/idpresponse"
                     ],
                     "explicitAuthFlows": [
                       "ALLOW_USER_PASSWORD_AUTH",
@@ -1022,7 +1022,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                   "aws:cdk:cloudformation:props": {
-                    "domain": "z06808741y2d4fyjcd0jo",
+                    "domain": "z23abc4xyzl05b",
                     "userPoolId": {
                       "Ref": "UserPool6BA7E5F2"
                     }
@@ -1071,8 +1071,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z06808741Y2D4FYJCD0JO",
-                    "name": "certificate-name.kornherm.people.aws.dev.",
+                    "hostedZoneId": "Z23ABC4XYZL05B",
+                    "name": "example.com.",
                     "type": "A"
                   }
                 },
@@ -1265,6 +1265,14 @@
               "version": "10.3.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "integ-cognito/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
             "path": "integ-cognito/AWS679f53fac002430cb0da5b7982bd2287",
@@ -1362,7 +1370,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+                      "s3Key": "aa903f33cd9fe411974d9bc150e046dc03dd0d7ee4d5934f7e2c172b2f61650e.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -1371,7 +1379,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },
@@ -1489,7 +1505,7 @@
                       "variables": {
                         "TEST_USERNAME": "test-user@example.com",
                         "TEST_PASSWORD": "TestUser@123",
-                        "TEST_URL": "https://certificate-name.kornherm.people.aws.dev"
+                        "TEST_URL": "https://*.example.com"
                       }
                     },
                     "functionName": "cdk-integ-alb-cognito-signin-handler",
@@ -1678,6 +1694,14 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integ-test-cognito/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837": {

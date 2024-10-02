@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e72b469f3f6e217cace4389fd16922c0495d1816fce11e56cf987d498a39cdbe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf69820daf5ac468e4c068f4860c22cb3b56c4830b7bd436e8e4fad879dea629.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -170,6 +170,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCFlowLogsKinesisDataFirehoseFlowLog41C8928A"
+          }
+        ],
+        "/FlowLogsTestStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/FlowLogsTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [

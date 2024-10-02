@@ -1,6 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
+import * as chalk from 'chalk';
+import { Tag } from '../cdk-toolkit';
+import { debug, warning, error } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
@@ -12,8 +15,6 @@ import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSum
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
 import { makeBodyParameterAndUpload } from './util/template-body-parameter';
-import { Tag } from '../cdk-toolkit';
-import { debug, warning, error } from '../logging';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
 
 /**
@@ -492,6 +493,7 @@ export class Deployments {
     const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
       assumeRoleExternalId: stack.assumeRoleExternalId,
+      assumeRoleAdditionalOptions: stack.assumeRoleAdditionalOptions,
     });
 
     return {
@@ -538,6 +540,7 @@ export class Deployments {
       const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
+        assumeRoleAdditionalOptions: stack.lookupRole?.assumeRoleAdditionalOptions,
       });
 
       const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
@@ -671,13 +674,19 @@ export class Deployments {
     mode: Mode,
     options?: CredentialsOptions,
   ) {
-    const cacheKey = [
+    const cacheKeyElements = [
       environment.account,
       environment.region,
       `${mode}`,
       options?.assumeRoleArn ?? '',
       options?.assumeRoleExternalId ?? '',
-    ].join(':');
+    ];
+
+    if (options?.assumeRoleAdditionalOptions) {
+      cacheKeyElements.push(JSON.stringify(options.assumeRoleAdditionalOptions));
+    }
+
+    const cacheKey = cacheKeyElements.join(':');
     const existing = this.sdkCache.get(cacheKey);
     if (existing) {
       return existing;
@@ -692,7 +701,7 @@ export class Deployments {
     if (existing) {
       return existing;
     }
-    const prefix = stackName ? `${stackName}: ` : '';
+    const prefix = stackName ? `${chalk.bold(stackName)}: ` : '';
     const publisher = new cdk_assets.AssetPublishing(assetManifest, {
       aws: new PublishingAws(this.sdkProvider, env),
       progressListener: new ParallelSafeAssetProgress(prefix, this.props.quiet ?? false),
@@ -711,7 +720,7 @@ class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
 
   public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
-    handler(`${this.prefix} ${type}: ${event.message}`);
+    handler(`${this.prefix}${type}: ${event.message}`);
   }
 }
 

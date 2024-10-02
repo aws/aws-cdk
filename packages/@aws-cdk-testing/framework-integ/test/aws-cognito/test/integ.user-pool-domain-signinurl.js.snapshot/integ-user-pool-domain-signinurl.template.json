@@ -43,9 +43,6 @@
   "UserPoolUserPoolClient40176907": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "UserPool6BA7E5F2"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -63,7 +60,10 @@
     ],
     "SupportedIdentityProviders": [
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "UserPool6BA7E5F2"
+    }
    }
   }
  },

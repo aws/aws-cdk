@@ -336,6 +336,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "cdk-integ-elasticsearch-custom-kms-key/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
             "path": "cdk-integ-elasticsearch-custom-kms-key/AWS679f53fac002430cb0da5b7982bd2287",
@@ -481,7 +489,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+                      "s3Key": "aa903f33cd9fe411974d9bc150e046dc03dd0d7ee4d5934f7e2c172b2f61650e.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -490,7 +498,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },
@@ -547,94 +563,6 @@
                 "id": "DeployAssert",
                 "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallCloudWatchLogsdescribeResourcePolicies": {
-                    "id": "AwsApiCallCloudWatchLogsdescribeResourcePolicies",
-                    "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies",
-                    "children": {
-                      "SdkProvider": {
-                        "id": "SdkProvider",
-                        "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/SdkProvider",
-                        "children": {
-                          "AssertionsProvider": {
-                            "id": "AssertionsProvider",
-                            "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/SdkProvider/AssertionsProvider",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Default": {
-                        "id": "Default",
-                        "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/Default",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/Default/Default",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssertionResults": {
-                        "id": "AssertionResults",
-                        "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/AssertionResults",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnOutput",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
-                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "children": {
-                      "Staging": {
-                        "id": "Staging",
-                        "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Role": {
-                        "id": "Role",
-                        "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Handler": {
-                        "id": "Handler",
-                        "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/BootstrapVersion",

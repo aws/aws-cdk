@@ -26,7 +26,7 @@ import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
-import { displayNotices, refreshNotices } from '../lib/notices';
+import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
@@ -260,7 +260,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources or mangled non-ASCII characters', default: false })
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources, mangled non-ASCII characters, or the CheckBootstrapVersionRule', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
@@ -268,7 +268,9 @@ async function parseCommandLineArguments(args: string[]) {
       .option('change-set', { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
-    .command('notices', 'Returns a list of relevant notices')
+    .command('notices', 'Returns a list of relevant notices', (yargs: Argv) => yargs
+      .option('unacknowledged', { type: 'boolean', alias: 'u', default: false, desc: 'Returns a list of unacknowledged notices' }),
+    )
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
@@ -365,10 +367,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   });
   await configuration.load();
 
-  if (shouldDisplayNotices()) {
-    void refreshNotices()
-      .catch(e => debug(`Could not refresh notices: ${e}`));
-  }
+  const cmd = argv._[0];
+
+  const notices = Notices.create({ configuration, includeAcknowlegded: cmd === 'notices' ? !argv.unacknowledged : false });
+  await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
@@ -420,8 +422,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   loadPlugins(configuration.settings);
 
-  const cmd = argv._[0];
-
   if (typeof(cmd) !== 'string') {
     throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
@@ -438,25 +438,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     // Do PSAs here
     await version.displayVersionMessage();
 
-    if (shouldDisplayNotices()) {
-      if (cmd === 'notices') {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: [],
-          ignoreCache: true,
-        });
-      } else if (cmd !== 'version') {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
-          ignoreCache: false,
-        });
-      }
-    }
-  }
+    if (cmd === 'notices') {
+      await notices.refresh({ force: true });
+      notices.display({ showTotal: argv.unacknowledged });
 
-  function shouldDisplayNotices(): boolean {
-    return configuration.settings.get(['notices']) ?? true;
+    } else if (cmd !== 'version') {
+      await notices.refresh();
+      notices.display();
+    }
+
   }
 
   async function main(command: string, args: any): Promise<number | void> {
@@ -538,7 +528,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             createCustomerMasterKey: args.bootstrapCustomerKey,
-            qualifier: args.qualifier,
+            qualifier: args.qualifier ?? configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
             examplePermissionsBoundary: argv.examplePermissionsBoundary,
             customPermissionsBoundary: argv.customPermissionsBoundary,

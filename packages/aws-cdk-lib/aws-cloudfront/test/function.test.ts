@@ -204,6 +204,29 @@ describe('CloudFront Function', () => {
     });
   });
 
+  test('long name truncates correctly every time', () => {
+    const app = new App();
+    const stack = new Stack(app, 'CdkTestWithALongNameStack');
+
+    new Function(stack, 'MyCloudFrontFunction', {
+      code: FunctionCode.fromInline(''),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+      Name: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              Ref: 'AWS::Region',
+            },
+            'CdkTestWithALongoudFrontFunction302260D0',
+          ],
+        ],
+      },
+    });
+  });
+
   describe('key value store association', () => {
     test('minimal example', () => {
       const stack = new Stack();

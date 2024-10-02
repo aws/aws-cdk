@@ -1,0 +1,8 @@
+{
+    "exclude": [
+      "from-method:@aws-cdk/aws-ec2-alpha.VpcV2",
+      "attribute-tag:@aws-cdk/aws-ec2-alpha.RouteTable.routeTableId",
+      "from-method:@aws-cdk/aws-ec2-alpha.SubnetV2",
+      "from-method:@aws-cdk/aws-ec2-alpha.Route"
+    ]
+}

@@ -140,6 +140,17 @@ export enum LoggingFormat {
   JSON = 'JSON',
 }
 
+export enum RecursiveLoop {
+  /**
+   * Allows the recursive loop to happen and does not terminate it.
+  */
+  ALLOW = 'Allow',
+  /**
+   * Terminates the recursive loop.
+   */
+  TERMINATE = 'Terminate',
+}
+
 /**
  * Non runtime options
  */
@@ -283,7 +294,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Whether to allow the Lambda to send all network traffic
+   * Whether to allow the Lambda to send all network traffic (except ipv6)
    *
    * If set to false, you must individually add traffic rules to allow the
    * Lambda to connect to network targets.
@@ -294,6 +305,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether to allow the Lambda to send all ipv6 network traffic
+   *
+   * If set to true, there will only be a single egress rule which allows all
+   * outbound ipv6 traffic. If set to false, you must individually add traffic rules to allow the
+   * Lambda to connect to network targets using ipv6.
+   *
+   * Do not specify this property if the `securityGroups` or `securityGroup` property is set.
+   * Instead, configure `allowAllIpv6Outbound` directly on the security group.
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
 
   /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
@@ -524,6 +549,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Sets the logFormat for the function.
+   * @deprecated Use `loggingFormat` as a property instead.
    * @default "Text"
    */
   readonly logFormat?: string;
@@ -535,16 +561,38 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly loggingFormat?: LoggingFormat;
 
   /**
+  * Sets the Recursive Loop Protection for Lambda Function.
+  * It lets Lambda detect and terminate unintended recusrive loops.
+  *
+  * @default RecursiveLoop.Terminate
+  */
+  readonly recursiveLoop?: RecursiveLoop;
+
+  /**
    * Sets the application log level for the function.
+   * @deprecated Use `applicationLogLevelV2` as a property instead.
    * @default "INFO"
    */
   readonly applicationLogLevel?: string;
 
   /**
+   * Sets the application log level for the function.
+   * @default ApplicationLogLevel.INFO
+   */
+  readonly applicationLogLevelV2?: ApplicationLogLevel;
+
+  /**
    * Sets the system log level for the function.
+   * @deprecated Use `systemLogLevelV2` as a property instead.
    * @default "INFO"
    */
   readonly systemLogLevel?: string;
+
+  /**
+   * Sets the system log level for the function.
+   * @default SystemLogLevel.INFO
+   */
+  readonly systemLogLevelV2?: SystemLogLevel;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -846,6 +894,9 @@ export class Function extends FunctionBase {
   /** @internal */
   public readonly _layers: ILayerVersion[] = [];
 
+  /** @internal */
+  public _logRetention?: logs.LogRetention;
+
   private _logGroup?: logs.ILogGroup;
 
   /**
@@ -898,6 +949,14 @@ export class Function extends FunctionBase {
     // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
+      if (!Token.isUnresolved(config.localMountPath)) {
+        if (!/^\/mnt\/[a-zA-Z0-9-_.]+$/.test(config.localMountPath)) {
+          throw new Error(`Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`);
+        }
+        if (config.localMountPath.length > 160) {
+          throw new Error(`Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`);
+        }
+      }
       if (config.policies) {
         config.policies.forEach(p => {
           this.role?.addToPrincipalPolicy(p);
@@ -1010,6 +1069,7 @@ export class Function extends FunctionBase {
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
+      recursiveLoop: props.recursiveLoop,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
@@ -1057,6 +1117,7 @@ export class Function extends FunctionBase {
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
+      this._logRetention = logRetention;
     }
 
     props.code.bindToResource(resource);
@@ -1151,25 +1212,34 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
-    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON
-    && props.loggingFormat === undefined) {
-      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
-    }
-
-    if ((props.applicationLogLevel || props.systemLogLevel) && props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
-      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
-    }
-
     if (props.logFormat && props.loggingFormat) {
       throw new Error('Only define LogFormat or LoggingFormat, not both.');
+    }
+
+    if (props.applicationLogLevel && props.applicationLogLevelV2) {
+      throw new Error('Only define applicationLogLevel or applicationLogLevelV2, not both.');
+    }
+
+    if (props.systemLogLevel && props.systemLogLevelV2) {
+      throw new Error('Only define systemLogLevel or systemLogLevelV2, not both.');
+    }
+
+    if (props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2) {
+      if (props.logFormat !== LogFormat.JSON && props.loggingFormat === undefined) {
+        throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
+      }
+
+      if (props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
+        throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
+      }
     }
 
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup || props.loggingFormat) {
       loggingConfig = {
         logFormat: props.logFormat || props.loggingFormat,
-        systemLogLevel: props.systemLogLevel,
-        applicationLogLevel: props.applicationLogLevel,
+        systemLogLevel: props.systemLogLevel || props.systemLogLevelV2,
+        applicationLogLevel: props.applicationLogLevel || props.applicationLogLevelV2,
         logGroup: props.logGroup?.logGroupName,
       };
       return loggingConfig;
@@ -1459,6 +1529,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.ipv6AllowedForDualStack) {
         throw new Error('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC');
       }
+      if (props.allowAllIpv6Outbound !== undefined) {
+        throw new Error('Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC');
+      }
       return undefined;
     }
 
@@ -1471,6 +1544,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
     }
 
+    if (props.allowAllIpv6Outbound !== undefined) {
+      if (props.securityGroup) {
+        throw new Error('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup.');
+      }
+      if (hasSecurityGroups) {
+        throw new Error('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups.');
+      }
+    }
+
     let securityGroups: ec2.ISecurityGroup[];
 
     if (hasSecurityGroups) {
@@ -1480,6 +1562,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         vpc: props.vpc,
         description: 'Automatic security group for Lambda Function ' + Names.uniqueId(this),
         allowAllOutbound: props.allowAllOutbound,
+        allowAllIpv6Outbound: props.allowAllIpv6Outbound,
       });
       securityGroups = [securityGroup];
     }
@@ -1530,7 +1613,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-    // SnapStart does not support arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
+    // SnapStart does not support Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
     // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
     // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
@@ -1539,10 +1622,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (!props.runtime.supportsSnapStart) {
       throw new Error(`SnapStart currently not supported by runtime ${props.runtime.name}`);
-    }
-
-    if (props.architecture == Architecture.ARM_64) {
-      throw new Error('SnapStart is currently not supported on Arm_64');
     }
 
     if (props.filesystem) {

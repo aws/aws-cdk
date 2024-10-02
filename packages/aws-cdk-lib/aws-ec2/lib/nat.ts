@@ -1,9 +1,9 @@
 import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
-import { InstanceType } from './instance-types';
+import { InstanceArchitecture, InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
-import { AmazonLinuxGeneration, AmazonLinuxImage, IMachineImage, LookupMachineImage } from './machine-image';
+import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -280,7 +280,7 @@ export interface NatInstanceProps {
 /**
  * Provider for NAT Gateways
  */
-class NatGatewayProvider extends NatProvider {
+export class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
 
   constructor(private readonly props: NatGatewayProps = {}) {
@@ -511,7 +511,10 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
     // Create the NAT instances. They can share a security group and a Role. The new NAT instance created uses latest
     // Amazon Linux 2023 image. This is important since the original NatInstanceProvider uses an instance image that has
     // reached EOL on Dec 31 2023
-    const machineImage = this.props.machineImage || new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2023 });
+    const machineImage = this.props.machineImage || new AmazonLinuxImage({
+      generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
+      cpuType: this.props.instanceType.architecture == InstanceArchitecture.ARM_64 ? AmazonLinuxCpuType.ARM_64 : undefined,
+    });
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',

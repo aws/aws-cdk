@@ -3,6 +3,7 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -522,6 +523,56 @@ test('create a service from existing ECR repository(image repository type: ECR)'
       ],
       Version: '2012-10-17',
     },
+  });
+  // we should have a following IAM Policy
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'ecr:GetAuthorizationToken',
+          Resource: '*',
+        },
+        {
+          Effect: 'Allow',
+          Action: [
+            'ecr:BatchCheckLayerAvailability',
+            'ecr:GetDownloadUrlForLayer',
+            'ecr:BatchGetImage',
+          ],
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':ecr:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':repository/nginx',
+            ]],
+          },
+        },
+        {
+          Effect: 'Allow',
+          Action: 'ecr:DescribeImages',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':ecr:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':repository/nginx',
+            ]],
+          },
+        },
+      ],
+    },
+    PolicyName: 'ServiceAccessRoleDefaultPolicy9C214812',
+    Roles: [
+      { Ref: 'ServiceAccessRole4763579D' },
+    ],
   });
   // we should have the service
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
@@ -1579,4 +1630,130 @@ test('timeout must be less than or equal to 20 in healthCheck', () => {
       }),
     });
   }).toThrow('timeout must be between 1 and 20 seconds, got 21');
+});
+
+test('create a service with a customer managed key)', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const key = new kms.Key(stack, 'Key');
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    kmsKey: key,
+  });
+
+  // THEN
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    EncryptionConfiguration: {
+      KmsKey: stack.resolve(key.keyArn),
+    },
+  });
+});
+
+test.each([apprunner.IpAddressType.IPV4, apprunner.IpAddressType.DUAL_STACK])('ipAddressType is set %s', (ipAddressType: apprunner.IpAddressType) => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    ipAddressType,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    NetworkConfiguration: {
+      IpAddressType: ipAddressType,
+    },
+  });
+});
+
+test('create a service with an AutoScalingConfiguration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const autoScalingConfiguration = new apprunner.AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+    autoScalingConfigurationName: 'MyAutoScalingConfiguration',
+  });
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    autoScalingConfiguration,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {
+    AutoScalingConfigurationName: 'MyAutoScalingConfiguration',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    AutoScalingConfigurationArn: stack.resolve(autoScalingConfiguration.autoScalingConfigurationArn),
+  });
+});
+
+test('create a service with a Observability Configuration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const observabilityConfiguration = new apprunner.ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
+    observabilityConfigurationName: 'MyObservabilityConfiguration',
+    traceConfigurationVendor: apprunner.TraceConfigurationVendor.AWSXRAY,
+  });
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    observabilityConfiguration,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
+    ObservabilityConfigurationName: 'MyObservabilityConfiguration',
+    TraceConfiguration: {
+      Vendor: 'AWSXRAY',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ObservabilityConfiguration: {
+      ObservabilityEnabled: true,
+      ObservabilityConfigurationArn: stack.resolve(observabilityConfiguration.observabilityConfigurationArn),
+    },
+  });
+});
+
+test('create a service without a Observability Configuration', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    ObservabilityConfiguration: Match.absent(),
+  });
 });

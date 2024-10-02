@@ -55,6 +55,12 @@ class TestStack extends cdk.Stack {
               '/target/path/config.json',
               path.join(tmpDir, 'testConfigFile2'),
             ),
+            ec2.InitCommand.argvCommand([
+              'useradd', '-u', '1001', '-g', '1001', 'eguser',
+            ]),
+            ec2.InitCommand.argvCommand([
+              'useradd', '-a', '-u', '1001', '-g', '1001', 'eguser',
+            ]),
           ]),
         },
       }),

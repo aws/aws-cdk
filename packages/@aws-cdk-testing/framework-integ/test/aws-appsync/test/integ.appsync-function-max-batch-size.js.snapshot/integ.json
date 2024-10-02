@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AppSyncFunctionMaxBatchSize/DefaultTest": {
+      "stacks": [
+        "aws-cdk-appsync-function-max-batch-size"
+      ],
+      "assertionStack": "AppSyncFunctionMaxBatchSize/DefaultTest/DeployAssert",
+      "assertionStackName": "AppSyncFunctionMaxBatchSizeDefaultTestDeployAssert21899F3D"
+    }
+  }
+}

@@ -105,7 +105,7 @@ export class CdkToolkit {
 
   public async metadata(stackName: string, json: boolean) {
     const stacks = await this.selectSingleStackByName(stackName);
-    data(serializeStructure(stacks.firstStack.manifest.metadata ?? {}, json));
+    printSerializedObject(stacks.firstStack.manifest.metadata ?? {}, json);
   }
 
   public async acknowledge(noticeId: string) {
@@ -138,15 +138,11 @@ export class CdkToolkit {
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, quiet))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        if (!quiet) {
-          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        }
-
         const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
@@ -161,7 +157,6 @@ export class CdkToolkit {
         let changeSet = undefined;
 
         if (options.changeSet) {
-
           let stackExists = false;
           try {
             stackExists = await this.props.deployments.stackExists({
@@ -171,7 +166,9 @@ export class CdkToolkit {
             });
           } catch (e: any) {
             debug(e.message);
-            stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+            if (!quiet) {
+              stream.write(`Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`);
+            }
             stackExists = false;
           }
 
@@ -191,14 +188,12 @@ export class CdkToolkit {
           }
         }
 
-        if (resourcesToImport) {
-          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
-        }
-
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, quiet, stack.displayName, changeSet)))
+          : (printStackDiff(
+            currentTemplate, stack, strict, contextLines, quiet, stack.displayName, changeSet, !!resourcesToImport, stream, nestedStacks,
+          ));
 
         diffs += stackCount;
       }
@@ -212,14 +207,6 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     if (options.watch) {
       return this.watch(options);
-    }
-
-    if (options.notificationArns) {
-      options.notificationArns.map( arn => {
-        if (!validateSnsTopicArn(arn)) {
-          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
-        }
-      });
     }
 
     const startSynthTime = new Date().getTime();
@@ -318,7 +305,17 @@ export class CdkToolkit {
         }
       }
 
-      const stackIndex = stacks.indexOf(stack)+1;
+      let notificationArns: string[] = [];
+      notificationArns = notificationArns.concat(options.notificationArns ?? []);
+      notificationArns = notificationArns.concat(stack.notificationArns);
+
+      notificationArns.map(arn => {
+        if (!validateSnsTopicArn(arn)) {
+          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+        }
+      });
+
+      const stackIndex = stacks.indexOf(stack) + 1;
       print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
       const startDeployTime = new Date().getTime();
 
@@ -335,7 +332,7 @@ export class CdkToolkit {
           roleArn: options.roleArn,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
-          notificationArns: options.notificationArns,
+          notificationArns,
           tags,
           execute: options.execute,
           changeSetName: options.changeSetName,
@@ -374,9 +371,14 @@ export class CdkToolkit {
         print('Stack ARN:');
 
         data(result.stackArn);
-      } catch (e) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
-        throw e;
+      } catch (e: any) {
+        // It has to be exactly this string because an integration test tests for
+        // "bold(stackname) failed: ResourceNotReady: <error>"
+        throw new Error([
+          `❌  ${chalk.bold(stack.stackName)} failed:`,
+          ...e.code ? [`${e.code}:`] : [],
+          e.message,
+        ].join(' '));
       } finally {
         if (options.cloudWatchLogMonitor) {
           const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
@@ -404,33 +406,28 @@ export class CdkToolkit {
       warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
     }
 
-    try {
-      const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
-        stack,
-        ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
-      ]);
-      const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
+    const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
+      stack,
+      ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
+    ]);
+    const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
 
-      // Unless we are running with '--force', skip already published assets
-      if (!options.force) {
-        await this.removePublishedAssets(workGraph, options);
-      }
-
-      const graphConcurrency: Concurrency = {
-        'stack': concurrency,
-        'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
-        'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
-      };
-
-      await workGraph.doParallel(graphConcurrency, {
-        deployStack,
-        buildAsset,
-        publishAsset,
-      });
-    } catch (e) {
-      error('\n ❌ Deployment failed: %s', e);
-      throw e;
+    // Unless we are running with '--force', skip already published assets
+    if (!options.force) {
+      await this.removePublishedAssets(workGraph, options);
     }
+
+    const graphConcurrency: Concurrency = {
+      'stack': concurrency,
+      'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
+      'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
+    };
+
+    await workGraph.doParallel(graphConcurrency, {
+      deployStack,
+      buildAsset,
+      publishAsset,
+    });
   }
 
   public async watch(options: WatchOptions) {
@@ -632,7 +629,7 @@ export class CdkToolkit {
     });
 
     if (options.long && options.showDeps) {
-      data(serializeStructure(stacks, options.json ?? false));
+      printSerializedObject(stacks, options.json ?? false);
       return 0;
     }
 
@@ -646,7 +643,7 @@ export class CdkToolkit {
         });
       }
 
-      data(serializeStructure(stackDeps, options.json ?? false));
+      printSerializedObject(stackDeps, options.json ?? false);
       return 0;
     }
 
@@ -660,7 +657,7 @@ export class CdkToolkit {
           environment: stack.environment,
         });
       }
-      data(serializeStructure(long, options.json ?? false));
+      printSerializedObject(long, options.json ?? false);
       return 0;
     }
 
@@ -687,7 +684,7 @@ export class CdkToolkit {
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
       if (!quiet) {
-        data(serializeStructure(stacks.firstStack.template, json ?? false));
+        printSerializedObject(obscureTemplate(stacks.firstStack.template), json ?? false);
       }
       return undefined;
     }
@@ -701,7 +698,7 @@ export class CdkToolkit {
     // behind an environment variable.
     const isIntegMode = process.env.CDK_INTEG_MODE === '1';
     if (isIntegMode) {
-      data(serializeStructure(stacks.stackArtifacts.map(s => s.template), json ?? false));
+      printSerializedObject(stacks.stackArtifacts.map(s => obscureTemplate(s.template)), json ?? false);
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...
@@ -1043,6 +1040,13 @@ export class CdkToolkit {
 
     return undefined;
   }
+}
+
+/**
+ * Print a serialized object (YAML or JSON) to stdout.
+ */
+function printSerializedObject(obj: any, json: boolean) {
+  data(serializeStructure(obj, json));
 }
 
 export interface DiffOptions {
@@ -1525,4 +1529,22 @@ function buildParameterMap(parameters: {
   }
 
   return parameterMap;
+}
+
+/**
+ * Remove any template elements that we don't want to show users.
+ */
+function obscureTemplate(template: any = {}) {
+  if (template.Rules) {
+    // see https://github.com/aws/aws-cdk/issues/17942
+    if (template.Rules.CheckBootstrapVersion) {
+      if (Object.keys(template.Rules).length > 1) {
+        delete template.Rules.CheckBootstrapVersion;
+      } else {
+        delete template.Rules;
+      }
+    }
+  }
+
+  return template;
 }

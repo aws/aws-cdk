@@ -61,6 +61,12 @@ export interface RuleTargetConfig {
   readonly retryPolicy?: CfnRule.RetryPolicyProperty;
 
   /**
+   * Contains the GraphQL operation to be parsed and executed, if the event target is an AWS AppSync API.
+   * @default - None
+   */
+  readonly appSyncParameters?: CfnRule.AppSyncParametersProperty;
+
+  /**
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */
@@ -91,6 +97,13 @@ export interface RuleTargetConfig {
    * rule.
    */
   readonly sqsParameters?: CfnRule.SqsParametersProperty;
+
+  /**
+   * Parameters used when the rule invokes Amazon Redshift Queries
+   *
+   * @default - no parameters set
+   */
+  readonly redshiftDataParameters?: CfnRule.RedshiftDataParametersProperty;
 
   /**
    * What input to send to the event target
