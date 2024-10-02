@@ -290,7 +290,7 @@ new codebuild.Project(this, 'Project', {
 
 ## Environment
 
-By default, projects use a small instance with an Ubuntu 18.04 image. You
+By default, projects use a small instance with a LinuxBuildImage STANDARD_7_0. You
 can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
