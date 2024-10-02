@@ -1677,6 +1677,182 @@
               "version": "0.0.0"
             }
           },
+          "noOptimalInstancesForARM": {
+            "id": "noOptimalInstancesForARM",
+            "path": "batch-stack/noOptimalInstancesForARM",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "batch-stack/noOptimalInstancesForARM/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/noOptimalInstancesForARM/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "batch-stack/noOptimalInstancesForARM/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "InstanceProfileRole": {
+                "id": "InstanceProfileRole",
+                "path": "batch-stack/noOptimalInstancesForARM/InstanceProfileRole",
+                "children": {
+                  "ImportInstanceProfileRole": {
+                    "id": "ImportInstanceProfileRole",
+                    "path": "batch-stack/noOptimalInstancesForARM/InstanceProfileRole/ImportInstanceProfileRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/noOptimalInstancesForARM/InstanceProfileRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "InstanceProfile": {
+                "id": "InstanceProfile",
+                "path": "batch-stack/noOptimalInstancesForARM/InstanceProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "noOptimalInstancesForARMInstanceProfileRole926AEEC5"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/noOptimalInstancesForARM/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
+                  "aws:cdk:cloudformation:props": {
+                    "computeResources": {
+                      "maxvCpus": 256,
+                      "type": "EC2",
+                      "securityGroupIds": [
+                        {
+                          "Fn::GetAtt": [
+                            "noOptimalInstancesForARMSecurityGroup7157B016",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "subnets": [
+                        {
+                          "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                        },
+                        {
+                          "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                        }
+                      ],
+                      "minvCpus": 0,
+                      "instanceRole": {
+                        "Fn::GetAtt": [
+                          "noOptimalInstancesForARMInstanceProfile37BE9D32",
+                          "Arn"
+                        ]
+                      },
+                      "instanceTypes": [
+                        "a1.large",
+                        "m6g"
+                      ],
+                      "allocationStrategy": "BEST_FIT_PROGRESSIVE",
+                      "ec2Configuration": [
+                        {
+                          "imageIdOverride": {
+                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "imageType": "ECS_AL2"
+                        }
+                      ]
+                    },
+                    "replaceComputeEnvironment": false,
+                    "state": "ENABLED",
+                    "type": "managed",
+                    "updatePolicy": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_batch.CfnComputeEnvironment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
+              "version": "0.0.0"
+            }
+          },
           "taggedCE": {
             "id": "taggedCE",
             "path": "batch-stack/taggedCE",
