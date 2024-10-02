@@ -10,6 +10,7 @@ import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from './toolkit-info';
 const pLimit: typeof import('p-limit') = require('p-limit');
 
 const ISOLATED_TAG = 'aws-cdk:isolated';
+const P_LIMIT = 50;
 
 class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();
@@ -113,11 +114,17 @@ interface GarbageCollectorProps {
 export class GarbageCollector {
   private garbageCollectS3Assets: boolean;
   private garbageCollectEcrAssets: boolean;
+  private permissionToDelete: boolean;
+  private permissionToTag: boolean;
   private bootstrapStackName: string;
 
   public constructor(readonly props: GarbageCollectorProps) {
-    this.garbageCollectS3Assets = props.type === 's3' || props.type === 'all';
-    this.garbageCollectEcrAssets = props.type === 'ecr' || props.type === 'all';
+    this.garbageCollectS3Assets = ['s3', 'all'].includes(props.type);
+    this.garbageCollectEcrAssets = ['ecr', 'all'].includes(props.type);
+
+    this.permissionToDelete = ['delete-tagged', 'full'].includes(props.type);
+    this.permissionToTag = ['tag', 'full'].includes(props.type);
+
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
     // TODO: ECR garbage collection
@@ -168,8 +175,7 @@ export class GarbageCollector {
 
         let deletables: S3Asset[] = [];
 
-        // no items are deletable if tagOnly is set
-        if (this.props.action == 'tag') {
+        if (this.permissionToDelete) {
           deletables = graceDays > 0
             ? await Promise.all(
               isolated.map(async (obj) => {
@@ -183,25 +189,28 @@ export class GarbageCollector {
             : isolated;
         }
 
-        const taggables: S3Asset[] = graceDays > 0
-          ? await Promise.all(
-            isolated.map(async (obj) => {
-              const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
-              return hasTag ? null : obj;
-            }),
-          ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
-          : [];
+        let taggables: S3Asset[] = [];
+
+        if (this.permissionToTag) {
+          taggables = graceDays > 0
+            ? await Promise.all(
+              isolated.map(async (obj) => {
+                const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
+                return hasTag ? null : obj;
+              }),
+            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
+            : [];
+        }
 
         print(chalk.blue(`${deletables.length} deletable assets`));
         print(chalk.white(`${taggables.length} taggable assets`));
 
-        if (this.props.action != 'print') {
-          if (deletables.length > 0) {
-            await this.parallelDelete(s3, bucket, deletables);
-          }
-          if (taggables.length > 0) {
-            await this.parallelTag(s3, bucket, taggables);
-          }
+        if (deletables.length > 0) {
+          await this.parallelDelete(s3, bucket, deletables);
+        }
+
+        if (taggables.length > 0) {
+          await this.parallelTag(s3, bucket, taggables, currentTime);
         }
 
         // TODO: maybe undelete
@@ -215,8 +224,8 @@ export class GarbageCollector {
    * Tag objects in parallel using p-limit. The putObjectTagging API does not
    * support batch tagging so we must handle the parallelism client-side.
    */
-  private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[]) {
-    const limit = pLimit(5);
+  private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[], date: number) {
+    const limit = pLimit(P_LIMIT);
 
     for (const obj of taggables) {
       await limit(() =>
@@ -227,7 +236,7 @@ export class GarbageCollector {
             TagSet: [
               {
                 Key: ISOLATED_TAG,
-                Value: String(Date.now()),
+                Value: String(date),
               },
             ],
           },
