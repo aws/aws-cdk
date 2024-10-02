@@ -795,7 +795,7 @@ export class CdkToolkit {
         sdkProvider: this.props.sdkProvider,
         resolvedEnvironment: environment,
         bootstrapStackName: options.bootstrapStackName,
-        isolationDays: options.rollbackBufferDays,
+        rollbackBufferDays: options.rollbackBufferDays,
         action: options.action ?? 'full',
         type: options.type ?? 'all',
       });

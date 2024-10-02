@@ -32,7 +32,7 @@ class ActiveAssetCache {
 class S3Asset {
   private cached_tags: S3.TagSet | undefined = undefined;
 
-  public constructor(private readonly bucket: string, public readonly key: string) {}
+  public constructor(private readonly bucket: string, public readonly key: string, public readonly size: number) {}
 
   public fileName(): string {
     return this.key.split('.')[0];
@@ -83,7 +83,7 @@ interface GarbageCollectorProps {
    *
    * @default 0
    */
-  readonly isolationDays: number;
+  readonly rollbackBufferDays: number;
 
   /**
    * The environment to deploy this stack in
@@ -122,8 +122,10 @@ export class GarbageCollector {
     this.garbageCollectS3Assets = ['s3', 'all'].includes(props.type);
     this.garbageCollectEcrAssets = ['ecr', 'all'].includes(props.type);
 
-    this.permissionToDelete = ['delete-tagged', 'full'].includes(props.type);
-    this.permissionToTag = ['tag', 'full'].includes(props.type);
+    this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
+    this.permissionToTag = ['tag', 'full'].includes(props.action);
+
+    print(chalk.white(this.permissionToDelete, this.permissionToTag, props.action));
 
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
@@ -147,31 +149,56 @@ export class GarbageCollector {
 
     const activeAssets = new ActiveAssetCache();
 
-    const refreshStacks = async () => {
-      const stacks = await this.fetchAllStackTemplates(cfn, qualifier);
-      for (const stack of stacks) {
-        activeAssets.rememberStack(stack);
+    let refreshStacksRunning = false;
+    const refreshStacks = async (isInitial?: boolean) => {
+      if (refreshStacksRunning) {
+        return;
+      }
+
+      refreshStacksRunning = true;
+
+      try {
+        const stacks = await this.fetchAllStackTemplates(cfn, qualifier);
+        for (const stack of stacks) {
+          activeAssets.rememberStack(stack);
+        }
+      } catch (err) {
+        throw new Error(`Error refreshing stacks: ${err}`);
+      } finally {
+        refreshStacksRunning = false;
+
+        if (!isInitial) {
+          setTimeout(refreshStacks, 300_000);
+        }
       }
     };
 
     // Grab stack templates first
-    await refreshStacks();
-
-    // Refresh stacks every 5 minutes
-    const timer = setInterval(refreshStacks, 30_000);
+    await refreshStacks(true);
+    // Refresh stacks in the background
+    const timeout = setTimeout(refreshStacks, 300_000);
 
     try {
       const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
+      const numObjects = await this.numObjectsInBucket(s3, bucket);
+      const batches = 1;
+      const batchSize = 1000;
+      const currentTime = Date.now();
+      const graceDays = this.props.rollbackBufferDays;
+
+      print(chalk.white(`Parsing through ${numObjects} in batches`));
+
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
-      for await (const batch of this.readBucketInBatches(s3, bucket)) {
-        print(chalk.red(batch.length));
-        const currentTime = Date.now();
-        const graceDays = this.props.isolationDays;
+      for await (const batch of this.readBucketInBatches(s3, bucket, batchSize)) {
+        print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
+
         const isolated = batch.filter((obj) => {
           return !activeAssets.contains(obj.fileName());
         });
+
+        print(chalk.blue(`${isolated.length} isolated assets`));
 
         let deletables: S3Asset[] = [];
 
@@ -215,8 +242,10 @@ export class GarbageCollector {
 
         // TODO: maybe undelete
       }
+    } catch (err: any) {
+      throw new Error(err);
     } finally {
-      clearInterval(timer);
+      clearTimeout(timeout);
     }
   }
 
@@ -280,6 +309,11 @@ export class GarbageCollector {
     return info.bootstrapStack.parameters.Qualifier;
   }
 
+  private async numObjectsInBucket(s3: S3, bucket: string): Promise<number> {
+    const response = await s3.listObjectsV2({ Bucket: bucket }).promise();
+    return response.KeyCount ?? 0;
+  }
+
   /**
    * Generator function that reads objects from the S3 Bucket in batches.
    */
@@ -297,8 +331,10 @@ export class GarbageCollector {
         }).promise();
 
         response.Contents?.forEach((obj) => {
+          const key = obj.Key ?? '';
+          const size = obj.Size ?? 0;
           if (obj.Key) {
-            batch.push(new S3Asset(bucket, obj.Key));
+            batch.push(new S3Asset(bucket, key, size));
           }
         });
 
