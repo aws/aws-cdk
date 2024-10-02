@@ -647,8 +647,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   }
 
   /**
- * Get whether the inteface endpoint support Private DNS
- */
+   * Get whether the inteface endpoint support Private DNS
+   */
   private getPrivateDnsDefault(name: string) {
     const PRIVATE_DNS_NOT_SUPPORTED_SERVICES = [
       'dynamodb',
