@@ -32,6 +32,7 @@ import {
   withCDKMigrateFixture,
   withExtendedTimeoutFixture,
   randomString,
+  withSpecificFixture,
   withoutBootstrap,
 } from '../../lib';
 
@@ -2259,3 +2260,158 @@ integTest(
     expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
   }),
 );
+
+integTest(
+  'test cdk rollback',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2a';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Rollback
+      await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'test cdk rollback --force',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2b'; // Fail update and also fail rollback
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Should still fail
+      const rollbackOutput = await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(rollbackOutput).toContain('Failing rollback');
+
+      // Rollback and force cleanup
+      await fixture.cdk(['rollback', '--force'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
+
+  const cache = {
+    expiration: 4125963264000, // year 2100 so we never overwrite the cache
+    notices: [
+      {
+        title: 'CLI Notice',
+        issueNumber: 1111,
+        overview: 'Overview for CLI Notice',
+        components: [
+          {
+            name: 'cli',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Framework Notice',
+        issueNumber: 2222,
+        overview: 'Overview for Framework Notice',
+        components: [
+          {
+            name: 'framework',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Queue Notice',
+        issueNumber: 3333,
+        overview: 'Overview for Queue Notice',
+        components: [
+          {
+            name: 'aws-cdk-lib.aws_sqs.Queue',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Bootstrap 22 Notice',
+        issueNumber: 4444,
+        overview: 'Overview for Bootstrap 22 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        components: [
+          {
+            name: 'bootstrap',
+            version: '22',
+          },
+        ],
+        schemaVersion: '1',
+      },
+    ],
+  };
+
+  const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
+  await fs.mkdir(cdkCacheDir);
+  await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
+
+  const output = await fixture.cdkDeploy('notices', {
+    verbose: false,
+    modEnv: {
+      CDK_HOME: fixture.integTestDir,
+    },
+  });
+
+  expect(output).toContain('Overview for CLI Notice');
+  expect(output).toContain('Overview for Framework Notice');
+  expect(output).toContain('Overview for Queue Notice');
+  expect(output).toContain('Overview for Bootstrap 22 Notice');
+
+  // assert dynamic environments are resolved
+  expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
+
+}));
