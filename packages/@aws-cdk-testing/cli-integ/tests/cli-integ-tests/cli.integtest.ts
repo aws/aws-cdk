@@ -2260,33 +2260,79 @@ integTest(
   }),
 );
 
-integTest('cdk notices for bootstrap', withDefaultFixture(async (fixture) => {
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
 
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
-    notices: [{
-      title: 'Bootstrap stack outdated',
-      issueNumber: 16600,
-      overview: 'Your environments "{resolve:ENVIRONMENTS}" are running an outdated bootstrap stack.',
-      components: [{
-        name: 'bootstrap',
-        version: '<2000',
-      }],
-      schemaVersion: '1',
-    }],
+    notices: [
+      {
+        title: 'CLI Notice',
+        issueNumber: 1111,
+        overview: 'Overview for CLI Notice',
+        components: [
+          {
+            name: 'cli',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Framework Notice',
+        issueNumber: 2222,
+        overview: 'Overview for Framework Notice',
+        components: [
+          {
+            name: 'framework',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Queue Notice',
+        issueNumber: 3333,
+        overview: 'Overview for Queue Notice',
+        components: [
+          {
+            name: 'aws-cdk-lib.aws_sqs.Queue',
+            version: '<99.0.0',
+          },
+        ],
+        schemaVersion: '1',
+      },
+      {
+        title: 'Bootstrap 22 Notice',
+        issueNumber: 4444,
+        overview: 'Overview for Bootstrap 22 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        components: [
+          {
+            name: 'bootstrap',
+            version: '22',
+          },
+        ],
+        schemaVersion: '1',
+      },
+    ],
   };
 
   const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
   await fs.mkdir(cdkCacheDir);
   await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
 
-  const output = await fixture.cdkDeploy('test-2', {
+  const output = await fixture.cdkDeploy('notices', {
     verbose: false,
     modEnv: {
       CDK_HOME: fixture.integTestDir,
     },
   });
 
-  expect(output).toContain('Your environments \"aws://');
+  expect(output).toContain('Overview for CLI Notice');
+  expect(output).toContain('Overview for Framework Notice');
+  expect(output).toContain('Overview for Queue Notice');
+  expect(output).toContain('Overview for Bootstrap 22 Notice');
+
+  // assert dynamic environments are resolved
+  expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
 
 }));
