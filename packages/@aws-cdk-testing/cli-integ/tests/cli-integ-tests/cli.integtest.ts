@@ -2339,55 +2339,19 @@ integTest(
   }),
 );
 
-integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
+integTest('cdk bootstrap notice is displayed correctly', withDefaultFixture(async (fixture) => {
 
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
     notices: [
       {
-        title: 'CLI Notice',
-        issueNumber: 1111,
-        overview: 'Overview for CLI Notice',
-        components: [
-          {
-            name: 'cli',
-            version: '<99.0.0',
-          },
-        ],
-        schemaVersion: '1',
-      },
-      {
-        title: 'Framework Notice',
-        issueNumber: 2222,
-        overview: 'Overview for Framework Notice',
-        components: [
-          {
-            name: 'framework',
-            version: '<99.0.0',
-          },
-        ],
-        schemaVersion: '1',
-      },
-      {
-        title: 'Queue Notice',
-        issueNumber: 3333,
-        overview: 'Overview for Queue Notice',
-        components: [
-          {
-            name: 'aws-cdk-lib.aws_sqs.Queue',
-            version: '<99.0.0',
-          },
-        ],
-        schemaVersion: '1',
-      },
-      {
-        title: 'Bootstrap 22 Notice',
+        title: 'Bootstrap 1999 Notice',
         issueNumber: 4444,
-        overview: 'Overview for Bootstrap 22 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        overview: 'Overview for Bootstrap 1999 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
         components: [
           {
             name: 'bootstrap',
-            version: '22',
+            version: '<1999', // so we include all possible environments
           },
         ],
         schemaVersion: '1',
@@ -2406,10 +2370,7 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
     },
   });
 
-  expect(output).toContain('Overview for CLI Notice');
-  expect(output).toContain('Overview for Framework Notice');
-  expect(output).toContain('Overview for Queue Notice');
-  expect(output).toContain('Overview for Bootstrap 22 Notice');
+  expect(output).toContain('Overview for Bootstrap 1999 Notice');
 
   // assert dynamic environments are resolved
   expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
