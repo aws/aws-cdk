@@ -314,6 +314,7 @@ export class Deployments {
   private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
+  private _allowCrossAccountAssetPublishing: boolean | undefined;
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
@@ -604,7 +605,10 @@ export class Deployments {
    */
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+    await publishAssets(manifest, this.sdkProvider, stackEnv, {
+      ...options.publishOptions,
+      allowCrossAccount: this.allowCrossAccountAssetPublishing,
+    });
   }
 
   /**
@@ -636,10 +640,48 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    await publisher.publishEntry(asset);
+    // eslint-disable-next-line no-console
+    await publisher.publishEntry(asset, { allowCrossAccount: this.allowCrossAccountAssetPublishing });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
+  }
+
+  private get allowCrossAccountAssetPublishing() {
+    if (this._allowCrossAccountAssetPublishing === undefined) {
+      this._allowCrossAccountAssetPublishing = this._determineAllowCrossAccountAssetPublishing();
+    }
+    return this._allowCrossAccountAssetPublishing;
+  }
+
+  private _determineAllowCrossAccountAssetPublishing(): boolean {
+
+    if (!this.stagingBucketInToolkitStack()) {
+      // indicates an intentional cross account setup
+      return true;
+    }
+
+    if (this.bootstrapVersion() >= 21) {
+      // bootstrap stack version 21 contains a fix that will prevent cross
+      // account publishing on the IAM level
+      // https://github.com/aws/aws-cdk/pull/30823
+      return true;
+    }
+
+    // other scenarios are highly irregular and potentially dangerous so we prevent it by
+    // instructing cdk-assets to detect foriegn bucket ownership and reject.
+    return false;
+  }
+
+  private stagingBucketInToolkitStack(): boolean {
+    // determine if the staging bucket exists in the
+    // bootstrap stack (user might have removed it in case of a custom bootstrap template)
+    throw new Error('TODO');
+  }
+
+  private bootstrapVersion(): number {
+    // grab the current bootstrap stack version from the customer account
+    throw new Error('TODO');
   }
 
   /**
