@@ -5,8 +5,12 @@ import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
 import { EcsTask } from 'aws-cdk-lib/aws-events-targets';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
-const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
-const region = process.env.CDK_INTEG_REGION || 'us-east-1';
+/**
+ * To deploy the stack in this integ test,
+ * replace the account and region values with your AWS account and region to deploy to.
+ */
+const account = process.env.CDK_INTEG_ACCOUNT;
+const region = process.env.CDK_INTEG_REGION;
 
 const app = new App();
 const stack = new Stack(app, 'IntegEcsImportedTaskDefStack');

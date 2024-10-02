@@ -603,7 +603,7 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:ecs:us-east-1:123456789012:task-definition/TaskDef:*"
+       "Resource": "arn:aws:ecs:test-region:12345678:task-definition/TaskDef:*"
       },
       {
        "Action": "ecs:TagResource",
@@ -632,7 +632,7 @@
       {
        "Action": "iam:PassRole",
        "Effect": "Allow",
-       "Resource": "arn:aws:iam::123456789012:role/TaskRoleA"
+       "Resource": "arn:aws:iam::12345678:role/TaskRoleA"
       }
      ],
      "Version": "2012-10-17"
@@ -698,7 +698,7 @@
         }
        },
        "TaskCount": 1,
-       "TaskDefinitionArn": "arn:aws:ecs:us-east-1:123456789012:task-definition/TaskDef"
+       "TaskDefinitionArn": "arn:aws:ecs:test-region:12345678:task-definition/TaskDef"
       },
       "Id": "Target0",
       "Input": "{}",
@@ -751,7 +751,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -765,6 +774,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -791,6 +803,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {
