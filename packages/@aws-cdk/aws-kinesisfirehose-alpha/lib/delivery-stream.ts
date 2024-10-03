@@ -185,11 +185,9 @@ export enum StreamEncryptionType {
  */
 export interface DeliveryStreamProps {
   /**
-   * The destinations that this delivery stream will deliver data to.
-   *
-   * Only a singleton array is supported at this time.
+   * The destination that this delivery stream will deliver data to.
    */
-  readonly destinations: IDestination;
+  readonly destination: IDestination;
 
   /**
    * A name for the delivery stream.
@@ -365,7 +363,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       readStreamGrant = props.sourceStream.grantRead(this._role);
     }
 
-    const destinationConfig = props.destinations.bind(this, {});
+    const destinationConfig = props.destination.bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
