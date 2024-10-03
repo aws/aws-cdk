@@ -1059,10 +1059,13 @@ integTest(
 integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
   // Bootstrapping with custom toolkit stack name and qualifier
   const qualifier = 'abc1234';
+  const toolkitStackName = 'custom-stack';
+  const bootstrapBucketName = 'cdk-abc1234-assets-587443617500-us-east-1';
   await fixture.cdkBootstrapModern({
     verbose: true,
-    toolkitStackName: 'custom-stack',
+    toolkitStackName: toolkitStackName,
     qualifier: qualifier,
+    bootstrapBucketName: bootstrapBucketName,
   });
 
   // Deploying small initial stack with only ane IAM role
@@ -1071,6 +1074,8 @@ integTest('cdk diff with large changeset and custom toolkit stack name and quali
       NUMBER_OF_ROLES: '1',
     },
     options: [
+      '--context', `bootstrapBucket=${bootstrapBucketName}`,
+      '--toolkit-stack-name', toolkitStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
     ],
   });
@@ -1082,6 +1087,8 @@ integTest('cdk diff with large changeset and custom toolkit stack name and quali
       NUMBER_OF_ROLES: '200',
     },
     options: [
+      '--context', `bootstrapBucket=${bootstrapBucketName}`,
+      '--toolkit-stack-name', toolkitStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
     ],
   });
