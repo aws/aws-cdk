@@ -65,9 +65,12 @@ class S3Asset {
 
   public async isolatedTagBefore(s3: S3, date: Date) {
     const tagValue = await this.getTag(s3, ISOLATED_TAG);
-    if (!tagValue) {
+    print(chalk.red('a', tagValue, 'b', date));
+    if (!tagValue || tagValue == '') {
+      print(chalk.red('no tag'));
       return false;
     }
+    print(chalk.red('tag', typeof(tagValue)));
     return new Date(tagValue) < date;
   }
 }
@@ -199,7 +202,7 @@ export class GarbageCollector {
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
 
-      print(chalk.white(`Parsing through ${numObjects} in batches`));
+      print(chalk.white(`Parsing through ${numObjects} objects in batches`));
 
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
@@ -213,13 +216,21 @@ export class GarbageCollector {
 
         print(chalk.blue(`${isolated.length} isolated assets`));
 
-        let deletables: S3Asset[] = [];
+        let deletables: S3Asset[] = isolated;
         let taggables: S3Asset[] = [];
 
         if (graceDays > 0) {
+          print(chalk.white(`Filtering out assets that are not old enough to delete`));
           await this.parallelReadAllTags(s3, isolated);
-          deletables = isolated.filter((obj) => obj.isolatedTagBefore(s3, new Date(currentTime - (graceDays * DAY))));
-          taggables = isolated.filter((obj) => obj.noIsolatedTag(s3));
+          deletables = await Promise.all(isolated.map(async (obj) => {
+            const shouldDelete = await obj.isolatedTagBefore(s3, new Date(currentTime - (graceDays * DAY)));
+            return shouldDelete ? obj : null;
+          })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
+          
+          taggables = await Promise.all(isolated.map(async (obj) => {
+            const shouldTag = await obj.noIsolatedTag(s3);
+            return shouldTag ? obj : null;
+          })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
         }
 
         print(chalk.blue(`${deletables.length} deletable assets`));
