@@ -373,7 +373,6 @@ describe('CDK Include', () => {
       },
     }));
   });
-
 });
 
 interface IncludeTestTemplateProps {
