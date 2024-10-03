@@ -1,3 +1,22 @@
+import { AppSync } from '@aws-sdk/client-appsync';
+import { CloudFormation } from '@aws-sdk/client-cloudformation';
+import { CloudWatchLogs } from '@aws-sdk/client-cloudwatch-logs';
+import { CodeBuild } from '@aws-sdk/client-codebuild';
+import { EC2 } from '@aws-sdk/client-ec2';
+import { ECR } from '@aws-sdk/client-ecr';
+import { ECS } from '@aws-sdk/client-ecs';
+import { ElasticLoadBalancingV2 } from '@aws-sdk/client-elastic-load-balancing-v2';
+import { IAM } from '@aws-sdk/client-iam';
+import { KMS } from '@aws-sdk/client-kms';
+import { Lambda } from '@aws-sdk/client-lambda';
+import { Route53 } from '@aws-sdk/client-route-53';
+import { S3 } from '@aws-sdk/client-s3';
+import { SecretsManager } from '@aws-sdk/client-secrets-manager';
+import { SFN } from '@aws-sdk/client-sfn';
+import { SSM } from '@aws-sdk/client-ssm';
+import { STS } from '@aws-sdk/client-sts';
+import { AwsCredentialIdentityProvider, AwsCredentialIdentity } from '@aws-sdk/types';
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { debug, trace } from './_env';
@@ -19,6 +38,54 @@ require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 
 if (!regionUtil.getEndpointSuffix) {
   throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
+}
+
+export interface ISDKv3 {
+  /**
+   * The region this SDK has been instantiated for
+   *
+   * (As distinct from the `defaultRegion()` on SdkProvider which
+   * represents the region configured in the default config).
+   */
+  readonly currentRegion: string;
+
+  /**
+   * The Account this SDK has been instantiated for
+   *
+   * (As distinct from the `defaultAccount()` on SdkProvider which
+   * represents the account available by using default credentials).
+   */
+  currentAccount(): Promise<Account>;
+
+  getEndpointSuffix(region: string): string;
+
+  /**
+   * Appends the given string as the extra information to put into the User-Agent header for any requests invoked by this SDK.
+   * If the string is 'undefined', this method has no effect.
+   */
+  appendCustomUserAgent(userAgentData?: string): void;
+
+  /**
+   * Removes the given string from the extra User-Agent header data used for requests invoked by this SDK.
+   */
+  removeCustomUserAgent(userAgentData: string): void;
+
+  lambda(): Lambda;
+  cloudFormation(): CloudFormation;
+  ec2(): EC2;
+  iam(): IAM;
+  ssm(): SSM;
+  s3(): S3;
+  route53(): Route53;
+  ecr(): ECR;
+  ecs(): ECS;
+  elbv2(): ElasticLoadBalancingV2;
+  secretsManager(): SecretsManager;
+  kms(): KMS;
+  stepFunctions(): SFN;
+  codeBuild(): CodeBuild;
+  cloudWatchLogs(): CloudWatchLogs;
+  appsync(): AppSync;
 }
 
 export interface ISDK {
@@ -79,12 +146,361 @@ export interface SdkOptions {
    * Will be printed in an error message to help users diagnose auth problems.
    */
   readonly assumeRoleCredentialsSourceDescription?: string;
+
+  /**
+     * Sets a custom User-Agent string.
+     * In node environments this will set the User-Agent header, but
+     * browser environments this will set the X-Amz-User-Agent header.
+     */
+  customUserAgent?: string;
 }
 
 /**
  * Base functionality of SDK without credential fetching
  */
 @traceMethods
+export class SDKv3 implements ISDKv3 {
+  private static readonly accountCache = new AccountAccessKeyCache();
+
+  public readonly currentRegion: string;
+
+  private config: {
+    region: string;
+    credentials: AwsCredentialIdentity;
+    logger: {
+      debug: (...messages: any[]) => void;
+      info: (...messages: any[]) => void;
+      warn: (...messages: any[]) => void;
+      error: (...messages: any[]) => void;
+    };
+    retryStrategy: ConfiguredRetryStrategy;
+    customUserAgent?: string;
+  };
+
+  private readonly logger = {
+    debug: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+    info: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+    warn: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+    error: (...messages: any[]) => messages.forEach(m => trace('%s', m)),
+  };
+
+  /**
+   * Default retry options for SDK clients.
+   */
+  private readonly retryStrategy = new ConfiguredRetryStrategy(
+    6,
+    (attempt: number) => 300 + attempt, // 300ms delay
+  )
+
+  /**
+   * The more generous retry policy for CloudFormation, which has a 1 TPM limit on certain APIs,
+   * which are abundantly used for deployment tracking, ...
+   *
+   * So we're allowing way more retries, but waiting a bit more.
+   */
+  private readonly cloudFormationRetryStrategy = new ConfiguredRetryStrategy(
+    10,
+    (attempt: number) => 1000 + attempt, // 1000ms delay
+  )
+  /**
+   * STS is used to check credential validity, don't do too many retries.
+   */
+  private readonly stsRetryStrategy = new ConfiguredRetryStrategy(
+    3,
+    (attempt: number) => 100 + attempt, // 1000ms delay
+  )
+
+  /**
+   * Whether we have proof that the credentials have not expired
+   *
+   * We need to do some manual plumbing around this because the JS SDKv2 treats `ExpiredToken`
+   * as retriable and we have hefty retries on CFN calls making the CLI hang for a good 15 minutes
+   * if the credentials have expired.
+   */
+  private _credentialsValidated = false;
+
+  constructor(
+    private _credentials: AwsCredentialIdentity,
+    region: string,
+    private readonly sdkOptions: SdkOptions = {},
+    private readonly provider: AwsCredentialIdentityProvider) {
+
+    this.config = {
+      region,
+      credentials: this._credentials,
+      logger: this.logger,
+      retryStrategy: this.retryStrategy,
+      customUserAgent: this.sdkOptions.customUserAgent,
+    };
+    this.currentRegion = region;
+  }
+
+  public appendCustomUserAgent(userAgentData?: string): void {
+    if (!userAgentData) {
+      return;
+    }
+
+    const currentCustomUserAgent = this.config.customUserAgent;
+    this.config.customUserAgent = currentCustomUserAgent
+      ? `${currentCustomUserAgent} ${userAgentData}`
+      : userAgentData;
+  }
+
+  public removeCustomUserAgent(userAgentData: string): void {
+    this.config.customUserAgent = this.config.customUserAgent?.replace(userAgentData, '');
+  }
+
+  public lambda(): Lambda {
+    return this.wrapServiceErrorHandling(new Lambda(this.config));
+  }
+
+  public cloudFormation(): CloudFormation {
+    const cfnConfig = this.config;
+    cfnConfig.retryStrategy = this.cloudFormationRetryStrategy;
+    return this.wrapServiceErrorHandling(new CloudFormation(cfnConfig));
+  }
+
+  public ec2(): EC2 {
+    return this.wrapServiceErrorHandling(new EC2(this.config));
+  }
+
+  public iam(): IAM {
+    return this.wrapServiceErrorHandling(new IAM(this.config));
+  }
+
+  public ssm(): SSM {
+    return this.wrapServiceErrorHandling(new SSM(this.config));
+  }
+
+  public s3(): S3 {
+    return this.wrapServiceErrorHandling(new S3(this.config));
+  }
+
+  public route53(): Route53 {
+    return this.wrapServiceErrorHandling(new Route53(this.config));
+  }
+
+  public ecr(): ECR {
+    return this.wrapServiceErrorHandling(new ECR(this.config));
+  }
+
+  public ecs(): ECS {
+    return this.wrapServiceErrorHandling(new ECS(this.config));
+  }
+
+  public elbv2(): ElasticLoadBalancingV2 {
+    return this.wrapServiceErrorHandling(new ElasticLoadBalancingV2(this.config));
+  }
+
+  public secretsManager(): SecretsManager {
+    return this.wrapServiceErrorHandling(new SecretsManager(this.config));
+  }
+
+  public kms(): KMS {
+    return this.wrapServiceErrorHandling(new KMS(this.config));
+  }
+
+  public stepFunctions(): SFN {
+    return this.wrapServiceErrorHandling(new SFN(this.config));
+  }
+
+  public codeBuild(): CodeBuild {
+    return this.wrapServiceErrorHandling(new CodeBuild(this.config));
+  }
+
+  public cloudWatchLogs(): CloudWatchLogs {
+    return this.wrapServiceErrorHandling(new CloudWatchLogs(this.config));
+  }
+
+  public appsync(): AppSync {
+    return this.wrapServiceErrorHandling(new AppSync(this.config));
+  }
+
+  public async currentAccount(): Promise<Account> {
+    // Get/refresh if necessary before we can access `accessKeyId`
+    await this.forceCredentialRetrieval();
+
+    return cached(this, CURRENT_ACCOUNT_KEY, () => SDKv3.accountCache.fetch(this._credentials.accessKeyId, async () => {
+      // if we don't have one, resolve from STS and store in cache.
+      debug('Looking up default account ID from STS');
+      const stsConfig = this.config;
+      stsConfig.retryStrategy = this.stsRetryStrategy;
+      const result = await new STS(stsConfig).getCallerIdentity();
+      const accountId = result.Account;
+      const partition = result.Arn!.split(':')[1];
+      if (!accountId) {
+        throw new Error('STS didn\'t return an account ID');
+      }
+      debug('Default account ID:', accountId);
+
+      // Save another STS call later if this one already succeeded
+      this._credentialsValidated = true;
+      return { accountId, partition };
+    }));
+  }
+
+  /**
+   * Return the current credentials
+   *
+   * Don't use -- only used to write tests around assuming roles.
+   */
+  public async currentCredentials(): Promise<AwsCredentialIdentity> {
+    await this.forceCredentialRetrieval();
+    return this._credentials;
+  }
+
+  /**
+   * Force retrieval of the current credentials
+   *
+   * Relevant if the current credentials are AssumeRole credentials -- do the actual
+   * lookup, and translate any error into a useful error message (taking into
+   * account credential provenance).
+   */
+  public async forceCredentialRetrieval() {
+    try {
+      this._credentials = await this.provider();
+    } catch (e: any) {
+      if (isUnrecoverableAwsError(e)) {
+        throw e;
+      }
+
+      // Only reason this would fail is if it was an AssumRole. Otherwise,
+      // reading from an INI file or reading env variables is unlikely to fail.
+      debug(`Assuming role failed: ${e.message}`);
+      throw new Error([
+        'Could not assume role in target account',
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`] : []),
+        e.message,
+        '. Please make sure that this role exists in the account. If it doesn\'t exist, (re)-bootstrap the environment ' +
+        'with the right \'--trust\', using the latest version of the CDK CLI.',
+      ].join(' '));
+    }
+  }
+
+  /**
+   * Make sure the the current credentials are not expired
+   */
+  public async validateCredentials() {
+    if (this._credentialsValidated) {
+      return;
+    }
+
+    const stsConfig = this.config;
+    stsConfig.retryStrategy = this.stsRetryStrategy;
+    await new STS(stsConfig).getCallerIdentity();
+    this._credentialsValidated = true;
+  }
+
+  public getEndpointSuffix(region: string): string {
+    return regionUtil.getEndpointSuffix(region);
+  }
+
+  /**
+   * Return a wrapping object for the underlying service object
+   *
+   * Responds to failures in the underlying service calls, in two different
+   * ways:
+   *
+   * - When errors are encountered, log the failing call and the error that
+   *   it triggered (at debug level). This is necessary because the lack of
+   *   stack traces in NodeJS otherwise makes it very hard to suss out where
+   *   a certain AWS error occurred.
+   * - The JS SDK has a funny business of wrapping any credential-based error
+   *   in a super-generic (and in our case wrong) exception. If we then use a
+   *   'ChainableTemporaryCredentials' and the target role doesn't exist,
+   *   the error message that shows up by default is super misleading
+   *   (https://github.com/aws/aws-sdk-js/issues/3272). We can fix this because
+   *   the exception contains the "inner exception", so we unwrap and throw
+   *   the correct error ("cannot assume role").
+   *
+   * The wrapping business below is slightly more complicated than you'd think
+   * because we must hook into the `promise()` method of the object that's being
+   * returned from the methods of the object that we wrap, so there's two
+   * levels of wrapping going on, and also some exceptions to the wrapping magic.
+   */
+  private wrapServiceErrorHandling<A extends object>(serviceObject: A): A {
+    const classObject = serviceObject.constructor.prototype;
+    const self = this;
+
+    return new Proxy(serviceObject, {
+      get(obj: A, prop: string) {
+        const real = (obj as any)[prop];
+        // Things we don't want to intercept:
+        // - Anything that's not a function.
+        // - 'constructor', s3.upload() will use this to do some magic and we need the underlying constructor.
+        // - Any method that's not on the service class (do not intercept 'makeRequest' and other helpers).
+        if (prop === 'constructor' || !classObject.hasOwnProperty(prop) || !isFunction(real)) { return real; }
+
+        // NOTE: This must be a function() and not an () => {
+        // because I need 'this' to be dynamically bound and not statically bound.
+        // If your linter complains don't listen to it!
+        return function(this: any) {
+          // Call the underlying function. If it returns an object with a promise()
+          // method on it, wrap that 'promise' method.
+          const args = [].slice.call(arguments, 0);
+          const response = real.apply(this, args);
+
+          // Don't intercept unless the return value is an object with a '.promise()' method.
+          if (typeof response !== 'object' || !response) { return response; }
+          if (!('promise' in response)) { return response; }
+
+          // Return an object with the promise method replaced with a wrapper which will
+          // do additional things to errors.
+          return Object.assign(Object.create(response), {
+            promise() {
+              return (
+                // The `.promise()` call might be on an JS SDK v2 client API.
+                // If yes, please remove .promise(). If not, remove this comment.
+                response.promise().catch((e: Error & { code?: string }) => {
+                  e = self.makeDetailedException(e);
+                  debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message} (code=${e.code})`);
+                  return Promise.reject(e); // Re-'throw' the new error
+                })
+              );
+            },
+          });
+        };
+      },
+    });
+  }
+
+  /**
+   * Extract a more detailed error out of a generic error if we can
+   *
+   * If this is an error about Assuming Roles, add in the context showing the
+   * chain of credentials we used to try to assume the role.
+   */
+  private makeDetailedException(e: Error): Error {
+    // This is the super-generic "something's wrong" error that the JS SDK wraps other errors in.
+    // https://github.com/aws/aws-sdk-js/blob/f0ac2e53457c7512883d0677013eacaad6cd8a19/lib/event_listeners.js#L84
+    if (typeof e.message === 'string' && e.message.startsWith('Missing credentials in config')) {
+      const original = (e as any).originalError;
+      if (original) {
+        // When the SDK does a 'util.copy', they lose the Error-ness of the inner error
+        // (they copy the Error's properties into a plain object) so make it an Error object again.
+        e = Object.assign(new Error(), original);
+      }
+    }
+
+    // At this point, the error might still be a generic "ChainableTemporaryCredentials failed"
+    // error which wraps the REAL error (AssumeRole failed). We're going to replace the error
+    // message with one that's more likely to help users, and tell them the most probable
+    // fix (bootstrapping). The underlying service call failure will be appended below.
+    if (e.message === 'Could not load credentials from ChainableTemporaryCredentials') {
+      e.message = [
+        'Could not assume role in target account',
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`] : []),
+        '(did you bootstrap the environment with the right \'--trust\'s?)',
+      ].join(' ');
+    }
+
+    // Replace the message on this error with a concatenation of all inner error messages.
+    // Must more clear what's going on that way.
+    e.message = allChainedExceptionMessages(e);
+    return e;
+  }
+}
+
 export class SDK implements ISDK {
   private static readonly accountCache = new AccountAccessKeyCache();
 
@@ -384,9 +800,7 @@ export class SDK implements ISDK {
     if (e.message === 'Could not load credentials from ChainableTemporaryCredentials') {
       e.message = [
         'Could not assume role in target account',
-        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
-          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : [],
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`] : []),
         '(did you bootstrap the environment with the right \'--trust\'s?)',
       ].join(' ');
     }

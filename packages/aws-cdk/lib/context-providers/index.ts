@@ -9,7 +9,7 @@ import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderP
 import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
-import { SdkProvider } from '../api';
+import { SdkProvider, SdkProviderv3 } from '../api';
 import { PluginHost } from '../api/plugin';
 import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
 import { replaceEnvPlaceholders } from '../api/util/placeholders';
@@ -17,18 +17,22 @@ import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 
 export type ContextProviderFactory = ((sdk: SdkProvider) => ContextProviderPlugin);
+export type ContextProviderFactoryv3 = ((sdk: SdkProviderv3) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ContextProviderFactory};
+export type ProviderMapv3 = {[name: string]: ContextProviderFactoryv3};
 
 const PLUGIN_PROVIDER_PREFIX = 'plugin';
+
+type SdkProviderType = SdkProvider | SdkProviderv3;
 
 /**
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
  */
-export async function provideContextValues(
+export async function provideContextValues<T extends SdkProviderType>(
   missingValues: cxschema.MissingContext[],
   context: Context,
-  sdk: SdkProvider) {
-
+  sdk: T,
+) {
   for (const missingContext of missingValues) {
     const key = missingContext.key;
 
@@ -36,18 +40,17 @@ export async function provideContextValues(
       ? `${PLUGIN_PROVIDER_PREFIX}:${(missingContext.props as cxschema.PluginContextQuery).pluginName}`
       : missingContext.provider;
 
-    let factory;
+    let factory: (sdk: T) => ContextProviderPlugin;
     if (providerName.startsWith(`${PLUGIN_PROVIDER_PREFIX}:`)) {
       const plugin = PluginHost.instance.contextProviderPlugins[providerName.substring(PLUGIN_PROVIDER_PREFIX.length + 1)];
       if (!plugin) {
-        // eslint-disable-next-line max-len
         throw new Error(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
       }
       factory = () => plugin;
     } else {
-      factory = availableContextProviders[providerName];
+      factory = availableContextProviders[providerName] as (sdk: T) => ContextProviderPlugin
+      || availableContextProvidersv3[providerName] as (sdk: T) => ContextProviderPlugin;
       if (!factory) {
-        // eslint-disable-next-line max-len
         throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
       }
     }
@@ -70,8 +73,6 @@ export async function provideContextValues(
 
       value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
     } catch (e: any) {
-      // Set a specially formatted provider value which will be interpreted
-      // as a lookup failure in the toolkit.
       value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
     }
     context.set(key, value);
@@ -86,6 +87,7 @@ export async function provideContextValues(
  */
 export function registerContextProvider(name: string, provider: ContextProviderPlugin) {
   availableContextProviders[name] = () => provider;
+  combinedContextProviders[name] = () => provider;
 }
 
 /**
@@ -110,11 +112,25 @@ const availableContextProviders: ProviderMap = {
   [cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER]: (s) => new AZContextProviderPlugin(s),
   [cxschema.ContextProvider.SSM_PARAMETER_PROVIDER]: (s) => new SSMContextProviderPlugin(s),
   [cxschema.ContextProvider.HOSTED_ZONE_PROVIDER]: (s) => new HostedZoneContextProviderPlugin(s),
-  [cxschema.ContextProvider.VPC_PROVIDER]: (s) => new VpcNetworkContextProviderPlugin(s),
-  [cxschema.ContextProvider.AMI_PROVIDER]: (s) => new AmiContextProviderPlugin(s),
   [cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER]: (s) => new EndpointServiceAZContextProviderPlugin(s),
   [cxschema.ContextProvider.SECURITY_GROUP_PROVIDER]: (s) => new SecurityGroupContextProviderPlugin(s),
   [cxschema.ContextProvider.LOAD_BALANCER_PROVIDER]: (s) => new LoadBalancerContextProviderPlugin(s),
   [cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER]: (s) => new LoadBalancerListenerContextProviderPlugin(s),
   [cxschema.ContextProvider.KEY_PROVIDER]: (s) => new KeyContextProviderPlugin(s),
+  [cxschema.ContextProvider.AMI_PROVIDER]: (s) => new AmiContextProviderPlugin(s),
+};
+
+const availableContextProvidersv3: ProviderMapv3 = {
+  [cxschema.ContextProvider.VPC_PROVIDER]: (s) => new VpcNetworkContextProviderPlugin(s),
+};
+
+type CombinedContextProviderFactory = ContextProviderFactory | ContextProviderFactoryv3;
+
+type CombinedProviderMap = {
+  [key: string]: CombinedContextProviderFactory;
+};
+
+const combinedContextProviders: CombinedProviderMap = {
+  ...availableContextProviders,
+  ...availableContextProvidersv3,
 };

@@ -1,11 +1,17 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { debug } from '../../logging';
 import { Mode } from '../aws-auth/credentials';
-import { SdkProvider } from '../aws-auth/sdk-provider';
+
+interface IBaseCredentialsPartitionProvider {
+  baseCredentialsPartition(environment: cxapi.Environment, mode: Mode): Promise<string | undefined>;
+}
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
  */
-export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
+export async function replaceEnvPlaceholders<A extends { }>(
+  object: A, env: cxapi.Environment, sdkProvider: IBaseCredentialsPartitionProvider): Promise<A> {
+  debug('called replaceEnvPlaceholders');
   return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
     accountId: () => Promise.resolve(env.account),
     region: () => Promise.resolve(env.region),
@@ -19,4 +25,3 @@ export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxap
     },
   });
 }
-
