@@ -24,7 +24,7 @@ export interface KinesisTargetParameters {
 }
 
 /**
- * A EventBridge Pipes target that sends messages to a Kinesis stream.
+ * An EventBridge Pipes target that sends messages to a Kinesis stream.
  */
 export class KinesisTarget implements ITarget {
   private stream: IStream;
@@ -44,12 +44,6 @@ export class KinesisTarget implements ITarget {
   }
 
   bind(pipe: IPipe): TargetConfig {
-    if (!this.streamParameters) {
-      return {
-        targetParameters: {},
-      };
-    }
-
     return {
       targetParameters: {
         inputTemplate: this.streamParameters.inputTransformation?.bind(pipe).inputTemplate,
@@ -60,9 +54,7 @@ export class KinesisTarget implements ITarget {
 }
 
 function validatePartitionKey(pk: string) {
-  if (!Token.isUnresolved(pk)) {
-    if (pk.length > 256) {
-      throw new Error(`Partition key must be less than or equal to 256 characters, received ${pk.length}`);
-    }
+  if (!Token.isUnresolved(pk) && pk.length > 256) {
+    throw new Error(`Partition key must be less than or equal to 256 characters, received ${pk.length}`);
   }
 }
