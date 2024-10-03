@@ -513,4 +513,124 @@ describe('EC2 Routing', () => {
     });
   });
 
+  describe('VPCPeeringConnection', () => {
+    test('Cross account peering connection', () => {
+      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      });
+      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+      });
+
+      new route.VPCPeeringConnection(stack, 'TestPeering', {
+        isCrossAccount: true,
+        requestorVpc: vpc1,
+        acceptorVpc: vpc2,
+        acceptorAccountId: '123456789012',
+        acceptorRegion: 'us-west-2',
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+        PeerOwnerId: '123456789012',
+        PeerRegion: 'us-west-2',
+        VpcId: {
+          'Fn::GetAtt': ['VPC17DE2CF87', 'VpcId'],
+        },
+        PeerVpcId: {
+          'Fn::GetAtt': ['VPC2C1F0E711', 'VpcId'],
+        },
+        PeerRoleArn: {
+          'Fn::GetAtt': ['TestPeeringPeerRole67D845E9', 'Arn'],
+        },
+      });
+    });
+
+    test('CIDR block overlap should throw error', () => {
+      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+      });
+
+      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+      });
+
+      expect(() => {
+        new route.VPCPeeringConnection(stack, 'TestPeering', {
+          isCrossAccount: false,
+          requestorVpc: vpc1,
+          acceptorVpc: vpc2,
+        });
+      }).toThrow(/CIDR block should not overlap with existing subnet blocks/);
+    });
+
+    test('CIDR block overlap with secondary CIDR block should throw error', () => {
+      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
+      });
+
+      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
+      });
+
+      expect(() => {
+        new route.VPCPeeringConnection(stack, 'TestPeering', {
+          isCrossAccount: false,
+          requestorVpc: vpc1,
+          acceptorVpc: vpc2,
+        });
+      }).toThrow(/CIDR block should not overlap with existing subnet blocks/);
+    });
+
+    test('Non overlapping CIDR blocks should succeed', () => {
+      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
+      });
+
+      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.3.0.0/16', { cidrBlockName: 'Temp Block' })],
+      });
+
+      expect(() => {
+        new route.VPCPeeringConnection(stack, 'TestPeering', {
+          isCrossAccount: false,
+          requestorVpc: vpc1,
+          acceptorVpc: vpc2,
+        });
+      }).not.toThrow();
+    });
+
+    test('Default region handling for same account peering', () => {
+      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      });
+
+      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+      });
+
+      new route.VPCPeeringConnection(stack, 'TestPeering', {
+        isCrossAccount: false,
+        requestorVpc: vpc1,
+        acceptorVpc: vpc2,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+        VpcId: {
+          'Fn::GetAtt': ['VPC17DE2CF87', 'VpcId'],
+        },
+        PeerVpcId: {
+          'Fn::GetAtt': ['VPC2C1F0E711', 'VpcId'],
+        },
+        PeerRegion: {
+          Ref: 'AWS::Region', // CDK resolves this as the stack region
+        },
+      });
+    });
+  });
 });
