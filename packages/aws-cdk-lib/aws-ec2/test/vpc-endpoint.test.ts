@@ -935,7 +935,7 @@ describe('vpc endpoint', () => {
       });
     });
 
-    test('vpc interface endpoints with private dns disabled', () => {
+    test('test vpc interface endpoint with private dns disabled', () => {
       //GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
       const vpc = new Vpc(stack, 'VPC');
