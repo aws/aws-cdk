@@ -901,6 +901,16 @@ export enum InstanceClass {
   G6 = 'g6',
 
   /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 6th generation
+   */
+  GRAPHICS6_EFFICIENT = 'graphics6-efficient',
+
+  /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 6th generation
+   */
+  G6E = 'g6e',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'parallel2',
@@ -1590,6 +1600,8 @@ export class InstanceType {
       [InstanceClass.G5G]: 'g5g',
       [InstanceClass.GRAPHICS6]: 'g6',
       [InstanceClass.G6]: 'g6',
+      [InstanceClass.GRAPHICS6_EFFICIENT]: 'g6e',
+      [InstanceClass.G6E]: 'g6e',
       [InstanceClass.PARALLEL2]: 'p2',
       [InstanceClass.P2]: 'p2',
       [InstanceClass.PARALLEL3]: 'p3',
