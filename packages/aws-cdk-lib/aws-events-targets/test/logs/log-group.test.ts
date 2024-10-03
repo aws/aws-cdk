@@ -398,3 +398,83 @@ testDeprecated('specifying retry policy with 0 retryAttempts', () => {
     ],
   });
 });
+
+test('metricIncomingLogEvents', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+
+  expect(stack.resolve(logGroup.metricIncomingLogEvents())).toEqual({
+    period: {
+      amount: 5,
+      unit: { label: 'minutes', inMillis: 60000, isoLabel: 'M' },
+    },
+    namespace: 'AWS/Logs',
+    metricName: 'IncomingLogs',
+    statistic: 'Sum',
+  });
+});
+
+test('metricIncomingLogEvents with MetricOptions props', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+
+  expect(stack.resolve(logGroup.metricIncomingLogEvents({
+    period: cdk.Duration.hours(10),
+    label: 'MyMetric',
+  }))).toEqual({
+    period: {
+      amount: 10,
+      unit: { label: 'hours', inMillis: 3600000, isoLabel: 'H' },
+    },
+    namespace: 'AWS/Logs',
+    metricName: 'IncomingLogs',
+    statistic: 'Sum',
+    label: 'MyMetric',
+  });
+});
+
+test('metricIncomingBytes', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+
+  expect(stack.resolve(logGroup.metricIncomingBytes())).toEqual({
+    period: {
+      amount: 5,
+      unit: { label: 'minutes', inMillis: 60000, isoLabel: 'M' },
+    },
+    namespace: 'AWS/Logs',
+    metricName: 'IncomingBytes',
+    statistic: 'Sum',
+  });
+});
+
+test('metricIncomingBytes with MetricOptions props', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+
+  expect(stack.resolve(logGroup.metricIncomingBytes({
+    period: cdk.Duration.minutes(15),
+    statistic: 'Sum',
+  }))).toEqual({
+    period: {
+      amount: 15,
+      unit: { label: 'minutes', inMillis: 60000, isoLabel: 'M' },
+    },
+    namespace: 'AWS/Logs',
+    metricName: 'IncomingBytes',
+    statistic: 'Sum',
+  });
+});
+

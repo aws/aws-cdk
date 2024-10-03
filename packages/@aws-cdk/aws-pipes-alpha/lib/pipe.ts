@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
-import { ISource } from './source';
+import { ISource, SourceWithDeadLetterTarget } from './source';
 import { ITarget } from './target';
 
 /**
@@ -233,6 +233,16 @@ export class Pipe extends PipeBase {
      */
     const source = props.source.bind(this);
     props.source.grantRead(this.pipeRole);
+
+    /**
+     * An optional dead-letter queue stores any events that are not successfully delivered to
+     * a target after all retry attempts are exhausted. The IAM role needs permission to write
+     * events to the dead-letter queue, either an SQS queue or SNS topic.
+     */
+    if (SourceWithDeadLetterTarget.isSourceWithDeadLetterTarget(props.source)) {
+      props.source.grantPush(this.pipeRole, props.source.deadLetterTarget);
+    }
+
     // Add the filter criteria to the source parameters
     const sourceParameters : CfnPipe.PipeSourceParametersProperty= {
       ...source.sourceParameters,

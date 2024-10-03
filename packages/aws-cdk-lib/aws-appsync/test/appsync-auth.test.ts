@@ -2,13 +2,22 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as cognito from '../../aws-cognito';
 import * as lambda from '../../aws-lambda';
+import { App } from '../../core';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
 
 // GIVEN
 let stack: cdk.Stack;
+let app: App;
 beforeEach(() => {
-  stack = new cdk.Stack();
+  app = new App(
+    {
+      context: {
+        '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission': true,
+      },
+    },
+  );
+  stack = new cdk.Stack(app);
 });
 
 describe('AppSync API Key Authorization', () => {
@@ -924,5 +933,40 @@ describe('AppSync Lambda Authorization', () => {
         },
       },
     })).toThrow('Missing Lambda Configuration');
+  });
+
+  test('Lambda authorization properly scoped under feature flag', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.LAMBDA,
+          lambdaAuthorizerConfig: {
+            handler: fn,
+          },
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'authfunction96361832',
+          'Arn',
+        ],
+      },
+      Principal: 'appsync.amazonaws.com',
+      SourceArn: {
+        'Fn::GetAtt': [
+          'apiC8550315',
+          'Arn',
+        ],
+      },
+    });
+
   });
 });

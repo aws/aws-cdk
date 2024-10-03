@@ -384,6 +384,42 @@ export interface ContainerDefinitionOptions {
    * An array of ulimits to set in the container.
    */
   readonly ulimits?: Ulimit[];
+
+  /**
+   * Enable a restart policy for a container.
+   *
+   * When you set up a restart policy, Amazon ECS can restart the container without needing to replace the task.
+   *
+   * @default - false unless `restartIgnoredExitCodes` or `restartAttemptPeriod` is set.
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html
+   */
+  readonly enableRestartPolicy?: boolean;
+
+  /**
+   * A list of exit codes that Amazon ECS will ignore and not attempt a restart on.
+   *
+   * This property can't be used if `enableRestartPolicy` is set to false.
+   *
+   * You can specify a maximum of 50 container exit codes.
+   *
+   * @default - No exit codes are ignored.
+   */
+  readonly restartIgnoredExitCodes?: number[];
+
+  /**
+   * A period of time that the container must run for before a restart can be attempted.
+   *
+   * A container can be restarted only once every `restartAttemptPeriod` seconds.
+   * If a container isn't able to run for this time period and exits early, it will not be restarted.
+   *
+   * This property can't be used if `enableRestartPolicy` is set to false.
+   *
+   * You can set a minimum `restartAttemptPeriod` of 60 seconds and a maximum `restartAttemptPeriod`
+   * of 1800 seconds.
+   *
+   * @default - Duration.seconds(300) if `enableRestartPolicy` is true, otherwise no period.
+   */
+  readonly restartAttemptPeriod?: cdk.Duration;
 }
 
 /**
@@ -590,6 +626,8 @@ export class ContainerDefinition extends Construct {
     if (props.ulimits) {
       this.addUlimits(...props.ulimits);
     }
+
+    this.validateRestartPolicy(props.enableRestartPolicy, props.restartIgnoredExitCodes, props.restartAttemptPeriod);
   }
 
   /**
@@ -771,6 +809,18 @@ export class ContainerDefinition extends Construct {
     };
   }
 
+  private validateRestartPolicy(enableRestartPolicy?: boolean, restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration) {
+    if (enableRestartPolicy === false && (restartIgnoredExitCodes !== undefined || restartAttemptPeriod !== undefined)) {
+      throw new Error('The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false');
+    }
+    if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
+      throw new Error(`Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`);
+    }
+    if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
+      throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`);
+    }
+  }
+
   /**
    * Whether this container definition references a specific JSON field of a secret
    * stored in Secrets Manager.
@@ -873,6 +923,7 @@ export class ContainerDefinition extends Construct {
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
+      restartPolicy: renderRestartPolicy(this.props.enableRestartPolicy, this.props.restartIgnoredExitCodes, this.props.restartAttemptPeriod),
     };
   }
 }
@@ -1494,4 +1545,24 @@ function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinitio
     namespace: sc.namespace,
     value: sc.value,
   }));
+}
+
+function renderRestartPolicy(
+  enableRestartPolicy?: boolean,
+  restartIgnoredExitCodes?: number[],
+  restartAttemptPeriod?: cdk.Duration,
+): CfnTaskDefinition.RestartPolicyProperty | undefined {
+  if (enableRestartPolicy === undefined && restartIgnoredExitCodes === undefined && restartAttemptPeriod === undefined) {
+    return;
+  }
+
+  return {
+    // If `enableRestartPolicy` is undefined, we know that `restartIgnoredExitCodes` or restartAttemptPeriod is specified
+    // according to the above branch, so we treat `enableRestartPolicy` as true.
+    // The `validateRestartPolicy` function also ensures that `enableRestartPolicy` is not false if `restartIgnoredExitCodes`
+    // or `restartAttemptPeriod` is specified, so there is no conflict.
+    enabled: enableRestartPolicy ?? true,
+    ignoredExitCodes: restartIgnoredExitCodes, // always undefined if `enabled` is false
+    restartAttemptPeriod: restartAttemptPeriod?.toSeconds(), // always undefined if `enabled` is false
+  };
 }

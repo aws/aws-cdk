@@ -26,7 +26,7 @@ import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
-import { displayNotices, refreshNotices } from '../lib/notices';
+import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
@@ -175,6 +175,27 @@ async function parseCommandLineArguments(args: string[]) {
       .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
       .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true })
       .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false }),
+    )
+    .command('rollback [STACKS..]', 'Rolls back the stack(s) named STACKS to their last stable state', (yargs: Argv) => yargs
+      .option('all', { type: 'boolean', default: false, desc: 'Roll back all available stacks' })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack the environment is bootstrapped with', requiresArg: true })
+      .option('force', {
+        alias: 'f',
+        type: 'boolean',
+        desc: 'Orphan all resources for which the rollback operation fails.',
+      })
+      .option('validate-bootstrap-version', {
+        type: 'boolean',
+        desc: 'Whether to validate the bootstrap stack version. Defaults to \'true\', disable with --no-validate-bootstrap-version.',
+      })
+      .option('orphan', {
+        // alias: 'o' conflicts with --output
+        type: 'array',
+        nargs: 1,
+        requiresArg: true,
+        desc: 'Orphan the given resources, identified by their logical ID (can be specified multiple times)',
+        default: [],
+      }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -367,10 +388,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   });
   await configuration.load();
 
-  if (shouldDisplayNotices()) {
-    void refreshNotices()
-      .catch(e => debug(`Could not refresh notices: ${e}`));
-  }
+  const cmd = argv._[0];
+
+  const notices = Notices.create({ configuration, includeAcknowlegded: cmd === 'notices' ? !argv.unacknowledged : false });
+  await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
@@ -422,8 +443,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   loadPlugins(configuration.settings);
 
-  const cmd = argv._[0];
-
   if (typeof(cmd) !== 'string') {
     throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
@@ -440,32 +459,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     // Do PSAs here
     await version.displayVersionMessage();
 
-    if (shouldDisplayNotices()) {
-      if (cmd === 'notices' && argv.unacknowledged === true) {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
-          ignoreCache: true,
-          unacknowledged: true,
-        });
-      } else if (cmd === 'notices') {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: [],
-          ignoreCache: true,
-        });
-      } else if (cmd !== 'version') {
-        await displayNotices({
-          outdir: configuration.settings.get(['output']) ?? 'cdk.out',
-          acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
-          ignoreCache: false,
-        });
-      }
-    }
-  }
+    if (cmd === 'notices') {
+      await notices.refresh({ force: true });
+      notices.display({ showTotal: argv.unacknowledged });
 
-  function shouldDisplayNotices(): boolean {
-    return configuration.settings.get(['notices']) ?? true;
+    } else if (cmd !== 'version') {
+      await notices.refresh();
+      notices.display();
+    }
+
   }
 
   async function main(command: string, args: any): Promise<number | void> {
@@ -613,6 +615,16 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           assetParallelism: configuration.settings.get(['assetParallelism']),
           assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: args.ignoreNoStacks,
+        });
+
+      case 'rollback':
+        return cli.rollback({
+          selector,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          force: args.force,
+          validateBootstrapStackVersion: args['validate-bootstrap-version'],
+          orphanLogicalIds: args.orphan,
         });
 
       case 'import':

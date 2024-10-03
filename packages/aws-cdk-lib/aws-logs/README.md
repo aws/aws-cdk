@@ -208,6 +208,29 @@ new cloudwatch.Alarm(this, 'alarm from metric filter', {
 });
 ```
 
+### Metrics for IncomingLogs and IncomingBytes
+Metric methods have been defined for IncomingLogs and IncomingBytes within LogGroups. These metrics allow for the creation of alarms on log ingestion, ensuring that the log ingestion process is functioning correctly.
+
+To define an alarm based on these metrics, you can use the following template:
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingEventsMetric = logGroup.metricIncomingLogEvents();
+new cloudwatch.Alarm(this, 'HighLogVolumeAlarm', {
+  metric: incomingEventsMetric,
+  threshold: 1000,
+  evaluationPeriods: 1,
+});
+```
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingBytesMetric = logGroup.metricIncomingBytes();
+new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
+  metric: incomingBytesMetric,
+  threshold: 5000000,  // 5 MB
+  evaluationPeriods: 1,
+});
+```
+
 ## Patterns
 
 Patterns describe which log events match a subscription or metric filter. There

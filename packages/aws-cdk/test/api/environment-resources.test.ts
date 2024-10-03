@@ -1,7 +1,10 @@
 /* eslint-disable import/order */
 import { ToolkitInfo } from '../../lib/api';
 import { EnvironmentResourcesRegistry } from '../../lib/api/environment-resources';
+import { CachedDataSource, Notices, NoticesFilter } from '../../lib/notices';
+import { Configuration } from '../../lib/settings';
 import { errorWithCode, mockBootstrapStack, MockSdk } from '../util/mock-sdk';
+import * as version from '../../lib/version';
 import { MockToolkitInfo } from '../util/mock-toolkitinfo';
 
 let mockSdk: MockSdk;
@@ -66,6 +69,10 @@ describe('validateversion without bootstrap stack', () => {
     mockToolkitInfo(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   test('validating version with explicit SSM parameter succeeds', async () => {
     // GIVEN
     mockSdk.stubSsm({
@@ -74,8 +81,35 @@ describe('validateversion without bootstrap stack', () => {
       },
     });
 
+    // disable notices caching
+    jest.spyOn(CachedDataSource.prototype as any, 'save').mockImplementation((_: any) => Promise.resolve());
+    jest.spyOn(CachedDataSource.prototype as any, 'load').mockImplementation(() => Promise.resolve({ expiration: 0, notices: [] }));
+
+    // mock cli version number
+    jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
+
     // THEN
+    const notices = Notices.create({ configuration: new Configuration() });
+    await notices.refresh({ dataSource: { fetch: async () => [] } });
     await expect(envResources().validateVersion(8, '/abc')).resolves.toBeUndefined();
+
+    const filter = jest.spyOn(NoticesFilter, 'filter');
+    notices.display();
+
+    expect(filter).toHaveBeenCalledTimes(1);
+    expect(filter).toHaveBeenCalledWith({
+      bootstrappedEnvironments: [{
+        bootstrapStackVersion: 10,
+        environment: {
+          account: '11111111',
+          region: 'us-nowhere',
+          name: 'aws://11111111/us-nowhere',
+        },
+      }],
+      cliVersion: '1.0.0',
+      data: [],
+      outDir: 'cdk.out',
+    });
   });
 
   test('validating version without explicit SSM parameter fails', async () => {

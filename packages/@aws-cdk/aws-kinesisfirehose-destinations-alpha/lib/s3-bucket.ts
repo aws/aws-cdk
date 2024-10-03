@@ -29,8 +29,7 @@ export class S3Bucket implements firehose.IDestination {
     const bucketGrant = this.bucket.grantReadWrite(role);
 
     const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
-      logging: this.props.logging,
-      logGroup: this.props.logGroup,
+      loggingConfig: this.props.loggingConfig,
       role,
       streamId: 'S3Destination',
     }) ?? {};
