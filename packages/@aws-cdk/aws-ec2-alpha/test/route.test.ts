@@ -546,7 +546,36 @@ describe('EC2 Routing', () => {
       });
     });
 
-    test('CIDR block overlap should throw error', () => {
+    test('Default region handling for same account peering', () => {
+      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      });
+
+      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+      });
+
+      new route.VPCPeeringConnection(stack, 'TestPeering', {
+        isCrossAccount: false,
+        requestorVpc: vpc1,
+        acceptorVpc: vpc2,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+        VpcId: {
+          'Fn::GetAtt': ['VPC17DE2CF87', 'VpcId'],
+        },
+        PeerVpcId: {
+          'Fn::GetAtt': ['VPC2C1F0E711', 'VpcId'],
+        },
+        PeerRegion: {
+          Ref: 'AWS::Region',
+        },
+      });
+    });
+
+    test('Overlap with primary CIDR block should throw error', () => {
       const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
         primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
       });
@@ -564,7 +593,7 @@ describe('EC2 Routing', () => {
       }).toThrow(/CIDR block should not overlap with existing subnet blocks/);
     });
 
-    test('CIDR block overlap with secondary CIDR block should throw error', () => {
+    test('Overlap with secondary CIDR block should throw error', () => {
       const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
         primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
         secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
@@ -573,6 +602,26 @@ describe('EC2 Routing', () => {
       const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
         primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
         secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
+      });
+
+      expect(() => {
+        new route.VPCPeeringConnection(stack, 'TestPeering', {
+          isCrossAccount: false,
+          requestorVpc: vpc1,
+          acceptorVpc: vpc2,
+        });
+      }).toThrow(/CIDR block should not overlap with existing subnet blocks/);
+    });
+
+    test('Overlap with primary and secondary CIDR block should throw error', () => {
+      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.3.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
+      });
+
+      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.3.0.0/16', { cidrBlockName: 'Temp Block' })],
       });
 
       expect(() => {
@@ -602,35 +651,6 @@ describe('EC2 Routing', () => {
           acceptorVpc: vpc2,
         });
       }).not.toThrow();
-    });
-
-    test('Default region handling for same account peering', () => {
-      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      });
-
-      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-      });
-
-      new route.VPCPeeringConnection(stack, 'TestPeering', {
-        isCrossAccount: false,
-        requestorVpc: vpc1,
-        acceptorVpc: vpc2,
-      });
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
-        VpcId: {
-          'Fn::GetAtt': ['VPC17DE2CF87', 'VpcId'],
-        },
-        PeerVpcId: {
-          'Fn::GetAtt': ['VPC2C1F0E711', 'VpcId'],
-        },
-        PeerRegion: {
-          Ref: 'AWS::Region', // CDK resolves this as the stack region
-        },
-      });
     });
   });
 });
