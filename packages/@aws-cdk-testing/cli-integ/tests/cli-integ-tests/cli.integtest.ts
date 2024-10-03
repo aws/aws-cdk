@@ -1056,6 +1056,41 @@ integTest(
   }),
 );
 
+integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = 'abc1234';
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: 'custom-stack',
+    qualifier: qualifier,
+  });
+
+  // Deploying small initial stack with only ane IAM role
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+    options: [
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // WHEN - adding 200 roles to the same stack to create a large diff
+  const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+    verbose: true,
+    modEnv: {
+      NUMBER_OF_ROLES: '200',
+    },
+    options: [
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // Assert that the CLI assumes the file publishing role:
+  expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+  expect(diff).toContain('success: Published');
+}));
+
 integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
   withDefaultFixture(async (fixture) => {
