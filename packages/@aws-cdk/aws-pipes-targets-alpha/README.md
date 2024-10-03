@@ -33,6 +33,7 @@ The following targets are supported:
 2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
 3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
 4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
+5. `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
 
 ### Amazon SQS
 
@@ -203,5 +204,40 @@ const apiTarget = new targets.ApiDestinationTarget(dest, {
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
     target: apiTarget,
+});
+```
+
+### Amazon Kinesis Data Stream
+
+A data stream can be used as a target for a pipe. The data stream will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: kinesis.Stream;
+
+const streamTarget = new targets.KinesisTarget(targetStream, {
+    partitionKey: 'pk',
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: streamTarget,
+});
+```
+
+The input to the target data stream can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: kinesis.Stream;
+
+const streamTarget = new targets.KinesisTarget(targetStream, {
+    partitionKey: 'pk',
+    inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: streamTarget,
 });
 ```
