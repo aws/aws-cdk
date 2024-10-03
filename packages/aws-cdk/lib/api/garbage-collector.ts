@@ -11,6 +11,7 @@ const pLimit: typeof import('p-limit') = require('p-limit');
 
 const ISOLATED_TAG = 'aws-cdk:isolated';
 const P_LIMIT = 50;
+const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
 class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();
@@ -48,14 +49,26 @@ class S3Asset {
     return response.TagSet;
   }
 
-  public async getTag(s3: S3, tag: string) {
+  private async getTag(s3: S3, tag: string) {
     const tags = await this.allTags(s3);
     return tags.find(t => t.Key === tag)?.Value;
   }
 
-  public async hasTag(s3: S3, tag: string) {
+  private async hasTag(s3: S3, tag: string) {
     const tags = await this.allTags(s3);
     return tags.some(t => t.Key === tag);
+  }
+
+  public async noIsolatedTag(s3: S3) {
+    return !(await this.hasTag(s3, ISOLATED_TAG));
+  }
+
+  public async isolatedTagBefore(s3: S3, date: Date) {
+    const tagValue = await this.getTag(s3, ISOLATED_TAG);
+    if (!tagValue) {
+      return false;
+    }
+    return new Date(tagValue) < date;
   }
 }
 
@@ -201,42 +214,22 @@ export class GarbageCollector {
         print(chalk.blue(`${isolated.length} isolated assets`));
 
         let deletables: S3Asset[] = [];
-
-        if (this.permissionToDelete) {
-          deletables = graceDays > 0
-            ? await Promise.all(
-              isolated.map(async (obj) => {
-                const tagTime = await obj.getTag(s3, ISOLATED_TAG);
-                if (tagTime && olderThan(Number(tagTime), currentTime, graceDays)) {
-                  return obj;
-                }
-                return null;
-              }),
-            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
-            : isolated;
-        }
-
         let taggables: S3Asset[] = [];
 
-        if (this.permissionToTag) {
-          taggables = graceDays > 0
-            ? await Promise.all(
-              isolated.map(async (obj) => {
-                const hasTag = await obj.hasTag(s3, ISOLATED_TAG);
-                return hasTag ? null : obj;
-              }),
-            ).then(results => results.filter((obj): obj is S3Asset => obj !== null))
-            : [];
+        if (graceDays > 0) {
+          await this.parallelReadAllTags(s3, isolated);
+          deletables = isolated.filter((obj) => obj.isolatedTagBefore(s3, new Date(currentTime - (graceDays * DAY))));
+          taggables = isolated.filter((obj) => obj.noIsolatedTag(s3));
         }
 
         print(chalk.blue(`${deletables.length} deletable assets`));
         print(chalk.white(`${taggables.length} taggable assets`));
 
-        if (deletables.length > 0) {
+        if (this.permissionToDelete && deletables.length > 0) {
           await this.parallelDelete(s3, bucket, deletables);
         }
 
-        if (taggables.length > 0) {
+        if (this.permissionToTag && taggables.length > 0) {
           await this.parallelTag(s3, bucket, taggables, currentTime);
         }
 
@@ -246,6 +239,14 @@ export class GarbageCollector {
       throw new Error(err);
     } finally {
       clearTimeout(timeout);
+    }
+  }
+
+  private async parallelReadAllTags(s3: S3, objects: S3Asset[]) {
+    const limit = pLimit(P_LIMIT);
+
+    for (const obj of objects) {
+      await limit(() => obj.allTags(s3));
     }
   }
 
@@ -420,10 +421,4 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
       finished = true;
     }
   }
-}
-
-function olderThan(originalTime: number, currentTime: number, graceDays: number) {
-  const diff = currentTime - originalTime;
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  return days >= graceDays;
 }
