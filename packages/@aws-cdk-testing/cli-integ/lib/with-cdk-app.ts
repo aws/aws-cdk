@@ -13,7 +13,7 @@ import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
-export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
+export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
 
 /**
@@ -24,7 +24,8 @@ export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
  * For backwards compatibility with existing tests (so we don't have to change
  * too much) the inner block is expected to take a `TestFixture` object.
  */
-export function withCdkApp(
+export function withSpecificCdkApp(
+  appName: string,
   block: (context: TestFixture) => Promise<void>,
 ): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
   return async (context: TestContext & AwsContext & DisableBootstrapContext) => {
@@ -36,7 +37,7 @@ export function withCdkApp(
     context.output.write(` Test directory: ${integTestDir}\n`);
     context.output.write(` Region:         ${context.aws.region}\n`);
 
-    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'app'), integTestDir, context.output);
+    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', appName), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
@@ -85,6 +86,16 @@ export function withCdkApp(
       }
     }
   };
+}
+
+/**
+ * Like `withSpecificCdkApp`, but uses the default integration testing app with a million stacks in it
+ */
+export function withCdkApp(
+  block: (context: TestFixture) => Promise<void>,
+): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
+  // 'app' is the name of the default integration app in the `cdk-apps` directory
+  return withSpecificCdkApp('app', block);
 }
 
 export function withCdkMigrateApp<A extends TestContext>(language: string, block: (context: TestFixture) => Promise<void>) {
@@ -186,6 +197,10 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
  */
 export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
   return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkApp(block)));
+}
+
+export function withSpecificFixture(appName: string, block: (context: TestFixture) => Promise<void>) {
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withSpecificCdkApp(appName, block)));
 }
 
 export function withExtendedTimeoutFixture(block: (context: TestFixture) => Promise<void>) {

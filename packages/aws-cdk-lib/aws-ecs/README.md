@@ -619,6 +619,22 @@ taskDefinition.addContainer('container', {
 });
 ```
 
+### Restart policy
+
+To enable a restart policy for the container, set `enableRestartPolicy` to true and also specify
+`restartIgnoredExitCodes` and `restartAttemptPeriod` if necessary.
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  enableRestartPolicy: true,
+  restartIgnoredExitCodes: [0, 127],
+  restartAttemptPeriod: Duration.seconds(360),
+});
+```
+
 ## Docker labels
 
 You can add labels to the container with the `dockerLabels` property or with the `addDockerLabel` method:
