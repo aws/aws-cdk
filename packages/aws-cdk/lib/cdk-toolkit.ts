@@ -789,7 +789,7 @@ export class CdkToolkit {
   public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
     const environments = await this.defineEnvironments(userEnvironmentSpecs);
 
-    await Promise.all(environments.map(async (environment) => {
+    for (const environment of environments) {
       success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
       const gc = new GarbageCollector({
         sdkProvider: this.props.sdkProvider,
@@ -800,7 +800,7 @@ export class CdkToolkit {
         type: options.type ?? 'all',
       });
       await gc.garbageCollect();
-    }));
+    };
   }
 
   private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
