@@ -48,7 +48,10 @@
       "RouteTableId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "testNATgwNATGateway1533420D"
+   ]
   },
   "natgwprivSubnetE547C5A0": {
    "Type": "AWS::EC2::Subnet",

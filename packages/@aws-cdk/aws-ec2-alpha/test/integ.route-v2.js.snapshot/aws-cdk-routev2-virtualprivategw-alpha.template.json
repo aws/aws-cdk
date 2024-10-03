@@ -48,24 +48,12 @@
       "RouteTableId"
      ]
     }
-   }
-  },
-  "TestRoottablevpgwRouteGWAttachmentDD0077EE": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpgw2AB64B6B",
-      "VpcId"
-     ]
-    },
-    "VpnGatewayId": {
-     "Fn::GetAtt": [
-      "testVPGWIGW816C7C4F",
-      "VPNGatewayId"
-     ]
-    }
-   }
+   },
+   "DependsOn": [
+    "testVPGWIGW816C7C4F",
+    "testVPGWRoutePropagationD01C7942",
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
   },
   "vpgwSubnet5E7F36AD": {
    "Type": "AWS::EC2::Subnet",
@@ -117,6 +105,38 @@
    "Properties": {
     "Type": "ipsec.1"
    }
+  },
+  "testVPGWVPCVPNGWF1D3DC88": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpgw2AB64B6B",
+      "VpcId"
+     ]
+    },
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   }
+  },
+  "testVPGWRoutePropagationD01C7942": {
+   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
+   "Properties": {
+    "RouteTableIds": [],
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
   }
  },
  "Parameters": {
