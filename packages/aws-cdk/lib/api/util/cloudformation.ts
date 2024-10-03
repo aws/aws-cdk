@@ -3,10 +3,12 @@ import { DescribeChangeSetOutput } from '@aws-cdk/cloudformation-diff';
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { AssetManifest, FileManifestEntry } from 'cdk-assets';
 import { StackStatus } from './cloudformation/stack-status';
-import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
+import { makeBodyParameter, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
+import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
 
@@ -338,14 +340,54 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
   return uploadBodyParameterAndCreateChangeSet(options);
 }
 
+/**
+ * Returns all file entries from an AssetManifestArtifact. This is used in the
+ * `uploadBodyParameterAndCreateChangeSet` function to find all template asset files to build and publish.
+ *
+ * Returns a tuple of [AssetManifest, FileManifestEntry[]]
+ */
+function fileEntriesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): [AssetManifest, FileManifestEntry[]] {
+  const assets: (FileManifestEntry)[] = [];
+  const fileName = artifact.file;
+  const assetManifest = AssetManifest.fromFile(fileName);
+
+  assetManifest.entries.forEach(entry => {
+    if (entry.type === 'file') {
+      const source = (entry as FileManifestEntry).source;
+      if (source.path && (source.path.endsWith('.template.json'))) {
+        assets.push(entry as FileManifestEntry);
+      }
+    }
+  });
+  return [assetManifest, assets];
+}
+
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
+    for (const artifact of options.stack.dependencies) {
+      // Skip artifact if it is not an Asset Manifest Artifact
+      if (!cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
+        continue;
+      }
+
+      // Build and publish each file entry of the Asset Manifest Artifact:
+      const [assetManifest, file_entries] = fileEntriesFromAssetManifestArtifact(artifact);
+      for (const entry of file_entries) {
+        await options.deployments.buildSingleAsset(artifact, assetManifest, entry, {
+          stack: options.stack,
+        });
+        await options.deployments.publishSingleAsset(assetManifest, entry, {
+          stack: options.stack,
+        });
+      }
+    }
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
-    const bodyParameter = await makeBodyParameterAndUpload(
+
+    const bodyParameter = await makeBodyParameter(
       options.stack,
       preparedSdk.resolvedEnvironment,
+      new AssetManifestBuilder(),
       preparedSdk.envResources,
-      options.sdkProvider,
       preparedSdk.stackSdk,
     );
     const cfn = preparedSdk.stackSdk.cloudFormation();
