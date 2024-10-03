@@ -1326,6 +1326,8 @@ When enabled, AWS Lambda checks every code deployment and verifies that the code
 For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
 The following code configures a function with code signing.
 
+Please note the code will not be automatically signed before deployment. To ensure your code is properly signed, you'll need to conduct the code signing process either through the AWS CLI (Command Line Interface) [start-signing-job](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/signer/start-signing-job.html) or by accessing the AWS Signer console.
+
 ```ts
 import * as signer from 'aws-cdk-lib/aws-signer';
 

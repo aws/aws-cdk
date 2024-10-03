@@ -305,7 +305,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
-  public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier');
+  public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier', 'aws.api');
   public static readonly BILLING_AND_COST_MANAGEMENT_TAX = new InterfaceVpcEndpointAwsService('tax');
   public static readonly BILLING_CONDUCTOR = new InterfaceVpcEndpointAwsService('billingconductor');
   public static readonly BRAKET = new InterfaceVpcEndpointAwsService('braket');
@@ -355,6 +355,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODE_CONNECTIONS = new InterfaceVpcEndpointAwsService('codeconnections.api');
   public static readonly COMPREHEND = new InterfaceVpcEndpointAwsService('comprehend');
   public static readonly COMPREHEND_MEDICAL = new InterfaceVpcEndpointAwsService('comprehendmedical');
+  public static readonly COMPUTE_OPTIMIZER = new InterfaceVpcEndpointAwsService('compute-optimizer');
   public static readonly CONFIG = new InterfaceVpcEndpointAwsService('config');
   public static readonly CONNECT_APP_INTEGRATIONS = new InterfaceVpcEndpointAwsService('app-integrations');
   public static readonly CONNECT_CASES = new InterfaceVpcEndpointAwsService('cases');
@@ -365,7 +366,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CONTROL_CATALOG = new InterfaceVpcEndpointAwsService('controlcatalog');
   public static readonly COST_EXPLORER = new InterfaceVpcEndpointAwsService('ce');
   public static readonly DATA_EXCHANGE = new InterfaceVpcEndpointAwsService('dataexchange');
-  public static readonly DATA_EXPORTS = new InterfaceVpcEndpointAwsService('bcm-data-exports');
+  public static readonly DATA_EXPORTS = new InterfaceVpcEndpointAwsService('bcm-data-exports', 'aws.api');
   public static readonly DATASYNC = new InterfaceVpcEndpointAwsService('datasync');
   public static readonly DATAZONE = new InterfaceVpcEndpointAwsService('datazone');
   public static readonly DATABASE_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('dms');
@@ -420,12 +421,15 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly GRAFANA = new InterfaceVpcEndpointAwsService('grafana');
   public static readonly GRAFANA_WORKSPACE = new InterfaceVpcEndpointAwsService('grafana-workspace');
   public static readonly GROUNDSTATION = new InterfaceVpcEndpointAwsService('groundstation');
+  public static readonly GUARDDUTY = new InterfaceVpcEndpointAwsService('guardduty');
+  public static readonly GUARDDUTY_FIPS = new InterfaceVpcEndpointAwsService('guardduty-fips');
   public static readonly GUARDDUTY_DATA = new InterfaceVpcEndpointAwsService('guardduty-data');
   public static readonly GUARDDUTY_DATA_FIPS = new InterfaceVpcEndpointAwsService('guardduty-data-fips');
   public static readonly HEALTH_IMAGING = new InterfaceVpcEndpointAwsService('medical-imaging');
   public static readonly HEALTH_IMAGING_RUNTIME = new InterfaceVpcEndpointAwsService('runtime-medical-imaging');
   public static readonly HEALTH_IMAGING_DICOM = new InterfaceVpcEndpointAwsService('dicom-medical-imaging');
   public static readonly HEALTHLAKE = new InterfaceVpcEndpointAwsService('healthlake');
+  public static readonly IAM = new InterfaceVpcEndpointAwsService('iam', 'com.amazonaws', undefined, { global: true });
   public static readonly IAM_IDENTITY_CENTER = new InterfaceVpcEndpointAwsService('identitystore');
   public static readonly IAM_ROLES_ANYWHERE = new InterfaceVpcEndpointAwsService('rolesanywhere');
   public static readonly IMAGE_BUILDER = new InterfaceVpcEndpointAwsService('imagebuilder');
@@ -455,6 +459,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
   public static readonly KMS_FIPS = new InterfaceVpcEndpointAwsService('kms-fips');
   public static readonly LAKE_FORMATION = new InterfaceVpcEndpointAwsService('lakeformation');
+  public static readonly LAUNCH_WIZARD = new InterfaceVpcEndpointAwsService('launchwizard');
   public static readonly LAMBDA = new InterfaceVpcEndpointAwsService('lambda');
   public static readonly LEX_MODELS = new InterfaceVpcEndpointAwsService('models-v2-lex');
   public static readonly LEX_RUNTIME = new InterfaceVpcEndpointAwsService('runtime-v2-lex');
@@ -480,6 +485,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly MIGRATIONHUB_REFACTOR_SPACES = new InterfaceVpcEndpointAwsService('refactor-spaces');
   public static readonly MIGRATIONHUB_STRATEGY = new InterfaceVpcEndpointAwsService('migrationhub-strategy');
   public static readonly NEPTUNE_ANALYTICS = new InterfaceVpcEndpointAwsService('neptune-graph');
+  public static readonly NETWORK_FIREWALL = new InterfaceVpcEndpointAwsService('network-firewall');
+  public static readonly NETWORK_FIREWALL_FIPS = new InterfaceVpcEndpointAwsService('network-firewall-fips');
   public static readonly NIMBLE_STUDIO = new InterfaceVpcEndpointAwsService('nimble');
   public static readonly OUTPOSTS = new InterfaceVpcEndpointAwsService('outposts');
   public static readonly ORGANIZATIONS = new InterfaceVpcEndpointAwsService('organizations');
@@ -508,6 +515,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD = new InterfaceVpcEndpointAwsService('pca-connector-ad');
+  public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_SCEP = new InterfaceVpcEndpointAwsService('pca-connector-scep');
   public static readonly PROMETHEUS = new InterfaceVpcEndpointAwsService('aps');
   public static readonly PROMETHEUS_WORKSPACES = new InterfaceVpcEndpointAwsService('aps-workspaces');
   public static readonly PROTON = new InterfaceVpcEndpointAwsService('proton');
@@ -533,12 +541,14 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION_STREAMING = new InterfaceVpcEndpointAwsService('streaming-rekognition');
   public static readonly REKOGNITION_STREAMING_FIPS = new InterfaceVpcEndpointAwsService('streaming-rekognition-fips');
   public static readonly REPOST_SPACE = new InterfaceVpcEndpointAwsService('repostspace');
+  public static readonly RESOURCE_ACCESS_MANAGER = new InterfaceVpcEndpointAwsService('ram');
   public static readonly ROBOMAKER = new InterfaceVpcEndpointAwsService('robomaker');
   public static readonly RECYCLE_BIN = new InterfaceVpcEndpointAwsService('rbin');
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
   public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, { global: true });
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
+  public static readonly SAGEMAKER_EXPERIMENTS = new InterfaceVpcEndpointAwsService('experiments', 'aws.sagemaker');
   public static readonly SAGEMAKER_FEATURESTORE_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.featurestore-runtime');
   public static readonly SAGEMAKER_GEOSPATIAL = new InterfaceVpcEndpointAwsService('sagemaker-geospatial');
   public static readonly SAGEMAKER_METRICS = new InterfaceVpcEndpointAwsService('sagemaker.metrics');
@@ -553,6 +563,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SERVER_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('sms');
   public static readonly SERVER_MIGRATION_SERVICE_FIPS = new InterfaceVpcEndpointAwsService('sms-fips');
   public static readonly SERVER_MIGRATION_SERVICE_AWSCONNECTOR = new InterfaceVpcEndpointAwsService('awsconnector');
+  public static readonly SERVERLESS_APPLICATION_REPOSITORY = new InterfaceVpcEndpointAwsService('serverlessrepo');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.EMAIL_SMTP instead. */
   public static readonly SES = new InterfaceVpcEndpointAwsService('email-smtp');
   public static readonly SIMSPACE_WEAVER = new InterfaceVpcEndpointAwsService('simspaceweaver');

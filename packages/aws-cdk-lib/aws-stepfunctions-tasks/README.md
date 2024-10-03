@@ -895,6 +895,18 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
 });
 ```
 
+If you want to use an [auto-termination policy](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-auto-termination-policy.html),
+you can specify the `autoTerminationPolicyIdleTimeout` property.
+Specifies the amount of idle time after which the cluster automatically terminates. You can specify a minimum of 60 seconds and a maximum of 604800 seconds (seven days).
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: 'ClusterName',
+  autoTerminationPolicyIdleTimeout: Duration.seconds(100),
+});
+```
+
 ### Termination Protection
 
 Locks a cluster (job flow) so the EC2 instances in the cluster cannot be

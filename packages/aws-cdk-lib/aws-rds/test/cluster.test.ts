@@ -175,6 +175,44 @@ describe('cluster new api', () => {
       });
     });
 
+    describe('enableLocalWriteForwarding', () => {
+      test('set enableLocalWriteForwarding', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 }),
+          vpc,
+          enableLocalWriteForwarding: true,
+          writer: ClusterInstance.serverlessV2('writer'),
+        });
+
+        // THEN
+        const template = Template.fromStack(stack);
+        template.hasResourceProperties('AWS::RDS::DBCluster', {
+          EnableLocalWriteForwarding: true,
+        });
+      });
+
+      test.each([true, false])('throw error for enableLocalWriteForwarding with aurora postgresql cluster', (enableLocalWriteForwarding) => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        expect(() => {
+          new DatabaseCluster(stack, 'Database', {
+            engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }),
+            vpc,
+            enableLocalWriteForwarding,
+            writer: ClusterInstance.serverlessV2('writer'),
+          });
+        }).toThrow('\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: aurora-postgresql');
+      });
+    });
+
     test('vpcSubnets can be provided', () => {
       // GIVEN
       const stack = testStack();

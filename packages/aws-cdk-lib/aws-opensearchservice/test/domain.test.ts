@@ -43,6 +43,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_10,
   EngineVersion.OPENSEARCH_2_11,
   EngineVersion.OPENSEARCH_2_13,
+  EngineVersion.OPENSEARCH_2_15,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -209,6 +210,7 @@ each([
   [EngineVersion.OPENSEARCH_2_10, 'OpenSearch_2.10'],
   [EngineVersion.OPENSEARCH_2_11, 'OpenSearch_2.11'],
   [EngineVersion.OPENSEARCH_2_13, 'OpenSearch_2.13'],
+  [EngineVersion.OPENSEARCH_2_15, 'OpenSearch_2.15'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
