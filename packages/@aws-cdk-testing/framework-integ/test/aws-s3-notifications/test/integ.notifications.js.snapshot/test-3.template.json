@@ -47,7 +47,7 @@
       }
      ]
     },
-    "Managed": false,
+    "Managed": true,
     "SkipDestinationValidation": false
    },
    "DependsOn": [
@@ -306,7 +306,7 @@
       }
      ]
     },
-    "Managed": false,
+    "Managed": true,
     "SkipDestinationValidation": false
    },
    "DependsOn": [

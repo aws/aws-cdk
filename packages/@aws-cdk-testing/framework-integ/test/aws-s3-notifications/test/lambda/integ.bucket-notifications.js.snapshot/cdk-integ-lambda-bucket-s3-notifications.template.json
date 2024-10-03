@@ -87,7 +87,7 @@
       }
      ]
     },
-    "Managed": false,
+    "Managed": true,
     "SkipDestinationValidation": false
    },
    "DependsOn": [
