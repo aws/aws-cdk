@@ -74,7 +74,7 @@ test('throw when client token has a length that is less than 1', () => {
 test('throw when client token has a length that is greater than 64', () => {
   expect(() => new AccessPoint(stack, 'MyAccessPoint', {
     fileSystem,
-    clientToken: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    clientToken: 'a'.repeat(65),
   },
   )).toThrow(/The length of \'clientToken\' must range from 1 to 64 characters, got: 65 characters/);
 });
