@@ -33,6 +33,7 @@ The following targets are supported:
 2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
 3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
 4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
+5. `targets.SageMakerTarget`: [Send event source to a SageMaker pipeline](#amazon-sagemaker-pipeline)
 
 ### Amazon SQS
 
@@ -203,5 +204,37 @@ const apiTarget = new targets.ApiDestinationTarget(dest, {
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
     target: apiTarget,
+});
+```
+
+### Amazon SageMaker Pipeline
+
+A SageMaker pipeline can be used as a target for a pipe. The pipeline will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetPipeline: sagemaker.IPipeline;
+
+const pipelineTarget = new targets.SageMakerTarget(targetPipeline);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: pipelineTarget,
+});
+```
+
+The input to the target pipeline can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetPipeline: sagemaker.IPipeline;
+
+const pipelineTarget = new targets.SageMakerTarget(targetPipeline, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: pipelineTarget,
 });
 ```
