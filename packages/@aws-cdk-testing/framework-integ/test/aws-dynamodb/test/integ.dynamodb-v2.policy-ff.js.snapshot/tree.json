@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "ResourcePolicyTest-v2": {
-        "id": "ResourcePolicyTest-v2",
-        "path": "ResourcePolicyTest-v2",
+      "ResourcePolicyTest-v2-FF": {
+        "id": "ResourcePolicyTest-v2-FF",
+        "path": "ResourcePolicyTest-v2-FF",
         "children": {
           "TableTestV2-1": {
             "id": "TableTestV2-1",
-            "path": "ResourcePolicyTest-v2/TableTestV2-1",
+            "path": "ResourcePolicyTest-v2-FF/TableTestV2-1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ResourcePolicyTest-v2/TableTestV2-1/Resource",
+                "path": "ResourcePolicyTest-v2-FF/TableTestV2-1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
                   "aws:cdk:cloudformation:props": {
@@ -32,9 +32,6 @@
                       }
                     ],
                     "replicas": [
-                      {
-                        "region": "eu-west-2"
-                      },
                       {
                         "region": "eu-west-1",
                         "resourcePolicy": {
@@ -64,10 +61,7 @@
                           }
                         }
                       }
-                    ],
-                    "streamSpecification": {
-                      "streamViewType": "NEW_AND_OLD_IMAGES"
-                    }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -77,13 +71,13 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "ResourcePolicyTest-v2/BootstrapVersion",
+            "path": "ResourcePolicyTest-v2-FF/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -91,7 +85,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "ResourcePolicyTest-v2/CheckBootstrapVersion",
+            "path": "ResourcePolicyTest-v2-FF/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

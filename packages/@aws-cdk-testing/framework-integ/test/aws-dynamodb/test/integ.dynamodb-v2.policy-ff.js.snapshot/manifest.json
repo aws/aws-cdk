@@ -1,28 +1,28 @@
 {
   "version": "36.0.24",
   "artifacts": {
-    "ResourcePolicyTest-v2.assets": {
+    "ResourcePolicyTest-v2-FF.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ResourcePolicyTest-v2.assets.json",
+        "file": "ResourcePolicyTest-v2-FF.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ResourcePolicyTest-v2": {
+    "ResourcePolicyTest-v2-FF": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/eu-west-1",
       "properties": {
-        "templateFile": "ResourcePolicyTest-v2.template.json",
+        "templateFile": "ResourcePolicyTest-v2-FF.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/0aaa25e74c3bd8b4c72922081490518294b93ff15f40df38ae16908cbe6d69c5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/192dc5b63bb0eb2c99bc1ea8a8fe1237a00e5067ac672d4e4f0986700f476849.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ResourcePolicyTest-v2.assets"
+          "ResourcePolicyTest-v2-FF.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-west-1",
@@ -31,29 +31,29 @@
         }
       },
       "dependencies": [
-        "ResourcePolicyTest-v2.assets"
+        "ResourcePolicyTest-v2-FF.assets"
       ],
       "metadata": {
-        "/ResourcePolicyTest-v2/TableTestV2-1/Resource": [
+        "/ResourcePolicyTest-v2-FF/TableTestV2-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TableTestV215EEA02B7"
           }
         ],
-        "/ResourcePolicyTest-v2/BootstrapVersion": [
+        "/ResourcePolicyTest-v2-FF/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ResourcePolicyTest-v2/CheckBootstrapVersion": [
+        "/ResourcePolicyTest-v2-FF/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ResourcePolicyTest-v2"
+      "displayName": "ResourcePolicyTest-v2-FF"
     },
     "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7.assets": {
       "type": "cdk:asset-manifest",
