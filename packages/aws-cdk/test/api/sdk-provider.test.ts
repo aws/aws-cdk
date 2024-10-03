@@ -536,6 +536,9 @@ describe('with intercepted network calls', () => {
       await provider.defaultAccount();
 
       // THEN
+      // For this test, we only care that we are calling STS with the credentials
+      // coming from the metadata service. So we don't do the whole FakeSTS setup
+      // and we are only expecting that the request has the right properties.
       expect(fakeSts.requests[0].parsedBody.Action).toEqual('AssumeRole');
       expect(fakeSts.requests[0].headers.authorization).toMatch('Credential=SOMEKEY');
       delete process.env.AWS_CONTAINER_CREDENTIALS_FULL_URI;
@@ -556,6 +559,9 @@ describe('with intercepted network calls', () => {
       await provider.defaultAccount();
 
       // THEN
+      // For this test, we only care that we are calling STS with the credentials
+      // coming from the metadata service. So we don't do the whole FakeSTS setup
+      // and we are only expecting that the request has the right properties.
       expect(fakeSts.requests[0].parsedBody.Action).toEqual('AssumeRole');
       expect(fakeSts.requests[0].headers.authorization).toMatch('Credential=SOMEKEY');
     });
