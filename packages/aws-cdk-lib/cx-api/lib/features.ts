@@ -112,6 +112,7 @@ export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
 export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
 export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
+export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1202,6 +1203,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     recommendedValue: true,
     introducedIn: { v2: 'V2NEXT' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.',
+    detailsMd: `
+      Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default. 
+      However, this can cause version mismatches between the '@aws-sdk/*' and '@smithy/*' packages, as they are tightly coupled dependencies in AWS SDK v3.
+      
+      When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages will be excluded during the bundling process. This ensures that no mismatches
+      occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
