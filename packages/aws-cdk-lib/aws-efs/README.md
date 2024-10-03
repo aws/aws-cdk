@@ -217,7 +217,9 @@ the access point can only access data in its own directory and below. To learn m
 Use the `addAccessPoint` API to create an access point from a fileSystem.
 
 ```ts fixture=with-filesystem-instance
-fileSystem.addAccessPoint('MyAccessPoint', {clientToken: 'client-token',
+fileSystem.addAccessPoint('MyAccessPoint', {
+  // create a unique access point via an optional client token
+  clientToken: 'client-token',
 });
 ```
 

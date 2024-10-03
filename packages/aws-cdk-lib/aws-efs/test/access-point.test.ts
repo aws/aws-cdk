@@ -63,6 +63,22 @@ test('allow client token to be set for AccessPoint', () => {
   });
 });
 
+test('throw when client token has a length that is less than 1', () => {
+  expect(() => new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+    clientToken: '',
+  },
+  )).toThrow(/The length of \'clientToken\' must range from 1 to 64 characters, got: 0 characters/);
+});
+
+test('throw when client token has a length that is greater than 64', () => {
+  expect(() => new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+    clientToken: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  },
+  )).toThrow(/The length of \'clientToken\' must range from 1 to 64 characters, got: 65 characters/);
+});
+
 test('import an AccessPoint using fromAccessPointId', () => {
   // WHEN
   const ap = new AccessPoint(stack, 'MyAccessPoint', {
