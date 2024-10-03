@@ -1061,9 +1061,6 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
-If the interface endpoint doesn't support Private DNS, `privateDnsDefault` will be set false.
-In that case, you can't set `privateDnsEnabled` to be true.
-
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and all traffic to the endpoint from within the VPC will be automatically allowed.

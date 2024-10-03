@@ -43,9 +43,10 @@ class VpcEndpointStack extends cdk.Stack {
     });
     /// !hide
 
-    // Add an interface endpoint privateDnsDefault false
+    // Add an interface endpoint with privateDnsDefault false
     vpc.addInterfaceEndpoint('DynamoDbInterfaceEndpoint', {
       service: ec2.InterfaceVpcEndpointAwsService.DYNAMODB,
+      privateDnsEnabled: false,
     });
   }
 }

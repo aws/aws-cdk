@@ -943,29 +943,16 @@ describe('vpc endpoint', () => {
       //WHEN
       vpc.addInterfaceEndpoint('DynamoDB Endpoint', {
         service: InterfaceVpcEndpointAwsService.DYNAMODB,
+        privateDnsEnabled: false,
       });
 
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.us-west-2.dynamodb',
-        VpcId: {
-          Ref: 'VPCB9E5F0B4',
-        },
+        VpcId: stack.resolve(vpc.vpcId),
         PrivateDnsEnabled: false,
         VpcEndpointType: 'Interface',
       });
-    });
-
-    test('vpc interface endpoint does not support private dns enabled', () => {
-      //GIVEN
-      const stack = new Stack(undefined, 'TestStack');
-      const vpc = new Vpc(stack, 'VPC');
-
-      expect(() => vpc.addInterfaceEndpoint('DynamoDB Endpoint', {
-        service: InterfaceVpcEndpointAwsService.DYNAMODB,
-        privateDnsEnabled: true,
-      }),
-      ).toThrow('Cannot create a VPC Endpoint private dns enabled: dynamodb');
     });
   });
 });
