@@ -138,6 +138,12 @@ export class CfnInclude extends core.CfnElement {
 
     this.dehydratedResources = props.dehydratedResources ?? [];
 
+    for (const logicalId of this.dehydratedResources) {
+      if (!Object.keys(this.template.Resources).includes(logicalId)) {
+        throw new Error(`Logical ID '${logicalId}' was specified in 'dehydratedResources', but does not belong to a resource in the template.`);
+      }
+    }
+
     // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(this.parametersToReplace)) {
       if (!(logicalId in (this.template.Parameters || {}))) {

@@ -373,6 +373,58 @@ describe('CDK Include', () => {
       },
     }));
   });
+
+  test('synth-time validation does not run on dehydrated resources', () => {
+    // synth-time validation fails if resource is hydrated
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json');
+      Template.fromStack(stack);
+    }).toThrow(`Resolution error: Supplied properties not correct for \"CfnLoadBalancerProps\"
+  tags: element 1: {} should have a 'key' and a 'value' property.`);
+
+    app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new core.Stack(app);
+
+    // synth-time validation not run if resource is dehydrated
+    includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json', {
+      dehydratedResources: ['MyLoadBalancer'],
+    });
+
+    expect(Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Properties: {
+        Tags: [
+          {
+            Key: 'Name',
+            Value: 'MyLoadBalancer',
+          },
+          {
+            data: [
+              'IsExtraTag',
+              {
+                Key: 'Name2',
+                Value: 'MyLoadBalancer2',
+              },
+              {
+                data: 'AWS::NoValue',
+                type: 'Ref',
+                isCfnFunction: true,
+              },
+            ],
+            type: 'Fn::If',
+            isCfnFunction: true,
+          },
+        ],
+      },
+    }));
+  });
+
+  test('throws on dehydrated resources not present in the template', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json', {
+        dehydratedResources: ['ResourceNotExistingHere'],
+      });
+    }).toThrow(/Logical ID 'ResourceNotExistingHere' was specified in 'dehydratedResources', but does not belong to a resource in the template./);
+  });
 });
 
 interface IncludeTestTemplateProps {
