@@ -77,7 +77,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | 2.160.0 | (fix) |
 | [@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission](#aws-cdkaws-appsyncappsyncgraphqlapiscopelambdapermission) | When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn. | V2NEXT | (fix) |
 | [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | V2NEXT | (fix) |
-| [@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics](#aws-cdkcorecfnincluderejectcomplexresourceupdatecreatepolicyintrinsics) | When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values. | 2.160.0 | (fix) |
+| [@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics](#aws-cdkcorecfnincluderejectcomplexresourceupdatecreatepolicyintrinsics) | When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1470,5 +1470,6 @@ Enabling this feature flag will make `cfn-include` throw on these templates, unl
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
 
 <!-- END details -->
