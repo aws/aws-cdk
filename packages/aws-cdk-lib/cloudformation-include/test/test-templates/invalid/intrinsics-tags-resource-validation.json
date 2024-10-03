@@ -1,0 +1,54 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "IsExtraTag": {
+      "Type": "String",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "false"
+    }
+  },
+  "Conditions": {
+    "AddExtraTag": {
+      "Fn::Equals": [
+        {
+          "data": "IsExtraTag",
+          "type": "Ref",
+          "isCfnFunction": true
+        },
+        "true"
+      ]
+    }
+  },
+  "Resources": {
+    "MyLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "MyLoadBalancer"
+          },
+          {
+            "data": [
+              "IsExtraTag",
+              {
+                "Key": "Name2",
+                "Value": "MyLoadBalancer2"
+              },
+              {
+                "data": "AWS::NoValue",
+                "type": "Ref",
+                "isCfnFunction": true
+              }
+            ],
+            "type": "Fn::If",
+            "isCfnFunction": true
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "Conditions": {
+    "SomeCondition": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "Alias": {
+      "Type": "AWS::Lambda::Alias",
+      "Properties": {
+        "FunctionName": "SomeLambda",
+        "FunctionVersion": "SomeVersion",
+        "Name": "MyAlias"
+      },
+      "UpdatePolicy": {
+        "CodeDeployLambdaAliasUpdate": {
+          "Fn::If": [
+            "SomeCondition",
+            {
+              "ApplicationName": "SomeApp",
+              "DeploymentGroupName": "SomeDeploymentGroup",
+              "BeforeAllowTrafficHook": "SomeHook",
+              "AfterAllowTrafficHook": "SomeOtherHook"
+            },
+            {
+              "ApplicationName": "SomeOtherApp",
+              "DeploymentGroupName": "SomeOtherDeploymentGroup",
+              "BeforeAllowTrafficHook": "SomeOtherHook",
+              "AfterAllowTrafficHook": "SomeOtherOtherHook"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

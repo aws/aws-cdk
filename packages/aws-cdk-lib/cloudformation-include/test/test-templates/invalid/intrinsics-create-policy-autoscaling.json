@@ -1,0 +1,28 @@
+{
+  "Conditions": {
+    "SomeCondition": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "AutoScalingCreationPolicyIntrinsic": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": 1,
+        "MaxSize": 5
+      },
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "Fn::If": [
+            "SomeCondition",
+            { "MinSuccessfulInstancesPercent": 50 },
+            { "MinSuccessfulInstancesPercent": 25 }
+          ]
+        }
+      }
+    }
+  }
+}

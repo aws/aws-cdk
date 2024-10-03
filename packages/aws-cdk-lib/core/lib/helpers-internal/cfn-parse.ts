@@ -1,3 +1,4 @@
+import { CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS } from '../../../cx-api';
 import { CfnCondition } from '../cfn-condition';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
@@ -9,10 +10,12 @@ import {
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
 } from '../cfn-resource-policy';
 import { CfnTag } from '../cfn-tag';
+import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
 import { IResolvable } from '../resolvable';
 import { Validator } from '../runtime';
+import { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';
 
@@ -343,6 +346,7 @@ export interface ParseCfnOptions {
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
+  private stack?: Stack;
 
   constructor(options: ParseCfnOptions) {
     this.options = options;
@@ -350,9 +354,10 @@ export class CfnParser {
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const cfnOptions = resource.cfnOptions;
+    this.stack = Stack.of(resource);
 
-    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
-    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy, logicalId);
+    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy, logicalId);
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
     cfnOptions.version = this.parseValue(resourceAttributes.Version);
@@ -381,8 +386,10 @@ export class CfnParser {
     }
   }
 
-  private parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
+  private parseCreationPolicy(policy: any, logicalId: string): CfnCreationPolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
+    this.throwIfIsIntrinsic(policy, logicalId);
+    const self = this;
 
     // change simple JS values to their CDK equivalents
     policy = this.parseValue(policy);
@@ -393,6 +400,7 @@ export class CfnParser {
     });
 
     function parseAutoScalingCreationPolicy(p: any): CfnResourceAutoScalingCreationPolicy | undefined {
+      self.throwIfIsIntrinsic(p, logicalId);
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
@@ -402,6 +410,7 @@ export class CfnParser {
 
     function parseResourceSignal(p: any): CfnResourceSignal | undefined {
       if (typeof p !== 'object') { return undefined; }
+      self.throwIfIsIntrinsic(p, logicalId);
 
       return undefinedIfAllValuesAreEmpty({
         count: FromCloudFormation.getNumber(p.Count).value,
@@ -410,8 +419,10 @@ export class CfnParser {
     }
   }
 
-  private parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
+  private parseUpdatePolicy(policy: any, logicalId: string): CfnUpdatePolicy | undefined {
     if (typeof policy !== 'object') { return undefined; }
+    this.throwIfIsIntrinsic(policy, logicalId);
+    const self = this;
 
     // change simple JS values to their CDK equivalents
     policy = this.parseValue(policy);
@@ -427,6 +438,7 @@ export class CfnParser {
 
     function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
       if (typeof p !== 'object') { return undefined; }
+      self.throwIfIsIntrinsic(p, logicalId);
 
       return undefinedIfAllValuesAreEmpty({
         willReplace: p.WillReplace,
@@ -435,6 +447,7 @@ export class CfnParser {
 
     function parseAutoScalingRollingUpdate(p: any): CfnAutoScalingRollingUpdate | undefined {
       if (typeof p !== 'object') { return undefined; }
+      self.throwIfIsIntrinsic(p, logicalId);
 
       return undefinedIfAllValuesAreEmpty({
         maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize).value,
@@ -447,6 +460,7 @@ export class CfnParser {
     }
 
     function parseCodeDeployLambdaAliasUpdate(p: any): CfnCodeDeployLambdaAliasUpdate | undefined {
+      self.throwIfIsIntrinsic(p, logicalId);
       if (typeof p !== 'object') { return undefined; }
 
       return {
@@ -458,6 +472,7 @@ export class CfnParser {
     }
 
     function parseAutoScalingScheduledAction(p: any): CfnAutoScalingScheduledAction | undefined {
+      self.throwIfIsIntrinsic(p, logicalId);
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
@@ -671,6 +686,20 @@ export class CfnParser {
         } else {
           throw new Error(`Unsupported CloudFormation function '${key}'`);
         }
+    }
+  }
+
+  private throwIfIsIntrinsic(object: object, logicalId: string): void {
+    // Top-level parsing functions check before we call `parseValue`, which requires
+    // calling `looksLikeCfnIntrinsic`. Helper parsing functions check after we call
+    // `parseValue`, which requires calling `isResolvableObject`.
+    if (!this.stack) {
+      throw new Error('cannot call this method before handleAttributes!');
+    }
+    if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
+      if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
+        throw new Error(`Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
+      }
     }
   }
 
