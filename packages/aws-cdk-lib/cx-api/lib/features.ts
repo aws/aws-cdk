@@ -1175,7 +1175,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         specific AppSync GraphQL API.
         `,
     recommendedValue: true,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.161.0' },
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1187,7 +1187,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       
       When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.161.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`',
   },
@@ -1202,7 +1202,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     Enabling this feature flag will make \`cfn-include\` throw on these templates, unless you specify the logical ID of the resource in the 'unhydratedResources' property.
     `,
     recommendedValue: true,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.161.0' },
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1216,7 +1216,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages will be excluded during the bundling process. This ensures that no mismatches
       occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.161.0' },
     recommendedValue: true,
   },
 };
