@@ -201,7 +201,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
     const getStringValue = (v: string) => useJsonata && !isJsonataExpression(v) ? `'${v}'` : unJsonata(v);
     const apiEndpoint = useJsonata ?
       `{% ${getStringValue(this.props.apiRoot)} & '/' & ${getStringValue(this.props.apiEndpoint.value)} %}`
-      : `${this.props.apiRoot}/${this.props.apiEndpoint.value}`;
+      : sfn.JsonPath.format('{}/{}', this.props.apiRoot, this.props.apiEndpoint.value);
     const parameters: TaskParameters = {
       ApiEndpoint: apiEndpoint,
       Authentication: {
