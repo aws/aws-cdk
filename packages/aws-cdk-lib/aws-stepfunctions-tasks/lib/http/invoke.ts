@@ -166,7 +166,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
 
   private buildTaskParameters() {
     const parameters: TaskParameters = {
-      ApiEndpoint: `${this.props.apiRoot}/${this.props.apiEndpoint.value}`,
+      ApiEndpoint: sfn.JsonPath.format('{}/{}', this.props.apiRoot, this.props.apiEndpoint.value),
       Authentication: {
         ConnectionArn: this.props.connection.connectionArn,
       },
