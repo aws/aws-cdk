@@ -431,6 +431,20 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
+class IamRolesStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // Environment variabile is used to create a bunch of roles to test
+    // that large diff templates are uploaded to S3 to create the changeset.
+    for(let i = 1; i <= Number(process.env.NUMBER_OF_ROLES) ; i++) {
+      new iam.Role(this, `Role${i}`, {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+    }
+  }
+}
+
 class SessionTagsStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, {
@@ -777,6 +791,8 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+
+    new IamRolesStack(app, `${stackPrefix}-iam-roles`);
 
     if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
       // this stack performs a VPC lookup so we gate synth
