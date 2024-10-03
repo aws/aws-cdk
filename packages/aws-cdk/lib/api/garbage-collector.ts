@@ -328,7 +328,6 @@ export class GarbageCollector {
         const response = await s3.listObjectsV2({
           Bucket: bucket,
           ContinuationToken: continuationToken,
-          MaxKeys: batchSize - batch.length,
         }).promise();
 
         response.Contents?.forEach((obj) => {
