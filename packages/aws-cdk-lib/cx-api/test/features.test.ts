@@ -38,6 +38,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
     [feats.CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
     [feats.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
+    [feats.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true,
     // Add new disabling feature flags below this line
   });
 });

@@ -7,20 +7,27 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // deploy the latest opensearch domain with minimal configuration
-    const domainProps: opensearch.DomainProps = {
-      version: opensearch.EngineVersion.OPENSEARCH_2_13,
-      removalPolicy: RemovalPolicy.DESTROY,
-      capacity: {
-        multiAzWithStandbyEnabled: false,
-      },
-    };
+    const versions = [
+      opensearch.EngineVersion.OPENSEARCH_2_13,
+      opensearch.EngineVersion.OPENSEARCH_2_15,
+    ];
 
-    new opensearch.Domain(this, 'Domain', domainProps);
+    // deploy opensearch domain with minimal configuration
+    versions.forEach((version) => {
+      const domainProps: opensearch.DomainProps = {
+        version,
+        removalPolicy: RemovalPolicy.DESTROY,
+        capacity: {
+          multiAzWithStandbyEnabled: false,
+        },
+      };
+
+      new opensearch.Domain(this, version.version, domainProps);
+    });
   }
 }
 
 const app = new App();
-const stack = new TestStack(app, 'cdk-integ-opensearch');
+const stack = new TestStack(app, 'cdk-integ-opensearch-min');
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+new IntegTest(app, 'integ-openseach-min', { testCases: [stack] });

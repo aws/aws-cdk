@@ -1,5 +1,5 @@
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -473,6 +473,7 @@ describe('certificates', () => {
         },
       },
     });
+    Annotations.fromStack(stack).hasWarning('/Stack/Dist1', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront:emptyDomainNames]');
   });
 
   test('use the TLSv1.2_2021 security policy by default', () => {
