@@ -76,7 +76,6 @@ async function parseCommandLineArguments(args: string[]) {
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified', requiresArg: true })
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })
-    .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: undefined })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: undefined })
@@ -227,18 +226,6 @@ async function parseCommandLineArguments(args: string[]) {
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: Argv) => yargs
-      // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
-      // .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
-      // .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
-      // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
-      // .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
-      // .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
-      // These options, however, are more subtle - I could be convinced some of these should also be available for 'watch':
-      // .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
-      // .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
-      // .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
-      // .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
-      // .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
@@ -395,7 +382,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
-    ec2creds: argv.ec2creds,
     httpOptions: {
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
@@ -406,15 +392,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   const cloudExecutable = new CloudExecutable({
     configuration,
     sdkProvider,
-    synthesizer: synthesizer ?? (async (aws, config) => {
-      // Invoke 'execProgram', and copy the lock for the directory in the global
-      // variable here. It will be released when the CLI exits. Locks are not re-entrant
-      // so release it if we have to synthesize more than once (because of context lookups).
-      await outDirLock?.release();
-      const { assembly, lock } = await execProgram(aws, config);
-      outDirLock = lock;
-      return assembly;
-    }),
+    synthesizer:
+      synthesizer ??
+      (async (aws, config) => {
+        // Invoke 'execProgram', and copy the lock for the directory in the global
+        // variable here. It will be released when the CLI exits. Locks are not re-entrant
+        // so release it if we have to synthesize more than once (because of context lookups).
+        await outDirLock?.release();
+        const { assembly, lock } = await execProgram(aws, config);
+        outDirLock = lock;
+        return assembly;
+      }),
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -424,7 +412,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       const plugins: string[] = source.get(['plugin']) || [];
       for (const plugin of plugins) {
         const resolved = tryResolve(plugin);
-        if (loaded.has(resolved)) { continue; }
+        if (loaded.has(resolved)) {
+          continue;
+        }
         debug(`Loading plug-in: ${chalk.green(plugin)} from ${chalk.blue(resolved)}`);
         PluginHost.instance.load(plugin);
         loaded.add(resolved);
@@ -510,7 +500,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, { long: args.long, json: argv.json, showDeps: args.showDependencies });
+        return cli.list(args.STACKS, {
+          long: args.long,
+          json: argv.json,
+          showDeps: args.showDependencies,
+        });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
@@ -582,13 +576,25 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             deploymentMethod = { method: 'direct' };
             break;
           case 'change-set':
-            deploymentMethod = { method: 'change-set', execute: true, changeSetName: args.changeSetName };
+            deploymentMethod = {
+              method: 'change-set',
+              execute: true,
+              changeSetName: args.changeSetName,
+            };
             break;
           case 'prepare-change-set':
-            deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName };
+            deploymentMethod = {
+              method: 'change-set',
+              execute: false,
+              changeSetName: args.changeSetName,
+            };
             break;
           case undefined:
-            deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName };
+            deploymentMethod = {
+              method: 'change-set',
+              execute: args.execute ?? true,
+              changeSetName: args.changeSetName,
+            };
             break;
         }
 
@@ -614,7 +620,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           traceLogs: args.logs,
           concurrency: args.concurrency,
           assetParallelism: configuration.settings.get(['assetParallelism']),
-          assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
+          assetBuildTime: configuration.settings.get(['assetPrebuild'])
+            ? AssetBuildTime.ALL_BEFORE_DEPLOY
+            : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: args.ignoreNoStacks,
         });
 
@@ -648,11 +656,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       case 'watch':
         return cli.watch({
           selector,
-          // parameters: parameterMap,
-          // usePreviousParameters: args['previous-parameters'],
-          // outputsFile: configuration.settings.get(['outputsFile']),
-          // requireApproval: configuration.settings.get(['requireApproval']),
-          // notificationArns: args.notificationArns,
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
@@ -788,11 +791,16 @@ function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
  *   take to mean they passed an empty array.
  */
 function arrayFromYargs(xs: string[]): string[] | undefined {
-  if (xs.length === 0) { return undefined; }
-  return xs.filter(x => x !== '');
+  if (xs.length === 0) {
+    return undefined;
+  }
+  return xs.filter((x) => x !== '');
 }
 
-function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S extends string, L extends string>(shortName: S, longName: L) {
+function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined }, S extends string, L extends string>(
+  shortName: S,
+  longName: L,
+) {
   return (argv: T) => {
     if (shortName in argv && argv[shortName]) {
       (argv as any)[longName] = false;
@@ -815,7 +823,8 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   let hotswapMode: HotswapMode;
   if (hotswap) {
     hotswapMode = HotswapMode.HOTSWAP_ONLY;
-  } else /*if (hotswapFallback)*/ {
+  /*if (hotswapFallback)*/
+  } else {
     hotswapMode = HotswapMode.FALL_BACK;
   }
 
@@ -829,12 +838,11 @@ export function cli(args: string[] = process.argv.slice(2)) {
         process.exitCode = value;
       }
     })
-    .catch(err => {
+    .catch((err) => {
       error(err.message);
       if (err.stack) {
         debug(err.stack);
       }
       process.exitCode = 1;
     });
-
 }

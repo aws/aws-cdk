@@ -1,8 +1,9 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
-import { ISDK, Mode, SdkProvider } from '../aws-auth';
+import type { CloudFormationStackArtifact, Environment } from '@aws-cdk/cx-api';
+import type { StackResourceSummary } from '@aws-sdk/client-cloudformation';
+import type { SDK, SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
+import { Mode } from '../plugin';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
 const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail', 'AWS::CodeBuild::Project'];
@@ -16,13 +17,13 @@ export interface FoundLogGroupsResult {
    * The resolved environment (account/region) that the log
    * groups are deployed in
    */
-  readonly env: cxapi.Environment;
+  readonly env: Environment;
 
   /**
    * The SDK that can be used to read events from the CloudWatch
    * Log Groups in the given environment
    */
-  readonly sdk: ISDK;
+  readonly sdk: SDK;
 
   /**
    * The names of the relevant CloudWatch Log Groups
@@ -33,9 +34,9 @@ export interface FoundLogGroupsResult {
 
 export async function findCloudWatchLogGroups(
   sdkProvider: SdkProvider,
-  stackArtifact: cxapi.CloudFormationStackArtifact,
+  stackArtifact: CloudFormationStackArtifact,
 ): Promise<FoundLogGroupsResult> {
-  let sdk: ISDK;
+  let sdk: SDK;
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // try to assume the lookup role and fallback to the default credentials
   try {
@@ -52,7 +53,6 @@ export async function findCloudWatchLogGroups(
     account: resolvedEnv.account,
     region: resolvedEnv.region,
     partition: (await sdk.currentAccount()).partition,
-    urlSuffix: (region) => sdk.getEndpointSuffix(region),
     sdk,
   });
 
@@ -71,18 +71,18 @@ export async function findCloudWatchLogGroups(
  * with an ignored resource
  */
 function isReferencedFromIgnoredResource(
-  logGroupResource: CloudFormation.StackResourceSummary,
+  logGroupResource: StackResourceSummary,
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): boolean {
-  const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(logGroupResource.LogicalResourceId);
-  return resourcesReferencingLogGroup.some(reference => {
+  const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(logGroupResource.LogicalResourceId!);
+  return resourcesReferencingLogGroup.some((reference) => {
     return IGNORE_LOGS_RESOURCE_TYPES.includes(reference.Type);
   });
 }
 
 type CloudWatchLogsResolver = (
-  resource: CloudFormation.StackResourceSummary,
-  evaluateCfnTemplate: EvaluateCloudFormationTemplate
+  resource: StackResourceSummary,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ) => string | undefined;
 
 const cloudWatchLogsResolvers: Record<string, CloudWatchLogsResolver> = {
@@ -97,7 +97,7 @@ const cloudWatchLogsResolvers: Record<string, CloudWatchLogsResolver> = {
   // The keys are CFN resource types, and the values are the name of the physical name property of that resource
   // and the service name that is used in the automatically created CloudWatch log group.
   'AWS::Lambda::Function': (resource, evaluateCfnTemplate) => {
-    const loggingConfig = evaluateCfnTemplate.getResourceProperty(resource.LogicalResourceId, 'LoggingConfig');
+    const loggingConfig = evaluateCfnTemplate.getResourceProperty(resource.LogicalResourceId!, 'LoggingConfig');
     if (loggingConfig?.LogGroup) {
       // if LogGroup is a string then use it as the LogGroupName as it is referred by LogGroup.fromLogGroupArn in CDK
       if (typeof loggingConfig.LogGroup === 'string') {
@@ -122,13 +122,13 @@ const cloudWatchLogsResolvers: Record<string, CloudWatchLogsResolver> = {
  * and Log Groups created implicitly (i.e. Lambda Functions)
  */
 function findAllLogGroupNames(
-  stackResources: CloudFormation.StackResourceSummary[],
+  stackResources: StackResourceSummary[],
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): string[] {
   const logGroupNames: string[] = [];
 
   for (const resource of stackResources) {
-    const logGroupResolver = cloudWatchLogsResolvers[resource.ResourceType];
+    const logGroupResolver = cloudWatchLogsResolvers[resource.ResourceType!];
     if (logGroupResolver) {
       const logGroupName = logGroupResolver(resource, evaluateCfnTemplate);
       if (logGroupName) {

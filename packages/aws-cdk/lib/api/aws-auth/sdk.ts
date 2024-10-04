@@ -1,73 +1,296 @@
-import * as AWS from 'aws-sdk';
-import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
-import { debug, trace } from './_env';
+import {
+  GetSchemaCreationStatusCommand,
+  type GetSchemaCreationStatusCommandInput,
+  type GetSchemaCreationStatusCommandOutput,
+  type ListFunctionsCommandInput,
+  type StartSchemaCreationCommandInput,
+  type StartSchemaCreationCommandOutput,
+  type UpdateApiKeyCommandInput,
+  type UpdateApiKeyCommandOutput,
+  type UpdateFunctionCommandInput,
+  type UpdateFunctionCommandOutput,
+  type UpdateResolverCommandInput,
+  type UpdateResolverCommandOutput,
+  StartSchemaCreationCommand,
+  UpdateApiKeyCommand,
+  UpdateFunctionCommand,
+  UpdateResolverCommand,
+  AppSyncClient,
+  paginateListFunctions,
+  FunctionConfiguration,
+} from '@aws-sdk/client-appsync';
+import {
+  CloudFormationClient,
+  CreateChangeSetCommand,
+  CreateStackCommand,
+  type CreateChangeSetCommandInput,
+  type CreateChangeSetCommandOutput,
+  type CreateStackCommandInput,
+  type CreateStackCommandOutput,
+  type DeleteChangeSetCommandInput,
+  type DeleteChangeSetCommandOutput,
+  type DeleteStackCommandInput,
+  type DeleteStackCommandOutput,
+  type DescribeChangeSetCommandInput,
+  type DescribeChangeSetCommandOutput,
+  type DescribeStackEventsCommandInput,
+  type DescribeStacksCommandInput,
+  type DescribeStacksCommandOutput,
+  type ExecuteChangeSetCommandInput,
+  type ExecuteChangeSetCommandOutput,
+  type GetTemplateCommandInput,
+  type GetTemplateCommandOutput,
+  type ListExportsCommandInput,
+  type ListExportsCommandOutput,
+  type ListStackResourcesCommandInput,
+  type UpdateStackCommandInput,
+  type UpdateStackCommandOutput,
+  type UpdateTerminationProtectionCommandInput,
+  type UpdateTerminationProtectionCommandOutput,
+  DeleteChangeSetCommand,
+  DeleteStackCommand,
+  DescribeChangeSetCommand,
+  DescribeStackResourcesCommand,
+  DescribeStacksCommand,
+  ExecuteChangeSetCommand,
+  GetTemplateCommand,
+  ListExportsCommand,
+  UpdateStackCommand,
+  UpdateTerminationProtectionCommand,
+  type GetTemplateSummaryCommandInput,
+  type GetTemplateSummaryCommandOutput,
+  GetTemplateSummaryCommand,
+  type ListResourceScanResourcesCommandInput,
+  type ListResourceScanResourcesCommandOutput,
+  ListResourceScanResourcesCommand,
+  type DescribeResourceScanCommandInput,
+  type DescribeResourceScanCommandOutput,
+  DescribeResourceScanCommand,
+  DescribeGeneratedTemplateCommand,
+  type DescribeGeneratedTemplateCommandOutput,
+  type DescribeGeneratedTemplateCommandInput,
+  GetGeneratedTemplateCommand,
+  type GetGeneratedTemplateCommandOutput,
+  type GetGeneratedTemplateCommandInput,
+  CreateGeneratedTemplateCommand,
+  type CreateGeneratedTemplateCommandOutput,
+  type CreateGeneratedTemplateCommandInput,
+  DeleteGeneratedTemplateCommand,
+  type DeleteGeneratedTemplateCommandInput,
+  type DeleteGeneratedTemplateCommandOutput,
+  ListResourceScanRelatedResourcesCommand,
+  type ListResourceScanRelatedResourcesCommandInput,
+  type ListResourceScanRelatedResourcesCommandOutput,
+  StartResourceScanCommand,
+  type StartResourceScanCommandInput,
+  type StartResourceScanCommandOutput,
+  ListResourceScansCommand,
+  type ListResourceScansCommandInput,
+  type ListResourceScansCommandOutput,
+  paginateDescribeStackEvents,
+  paginateListStackResources,
+  StackEvent,
+  StackResourceSummary,
+  RollbackStackCommandInput,
+  RollbackStackCommandOutput,
+  RollbackStackCommand,
+  ContinueUpdateRollbackCommandInput,
+  ContinueUpdateRollbackCommandOutput,
+  ContinueUpdateRollbackCommand,
+} from '@aws-sdk/client-cloudformation';
+import {
+  CloudWatchLogsClient,
+  DescribeLogGroupsCommand,
+  FilterLogEventsCommandInput,
+  type DescribeLogGroupsCommandInput,
+  type DescribeLogGroupsCommandOutput,
+  FilterLogEventsCommandOutput,
+  FilterLogEventsCommand,
+} from '@aws-sdk/client-cloudwatch-logs';
+import {
+  CodeBuildClient,
+  type UpdateProjectCommandInput,
+  type UpdateProjectCommandOutput,
+  UpdateProjectCommand,
+} from '@aws-sdk/client-codebuild';
+import {
+  EC2Client,
+  type DescribeAvailabilityZonesCommandInput,
+  type DescribeAvailabilityZonesCommandOutput,
+  type DescribeImagesCommandInput,
+  type DescribeImagesCommandOutput,
+  type DescribeInstancesCommandInput,
+  type DescribeInstancesCommandOutput,
+  type DescribeRouteTablesCommandInput,
+  type DescribeRouteTablesCommandOutput,
+  type DescribeSecurityGroupsCommandInput,
+  type DescribeSecurityGroupsCommandOutput,
+  type DescribeSubnetsCommandInput,
+  type DescribeSubnetsCommandOutput,
+  type DescribeVpcEndpointServicesCommandInput,
+  type DescribeVpcEndpointServicesCommandOutput,
+  type DescribeVpcsCommandInput,
+  type DescribeVpcsCommandOutput,
+  type DescribeVpnGatewaysCommandInput,
+  type DescribeVpnGatewaysCommandOutput,
+  DescribeAvailabilityZonesCommand,
+  DescribeImagesCommand,
+  DescribeInstancesCommand,
+  DescribeRouteTablesCommand,
+  DescribeSecurityGroupsCommand,
+  DescribeSubnetsCommand,
+  DescribeVpcEndpointServicesCommand,
+  DescribeVpcsCommand,
+  DescribeVpnGatewaysCommand,
+} from '@aws-sdk/client-ec2';
+import {
+  type CreateRepositoryCommandInput,
+  type CreateRepositoryCommandOutput,
+  type DescribeImagesCommandInput as ECRDescribeImagesCommandInput,
+  type DescribeImagesCommandOutput as ECRDescribeImagesCommandOutput,
+  DescribeImagesCommand as ECRDescribeImagesCommand,
+  type DescribeRepositoriesCommandInput,
+  type DescribeRepositoriesCommandOutput,
+  type PutImageScanningConfigurationCommandInput,
+  type PutImageScanningConfigurationCommandOutput,
+  type GetAuthorizationTokenCommandInput,
+  type GetAuthorizationTokenCommandOutput,
+  ECRClient,
+  CreateRepositoryCommand,
+  DescribeRepositoriesCommand,
+  GetAuthorizationTokenCommand,
+  PutImageScanningConfigurationCommand,
+} from '@aws-sdk/client-ecr';
+import {
+  ECSClient,
+  ListClustersCommand,
+  RegisterTaskDefinitionCommandInput,
+  type ListClustersCommandInput,
+  type ListClustersCommandOutput,
+  type RegisterTaskDefinitionCommandOutput,
+  RegisterTaskDefinitionCommand,
+  type UpdateServiceCommandInput,
+  type UpdateServiceCommandOutput,
+  UpdateServiceCommand,
+  DescribeServicesCommandInput,
+  waitUntilServicesStable,
+} from '@aws-sdk/client-ecs';
+import {
+  ElasticLoadBalancingV2Client,
+  type DescribeListenersCommandInput,
+  type DescribeListenersCommandOutput,
+  type DescribeLoadBalancersCommandInput,
+  type DescribeLoadBalancersCommandOutput,
+  type DescribeTagsCommandInput,
+  type DescribeTagsCommandOutput,
+  DescribeListenersCommand,
+  DescribeLoadBalancersCommand,
+  DescribeTagsCommand,
+  paginateDescribeListeners,
+  paginateDescribeLoadBalancers,
+  LoadBalancer,
+  Listener,
+} from '@aws-sdk/client-elastic-load-balancing-v2';
+import {
+  IAMClient,
+  type CreatePolicyCommandInput,
+  type CreatePolicyCommandOutput,
+  type GetPolicyCommandInput,
+  type GetPolicyCommandOutput,
+  type GetRoleCommandInput,
+  type GetRoleCommandOutput,
+  CreatePolicyCommand,
+  GetPolicyCommand,
+  GetRoleCommand,
+} from '@aws-sdk/client-iam';
+import {
+  KMSClient,
+  type DescribeKeyCommandInput,
+  type DescribeKeyCommandOutput,
+  type ListAliasesCommandInput,
+  type ListAliasesCommandOutput,
+  DescribeKeyCommand,
+  ListAliasesCommand,
+} from '@aws-sdk/client-kms';
+import {
+  LambdaClient,
+  type InvokeCommandInput,
+  type InvokeCommandOutput,
+  InvokeCommand,
+  type UpdateFunctionCodeCommandInput,
+  type UpdateFunctionCodeCommandOutput,
+  type UpdateFunctionConfigurationCommandInput,
+  type UpdateFunctionConfigurationCommandOutput,
+  UpdateFunctionConfigurationCommand,
+  UpdateFunctionCodeCommand,
+  type PublishVersionCommandInput,
+  type PublishVersionCommandOutput,
+  PublishVersionCommand,
+  type UpdateAliasCommandInput,
+  type UpdateAliasCommandOutput,
+  UpdateAliasCommand,
+  waitUntilFunctionUpdated,
+} from '@aws-sdk/client-lambda';
+import {
+  Route53Client,
+  type GetHostedZoneCommandInput,
+  type GetHostedZoneCommandOutput,
+  type ListHostedZonesByNameCommandInput,
+  type ListHostedZonesByNameCommandOutput,
+  type ListHostedZonesCommandInput,
+  type ListHostedZonesCommandOutput,
+  GetHostedZoneCommand,
+  ListHostedZonesCommand,
+  ListHostedZonesByNameCommand,
+} from '@aws-sdk/client-route-53';
+import {
+  type CompleteMultipartUploadCommandOutput,
+  type GetBucketEncryptionCommandInput,
+  type GetBucketEncryptionCommandOutput,
+  GetBucketLocationCommand,
+  type GetBucketLocationCommandInput,
+  type GetBucketLocationCommandOutput,
+  type GetObjectCommandInput,
+  type GetObjectCommandOutput,
+  ListObjectsV2Command,
+  type ListObjectsV2CommandInput,
+  type ListObjectsV2CommandOutput,
+  type PutObjectCommandInput,
+  S3Client,
+  GetBucketEncryptionCommand,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3';
+import {
+  SecretsManagerClient,
+  type GetSecretValueCommandInput,
+  type GetSecretValueCommandOutput,
+  GetSecretValueCommand,
+} from '@aws-sdk/client-secrets-manager';
+import {
+  SFNClient,
+  UpdateStateMachineCommandInput,
+  UpdateStateMachineCommandOutput,
+  UpdateStateMachineCommand,
+} from '@aws-sdk/client-sfn';
+import {
+  SSMClient,
+  type GetParameterCommandInput,
+  type GetParameterCommandOutput,
+  GetParameterCommand,
+} from '@aws-sdk/client-ssm';
+import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
+import { Upload } from '@aws-sdk/lib-storage';
+import { getEndpointFromInstructions } from '@smithy/middleware-endpoint';
+import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
+import { AwsCredentialIdentity, Logger } from '@smithy/types';
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
+import { WaiterResult } from '@smithy/util-waiter';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
 import { Account } from './sdk-provider';
+import { defaultCliUserAgent } from './user-agent';
+import { debug } from '../../logging';
 import { traceMethods } from '../../util/tracing';
-
-// We need to map regions to domain suffixes, and the SDK already has a function to do this.
-// It's not part of the public API, but it's also unlikely to go away.
-//
-// Reuse that function, and add a safety check, so we don't accidentally break if they ever
-// refactor that away.
-
-/* eslint-disable @typescript-eslint/no-require-imports */
-const regionUtil = require('aws-sdk/lib/region_config');
-require('aws-sdk/lib/maintenance_mode_message').suppress = true;
-/* eslint-enable @typescript-eslint/no-require-imports */
-
-if (!regionUtil.getEndpointSuffix) {
-  throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
-}
-
-export interface ISDK {
-  /**
-   * The region this SDK has been instantiated for
-   *
-   * (As distinct from the `defaultRegion()` on SdkProvider which
-   * represents the region configured in the default config).
-   */
-  readonly currentRegion: string;
-
-  /**
-   * The Account this SDK has been instantiated for
-   *
-   * (As distinct from the `defaultAccount()` on SdkProvider which
-   * represents the account available by using default credentials).
-   */
-  currentAccount(): Promise<Account>;
-
-  getEndpointSuffix(region: string): string;
-
-  /**
-   * Appends the given string as the extra information to put into the User-Agent header for any requests invoked by this SDK.
-   * If the string is 'undefined', this method has no effect.
-   */
-  appendCustomUserAgent(userAgentData?: string): void;
-
-  /**
-   * Removes the given string from the extra User-Agent header data used for requests invoked by this SDK.
-   */
-  removeCustomUserAgent(userAgentData: string): void;
-
-  lambda(): AWS.Lambda;
-  cloudFormation(): AWS.CloudFormation;
-  ec2(): AWS.EC2;
-  iam(): AWS.IAM;
-  ssm(): AWS.SSM;
-  s3(): AWS.S3;
-  route53(): AWS.Route53;
-  ecr(): AWS.ECR;
-  ecs(): AWS.ECS;
-  elbv2(): AWS.ELBv2;
-  secretsManager(): AWS.SecretsManager;
-  kms(): AWS.KMS;
-  stepFunctions(): AWS.StepFunctions;
-  codeBuild(): AWS.CodeBuild;
-  cloudWatchLogs(): AWS.CloudWatchLogs;
-  appsync(): AWS.AppSync;
-}
 
 /**
  * Additional SDK configuration options
@@ -81,34 +304,186 @@ export interface SdkOptions {
   readonly assumeRoleCredentialsSourceDescription?: string;
 }
 
+// TODO: still some cleanup here. Make the pagination functions do all the work here instead of in individual packages.
+// Also add async/await. Does that actually matter in this context? Find out and update accordingly.
+
+// Also add notes to the PR about why you imported everything individually and used 'type' so reviewers don't have to ask.
+
+export interface ConfigurationOptions {
+  region: string;
+  credentials: AwsCredentialIdentity;
+  requestHandler: NodeHttpHandlerOptions;
+  retryStrategy: ConfiguredRetryStrategy;
+  customUserAgent: string;
+  logger?: Logger;
+}
+
+export interface IAppSyncClient {
+  getSchemaCreationStatus(input: GetSchemaCreationStatusCommandInput): Promise<GetSchemaCreationStatusCommandOutput>;
+  startSchemaCreation(input: StartSchemaCreationCommandInput): Promise<StartSchemaCreationCommandOutput>;
+  updateApiKey(input: UpdateApiKeyCommandInput): Promise<UpdateApiKeyCommandOutput>;
+  updateFunction(input: UpdateFunctionCommandInput): Promise<UpdateFunctionCommandOutput>;
+  updateResolver(input: UpdateResolverCommandInput): Promise<UpdateResolverCommandOutput>;
+  // Pagination functions
+  listFunctions(input: ListFunctionsCommandInput): Promise<FunctionConfiguration[]>;
+}
+
+export interface ICloudFormationClient {
+  continueUpdateRollback(input: ContinueUpdateRollbackCommandInput): Promise<ContinueUpdateRollbackCommandOutput>;
+  createChangeSet(input: CreateChangeSetCommandInput): Promise<CreateChangeSetCommandOutput>;
+  createGeneratedTemplate(input: CreateGeneratedTemplateCommandInput): Promise<CreateGeneratedTemplateCommandOutput>;
+  createStack(input: CreateStackCommandInput): Promise<CreateStackCommandOutput>;
+  deleteChangeSet(input: DeleteChangeSetCommandInput): Promise<DeleteChangeSetCommandOutput>;
+  deleteGeneratedTemplate(input: DeleteGeneratedTemplateCommandInput): Promise<DeleteGeneratedTemplateCommandOutput>;
+  deleteStack(input: DeleteStackCommandInput): Promise<DeleteStackCommandOutput>;
+  describeChangeSet(input: DescribeChangeSetCommandInput): Promise<DescribeChangeSetCommandOutput>;
+  describeGeneratedTemplate(
+    input: DescribeGeneratedTemplateCommandInput,
+  ): Promise<DescribeGeneratedTemplateCommandOutput>;
+  describeResourceScan(input: DescribeResourceScanCommandInput): Promise<DescribeResourceScanCommandOutput>;
+  describeStacks(input: DescribeStacksCommandInput): Promise<DescribeStacksCommandOutput>;
+  executeChangeSet(input: ExecuteChangeSetCommandInput): Promise<ExecuteChangeSetCommandOutput>;
+  getGeneratedTemplate(input: GetGeneratedTemplateCommandInput): Promise<GetGeneratedTemplateCommandOutput>;
+  getTemplate(input: GetTemplateCommandInput): Promise<GetTemplateCommandOutput>;
+  getTemplateSummary(input: GetTemplateSummaryCommandInput): Promise<GetTemplateSummaryCommandOutput>;
+  listExports(input: ListExportsCommandInput): Promise<ListExportsCommandOutput>;
+  listResourceScanRelatedResources(
+    input: ListResourceScanRelatedResourcesCommandInput,
+  ): Promise<ListResourceScanRelatedResourcesCommandOutput>;
+  listResourceScanResources(
+    input: ListResourceScanResourcesCommandInput,
+  ): Promise<ListResourceScanResourcesCommandOutput>;
+  listResourceScans(input?: ListResourceScansCommandInput): Promise<ListResourceScansCommandOutput>;
+  rollbackStack(input: RollbackStackCommandInput): Promise<RollbackStackCommandOutput>;
+  startResourceScan(input: StartResourceScanCommandInput): Promise<StartResourceScanCommandOutput>;
+  updateStack(input: UpdateStackCommandInput): Promise<UpdateStackCommandOutput>;
+  updateTerminationProtection(
+    input: UpdateTerminationProtectionCommandInput,
+  ): Promise<UpdateTerminationProtectionCommandOutput>;
+  // Pagination functions
+  describeStackEvents(input: DescribeStackEventsCommandInput): Promise<StackEvent[]>;
+  listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
+}
+
+export interface ICloudWatchLogsClient {
+  describeLogGroups(input: DescribeLogGroupsCommandInput): Promise<DescribeLogGroupsCommandOutput>;
+  filterLogEvents(input: FilterLogEventsCommandInput): Promise<FilterLogEventsCommandOutput>;
+}
+
+export interface ICodeBuildClient {
+  updateProject(input: UpdateProjectCommandInput): Promise<UpdateProjectCommandOutput>;
+}
+export interface IEC2Client {
+  describeAvailabilityZones(
+    input: DescribeAvailabilityZonesCommandInput,
+  ): Promise<DescribeAvailabilityZonesCommandOutput>;
+  describeImages(input: DescribeImagesCommandInput): Promise<DescribeImagesCommandOutput>;
+  describeInstances(input: DescribeInstancesCommandInput): Promise<DescribeInstancesCommandOutput>;
+  describeRouteTables(input: DescribeRouteTablesCommandInput): Promise<DescribeRouteTablesCommandOutput>;
+  describeSecurityGroups(input: DescribeSecurityGroupsCommandInput): Promise<DescribeSecurityGroupsCommandOutput>;
+  describeSubnets(input: DescribeSubnetsCommandInput): Promise<DescribeSubnetsCommandOutput>;
+  describeVpcEndpointServices(
+    input: DescribeVpcEndpointServicesCommandInput,
+  ): Promise<DescribeVpcEndpointServicesCommandOutput>;
+  describeVpcs(input: DescribeVpcsCommandInput): Promise<DescribeVpcsCommandOutput>;
+  describeVpnGateways(input: DescribeVpnGatewaysCommandInput): Promise<DescribeVpnGatewaysCommandOutput>;
+}
+
+export interface IECRClient {
+  createRepository(input: CreateRepositoryCommandInput): Promise<CreateRepositoryCommandOutput>;
+  describeImages(input: ECRDescribeImagesCommandInput): Promise<ECRDescribeImagesCommandOutput>;
+  describeRepositories(input: DescribeRepositoriesCommandInput): Promise<DescribeRepositoriesCommandOutput>;
+  getAuthorizationToken(input: GetAuthorizationTokenCommandInput): Promise<GetAuthorizationTokenCommandOutput>;
+  putImageScanningConfiguration(
+    input: PutImageScanningConfigurationCommandInput,
+  ): Promise<PutImageScanningConfigurationCommandOutput>;
+}
+
+export interface IECSClient {
+  listClusters(input: ListClustersCommandInput): Promise<ListClustersCommandOutput>;
+  registerTaskDefinition(input: RegisterTaskDefinitionCommandInput): Promise<RegisterTaskDefinitionCommandOutput>;
+  updateService(input: UpdateServiceCommandInput): Promise<UpdateServiceCommandOutput>;
+  // Waiters
+  waitUntilServicesStable(input: DescribeServicesCommandInput): Promise<WaiterResult>;
+}
+
+export interface IElasticLoadBalancingV2Client {
+  describeListeners(input: DescribeListenersCommandInput): Promise<DescribeListenersCommandOutput>;
+  describeLoadBalancers(input: DescribeLoadBalancersCommandInput): Promise<DescribeLoadBalancersCommandOutput>;
+  describeTags(input: DescribeTagsCommandInput): Promise<DescribeTagsCommandOutput>;
+  // Pagination
+  paginateDescribeListeners(input: DescribeListenersCommandInput): Promise<Listener[]>;
+  paginateDescribeLoadBalancers(input: DescribeLoadBalancersCommandInput): Promise<LoadBalancer[]>;
+}
+
+export interface IIAMClient {
+  createPolicy(input: CreatePolicyCommandInput): Promise<CreatePolicyCommandOutput>;
+  getPolicy(input: GetPolicyCommandInput): Promise<GetPolicyCommandOutput>;
+  getRole(input: GetRoleCommandInput): Promise<GetRoleCommandOutput>;
+}
+
+export interface IKMSClient {
+  describeKey(input: DescribeKeyCommandInput): Promise<DescribeKeyCommandOutput>;
+  listAliases(input: ListAliasesCommandInput): Promise<ListAliasesCommandOutput>;
+}
+
+export interface ILambdaClient {
+  invokeCommand(input: InvokeCommandInput): Promise<InvokeCommandOutput>;
+  publishVersion(input: PublishVersionCommandInput): Promise<PublishVersionCommandOutput>;
+  updateAlias(input: UpdateAliasCommandInput): Promise<UpdateAliasCommandOutput>;
+  updateFunctionCode(input: UpdateFunctionCodeCommandInput): Promise<UpdateFunctionCodeCommandOutput>;
+  updateFunctionConfiguration(
+    input: UpdateFunctionConfigurationCommandInput,
+  ): Promise<UpdateFunctionConfigurationCommandOutput>;
+  // Waiters
+  waitUntilFunctionUpdated(delaySeconds: number, input: UpdateFunctionConfigurationCommandInput): Promise<WaiterResult>;
+}
+
+export interface IRoute53Client {
+  getHostedZone(input: GetHostedZoneCommandInput): Promise<GetHostedZoneCommandOutput>;
+  listHostedZones(input: ListHostedZonesCommandInput): Promise<ListHostedZonesCommandOutput>;
+  listHostedZonesByName(input: ListHostedZonesByNameCommandInput): Promise<ListHostedZonesByNameCommandOutput>;
+}
+
+export interface IS3Client {
+  getBucketEncryption(input: GetBucketEncryptionCommandInput): Promise<GetBucketEncryptionCommandOutput>;
+  getBucketLocation(input: GetBucketLocationCommandInput): Promise<GetBucketLocationCommandOutput>;
+  getObject(input: GetObjectCommandInput): Promise<GetObjectCommandOutput>;
+  listObjectsV2(input: ListObjectsV2CommandInput): Promise<ListObjectsV2CommandOutput>;
+  upload(input: PutObjectCommandInput): Promise<CompleteMultipartUploadCommandOutput>;
+}
+
+export interface ISecretsManagerClient {
+  getSecretValue(input: GetSecretValueCommandInput): Promise<GetSecretValueCommandOutput>;
+}
+
+export interface ISSMClient {
+  getParameter(input: GetParameterCommandInput): Promise<GetParameterCommandOutput>;
+}
+
+export interface IStepFunctionsClient {
+  // listStateMachines(input: ListStateMachinesCommandInput): Promise<ListStateMachinesCommandOutput>;
+  updateStateMachine(input: UpdateStateMachineCommandInput): Promise<UpdateStateMachineCommandOutput>;
+}
+
 /**
  * Base functionality of SDK without credential fetching
  */
 @traceMethods
-export class SDK implements ISDK {
+export class SDK {
   private static readonly accountCache = new AccountAccessKeyCache();
 
   public readonly currentRegion: string;
 
-  private readonly config: ConfigurationOptions;
-
-  /**
-   * Default retry options for SDK clients.
-   */
-  private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 } };
-
-  /**
-   * The more generous retry policy for CloudFormation, which has a 1 TPM limit on certain APIs,
-   * which are abundantly used for deployment tracking, ...
-   *
-   * So we're allowing way more retries, but waiting a bit more.
-   */
-  private readonly cloudFormationRetryOptions = { maxRetries: 10, retryDelayOptions: { base: 1_000 } };
+  public readonly config: ConfigurationOptions;
 
   /**
    * STS is used to check credential validity, don't do too many retries.
    */
-  private readonly stsRetryOptions = { maxRetries: 3, retryDelayOptions: { base: 100 } };
+  private readonly stsRetryOptions = {
+    maxRetries: 3,
+    retryDelayOptions: { base: 100 },
+  };
 
   /**
    * Whether we have proof that the credentials have not expired
@@ -120,17 +495,17 @@ export class SDK implements ISDK {
   private _credentialsValidated = false;
 
   constructor(
-    private readonly _credentials: AWS.Credentials,
+    private readonly _credentials: AwsCredentialIdentity,
     region: string,
-    httpOptions: ConfigurationOptions = {},
-    private readonly sdkOptions: SdkOptions = {}) {
-
+    requestHandler: NodeHttpHandlerOptions,
+    private readonly sdkOptions: SdkOptions = {},
+  ) {
     this.config = {
-      ...httpOptions,
-      ...this.retryOptions,
-      credentials: _credentials,
       region,
-      logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
+      credentials: _credentials,
+      requestHandler,
+      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => attempt ** 300),
+      customUserAgent: defaultCliUserAgent(),
     };
     this.currentRegion = region;
   }
@@ -141,141 +516,387 @@ export class SDK implements ISDK {
     }
 
     const currentCustomUserAgent = this.config.customUserAgent;
-    this.config.customUserAgent = currentCustomUserAgent
-      ? `${currentCustomUserAgent} ${userAgentData}`
-      : userAgentData;
+    this.config.customUserAgent = currentCustomUserAgent ? `${currentCustomUserAgent} ${userAgentData}` : userAgentData;
   }
 
   public removeCustomUserAgent(userAgentData: string): void {
     this.config.customUserAgent = this.config.customUserAgent?.replace(userAgentData, '');
   }
 
-  public lambda(): AWS.Lambda {
-    return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
+  public appsync(): IAppSyncClient {
+    const client = new AppSyncClient(this.config);
+    return {
+      getSchemaCreationStatus: (
+        input: GetSchemaCreationStatusCommandInput,
+      ): Promise<GetSchemaCreationStatusCommandOutput> => client.send(new GetSchemaCreationStatusCommand(input)),
+      startSchemaCreation: (input: StartSchemaCreationCommandInput): Promise<StartSchemaCreationCommandOutput> =>
+        client.send(new StartSchemaCreationCommand(input)),
+      updateApiKey: (input: UpdateApiKeyCommandInput): Promise<UpdateApiKeyCommandOutput> =>
+        client.send(new UpdateApiKeyCommand(input)),
+      updateFunction: (input: UpdateFunctionCommandInput): Promise<UpdateFunctionCommandOutput> =>
+        client.send(new UpdateFunctionCommand(input)),
+      updateResolver: (input: UpdateResolverCommandInput): Promise<UpdateResolverCommandOutput> =>
+        client.send(new UpdateResolverCommand(input)),
+
+      // Pagination Functions
+      listFunctions: async (input: ListFunctionsCommandInput): Promise<FunctionConfiguration[]> => {
+        const functions = Array<FunctionConfiguration>();
+        const paginator = paginateListFunctions({ client }, input);
+        for await (const page of paginator) {
+          functions.push(...(page.functions || []));
+        }
+        return functions;
+      },
+    };
   }
 
-  public cloudFormation(): AWS.CloudFormation {
-    return this.wrapServiceErrorHandling(new AWS.CloudFormation({
+  public cloudFormation(): ICloudFormationClient {
+    const client = new CloudFormationClient({
       ...this.config,
-      ...this.cloudFormationRetryOptions,
-    }));
+      retryStrategy: new ConfiguredRetryStrategy(11, (attempt: number) => attempt ** 1000),
+    });
+    return {
+      continueUpdateRollback: async (
+        input: ContinueUpdateRollbackCommandInput,
+      ): Promise<ContinueUpdateRollbackCommandOutput> => client.send(new ContinueUpdateRollbackCommand(input)),
+      createChangeSet: (input: CreateChangeSetCommandInput): Promise<CreateChangeSetCommandOutput> =>
+        client.send(new CreateChangeSetCommand(input)),
+      createGeneratedTemplate: (
+        input: CreateGeneratedTemplateCommandInput,
+      ): Promise<CreateGeneratedTemplateCommandOutput> => client.send(new CreateGeneratedTemplateCommand(input)),
+      createStack: (input: CreateStackCommandInput): Promise<CreateStackCommandOutput> =>
+        client.send(new CreateStackCommand(input)),
+      deleteChangeSet: (input: DeleteChangeSetCommandInput): Promise<DeleteChangeSetCommandOutput> =>
+        client.send(new DeleteChangeSetCommand(input)),
+      deleteGeneratedTemplate: (
+        input: DeleteGeneratedTemplateCommandInput,
+      ): Promise<DeleteGeneratedTemplateCommandOutput> => client.send(new DeleteGeneratedTemplateCommand(input)),
+      deleteStack: (input: DeleteStackCommandInput): Promise<DeleteStackCommandOutput> =>
+        client.send(new DeleteStackCommand(input)),
+      describeChangeSet: (input: DescribeChangeSetCommandInput): Promise<DescribeChangeSetCommandOutput> =>
+        client.send(new DescribeChangeSetCommand(input)),
+      describeGeneratedTemplate: (
+        input: DescribeGeneratedTemplateCommandInput,
+      ): Promise<DescribeGeneratedTemplateCommandOutput> => client.send(new DescribeGeneratedTemplateCommand(input)),
+      describeResourceScan: (input: DescribeResourceScanCommandInput): Promise<DescribeResourceScanCommandOutput> =>
+        client.send(new DescribeResourceScanCommand(input)),
+      describeStacks: (input: DescribeStacksCommandInput): Promise<DescribeStacksCommandOutput> =>
+        client.send(new DescribeStacksCommand(input)),
+      executeChangeSet: (input: ExecuteChangeSetCommandInput): Promise<ExecuteChangeSetCommandOutput> =>
+        client.send(new ExecuteChangeSetCommand(input)),
+      getGeneratedTemplate: (input: GetGeneratedTemplateCommandInput): Promise<GetGeneratedTemplateCommandOutput> =>
+        client.send(new GetGeneratedTemplateCommand(input)),
+      getTemplate: (input: GetTemplateCommandInput): Promise<GetTemplateCommandOutput> =>
+        client.send(new GetTemplateCommand(input)),
+      getTemplateSummary: (input: GetTemplateSummaryCommandInput): Promise<GetTemplateSummaryCommandOutput> =>
+        client.send(new GetTemplateSummaryCommand(input)),
+      listExports: (input: ListExportsCommandInput): Promise<ListExportsCommandOutput> =>
+        client.send(new ListExportsCommand(input)),
+      listResourceScanRelatedResources: (
+        input: ListResourceScanRelatedResourcesCommandInput,
+      ): Promise<ListResourceScanRelatedResourcesCommandOutput> =>
+        client.send(new ListResourceScanRelatedResourcesCommand(input)),
+      listResourceScanResources: (
+        input: ListResourceScanResourcesCommandInput,
+      ): Promise<ListResourceScanResourcesCommandOutput> => client.send(new ListResourceScanResourcesCommand(input)),
+      listResourceScans: (input: ListResourceScansCommandInput): Promise<ListResourceScansCommandOutput> =>
+        client.send(new ListResourceScansCommand(input)),
+      rollbackStack: (input: RollbackStackCommandInput): Promise<RollbackStackCommandOutput> =>
+        client.send(new RollbackStackCommand(input)),
+      startResourceScan: (input: StartResourceScanCommandInput): Promise<StartResourceScanCommandOutput> =>
+        client.send(new StartResourceScanCommand(input)),
+      updateStack: (input: UpdateStackCommandInput): Promise<UpdateStackCommandOutput> =>
+        client.send(new UpdateStackCommand(input)),
+      updateTerminationProtection: (
+        input: UpdateTerminationProtectionCommandInput,
+      ): Promise<UpdateTerminationProtectionCommandOutput> =>
+        client.send(new UpdateTerminationProtectionCommand(input)),
+      describeStackEvents: async (input: DescribeStackEventsCommandInput): Promise<StackEvent[]> => {
+        const stackEvents = Array<StackEvent>();
+        const paginator = paginateDescribeStackEvents({ client }, input);
+        for await (const page of paginator) {
+          stackEvents.push(...(page?.StackEvents || []));
+        }
+        return stackEvents;
+      },
+      listStackResources: async (input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]> => {
+        const stackResources = Array<StackResourceSummary>();
+        const paginator = paginateListStackResources({ client }, input);
+        for await (const page of paginator) {
+          stackResources.push(...(page?.StackResourceSummaries || []));
+        }
+        return stackResources;
+      },
+    };
   }
 
-  public ec2(): AWS.EC2 {
-    return this.wrapServiceErrorHandling(new AWS.EC2(this.config));
+  public cloudWatchLogs(): ICloudWatchLogsClient {
+    const client = new CloudWatchLogsClient(this.config);
+    return {
+      describeLogGroups: (input: DescribeLogGroupsCommandInput): Promise<DescribeLogGroupsCommandOutput> =>
+        client.send(new DescribeLogGroupsCommand(input)),
+      filterLogEvents: (input: FilterLogEventsCommandInput): Promise<FilterLogEventsCommandOutput> =>
+        client.send(new FilterLogEventsCommand(input)),
+    };
   }
 
-  public iam(): AWS.IAM {
-    return this.wrapServiceErrorHandling(new AWS.IAM(this.config));
+  public codeBuild(): ICodeBuildClient {
+    const client = this.wrapServiceErrorHandling(new CodeBuildClient(this.config));
+    return {
+      updateProject: (input: UpdateProjectCommandInput): Promise<UpdateProjectCommandOutput> =>
+        client.send(new UpdateProjectCommand(input)),
+    };
   }
 
-  public ssm(): AWS.SSM {
-    return this.wrapServiceErrorHandling(new AWS.SSM(this.config));
+  public ec2(): IEC2Client {
+    const client = this.wrapServiceErrorHandling(new EC2Client(this.config));
+    return {
+      describeAvailabilityZones: (
+        input: DescribeAvailabilityZonesCommandInput,
+      ): Promise<DescribeAvailabilityZonesCommandOutput> => client.send(new DescribeAvailabilityZonesCommand(input)),
+      describeImages: (input: DescribeImagesCommandInput): Promise<DescribeImagesCommandOutput> =>
+        client.send(new DescribeImagesCommand(input)),
+      describeInstances: (input: DescribeInstancesCommandInput): Promise<DescribeInstancesCommandOutput> =>
+        client.send(new DescribeInstancesCommand(input)),
+      describeRouteTables: (input: DescribeRouteTablesCommandInput): Promise<DescribeRouteTablesCommandOutput> =>
+        client.send(new DescribeRouteTablesCommand(input)),
+      describeSecurityGroups: (
+        input: DescribeSecurityGroupsCommandInput,
+      ): Promise<DescribeSecurityGroupsCommandOutput> => client.send(new DescribeSecurityGroupsCommand(input)),
+      describeSubnets: (input: DescribeSubnetsCommandInput): Promise<DescribeSubnetsCommandOutput> =>
+        client.send(new DescribeSubnetsCommand(input)),
+      describeVpcEndpointServices: (
+        input: DescribeVpcEndpointServicesCommandInput,
+      ): Promise<DescribeVpcEndpointServicesCommandOutput> =>
+        client.send(new DescribeVpcEndpointServicesCommand(input)),
+      describeVpcs: (input: DescribeVpcsCommandInput): Promise<DescribeVpcsCommandOutput> =>
+        client.send(new DescribeVpcsCommand(input)),
+      describeVpnGateways: (input: DescribeVpnGatewaysCommandInput): Promise<DescribeVpnGatewaysCommandOutput> =>
+        client.send(new DescribeVpnGatewaysCommand(input)),
+    };
   }
 
-  public s3(): AWS.S3 {
-    return this.wrapServiceErrorHandling(new AWS.S3(this.config));
+  public ecr(): IECRClient {
+    const client = this.wrapServiceErrorHandling(new ECRClient(this.config));
+    return {
+      createRepository: (input: CreateRepositoryCommandInput): Promise<CreateRepositoryCommandOutput> =>
+        client.send(new CreateRepositoryCommand(input)),
+      describeImages: (input: ECRDescribeImagesCommandInput): Promise<ECRDescribeImagesCommandOutput> =>
+        client.send(new ECRDescribeImagesCommand(input)),
+      describeRepositories: (input: DescribeRepositoriesCommandInput): Promise<DescribeRepositoriesCommandOutput> =>
+        client.send(new DescribeRepositoriesCommand(input)),
+      getAuthorizationToken: (input: GetAuthorizationTokenCommandInput): Promise<GetAuthorizationTokenCommandOutput> =>
+        client.send(new GetAuthorizationTokenCommand(input)),
+      putImageScanningConfiguration: (
+        input: PutImageScanningConfigurationCommandInput,
+      ): Promise<PutImageScanningConfigurationCommandOutput> =>
+        client.send(new PutImageScanningConfigurationCommand(input)),
+    };
   }
 
-  public route53(): AWS.Route53 {
-    return this.wrapServiceErrorHandling(new AWS.Route53(this.config));
+  public ecs(): IECSClient {
+    const client = this.wrapServiceErrorHandling(new ECSClient(this.config));
+    return {
+      listClusters: (input: ListClustersCommandInput): Promise<ListClustersCommandOutput> =>
+        client.send(new ListClustersCommand(input)),
+      registerTaskDefinition: (
+        input: RegisterTaskDefinitionCommandInput,
+      ): Promise<RegisterTaskDefinitionCommandOutput> => client.send(new RegisterTaskDefinitionCommand(input)),
+      updateService: (input: UpdateServiceCommandInput): Promise<UpdateServiceCommandOutput> =>
+        client.send(new UpdateServiceCommand(input)),
+      // Waiters
+      waitUntilServicesStable: (input: DescribeServicesCommandInput): Promise<WaiterResult> => {
+        return waitUntilServicesStable(
+          {
+            client,
+            maxWaitTime: 600,
+            minDelay: 6,
+            maxDelay: 6,
+          },
+          input,
+        );
+      },
+    };
   }
 
-  public ecr(): AWS.ECR {
-    return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
+  public elbv2(): IElasticLoadBalancingV2Client {
+    const client = this.wrapServiceErrorHandling(new ElasticLoadBalancingV2Client(this.config));
+    return {
+      describeListeners: (input: DescribeListenersCommandInput): Promise<DescribeListenersCommandOutput> =>
+        client.send(new DescribeListenersCommand(input)),
+      describeLoadBalancers: (input: DescribeLoadBalancersCommandInput): Promise<DescribeLoadBalancersCommandOutput> =>
+        client.send(new DescribeLoadBalancersCommand(input)),
+      describeTags: (input: DescribeTagsCommandInput): Promise<DescribeTagsCommandOutput> =>
+        client.send(new DescribeTagsCommand(input)),
+      // Pagination Functions
+      paginateDescribeListeners: async (input: DescribeListenersCommandInput): Promise<Listener[]> => {
+        const listeners = Array<Listener>();
+        const paginator = paginateDescribeListeners({ client }, input);
+        for await (const page of paginator) {
+          listeners.push(...(page?.Listeners || []));
+        }
+        return listeners;
+      },
+      paginateDescribeLoadBalancers: async (input: DescribeLoadBalancersCommandInput): Promise<LoadBalancer[]> => {
+        const loadBalancers = Array<LoadBalancer>();
+        const paginator = paginateDescribeLoadBalancers({ client }, input);
+        for await (const page of paginator) {
+          loadBalancers.push(...(page?.LoadBalancers || []));
+        }
+        return loadBalancers;
+      },
+    };
   }
 
-  public ecs(): AWS.ECS {
-    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
+  public iam(): IIAMClient {
+    const client = this.wrapServiceErrorHandling(new IAMClient(this.config));
+    return {
+      createPolicy: (input: CreatePolicyCommandInput): Promise<CreatePolicyCommandOutput> =>
+        client.send(new CreatePolicyCommand(input)),
+      getPolicy: (input: GetPolicyCommandInput): Promise<GetPolicyCommandOutput> =>
+        client.send(new GetPolicyCommand(input)),
+      getRole: (input: GetRoleCommandInput): Promise<GetRoleCommandOutput> => client.send(new GetRoleCommand(input)),
+    };
   }
 
-  public elbv2(): AWS.ELBv2 {
-    return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
+  public kms(): IKMSClient {
+    const client = this.wrapServiceErrorHandling(new KMSClient(this.config));
+    return {
+      describeKey: (input: DescribeKeyCommandInput): Promise<DescribeKeyCommandOutput> =>
+        client.send(new DescribeKeyCommand(input)),
+      listAliases: (input: ListAliasesCommandInput): Promise<ListAliasesCommandOutput> =>
+        client.send(new ListAliasesCommand(input)),
+    };
   }
 
-  public secretsManager(): AWS.SecretsManager {
-    return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  public lambda(): ILambdaClient {
+    const client = this.wrapServiceErrorHandling(new LambdaClient(this.config));
+    return {
+      invokeCommand: (input: InvokeCommandInput): Promise<InvokeCommandOutput> => client.send(new InvokeCommand(input)),
+      publishVersion: (input: PublishVersionCommandInput): Promise<PublishVersionCommandOutput> =>
+        client.send(new PublishVersionCommand(input)),
+      updateAlias: (input: UpdateAliasCommandInput): Promise<UpdateAliasCommandOutput> =>
+        client.send(new UpdateAliasCommand(input)),
+      updateFunctionCode: (input: UpdateFunctionCodeCommandInput): Promise<UpdateFunctionCodeCommandOutput> =>
+        client.send(new UpdateFunctionCodeCommand(input)),
+      updateFunctionConfiguration: (
+        input: UpdateFunctionConfigurationCommandInput,
+      ): Promise<UpdateFunctionConfigurationCommandOutput> =>
+        client.send(new UpdateFunctionConfigurationCommand(input)),
+      // Waiters
+      waitUntilFunctionUpdated: (
+        delaySeconds: number,
+        input: UpdateFunctionConfigurationCommandInput,
+      ): Promise<WaiterResult> => {
+        return waitUntilFunctionUpdated(
+          {
+            client,
+            maxDelay: delaySeconds,
+            minDelay: delaySeconds,
+            maxWaitTime: delaySeconds * 60,
+          },
+          input,
+        );
+      },
+    };
   }
 
-  public kms(): AWS.KMS {
-    return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+  public route53(): IRoute53Client {
+    const client = this.wrapServiceErrorHandling(new Route53Client(this.config));
+    return {
+      getHostedZone: (input: GetHostedZoneCommandInput): Promise<GetHostedZoneCommandOutput> =>
+        client.send(new GetHostedZoneCommand(input)),
+      listHostedZones: (input: ListHostedZonesCommandInput): Promise<ListHostedZonesCommandOutput> =>
+        client.send(new ListHostedZonesCommand(input)),
+      listHostedZonesByName: (input: ListHostedZonesByNameCommandInput): Promise<ListHostedZonesByNameCommandOutput> =>
+        client.send(new ListHostedZonesByNameCommand(input)),
+    };
   }
 
-  public stepFunctions(): AWS.StepFunctions {
-    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
+  public s3(): IS3Client {
+    const client = this.wrapServiceErrorHandling(new S3Client(this.config));
+    return {
+      getBucketEncryption: (input: GetBucketEncryptionCommandInput): Promise<GetBucketEncryptionCommandOutput> =>
+        client.send(new GetBucketEncryptionCommand(input)),
+      getBucketLocation: (input: GetBucketLocationCommandInput): Promise<GetBucketLocationCommandOutput> =>
+        client.send(new GetBucketLocationCommand(input)),
+      getObject: (input: GetObjectCommandInput): Promise<GetObjectCommandOutput> =>
+        client.send(new GetObjectCommand(input)),
+      listObjectsV2: (input: ListObjectsV2CommandInput): Promise<ListObjectsV2CommandOutput> =>
+        client.send(new ListObjectsV2Command(input)),
+      upload: (input: PutObjectCommandInput): Promise<CompleteMultipartUploadCommandOutput> => {
+        try {
+          const upload = new Upload({
+            client,
+            params: input,
+          });
+
+          return upload.done();
+        } catch (e: any) {
+          throw new Error(`Upload failed: ${e.message}`);
+        }
+      },
+    };
   }
 
-  public codeBuild(): AWS.CodeBuild {
-    return this.wrapServiceErrorHandling(new AWS.CodeBuild(this.config));
+  public secretsManager(): ISecretsManagerClient {
+    const client = this.wrapServiceErrorHandling(new SecretsManagerClient(this.config));
+    return {
+      getSecretValue: (input: GetSecretValueCommandInput): Promise<GetSecretValueCommandOutput> =>
+        client.send(new GetSecretValueCommand(input)),
+    };
   }
 
-  public cloudWatchLogs(): AWS.CloudWatchLogs {
-    return this.wrapServiceErrorHandling(new AWS.CloudWatchLogs(this.config));
+  public ssm(): ISSMClient {
+    const client = this.wrapServiceErrorHandling(new SSMClient(this.config));
+    return {
+      getParameter: (input: GetParameterCommandInput): Promise<GetParameterCommandOutput> =>
+        client.send(new GetParameterCommand(input)),
+    };
   }
 
-  public appsync(): AWS.AppSync {
-    return this.wrapServiceErrorHandling(new AWS.AppSync(this.config));
+  public stepFunctions(): IStepFunctionsClient {
+    const client = this.wrapServiceErrorHandling(new SFNClient(this.config));
+    return {
+      updateStateMachine: (input: UpdateStateMachineCommandInput): Promise<UpdateStateMachineCommandOutput> =>
+        client.send(new UpdateStateMachineCommand(input)),
+    };
+  }
+
+  /**
+   * The AWS SDK v3 requires a client config and a command in order to get an endpoint for
+   * any given service.
+   */
+  public async getUrlSuffix(region: string): Promise<string> {
+    const cfn = new CloudFormationClient({ region });
+    const endpoint = await getEndpointFromInstructions({}, DescribeStackResourcesCommand, { ...cfn.config });
+    return endpoint.url.hostname.split(`${region}.`).pop()!;
   }
 
   public async currentAccount(): Promise<Account> {
-    // Get/refresh if necessary before we can access `accessKeyId`
-    await this.forceCredentialRetrieval();
+    return cached(this, CURRENT_ACCOUNT_KEY, () =>
+      SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
+        // if we don't have one, resolve from STS and store in cache.
+        debug('Looking up default account ID from STS');
+        const client = new STSClient({
+          ...this.config,
+          ...this.stsRetryOptions,
+        });
+        const command = new GetCallerIdentityCommand({});
+        const result = await client.send(command);
+        debug(result.Account!, result.Arn, result.UserId);
+        const accountId = result.Account;
+        const partition = result.Arn!.split(':')[1];
+        if (!accountId) {
+          throw new Error("STS didn't return an account ID");
+        }
+        debug('Default account ID:', accountId);
 
-    return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
-      // if we don't have one, resolve from STS and store in cache.
-      debug('Looking up default account ID from STS');
-      const result = await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
-      const accountId = result.Account;
-      const partition = result.Arn!.split(':')[1];
-      if (!accountId) {
-        throw new Error('STS didn\'t return an account ID');
-      }
-      debug('Default account ID:', accountId);
-
-      // Save another STS call later if this one already succeeded
-      this._credentialsValidated = true;
-      return { accountId, partition };
-    }));
-  }
-
-  /**
-   * Return the current credentials
-   *
-   * Don't use -- only used to write tests around assuming roles.
-   */
-  public async currentCredentials(): Promise<AWS.Credentials> {
-    await this.forceCredentialRetrieval();
-    return this._credentials;
-  }
-
-  /**
-   * Force retrieval of the current credentials
-   *
-   * Relevant if the current credentials are AssumeRole credentials -- do the actual
-   * lookup, and translate any error into a useful error message (taking into
-   * account credential provenance).
-   */
-  public async forceCredentialRetrieval() {
-    try {
-      await this._credentials.getPromise();
-    } catch (e: any) {
-      if (isUnrecoverableAwsError(e)) {
-        throw e;
-      }
-
-      // Only reason this would fail is if it was an AssumRole. Otherwise,
-      // reading from an INI file or reading env variables is unlikely to fail.
-      debug(`Assuming role failed: ${e.message}`);
-      throw new Error([
-        'Could not assume role in target account',
-        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
-          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : [],
-        e.message,
-        '. Please make sure that this role exists in the account. If it doesn\'t exist, (re)-bootstrap the environment ' +
-        'with the right \'--trust\', using the latest version of the CDK CLI.',
-      ].join(' '));
-    }
+        // Save another STS call later if this one already succeeded
+        this._credentialsValidated = true;
+        return { accountId, partition };
+      }),
+    );
   }
 
   /**
@@ -286,12 +907,9 @@ export class SDK implements ISDK {
       return;
     }
 
-    await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
+    const client = new STSClient({ ...this.config, ...this.stsRetryOptions });
+    await client.send(new GetCallerIdentityCommand({}));
     this._credentialsValidated = true;
-  }
-
-  public getEndpointSuffix(region: string): string {
-    return regionUtil.getEndpointSuffix(region);
   }
 
   /**
@@ -328,28 +946,34 @@ export class SDK implements ISDK {
         // - Anything that's not a function.
         // - 'constructor', s3.upload() will use this to do some magic and we need the underlying constructor.
         // - Any method that's not on the service class (do not intercept 'makeRequest' and other helpers).
-        if (prop === 'constructor' || !classObject.hasOwnProperty(prop) || !isFunction(real)) { return real; }
+        if (prop === 'constructor' || !classObject.hasOwnProperty(prop) || !isFunction(real)) {
+          return real;
+        }
 
         // NOTE: This must be a function() and not an () => {
         // because I need 'this' to be dynamically bound and not statically bound.
         // If your linter complains don't listen to it!
-        return function(this: any) {
+        return function (this: any) {
           // Call the underlying function. If it returns an object with a promise()
           // method on it, wrap that 'promise' method.
           const args = [].slice.call(arguments, 0);
           const response = real.apply(this, args);
 
           // Don't intercept unless the return value is an object with a '.promise()' method.
-          if (typeof response !== 'object' || !response) { return response; }
-          if (!('promise' in response)) { return response; }
+          if (typeof response !== 'object' || !response) {
+            return response;
+          }
+          if (!('promise' in response)) {
+            return response;
+          }
 
           // Return an object with the promise method replaced with a wrapper which will
           // do additional things to errors.
           return Object.assign(Object.create(response), {
             promise() {
-              return response.promise().catch((e: Error & { code?: string }) => {
+              return response.catch((e: Error & { code?: string }) => {
                 e = self.makeDetailedException(e);
-                debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message} (code=${e.code})`);
+                debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message} (code=${e.name})`);
                 return Promise.reject(e); // Re-'throw' the new error
               });
             },
@@ -384,10 +1008,10 @@ export class SDK implements ISDK {
     if (e.message === 'Could not load credentials from ChainableTemporaryCredentials') {
       e.message = [
         'Could not assume role in target account',
-        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
+        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription
           ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : [],
-        '(did you bootstrap the environment with the right \'--trust\'s?)',
+          : []),
+        "(did you bootstrap the environment with the right '--trust's?)",
       ].join(' ');
     }
 
@@ -414,11 +1038,4 @@ function allChainedExceptionMessages(e: Error | undefined) {
     e = (e as any).originalError;
   }
   return ret.join(': ');
-}
-
-/**
- * Return whether an error should not be recovered from
- */
-export function isUnrecoverableAwsError(e: Error) {
-  return (e as any).code === 'ExpiredToken';
 }
