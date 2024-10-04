@@ -1097,7 +1097,7 @@ test.each([
   });
 });
 
-test('Non-imported TaskDefinition role is targeting by Ref', () => {
+test('When using non-imported TaskDefinition, the IAM policy `Resource` should use `Ref` to reference the TaskDefinition, () => {
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('henk'),
