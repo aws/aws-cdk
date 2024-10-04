@@ -24,9 +24,6 @@ export class AssetManifestBuilder {
   public defaultAddFileAsset(stack: Stack, asset: FileAssetSource, target: AssetManifestFileDestination) {
     validateFileAssetSource(asset);
 
-    // If the fileName begins with 'asset.', remove it here
-    // because when a file without extension is added to the manifest, the path.extension() will return an file hash.
-    // ex) path.extension('asset.dc5ce447844') => 'dc5ce447844'
     const extension =
       asset.fileName != undefined ? path.extname(asset.fileName) : '';
     const objectKey =
