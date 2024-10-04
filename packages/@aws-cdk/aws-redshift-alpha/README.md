@@ -616,6 +616,7 @@ as it's a fast operation and typically completes in minutes. Elastic resize is o
   * dc2.8xlarge
   * ds2.xlarge
   * ds2.8xlarge
+  * ra3.large
   * ra3.xlplus
   * ra3.4xlarge
   * ra3.16xlarge
