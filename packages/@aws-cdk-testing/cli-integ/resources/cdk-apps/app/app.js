@@ -800,6 +800,7 @@ switch (stackSet) {
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
 
+    // This stack is used to test diff with large templates by creating a role with a ton of metadata
     new IamRolesStack(app, `${stackPrefix}-iam-roles`);
 
     if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
