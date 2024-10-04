@@ -34,7 +34,7 @@ const mockS3Destination: firehose.IDestination = {
 };
 
 const stream = new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
-  destinations: [mockS3Destination],
+  destination: mockS3Destination,
 });
 
 new events.Rule(stack, 'rule', {
