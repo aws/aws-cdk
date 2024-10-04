@@ -453,6 +453,12 @@
       "Type": "forward"
      }
     ],
+    "ListenerAttributes": [
+     {
+      "Key": "tcp.idle_timeout.seconds",
+      "Value": "100"
+     }
+    ],
     "LoadBalancerArn": {
      "Ref": "LB8A12904C"
     },

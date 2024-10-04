@@ -744,6 +744,12 @@
                             }
                           }
                         ],
+                        "listenerAttributes": [
+                          {
+                            "key": "tcp.idle_timeout.seconds",
+                            "value": "100"
+                          }
+                        ],
                         "loadBalancerArn": {
                           "Ref": "LB8A12904C"
                         },
