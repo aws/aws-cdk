@@ -638,9 +638,7 @@ new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
   userPool: userpool,
   attributeMapping: {
     email: cognito.ProviderAttribute.AMAZON_EMAIL,
-    // use other() when an attribute is not pre-defined in the CDK
-    emailVerified: cognito.ProviderAttribute.other('email_verified'),
-    website: cognito.ProviderAttribute.other('url'), 
+    website: cognito.ProviderAttribute.other('url'), // use other() when an attribute is not pre-defined in the CDK
     custom: {
       // custom user pool attributes go here
       uniqueId: cognito.ProviderAttribute.AMAZON_USER_ID,
