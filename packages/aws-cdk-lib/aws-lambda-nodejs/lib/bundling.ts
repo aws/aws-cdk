@@ -7,6 +7,7 @@ import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
+import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
 const ESBUILD_DEFAULT_VERSION = '0.21';
@@ -125,10 +126,19 @@ export class Bundling implements cdk.BundlingOptions {
       throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
     }
 
+    /**
+     * For Lambda runtime that uses AWS SDK v3, we need to remove both `aws-sdk/*` modules
+     * and `smithy/*` modules to prevent version mismatches. Hide it behind feature flag
+     * to make sure no breaking change is introduced.
+     *
+     * Issue reference: https://github.com/aws/aws-cdk/issues/31610#issuecomment-2389983347
+     */
+    const sdkV3Externals = cdk.FeatureFlags.of(scope).isEnabled(LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES) ?
+      ['@aws-sdk/*', '@smithy/*'] : ['@aws-sdk/*'];
     // Modules to externalize when using a constant known version of the runtime.
     // Mark aws-sdk as external by default (available in the runtime)
     const isV2Runtime = isSdkV2Runtime(props.runtime);
-    const versionedExternals = isV2Runtime ? ['aws-sdk'] : ['@aws-sdk/*'];
+    const versionedExternals = isV2Runtime ? ['aws-sdk'] : sdkV3Externals;
     // Don't automatically externalize any dependencies when using a `latest` runtime which may
     // update versions in the future.
     // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
