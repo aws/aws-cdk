@@ -81,7 +81,7 @@ export class AccountAccessKeyCache {
     } catch (e: any) {
       // File doesn't exist or is not readable. This is a cache,
       // pretend we successfully loaded an empty map.
-      if (e.name === 'ENOENT' || e.name === 'EACCES') {
+      if (e.code === 'ENOENT' || e.code === 'EACCES') {
         return {};
       }
       // File is not JSON, could be corrupted because of concurrent writes.
@@ -100,7 +100,7 @@ export class AccountAccessKeyCache {
     } catch (e: any) {
       // File doesn't exist or file/dir isn't writable. This is a cache,
       // if we can't write it then too bad.
-      if (e.name === 'ENOENT' || e.name === 'EACCES' || e.name === 'EROFS') {
+      if (e.code === 'ENOENT' || e.code === 'EACCES' || e.code === 'EROFS') {
         return;
       }
       throw e;

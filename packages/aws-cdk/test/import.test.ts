@@ -408,7 +408,7 @@ function givenCurrentStack(stackName: string, template: any) {
       },
     ],
   });
-  
+
   mockCloudFormationClient.on(DescribeChangeSetCommand).resolves({
     Status: StackStatus.CREATE_COMPLETE,
     Changes: [],
