@@ -587,6 +587,24 @@ describe('tests', () => {
     });
   });
 
+  test('throws when tcpIdleTimeout is set with UDP.', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80, protocol: elbv2.Protocol.UDP });
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    expect(() => {
+      lb.addListener('Listener1', {
+        port: 80,
+        defaultAction: elbv2.NetworkListenerAction.forward([group]),
+        tcpIdleTimeout: cdk.Duration.seconds(100),
+        protocol: elbv2.Protocol.UDP,
+      });
+    }).toThrow('\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.');
+  });
+
   test.each([1, 10000])('throws when tcpIdleTimeout is invalid seconds, got: %d seconds', (tcpIdleTimeoutSeconds) => {
     // GIVEN
     const stack = new cdk.Stack();

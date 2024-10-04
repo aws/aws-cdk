@@ -233,6 +233,10 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     if (props.tcpIdleTimeout !== undefined && !Token.isUnresolved(props.tcpIdleTimeout)) {
       const tcpIdleTimeoutSeconds = props.tcpIdleTimeout.toSeconds();
 
+      if (proto === Protocol.UDP) {
+        throw new Error('\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.');
+      }
+
       if (tcpIdleTimeoutSeconds < 60 || tcpIdleTimeoutSeconds > 6000) {
         throw new Error(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`);
       }
