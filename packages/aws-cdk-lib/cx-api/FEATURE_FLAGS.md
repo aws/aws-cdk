@@ -76,7 +76,9 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
 | [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | 2.160.0 | (fix) |
 | [@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission](#aws-cdkaws-appsyncappsyncgraphqlapiscopelambdapermission) | When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn. | V2NEXT | (fix) |
+| [@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages](#aws-cdkaws-lambda-nodejssdkv3excludesmithypackages) | When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications. | V2NEXT | (fix) |
 | [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | V2NEXT | (fix) |
+| [@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics](#aws-cdkcorecfnincluderejectcomplexresourceupdatecreatepolicyintrinsics) | When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -141,8 +143,10 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
-    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true
-    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true
+    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
+    "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
   }
 }
 ```
@@ -1438,6 +1442,23 @@ specific AppSync GraphQL API.
 | V2NEXT | `false` | `true` |
 
 
+### @aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages
+
+*When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.* (fix)
+
+Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default. 
+However, this can cause version mismatches between the '@aws-sdk/*' and '@smithy/*' packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages will be excluded during the bundling process. This ensures that no mismatches
+occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
 ### @aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId
 
 *When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
@@ -1453,6 +1474,21 @@ When this feature flag is enabled, the value of that property will be as expecte
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`
+
+
+### @aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics
+
+*When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.* (fix)
+
+Without enabling this feature flag, `cfn-include` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
+
+Enabling this feature flag will make `cfn-include` throw on these templates, unless you specify the logical ID of the resource in the 'unhydratedResources' property.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
