@@ -142,7 +142,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
     "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
-    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
+    "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
   }
 }
 ```
