@@ -512,7 +512,7 @@ export abstract class Job extends JobBase {
     };
 
     if (props?.quiet) {
-      args['--enable-continuous-log-filter'] = (props.quiet ?? true).toString();
+      args['--enable-continuous-log-filter'] = 'true';
     };
 
     // If the developer provided a log group, add its name to the args and update the role.

@@ -8,7 +8,7 @@ import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSpark
 import { Code } from '../code';
 
 /**
- *  Spark ETL Jobs class
+ *  PySpark ETL Jobs class
  *  ETL jobs support pySpark and Scala languages, for which there are separate
  *  but similar constructors. ETL jobs default to the G2 worker type, but you
  *  can override this default with other supported worker type values
@@ -82,9 +82,6 @@ export class PySparkEtlJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
-
-    this.jobName = props.jobName ?? '';
-
     // Set up role and permissions for principal
     this.role = props.role, {
       assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
@@ -121,10 +118,10 @@ export class PySparkEtlJob extends Job {
       command: {
         name: JobType.ETL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
-        pythonVersion: PythonVersion.THREE,
+        pythonVersion: PythonVersion.THREE_NINE,
       },
-      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
+      glueVersion: props.glueVersion ?? GlueVersion.V4_0,
+      workerType: props.workerType ?? WorkerType.G_1X,
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,

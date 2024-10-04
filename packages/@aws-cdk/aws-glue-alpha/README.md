@@ -24,7 +24,7 @@ service that makes it easier to discover, prepare, move, and integrate data
 from multiple sources for analytics, machine learning (ML), and application
 development.
 
-Wihout an L2 construct, developers define Glue data sources, connections,
+Without an L2 construct, developers define Glue data sources, connections,
 jobs, and workflows for their data and ETL solutions via the AWS console,
 the AWS CLI, and Infrastructure as Code tools like CloudFormation and the
 CDK. However, there are several challenges to defining Glue resources at
@@ -218,6 +218,406 @@ configuration
     subnet selection. Without a specific subnet provided, the L2 leverages the
     existing [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
     library to make the best choice selection for the subnet.
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const subnet: ec2.Subnet;
+new glue.Connection(this, 'MyConnection', {
+  type: glue.ConnectionType.NETWORK,
+  // The security groups granting AWS Glue inbound access to the data source within the VPC
+  securityGroups: [securityGroup],
+  // The VPC subnet which contains the data source
+  subnet,
+});
+```
+
+For RDS `Connection` by JDBC, it is recommended to manage credentials using AWS Secrets Manager. To use Secret, specify `SECRET_ID` in `properties` like the following code. Note that in this case, the subnet must have a route to the AWS Secrets Manager VPC endpoint or to the AWS Secrets Manager endpoint through a NAT gateway.
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const subnet: ec2.Subnet;
+declare const db: rds.DatabaseCluster;
+new glue.Connection(this, "RdsConnection", {
+  type: glue.ConnectionType.JDBC,
+  securityGroups: [securityGroup],
+  subnet,
+  properties: {
+    JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
+    JDBC_ENFORCE_SSL: "false",
+    SECRET_ID: db.secret!.secretName,
+  },
+});
+```
+
+If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
+
+See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
+
+## SecurityConfiguration
+
+A `SecurityConfiguration` is a set of security properties that can be used by AWS Glue to encrypt data at rest.
+
+```ts
+new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
+  cloudWatchEncryption: {
+    mode: glue.CloudWatchEncryptionMode.KMS,
+  },
+  jobBookmarksEncryption: {
+    mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
+  },
+  s3Encryption: {
+    mode: glue.S3EncryptionMode.KMS,
+  },
+});
+```
+
+By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key for each encryption config, for example, for CloudWatch encryption:
+
+```ts
+declare const key: kms.Key;
+new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
+  cloudWatchEncryption: {
+    mode: glue.CloudWatchEncryptionMode.KMS,
+    kmsKey: key,
+  },
+});
+```
+
+See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
+
+## Database
+
+A `Database` is a logical grouping of `Tables` in the Glue Catalog.
+
+```ts
+new glue.Database(this, 'MyDatabase', {
+  databaseName: 'my_database',
+  description: 'my_database_description',
+});
+```
+
+## Table
+
+A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }, {
+    name: 'col2',
+    type: glue.Schema.array(glue.Schema.STRING),
+    comment: 'col2 is an array of strings' // comment is optional
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+By default, a S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `s3Prefix`:
+
+```ts
+declare const myBucket: s3.Bucket;
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  bucket: myBucket,
+  s3Prefix: 'my-table/',
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Glue tables can be configured to contain user-defined properties, to describe the physical storage of table data, through the `storageParameters` property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  storageParameters: [
+    glue.StorageParameter.skipHeaderLineCount(1),
+    glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+    glue.StorageParameter.custom('separatorChar', ',')
+  ],
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Glue tables can also be configured to contain user-defined table properties through the [`parameters`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters) property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  parameters: {
+    key1: 'val1',
+    key2: 'val2',
+  },
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+### Partition Keys
+
+To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'year',
+    type: glue.Schema.SMALL_INT,
+  }, {
+    name: 'month',
+    type: glue.Schema.SMALL_INT,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+### Partition Indexes
+
+Another way to improve query performance is to specify partition indexes. If no partition indexes are
+present on the table, AWS Glue loads all partitions of the table and filters the loaded partitions using
+the query expression. The query takes more time to run as the number of partitions increase. With an
+index, the query will try to fetch a subset of the partitions instead of loading all partitions of the
+table.
+
+The keys of a partition index must be a subset of the partition keys of the table. You can have a
+maximum of 3 partition indexes per table. To specify a partition index, you can use the `partitionIndexes`
+property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'year',
+    type: glue.Schema.SMALL_INT,
+  }, {
+    name: 'month',
+    type: glue.Schema.SMALL_INT,
+  }],
+  partitionIndexes: [{
+    indexName: 'my-index', // optional
+    keyNames: ['year'],
+  }], // supply up to 3 indexes
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Alternatively, you can call the `addPartitionIndex()` function on a table:
+
+```ts
+declare const myTable: glue.Table;
+myTable.addPartitionIndex({
+  indexName: 'my-index',
+  keyNames: ['year'],
+});
+```
+
+### Partition Filtering
+
+If you have a table with a large number of partitions that grows over time, consider using AWS Glue partition indexing and filtering.
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+    database: myDatabase,
+    columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+    }],
+    partitionKeys: [{
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+    }, {
+        name: 'month',
+        type: glue.Schema.SMALL_INT,
+    }],
+    dataFormat: glue.DataFormat.JSON,
+    enablePartitionFiltering: true,
+});
+```
+
+### Glue Connections
+
+Glue connections allow external data connections to third party databases and data warehouses. However, these connections can also be assigned to Glue Tables, allowing you to query external data sources using the Glue Data Catalog.
+
+Whereas `S3Table` will point to (and if needed, create) a bucket to store the tables' data, `ExternalTable` will point to an existing table in a data source. For example, to create a table in Glue that points to a table in Redshift:
+
+```ts
+declare const myConnection: glue.Connection;
+declare const myDatabase: glue.Database;
+new glue.ExternalTable(this, 'MyTable', {
+  connection: myConnection,
+  externalDataLocation: 'default_db_public_example', // A table in Redshift
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
+
+You can enable encryption on a Table's data:
+
+* [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - (default) Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.S3_MANAGED,
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+* [Kms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`) with an AWS KMS Key managed by the account owner.
+
+```ts
+declare const myDatabase: glue.Database;
+// KMS key is created automatically
+new glue.S3Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.KMS,
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+
+// with an explicit KMS key
+new glue.S3Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.KMS,
+  encryptionKey: new kms.Key(this, 'MyKey'),
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+* [KmsManaged](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`), like `Kms`, except with an AWS KMS Key managed by the AWS Key Management Service.
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.KMS_MANAGED,
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+* [ClientSideKms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (`CSE-KMS`) with an AWS KMS Key managed by the account owner.
+
+```ts
+declare const myDatabase: glue.Database;
+// KMS key is created automatically
+new glue.S3Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+
+// with an explicit KMS key
+new glue.S3Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
+  encryptionKey: new kms.Key(this, 'MyKey'),
+  // ...
+  database: myDatabase,
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+*Note: you cannot provide a `Bucket` when creating the `S3Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
+
+## Types
+
+A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  columns: [{
+    name: 'primitive_column',
+    type: glue.Schema.STRING,
+  }, {
+    name: 'array_column',
+    type: glue.Schema.array(glue.Schema.INTEGER),
+    comment: 'array<integer>',
+  }, {
+    name: 'map_column',
+    type: glue.Schema.map(
+      glue.Schema.STRING,
+      glue.Schema.TIMESTAMP),
+    comment: 'map<string,string>',
+  }, {
+    name: 'struct_column',
+    type: glue.Schema.struct([{
+      name: 'nested_column',
+      type: glue.Schema.DATE,
+      comment: 'nested comment',
+    }]),
+    comment: "struct<nested_column:date COMMENT 'nested comment'>",
+  }],
+  // ...
+  database: myDatabase,
+  dataFormat: glue.DataFormat.JSON,
+});  
+```
 
 ## Public FAQ
 
