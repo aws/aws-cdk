@@ -238,6 +238,8 @@ VPC peering connection allows you to connect two VPCs and route traffic between 
 Here's an example of how to create a VPC peering connection between two VPCs:
 
 ```ts
+const stack = new Stack();
+
 const vpcA = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
@@ -246,22 +248,24 @@ const vpcB = new VpcV2(this, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
 });
 
-const peeringConnection = new VPCPeeringConnection(stacks.vpcpc, 'crossAccountCrossRegionPeering', {
+const peeringConnection = new VPCPeeringConnection(this, 'crossAccountCrossRegionPeering', {
   isCrossAccount: true,
   requestorVpc: vpcA,
   acceptorVpc: vpcB,
   acceptorAccountId: '123456789012',
   acceptorRegion: 'us-west-2',
 });
+
+const routeTable = new RouteTable(this, 'RouteTable', {
+  vpc: vpcA,
+});
+
+routeTable.addRoute('vpcPeeringRoute', '10.0.0.0/16', { gateway: peeringConnection });
 ```
 
 Note that for cross-account peering, you'll need to ensure that the peering request is accepted in the peer account. For more information see [Accept or reject a VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/accept-vpc-peering-connection.html).
 
-To add routes for the peering connection to specific subnets, you can use the addRoute method of the RouteTable construct:
-
-```ts
-routeTables.addRoute('vpcPeeringRoute', '10.0.0.0/16', { gateway: peeringConnection });
-```
+To add routes for the peering connection to specific subnets, you can use the addRoute method of the RouteTable construct.
 
 ## Adding Egress-Only Internet Gateway to VPC
 
