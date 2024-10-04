@@ -67,7 +67,12 @@ export interface HttpLambdaAuthorizerProps {
 export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
   private httpApi?: IHttpApi;
+
+  /**
+   * The authorizationType used for Lambda Authorizer
+   */
   public readonly authorizationType = 'CUSTOM';
+
   /**
    * Initialize a lambda authorizer to be bound with HTTP route.
    * @param id The id of the underlying construct

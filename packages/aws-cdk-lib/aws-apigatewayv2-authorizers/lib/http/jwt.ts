@@ -37,6 +37,9 @@ export interface HttpJwtAuthorizerProps {
  */
 export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
+  /**
+   * The authorizationType used for JWT Authorizer
+   */
   public readonly authorizationType = 'JWT';
 
   /**

@@ -38,6 +38,9 @@ export interface HttpUserPoolAuthorizerProps {
  */
 export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
+  /**
+   * The authorizationType used for UserPool Authorizer
+   */
   public readonly authorizationType = 'JWT';
   /**
    * Initialize a Cognito user pool authorizer to be bound with HTTP route.

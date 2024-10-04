@@ -194,10 +194,11 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const t = () => {
-      new HttpLambdaAuthorizer('BooksAuthorizer', handler);
+      const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
+      const authorizerId = authorizer.authorizerId;
     };
 
     // THEN
-    expect(t).toThrow(TypeError);
+    expect(t).toThrow(Error);
   });
 });
