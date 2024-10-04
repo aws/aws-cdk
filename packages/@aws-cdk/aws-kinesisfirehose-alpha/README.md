@@ -153,18 +153,18 @@ declare const destination: firehose.IDestination;
 
 // SSE with an AWS-owned key
 new firehose.DeliveryStream(this, 'Delivery Stream AWS Owned', {
-  encryption: firehose.StreamEncryption.AWS_OWNED,
+  encryption: firehose.StreamEncryption.awsOwnedKey(),
   destinations: [destination],
 });
 // SSE with an customer-managed key that is created automatically by the CDK
 new firehose.DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
-  encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
+  encryption: firehose.StreamEncryption.customerManagedKey(),
   destinations: [destination],
 });
 // SSE with an customer-managed key that is explicitly specified
 declare const key: kms.Key;
 new firehose.DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
-  encryptionKey: key,
+  encryption: firehose.StreamEncryption.customerManagedKey(key),
   destinations: [destination],
 });
 ```
@@ -183,8 +183,8 @@ Kinesis Data Firehose will send logs to CloudWatch when data transformation or d
 delivery fails. The CDK will enable logging by default and create a CloudWatch LogGroup
 and LogStream for your Delivery Stream.
 
-When you create a destination, you can specify a log group. In this log group, The CDK
-will create log streams where log events will be sent:
+When creating a destination, you can provide an `ILoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
+If you use `EnableLogging`, you can specify a log group where the CDK will create log streams to capture and store log events. For example:
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -192,7 +192,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 const logGroup = new logs.LogGroup(this, 'Log Group');
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, {
-  logGroup: logGroup,
+  loggingConfig: new destinations.EnableLogging(logGroup),
 });
 
 new firehose.DeliveryStream(this, 'Delivery Stream', {
@@ -205,7 +205,7 @@ Logging can also be disabled:
 ```ts
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, {
-  logging: false,
+  loggingConfig: new destinations.DisableLogging(),
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
   destinations: [destination],

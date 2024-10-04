@@ -21,7 +21,7 @@ export async function handler(props: UserTablePrivilegesHandlerProps & ClusterPr
       username,
       tablePrivileges,
       clusterProps,
-      event.OldResourceProperties as UserTablePrivilegesHandlerProps & ClusterProps,
+      event.OldResourceProperties as unknown as UserTablePrivilegesHandlerProps & ClusterProps,
     );
     const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId };

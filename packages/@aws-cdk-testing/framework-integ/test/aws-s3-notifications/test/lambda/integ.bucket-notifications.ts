@@ -29,8 +29,8 @@ bucketB.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.LambdaDestinat
 const c1 = new constructs.Construct(stack, 'Construct1');
 const unmanagedBucket = s3.Bucket.fromBucketName(c1, 'IntegUnmanagedBucket1', bucketA.bucketName);
 
-unmanagedBucket.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { prefix: 'TEST/', suffix: '.png' });
-unmanagedBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn), { prefix: 'TEST1/' });
+unmanagedBucket.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { prefix: 'TEST1/', suffix: '.png' });
+unmanagedBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn), { prefix: 'TEST2/' });
 
 /* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
@@ -71,7 +71,7 @@ getNotifications.expect(integ.ExpectedResult.objectLike({
           FilterRules: [
             {
               Name: 'Prefix',
-              Value: 'TEST/',
+              Value: 'TEST1/',
             },
             {
               Name: 'Suffix',
@@ -90,7 +90,7 @@ getNotifications.expect(integ.ExpectedResult.objectLike({
           FilterRules: [
             {
               Name: 'Prefix',
-              Value: 'TEST1/',
+              Value: 'TEST2/',
             },
           ],
         },

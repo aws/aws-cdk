@@ -24,6 +24,20 @@ bucket2.addObjectCreatedNotification(new s3n.SqsDestination(queue), { suffix: '.
 const encryptedQueue = new sqs.Queue(stack, 'EncryptedQueue', { encryption: sqs.QueueEncryption.KMS });
 bucket1.addObjectRemovedNotification(new s3n.SqsDestination(encryptedQueue));
 
+const bucket3 = new s3.Bucket(stack, 'Bucket3WithSkipDestinationValidation', {
+  notificationsSkipDestinationValidation: true,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+const queueWithIncorrectS3Permissions = new sqs.Queue(stack, 'MyQueueWithIncorrectS3Permissions');
+queueWithIncorrectS3Permissions.addToResourcePolicy(
+  new cdk.aws_iam.PolicyStatement({
+    effect: cdk.aws_iam.Effect.DENY,
+    actions: ['sqs:SendMessage'],
+    principals: [new cdk.aws_iam.ServicePrincipal('s3.amazonaws.com')],
+    resources: [queueWithIncorrectS3Permissions.queueArn],
+  }));
+bucket3.addEventNotification(s3.EventType.OBJECT_TAGGING_PUT, new s3n.SqsDestination(queueWithIncorrectS3Permissions));
+
 const integTest = new integ.IntegTest(app, 'SQSBucketNotificationsTest', {
   testCases: [stack],
   diffAssets: true,

@@ -2,6 +2,7 @@
 import { AppSync, S3 } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { silentTest } from '../../util/silent';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateResolver: (params: AppSync.UpdateResolverRequest) => AppSync.UpdateResolverResponse;
@@ -22,11 +23,10 @@ beforeEach(() => {
     updateApiKey: mockUpdateApiKey,
     startSchemaCreation: mockStartSchemaCreation,
   });
-
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test(`A new Resolver being added to the Stack returns undefined in CLASSIC mode and
+  silentTest(`A new Resolver being added to the Stack returns undefined in CLASSIC mode and
         returns a noOp in HOTSWAP_ONLY mode`,
   async () => {
     // GIVEN
@@ -56,7 +56,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls the updateResolver() API when it receives only a mapping template difference in a Unit Resolver', async () => {
+  silentTest('calls the updateResolver() API when it receives only a mapping template difference in a Unit Resolver', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -122,7 +122,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateResolver() API when it receives only a mapping template difference s3 location in a Unit Resolver', async () => {
+  silentTest('calls the updateResolver() API when it receives only a mapping template difference s3 location in a Unit Resolver', async () => {
     // GIVEN
     mockS3GetObject = jest.fn().mockImplementation(async () => {
       return { Body: 'template defined in s3' };
@@ -196,7 +196,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateResolver() API when it receives only a code s3 location in a Pipeline Resolver', async () => {
+  silentTest('calls the updateResolver() API when it receives only a code s3 location in a Pipeline Resolver', async () => {
     // GIVEN
     mockS3GetObject = jest.fn().mockImplementation(async () => {
       return { Body: 'code defined in s3' };
@@ -267,7 +267,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateResolver() API when it receives only a code difference in a Pipeline Resolver', async () => {
+  silentTest('calls the updateResolver() API when it receives only a code difference in a Pipeline Resolver', async () => {
     // GIVEN
     hotswapMockSdkProvider.stubS3({ getObject: mockS3GetObject });
     setup.setCurrentCfnStackTemplate({
@@ -331,7 +331,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateResolver() API when it receives only a mapping template difference in a Pipeline Resolver', async () => {
+  silentTest('calls the updateResolver() API when it receives only a mapping template difference in a Pipeline Resolver', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -399,7 +399,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test(`when it receives a change that is not a mapping template difference in a Resolver, it does not call the updateResolver() API in CLASSIC mode
+  silentTest(`when it receives a change that is not a mapping template difference in a Resolver, it does not call the updateResolver() API in CLASSIC mode
         but does call the updateResolver() API in HOTSWAP_ONLY mode`,
   async () => {
     // GIVEN
@@ -465,7 +465,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('does not call the updateResolver() API when a resource with type that is not AWS::AppSync::Resolver but has the same properties is changed', async () => {
+  silentTest('does not call the updateResolver() API when a resource with type that is not AWS::AppSync::Resolver but has the same properties is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -511,7 +511,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls the updateFunction() API when it receives only a mapping template difference in a Function', async () => {
+  silentTest('calls the updateFunction() API when it receives only a mapping template difference in a Function', async () => {
     // GIVEN
     const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
     hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
@@ -571,7 +571,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateFunction() API with function version when it receives both function version and runtime with a mapping template in a Function', async () => {
+  silentTest('calls the updateFunction() API with function version when it receives both function version and runtime with a mapping template in a Function', async () => {
     // GIVEN
     const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
     hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
@@ -633,7 +633,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateFunction() API with runtime when it receives both function version and runtime with code in a Function', async () => {
+  silentTest('calls the updateFunction() API with runtime when it receives both function version and runtime with code in a Function', async () => {
     // GIVEN
     const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
     hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
@@ -692,7 +692,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateFunction() API when it receives only a mapping template s3 location difference in a Function', async () => {
+  silentTest('calls the updateFunction() API when it receives only a mapping template s3 location difference in a Function', async () => {
     // GIVEN
     mockS3GetObject = jest.fn().mockImplementation(async () => {
       return { Body: 'template defined in s3' };
@@ -760,7 +760,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test(`when it receives a change that is not a mapping template difference in a Function, it does not call the updateFunction() API in CLASSIC mode
+  silentTest(`when it receives a change that is not a mapping template difference in a Function, it does not call the updateFunction() API in CLASSIC mode
         but does in HOTSWAP_ONLY mode`,
   async () => {
     // GIVEN
@@ -823,7 +823,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('does not call the updateFunction() API when a resource with type that is not AWS::AppSync::FunctionConfiguration but has the same properties is changed', async () => {
+  silentTest('does not call the updateFunction() API when a resource with type that is not AWS::AppSync::FunctionConfiguration but has the same properties is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -871,7 +871,90 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls the startSchemaCreation() API when it receives only a definition difference in a graphql schema', async () => {
+  silentTest('calls the updateFunction() API with functionId when function is listed on second page', async () => {
+    // GIVEN
+    const mockListFunctions = jest
+      .fn()
+      .mockReturnValueOnce({
+        functions: [{ name: 'other-function', functionId: 'other-functionId' }],
+        nextToken: 'nexttoken',
+      })
+      .mockReturnValueOnce({
+        functions: [{ name: 'my-function', functionId: 'functionId' }],
+      });
+    hotswapMockSdkProvider.stubAppSync({
+      listFunctions: mockListFunctions,
+      updateFunction: mockUpdateFunction,
+    });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncFunction: {
+          Type: 'AWS::AppSync::FunctionConfiguration',
+          Properties: {
+            Name: 'my-function',
+            ApiId: 'apiId',
+            DataSourceName: 'my-datasource',
+            FunctionVersion: '2018-05-29',
+            Runtime: 'APPSYNC_JS',
+            Code: 'old test code',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              Runtime: 'APPSYNC_JS',
+              Code: 'new test code',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult =
+      await hotswapMockSdkProvider.tryHotswapDeployment(
+        hotswapMode,
+        cdkStackArtifact,
+      );
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockListFunctions).toHaveBeenCalledTimes(2);
+    expect(mockListFunctions).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      nextToken: undefined,
+    });
+    expect(mockListFunctions).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      nextToken: 'nexttoken',
+    });
+    expect(mockUpdateFunction).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      functionId: 'functionId',
+      runtime: 'APPSYNC_JS',
+      name: 'my-function',
+      code: 'new test code',
+    });
+  });
+
+  silentTest('calls the startSchemaCreation() API when it receives only a definition difference in a graphql schema', async () => {
     // GIVEN
     mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'SUCCESS' });
     hotswapMockSdkProvider.stubAppSync({ startSchemaCreation: mockStartSchemaCreation });
@@ -925,7 +1008,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the startSchemaCreation() API when it receives only a definition s3 location difference in a graphql schema', async () => {
+  silentTest('calls the startSchemaCreation() API when it receives only a definition s3 location difference in a graphql schema', async () => {
     // GIVEN
     mockS3GetObject = jest.fn().mockImplementation(async () => {
       return { Body: 'schema defined in s3' };
@@ -988,7 +1071,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('does not call startSchemaCreation() API when a resource with type that is not AWS::AppSync::GraphQLSchema but has the same properties is change', async () => {
+  silentTest('does not call startSchemaCreation() API when a resource with type that is not AWS::AppSync::GraphQLSchema but has the same properties is change', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -1042,7 +1125,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('calls the startSchemaCreation() and waits for schema creation to stabilize before finishing', async () => {
+  silentTest('calls the startSchemaCreation() and waits for schema creation to stabilize before finishing', async () => {
     // GIVEN
     mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'PROCESSING' });
     const mockGetSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'SUCCESS' });
@@ -1100,7 +1183,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the startSchemaCreation() and throws if schema creation fails', async () => {
+  silentTest('calls the startSchemaCreation() and throws if schema creation fails', async () => {
     // GIVEN
     mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'PROCESSING' });
     const mockGetSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'FAILED', details: 'invalid schema' });
@@ -1157,7 +1240,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateApiKey() API when it receives only a expires property difference in an AppSync ApiKey', async () => {
+  silentTest('calls the updateApiKey() API when it receives only a expires property difference in an AppSync ApiKey', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -1211,7 +1294,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('calls the updateApiKey() API when it receives only a expires property difference and no api-key-id in an AppSync ApiKey', async () => {
+  silentTest('calls the updateApiKey() API when it receives only a expires property difference and no api-key-id in an AppSync ApiKey', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
