@@ -1,0 +1,1 @@
+Ensure the number of awaited promises does not depend on program input

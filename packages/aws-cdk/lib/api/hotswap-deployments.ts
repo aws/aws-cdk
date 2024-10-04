@@ -15,6 +15,10 @@ import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
 
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
+
 type HotswapDetector = (
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate
 ) => Promise<ChangeHotswapResult>;
@@ -156,6 +160,8 @@ async function classifyResourceChanges(
   // resolve all detector results
   const changesDetectionResults: Array<ChangeHotswapResult> = [];
   for (const detectorResultPromises of promises) {
+    // Constant set of promises per resource
+    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
     const hotswapDetectionResults = await Promise.all(await detectorResultPromises());
     changesDetectionResults.push(hotswapDetectionResults);
   }
@@ -329,9 +335,11 @@ async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: Hotsw
   if (hotswappableChanges.length > 0) {
     print(`\n${ICON} hotswapping resources:`);
   }
-  return Promise.all(hotswappableChanges.map(hotswapOperation => {
+  const limit = pLimit(10);
+  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  return Promise.all(hotswappableChanges.map(hotswapOperation => limit(() => {
     return applyHotswappableChange(sdk, hotswapOperation);
-  }));
+  })));
 }
 
 async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswappableChange): Promise<void> {

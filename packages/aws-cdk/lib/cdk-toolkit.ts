@@ -31,6 +31,10 @@ import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
+
 export interface CdkToolkitProps {
 
   /**
@@ -788,7 +792,10 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    await Promise.all(environments.map(async (environment) => {
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment) => limit(async () => {
       success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
         const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
@@ -800,7 +807,7 @@ export class CdkToolkit {
         error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
         throw e;
       }
-    }));
+    })));
   }
 
   /**
