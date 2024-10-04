@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { DailyAutomaticBackupStartTime } from './daily-automatic-backup-start-time';
-import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem } from './file-system';
+import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem, StorageType } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
@@ -49,6 +49,20 @@ export enum LustreAutoImportPolicy {
    * AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket, any existing objects that are changed in the S3 bucket, and any objects that were deleted in the S3 bucket.
    * */
   NEW_CHANGED_DELETED = 'NEW_CHANGED_DELETED',
+}
+
+/**
+ * The type of drive cache used by PERSISTENT_1 file systems that are provisioned with HDD storage devices.
+ */
+export enum DriveCacheType {
+  /**
+   * The Lustre file system is configured with no data cache.
+   */
+  NONE = 'NONE',
+  /**
+   * The Lustre file system is configured with a read cache.
+   */
+  READ = 'READ',
 }
 
 /**
@@ -129,10 +143,15 @@ export interface LustreConfiguration {
   readonly dataCompressionType?: LustreDataCompressionType;
 
   /**
-   * Required for the PERSISTENT_1 deployment type, describes the amount of read and write throughput for each 1
-   * tebibyte of storage, in MB/s/TiB. Valid values are 50, 100, 200.
+   * Provisions the amount of read and write throughput for each 1 tebibyte (TiB) of file system storage capacity, in MB/s/TiB.
+   * Required with PERSISTENT_1 and PERSISTENT_2 deployment types.
    *
-   * @default - no default, conditionally required for PERSISTENT_1 deployment type
+   * Valid values:
+   * - For PERSISTENT_1 SSD storage: 50, 100, 200 MB/s/TiB.
+   * - For PERSISTENT_1 HDD storage: 12, 40 MB/s/TiB.
+   * - For PERSISTENT_2 SSD storage: 125, 250, 500, 1000 MB/s/TiB.
+   *
+   * @default - no default, conditionally required for PERSISTENT_1 and PERSISTENT_2 deployment type
    */
   readonly perUnitStorageThroughput?: number;
 
@@ -170,6 +189,12 @@ export interface LustreConfiguration {
    */
   readonly dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime;
 
+  /**
+   * The type of drive cache used by PERSISTENT_1 file systems that are provisioned with HDD storage devices.
+   *
+   * @default - no drive cache
+   */
+  readonly driveCacheType?: DriveCacheType;
 }
 
 /**
@@ -270,6 +295,7 @@ export class LustreFileSystem extends FileSystemBase {
       weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
       automaticBackupRetentionDays: props.lustreConfiguration.automaticBackupRetention?.toDays(),
       dailyAutomaticBackupStartTime: props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
+      driveCacheType: props.lustreConfiguration.driveCacheType ?? (props.storageType === StorageType.HDD ? DriveCacheType.NONE : undefined),
     };
     const lustreConfiguration = Object.assign({}, props.lustreConfiguration, updatedLustureProps);
 
@@ -289,6 +315,7 @@ export class LustreFileSystem extends FileSystemBase {
       lustreConfiguration,
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
+      storageType: props.storageType,
     });
     this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
@@ -303,6 +330,7 @@ export class LustreFileSystem extends FileSystemBase {
   private validateProps(props: LustreFileSystemProps) {
     const lustreConfiguration = props.lustreConfiguration;
     const deploymentType = lustreConfiguration.deploymentType;
+    const perUnitStorageThroughput = lustreConfiguration.perUnitStorageThroughput;
 
     // Make sure the import path is valid before validating the export path
     this.validateImportPath(lustreConfiguration.importPath);
@@ -310,12 +338,36 @@ export class LustreFileSystem extends FileSystemBase {
 
     this.validateImportedFileChunkSize(lustreConfiguration.importedFileChunkSizeMiB);
     this.validateAutoImportPolicy(deploymentType, lustreConfiguration.importPath, lustreConfiguration.autoImportPolicy);
-    this.validatePerUnitStorageThroughput(deploymentType, lustreConfiguration.perUnitStorageThroughput);
-    this.validateStorageCapacity(deploymentType, props.storageCapacityGiB);
 
     this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
 
     this.validateDailyAutomaticBackupStartTime(lustreConfiguration.automaticBackupRetention, lustreConfiguration.dailyAutomaticBackupStartTime);
+    this.validatePerUnitStorageThroughput(deploymentType, perUnitStorageThroughput, props.storageType);
+    this.validateStorageCapacity(deploymentType, props.storageCapacityGiB, props.storageType, perUnitStorageThroughput);
+    this.validateStorageType(deploymentType, props.storageType);
+    this.validateDriveCacheType(deploymentType, props.storageType, lustreConfiguration.driveCacheType);
+  }
+
+  /**
+   * Validates the drive cache type is only set for the PERSISTENT_1 deployment type and HDD storage type.
+   */
+  private validateDriveCacheType(deploymentType: LustreDeploymentType, storageType?: StorageType, driveCacheType?: DriveCacheType): void {
+    if (!driveCacheType) return;
+
+    if (deploymentType !== LustreDeploymentType.PERSISTENT_1 || storageType !== StorageType.HDD) {
+      throw new Error(`driveCacheType can only be set for PERSISTENT_1 HDD storage type, got: ${deploymentType} and ${storageType}`);
+    }
+  }
+
+  /**
+   * Validates if the storage type corresponds to the appropriate deployment type.
+   */
+  private validateStorageType(deploymentType: LustreDeploymentType, storageType?: StorageType): void {
+    if (!storageType) return;
+
+    if (storageType === StorageType.HDD && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
+      throw new Error(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
+    }
   }
 
   /**
@@ -383,8 +435,14 @@ export class LustreFileSystem extends FileSystemBase {
 
   /**
    * Validates the perUnitStorageThroughput is defined correctly for the given deploymentType.
+   *
+   * @see https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-throughput-capacity.html
    */
-  private validatePerUnitStorageThroughput(deploymentType: LustreDeploymentType, perUnitStorageThroughput?: number) {
+  private validatePerUnitStorageThroughput(
+    deploymentType: LustreDeploymentType,
+    perUnitStorageThroughput?: number,
+    storageType?: StorageType,
+  ): void {
     if (perUnitStorageThroughput === undefined) { return; }
 
     if (deploymentType !== LustreDeploymentType.PERSISTENT_1 && deploymentType !== LustreDeploymentType.PERSISTENT_2) {
@@ -392,29 +450,59 @@ export class LustreFileSystem extends FileSystemBase {
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
-      if (![50, 100, 200].includes(perUnitStorageThroughput)) {
-        throw new Error('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 deployment type, got: ' + perUnitStorageThroughput);
+      if (storageType === StorageType.HDD && ![12, 40].includes(perUnitStorageThroughput)) {
+        throw new Error(`perUnitStorageThroughput must be 12 or 40 MB/s/TiB for PERSISTENT_1 HDD storage, got: ${perUnitStorageThroughput}`);
+      }
+      if ((storageType === undefined || storageType === StorageType.SSD) && ![50, 100, 200].includes(perUnitStorageThroughput)) {
+        throw new Error('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' + perUnitStorageThroughput);
       }
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_2) {
       if (![125, 250, 500, 1000].includes(perUnitStorageThroughput)) {
-        throw new Error('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + perUnitStorageThroughput);
+        throw new Error(`perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ${perUnitStorageThroughput}`);
       }
     }
   }
 
   /**
    * Validates the storage capacity is an acceptable value for the deployment type.
+   *
+   * @see https://docs.aws.amazon.com/fsx/latest/LustreGuide/increase-storage-capacity.html
    */
-  private validateStorageCapacity(deploymentType: LustreDeploymentType, storageCapacity: number): void {
+  private validateStorageCapacity(
+    deploymentType: LustreDeploymentType,
+    storageCapacity: number,
+    storageType?: StorageType,
+    perUnitStorageThroughput?: number,
+  ): void {
     if (deploymentType === LustreDeploymentType.SCRATCH_1) {
       if (![1200, 2400, 3600].includes(storageCapacity) && storageCapacity % 3600 !== 0) {
-        throw new Error('storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600');
+        throw new Error(`storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type, got ${storageCapacity}.`);
       }
-    } else {
+    }
+
+    if (
+      deploymentType === LustreDeploymentType.PERSISTENT_2
+      || deploymentType === LustreDeploymentType.SCRATCH_2
+    ) {
       if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
-        throw new Error('storageCapacity must be 1,200, 2,400, or a multiple of 2,400');
+        throw new Error(`storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for SCRATCH_2 and PERSISTENT_2 deployment types, got ${storageCapacity}`);
+      }
+    }
+
+    if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
+      if (storageType === StorageType.HDD) {
+        if (perUnitStorageThroughput === 12 && storageCapacity % 6000 !== 0) {
+          throw new Error(`storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput, got ${storageCapacity}`);
+        }
+        if (perUnitStorageThroughput === 40 && storageCapacity % 1800 !== 0) {
+          throw new Error(`storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput, got ${storageCapacity}`);
+        }
+      } else {
+        if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
+          throw new Error(`storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage, got ${storageCapacity}`);
+        }
       }
     }
   }

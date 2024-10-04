@@ -1,0 +1,347 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "FsxLustreStorageTypeStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FsxLustreStorageTypeStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FsxLustreStorageTypeStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FsxLustreStorageTypeStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b70afe3fccbab7f6f454145285c729eb91a7254c797c5156812a783b8f6cefd9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FsxLustreStorageTypeStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FsxLustreStorageTypeStack.assets"
+      ],
+      "metadata": {
+        "/FsxLustreStorageTypeStack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemSsdStorage/FsxLustreSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemSsdStorageFsxLustreSecurityGroup14F696B3"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemSsdStorage/FsxLustreSecurityGroup/from FsxLustreStorageTypeStackFsxLustreFileSystemSsdStorageFsxLustreSecurityGroup900D4B37:988-1023": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemSsdStorageFsxLustreSecurityGroupfromFsxLustreStorageTypeStackFsxLustreFileSystemSsdStorageFsxLustreSecurityGroup900D4B37988102342FA56B2"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemSsdStorage/FsxLustreSecurityGroup/from FsxLustreStorageTypeStackSsdFsxInstanceInstanceSecurityGroupAC704ACF:988-1023": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemSsdStorageFsxLustreSecurityGroupfromFsxLustreStorageTypeStackSsdFsxInstanceInstanceSecurityGroupAC704ACF988102380D6A84E"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemSsdStorage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemSsdStorage70256D99"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/SsdFsxInstance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsdFsxInstanceInstanceSecurityGroup6C5726B9"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/SsdFsxInstance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsdFsxInstanceInstanceRole933EE1D6"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/SsdFsxInstance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsdFsxInstanceInstanceProfile0AD53366"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/SsdFsxInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsdFsxInstance09AA8DE7"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemHddStorage/FsxLustreSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemHddStorageFsxLustreSecurityGroupCB529CFC"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemHddStorage/FsxLustreSecurityGroup/from FsxLustreStorageTypeStackFsxLustreFileSystemHddStorageFsxLustreSecurityGroup36EAA88E:988-1023": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemHddStorageFsxLustreSecurityGroupfromFsxLustreStorageTypeStackFsxLustreFileSystemHddStorageFsxLustreSecurityGroup36EAA88E9881023C048CB34"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemHddStorage/FsxLustreSecurityGroup/from FsxLustreStorageTypeStackHddFsxInstanceInstanceSecurityGroup83E545BE:988-1023": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemHddStorageFsxLustreSecurityGroupfromFsxLustreStorageTypeStackHddFsxInstanceInstanceSecurityGroup83E545BE98810231EFC35B6"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/FsxLustreFileSystemHddStorage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FsxLustreFileSystemHddStorage85B422B8"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/HddFsxInstance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HddFsxInstanceInstanceSecurityGroupFF15A567"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/HddFsxInstance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HddFsxInstanceInstanceRole7B336CC9"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/HddFsxInstance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HddFsxInstanceInstanceProfile0833AA40"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/HddFsxInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HddFsxInstance019A1F6D"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FsxLustreStorageTypeStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FsxLustreStorageTypeStack"
+    },
+    "FsxLustreStorageTypeTestDefaultTestDeployAssert50B0FE3D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FsxLustreStorageTypeTestDefaultTestDeployAssert50B0FE3D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FsxLustreStorageTypeTestDefaultTestDeployAssert50B0FE3D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FsxLustreStorageTypeTestDefaultTestDeployAssert50B0FE3D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FsxLustreStorageTypeTestDefaultTestDeployAssert50B0FE3D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FsxLustreStorageTypeTestDefaultTestDeployAssert50B0FE3D.assets"
+      ],
+      "metadata": {
+        "/FsxLustreStorageTypeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FsxLustreStorageTypeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FsxLustreStorageTypeTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
