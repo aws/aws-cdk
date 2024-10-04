@@ -279,7 +279,7 @@ export class EcsTask implements events.IRuleTarget {
   private createEventRolePolicyStatements(): iam.PolicyStatement[] {
     // check if there is a taskdefinition revision (arn will end with : followed by digits) included in the arn already
     let needsRevisionWildcard = false;
-    if ( !cdk.Token.isUnresolved(this.taskDefinition.taskDefinitionArn)) {
+    if (!cdk.Token.isUnresolved(this.taskDefinition.taskDefinitionArn)) {
       const revisionAtEndPattern = /:[0-9]+$/;
       const hasRevision = revisionAtEndPattern.test(this.taskDefinition.taskDefinitionArn);
       needsRevisionWildcard = !hasRevision;
