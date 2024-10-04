@@ -413,7 +413,7 @@ You can modify attributes of Network Load Balancer Listener:
 declare const lb: elbv2.NetworkLoadBalancer;
 declare const group: elbv2.NetworkTargetGroup;
 
-const listener = nlb.addListener('Listener', {
+const listener = lb.addListener('Listener', {
   port: 80,
   defaultAction: elbv2.NetworkListenerAction.forward([group]),
 
