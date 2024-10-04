@@ -176,27 +176,6 @@ async function parseCommandLineArguments(args: string[]) {
       .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true })
       .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false }),
     )
-    .command('rollback [STACKS..]', 'Rolls back the stack(s) named STACKS to their last stable state', (yargs: Argv) => yargs
-      .option('all', { type: 'boolean', default: false, desc: 'Roll back all available stacks' })
-      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack the environment is bootstrapped with', requiresArg: true })
-      .option('force', {
-        alias: 'f',
-        type: 'boolean',
-        desc: 'Orphan all resources for which the rollback operation fails.',
-      })
-      .option('validate-bootstrap-version', {
-        type: 'boolean',
-        desc: 'Whether to validate the bootstrap stack version. Defaults to \'true\', disable with --no-validate-bootstrap-version.',
-      })
-      .option('orphan', {
-        // alias: 'o' conflicts with --output
-        type: 'array',
-        nargs: 1,
-        requiresArg: true,
-        desc: 'Orphan the given resources, identified by their logical ID (can be specified multiple times)',
-        default: [],
-      }),
-    )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
@@ -615,16 +594,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           assetParallelism: configuration.settings.get(['assetParallelism']),
           assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: args.ignoreNoStacks,
-        });
-
-      case 'rollback':
-        return cli.rollback({
-          selector,
-          toolkitStackName,
-          roleArn: args.roleArn,
-          force: args.force,
-          validateBootstrapStackVersion: args['validate-bootstrap-version'],
-          orphanLogicalIds: args.orphan,
         });
 
       case 'import':
