@@ -159,19 +159,7 @@ const ecsTaskTarget = new targets.EcsTask({ cluster, taskDefinition, role, platf
 The `aws-cdk-lib/aws-events-targets` module includes classes that implement the `IRuleTarget`
 interface for various AWS services.
 
-The following targets are supported:
-
-* `targets.CodeBuildProject`: Start an AWS CodeBuild build
-* `targets.CodePipeline`: Start an AWS CodePipeline pipeline execution
-* `targets.EcsTask`: Start a task on an Amazon ECS cluster
-* `targets.LambdaFunction`: Invoke an AWS Lambda function
-* `targets.SnsTopic`: Publish into an SNS topic
-* `targets.SqsQueue`: Send a message to an Amazon SQS Queue
-* `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
-* `targets.BatchJob`: Queue an AWS Batch Job
-* `targets.AwsApi`: Make an AWS API call
-* `targets.ApiGateway`: Invoke an AWS API Gateway
-* `targets.ApiDestination`: Make an call to an external destination
+See the README of the [`aws-cdk-lib/aws-events-targets`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-events-targets) module for more information on supported targets.
 
 ### Cross-account and cross-region targets
 
@@ -220,7 +208,8 @@ It is possible to archive all or some events sent to an event bus. It is then po
 
 ```ts
 const bus = new events.EventBus(this, 'bus', {
-  eventBusName: 'MyCustomEventBus'
+  eventBusName: 'MyCustomEventBus',
+  description: 'MyCustomEventBus',
 });
 
 bus.archive('MyArchive', {
@@ -248,3 +237,22 @@ const eventBus = events.EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:
 // now you can just call methods on the eventbus
 eventBus.grantPutEventsTo(lambdaFunction);
 ```
+
+## Use a customer managed key
+
+To use a customer managed key for events on the event bus, use the `kmsKey` attribute.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const kmsKey: kms.IKey;
+
+new events.EventBus(this, 'Bus', {
+  kmsKey,
+});
+```
+
+**Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
+To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
+For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
+

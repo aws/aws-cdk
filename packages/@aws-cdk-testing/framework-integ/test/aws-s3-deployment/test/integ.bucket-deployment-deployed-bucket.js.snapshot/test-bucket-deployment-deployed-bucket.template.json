@@ -188,6 +188,7 @@
     },
     "RetainOnDelete": false,
     "Prune": true,
+    "OutputObjectKeys": true,
     "DestinationBucketArn": {
      "Fn::GetAtt": [
       "Destination920A3C57",
@@ -330,7 +331,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2d56e153cac88d3e0c2f842e8e6f6783b8725bf91f95e0673b4725448a56e96d.zip"
+     "S3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
     },
     "Environment": {
      "Variables": {
@@ -349,7 +350,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.11",
     "Timeout": 900
    },
    "DependsOn": [
@@ -393,7 +394,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -407,6 +417,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -433,6 +446,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {
@@ -500,8 +516,17 @@
    "ap-southeast-4": {
     "endpoint": "s3-website.ap-southeast-4.amazonaws.com"
    },
+   "ap-southeast-5": {
+    "endpoint": "s3-website.ap-southeast-5.amazonaws.com"
+   },
+   "ap-southeast-7": {
+    "endpoint": "s3-website.ap-southeast-7.amazonaws.com"
+   },
    "ca-central-1": {
     "endpoint": "s3-website.ca-central-1.amazonaws.com"
+   },
+   "ca-west-1": {
+    "endpoint": "s3-website.ca-west-1.amazonaws.com"
    },
    "cn-north-1": {
     "endpoint": "s3-website.cn-north-1.amazonaws.com.cn"
@@ -514,6 +539,9 @@
    },
    "eu-central-2": {
     "endpoint": "s3-website.eu-central-2.amazonaws.com"
+   },
+   "eu-isoe-west-1": {
+    "endpoint": "s3-website.eu-isoe-west-1.cloud.adc-e.uk"
    },
    "eu-north-1": {
     "endpoint": "s3-website.eu-north-1.amazonaws.com"
@@ -541,6 +569,9 @@
    },
    "me-south-1": {
     "endpoint": "s3-website.me-south-1.amazonaws.com"
+   },
+   "mx-central-1": {
+    "endpoint": "s3-website.mx-central-1.amazonaws.com"
    },
    "sa-east-1": {
     "endpoint": "s3-website-sa-east-1.amazonaws.com"

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "integtest-model/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpcv2-alpha"
+      ],
+      "assertionStack": "integtest-model/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestmodelDefaultTestDeployAssertCF40BD53"
+    }
+  }
+}

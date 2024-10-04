@@ -1,4 +1,5 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Cluster } from 'aws-cdk-lib/aws-ecs';
 import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, LogFormat } from 'aws-cdk-lib/aws-ec2';
@@ -19,6 +20,9 @@ class TestStack extends Stack {
         LogFormat.SRC_PORT,
       ],
     });
+
+    new Cluster(this, 'ECSCluster', { vpc });
+
     new FlowLog(this, 'FlowLogsAllFormatCW', {
       resourceType: FlowLogResourceType.fromVpc(vpc),
       logFormat: [
@@ -51,6 +55,16 @@ class TestStack extends Stack {
         LogFormat.PKT_DST_AWS_SERVICE,
         LogFormat.FLOW_DIRECTION,
         LogFormat.TRAFFIC_PATH,
+        LogFormat.ECS_CLUSTER_ARN,
+        LogFormat.ECS_CLUSTER_NAME,
+        LogFormat.ECS_CONTAINER_INSTANCE_ARN,
+        LogFormat.ECS_CONTAINER_INSTANCE_ID,
+        LogFormat.ECS_CONTAINER_ID,
+        LogFormat.ECS_SECOND_CONTAINER_ID,
+        LogFormat.ECS_SERVICE_NAME,
+        LogFormat.ECS_TASK_DEFINITION_ARN,
+        LogFormat.ECS_TASK_ARN,
+        LogFormat.ECS_TASK_ID,
       ],
     });
 

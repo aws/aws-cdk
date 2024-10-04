@@ -40,6 +40,16 @@ publish their log group to a specific region, such as AWS Chatbot creating a log
 
 By default, the log group created by LogRetention will be retained after the stack is deleted. If the RemovalPolicy is set to DESTROY, then the log group will be deleted when the stack is deleted.
 
+## Log Group Class
+
+CloudWatch Logs offers two classes of log groups:
+
+1. The CloudWatch Logs Standard log class is a full-featured option for logs that require real-time monitoring or logs that you access frequently.
+
+2. The CloudWatch Logs Infrequent Access log class is a new log class that you can use to cost-effectively consolidate your logs. This log class offers a subset of CloudWatch Logs capabilities including managed ingestion, storage, cross-account log analytics, and encryption with a lower ingestion price per GB. The Infrequent Access log class is ideal for ad-hoc querying and after-the-fact forensic analysis on infrequently accessed logs.
+
+For more details please check: [log group class documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html)
+
 ## Resource Policy
 
 CloudWatch Resource Policies allow other AWS services or IAM Principals to put log events into the log groups.
@@ -195,6 +205,29 @@ new cloudwatch.Alarm(this, 'alarm from metric filter', {
   metric,
   threshold: 100,
   evaluationPeriods: 2,
+});
+```
+
+### Metrics for IncomingLogs and IncomingBytes
+Metric methods have been defined for IncomingLogs and IncomingBytes within LogGroups. These metrics allow for the creation of alarms on log ingestion, ensuring that the log ingestion process is functioning correctly.
+
+To define an alarm based on these metrics, you can use the following template:
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingEventsMetric = logGroup.metricIncomingLogEvents();
+new cloudwatch.Alarm(this, 'HighLogVolumeAlarm', {
+  metric: incomingEventsMetric,
+  threshold: 1000,
+  evaluationPeriods: 1,
+});
+```
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingBytesMetric = logGroup.metricIncomingBytes();
+new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
+  metric: incomingBytesMetric,
+  threshold: 5000000,  // 5 MB
+  evaluationPeriods: 1,
 });
 ```
 

@@ -3,7 +3,7 @@ import { Certificate } from '../../aws-certificatemanager';
 import { CfnParameter, Stack } from '../../core';
 import { UserPool, UserPoolDomain } from '../lib';
 
-describe('User Pool Client', () => {
+describe('User Pool Domain', () => {
   test('custom domain name', () => {
     // GIVEN
     const stack = new Stack();

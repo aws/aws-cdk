@@ -358,3 +358,120 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions`
+
+When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+
+When this feature flag is enabled, the IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
+The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
+for more details.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
+  }
+}
+```
+
+* `@aws-cdk/aws-stepfunctions-taks:useNewS3UriParametersForBedrockInvokeModelTask`
+
+When enabled, use new props for S3 URI under `input` and `output` fields in task definition of state machine for bedrock invoke model.
+
+When this feature flag is enabled, use newly introduced props `s3InputUri` and `s3OutputUri` to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions`
+
+Currently, we will automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ec2:ec2SumTImeoutEnabled`
+
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance, only the value from 'resourceSignalTimeout' will be used. 
+      
+When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true
+  }
+}
+```
+
+* `@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission`
+
+Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning it allows invocations from any source.
+
+When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the specific AppSync GraphQL API.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:appSyncGraphQLAPIScopeLambdaPermission": true
+  }
+}
+```
+
+* `@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId`
+
+When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
+
+When this feature flag is enabled, the value of that property will be as expected set to `DbiResourceId` attribute, and that will fix the grantConnect method.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true
+  }
+}
+```
+
+* `@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages`
+
+Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the `@aws-sdk/*` packages are excluded by default.
+However, this can cause version mismatches between the `@aws-sdk/*` and `@smithy/*` packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+When this feature flag is enabled, both `@aws-sdk/*` and `@smithy/*` packages will be excluded during the bundling process. This ensures that no mismatches
+occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
+  }
+}
+```

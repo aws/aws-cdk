@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
+import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 
 /**
@@ -252,6 +254,16 @@ export interface EventSourceMappingOptions {
   readonly filters?: Array<{[key: string]: any}>;
 
   /**
+   * Add Customer managed KMS key to encrypt Filter Criteria.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * By default, Lambda will encrypt Filter Criteria using AWS managed keys
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk
+   *
+   * @default - none
+   */
+  readonly filterEncryption?: IKey;
+
+  /**
    * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
    *
    * @default false
@@ -388,6 +400,23 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
     }
 
+    if (props.filterEncryption !== undefined && props.filters == undefined) {
+      throw new Error('filter criteria must be provided to enable setting filter criteria encryption');
+    }
+
+    /**
+     * Grants the Lambda function permission to decrypt data using the specified KMS key.
+     * This step is necessary for setting up encrypted filter criteria.
+     *
+     * If the KMS key was created within this CloudFormation stack (via `new Key`), a Key policy
+     * will be attached to the key to allow the Lambda function to access it. However, if the
+     * Key is imported from an existing ARN (`Key.fromKeyArn`), no action will be taken.
+     */
+    if (props.filterEncryption !== undefined) {
+      const lambdaPrincipal = new iam.ServicePrincipal('lambda.amazonaws.com');
+      props.filterEncryption.grantDecrypt(lambdaPrincipal);
+    }
+
     let destinationConfig;
 
     if (props.onFailure) {
@@ -423,6 +452,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
       filterCriteria: props.filters ? { filters: props.filters }: undefined,
+      kmsKeyArn: props.filterEncryption?.keyArn,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Stack, Names } from '../../core';
@@ -37,6 +38,16 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - none
    */
   readonly filters?: Array<{[key: string]: any}>;
+
+  /**
+   * Add Customer managed KMS key to encrypt Filter Criteria.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * By default, Lambda will encrypt Filter Criteria using AWS managed keys
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk
+   *
+   * @default - none
+   */
+  readonly filterEncryption?: IKey;
 
   /**
    * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
@@ -146,6 +157,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.clusterArn,
         filters: this.innerProps.filters,
+        filterEncryption: this.innerProps.filterEncryption,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
@@ -236,6 +248,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       this.mappingId(target),
       this.enrichMappingOptions({
         filters: this.innerProps.filters,
+        filterEncryption: this.innerProps.filterEncryption,
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,

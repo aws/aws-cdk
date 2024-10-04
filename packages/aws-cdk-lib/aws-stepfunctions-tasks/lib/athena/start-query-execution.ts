@@ -52,6 +52,13 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
    * @default - No parameters
    */
   readonly executionParameters?: string[];
+
+  /**
+   * Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse.
+   *
+   * @default - Query results are not reused
+   */
+  readonly resultReuseConfigurationMaxAge?: cdk.Duration;
 }
 
 /**
@@ -77,6 +84,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
     this.validateExecutionParameters(props.executionParameters);
+    this.validateMaxAgeInMinutes(props.resultReuseConfigurationMaxAge);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -90,6 +98,18 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     if (invalidExecutionParameters) {
       throw new Error('\'executionParameters\' items\'s length must be between 1 and 1024 characters');
     }
+  }
+
+  private validateMaxAgeInMinutes(resultReuseConfigurationMaxAge?: cdk.Duration) {
+    if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
+    const maxAgeInMillis = resultReuseConfigurationMaxAge.toMilliseconds();
+    if (maxAgeInMillis > 0 && maxAgeInMillis < cdk.Duration.minutes(1).toMilliseconds()) {
+      throw new Error(`resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`);
+    }
+    const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
+    if (maxAgeInMinutes > 10080) {
+      throw new Error(`resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`);
+    };
   }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
@@ -232,6 +252,12 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         },
         WorkGroup: this.props.workGroup,
         ExecutionParameters: this.props.executionParameters,
+        ResultReuseConfiguration: this.props.resultReuseConfigurationMaxAge ? {
+          ResultReuseByAgeConfiguration: {
+            Enabled: true,
+            MaxAgeInMinutes: this.props.resultReuseConfigurationMaxAge.toMinutes(),
+          },
+        } : undefined,
       }),
     };
   }

@@ -1,6 +1,5 @@
 # AWS Region-Specific Information Directory
 
-
 ## Usage
 
 Some information used in CDK Applications differs from one AWS region to
@@ -19,7 +18,6 @@ const region = regionInfo.RegionInfo.get('eu-west-1');
 
 // Access attributes:
 region.s3StaticWebsiteEndpoint; // s3-website-eu-west-1.amazonaws.com
-region.servicePrincipal('logs.amazonaws.com'); // logs.eu-west-1.amazonaws.com
 ```
 
 The `RegionInfo` layer is built on top of the Low-Level API, which is described
@@ -34,10 +32,10 @@ a list of known fact names, which can then be used with the `RegionInfo` to
 retrieve a particular value:
 
 ```ts
-const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
-// => codedeploy.us-east-1.amazonaws.com
-
-const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName.S3_STATIC_WEBSITE_ENDPOINT);
+const staticWebsite = regionInfo.Fact.find(
+  'ap-northeast-1',
+  regionInfo.FactName.S3_STATIC_WEBSITE_ENDPOINT
+);
 // => s3-website-ap-northeast-1.amazonaws.com
 ```
 
@@ -50,7 +48,7 @@ to inject FactName into the database:
 ```ts
 class MyFact implements regionInfo.IFact {
   public readonly region = 'bermuda-triangle-1';
-  public readonly name = regionInfo.FactName.servicePrincipal('s3.amazonaws.com');
+  public readonly name = regionInfo.FactName.S3_STATIC_WEBSITE_ENDPOINT;
   public readonly value = 's3-website.bermuda-triangle-1.nowhere.com';
 }
 
@@ -66,8 +64,8 @@ adding an extra boolean argument:
 ```ts
 class MyFact implements regionInfo.IFact {
   public readonly region = 'us-east-1';
-  public readonly name = regionInfo.FactName.servicePrincipal('service.amazonaws.com');
-  public readonly value = 'the-correct-principal.amazonaws.com';
+  public readonly name = regionInfo.FactName.S3_STATIC_WEBSITE_ENDPOINT;
+  public readonly value = 'the-correct-endpoint.amazonaws.com';
 }
 
 regionInfo.Fact.register(new MyFact(), true /* Allow overriding information */);

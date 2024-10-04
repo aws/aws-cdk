@@ -1,0 +1,19 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "d9e986753b0d85d4019eeeb0bfa3943d6b3e1f7727b0ad62c1f97277cc0567ac": {
+      "source": {
+        "path": "KmsKeyMultiRegionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d9e986753b0d85d4019eeeb0bfa3943d6b3e1f7727b0ad62c1f97277cc0567ac.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
