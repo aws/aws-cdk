@@ -520,7 +520,7 @@ export class AssetStaging extends Construct {
     // Add a suffix to the asset file name
     // because when a file without extension is specified, the source directory name is the same as the staged asset file name.
     if (this.hashType === AssetHashType.SOURCE && path.dirname(sourcePath) === targetPath) {
-      targetPath = targetPath + 'noext';
+      targetPath = targetPath + '_noext';
     }
     return targetPath;
   }

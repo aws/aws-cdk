@@ -1472,7 +1472,7 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.ef734136dc22840a94140575a2f98cbc061074e09535589d1cd2c11a4ac2fd75',
-      'asset.ef734136dc22840a94140575a2f98cbc061074e09535589d1cd2c11a4ac2fd75noext',
+      'asset.ef734136dc22840a94140575a2f98cbc061074e09535589d1cd2c11a4ac2fd75_noext',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -1571,7 +1571,7 @@ describe('staging with docker cp', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.93bd4079bff7440a725991ecf249416ae9ad73cb639f4a8d9e8f3ad8d491e89f',
-      'asset.93bd4079bff7440a725991ecf249416ae9ad73cb639f4a8d9e8f3ad8d491e89fnoext',
+      'asset.93bd4079bff7440a725991ecf249416ae9ad73cb639f4a8d9e8f3ad8d491e89f_noext',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
