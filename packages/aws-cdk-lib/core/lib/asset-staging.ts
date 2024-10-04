@@ -519,7 +519,9 @@ export class AssetStaging extends Construct {
   private renderStagedPath(sourcePath: string, targetPath: string): string {
     // Add a suffix to the asset file name
     // because when a file without extension is specified, the source directory name is the same as the staged asset file name.
-    if (this.hashType === AssetHashType.SOURCE && path.dirname(sourcePath) === targetPath) {
+    // But when the hashType is `AssetHashType.OUTPUT`, the source directory name begins with `bundling-temp-` and the staged asset file name is different.
+    // We only need to add a suffix when the hashType is not `AssetHashType.OUTPUT`.
+    if (this.hashType !== AssetHashType.OUTPUT && path.dirname(sourcePath) === targetPath) {
       targetPath = targetPath + '_noext';
     }
     return targetPath;
