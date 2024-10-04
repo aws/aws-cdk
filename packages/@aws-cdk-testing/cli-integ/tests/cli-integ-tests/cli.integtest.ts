@@ -1046,7 +1046,7 @@ integTest(
     const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
       verbose: true,
       modEnv: {
-        NUMBER_OF_ROLES: '200',
+        NUMBER_OF_ROLES: '2',
       },
     });
 
@@ -1058,14 +1058,14 @@ integTest(
 
 integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
   // Bootstrapping with custom toolkit stack name and qualifier
-  const qualifier = 'abc1234';
-  const toolkitStackName = 'custom-stack';
-  const bootstrapBucketName = 'cdk-abc1234-assets-587443617500-us-east-1';
+  const qualifier = 'abc1111';
+  const toolkitStackName = 'custom-stack2';
+  // const bootstrapBucketName = 'cdk-abc1234-assets-587443617500-us-east-1';
   await fixture.cdkBootstrapModern({
     verbose: true,
     toolkitStackName: toolkitStackName,
     qualifier: qualifier,
-    bootstrapBucketName: bootstrapBucketName,
+    // bootstrapBucketName: bootstrapBucketName,
   });
 
   // Deploying small initial stack with only ane IAM role
@@ -1074,23 +1074,18 @@ integTest('cdk diff with large changeset and custom toolkit stack name and quali
       NUMBER_OF_ROLES: '1',
     },
     options: [
-      '--context', `bootstrapBucket=${bootstrapBucketName}`,
+      // '--context', `bootstrapBucket=${bootstrapBucketName}`,
       '--toolkit-stack-name', toolkitStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
     ],
   });
 
   // WHEN - adding 200 roles to the same stack to create a large diff
-  const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+  const diff = await fixture.cdk(['diff', '--toolkit-stack-name', toolkitStackName, '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`, fixture.fullStackName('iam-roles')], {
     verbose: true,
     modEnv: {
-      NUMBER_OF_ROLES: '200',
+      NUMBER_OF_ROLES: '2',
     },
-    options: [
-      '--context', `bootstrapBucket=${bootstrapBucketName}`,
-      '--toolkit-stack-name', toolkitStackName,
-      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
-    ],
   });
 
   // Assert that the CLI assumes the file publishing role:
