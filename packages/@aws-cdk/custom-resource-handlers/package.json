@@ -62,7 +62,8 @@
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-kms": "3.451.0",
     "@aws-sdk/client-s3": "3.421.0",
-    "@aws-sdk/client-cloudwatch": "3.421.0"
+    "@aws-sdk/client-cloudwatch": "3.421.0",
+    "p-limit": "^3.1.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
