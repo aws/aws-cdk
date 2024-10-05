@@ -243,7 +243,7 @@ import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 const stream = new firehose.DeliveryStream(this, 'MyStream', {
-  destinations: [new destinations.S3Bucket(bucket)],
+  destination: new destinations.S3Bucket(bucket),
 });
 
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
