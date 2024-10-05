@@ -11,7 +11,7 @@ export class Artifact {
    * Mainly meant to be used from `decdk`.
    *
    * @param name the (required) name of the Artifact
-   * @param files file paths that you want to export as output artifacts for the action. (can only be used in artifacts for `CommandAction`)
+   * @param files file paths that you want to export as output artifacts for the action. (can only be used in artifacts for `CommandsAction`)
    */
   public static artifact(name: string, files?: string[]): Artifact {
     return new Artifact(name, files);
