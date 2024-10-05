@@ -752,7 +752,8 @@ export interface UserPoolProps {
 
   /**
    * The tags applied to the user pool.
-   * @default {} - no tags
+   *
+   * @default - no tags
    */
   readonly tags?: { [key: string]: string };
 }
