@@ -2,8 +2,8 @@ import { strictEqual } from 'assert';
 import { Template } from '../../assertions';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '../../aws-ec2';
 import { Key } from '../../aws-kms';
-import { Aws, Stack, Token } from '../../core';
-import { LustreConfiguration, LustreDeploymentType, LustreAutoImportPolicy, LustreFileSystem, LustreMaintenanceTime, Weekday, LustreDataCompressionType } from '../lib';
+import { Aws, Duration, Stack, Token } from '../../core';
+import { LustreConfiguration, LustreDeploymentType, LustreAutoImportPolicy, LustreFileSystem, LustreMaintenanceTime, Weekday, LustreDataCompressionType, DailyAutomaticBackupStartTime } from '../lib';
 
 describe('FSx for Lustre File System', () => {
   let lustreConfiguration: LustreConfiguration;
@@ -705,6 +705,96 @@ describe('FSx for Lustre File System', () => {
         }).toThrowError(/storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600/);
       });
     });
+
+    describe('automaticBackupRetention', () => {
+      test.each([0, 10, 90])('valid value for automaticBackupRetention using %d', (validValue: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          automaticBackupRetention: Duration.days(validValue),
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            DeploymentType: LustreDeploymentType.PERSISTENT_1,
+            AutomaticBackupRetentionDays: validValue,
+          },
+        });
+      });
+
+      test('Scratch file system with a non-zero day automaticBackupRetention throws error', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.SCRATCH_1,
+          automaticBackupRetention: Duration.days(3),
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrow('automatic backups is not supported on scratch file systems');
+      });
+
+      test('automaticBackupRetention over 90 days throws error', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          automaticBackupRetention: Duration.days(100),
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrow('automaticBackupRetention period must be between 0 and 90 days. received: 100');
+      });
+    });
+
+    describe('dailyAutomaticBackupStartTime', () => {
+      test('dailyAutomaticBackupStartTime without an automaticBackupRetention setting throws error', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          dailyAutomaticBackupStartTime: new DailyAutomaticBackupStartTime({ hour: 10, minute: 0 }),
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrow('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
+      });
+
+      test('dailyAutomaticBackupStartTime with automaticBackupRetention 0 day throws error', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          automaticBackupRetention: Duration.days(0),
+          dailyAutomaticBackupStartTime: new DailyAutomaticBackupStartTime({ hour: 10, minute: 0 }),
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrow('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
+      });
+    });
   });
 
   test('existing file system is imported correctly', () => {
@@ -721,6 +811,27 @@ describe('FSx for Lustre File System', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
+    });
+  });
+
+  test.each([true, false])('copyTagsToBackups using %s', (copyTagsToBackups: boolean) => {
+    lustreConfiguration = {
+      deploymentType: LustreDeploymentType.PERSISTENT_1,
+      copyTagsToBackups,
+    };
+
+    new LustreFileSystem(stack, 'FsxFileSystem', {
+      lustreConfiguration,
+      storageCapacityGiB: storageCapacity,
+      vpc,
+      vpcSubnet,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+      LustreConfiguration: {
+        DeploymentType: LustreDeploymentType.PERSISTENT_1,
+        CopyTagsToBackups: copyTagsToBackups,
+      },
     });
   });
 });

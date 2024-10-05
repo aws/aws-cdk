@@ -13,6 +13,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var lambda = require('@aws-cdk/aws-lambda');
   var sso = require('@aws-cdk/aws-sso');
   var docker = require('@aws-cdk/aws-ecr-assets');
+  var appsync = require('@aws-cdk/aws-appsync');
 } else {
   var cdk = require('aws-cdk-lib');
   var {
@@ -28,6 +29,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_sqs: sqs,
     aws_lambda: lambda,
     aws_ecr_assets: docker,
+    aws_appsync: appsync,
     Stack
   } = require('aws-cdk-lib');
 }
@@ -67,6 +69,13 @@ class YourStack extends cdk.Stack {
     super(parent, id, props);
     new sns.Topic(this, 'topic1');
     new sns.Topic(this, 'topic2');
+  }
+}
+
+class NoticesStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    new sqs.Queue(this, 'queue');
   }
 }
 
@@ -422,6 +431,81 @@ class LambdaStack extends cdk.Stack {
   }
 }
 
+class IamRolesStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // Environment variabile is used to create a bunch of roles to test
+    // that large diff templates are uploaded to S3 to create the changeset.
+    for(let i = 1; i <= Number(process.env.NUMBER_OF_ROLES) ; i++) {
+      new iam.Role(this, `Role${i}`, {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+    }
+  }
+}
+
+class SessionTagsStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        }
+      })
+    });
+
+    // VPC lookup to test LookupRole
+    ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
+
+    // Lambda Function to test AssetPublishingRole
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.asset(path.join(__dirname, 'lambda')),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler'
+    });
+
+    // DockerImageAsset to test ImageAssetPublishingRole
+    new docker.DockerImageAsset(this, 'image', {
+      directory: path.join(__dirname, 'docker')
+    });
+  }
+}
+
+class NoExecutionRoleCustomSynthesizer extends cdk.DefaultStackSynthesizer {
+
+  emitArtifact(session, options) {
+    super.emitArtifact(session, {
+      ...options,
+      cloudFormationExecutionRoleArn: undefined,
+    })
+  }
+}
+
+class SessionTagsWithNoExecutionRoleCustomSynthesizerStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new NoExecutionRoleCustomSynthesizer({
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+      })
+    });
+
+    new sqs.Queue(this, 'sessionTagsQueue');
+  }
+}
 class LambdaHotswapStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -649,6 +733,40 @@ class IamRolesStack extends cdk.Stack {
   }
 }
 
+class NotificationArnPropStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    new sns.Topic(this, 'topic');
+  }
+}
+class AppSyncHotswapStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const api = new appsync.GraphqlApi(this, "Api", {
+      name: "appsync-hotswap",
+      definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.hotswap.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.IAM,
+        },
+      },
+    });
+
+    const noneDataSource = api.addNoneDataSource("none");
+    // create 50 appsync functions to hotswap
+    for (const i of Array(50).keys()) {
+      const appsyncFunction = new appsync.AppsyncFunction(this, `Function${i}`, {
+        name: `appsync_function${i}`,
+        api,
+        dataSource: noneDataSource,
+        requestMappingTemplate: appsync.MappingTemplate.fromString(process.env.DYNAMIC_APPSYNC_PROPERTY_VALUE ?? "$util.toJson({})"),
+        responseMappingTemplate: appsync.MappingTemplate.fromString('$util.toJson({})'),
+      });
+    }
+  }
+}
+
 const app = new cdk.App({
   context: {
     '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
@@ -668,6 +786,7 @@ switch (stackSet) {
     // Deploy all does a wildcard ${stackPrefix}-test-*
     new MyStack(app, `${stackPrefix}-test-1`, { env: defaultEnv });
     new YourStack(app, `${stackPrefix}-test-2`);
+    new NoticesStack(app, `${stackPrefix}-notices`);
     // Deploy wildcard with parameters does ${stackPrefix}-param-test-*
     new ParameterStack(app, `${stackPrefix}-param-test-1`);
     new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
@@ -684,12 +803,27 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+
+    new IamRolesStack(app, `${stackPrefix}-iam-roles`);
+
+    if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
+      // this stack performs a VPC lookup so we gate synth
+      const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+      new SessionTagsStack(app, `${stackPrefix}-session-tags`, { env });
+    }
+
+    new SessionTagsWithNoExecutionRoleCustomSynthesizerStack(app, `${stackPrefix}-session-tags-with-custom-synthesizer`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
+    new AppSyncHotswapStack(app, `${stackPrefix}-appsync-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
     new IamRolesStack(app, `${stackPrefix}-iam-roles`);
+
+    new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
+      notificationArns: [`arn:aws:sns:${defaultEnv.region}:${defaultEnv.account}:${stackPrefix}-test-topic-prop`],
+    });
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);

@@ -9,6 +9,8 @@ import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
+import { IAutoScalingConfiguration } from './auto-scaling-configuration';
+import { IObservabilityConfiguration } from './observability-configuration';
 
 /**
  * The image repository types
@@ -201,6 +203,11 @@ export class Runtime {
   public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
 
   /**
+   * NodeJS 18
+   */
+  public static readonly NODEJS_18 = Runtime.of('NODEJS_18')
+
+  /**
    * PHP 8.1
    */
   public static readonly PHP_81 = Runtime.of('PHP_81')
@@ -209,6 +216,11 @@ export class Runtime {
    * Python 3
    */
   public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
+
+  /**
+   * Python 3.11
+   */
+  public static readonly PYTHON_311 = Runtime.of('PYTHON_311')
 
   /**
    * Ruby 3.1
@@ -575,7 +587,7 @@ export interface ImageRepository {
    * always be `public.ecr.aws`. For `ECR`, the pattern should be
    * `([0-9]{12}.dkr.ecr.[a-z\-]+-[0-9]{1}.amazonaws.com\/.*)`.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html for more details.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
    */
   readonly imageIdentifier: string;
 
@@ -657,6 +669,18 @@ export interface ServiceProps {
   readonly autoDeploymentsEnabled?: boolean;
 
   /**
+   * Specifies an App Runner Auto Scaling Configuration.
+   *
+   * A default configuration is either the AWS recommended configuration,
+   * or the configuration you set as the default.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/manage-autoscaling.html
+   *
+   * @default - the latest revision of a default auto scaling configuration is used.
+   */
+  readonly autoScalingConfiguration?: IAutoScalingConfiguration;
+
+  /**
    * The number of CPU units reserved for each instance of your App Runner service.
    *
    * @default Cpu.ONE_VCPU
@@ -730,6 +754,14 @@ export interface ServiceProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Settings for an App Runner observability configuration.
+   *
+   * @default - no observability configuration resource is associated with the service.
+   */
+  readonly observabilityConfiguration?: IObservabilityConfiguration;
+
 }
 
 /**
@@ -1272,6 +1304,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       encryptionConfiguration: this.props.kmsKey ? {
         kmsKey: this.props.kmsKey.keyArn,
       } : undefined,
+      autoScalingConfigurationArn: this.props.autoScalingConfiguration?.autoScalingConfigurationArn,
       networkConfiguration: {
         egressConfiguration: {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
@@ -1282,11 +1315,17 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :
         undefined,
+      observabilityConfiguration: props.observabilityConfiguration ? {
+        observabilityEnabled: true,
+        observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
+      } : undefined,
     });
 
-    // grant required privileges for the role
+    // grant required privileges for the role to access an image in Amazon ECR
+    // See https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles
     if (this.source.ecrRepository && this.accessRole) {
       this.source.ecrRepository.grantPull(this.accessRole);
+      this.source.ecrRepository.grant(this.accessRole, 'ecr:DescribeImages');
     }
 
     this.serviceArn = resource.attrServiceArn;

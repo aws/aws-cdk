@@ -676,110 +676,149 @@
           "ImportedBucket": {
             "id": "ImportedBucket",
             "path": "aws-cdk-alb-log-imported-bucket-integ/ImportedBucket",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedBucketPolicy": {
+            "id": "ImportedBucketPolicy",
+            "path": "aws-cdk-alb-log-imported-bucket-integ/ImportedBucketPolicy",
             "children": {
-              "Policy": {
-                "id": "Policy",
-                "path": "aws-cdk-alb-log-imported-bucket-integ/ImportedBucket/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-alb-log-imported-bucket-integ/ImportedBucket/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "bucket": {
-                          "Ref": "Bucket83908E77"
-                        },
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "s3:PutObject",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": "arn:aws:iam::797873946194:root"
-                              },
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:aws:s3:::",
-                                    {
-                                      "Ref": "Bucket83908E77"
-                                    },
-                                    "/prefix/AWSLogs/",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    "/*"
-                                  ]
-                                ]
-                              }
-                            },
-                            {
-                              "Action": "s3:PutObject",
-                              "Condition": {
-                                "StringEquals": {
-                                  "s3:x-amz-acl": "bucket-owner-full-control"
-                                }
-                              },
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "delivery.logs.amazonaws.com"
-                              },
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:aws:s3:::",
-                                    {
-                                      "Ref": "Bucket83908E77"
-                                    },
-                                    "/prefix/AWSLogs/",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    "/*"
-                                  ]
-                                ]
-                              }
-                            },
-                            {
-                              "Action": "s3:GetBucketAcl",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "delivery.logs.amazonaws.com"
-                              },
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:aws:s3:::",
-                                    {
-                                      "Ref": "Bucket83908E77"
-                                    }
-                                  ]
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-alb-log-imported-bucket-integ/ImportedBucketPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "bucket": {
+                      "Ref": "Bucket83908E77"
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                      "version": "0.0.0"
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "s3:PutObject",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "arn:aws:iam::797873946194:root"
+                          },
+                          "Resource": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:aws:s3:::",
+                                {
+                                  "Ref": "Bucket83908E77"
+                                },
+                                "/prefix/AWSLogs/",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                "/*"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "Action": "s3:PutObject",
+                          "Condition": {
+                            "StringEquals": {
+                              "s3:x-amz-acl": "bucket-owner-full-control"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "delivery.logs.amazonaws.com"
+                          },
+                          "Resource": [
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:s3:::",
+                                  {
+                                    "Ref": "Bucket83908E77"
+                                  },
+                                  "/prefix-connection-log/AWSLogs/",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  "/*"
+                                ]
+                              ]
+                            },
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:s3:::",
+                                  {
+                                    "Ref": "Bucket83908E77"
+                                  },
+                                  "/prefix/AWSLogs/",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  "/*"
+                                ]
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Action": "s3:GetBucketAcl",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "delivery.logs.amazonaws.com"
+                          },
+                          "Resource": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:aws:s3:::",
+                                {
+                                  "Ref": "Bucket83908E77"
+                                }
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "Action": "s3:PutObject",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "arn:aws:iam::797873946194:root"
+                          },
+                          "Resource": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:aws:s3:::",
+                                {
+                                  "Ref": "Bucket83908E77"
+                                },
+                                "/prefix-connection-log/AWSLogs/",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                "/*"
+                              ]
+                            ]
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+              "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
               "version": "0.0.0"
             }
           },
@@ -811,6 +850,20 @@
                       {
                         "key": "access_logs.s3.prefix",
                         "value": "prefix"
+                      },
+                      {
+                        "key": "connection_logs.s3.enabled",
+                        "value": "true"
+                      },
+                      {
+                        "key": "connection_logs.s3.bucket",
+                        "value": {
+                          "Ref": "Bucket83908E77"
+                        }
+                      },
+                      {
+                        "key": "connection_logs.s3.prefix",
+                        "value": "prefix-connection-log"
                       }
                     ],
                     "scheme": "internet-facing",

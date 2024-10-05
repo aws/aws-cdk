@@ -12,21 +12,21 @@ Shout out to our top contributors!
 - [shivlaks](https://github.com/shivlaks)
 - [otaviomacedo](https://github.com/otaviomacedo)
 - [mrgrain](https://github.com/mrgrain)
-- [madeline-k](https://github.com/madeline-k)
-- [comcalvi](https://github.com/comcalvi)
 - [pahud](https://github.com/pahud)
-- [NetaNir](https://github.com/NetaNir)
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
+- [comcalvi](https://github.com/comcalvi)
+- [madeline-k](https://github.com/madeline-k)
+- [NetaNir](https://github.com/NetaNir)
 - [robertd](https://github.com/robertd)
-- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [go-to-k](https://github.com/go-to-k)
+- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [lpizzinidev](https://github.com/lpizzinidev)
 - [peterwoodworth](https://github.com/peterwoodworth)
+- [mazyu36](https://github.com/mazyu36)
 - [colifran](https://github.com/colifran)
+- [badmintoncryer](https://github.com/badmintoncryer)
 - [msambol](https://github.com/msambol)
-- [nija-at](https://github.com/nija-at)
-- [hoegertn](https://github.com/hoegertn)
 - [watany-dev](https://github.com/watany-dev)
 
 
-_Last updated: Sat, 01 Jun 24 00:09:37 +0000_
+_Last updated: Tue, 01 Oct 24 00:12:17 +0000_

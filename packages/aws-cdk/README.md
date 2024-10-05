@@ -165,6 +165,8 @@ $ # Diff against the currently deployed stack with quiet parameter enabled
 $ cdk diff --quiet --app='node bin/main.js' MyStackName
 ```
 
+Note that the CDK::Metadata resource and the `CheckBootstrapVersion` Rule are excluded from `cdk diff` by default. You can force `cdk diff` to display them by passing the `--strict` flag.
+
 The `change-set` flag will make `diff` create a change set and extract resource replacement data from it. This is a bit slower, but will provide no false positives for resource replacement.
 The `--no-change-set` mode will consider any change to a property that requires replacement to be a resource replacement,
 even if the change is purely cosmetic (like replacing a resource reference with a hardcoded arn).
@@ -877,33 +879,39 @@ $ cdk deploy
 
 NOTICES
 
-16603   Toggling off auto_delete_objects for Bucket empties the bucket
+22090   cli: cdk init produces EACCES: permission denied and does not fill the directory
 
-        Overview: If a stack is deployed with an S3 bucket with
-                  auto_delete_objects=True, and then re-deployed with
-                  auto_delete_objects=False, all the objects in the bucket
-                  will be deleted.
+        Overview: The CLI is unable to initialize new apps if CDK is
+                  installed globally in a directory owned by root
 
-        Affected versions: <1.126.0.
+        Affected versions: cli: 2.42.0.
 
-        More information at: https://github.com/aws/aws-cdk/issues/16603
+        More information at: https://github.com/aws/aws-cdk/issues/22090
 
 
-17061   Error when building EKS cluster with monocdk import
+27547   Incorrect action in policy of Bucket `grantRead` method
 
-        Overview: When using monocdk/aws-eks to build a stack containing
-                  an EKS cluster, error is thrown about missing
-                  lambda-layer-node-proxy-agent/layer/package.json.
+        Overview: Using the `grantRead` method on `aws-cdk-lib/aws-s3.Bucket`
+                  results in an invalid action attached to the resource policy
+                  which can cause unexpected failures when interacting
+                  with the bucket.
 
-        Affected versions: >=1.126.0 <=1.130.0.
+        Affected versions: aws-cdk-lib.aws_s3.Bucket: 2.101.0.
 
-        More information at: https://github.com/aws/aws-cdk/issues/17061
+        More information at: https://github.com/aws/aws-cdk/issues/27547
 
 
-If you don’t want to see an notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
+If you don’t want to see a notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
 ```
 
-You can suppress warnings in a variety of ways:
+There are several types of notices you may encounter, differentiated by the affected component:
+
+- **cli**: notifies you about issues related to your CLI version.
+- **framework**: notifies you about issues related to your version of core constructs (e.g `Stack`).
+- **aws-cdk-lib.{module}.{construct}**: notifies you about issue related to your version of a specific construct (e.g `aws-cdk-lib.aws_s3.Bucket`)
+- **bootstrap**: notifies you about issues related to your version of the bootstrap stack. Note that these types of notices are only shown during the `cdk deploy` command.
+
+You can suppress notices in a variety of ways:
 
 - per individual execution:
 
@@ -959,6 +967,31 @@ NOTICES
 
 
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
+```
+
+List the unacknowledged notices:
+
+```console
+$ cdk notices --unacknowledged
+
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+29483	(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality
+
+	Overview: cdk diff functionality used to rely on assuming lookup-role.
+	          With a recent change present in v2.132.0 and v2.132.1, it is
+	          now trying to assume deploy-role with the lookup-role. This
+	          leads to an authorization error if permissions were not
+	          defined to assume deploy-role.
+
+	Affected versions: cli: >=2.132.0 <=2.132.1
+
+	More information at: https://github.com/aws/aws-cdk/issues/29483
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29483".
+
+There are 1 unacknowledged notice(s).
 ```
 
 ### Bundling

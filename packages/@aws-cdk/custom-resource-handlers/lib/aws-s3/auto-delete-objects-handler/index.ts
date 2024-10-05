@@ -70,23 +70,22 @@ async function denyWrites(bucketName: string) {
 }
 
 /**
- * Recursively delete all items in the bucket
+ * Iteratively delete all items in the bucket
  *
  * @param bucketName the bucket name
  */
 async function emptyBucket(bucketName: string) {
-  const listedObjects = await s3.listObjectVersions({ Bucket: bucketName });
-  const contents = [...listedObjects.Versions ?? [], ...listedObjects.DeleteMarkers ?? []];
-  if (contents.length === 0) {
-    return;
-  }
+  let listedObjects;
+  do {
+    listedObjects = await s3.listObjectVersions({ Bucket: bucketName });
+    const contents = [...listedObjects.Versions ?? [], ...listedObjects.DeleteMarkers ?? []];
+    if (contents.length === 0) {
+      return;
+    }
 
-  const records = contents.map((record: any) => ({ Key: record.Key, VersionId: record.VersionId }));
-  await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } });
-
-  if (listedObjects?.IsTruncated) {
-    await emptyBucket(bucketName);
-  }
+    const records = contents.map((record) => ({ Key: record.Key, VersionId: record.VersionId }));
+    await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } });
+  } while (listedObjects?.IsTruncated)
 }
 
 async function onDelete(bucketName?: string) {

@@ -464,3 +464,17 @@ test('create a dynamically rendered app when the platform is set to WEB_COMPUTE'
     Platform: amplify.Platform.WEB_COMPUTE,
   });
 });
+
+test.each([amplify.CacheConfigType.AMPLIFY_MANAGED, amplify.CacheConfigType.AMPLIFY_MANAGED_NO_COOKIES])('create a app with cacheConfigType is set to %s', (cacheConfigType) => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    cacheConfigType,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    CacheConfig: {
+      Type: cacheConfigType,
+    },
+  });
+});

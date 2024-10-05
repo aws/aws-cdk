@@ -1,8 +1,9 @@
 import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import { HttpNlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 
@@ -14,9 +15,26 @@ const listener = lb.addListener('listener', { port: 80 });
 listener.addTargets('target', { port: 80 });
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpNlbIntegration('DefaultIntegration', listener),
+  defaultIntegration: new HttpNlbIntegration('DefaultIntegration', listener, {
+    timeout: Duration.seconds(20),
+  }),
 });
 
-new CfnOutput(stack, 'Endpoint', {
-  value: httpEndpoint.url!,
+const integ = new IntegTest(app, 'integ-nlb-integration-test', {
+  testCases: [stack],
 });
+
+const integrations = integ.assertions.awsApiCall('ApiGatewayV2', 'getIntegrations', {
+  ApiId: httpEndpoint.httpApiId,
+});
+
+const assertionProvider = integrations.node.tryFindChild('SdkProvider') as AssertionsProvider;
+assertionProvider.addPolicyStatementFromSdkCall('apigateway', 'GET', [
+  `arn:${stack.partition}:apigateway:${stack.region}::/apis/${httpEndpoint.httpApiId}/integrations`,
+]);
+
+integrations.expect(
+  ExpectedResult.objectLike({ Items: [{ IntegrationMethod: 'ANY', TimeoutInMillis: 20000 }] }),
+);
+
+app.synth();

@@ -25,6 +25,7 @@ const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
 });
 
 lb.logAccessLogs(bucket, 'prefix');
+lb.logConnectionLogs(bucket, 'prefix-connection-log');
 
 const listener = lb.addListener('Listener', {
   port: 80,

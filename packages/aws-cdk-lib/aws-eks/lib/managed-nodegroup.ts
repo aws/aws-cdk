@@ -245,7 +245,7 @@ export interface NodegroupOptions {
   /**
    * The instance types to use for your node group.
    * @default t3.medium will be used according to the cloudformation document.
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
    */
   readonly instanceTypes?: InstanceType[];
   /**
@@ -293,7 +293,7 @@ export interface NodegroupOptions {
   readonly tags?: { [name: string]: string };
   /**
    * Launch template specification used for the nodegroup
-   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
   readonly launchTemplateSpec?: LaunchTemplateSpec;

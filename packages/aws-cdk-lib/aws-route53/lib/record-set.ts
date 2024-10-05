@@ -929,10 +929,6 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       throw Error('Only one of parentHostedZoneName and parentHostedZoneId is supported');
     }
 
-    if (!props.delegatedZone.hostedZoneNameServers) {
-      throw Error(`Not able to retrieve Name Servers for ${props.delegatedZone.zoneName} due to it being imported.`);
-    }
-
     const provider = CrossAccountZoneDelegationProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE);
 
     const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);

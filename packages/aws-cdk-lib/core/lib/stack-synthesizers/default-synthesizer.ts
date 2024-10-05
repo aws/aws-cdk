@@ -24,10 +24,12 @@ const MIN_BOOTSTRAP_STACK_VERSION = 6;
 const MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 8;
 
 /**
- * The minimum bootstrap stack version required
- * to use the changeset role.
+ * Session tags require `sts:TagSession` permissions on roles during bootstrap.
+ * This is the first version of the bootstrap templates that adds these permissions.
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
  */
-const MIN_CHANGESET_ROLE_BOOTSTRAP_STACK_VERSION = 21;
+const MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION = 23;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -224,6 +226,54 @@ export interface DefaultStackSynthesizerProps {
    * @default DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER
    */
   readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
+   * Additional options to pass to STS when assuming the deploy role.
+   *
+   * - `RoleArn` should not be used. Use the dedicated `deployRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `deployRoleExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transitive by default.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
+   */
+  readonly deployRoleAdditionalOptions?: { [key: string]: any };
+
+  /**
+   * Additional options to pass to STS when assuming the lookup role.
+   *
+   * - `RoleArn` should not be used. Use the dedicated `lookupRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `lookupRoleExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transitive by default.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
+   */
+  readonly lookupRoleAdditionalOptions?: { [key: string]: any };
+
+  /**
+   * Additional options to pass to STS when assuming the file asset publishing.
+   *
+   * - `RoleArn` should not be used. Use the dedicated `fileAssetPublishingRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `fileAssetPublishingExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transitive by default.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
+   */
+  readonly fileAssetPublishingRoleAdditionalOptions?: { [key: string]: any };
+
+  /**
+   * Additional options to pass to STS when assuming the image asset publishing.
+   *
+   * - `RoleArn` should not be used. Use the dedicated `imageAssetPublishingRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `imageAssetPublishingExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transitive by default.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
+   */
+  readonly imageAssetPublishingRoleAdditionalOptions?: { [key: string]: any };
 }
 
 /**
@@ -402,6 +452,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       role: this.fileAssetPublishingRoleArn ? {
         assumeRoleArn: this.fileAssetPublishingRoleArn,
         assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+        assumeRoleAdditionalOptions: this.props.fileAssetPublishingRoleAdditionalOptions,
       } : undefined,
     });
     return this.cloudFormationLocationFromFileAsset(location);
@@ -416,6 +467,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       role: this.imageAssetPublishingRoleArn ? {
         assumeRoleArn: this.imageAssetPublishingRoleArn,
         assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+        assumeRoleAdditionalOptions: this.props.imageAssetPublishingRoleAdditionalOptions,
       } : undefined,
     });
     return this.cloudFormationLocationFromDockerImageAsset(location);
@@ -425,7 +477,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    * Synthesize the stack template to the given session, passing the configured lookup role ARN
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
-    stack._synthesizeTemplate(session, this.lookupRoleArn);
+    stack._synthesizeTemplate(session, this.lookupRoleArn, this.props.lookupRoleExternalId, this.props.lookupRoleAdditionalOptions);
   }
 
   /**
@@ -449,29 +501,32 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      this.addBootstrapVersionRule(MIN_BOOTSTRAP_STACK_VERSION, this.bootstrapStackVersionSsmParameter!);
+      this.addBootstrapVersionRule(this._requiredBootstrapVersionForDeployment, this.bootstrapStackVersionSsmParameter!);
     }
 
-    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
+    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn,
+      this.props.lookupRoleExternalId, this.props.lookupRoleAdditionalOptions);
     const templateAsset = this.addFileAsset(templateAssetSource);
 
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
-      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      requiresBootstrapStackVersion: this._requiredBoostrapVersionForAssets,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
     });
 
     this.emitArtifact(session, {
       assumeRoleExternalId: this.props.deployRoleExternalId,
       assumeRoleArn: this._deployRoleArn,
+      assumeRoleAdditionalOptions: this.props.deployRoleAdditionalOptions,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      requiresBootstrapStackVersion: this._requiredBootstrapVersionForDeployment,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [assetManifestId],
       lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
         arn: this.lookupRoleArn,
         assumeRoleExternalId: this.props.lookupRoleExternalId,
-        requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
+        assumeRoleAdditionalOptions: this.props.lookupRoleAdditionalOptions,
+        requiresBootstrapStackVersion: this._requiredBootstrapVersionForLookup,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,
       changesetRole: this.changesetRoleArn ? {
@@ -480,6 +535,27 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,
     });
+  }
+
+  private get _requiredBoostrapVersionForAssets() {
+    if (this.props.fileAssetPublishingRoleAdditionalOptions?.Tags || this.props.imageAssetPublishingRoleAdditionalOptions?.Tags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_BOOTSTRAP_STACK_VERSION;
+  }
+
+  private get _requiredBootstrapVersionForDeployment() {
+    if (this.props.deployRoleAdditionalOptions?.Tags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_BOOTSTRAP_STACK_VERSION;
+  }
+
+  private get _requiredBootstrapVersionForLookup() {
+    if (this.props.lookupRoleAdditionalOptions?.Tags) {
+      return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
+    }
+    return MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION;
   }
 
   /**

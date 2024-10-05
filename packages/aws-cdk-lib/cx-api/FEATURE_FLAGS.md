@@ -38,7 +38,6 @@ Flags come in three types:
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) |
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
-| [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
@@ -72,6 +71,14 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
 | [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
+| [@aws-cdk/aws-s3:keepNotificationInImportedBucket](#aws-cdkaws-s3keepnotificationinimportedbucket) | When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack. | 2.155.0 | (fix) |
+| [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | 2.156.0 | (fix) |
+| [@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions](#aws-cdkaws-ecsreduceec2fargatecloudwatchpermissions) | When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration | 2.159.0 | (fix) |
+| [@aws-cdk/aws-ec2:ec2SumTImeoutEnabled](#aws-cdkaws-ec2ec2sumtimeoutenabled) | When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together. | 2.160.0 | (fix) |
+| [@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission](#aws-cdkaws-appsyncappsyncgraphqlapiscopelambdapermission) | When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn. | 2.161.0 | (fix) |
+| [@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages](#aws-cdkaws-lambda-nodejssdkv3excludesmithypackages) | When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications. | 2.161.0 | (fix) |
+| [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | 2.161.0 | (fix) |
+| [@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics](#aws-cdkcorecfnincluderejectcomplexresourceupdatecreatepolicyintrinsics) | When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values. | 2.161.0 | (fix) |
 
 <!-- END table -->
 
@@ -100,7 +107,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
-    "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
@@ -133,7 +139,14 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
-    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false
+    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
+    "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
   }
 }
 ```
@@ -177,6 +190,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | (fix) | 1.106.0 | `false` | `true` |
 | [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | (fix) | 1.117.0 | `false` | `true` |
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | (default) |  | `false` | `true` |
+| [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | (fix) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -192,7 +206,8 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
     "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
-    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false
+    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false,
+    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": false
   }
 }
 ```
@@ -738,22 +753,6 @@ This is a feature flag as the new behavior provides a better default experience 
 This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
 from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
 always apply, regardless of the value of this flag.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.51.0 | `false` | `true` |
-
-
-### @aws-cdk/aws-iam:standardizedServicePrincipals
-
-*Use standardized (global) service principals everywhere* (fix)
-
-We used to maintain a database of exceptions to Service Principal names in various regions. This database
-is no longer necessary: all service principals names have been standardized to their global form (`SERVICE.amazonaws.com`).
-
-This flag disables use of that exceptions database and always uses the global service principal.
 
 
 | Since | Default | Recommended |
@@ -1354,6 +1353,142 @@ property from the event object.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.145.0 | `false` | `false` |
+
+
+### @aws-cdk/aws-s3:keepNotificationInImportedBucket
+
+*When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack.* (fix)
+
+Currently, adding notifications to a bucket where it was created by ourselves will override notification added where it is imported.
+
+When this feature flag is enabled, adding notifications to a bucket in the current stack will only update notification defined in this stack.
+Other notifications that are not managed by this stack will be kept.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.155.0 | `false` | `false` |
+
+
+### @aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask
+
+*When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.* (fix)
+
+Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
+of State Machine Task definition.
+
+When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
+'s3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.156.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
+
+
+### @aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions
+
+*When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration* (fix)
+
+Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.159.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to continue grant permissions to log group when no log group is specified
+
+
+### @aws-cdk/aws-ec2:ec2SumTImeoutEnabled
+
+*When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
+
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+only the value from 'resourceSignalTimeout' will be used. 
+
+When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.160.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission
+
+*When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.* (fix)
+
+Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission 
+to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning 
+it allows invocations from any source.
+
+When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the 
+specific AppSync GraphQL API.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.161.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages
+
+*When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.* (fix)
+
+Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default. 
+However, this can cause version mismatches between the '@aws-sdk/*' and '@smithy/*' packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages will be excluded during the bundling process. This ensures that no mismatches
+occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.161.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId
+
+*When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
+
+Currently, the value of the property 'instanceResourceId' in construct 'DatabaseInstanceReadReplica' is not correct, and set to 'DbInstanceArn' which is not correct when it is used to create the IAM Policy in the grantConnect method.
+
+When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.161.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`
+
+
+### @aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics
+
+*When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.* (fix)
+
+Without enabling this feature flag, `cfn-include` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
+
+Enabling this feature flag will make `cfn-include` throw on these templates, unless you specify the logical ID of the resource in the 'unhydratedResources' property.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.161.0 | `false` | `true` |
 
 
 <!-- END details -->

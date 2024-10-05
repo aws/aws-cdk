@@ -4,7 +4,7 @@ import { PipelineBase } from '../main';
 import { stackVariableNamespace } from '../private/identifiers';
 
 /**
- * Translate stack outputs to Codepipline variable references
+ * Translate stack outputs to CodePipeline variable references
  */
 export class StackOutputsMap {
   private queries: PipelineQueries

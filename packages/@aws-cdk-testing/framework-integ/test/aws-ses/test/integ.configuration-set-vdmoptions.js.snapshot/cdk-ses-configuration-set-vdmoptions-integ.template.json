@@ -1,0 +1,109 @@
+{
+ "Resources": {
+  "VdmOptionsEnabled69EBE7CE": {
+   "Type": "AWS::SES::ConfigurationSet",
+   "Properties": {
+    "Name": "vdmoptions-enabled",
+    "VdmOptions": {
+     "DashboardOptions": {
+      "EngagementMetrics": "ENABLED"
+     },
+     "GuardianOptions": {
+      "OptimizedSharedDelivery": "ENABLED"
+     }
+    }
+   }
+  },
+  "VdmOptionsDisabledE1F2258E": {
+   "Type": "AWS::SES::ConfigurationSet",
+   "Properties": {
+    "Name": "vdmoptions-disabled",
+    "VdmOptions": {
+     "DashboardOptions": {
+      "EngagementMetrics": "DISABLED"
+     },
+     "GuardianOptions": {
+      "OptimizedSharedDelivery": "DISABLED"
+     }
+    }
+   }
+  },
+  "VdmOptionsNotConfigured273D3326": {
+   "Type": "AWS::SES::ConfigurationSet",
+   "Properties": {
+    "Name": "vdmoptions-not-configured"
+   }
+  },
+  "VdmAccountLevelSettings4BBA5196": {
+   "Type": "AWS::SES::VdmAttributes",
+   "Properties": {
+    "DashboardAttributes": {
+     "EngagementMetrics": "ENABLED"
+    },
+    "GuardianAttributes": {
+     "OptimizedSharedDelivery": "ENABLED"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefVdmOptionsEnabled69EBE7CE3C47B59E": {
+   "Value": {
+    "Ref": "VdmOptionsEnabled69EBE7CE"
+   },
+   "Export": {
+    "Name": "cdk-ses-configuration-set-vdmoptions-integ:ExportsOutputRefVdmOptionsEnabled69EBE7CE3C47B59E"
+   }
+  },
+  "ExportsOutputRefVdmOptionsDisabledE1F2258ECF65F287": {
+   "Value": {
+    "Ref": "VdmOptionsDisabledE1F2258E"
+   },
+   "Export": {
+    "Name": "cdk-ses-configuration-set-vdmoptions-integ:ExportsOutputRefVdmOptionsDisabledE1F2258ECF65F287"
+   }
+  },
+  "ExportsOutputRefVdmOptionsNotConfigured273D33265DF527D8": {
+   "Value": {
+    "Ref": "VdmOptionsNotConfigured273D3326"
+   },
+   "Export": {
+    "Name": "cdk-ses-configuration-set-vdmoptions-integ:ExportsOutputRefVdmOptionsNotConfigured273D33265DF527D8"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

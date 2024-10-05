@@ -351,6 +351,53 @@
               "version": "0.0.0"
             }
           },
+          "Schedule2": {
+            "id": "Schedule2",
+            "path": "aws-cdk-schedule/Schedule2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-schedule/Schedule2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "scheduleExpression": "at(2000-01-01T00:00:00)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "MyLambdaCCE802FB",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "SchedulerRoleForTarget1441a743A31888",
+                          "Arn"
+                        ]
+                      },
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 86400,
+                        "maximumRetryAttempts": 0
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
             "path": "aws-cdk-schedule/Exports",
@@ -366,7 +413,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -404,7 +451,7 @@
                 "path": "integtest-lambda-invoke/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -424,7 +471,7 @@
                             "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -464,7 +511,7 @@
                                 "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.70"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -490,7 +537,7 @@
                                 "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.70"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -574,7 +621,15 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
@@ -608,7 +663,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -642,7 +697,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -684,7 +739,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
