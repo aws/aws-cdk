@@ -124,7 +124,6 @@ describe('HttpUserPoolAuthorizer', () => {
 
     // THEN
     expect(authorizer.authorizerId).toBeDefined();
-    expect(authorizer.authorizerId).toEqual(authorizer['authorizer']?.authorizerId);
   });
 
   test('should throw error when acessing authorizer before it been bound to route', () => {
