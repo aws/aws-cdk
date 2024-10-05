@@ -37,6 +37,9 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The names of the variables in your environment that you want to export.
    *
+   * These variables can be referenced in other actions by using the `variable` method
+   * of this class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
    * @default - No output variables are exported
    */
