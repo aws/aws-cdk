@@ -296,7 +296,12 @@ async function initializeProject(
     await template.addMigrateContext(workDir);
   }
   if (await fs.pathExists('README.md')) {
-    print(chalk.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
+    const readme = await fs.readFile('README.md', { encoding: 'utf-8' });
+    // Save the logs!
+    // Without this statement, the readme of the CLI is printed in every init test
+    if (!readme.startsWith('# AWS CDK Toolkit')) {
+      print(chalk.green(readme));
+    }
   }
 
   if (!generateOnly) {

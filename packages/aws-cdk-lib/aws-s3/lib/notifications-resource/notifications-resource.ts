@@ -2,6 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 
@@ -15,6 +16,11 @@ interface NotificationsProps {
    * The role to be used by the lambda handler
    */
   handlerRole?: iam.IRole;
+
+  /**
+   * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
+   */
+  skipDestinationValidation: boolean;
 }
 
 /**
@@ -40,11 +46,13 @@ export class BucketNotifications extends Construct {
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;
+  private readonly skipDestinationValidation: boolean;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
     this.handlerRole = props.handlerRole;
+    this.skipDestinationValidation = props.skipDestinationValidation;
   }
 
   /**
@@ -117,7 +125,14 @@ export class BucketNotifications extends Construct {
         role: this.handlerRole,
       });
 
-      const managed = this.bucket instanceof Bucket;
+      let managed = this.bucket instanceof Bucket;
+
+      // We should treat buckets as unmanaged because it will not remove notifications added somewhere else
+      // Ading a feature flag to prevent it brings unexpected changes to customers
+      // Put it here because we still need to create the permission if it's unmanaged bucket.
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET)) {
+        managed = false;
+      }
 
       if (!managed) {
         handler.addToRolePolicy(new iam.PolicyStatement({
@@ -133,6 +148,7 @@ export class BucketNotifications extends Construct {
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
+          SkipDestinationValidation: this.skipDestinationValidation,
         },
       });
 

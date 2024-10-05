@@ -756,7 +756,7 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
   expect(numberOfTimesListStackResourcesWasCalled).toEqual(1);
 });
 
-test('readCurrentTemplateWithNestedStacks() successfully ignores stacks without metadata', async () => {
+test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without metadata', async () => {
   // GIVEN
   const cfnStack = new FakeCloudformationStack({
     stackName: 'MetadataRoot',
