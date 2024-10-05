@@ -1,5 +1,5 @@
 import { capitalizePropertyNames } from './utils';
-import { Annotations, Template } from '../../assertions';
+import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
@@ -237,26 +237,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('should not include optimal for ARM instance classes', () => {
-    // WHEN
-    new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      instanceClasses: [ec2.InstanceClass.M6G],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...expectedProps,
-      ComputeResources: {
-        ...defaultComputeResources,
-        InstanceTypes: [
-          'm6g',
-        ],
-      },
-    });
-  });
-
   test('instance types are correctly rendered', () => {
     // WHEN
     const ce = new ComputeEnvironment(stack, 'MyCE', {
@@ -304,28 +284,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('respects useOptimalInstanceClasses: false for ARM instances', () => {
-    // WHEN
-    const myCE = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      useOptimalInstanceClasses: false,
-    });
-
-    myCE.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE));
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...expectedProps,
-      ComputeResources: {
-        ...defaultComputeResources,
-        InstanceTypes: [
-          'a1.large',
-        ],
-      },
-    });
-  });
-
   test('does not throw with useOptimalInstanceClasses: false and a call to addInstanceClass()', () => {
     // WHEN
     const myCE = new ComputeEnvironment(stack, 'MyCE', {
@@ -368,88 +326,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         ],
       },
     });
-  });
-
-  test('warning when optimal instance classes are used with ARM instances', () => {
-    // WHEN
-    const ce = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      instanceClasses: [ec2.InstanceClass.A1],
-      instanceTypes: [
-        ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE),
-      ],
-      useOptimalInstanceClasses: true,
-    });
-
-    // THEN
-    Annotations.fromStack(stack).hasWarning('*',
-      '\'optimal\' instance types are not supported with ARM instance types or classes. Deploying will cause an error, please set useOptimalInstanceClasses to false [ack: @aws-cdk/aws-batch:optimalNotSupportedWithARM]',
-    );
-  });
-
-  test('no warning when optimal instance classes is undefined with ARM instances', () => {
-    // WHEN
-    const myCE = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-    });
-
-    myCE.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.ARM1, ec2.InstanceSize.LARGE));
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...expectedProps,
-      ComputeResources: {
-        ...defaultComputeResources,
-        InstanceTypes: [
-          'a1.large',
-        ],
-      },
-    });
-  });
-
-  test('mixing ARM and x86 instance classes should throw an error', () => {
-    // THEN
-    const CE = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      instanceClasses: [ec2.InstanceClass.M6G, ec2.InstanceClass.C4],
-    });
-
-    Annotations.fromStack(stack).hasWarning('*',
-      'Cannot mix ARM and x86 instance types or classes, deploying will cause an error [ack: @aws-cdk/aws-batch:mixingARMAndx86InstancesNotSupported]',
-    );
-  });
-
-  test('mixing ARM and x86 instance types should throw an error', () => {
-    // THEN
-    const CE = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      instanceTypes: [
-        ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE),
-        ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE),
-      ],
-    });
-
-    Annotations.fromStack(stack).hasWarning('*',
-      'Cannot mix ARM and x86 instance types or classes, deploying will cause an error [ack: @aws-cdk/aws-batch:mixingARMAndx86InstancesNotSupported]',
-    );
-  });
-
-  test('mixing ARM and x86 instance classes and types should throw an error', () => {
-    // THEN
-    const CE = new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      vpc,
-      instanceClasses: [ec2.InstanceClass.A1],
-      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M3, ec2.InstanceSize.LARGE)],
-    });
-
-    Annotations.fromStack(stack).hasWarning('*',
-      'Cannot mix ARM and x86 instance types or classes, deploying will cause an error [ack: @aws-cdk/aws-batch:mixingARMAndx86InstancesNotSupported]',
-    );
   });
 
   test('creates and uses instanceProfile, even when instanceRole is specified', () => {
