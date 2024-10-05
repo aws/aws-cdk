@@ -88,7 +88,7 @@ const putObjectCall = integ.assertions.awsApiCall('S3', 'putObject', {
 
 const getObjectCall = integ.assertions.awsApiCall('S3', 'getObject', {
   Bucket: deployBucket.bucketName,
-  Key: 'file.txt',
+  Key: 'my-key/my-dir/file.txt',
 });
 
 putObjectCall.next(
