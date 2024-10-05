@@ -23,6 +23,13 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The output Artifact for this action.
    *
+   * You can filter files that you want to export as output artifacts for the action.
+   *
+   * @example
+   * ```ts
+   * new codepipeline.Artifact('CommandsArtifact', ['my-dir/**']);
+   * ```
+   *
    * @default - no output artifact
    */
   readonly output?: codepipeline.Artifact;
