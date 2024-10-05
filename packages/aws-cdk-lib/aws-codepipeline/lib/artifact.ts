@@ -11,22 +11,29 @@ export class Artifact {
    * Mainly meant to be used from `decdk`.
    *
    * @param name the (required) name of the Artifact
+   * @param files file paths that you want to export as output artifacts for the action. (can only be used in artifacts for `CommandAction`)
    */
-  public static artifact(name: string): Artifact {
-    return new Artifact(name);
+  public static artifact(name: string, files?: string[]): Artifact {
+    return new Artifact(name, files);
   }
 
   private _artifactName?: string;
+  private _artifactFiles?: string[];
   private readonly metadata: { [key: string]: any } = {};
 
-  constructor(artifactName?: string) {
+  constructor(artifactName?: string, artifactFiles?: string[]) {
     validation.validateArtifactName(artifactName);
 
     this._artifactName = artifactName;
+    this._artifactFiles = artifactFiles;
   }
 
   public get artifactName(): string | undefined {
     return this._artifactName;
+  }
+
+  public get artifactFiles(): string[] | undefined {
+    return this._artifactFiles;
   }
 
   /**

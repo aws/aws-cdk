@@ -13,6 +13,7 @@ export enum ActionCategory {
   APPROVAL = 'Approval',
   DEPLOY = 'Deploy',
   INVOKE = 'Invoke',
+  COMPUTE = 'Compute',
 }
 
 /**
@@ -104,6 +105,20 @@ export interface ActionProperties {
    * @default - a name will be generated, based on the stage and action names
    */
   readonly variablesNamespace?: string;
+
+  /**
+   * Shell commands for the Commands action to run.
+   *
+   * @default - no commands
+   */
+  readonly commands?: string[];
+
+  /**
+   * The names of the variables in your environment that you want to export.
+   *
+   * @default - no output variables
+   */
+  readonly outputVariables?: string[];
 }
 
 export interface ActionBindOptions {
