@@ -73,7 +73,7 @@ export class CommandsAction extends Action {
   /**
    * Reference a CodePipeline variable exported in the Commands action.
    *
-   * @param variableName the name of the variable to reference
+   * @param variableName the name of the variable exported by `outputVariables`
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
    */
   public variable(variableName: string): string {
