@@ -21,9 +21,9 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
   readonly extraInputs?: codepipeline.Artifact[];
 
   /**
-   * The list of output Artifacts for this action.
+   * The output Artifact for this action.
    *
-   * @default - the action will not have any outputs
+   * @default - no output artifact
    */
   readonly output?: codepipeline.Artifact;
 
