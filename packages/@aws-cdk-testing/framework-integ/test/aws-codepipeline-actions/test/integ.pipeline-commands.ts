@@ -4,13 +4,13 @@ import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
-import { IKey, Key } from 'aws-cdk-lib/aws-kms';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-commands');
 
-const key: IKey = new Key(stack, 'EnvVarEncryptKey', {
+const key = new Key(stack, 'EnvVarEncryptKey', {
   description: 'sample key',
 });
 
