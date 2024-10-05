@@ -430,50 +430,6 @@ export class CdkToolkit {
     });
   }
 
-  /**
-   * Roll back the given stack or stacks.
-   */
-  public async rollback(options: RollbackOptions) {
-    const startSynthTime = new Date().getTime();
-    const stackCollection = await this.selectStacksForDeploy(options.selector, true);
-    const elapsedSynthTime = new Date().getTime() - startSynthTime;
-    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
-
-    if (stackCollection.stackCount === 0) {
-      // eslint-disable-next-line no-console
-      console.error('No stacks selected');
-      return;
-    }
-
-    let anyRollbackable = false;
-
-    for (const stack of stackCollection.stackArtifacts) {
-      print('Rolling back %s', chalk.bold(stack.displayName));
-      const startRollbackTime = new Date().getTime();
-      try {
-        const result = await this.props.deployments.rollbackStack({
-          stack,
-          roleArn: options.roleArn,
-          toolkitStackName: options.toolkitStackName,
-          force: options.force,
-          validateBootstrapStackVersion: options.validateBootstrapStackVersion,
-          orphanLogicalIds: options.orphanLogicalIds,
-        });
-        if (!result.notInRollbackableState) {
-          anyRollbackable = true;
-        }
-        const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
-        print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
-      } catch (e: any) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
-        throw new Error('Rollback failed (use --force to orphan failing resources)');
-      }
-    }
-    if (!anyRollbackable) {
-      throw new Error('No stacks were in a state that could be rolled back');
-    }
-  }
-
   public async watch(options: WatchOptions) {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
@@ -1387,48 +1343,6 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly ignoreNoStacks?: boolean;
-}
-
-export interface RollbackOptions {
-  /**
-   * Criteria for selecting stacks to deploy
-   */
-  readonly selector: StackSelector;
-
-  /**
-   * Name of the toolkit stack to use/deploy
-   *
-   * @default CDKToolkit
-   */
-  readonly toolkitStackName?: string;
-
-  /**
-   * Role to pass to CloudFormation for deployment
-   *
-   * @default - Default stack role
-   */
-  readonly roleArn?: string;
-
-  /**
-   * Whether to force the rollback or not
-   *
-   * @default false
-   */
-  readonly force?: boolean;
-
-  /**
-   * Logical IDs of resources to orphan
-   *
-   * @default - No orphaning
-   */
-  readonly orphanLogicalIds?: string[];
-
-  /**
-   * Whether to validate the version of the bootstrap stack permissions
-   *
-   * @default true
-   */
-  readonly validateBootstrapStackVersion?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {

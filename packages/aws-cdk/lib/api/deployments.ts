@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
@@ -12,16 +11,12 @@ import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from '
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
-import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack } from './util/cloudformation';
-import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-import { StackEventPoller } from './util/cloudformation/stack-event-poller';
-import { RollbackChoice } from './util/cloudformation/stack-status';
+import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
+import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
 import { makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
-
-const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
 
 /**
  * SDK obtained by assuming the lookup role
@@ -213,77 +208,6 @@ export interface DeployStackOptions {
    * @default false
    */
   ignoreNoStacks?: boolean;
-}
-
-export interface RollbackStackOptions {
-  /**
-   * Stack to roll back
-   */
-  readonly stack: cxapi.CloudFormationStackArtifact;
-
-  /**
-   * Execution role for the deployment (pass through to CloudFormation)
-   *
-   * @default - Current role
-   */
-  readonly roleArn?: string;
-
-  /**
-   * Don't show stack deployment events, just wait
-   *
-   * @default false
-   */
-  readonly quiet?: boolean;
-
-  /**
-   * Whether we are on a CI system
-   *
-   * @default false
-   */
-  readonly ci?: boolean;
-
-  /**
-   * Name of the toolkit stack, if not the default name
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
-
-  /**
-   * Whether to force a rollback or not
-   *
-   * Forcing a rollback will orphan all undeletable resources.
-   *
-   * @default false
-   */
-  readonly force?: boolean;
-
-  /**
-   * Orphan the resources with the given logical IDs
-   *
-   * @default - No orphaning
-   */
-  readonly orphanLogicalIds?: string[];
-
-  /**
-   * Display mode for stack deployment progress.
-   *
-   * @default - StackActivityProgress.Bar - stack events will be displayed for
-   *   the resource currently being deployed.
-   */
-  readonly progress?: StackActivityProgress;
-
-  /**
-   * Whether to validate the version of the bootstrap stack permissions
-   *
-   * @default true
-   */
-  readonly validateBootstrapStackVersion?: boolean;
-}
-
-export interface RollbackStackResult {
-  readonly notInRollbackableState?: boolean;
-  readonly success?: boolean;
 }
 
 interface AssetOptions {
@@ -493,125 +417,6 @@ export class Deployments {
       overrideTemplate: options.overrideTemplate,
       assetParallelism: options.assetParallelism,
     });
-  }
-
-  public async rollbackStack(options: RollbackStackOptions): Promise<RollbackStackResult> {
-    let resourcesToSkip: string[] = options.orphanLogicalIds ?? [];
-    if (options.force && resourcesToSkip.length > 0) {
-      throw new Error('Cannot combine --force with --orphan');
-    }
-
-    const {
-      stackSdk,
-      resolvedEnvironment: _,
-      cloudFormationRoleArn,
-      envResources,
-    } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
-
-    if (options.validateBootstrapStackVersion ?? true) {
-      // Do a verification of the bootstrap stack version
-      await this.validateBootstrapStackVersion(
-        options.stack.stackName,
-        BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK,
-        options.stack.bootstrapStackVersionSsmParameter,
-        envResources);
-    }
-
-    const cfn = stackSdk.cloudFormation();
-    const deployName = options.stack.stackName;
-
-    // We loop in case of `--force` and the stack ends up in `CONTINUE_UPDATE_ROLLBACK`.
-    let maxLoops = 10;
-    while (maxLoops--) {
-      let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
-
-      switch (cloudFormationStack.stackStatus.rollbackChoice) {
-        case RollbackChoice.NONE:
-          warning(`Stack ${deployName} does not need a rollback: ${cloudFormationStack.stackStatus}`);
-          return { notInRollbackableState: true };
-
-        case RollbackChoice.START_ROLLBACK:
-          debug(`Initiating rollback of stack ${deployName}`);
-          await cfn.rollbackStack({
-            StackName: deployName,
-            RoleARN: cloudFormationRoleArn,
-            ClientRequestToken: randomUUID(),
-            // Enabling this is just the better overall default, the only reason it isn't the upstream default is backwards compatibility
-            RetainExceptOnCreate: true,
-          }).promise();
-          break;
-
-        case RollbackChoice.CONTINUE_UPDATE_ROLLBACK:
-          if (options.force) {
-            // Find the failed resources from the deployment and automatically skip them
-            // (Using deployment log because we definitely have `DescribeStackEvents` permissions, and we might not have
-            // `DescribeStackResources` permissions).
-            const poller = new StackEventPoller(cfn, {
-              stackName: deployName,
-              stackStatuses: ['ROLLBACK_IN_PROGRESS', 'UPDATE_ROLLBACK_IN_PROGRESS'],
-            });
-            await poller.poll();
-            resourcesToSkip = poller.resourceErrors
-              .filter(r => !r.isStackEvent && r.parentStackLogicalIds.length === 0)
-              .map(r => r.event.LogicalResourceId ?? '');
-          }
-
-          const skipDescription = resourcesToSkip.length > 0
-            ? ` (orphaning: ${resourcesToSkip.join(', ')})`
-            : '';
-          warning(`Continuing rollback of stack ${deployName}${skipDescription}`);
-          await cfn.continueUpdateRollback({
-            StackName: deployName,
-            ClientRequestToken: randomUUID(),
-            RoleARN: cloudFormationRoleArn,
-            ResourcesToSkip: resourcesToSkip,
-          }).promise();
-          break;
-
-        case RollbackChoice.ROLLBACK_FAILED:
-          warning(`Stack ${deployName} failed creation and rollback. This state cannot be rolled back. You can recreate this stack by running 'cdk deploy'.`);
-          return { notInRollbackableState: true };
-
-        default:
-          throw new Error(`Unexpected rollback choice: ${cloudFormationStack.stackStatus.rollbackChoice}`);
-      }
-
-      const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
-        ci: options.ci,
-      }).start();
-
-      let stackErrorMessage: string | undefined = undefined;
-      let finalStackState = cloudFormationStack;
-      try {
-        const successStack = await stabilizeStack(cfn, deployName);
-
-        // This shouldn't really happen, but catch it anyway. You never know.
-        if (!successStack) { throw new Error('Stack deploy failed (the stack disappeared while we were rolling it back)'); }
-        finalStackState = successStack;
-
-        const errors = monitor?.errors?.join(', ');
-        if (errors) {
-          stackErrorMessage = errors;
-        }
-      } catch (e: any) {
-        stackErrorMessage = suffixWithErrors(e.message, monitor?.errors);
-      } finally {
-        await monitor?.stop();
-      }
-
-      if (finalStackState.stackStatus.isRollbackSuccess || !stackErrorMessage) {
-        return { success: true };
-      }
-
-      // Either we need to ignore some resources to continue the rollback, or something went wrong
-      if (finalStackState.stackStatus.rollbackChoice === RollbackChoice.CONTINUE_UPDATE_ROLLBACK && options.force) {
-        // Do another loop-de-loop
-        continue;
-      }
-
-      throw new Error(`${stackErrorMessage} (fix problem and retry, or orphan these resources using --orphan or --force)`);;
-    }
-    throw new Error('Rollback did not finish after a large number of iterations; stopping because it looks like we\'re not making progress anymore. You can retry if rollback was progressing as expected.');
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
@@ -924,10 +729,4 @@ class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
  * @deprecated Use 'Deployments' instead
  */
 export class CloudFormationDeployments extends Deployments {
-}
-
-function suffixWithErrors(msg: string, errors?: string[]) {
-  return errors && errors.length > 0
-    ? `${msg}: ${errors.join(', ')}`
-    : msg;
 }
