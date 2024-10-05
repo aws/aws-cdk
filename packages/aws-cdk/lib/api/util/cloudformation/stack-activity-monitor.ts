@@ -3,11 +3,11 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
 import * as chalk from 'chalk';
-import { ResourceEvent, StackEventPoller } from './stack-event-poller';
 import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
-export interface StackActivity extends ResourceEvent {
+export interface StackActivity {
+  readonly event: aws.CloudFormation.StackEvent;
   readonly metadata?: ResourceMetadata;
 }
 
@@ -116,13 +116,17 @@ export class StackActivityMonitor {
   }
 
   /**
-   * The poller used to read stack events
+   * Resource errors found while monitoring the deployment
    */
-  public readonly poller: StackEventPoller;
-
-  public readonly errors: string[] = [];
+  public readonly errors = new Array<string>();
 
   private active = false;
+  private activity: { [eventId: string]: StackActivity } = { };
+
+  /**
+   * Determines which events not to display
+   */
+  private readonly startTime: number;
 
   /**
    * Current tick timer
@@ -135,16 +139,13 @@ export class StackActivityMonitor {
   private readPromise?: Promise<any>;
 
   constructor(
-    cfn: aws.CloudFormation,
+    private readonly cfn: aws.CloudFormation,
     private readonly stackName: string,
     private readonly printer: IActivityPrinter,
     private readonly stack?: cxapi.CloudFormationStackArtifact,
     changeSetCreationTime?: Date,
   ) {
-    this.poller = new StackEventPoller(cfn, {
-      stackName,
-      startTime: changeSetCreationTime?.getTime() ?? Date.now(),
-    });
+    this.startTime = changeSetCreationTime?.getTime() ?? Date.now();
   }
 
   public start() {
@@ -220,17 +221,61 @@ export class StackActivityMonitor {
    * see a next page and the last event in the page is new to us (and within the time window).
    * haven't seen the final event
    */
-  private async readNewEvents(): Promise<void> {
-    const pollEvents = await this.poller.poll();
+  private async readNewEvents(stackName?: string): Promise<void> {
+    const stackToPollForEvents = stackName ?? this.stackName;
+    const events: StackActivity[] = [];
+    const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
+    try {
+      let nextToken: string | undefined;
+      let finished = false;
+      while (!finished) {
+        const response = await this.cfn.describeStackEvents({ StackName: stackToPollForEvents, NextToken: nextToken }).promise();
+        const eventPage = response?.StackEvents ?? [];
 
-    const activities: StackActivity[] = pollEvents.map(event => ({
-      ...event,
-      metadata: this.findMetadataFor(event.event.LogicalResourceId),
-    }));
+        for (const event of eventPage) {
+          // Event from before we were interested in 'em
+          if (event.Timestamp.valueOf() < this.startTime) {
+            finished = true;
+            break;
+          }
 
-    for (const activity of activities) {
-      this.checkForErrors(activity);
-      this.printer.addActivity(activity );
+          // Already seen this one
+          if (event.EventId in this.activity) {
+            finished = true;
+            break;
+          }
+
+          // Fresh event
+          events.push(this.activity[event.EventId] = {
+            event: event,
+            metadata: this.findMetadataFor(event.LogicalResourceId),
+          });
+
+          if (event.ResourceType === 'AWS::CloudFormation::Stack' && !CFN_SUCCESS_STATUS.includes(event.ResourceStatus ?? '')) {
+            // If the event is not for `this` stack and has a physical resource Id, recursively call for events in the nested stack
+            if (event.PhysicalResourceId && event.PhysicalResourceId !== stackToPollForEvents) {
+              await this.readNewEvents(event.PhysicalResourceId);
+            }
+          }
+        }
+
+        // We're also done if there's nothing left to read
+        nextToken = response?.NextToken;
+        if (nextToken === undefined) {
+          finished = true;
+        }
+      }
+    } catch (e: any) {
+      if (e.code === 'ValidationError' && e.message === `Stack [${stackToPollForEvents}] does not exist`) {
+        return;
+      }
+      throw e;
+    }
+
+    events.reverse();
+    for (const event of events) {
+      this.checkForErrors(event);
+      this.printer.addActivity(event);
     }
   }
 
@@ -253,7 +298,6 @@ export class StackActivityMonitor {
   }
 
   private checkForErrors(activity: StackActivity) {
-
     if (hasErrorMessage(activity.event.ResourceStatus ?? '')) {
       const isCancelled = (activity.event.ResourceStatusReason ?? '').indexOf('cancelled') > -1;
 
@@ -506,7 +550,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
       this.stream.write('\nFailed resources:\n');
       for (const failure of this.failures) {
         // Root stack failures are not interesting
-        if (failure.isStackEvent) {
+        if (failure.event.StackName === failure.event.LogicalResourceId) {
           continue;
         }
 
@@ -663,7 +707,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     const lines = new Array<string>();
     for (const failure of this.failures) {
       // Root stack failures are not interesting
-      if (failure.isStackEvent) {
+      if (failure.event.StackName === failure.event.LogicalResourceId) {
         continue;
       }
 

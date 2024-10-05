@@ -29,7 +29,6 @@ test('prints 0/4 progress report, when addActivity is called with an "IN_PROGRES
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
   });
 
@@ -54,7 +53,6 @@ test('prints 1/4 progress report, when addActivity is called with an "UPDATE_COM
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
   });
 
@@ -79,7 +77,6 @@ test('prints 1/4 progress report, when addActivity is called with an "UPDATE_COM
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
   });
 
@@ -104,7 +101,6 @@ test('prints 1/4 progress report, when addActivity is called with an "ROLLBACK_C
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
   });
 
@@ -129,7 +125,6 @@ test('prints 0/4 progress report, when addActivity is called with an "UPDATE_FAI
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
   });
 
@@ -154,7 +149,6 @@ test('does not print "Failed Resources:" list, when all deployments are successf
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
     historyActivityPrinter.addActivity({
       event: {
@@ -166,7 +160,6 @@ test('does not print "Failed Resources:" list, when all deployments are successf
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
     historyActivityPrinter.addActivity({
       event: {
@@ -178,7 +171,6 @@ test('does not print "Failed Resources:" list, when all deployments are successf
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
     historyActivityPrinter.stop();
   });
@@ -207,7 +199,6 @@ test('prints "Failed Resources:" list, when at least one deployment fails', () =
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
     historyActivityPrinter.addActivity({
       event: {
@@ -219,7 +210,6 @@ test('prints "Failed Resources:" list, when at least one deployment fails', () =
         EventId: '',
         StackName: 'stack-name',
       },
-      parentStackLogicalIds: [],
     });
     historyActivityPrinter.stop();
   });
@@ -252,7 +242,6 @@ test('print failed resources because of hook failures', () => {
         HookType: 'hook1',
         HookStatusReason: 'stack1 must obey certain rules',
       },
-      parentStackLogicalIds: [],
     });
     historyActivityPrinter.addActivity({
       event: {
@@ -265,7 +254,6 @@ test('print failed resources because of hook failures', () => {
         StackName: 'stack-name',
         ResourceStatusReason: 'The following hook(s) failed: hook1',
       },
-      parentStackLogicalIds: [],
     });
     historyActivityPrinter.stop();
   });
