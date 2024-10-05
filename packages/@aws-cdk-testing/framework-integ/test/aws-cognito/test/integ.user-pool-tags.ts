@@ -23,4 +23,3 @@ new IntegTest(app, 'IntegUserPoolTags', {
   testCases: [stack],
 });
 
-app.synth();
