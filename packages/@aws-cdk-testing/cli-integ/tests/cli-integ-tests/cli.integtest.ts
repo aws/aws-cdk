@@ -32,7 +32,6 @@ import {
   withCDKMigrateFixture,
   withExtendedTimeoutFixture,
   randomString,
-  withSpecificFixture,
   withoutBootstrap,
 } from '../../lib';
 
@@ -2285,85 +2284,7 @@ integTest(
   }),
 );
 
-integTest(
-  'test cdk rollback',
-  withSpecificFixture('rollback-test-app', async (fixture) => {
-    let phase = '1';
-
-    // Should succeed
-    await fixture.cdkDeploy('test-rollback', {
-      options: ['--no-rollback'],
-      modEnv: { PHASE: phase },
-      verbose: false,
-    });
-    try {
-      phase = '2a';
-
-      // Should fail
-      const deployOutput = await fixture.cdkDeploy('test-rollback', {
-        options: ['--no-rollback'],
-        modEnv: { PHASE: phase },
-        verbose: false,
-        allowErrExit: true,
-      });
-      expect(deployOutput).toContain('UPDATE_FAILED');
-
-      // Rollback
-      await fixture.cdk(['rollback'], {
-        modEnv: { PHASE: phase },
-        verbose: false,
-      });
-    } finally {
-      await fixture.cdkDestroy('test-rollback');
-    }
-  }),
-);
-
-integTest(
-  'test cdk rollback --force',
-  withSpecificFixture('rollback-test-app', async (fixture) => {
-    let phase = '1';
-
-    // Should succeed
-    await fixture.cdkDeploy('test-rollback', {
-      options: ['--no-rollback'],
-      modEnv: { PHASE: phase },
-      verbose: false,
-    });
-    try {
-      phase = '2b'; // Fail update and also fail rollback
-
-      // Should fail
-      const deployOutput = await fixture.cdkDeploy('test-rollback', {
-        options: ['--no-rollback'],
-        modEnv: { PHASE: phase },
-        verbose: false,
-        allowErrExit: true,
-      });
-
-      expect(deployOutput).toContain('UPDATE_FAILED');
-
-      // Should still fail
-      const rollbackOutput = await fixture.cdk(['rollback'], {
-        modEnv: { PHASE: phase },
-        verbose: false,
-        allowErrExit: true,
-      });
-
-      expect(rollbackOutput).toContain('Failing rollback');
-
-      // Rollback and force cleanup
-      await fixture.cdk(['rollback', '--force'], {
-        modEnv: { PHASE: phase },
-        verbose: false,
-      });
-    } finally {
-      await fixture.cdkDestroy('test-rollback');
-    }
-  }),
-);
-
-integTest('cdk bootstrap notice is displayed correctly', withDefaultFixture(async (fixture) => {
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
 
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache

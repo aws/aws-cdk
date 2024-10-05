@@ -124,20 +124,11 @@ describe('stack monitor, collecting errors from events', () => {
         return {
           StackEvents: [
             addErrorToStackEvent(
-              event(102), {
-                logicalResourceId: 'nestedStackLogicalResourceId',
-                physicalResourceId: 'nestedStackPhysicalResourceId',
-                resourceType: 'AWS::CloudFormation::Stack',
-                resourceStatusReason: 'nested stack failed',
-                resourceStatus: 'UPDATE_FAILED',
-              },
-            ),
-            addErrorToStackEvent(
               event(100), {
                 logicalResourceId: 'nestedStackLogicalResourceId',
                 physicalResourceId: 'nestedStackPhysicalResourceId',
                 resourceType: 'AWS::CloudFormation::Stack',
-                resourceStatus: 'UPDATE_IN_PROGRESS',
+                resourceStatusReason: 'nested stack failed',
               },
             ),
           ],
@@ -262,27 +253,17 @@ async function testMonitorWithEventCalls(
   let describeStackEvents = (jest.fn() as jest.Mock<AWS.CloudFormation.DescribeStackEventsOutput, [AWS.CloudFormation.DescribeStackEventsInput]>);
 
   let finished = false;
-  let error: Error | undefined = undefined;
 
   for (const invocation of beforeStopInvocations) {
     const invocation_ = invocation; // Capture loop variable in local because of closure semantics
     const isLast = invocation === beforeStopInvocations[beforeStopInvocations.length - 1];
     describeStackEvents = describeStackEvents.mockImplementationOnce(request => {
-      try {
-        const ret = invocation_(request);
-        if (isLast) {
-          finished = true;
-        }
-        return ret;
-      } catch (e: any) {
+      const ret = invocation_(request);
+      if (isLast) {
         finished = true;
-        error = e;
-        throw e;
       }
+      return ret;
     });
-  }
-  if (error) {
-    throw error;
   }
   for (const invocation of afterStopInvocations) {
     describeStackEvents = describeStackEvents.mockImplementationOnce(invocation);
