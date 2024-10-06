@@ -1,8 +1,12 @@
 import { randomUUID } from 'crypto';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsTarget } from '@aws-cdk/aws-pipes-targets-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationConfig, LogDestinationParameters, LogLevel, Pipe, SourceConfig, TargetConfig } from '../lib';
+import { DynamicInput, EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, IncludeExecutionData, InputTransformation, LogDestinationConfig, LogDestinationParameters, LogLevel, Pipe } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
@@ -17,45 +21,6 @@ const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', 
 });
 
 const loggroup = new cdk.aws_logs.LogGroup(stack, 'LogGroup');
-
-class TestSource implements ISource {
-  sourceArn: string;
-  sourceParameters = undefined;
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-  bind(_pipe: IPipe): SourceConfig {
-    return {
-      sourceParameters: this.sourceParameters,
-    };
-  }
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
-
-class TestTarget implements ITarget {
-  targetArn: string;
-  inputTransformation: InputTransformation = InputTransformation.fromEventPath('$.body');
-
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.targetArn = queue.queueArn;
-  }
-
-  bind(_pipe: Pipe): TargetConfig {
-    return {
-      targetParameters: {
-        inputTemplate: this.inputTransformation.bind(_pipe).inputTemplate,
-      },
-    };
-  }
-
-  grantPush(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantSendMessages(pipeRole);
-  }
-}
 
 class TestEnrichment implements IEnrichment {
   enrichmentArn: string;
@@ -95,21 +60,20 @@ class TestLogDestination implements ILogDestination {
       parameters: this.parameters,
     };
   }
-
   grantPush(pipeRole: cdk.aws_iam.IRole): void {
     this.logGroup.grantWrite(pipeRole);
   }
-
 }
 
 const pipe = new Pipe(stack, 'Pipe', {
   pipeName: 'BaseTestPipe',
-  source: new TestSource(sourceQueue),
-  target: new TestTarget(targetQueue),
+  source: new SqsSource(sourceQueue),
+  target: new SqsTarget(targetQueue, {
+    inputTransformation: InputTransformation.fromEventPath('$.body'),
+  }),
   enrichment: new TestEnrichment(enrichmentLambda),
   logLevel: LogLevel.TRACE,
   logIncludeExecutionData: [IncludeExecutionData.ALL],
-
   logDestinations: [
     new TestLogDestination(loggroup),
   ],
@@ -125,17 +89,13 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
-  {
-    QueueUrl: targetQueue.queueUrl,
-  })).expect(ExpectedResult.objectLike({
-  Messages: [
-    {
-      Body: uniqueIdentifier+ '-' + pipe.pipeName + '-static',
-    },
-  ],
+putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: targetQueue.queueUrl,
+})).expect(ExpectedResult.objectLike({
+  Messages: [{ Body: uniqueIdentifier+ '-' + pipe.pipeName + '-static' }],
 })).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(30),
+  totalTimeout: cdk.Duration.minutes(2),
+  interval: cdk.Duration.seconds(15),
 });
 
 app.synth();
