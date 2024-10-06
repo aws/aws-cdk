@@ -264,6 +264,75 @@ describe('tests', () => {
     });
   });
 
+  describe('http2Enabled', () => {
+    test('http2Enabled is not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.not(
+          Match.arrayWith([
+            {
+              Key: 'routing.http2.enabled',
+              Value: Match.anyValue(),
+            },
+          ]),
+        ),
+      });
+    });
+
+    test('http2Enabled is set to true', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        http2Enabled: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http2.enabled',
+            Value: 'true',
+          },
+        ]),
+      });
+    });
+
+    test('http2Enabled is set to false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        http2Enabled: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http2.enabled',
+            Value: 'false',
+          },
+        ]),
+      });
+    });
+  });
+
   test('Deletion protection false', () => {
     // GIVEN
     const stack = new cdk.Stack();
