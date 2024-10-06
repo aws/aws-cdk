@@ -1,27 +1,14 @@
+import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { TestEnrichment, TestSource, TestSourceWithDeadLetterTarget, TestTarget } from './test-classes';
-import { DesiredState, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, LogDestinationConfig, LogLevel, Pipe } from '../lib';
-
-class TestLogDestination implements ILogDestination {
-
-  logDestinationArn = 'log-destination-arn';
-  parameters = {
-    cloudwatchLogsLogDestination: {
-      logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-    },
-  };
-  public grantPush = jest.fn();
-  bind(_pipe: IPipe): LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
-}
+import { Construct } from 'constructs';
+import { CloudwatchLogsLogDestination, DesiredState, FirehoseLogDestination, IEnrichment, ISource, ITarget, IncludeExecutionData, LogLevel, Pipe, S3LogDestination, S3OutputFormat } from '../lib';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
 describe('Pipe', () => {
   let stack: Stack;
@@ -428,18 +415,18 @@ describe('Pipe', () => {
   });
 
   describe('logs', () => {
-    const logDestination = new TestLogDestination();
-    it('should pass along log configuration', () => {
+    it('should pass along cloudwatch logs log configuration', () => {
       // WHEN
+      const logGroup = new LogGroup(stack, 'LogGroup');
+      const cwlLogDestination = new CloudwatchLogsLogDestination(logGroup);
+
       new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
         target,
         logLevel: LogLevel.INFO,
         logIncludeExecutionData: [IncludeExecutionData.ALL],
-        logDestinations: [
-          logDestination,
-        ],
+        logDestinations: [cwlLogDestination],
       });
 
       const template = Template.fromStack(stack);
@@ -449,28 +436,237 @@ describe('Pipe', () => {
         Properties: {
           LogConfiguration: {
             CloudwatchLogsLogDestination: {
-
-              LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
+              LogGroupArn: {
+                'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
+              },
             },
             Level: 'INFO',
             IncludeExecutionData: ['ALL'],
           },
         },
-      },
-      );
-    } );
+      });
+    });
 
-    it('should call grantPush of the log destination with pipe role', () => {
+    it('should allow write to log group with pipe role', () => {
       // WHEN
-      const pipe = new Pipe(stack, 'TestPipe', {
+      const logGroup = new LogGroup(stack, 'LogGroup');
+      const cwlLogDestination = new CloudwatchLogsLogDestination(logGroup);
+
+      new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
         target,
-        logDestinations: [logDestination],
+        logDestinations: [cwlLogDestination],
       });
 
+      const template = Template.fromStack(stack);
+
+      // ASSERT
+      template.hasResource('AWS::IAM::Policy', {
+        Properties: {
+          Roles: [{
+            Ref: 'TestPipeRole0FD00B2B',
+          }],
+          PolicyDocument: {
+            Statement: [{
+              Action: [
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
+              ],
+              Resource: {
+                'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
+              },
+            }],
+          },
+        },
+      });
+    });
+
+    it('should pass along s3 log configuration', () => {
+      // WHEN
+      const bucket = new Bucket(stack, 'LogBucket');
+      const s3LogDestination = new S3LogDestination({
+        bucket,
+        prefix: 'mike',
+        outputFormat: S3OutputFormat.JSON,
+      });
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logLevel: LogLevel.ERROR,
+        logIncludeExecutionData: [IncludeExecutionData.ALL],
+        logDestinations: [s3LogDestination],
+      });
+
+      const template = Template.fromStack(stack);
+
       // THEN
-      expect(logDestination.grantPush).toHaveBeenCalledWith(pipe.pipeRole);
+      template.hasResource('AWS::Pipes::Pipe', {
+        Properties: {
+          LogConfiguration: {
+            S3LogDestination: {
+              BucketName: {
+                Ref: 'LogBucketCC3B17E8',
+              },
+              BucketOwner: stack.account,
+              Prefix: 'mike',
+              OutputFormat: 'json',
+            },
+            Level: 'ERROR',
+            IncludeExecutionData: ['ALL'],
+          },
+        },
+      });
+    });
+
+    it('should allow write to S3 bucket with pipe role', () => {
+      // WHEN
+      const bucket = new Bucket(stack, 'LogBucket');
+      const s3LogDestination = new S3LogDestination({ bucket });
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logDestinations: [s3LogDestination],
+      });
+
+      const template = Template.fromStack(stack);
+
+      // ASSERT
+      template.hasResource('AWS::IAM::Policy', {
+        Properties: {
+          Roles: [{
+            Ref: 'TestPipeRole0FD00B2B',
+          }],
+          PolicyDocument: {
+            Statement: [{
+              Action: [
+                's3:DeleteObject*',
+                's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
+                's3:Abort*',
+              ],
+              Resource: [
+                { 'Fn::GetAtt': ['LogBucketCC3B17E8', 'Arn'] },
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['LogBucketCC3B17E8', 'Arn'] }, '/*']] },
+              ],
+            }],
+          },
+        },
+      });
+    });
+
+    it('should pass along firehose log configuration', () => {
+      // WHEN
+      const firehoseBucket = new Bucket(stack, 'FirehoseBucket');
+      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('firehose.amazonaws.com') });
+
+      const mockS3Destination: IDestination = {
+        bind(_scope: Construct, _options: DestinationBindOptions): DestinationConfig {
+          const bucketGrant = firehoseBucket.grantReadWrite(role);
+          return {
+            extendedS3DestinationConfiguration: {
+              bucketArn: firehoseBucket.bucketArn,
+              roleArn: role.roleArn,
+            },
+            dependables: [bucketGrant],
+          };
+        },
+      };
+
+      const deliveryStream = new DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
+        destination: mockS3Destination,
+      });
+
+      const firehoseDestination = new FirehoseLogDestination(deliveryStream);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logLevel: LogLevel.ERROR,
+        logIncludeExecutionData: [IncludeExecutionData.ALL],
+        logDestinations: [firehoseDestination],
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::Pipes::Pipe', {
+        Properties: {
+          LogConfiguration: {
+            FirehoseLogDestination: {
+              DeliveryStreamArn: {
+                'Fn::GetAtt': ['DeliveryStreamNoSourceOrEncryptionKey0E4AAB82', 'Arn'],
+              },
+            },
+            Level: 'ERROR',
+            IncludeExecutionData: ['ALL'],
+          },
+        },
+      });
+    });
+
+    it('should allow write to firehose stream', () => {
+      // WHEN
+      const firehoseBucket = new Bucket(stack, 'FirehoseBucket');
+      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('firehose.amazonaws.com') });
+
+      const mockS3Destination: IDestination = {
+        bind(_scope: Construct, _options: DestinationBindOptions): DestinationConfig {
+          const bucketGrant = firehoseBucket.grantReadWrite(role);
+          return {
+            extendedS3DestinationConfiguration: {
+              bucketArn: firehoseBucket.bucketArn,
+              roleArn: role.roleArn,
+            },
+            dependables: [bucketGrant],
+          };
+        },
+      };
+
+      const deliveryStream = new DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
+        destination: mockS3Destination,
+      });
+
+      const firehoseDestination = new FirehoseLogDestination(deliveryStream);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logLevel: LogLevel.ERROR,
+        logIncludeExecutionData: [IncludeExecutionData.ALL],
+        logDestinations: [firehoseDestination],
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::IAM::Policy', {
+        Properties: {
+          Roles: [{
+            Ref: 'TestPipeRole0FD00B2B',
+          }],
+          PolicyDocument: {
+            Statement: [{
+              Action: [
+                'firehose:PutRecord',
+                'firehose:PutRecordBatch',
+              ],
+              Resource: {
+                'Fn::GetAtt': ['DeliveryStreamNoSourceOrEncryptionKey0E4AAB82', 'Arn'],
+              },
+            }],
+          },
+        },
+      });
     });
   });
 });
