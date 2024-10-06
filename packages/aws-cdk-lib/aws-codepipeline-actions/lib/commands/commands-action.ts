@@ -23,7 +23,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The output artifact for this action.
    *
-   * You can filter files that you want to export as output artifacts for the action.
+   * You can filter files that you want to export as the output artifact for the action.
    *
    * @example
    * ```ts
