@@ -912,3 +912,29 @@ rule.addTarget(new targets.AppSync(api, {
   }),
 }));
 ```
+
+## Caching
+
+You can create a cache for an API using the `apiId` from an existing graphQL API or add a cache 
+to an existing graphQL API resource.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'api',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+});
+
+const cache = new appsync.ApiCache(this, 'ApiCache', {
+  apiId: api.apiId,
+  apiCachingBehavior: appsync.CacheBehavior.FULL_REQUEST_CACHING,
+  type: appsync.CacheType.LARGE,
+  ttl: 60,
+});
+
+// or with the addCache method:
+api.addCache('ApiCache', {
+  apiCachingBehavior: appsync.CacheBehavior.PER_RESOLVER_CACHING,
+  type: appsync.CacheType.LARGE,
+  ttl: 360,
+});
+```

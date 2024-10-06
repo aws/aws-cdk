@@ -1,3 +1,4 @@
+import { ApiCache, ApiCacheBaseProps } from './api-cache';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -596,5 +597,23 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    */
   public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
     return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
+  }
+
+  /**
+   * Creates an API Cache for this GraphQLApi
+   *
+   * @param id The id for this resource
+   * @param props The configuration needed for the API Cache resource
+   */
+  public addCache(id: string, props: ApiCacheBaseProps): ApiCache {
+    return new ApiCache(this, id, {
+      apiId: this.apiId,
+      apiCachingBehavior: props.apiCachingBehavior,
+      atRestEncryptionEnabled: props.atRestEncryptionEnabled,
+      healthMetricsConfig: props.healthMetricsConfig,
+      transitEncryptionEnabled: props.transitEncryptionEnabled,
+      ttl: props.ttl,
+      type: props.type,
+    });
   }
 }
