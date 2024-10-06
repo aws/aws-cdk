@@ -69,8 +69,6 @@ possible:
 ### Example source
 
 ```ts
-import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
-
 declare const sourceQueue: sqs.Queue;
 const pipeSource = new sources.SqsSource(sourceQueue);
 ```
@@ -402,10 +400,7 @@ the same input transformation as in the enrichment step.
 ### Example target
 
 ```ts
-import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
-
 declare const targetQueue: sqs.Queue;
-
 const pipeTarget = new targets.SqsTarget(targetQueue);
 ```
 
