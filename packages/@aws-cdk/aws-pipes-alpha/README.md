@@ -70,7 +70,7 @@ possible:
 
 ```ts
 declare const sourceQueue: sqs.Queue;
-const pipeSource = new sources.SqsSource(sourceQueue);
+const pipeSource = new SqsSource(sourceQueue);
 ```
 
 ## Filter
@@ -401,7 +401,7 @@ the same input transformation as in the enrichment step.
 
 ```ts
 declare const targetQueue: sqs.Queue;
-const pipeTarget = new targets.SqsTarget(targetQueue);
+const pipeTarget = new SqsTarget(targetQueue);
 ```
 
 ## Log destination
