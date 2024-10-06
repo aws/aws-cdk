@@ -23,6 +23,8 @@ async function handler(event) {
 exports.handler = handler;
 async function putObjects(bucketName, n = 5) {
     // Put n objects in parallel
+    // Bounded by human input
+    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
     await Promise.all([...Array(n).keys()]
         .map(key => s3.putObject({
         Bucket: bucketName,
