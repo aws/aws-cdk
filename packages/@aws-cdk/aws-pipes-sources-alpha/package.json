@@ -89,7 +89,8 @@
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/aws-pipes-alpha": "0.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/aws-pipes-targets-alpha": "0.0.0"
   },
   "dependencies": {
   },

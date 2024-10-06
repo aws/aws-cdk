@@ -1,6 +1,5 @@
 import { randomUUID } from 'crypto';
 import { Pipe } from '@aws-cdk/aws-pipes-alpha';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { SqsTarget } from '@aws-cdk/aws-pipes-targets-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
