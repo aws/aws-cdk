@@ -1,8 +1,10 @@
 import { randomUUID } from 'crypto';
+import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationConfig, LogDestinationParameters, LogLevel, Pipe, SourceConfig, TargetConfig } from '../lib';
+import { Construct } from 'constructs';
+import { CloudwatchLogsLogDestination, DynamicInput, EnrichmentParametersConfig, FirehoseLogDestination, IEnrichment, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogLevel, Pipe, S3LogDestination, S3OutputFormat, SourceConfig, TargetConfig } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
@@ -16,7 +18,40 @@ const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', 
   runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
 });
 
-const loggroup = new cdk.aws_logs.LogGroup(stack, 'LogGroup');
+const logGroup = new cdk.aws_logs.LogGroup(stack, 'LogGroup', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+const firehoseBucket = new cdk.aws_s3.Bucket(stack, 'FirehoseBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
+
+const role = new cdk.aws_iam.Role(stack, 'Role', {
+  assumedBy: new cdk.aws_iam.ServicePrincipal('firehose.amazonaws.com'),
+});
+
+const mockS3Destination: IDestination = {
+  bind(_scope: Construct, _options: DestinationBindOptions): DestinationConfig {
+    const bucketGrant = firehoseBucket.grantReadWrite(role);
+    return {
+      extendedS3DestinationConfiguration: {
+        bucketArn: firehoseBucket.bucketArn,
+        roleArn: role.roleArn,
+      },
+      dependables: [bucketGrant],
+    };
+  },
+};
+
+const deliveryStream = new DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
+  destination: mockS3Destination,
+});
+
+const logBucket = new cdk.aws_s3.Bucket(stack, 'LogBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
 
 class TestSource implements ISource {
   sourceArn: string;
@@ -80,28 +115,6 @@ class TestEnrichment implements IEnrichment {
   }
 }
 
-class TestLogDestination implements ILogDestination {
-  parameters: LogDestinationParameters;
-  constructor(private readonly logGroup: cdk.aws_logs.LogGroup) {
-    this.logGroup = logGroup;
-    this.parameters = {
-      cloudwatchLogsLogDestination: {
-        logGroupArn: logGroup.logGroupArn,
-      },
-    };
-  }
-  bind(_pipe: IPipe): LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
-  grantPush(pipeRole: cdk.aws_iam.IRole): void {
-    this.logGroup.grantWrite(pipeRole);
-  }
-
-}
-
 const pipe = new Pipe(stack, 'Pipe', {
   pipeName: 'BaseTestPipe',
   source: new TestSource(sourceQueue),
@@ -109,9 +122,14 @@ const pipe = new Pipe(stack, 'Pipe', {
   enrichment: new TestEnrichment(enrichmentLambda),
   logLevel: LogLevel.TRACE,
   logIncludeExecutionData: [IncludeExecutionData.ALL],
-
   logDestinations: [
-    new TestLogDestination(loggroup),
+    new CloudwatchLogsLogDestination(logGroup),
+    new FirehoseLogDestination(deliveryStream),
+    new S3LogDestination({
+      bucket: logBucket,
+      prefix: 'aws-pipes',
+      outputFormat: S3OutputFormat.JSON,
+    }),
   ],
 });
 
