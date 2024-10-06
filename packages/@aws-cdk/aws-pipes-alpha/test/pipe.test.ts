@@ -2,13 +2,13 @@ import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
-import { TestEnrichment, TestSource, TestSourceWithDeadLetterTarget, TestTarget } from './test-classes';
 import { Construct } from 'constructs';
+import { TestEnrichment, TestSource, TestSourceWithDeadLetterTarget, TestTarget } from './test-classes';
 import { CloudwatchLogsLogDestination, DesiredState, FirehoseLogDestination, IEnrichment, ISource, ITarget, IncludeExecutionData, LogLevel, Pipe, S3LogDestination, S3OutputFormat } from '../lib';
-import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
 describe('Pipe', () => {
   let stack: Stack;
