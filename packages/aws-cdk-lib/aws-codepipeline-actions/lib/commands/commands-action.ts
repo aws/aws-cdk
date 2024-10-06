@@ -57,6 +57,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
  * CodePipeline compute action that uses AWS Commands.
  */
 export class CommandsAction extends Action {
+  private readonly outputVariables: string[];
   constructor(props: CommandsActionProps) {
     super({
       ...props,
@@ -68,6 +69,7 @@ export class CommandsAction extends Action {
       commands: props.commands,
       outputVariables: props.outputVariables,
     });
+    this.outputVariables = props.outputVariables || [];
   }
 
   /**
@@ -77,6 +79,9 @@ export class CommandsAction extends Action {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
    */
   public variable(variableName: string): string {
+    if (!this.outputVariables.includes(variableName)) {
+      throw new Error(`Variable '${variableName}' is not exported by \`outputVariables\`, exported variables: ${this.outputVariables.join(', ')}`);
+    }
     return this.variableExpression(variableName);
   }
 
