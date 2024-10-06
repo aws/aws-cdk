@@ -14,7 +14,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
   readonly input: codepipeline.Artifact;
 
   /**
-   * The list of additional input Artifacts for this action.
+   * The list of additional input artifacts for this action.
    *
    * @default - no extra inputs
    */
