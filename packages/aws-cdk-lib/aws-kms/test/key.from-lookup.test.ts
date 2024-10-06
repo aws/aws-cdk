@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
+import { App, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import { Key } from '../lib';
 
@@ -37,6 +37,33 @@ test('return correct key', () => {
   });
 
   restoreContextProvider(previous);
+});
+
+test('return dummy key if returnDummyKeyOnMissing is true', () => {
+  const app = new App();
+  const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
+  const key = Key.fromLookup(stack, 'Key', {
+    aliasName: 'alias/foo',
+    returnDummyKeyOnMissing: true,
+  });
+
+  expect(key.keyId).toEqual('1234abcd-12ab-34cd-56ef-1234567890ab');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'key-provider:account=123456789012:aliasName=alias/foo:region=us-east-1',
+      props: {
+        account: '123456789012',
+        aliasName: 'alias/foo',
+        ignoreErrorOnMissingContext: true,
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1',
+        dummyValue: {
+          keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+        },
+        region: 'us-east-1',
+      },
+      provider: 'key-provider',
+    },
+  ]);
 });
 
 interface MockKeyContextResponse {
