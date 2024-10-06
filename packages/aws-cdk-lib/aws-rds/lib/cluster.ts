@@ -1166,6 +1166,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
       this.clusterIdentifier = cluster.ref;
       this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
+      this.secret = secretsmanager.Secret.fromSecretCompleteArn(this, 'DbClusterSecret', cluster.attrMasterUserSecretSecretArn);
     }
 
     // create a number token that represents the port of the cluster
