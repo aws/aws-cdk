@@ -11,7 +11,8 @@ export class Artifact {
    * Mainly meant to be used from `decdk`.
    *
    * @param name the (required) name of the Artifact
-   * @param files file paths that you want to export as output artifacts for the action. (can only be used in artifacts for `CommandsAction`)
+   * @param files file paths that you want to export as the output artifact for the action.
+   * This property can only be used in the artifact for `CommandsAction`.
    */
   public static artifact(name: string, files?: string[]): Artifact {
     return new Artifact(name, files);
@@ -21,6 +22,13 @@ export class Artifact {
   private _artifactFiles?: string[];
   private readonly metadata: { [key: string]: any } = {};
 
+  /**
+   * An output artifact of an action. Artifacts can be used as input by some actions.
+   *
+   * @param artifactName the (required) name of the Artifact
+   * @param artifactFiles file paths that you want to export as the output artifact for the action.
+   * This property can only be used in the artifact for `CommandsAction`.
+   */
   constructor(artifactName?: string, artifactFiles?: string[]) {
     validation.validateArtifactName(artifactName);
 
@@ -32,6 +40,11 @@ export class Artifact {
     return this._artifactName;
   }
 
+  /**
+   * The file paths that you want to export as the output artifact for the action.
+   *
+   * This property can only be used in artifacts for `CommandsAction`.
+   */
   public get artifactFiles(): string[] | undefined {
     return this._artifactFiles;
   }
