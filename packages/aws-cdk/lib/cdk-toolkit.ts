@@ -794,7 +794,7 @@ export class CdkToolkit {
 
     const limit = pLimit(20);
 
-    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     await Promise.all(environments.map((environment) => limit(async () => {
       success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {

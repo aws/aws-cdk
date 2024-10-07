@@ -15,7 +15,7 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'import',
-    '@aws-cdk',
+    '@cdklabs',
     'jest',
   ],
   parser: '@typescript-eslint/parser',
