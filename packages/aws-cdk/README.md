@@ -34,8 +34,6 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 - [SSO Support](#sso-support)
 - [Configuration](#configuration)
   - [Running in CI](#running-in-ci)
-- [Stability](#stability)
-- [Changing the default TypeScript transpiler](#Changing-the-default-TypeScript-transpiler)
 
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
@@ -1091,20 +1089,6 @@ The following environment variables affect aws-cdk:
 The CLI will attempt to detect whether it is being run in CI by looking for the presence of an
 environment variable `CI=true`. This can be forced by passing the `--ci` flag. By default the CLI
 sends most of its logs to `stderr`, but when `ci=true` it will send the logs to `stdout` instead.
-
-### Stability
-
-Sometimes the CDK team will release experimental or incremental features. In these scenarios we will
-require explicit opt-in from users via the `--unstable` flag. For example, if we are working on a new
-bootstrap feature and decide to release it incrementally, we will "hide" its functionality.
-Opting in would look something like this:
-
-```bash
-cdk bootstrap --unstable='new-funky-bootstrap'
-```
-
-When the feature is stabilized, explicit opt-in is no longer necessary but the feature will continue
-to work with the `--unstable` flag set.
 
 ### Changing the default TypeScript transpiler
 

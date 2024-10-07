@@ -45,7 +45,7 @@ const backupKey = new kms.Key(stack, 'BackupKey', {
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
-  destinations: [new destinations.S3Bucket(bucket, {
+  destination: new destinations.S3Bucket(bucket, {
     loggingConfig: new destinations.EnableLogging(logGroup),
     processor: processor,
     compression: destinations.Compression.GZIP,
@@ -64,16 +64,16 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
       bufferingSize: cdk.Size.mebibytes(1),
       encryptionKey: backupKey,
     },
-  })],
+  }),
 });
 
 new firehose.DeliveryStream(stack, 'ZeroBufferingDeliveryStream', {
-  destinations: [new destinations.S3Bucket(bucket, {
+  destination: new destinations.S3Bucket(bucket, {
     compression: destinations.Compression.GZIP,
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
     bufferingInterval: cdk.Duration.seconds(0),
-  })],
+  }),
 });
 
 app.synth();

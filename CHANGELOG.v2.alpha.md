@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.161.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.161.0-alpha.0...v2.161.1-alpha.0) (2024-10-05)
+
+## [2.161.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.160.0-alpha.0...v2.161.0-alpha.0) (2024-10-03)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **kinesisfirehose-destinations:** the `logging` and `logGroup` properties in `DestinationLoggingProps` have been removed and replaced with a single optional property `loggingConfig` which accepts a class of type `LoggingConfig`. 
+
+#### Details
+Combine the `logging` and `logGroup` properties into a single new optional property called `loggingConfig` which accepts a class of type `LoggingConfig`. 
+
+`LoggingConfig` is an abstract class which can be instantiated through either an instance of `EnableLogging` or `DisableLogging` which can be used in the following 3 ways:
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const logGroup = new logs.LogGroup(this, 'Log Group');
+declare const bucket: s3.Bucket;
+
+// 1. Enable logging with no parameters - a log group will be created for you
+const destinationWithLogging = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.EnableLogging(),
+});
+
+// 2. Enable a logging and pass in a logGroup to be used
+const destinationWithLoggingAndMyLogGroup = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.EnableLogging(logGroup),
+});
+
+// 3. Disable logging (does not accept any parameters so it is now impossible to provide a logGroup in this case)
+const destinationWithoutLogging = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.DisableLogging(),
+});
+
+```
+
+### Description of how you validated changes
+unit + integ test
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Features
+
+* **ec2:** add interface endpoint dynamodb ([#30162](https://github.com/aws/aws-cdk/issues/30162)) ([182804a](https://github.com/aws/aws-cdk/commit/182804a3b3116924e2f7a8e50a22e2e7d99c71ae)), closes [#29547](https://github.com/aws/aws-cdk/issues/29547)
+* **pipes-sources:** add Kinesis and DynamoDB ([#29476](https://github.com/aws/aws-cdk/issues/29476)) ([00c2efb](https://github.com/aws/aws-cdk/commit/00c2efb323fdba21191c69e7f970e2cd78c37d68)), closes [#29378](https://github.com/aws/aws-cdk/issues/29378) [#29377](https://github.com/aws/aws-cdk/issues/29377)
+* **pipes-targets:** add API destination ([#30756](https://github.com/aws/aws-cdk/issues/30756)) ([5e08c98](https://github.com/aws/aws-cdk/commit/5e08c981dd2a309c84abc01a0c8b358e55b5cc4c)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-events-targets/lib/api-gateway.ts#L11-L32](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-events-targets/lib/api-gateway.ts/issues/L11-L32)
+* **pipes-targets:** add Kinesis ([#30656](https://github.com/aws/aws-cdk/issues/30656)) ([d0c99d8](https://github.com/aws/aws-cdk/commit/d0c99d85e0bd85beea78ce65f843d319abd493ce))
+* **redshift:** supports excludeCharacters settings for DatabaseSecret ([#30563](https://github.com/aws/aws-cdk/issues/30563)) ([a1c46cf](https://github.com/aws/aws-cdk/commit/a1c46cfc5eefa58640324420a3dc15b32c37e7dd)), closes [#26847](https://github.com/aws/aws-cdk/issues/26847)
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** better fallback for require failures ([#31571](https://github.com/aws/aws-cdk/issues/31571)) ([00cdbcb](https://github.com/aws/aws-cdk/commit/00cdbcba93baa9a605f62ae8c18c0880ec15aea2)), closes [#30067](https://github.com/aws/aws-cdk/issues/30067)
+
+
+### Miscellaneous Chores
+
+* **kinesisfirehose-destinations:** refactor logging to combine logGroup and logging properties into loggingConfig ([#31488](https://github.com/aws/aws-cdk/issues/31488)) ([c4bda64](https://github.com/aws/aws-cdk/commit/c4bda6409cea78dbfa51fb6437f61fb13d0d0abb))
+
 ## [2.160.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.159.1-alpha.0...v2.160.0-alpha.0) (2024-09-24)
 
 
