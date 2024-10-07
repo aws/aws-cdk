@@ -62,7 +62,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const vpc = new ec2.Vpc(this, 'Vpc');
-const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'logging-bucket');
+const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'amzn-s3-demo-bucket');
 
 const cluster = new Cluster(this, 'Redshift', {
   masterUser: {
