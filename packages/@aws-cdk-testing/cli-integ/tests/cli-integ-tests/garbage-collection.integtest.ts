@@ -78,10 +78,10 @@ integTest(
     });
     fixture.log('Garbage collection complete!');
 
-    // assert that the bootstrap bucket is empty
+    // assert that the bootstrap bucket has the object
     await fixture.aws.s3.send(new ListObjectsV2Command({ Bucket: bootstrapBucketName }))
       .then((result) => {
-        expect(result.Contents).toHaveLength(2);
+        expect(result.Contents).toHaveLength(1);
       });
 
     await fixture.cdkDestroy('lambda', {
@@ -134,10 +134,10 @@ integTest(
     });
     fixture.log('Garbage collection complete!');
 
-    // assert that the bootstrap bucket is empty
+    // assert that the bootstrap bucket has the object and is tagged
     await fixture.aws.s3.send(new ListObjectsV2Command({ Bucket: bootstrapBucketName }))
       .then(async (result) => {
-        expect(result.Contents).toHaveLength(2);
+        expect(result.Contents).toHaveLength(2); // also the CFN template
         const key = result.Contents![0].Key;
         const tags = await fixture.aws.s3.send(new GetObjectTaggingCommand({ Bucket: bootstrapBucketName, Key: key }));
         expect(tags.TagSet).toHaveLength(1);
