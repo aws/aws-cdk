@@ -222,7 +222,7 @@ describe('EventBridge target parameters validation', () => {
     }).toThrow('Time must be between 1 and 256 characters, received 0');
   });
 
-  test('Time must be <= 128 characters', () => {
+  test('Time must be <= 256 characters', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'TestStack');
