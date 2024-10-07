@@ -316,7 +316,7 @@ export class GarbageCollector {
     return info.bucketName;
   }
 
-  private async bootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+  private async bootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string | undefined> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bootstrapStack.parameters.Qualifier;
   }
@@ -369,7 +369,7 @@ export class GarbageCollector {
    * understanding of what assets are being used.
    * - stacks in REVIEW_IN_PROGRESS stage
    */
-  private async fetchAllStackTemplates(cfn: CloudFormation, qualifier: string) {
+  private async fetchAllStackTemplates(cfn: CloudFormation, qualifier?: string) {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       let response = await cfn.listStacks({ NextToken: nextToken }).promise();
@@ -405,9 +405,11 @@ export class GarbageCollector {
       // Filter out stacks that we KNOW are using a different bootstrap qualifier
       // This is necessary because a stack under a different bootstrap could coincidentally reference the same hash
       // and cause a false negative (cause an asset to be preserved when its isolated)
+      // This is intentionally done in a way where we ONLY filter out stacks that are meant for a different qualifier
+      // because we are okay with false positives.
       const bootstrapVersion = summary?.Parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
       const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
-      if (splitBootstrapVersion && splitBootstrapVersion.length == 4 && splitBootstrapVersion[2] != qualifier) {
+      if (qualifier && splitBootstrapVersion && splitBootstrapVersion.length == 4 && splitBootstrapVersion[2] != qualifier) {
         // This stack is definitely bootstrapped to a different qualifier so we can safely ignore it
         continue;
       } else {
