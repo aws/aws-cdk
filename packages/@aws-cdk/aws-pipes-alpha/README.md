@@ -424,18 +424,14 @@ declare const sourceQueue: sqs.Queue;
 declare const targetQueue: sqs.Queue;
 declare const logGroup: logs.LogGroup;
 
-const cwlLogDestination = new CloudwatchLogsLogDestination(logGroup);
+const cwlLogDestination = new pipes.CloudwatchLogsLogDestination(logGroup);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
   source: new SqsSource(sourceQueue),
   target: new SqsTarget(targetQueue),
-  
   logLevel: pipes.LogLevel.TRACE,
   logIncludeExecutionData: [pipes.IncludeExecutionData.ALL],
-
-   logDestinations: [
-    new CloudwatchLogsLogDestination(logGroup),
-  ],
+  logDestinations: [cwlLogDestination],
 });
 ```
 
