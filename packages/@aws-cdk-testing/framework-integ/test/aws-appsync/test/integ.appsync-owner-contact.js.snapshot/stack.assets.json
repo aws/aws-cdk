@@ -1,15 +1,15 @@
 {
   "version": "38.0.1",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "cd77d1891b0a8f735849dd17fc60557c01348da18e6cc1de251bd652c7f8a2cf": {
       "source": {
-        "path": "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.template.json",
+        "path": "stack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "cd77d1891b0a8f735849dd17fc60557c01348da18e6cc1de251bd652c7f8a2cf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

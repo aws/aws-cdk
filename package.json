@@ -41,7 +41,8 @@
     "colors": "1.4.0",
     "markdown-it": "^12.3.2",
     "string-width": "^4.2.3",
-    "@types/babel__traverse": "7.18.2"
+    "@types/babel__traverse": "7.18.2",
+    "@smithy/types": "3.5.0"
   },
   "repository": {
     "type": "git",

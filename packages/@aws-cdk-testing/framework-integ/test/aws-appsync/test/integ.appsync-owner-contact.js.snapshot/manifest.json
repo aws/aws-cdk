@@ -1,29 +1,29 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "cdk-route53-integ-delete-existing-record-set.assets": {
+    "stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-route53-integ-delete-existing-record-set.assets.json",
+        "file": "stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-route53-integ-delete-existing-record-set": {
+    "stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-route53-integ-delete-existing-record-set.template.json",
+        "templateFile": "stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d93b59e0a4526a43009ed8bbba643a91892d67d7145637612c1661561871ca69.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd77d1891b0a8f735849dd17fc60557c01348da18e6cc1de251bd652c7f8a2cf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-route53-integ-delete-existing-record-set.assets"
+          "stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -32,85 +32,61 @@
         }
       },
       "dependencies": [
-        "cdk-route53-integ-delete-existing-record-set.assets"
+        "stack.assets"
       ],
       "metadata": {
-        "/cdk-route53-integ-delete-existing-record-set/HostedZone/Resource": [
+        "/stack/OwnerContact/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDB99F866"
+            "data": "OwnerContactCA72337C"
           }
         ],
-        "/cdk-route53-integ-delete-existing-record-set/ExistingRecord/Resource": [
+        "/stack/OwnerContact/Schema": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExistingRecord8E2B2167"
+            "data": "OwnerContactSchemaD692A0DE"
           }
         ],
-        "/cdk-route53-integ-delete-existing-record-set/NewRecord/Resource": [
+        "/stack/OwnerContact/DefaultApiKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NewRecordB9E8EE35"
+            "data": "OwnerContactDefaultApiKeyF4AD6E80"
           }
         ],
-        "/cdk-route53-integ-delete-existing-record-set/NewRecord/DeleteExistingRecordSetCustomResource/Default": [
+        "/stack/OwnerContact/NoneDS/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NewRecordDeleteExistingRecordSetCustomResource3CF98631"
+            "data": "OwnerContactNoneDS6E9204C8"
           }
         ],
-        "/cdk-route53-integ-delete-existing-record-set/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomDeleteExistingRecordSetCustomResourceProviderHandlerAD00231E"
-          }
-        ],
-        "/cdk-route53-integ-delete-existing-record-set/BootstrapVersion": [
+        "/stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-route53-integ-delete-existing-record-set/CheckBootstrapVersion": [
+        "/stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-route53-integ-delete-existing-record-set"
+      "displayName": "stack"
     },
-    "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.assets": {
+    "apiDefaultTestDeployAssert018781F2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.assets.json",
+        "file": "apiDefaultTestDeployAssert018781F2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412": {
+    "apiDefaultTestDeployAssert018781F2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.template.json",
+        "templateFile": "apiDefaultTestDeployAssert018781F2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
@@ -120,7 +96,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.assets"
+          "apiDefaultTestDeployAssert018781F2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -129,23 +105,23 @@
         }
       },
       "dependencies": [
-        "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412.assets"
+        "apiDefaultTestDeployAssert018781F2.assets"
       ],
       "metadata": {
-        "/Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/api/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/api/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert"
+      "displayName": "api/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
