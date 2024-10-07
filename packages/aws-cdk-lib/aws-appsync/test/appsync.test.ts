@@ -395,3 +395,29 @@ test.each([
     },
   });
 });
+
+test('when owner contact is set, they should be used on API', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'owner-contact', {
+    name: 'owner-contact',
+    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    ownerContact: 'test',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    OwnerContact: 'test',
+  });
+});
+
+test('when owner contact exceeds 256 characters, it throws an error', () => {
+  const buildWithOwnerContact = () => {
+    new appsync.GraphqlApi(stack, 'owner-contact-length-exceeded', {
+      name: 'owner-contact',
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      ownerContact: 'a'.repeat(256 + 1),
+    });
+  };
+
+  expect(() => buildWithOwnerContact()).toThrow('You must specify `ownerContact` as a string of 256 characters or less.');
+});
