@@ -24,8 +24,7 @@ export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
  * For backwards compatibility with existing tests (so we don't have to change
  * too much) the inner block is expected to take a `TestFixture` object.
  */
-export function withSpecificCdkApp(
-  appName: string,
+export function withCdkApp(
   block: (context: TestFixture) => Promise<void>,
 ): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
   return async (context: TestContext & AwsContext & DisableBootstrapContext) => {
@@ -37,7 +36,7 @@ export function withSpecificCdkApp(
     context.output.write(` Test directory: ${integTestDir}\n`);
     context.output.write(` Region:         ${context.aws.region}\n`);
 
-    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', appName), integTestDir, context.output);
+    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'app'), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
@@ -86,16 +85,6 @@ export function withSpecificCdkApp(
       }
     }
   };
-}
-
-/**
- * Like `withSpecificCdkApp`, but uses the default integration testing app with a million stacks in it
- */
-export function withCdkApp(
-  block: (context: TestFixture) => Promise<void>,
-): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
-  // 'app' is the name of the default integration app in the `cdk-apps` directory
-  return withSpecificCdkApp('app', block);
 }
 
 export function withCdkMigrateApp<A extends TestContext>(language: string, block: (context: TestFixture) => Promise<void>) {
@@ -199,10 +188,6 @@ export function withDefaultFixture(block: (context: TestFixture) => Promise<void
   return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkApp(block)));
 }
 
-export function withSpecificFixture(appName: string, block: (context: TestFixture) => Promise<void>) {
-  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withSpecificCdkApp(appName, block)));
-}
-
 export function withExtendedTimeoutFixture(block: (context: TestFixture) => Promise<void>) {
   return withAws(withTimeout(EXTENDED_TEST_TIMEOUT_S, withCdkApp(block)));
 }
@@ -273,6 +258,11 @@ interface CommonCdkBootstrapCommandOptions {
    * @default - none
    */
   readonly tags?: string;
+
+  /**
+   * @default - the default CDK qualifier
+   */
+  readonly qualifier?: string;
 }
 
 export interface CdkLegacyBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
@@ -423,7 +413,7 @@ export class TestFixture extends ShellHelper {
     if (options.bootstrapBucketName) {
       args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
     }
-    args.push('--qualifier', this.qualifier);
+    args.push('--qualifier', options.qualifier ?? this.qualifier);
     if (options.cfnExecutionPolicy) {
       args.push('--cloudformation-execution-policies', options.cfnExecutionPolicy);
     }
