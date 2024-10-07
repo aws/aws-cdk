@@ -183,4 +183,106 @@ describe('Garbage Collection', () => {
       type: 'ecr',
     })).toThrow(/ECR garbage collection is not yet supported/);
   });
+
+  test('action = print -- does not tag or delete', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'print',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 3,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+
+    // get tags, but dont put tags
+    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+
+    // no deleting
+    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+  });
+
+  test('action = tag -- does not delete', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'tag',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 3,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+
+    // tags objects
+    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(3);
+
+    // no deleting
+    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+  });
+
+  test('action = delete-tagged -- does not tag', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'delete-tagged',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 3,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+
+    // get tags, but dont put tags
+    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+  });
 });
