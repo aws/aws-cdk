@@ -372,18 +372,21 @@ export class GarbageCollector {
   private async fetchAllStackTemplates(cfn: CloudFormation, qualifier: string) {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
-      const response = await cfn.listStacks({ NextToken: nextToken }).promise();
+      let response = await cfn.listStacks({ NextToken: nextToken }).promise();
 
       // We cannot operate on REVIEW_IN_PROGRESS stacks because we do not know what the template looks like in this case
+      // If we encounter this status, we will wait up to a minute for it to land before erroring out.
       const reviewInProgressStacks = response.StackSummaries?.filter(s => s.StackStatus === 'REVIEW_IN_PROGRESS') ?? [];
       if (reviewInProgressStacks.length > 0) {
-        throw new Error(`Stacks in REVIEW_IN_PROGRESS state are not allowed: ${reviewInProgressStacks.map(s => s.StackName).join(', ')}`);
+        const updatedRequest = await this.waitForStacksAndRefetch(cfn, response, reviewInProgressStacks);
+      response = await updatedRequest.promise();
       }
 
       // Deleted stacks are ignored
+      const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED'];
       stackNames.push(
         ...(response.StackSummaries ?? [])
-          .filter(s => s.StackStatus !== 'DELETE_COMPLETE' && s.StackStatus !== 'DELETE_IN_PROGRESS')
+          .filter(s => !ignoredStatues.includes(s.StackStatus))
           .map(s => s.StackId ?? s.StackName),
       );
 
@@ -419,6 +422,41 @@ export class GarbageCollector {
     print(chalk.red('Done parsing through stacks'));
 
     return templates;
+  }
+  
+  private async waitForStacksAndRefetch(
+    cfn: CloudFormation, 
+    originalResponse: AWS.CloudFormation.ListStacksOutput, 
+    reviewInProgressStacks: AWS.CloudFormation.StackSummary[]
+  ): Promise<AWS.Request<AWS.CloudFormation.ListStacksOutput, AWS.AWSError>> {
+    const maxWaitTime = 60000;
+    const startTime = Date.now();
+  
+    while (Date.now() - startTime < maxWaitTime) {
+      let allStacksUpdated = true;
+  
+      for (const stack of reviewInProgressStacks) {
+        const response = await cfn.describeStacks({ StackName: stack.StackId ?? stack.StackName }).promise();
+        const currentStatus = response.Stacks?.[0]?.StackStatus;
+  
+        if (currentStatus === 'REVIEW_IN_PROGRESS') {
+          allStacksUpdated = false;
+          break;
+        }
+      }
+  
+      if (allStacksUpdated) {
+        // All stacks have left REVIEW_IN_PROGRESS state, refetch the list
+        return cfn.listStacks({ NextToken: originalResponse.NextToken });
+      }
+  
+      // Wait for 15 seconds before checking again
+      await new Promise(resolve => setTimeout(resolve, 15000));
+    }
+  
+    // If we've reached this point, some stacks are still in REVIEW_IN_PROGRESS after waiting
+    const remainingStacks = reviewInProgressStacks.map(s => s.StackName).join(', ');
+    throw new Error(`Stacks still in REVIEW_IN_PROGRESS state after waiting for 1 minute: ${remainingStacks}`);
   }
 }
 
