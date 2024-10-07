@@ -2,7 +2,7 @@ import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway
 import { Construct, IDependable } from 'constructs';
 import { Aws, Annotations, Duration, IResource, Resource, Stack } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
-import { CidrBlock, NetworkUtils, allRouteTableIds } from './util';
+import { NetworkUtils, allRouteTableIds, validateVpcCidrOverlap } from './util';
 import { ISubnetV2 } from './subnet-v2';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
@@ -787,46 +787,4 @@ function routerTypeToPropName(routerType: RouterType) {
     [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
     [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
   })[routerType];
-}
-
-/**
- * Validates if the provided IPv4 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
- *
- * @param requestorVpc The VPC of the requestor.
- * @param acceptorVpc The VPC of the acceptor.
- * @returns True if the IPv4 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
- * @internal
- */
-function validateVpcCidrOverlap(requestorVpc: IVpcV2, acceptorVpc: IVpcV2): boolean {
-
-  const requestorCidrs = [requestorVpc.ipv4CidrBlock];
-  const acceptorCidrs = [acceptorVpc.ipv4CidrBlock];
-
-  if (requestorVpc.secondaryCidrBlock) {
-    requestorCidrs.push(...requestorVpc.secondaryCidrBlock
-      .map(block => block.cidrBlock)
-      .filter((cidr): cidr is string => cidr !== undefined));
-  }
-
-  if (acceptorVpc.secondaryCidrBlock) {
-    acceptorCidrs.push(...acceptorVpc.secondaryCidrBlock
-      .map(block => block.cidrBlock)
-      .filter((cidr): cidr is string => cidr !== undefined));
-  }
-
-  for (const requestorCidr of requestorCidrs) {
-    const requestorRange = new CidrBlock(requestorCidr);
-    const requestorIpRange: [string, string] = [requestorRange.minIp(), requestorRange.maxIp()];
-
-    for (const acceptorCidr of acceptorCidrs) {
-      const acceptorRange = new CidrBlock(acceptorCidr);
-      const acceptorIpRange: [string, string] = [acceptorRange.minIp(), acceptorRange.maxIp()];
-
-      if (requestorRange.rangesOverlap(acceptorIpRange, requestorIpRange)) {
-        return true;
-      }
-    }
-  }
-
-  return false;
 }
