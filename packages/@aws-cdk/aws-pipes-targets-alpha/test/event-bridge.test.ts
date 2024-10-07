@@ -194,7 +194,7 @@ describe('EventBridge target parameters validation', () => {
     }).toThrow('Source must be between 1 and 256 characters, received 0');
   });
 
-  test('Source must be <= 128 characters', () => {
+  test('Source must be <= 256 characters', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'TestStack');
