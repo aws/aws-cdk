@@ -61,7 +61,7 @@ export interface EventBridgeTargetParameters {
 }
 
 /**
- * A EventBridge Pipes target that sends messages to an EventBridge event bus.
+ * An EventBridge Pipes target that sends messages to an EventBridge event bus.
  */
 export class EventBridgeTarget implements ITarget {
   private eventBus: IEventBus;
