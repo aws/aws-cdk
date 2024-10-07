@@ -505,6 +505,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           compareAgainstProcessedTemplate: args.processed,
           quiet: args.quiet,
           changeSet: args['change-set'],
+          toolkitStackName: toolkitStackName,
         });
 
       case 'bootstrap':

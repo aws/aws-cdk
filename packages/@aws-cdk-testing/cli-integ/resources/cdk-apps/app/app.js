@@ -438,9 +438,17 @@ class IamRolesStack extends cdk.Stack {
     // Environment variabile is used to create a bunch of roles to test
     // that large diff templates are uploaded to S3 to create the changeset.
     for(let i = 1; i <= Number(process.env.NUMBER_OF_ROLES) ; i++) {
-      new iam.Role(this, `Role${i}`, {
+      const role = new iam.Role(this, `Role${i}`, {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
+      const cfnRole = role.node.defaultChild;
+
+      // For any extra IAM roles created, add a ton of metadata so that the template size is > 50 KiB.
+      if (i > 1) {
+        for(let i = 1; i <= 30 ; i++) {
+          cfnRole.addMetadata('a'.repeat(1000), 'v');
+        }
+      }
     }
   }
 }
@@ -792,6 +800,7 @@ switch (stackSet) {
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
 
+    // This stack is used to test diff with large templates by creating a role with a ton of metadata
     new IamRolesStack(app, `${stackPrefix}-iam-roles`);
 
     if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
