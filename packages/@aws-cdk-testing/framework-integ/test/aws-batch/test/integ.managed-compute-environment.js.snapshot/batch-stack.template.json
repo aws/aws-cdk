@@ -432,7 +432,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   },
@@ -479,7 +479,7 @@
     },
     "ReplaceComputeEnvironment": true,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {
      "JobExecutionTimeoutMinutes": 30,
      "TerminateJobsOnUpdate": true
@@ -587,7 +587,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   },
@@ -744,7 +744,7 @@
     },
     "ReplaceComputeEnvironment": true,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {
      "JobExecutionTimeoutMinutes": 60,
      "TerminateJobsOnUpdate": false
@@ -876,7 +876,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   },
@@ -982,7 +982,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   },
@@ -1115,7 +1115,7 @@
      "foo": "bar",
      "super": "salamander"
     },
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   },
@@ -1217,7 +1217,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   }
