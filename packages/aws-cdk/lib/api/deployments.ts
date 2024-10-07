@@ -14,7 +14,8 @@ import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateW
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
-import { makeBodyParameterAndUpload } from './util/template-body-parameter';
+import { makeBodyParameter } from './util/template-body-parameter';
+import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
 
 /**
@@ -350,11 +351,11 @@ export class Deployments {
     const cfn = stackSdk.cloudFormation();
 
     // Upload the template, if necessary, before passing it to CFN
-    const cfnParam = await makeBodyParameterAndUpload(
+    const cfnParam = await makeBodyParameter(
       stackArtifact,
       resolvedEnvironment,
+      new AssetManifestBuilder(),
       envResources,
-      this.sdkProvider,
       stackSdk);
 
     const response = await cfn.getTemplateSummary(cfnParam).promise();
