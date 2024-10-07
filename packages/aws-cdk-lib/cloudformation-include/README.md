@@ -18,7 +18,7 @@ It could be in JSON format, in a file `my-template.json`:
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "some-bucket-name"
+        "BucketName": "amzn-s3-demo-bucket"
       }
     }
   }
@@ -32,7 +32,7 @@ Resources:
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: some-bucket-name
+      BucketName: amzn-s3-demo-bucket
 ```
 
 It can be included in a CDK application with the following code:
@@ -85,7 +85,7 @@ for example, the name of the bucket can be changed:
 ```ts
 declare const cfnTemplate: cfn_inc.CfnInclude;
 const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
-cfnBucket.bucketName = 'my-bucket-name';
+cfnBucket.bucketName = 'amzn-s3-demo-bucket';
 ```
 
 You can also refer to the resource when defining other constructs,
@@ -410,7 +410,7 @@ and modify them like any other included template:
 declare const childTemplate: cfn_inc.CfnInclude;
 
 const cfnBucket = childTemplate.getResource('MyBucket') as s3.CfnBucket;
-cfnBucket.bucketName = 'my-new-bucket-name';
+cfnBucket.bucketName = 'amzn-s3-demo-bucket1';
 
 const role = new iam.Role(this, 'MyRole', {
   assumedBy: new iam.AccountRootPrincipal(),

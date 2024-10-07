@@ -11,12 +11,12 @@ PutObject
       "eventSource": "s3.amazonaws.com",
       "resources": [
         {
-          "ARN": "arn:aws:s3:::BUCKETNAME/OBJECTKEY",
+          "ARN": "arn:aws:s3:::amzn-s3-demo-bucket/OBJECTKEY",
           "type": "AWS::S3::Object"
         },
         {
           "accountId": "123456789012",
-          "ARN": "arn:aws:s3:::BUCKETNAME",
+          "ARN": "arn:aws:s3:::amzn-s3-demo-bucket",
           "type": "AWS::S3::Bucket"
         }
       ],
@@ -61,8 +61,8 @@ PutObject
       },
       "responseElements": null,
       "requestParameters": {
-        "bucketName": "BUCKETNAME",
-        "Host": "BUCKETNAME.s3.eu-west-1.amazonaws.com",
+        "bucketName": "amzn-s3-demo-bucket",
+        "Host": "amzn-s3-demo-bucket.s3.eu-west-1.amazonaws.com",
         "key": "OBJECTKEY"
       }
     }

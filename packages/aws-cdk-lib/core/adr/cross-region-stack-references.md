@@ -143,7 +143,7 @@ between these two resources.
 
 ```ts
 const bucket = new s3.Bucket(stack1, 'Bucket', {
-  bucketName: 'mybucket',
+  bucketName: 'amzn-s3-demo-bucket',
 });
 const handler = new lambda.Function(stack2, 'Handler', {
   environment: {
@@ -153,7 +153,7 @@ const handler = new lambda.Function(stack2, 'Handler', {
 bucket.grantRead(handler);
 ```
 
-If I tried to update the bucket, for example changing the name from `mybucket` to `myNewNameBucket`
+If I tried to update the bucket, for example changing the name from `amzn-s3-demo-bucket` to `amzn-s3-demo-bucket1`
 CloudFormation will fail the deployment for stack1 and prevent the bucket from being recreated. This
 is because it _knows_ that `stack2` is using the bucket. If it allows the bucket to change and the
 export to change you could end up in an unrecoverable state for `stack2`.
@@ -162,20 +162,20 @@ export to change you could end up in an unrecoverable state for `stack2`.
 sequenceDiagram
     Note over Stack1,Stack2: Initial Deployment
     activate Stack2
-    Note over Stack1: Create export mybucket
-    Stack2->>+Stack1: Read export mybucket
+    Note over Stack1: Create export amzn-s3-demo-bucket
+    Stack2->>+Stack1: Read export amzn-s3-demo-bucket
     Note over Stack2: Create Function
     deactivate Stack2
     Note over Stack1,Stack2: Second Deployment
     activate Stack2
-    Note over Stack1: Delete export mybucket
-    Note over Stack1: Create export myNewNameBucket
-    Stack2->>+Stack1: Read export myNewNameBucket
+    Note over Stack1: Delete export amzn-s3-demo-bucket
+    Note over Stack1: Create export amzn-s3-demo-bucket1
+    Stack2->>+Stack1: Read export amzn-s3-demo-bucket1
     deactivate Stack2
     Note over Stack2: Update Function Failed!
     Stack2-->>+Stack2: Rollback
     activate Stack2
-    Stack2->>+Stack1: Read export mybucket
+    Stack2->>+Stack1: Read export amzn-s3-demo-bucket
     Note right of Stack1: Export doesn't exist!
     deactivate Stack2
     Note over Stack2: Stack rollback failed!
