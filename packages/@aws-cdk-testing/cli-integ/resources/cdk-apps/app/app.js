@@ -35,7 +35,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
 }
 
 const { Annotations } = cdk;
-const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
+const { StackWithNestedStack, StackWithDoublyNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
 
 const stackPrefix = process.env.STACK_NAME_PREFIX;
 if (!stackPrefix) {
@@ -176,7 +176,7 @@ class DependentStack extends Stack {
     super(scope, id);
 
     const innerDependentStack = new InnerDependentStack(this, 'InnerDependentStack');
-    
+
     this.addDependency(innerDependentStack);
   }
 }
@@ -204,7 +204,7 @@ class MigrateStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueUrl', {
         value: queue.queueUrl,
       });
-      
+
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
@@ -258,7 +258,7 @@ class ImportableStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueUrl', {
         value: queue.queueUrl,
       });
-      
+
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
@@ -844,6 +844,7 @@ switch (stackSet) {
 
     new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
     new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
+    new StackWithDoublyNestedStack(app, `${stackPrefix}-with-doubly-nested-stack`);
     new ListStack(app, `${stackPrefix}-list-stacks`)
     new ListMultipleDependentStack(app, `${stackPrefix}-list-multiple-dependent-stacks`);
 
