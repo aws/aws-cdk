@@ -1143,7 +1143,7 @@ shipped as part of the runtime environment.
 
 *When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.* (fix)
 
-When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in
 the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
 Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
 
@@ -1200,7 +1200,7 @@ database cluster from a snapshot.
 
 *When enabled, the CodeCommit source action is using the default branch name 'main'.* (fix)
 
-When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+When setting up a CodeCommit source action for the source stage of a pipeline, please note that the
 default branch is 'master'.
 However, with the activation of this feature flag, the default branch is updated to 'main'.
 
@@ -1378,7 +1378,7 @@ Other notifications that are not managed by this stack will be kept.
 Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
 of State Machine Task definition.
 
-When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
+When this feature flag is enabled, specify newly introduced props 's3InputUri' and
 's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
 
 
@@ -1413,7 +1413,7 @@ When this feature flag is enabled, we will only grant the necessary permissions 
 *When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.* (fix)
 
 Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
-only the value from 'resourceSignalTimeout' will be used. 
+only the value from 'resourceSignalTimeout' will be used.
 
 When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
 
@@ -1428,11 +1428,11 @@ When this feature flag is enabled, if both initOptions.timeout and resourceSigna
 
 *When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.* (fix)
 
-Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission 
-to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning 
+Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission
+to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning
 it allows invocations from any source.
 
-When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the 
+When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the
 specific AppSync GraphQL API.
 
 
@@ -1446,7 +1446,7 @@ specific AppSync GraphQL API.
 
 *When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.* (fix)
 
-Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default. 
+Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default.
 However, this can cause version mismatches between the '@aws-sdk/*' and '@smithy/*' packages, as they are tightly coupled dependencies in AWS SDK v3.
 
 When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages will be excluded during the bundling process. This ensures that no mismatches
