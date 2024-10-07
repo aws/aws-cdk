@@ -15,9 +15,9 @@ import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { IVpcEndpoint } from '../../aws-ec2';
+import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '../../core';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -73,6 +73,13 @@ export interface IRestApi extends IResourceBase {
    * @param stage The stage (default `*`)
    */
   arnForExecuteApi(method?: string, path?: string, stage?: string): string;
+
+  /**
+   * Add a policy statement to the API's resource policy
+   *
+   * @param statement the policy statement to add
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 }
 
 /**
@@ -369,6 +376,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
+  protected resourcePolicy?: iam.PolicyDocument
   protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
@@ -380,6 +388,8 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
+
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Returns the URL for an HTTP path.
@@ -452,6 +462,31 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       stages: [this.deploymentStage],
       ...options,
     });
+  }
+
+  /**
+   * Add a resource policy that only allows API execution from an Interface VPC Endpoint to create a private API.
+   *
+   * @param interfaceVpcEndpoint the interface VPC endpoint to grant access to
+   */
+  public grantInvoke(interfaceVpcEndpoint: ec2.IInterfaceVpcEndpoint): void {
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      principals: [new iam.AnyPrincipal()],
+      actions: ['execute-api:Invoke'],
+      resources: ['execute-api:/*'],
+      effect: iam.Effect.DENY,
+      conditions: {
+        StringNotEquals: {
+          'aws:SourceVpce': interfaceVpcEndpoint.vpcEndpointId,
+        },
+      },
+    }));
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      principals: [new iam.AnyPrincipal()],
+      actions: ['execute-api:Invoke'],
+      resources: ['execute-api:/*'],
+      effect: iam.Effect.ALLOW,
+    }));
   }
 
   /**
@@ -701,9 +736,10 @@ export class SpecRestApi extends RestApiBase {
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
     super(scope, id, props);
     const apiDefConfig = props.apiDefinition.bind(this);
+    this.resourcePolicy = props.policy;
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.restApiName,
-      policy: props.policy,
+      policy: Lazy.any({ produce: () => this.resourcePolicy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes(),
       body: apiDefConfig.inlineDefinition ?? undefined,
@@ -726,6 +762,21 @@ export class SpecRestApi extends RestApiBase {
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this rest api.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported rest api.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument();
+    this.resourcePolicy.addStatements(statement);
+
+    return { statementAdded: true, policyDependable: this };
   }
 }
 
@@ -775,6 +826,10 @@ export class RestApi extends RestApiBase {
     class Import extends RestApiBase {
       public readonly restApiId = restApiId;
 
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        return { statementAdded: false };
+      }
+
       public get root(): IResource {
         throw new Error('root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
       }
@@ -796,6 +851,10 @@ export class RestApi extends RestApiBase {
       public readonly restApiName = attrs.restApiName ?? id;
       public readonly restApiRootResourceId = attrs.rootResourceId;
       public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        return { statementAdded: false };
+      }
     }
 
     return new Import(scope, id);
@@ -824,10 +883,12 @@ export class RestApi extends RestApiBase {
       throw new Error('both properties minCompressionSize and minimumCompressionSize cannot be set at once.');
     }
 
+    this.resourcePolicy = props.policy;
+
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
-      policy: props.policy,
+      policy: Lazy.any({ produce: () => this.resourcePolicy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes() ?? props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
@@ -854,6 +915,21 @@ export class RestApi extends RestApiBase {
 
     Object.defineProperty(this, APIGATEWAY_RESTAPI_SYMBOL, { value: true });
   }
+
+  /**
+   * Adds a statement to the resource policy associated with this rest api.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported rest api.
+   *
+   * @param statement The policy statement to add
+   */
+    public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+      this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument();
+      this.resourcePolicy.addStatements(statement);
+
+      return { statementAdded: true, policyDependable: this };
+    }
 
   /**
    * Adds a new model.
@@ -938,7 +1014,7 @@ export interface EndpointConfiguration {
    *
    * @default - no ALIASes are created for the endpoint.
    */
-  readonly vpcEndpoints?: IVpcEndpoint[];
+  readonly vpcEndpoints?: ec2.IVpcEndpoint[];
 }
 
 export enum ApiKeySourceType {

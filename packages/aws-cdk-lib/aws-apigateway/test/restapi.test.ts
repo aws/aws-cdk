@@ -3,6 +3,8 @@ import { Template } from '../../assertions';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
 import * as apigw from '../lib';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 
 describe('restapi', () => {
   test('minimal setup', () => {
@@ -1474,4 +1476,352 @@ describe('SpecRestApi', () => {
       ApiKeyRequired: false,
     });
   });
+
+  describe('addToResourcePolicy', () => {
+    test('add a statement to the resource policy for RestApi', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'Api');
+      api.root.addMethod('GET', undefined, {});
+      const statement = new iam.PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [Stack.of(stack).formatArn({
+          service: 'execute-api',
+          resource: '*',
+          sep: '/',
+        })],
+      });
+
+      // WHEN
+      api.addToResourcePolicy(statement);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [{
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              "Fn::Join": [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':*',
+                ]
+              ]
+            },
+          }],
+        },
+      });
+    });
+
+    test('add a statement to the resource policy for RestApi with policy provided', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'Api', {
+        policy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['execute-api:Invoke'],
+              resources: [Stack.of(stack).formatArn({
+                service: 'execute-api',
+                resource: '*',
+                sep: '/',
+              })],
+            }),
+          ],
+        }),
+      });
+      api.root.addMethod('GET', undefined, {});
+
+      const additionalPolicyStatement = new iam.PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [Stack.of(stack).formatArn({
+          service: 'execute-api',
+          resource: '*',
+          sep: '/',
+        })],
+        effect: iam.Effect.DENY,
+        principals: [new iam.AnyPrincipal()],
+        conditions: {
+          StringNotEquals: {
+            "aws:SourceVpce": "vpce-1234567890abcdef0"
+          }
+        }
+      });
+
+      // WHEN
+      api.addToResourcePolicy(additionalPolicyStatement);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'execute-api:Invoke',
+              Effect: 'Allow',
+              Resource: {
+                "Fn::Join": [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':*',
+                  ]
+                ]
+              },
+            },
+            {
+              Action: 'execute-api:Invoke',
+              Effect: 'Deny',
+              Resource: {
+                "Fn::Join": [
+                  '',
+                  [
+                    "arn:",
+                    { "Ref": "AWS::Partition" },
+                    ":execute-api:",
+                    { "Ref": "AWS::Region" },
+                    ":",
+                    { "Ref": "AWS::AccountId" },
+                    ":*"
+                  ]
+                ]
+              },
+              Condition: {
+                StringNotEquals: {
+                  "aws:SourceVpce": "vpce-1234567890abcdef0"
+                }
+              }
+            },
+          ],
+        },
+      });
+    });
+
+    test('add a statement to the resource policy for SpecRestApi', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.SpecRestApi(stack, 'Api', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      });
+      api.root.addMethod('GET', undefined, {});
+      const statement = new iam.PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [Stack.of(stack).formatArn({
+          service: 'execute-api',
+          resource: '*',
+          sep: '/',
+        })],
+      });
+
+      // WHEN
+      api.addToResourcePolicy(statement);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [{
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              "Fn::Join": [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':*',
+                ]
+              ]
+            },
+          }],
+        },
+      });
+    });
+
+    test('add a statement to the resource policy for SpecRestApi with policy provided', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.SpecRestApi(stack, 'Api', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+        policy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['execute-api:Invoke'],
+              resources: [Stack.of(stack).formatArn({
+                service: 'execute-api',
+                resource: '*',
+                sep: '/',
+              })],
+            }),
+          ],
+        }),
+      });
+      api.root.addMethod('GET', undefined, {});
+
+      const additionalPolicyStatement = new iam.PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [Stack.of(stack).formatArn({
+          service: 'execute-api',
+          resource: '*',
+          sep: '/',
+        })],
+        effect: iam.Effect.DENY,
+        principals: [new iam.AnyPrincipal()],
+        conditions: {
+          StringNotEquals: {
+            "aws:SourceVpce": "vpce-1234567890abcdef0"
+          }
+        }
+      });
+
+      // WHEN
+      api.addToResourcePolicy(additionalPolicyStatement);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'execute-api:Invoke',
+              Effect: 'Allow',
+              Resource: {
+                "Fn::Join": [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':*',
+                  ]
+                ]
+              },
+            },
+            {
+              Action: 'execute-api:Invoke',
+              Effect: 'Deny',
+              Resource: {
+                "Fn::Join": [
+                  '',
+                  [
+                    "arn:",
+                    { "Ref": "AWS::Partition" },
+                    ":execute-api:",
+                    { "Ref": "AWS::Region" },
+                    ":",
+                    { "Ref": "AWS::AccountId" },
+                    ":*"
+                  ]
+                ]
+              },
+              Condition: {
+                StringNotEquals: {
+                  "aws:SourceVpce": "vpce-1234567890abcdef0"
+                }
+              }
+            },
+          ],
+        },
+      });
+    });
+
+    test('cannot add a statement to the resource policy for imported RestApi from API ID', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = apigw.RestApi.fromRestApiId(stack, 'Api', 'api-id');
+
+      // THEN
+      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [Stack.of(stack).formatArn({
+          service: 'execute-api',
+          resource: '*',
+          sep: '/',
+        })],
+      }));
+
+      expect(result.statementAdded).toBe(false);
+    });
+
+    test('cannot add a statement to the resource policy for imported RestApi from API Attributes', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = apigw.RestApi.fromRestApiAttributes(stack, 'Api', {
+        restApiId: 'api-id',
+        rootResourceId: 'root-id',
+      });
+
+      // THEN
+      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [Stack.of(stack).formatArn({
+          service: 'execute-api',
+          resource: '*',
+          sep: '/',
+        })],
+      }));
+
+      expect(result.statementAdded).toBe(false);
+    });
+  });
+
+  test('add appropriate permissions by grantInvoke', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const vpcEndpoint = vpc.addInterfaceEndpoint('APIGatewayEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+    });
+    const api = new apigw.RestApi(stack, 'my-api', {
+      endpointTypes: [apigw.EndpointType.PRIVATE],
+    });
+    api.root.addMethod('GET');
+    api.grantInvoke(vpcEndpoint);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Policy: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 'execute-api:Invoke',
+          Effect: 'Deny',
+          Resource: 'execute-api:/*',
+          Condition: {
+            StringNotEquals: {
+              "aws:SourceVpce": {
+                "Ref": "VPCAPIGatewayEndpoint5865ABCA"
+              }
+            }
+          },
+        }, {
+          Action: 'execute-api:Invoke',
+          Effect: 'Allow',
+          Resource: 'execute-api:/*',
+          Principal: {
+            AWS: '*',
+          },
+        }],
+      },
+    });
+  })
 });
