@@ -273,6 +273,11 @@ interface CommonCdkBootstrapCommandOptions {
    * @default - none
    */
   readonly tags?: string;
+
+  /**
+   * @default - the default CDK qualifier
+   */
+  readonly qualifier?: string;
 }
 
 export interface CdkLegacyBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
@@ -423,7 +428,7 @@ export class TestFixture extends ShellHelper {
     if (options.bootstrapBucketName) {
       args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
     }
-    args.push('--qualifier', this.qualifier);
+    args.push('--qualifier', options.qualifier ?? this.qualifier);
     if (options.cfnExecutionPolicy) {
       args.push('--cloudformation-execution-policies', options.cfnExecutionPolicy);
     }

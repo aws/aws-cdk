@@ -186,6 +186,7 @@ export class CdkToolkit {
               parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
               resourcesToImport,
               stream,
+              toolkitStackName: options.toolkitStackName,
             });
           } else {
             debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
@@ -1105,6 +1106,13 @@ export interface DiffOptions {
    * Stack names to diff
    */
   stackNames: string[];
+
+  /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
 
   /**
    * Only select the given stack
