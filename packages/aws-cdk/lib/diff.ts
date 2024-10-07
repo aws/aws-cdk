@@ -127,7 +127,7 @@ export function printSecurityDiff(
   const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   // must output the stack name if there are differences, even if quiet
-  if (!quiet || !diff.isEmpty) {
+  if (stackName && (!quiet || !diff.isEmpty)) {
     stream.write(format('Stack %s\n', chalk.bold(stackName)));
   }
 
