@@ -51,7 +51,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
  */
 async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
   const limit = pLimit(10);
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(parameters.map((name) => limit(async () => {
     try {
       return await ssm.addTagsToResource({
@@ -73,7 +73,7 @@ async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise
  */
 async function removeTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
   const limit = pLimit(10);
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(parameters.map(name => limit(async() => {
     try {
       return await ssm.removeTagsFromResource({

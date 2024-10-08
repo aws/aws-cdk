@@ -87,7 +87,7 @@ async function copyAndRewrite(sourceDirectory: string, targetDirectory: string, 
 
   // Copy all files to new destination and rewrite imports if needed
   const limit = pLimit(20);
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(
     files.map((filePath: string) => limit(async () => {
       const stat = await fs.stat(filePath);

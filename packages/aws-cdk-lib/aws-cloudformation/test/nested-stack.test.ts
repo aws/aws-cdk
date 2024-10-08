@@ -9,7 +9,7 @@ import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer
 import * as cxapi from '../../cx-api';
 import { NestedStack } from '../lib/nested-stack';
 
-/* eslint-disable @aws-cdk/no-core-construct */
+/* eslint-disable @cdklabs/no-core-construct */
 /* eslint-disable max-len */
 
 describeDeprecated('NestedStack', () => {

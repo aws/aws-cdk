@@ -123,7 +123,7 @@ export async function isHotswappableLambdaFunctionChange(
 
         // run all of our updates in parallel
         // Limited set of updates per function
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all(operations);
       },
     });
@@ -367,7 +367,7 @@ async function versionsAndAliases(logicalId: string, evaluateCfnTemplate: Evalua
   const aliasesReferencingVersions = flatMap(versionsReferencingFunction, v =>
     evaluateCfnTemplate.findReferencesTo(v.LogicalId));
   // Limited set of updates per function
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   const aliasesNames = await Promise.all(aliasesReferencingVersions.map(a =>
     evaluateCfnTemplate.evaluateCfnExpression(a.Properties?.Name)));
 
@@ -385,7 +385,7 @@ async function renderAliases(
   const aliasesNames = (await versionsAndAliases(logicalId, evaluateCfnTemplate)).aliasesNames;
 
   // Limited set of updates per function
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   return Promise.all(aliasesNames.map(callbackfn));
 }
 

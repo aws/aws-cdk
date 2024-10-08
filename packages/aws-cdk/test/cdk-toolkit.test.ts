@@ -983,7 +983,7 @@ describe('watch', () => {
       });
 
       test("triggers a 'deploy' twice for two file changes", async () => {
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all([
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
@@ -993,7 +993,7 @@ describe('watch', () => {
       });
 
       test("batches file changes that happen during 'deploy'", async () => {
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all([
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),

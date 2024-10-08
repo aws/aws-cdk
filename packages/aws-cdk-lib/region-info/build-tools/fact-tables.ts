@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 /**
  * The hosted zone Id if using an alias record in Route53.
  *

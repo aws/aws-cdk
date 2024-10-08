@@ -164,7 +164,7 @@ export async function generateAll(
   );
 
   const limit = pLimit(20);
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(Object.keys(moduleMap).map((moduleName) => limit(async () => {
     // Add generated resources and files to module in map
     moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
