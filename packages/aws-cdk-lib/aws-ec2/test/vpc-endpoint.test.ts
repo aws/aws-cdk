@@ -549,7 +549,7 @@ describe('vpc endpoint', () => {
       const stack = new Stack(undefined, 'TestStack', { env: { region: 'us-east-1' } });
       const vpc = new Vpc(stack, 'VPC');
       // WHEN
-      expect(() =>vpc.addInterfaceEndpoint('YourService', {
+      expect(() => vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
           port: 443,
@@ -563,7 +563,7 @@ describe('vpc endpoint', () => {
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012' } });
       const vpc = new Vpc(stack, 'VPC');
       // WHEN
-      expect(() =>vpc.addInterfaceEndpoint('YourService', {
+      expect(() => vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
           port: 443,
@@ -589,7 +589,7 @@ describe('vpc endpoint', () => {
       const vpc = new Vpc(stack, 'VPC');
 
       // WHEN
-      expect(() =>vpc.addInterfaceEndpoint('YourService', {
+      expect(() => vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
           port: 443,
@@ -603,7 +603,7 @@ describe('vpc endpoint', () => {
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
       const vpc = new Vpc(stack, 'VPC');
       // WHEN
-      expect(() =>vpc.addInterfaceEndpoint('YourService', {
+      expect(() => vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
           port: 443,
@@ -932,6 +932,26 @@ describe('vpc endpoint', () => {
       });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'aws.api.global.codecatalyst',
+      });
+    });
+
+    test('test vpc interface endpoint with private dns disabled', () => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('DynamoDB Endpoint', {
+        service: InterfaceVpcEndpointAwsService.DYNAMODB,
+        privateDnsEnabled: false,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.dynamodb',
+        VpcId: stack.resolve(vpc.vpcId),
+        PrivateDnsEnabled: false,
+        VpcEndpointType: 'Interface',
       });
     });
   });
