@@ -1,35 +1,9 @@
-import {
-  Template,
-} from 'aws-cdk-lib/assertions';
-import {
-  UserPool,
-  UserPoolClient,
-  UserPoolIdentityProvider,
-} from 'aws-cdk-lib/aws-cognito';
-import {
-  Role,
-  ServicePrincipal,
-  ArnPrincipal,
-  AnyPrincipal,
-  OpenIdConnectProvider,
-  SamlProvider,
-  SamlMetadataDocument,
-  PolicyStatement,
-  Effect,
-  PolicyDocument,
-} from 'aws-cdk-lib/aws-iam';
-import {
-  Fn,
-  Lazy,
-  Stack,
-} from 'aws-cdk-lib';
-import {
-  IdentityPool,
-  IdentityPoolProviderUrl,
-} from '../lib/identitypool';
-import {
-  RoleMappingMatchType,
-} from '../lib/identitypool-role-attachment';
+import { Template } from 'aws-cdk-lib/assertions';
+import { UserPool, UserPoolClient, UserPoolIdentityProvider } from 'aws-cdk-lib/aws-cognito';
+import { Role, ServicePrincipal, ArnPrincipal, AnyPrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument, PolicyStatement, Effect, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { Fn, Lazy, Stack } from 'aws-cdk-lib';
+import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
+import { RoleMappingMatchType } from '../lib/identitypool-role-attachment';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
 describe('identity pool', () => {
