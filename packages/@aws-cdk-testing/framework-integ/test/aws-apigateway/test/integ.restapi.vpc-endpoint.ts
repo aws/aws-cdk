@@ -1,9 +1,9 @@
-import * as ec2 from "aws-cdk-lib/aws-ec2";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as iam from "aws-cdk-lib/aws-iam";
-import * as cdk from "aws-cdk-lib";
-import { ExpectedResult, IntegTest } from "@aws-cdk/integ-tests-alpha";
-import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 
 class TestStack extends cdk.Stack {
   public testFunction: lambda.IFunction;
@@ -12,17 +12,17 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, "Vpc", {
+    const vpc = new ec2.Vpc(this, 'Vpc', {
       restrictDefaultSecurityGroup: false,
       natGateways: 0,
     });
 
-    const vpcEndpoint = vpc.addInterfaceEndpoint("VpcEndpoint", {
+    const vpcEndpoint = vpc.addInterfaceEndpoint('VpcEndpoint', {
       service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
       privateDnsEnabled: true,
     });
 
-    this.api = new apigateway.RestApi(this, "Api", {
+    this.api = new apigateway.RestApi(this, 'Api', {
       cloudWatchRole: true,
       endpointConfiguration: {
         types: [apigateway.EndpointType.PRIVATE],
@@ -30,18 +30,18 @@ class TestStack extends cdk.Stack {
       },
     });
     this.api.root.addMethod(
-      "GET",
+      'GET',
       new apigateway.MockIntegration({
         requestTemplates: {
-          "application/json": JSON.stringify({
+          'application/json': JSON.stringify({
             statusCode: 200,
           }),
         },
         integrationResponses: [
           {
-            statusCode: "200",
+            statusCode: '200',
             responseTemplates: {
-              "application/json": JSON.stringify({ message: "OK" }),
+              'application/json': JSON.stringify({ message: 'OK' }),
             },
           },
         ],
@@ -49,16 +49,16 @@ class TestStack extends cdk.Stack {
       {
         methodResponses: [
           {
-            statusCode: "200",
+            statusCode: '200',
           },
         ],
       }
     );
     this.api.grantInvoke(vpcEndpoint);
 
-    this.testFunction = new lambda.Function(this, "TestFunction", {
+    this.testFunction = new lambda.Function(this, 'TestFunction', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: "index.handler",
+      handler: 'index.handler',
       code: lambda.Code.fromInline(`
         const https = require('https');
 
@@ -106,7 +106,7 @@ class TestStack extends cdk.Stack {
     });
     this.testFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: ["execute-api:Invoke"],
+        actions: ['execute-api:Invoke'],
         resources: [this.api.arnForExecuteApi()],
       })
     );
@@ -116,23 +116,23 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-const testCase = new TestStack(app, "ApiGatewayVpcEndpointTestStack");
-const integ = new IntegTest(app, "ApiGatewayVpcEndpointInteg", {
+const testCase = new TestStack(app, 'ApiGatewayVpcEndpointTestStack');
+const integ = new IntegTest(app, 'ApiGatewayVpcEndpointInteg', {
   testCases: [testCase],
 });
 
-const assertion = integ.assertions.awsApiCall("Lambda", "invoke", {
+const assertion = integ.assertions.awsApiCall('Lambda', 'invoke', {
   FunctionName: testCase.testFunction.functionName,
-  InvocationType: "RequestResponse",
+  InvocationType: 'RequestResponse',
 });
 assertion.provider.addToRolePolicy({
-  Effect: "Allow",
-  Action: ["lambda:InvokeFunction"],
+  Effect: 'Allow',
+  Action: ['lambda:InvokeFunction'],
   Resource: [testCase.testFunction.functionArn],
 });
 assertion.expect(
   ExpectedResult.objectLike({
     StatusCode: 200,
-    Payload: "{\"statusCode\":200,\"body\":\"{\\\"message\\\":\\\"Success\\\",\\\"data\\\":\\\"{\\\\\\\"message\\\\\\\":\\\\\\\"OK\\\\\\\"}\\\"}\"}",
+    Payload: '{\'statusCode\':200,\'body\':\'{\\\'message\\\':\\\'Success\\\',\\\'data\\\':\\\'{\\\\\\\'message\\\\\\\':\\\\\\\'OK\\\\\\\'}\\\'}\'}',
   })
 );
