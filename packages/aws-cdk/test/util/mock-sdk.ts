@@ -269,11 +269,21 @@ type AwsCallInputOutput<T> =
 // Determine the type of the mock handler from the type of the Input/Output type pair.
 // Don't need to worry about the 'never', TypeScript will propagate it upwards making it
 // impossible to specify the field that has 'never' anywhere in its type.
-type MockHandlerType<AI> =
+type HandlerType<AI> =
     AI extends [any, any] ? (input: AI[0]) => AI[1] : AI;
 
 // Any subset of the full type that synchronously returns the output structure is okay
-export type SyncHandlerSubsetOf<S> = {[K in keyof S]?: MockHandlerType<AwsCallInputOutput<S[K]>>};
+export type SyncHandlerSubsetOf<S> = {[K in keyof S]?: HandlerType<AwsCallInputOutput<S[K]>>};
+
+/**
+ * A jest Mock function we can pass into SdkProvider.stubXXX
+ *
+ * Use as follows:
+ *
+ * ```ts
+ * const mockDescribeStackEvents: MockedHandlerType<CloudFormation['describeStackEvents']> = jest.fn();
+ */
+export type MockedHandlerType<F> = AwsCallInputOutput<F> extends [infer IN, infer OUT] ? jest.Mock<OUT, [IN]> : never;
 
 /**
  * Fake AWS response.

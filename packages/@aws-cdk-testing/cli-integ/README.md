@@ -37,7 +37,7 @@ Test suites are written as a collection of Jest tests, and they are run using Je
 
 ### Setup
 
-Building the @aws-cdk-testing package is not very different from building the rest of the CDK. However, If you are having issues with the tests, you can ensure your enviornment is built properly by following the steps below:
+Building the @aws-cdk-testing package is not very different from building the rest of the CDK. However, If you are having issues with the tests, you can ensure your environment is built properly by following the steps below:
 
 ```shell
 yarn install # Install dependencies

@@ -13,7 +13,7 @@ const service1 = namespace.createService('NonIpService', {
 });
 
 service1.registerNonIpInstance('NonIpInstance', {
-  customAttributes: { arn: 'arn:aws:s3:::mybucket' },
+  customAttributes: { arn: 'arn:aws:s3:::amzn-s3-demo-bucket' },
 });
 
 const service2 = namespace.createService('IpService', {

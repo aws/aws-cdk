@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-servicediscovery-integ": {
         "id": "aws-servicediscovery-integ",
         "path": "aws-servicediscovery-integ",
@@ -30,7 +22,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-servicediscovery.CfnHttpNamespace",
+                  "fqn": "aws-cdk-lib.aws_servicediscovery.CfnHttpNamespace",
                   "version": "0.0.0"
                 }
               },
@@ -54,7 +46,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
+                      "fqn": "aws-cdk-lib.aws_servicediscovery.CfnService",
                       "version": "0.0.0"
                     }
                   },
@@ -69,31 +61,31 @@
                           "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Instance",
                           "aws:cdk:cloudformation:props": {
                             "instanceAttributes": {
-                              "arn": "arn:aws:s3:::mybucket"
+                              "arn": "arn:aws:s3:::amzn-s3-demo-bucket"
                             },
+                            "instanceId": "ervicediscoveryintegMyNamespaceNonIpServiceNonIpInstance45389A2A",
                             "serviceId": {
                               "Fn::GetAtt": [
                                 "MyNamespaceNonIpService3B425009",
                                 "Id"
                               ]
-                            },
-                            "instanceId": "ervicediscoveryintegMyNamespaceNonIpServiceNonIpInstance45389A2A"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-servicediscovery.CfnInstance",
+                          "fqn": "aws-cdk-lib.aws_servicediscovery.CfnInstance",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-servicediscovery.NonIpInstance",
+                      "fqn": "aws-cdk-lib.aws_servicediscovery.NonIpInstance",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
+                  "fqn": "aws-cdk-lib.aws_servicediscovery.Service",
                   "version": "0.0.0"
                 }
               },
@@ -122,7 +114,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
+                      "fqn": "aws-cdk-lib.aws_servicediscovery.CfnService",
                       "version": "0.0.0"
                     }
                   },
@@ -140,48 +132,72 @@
                               "AWS_INSTANCE_IPV4": "54.239.25.192",
                               "AWS_INSTANCE_PORT": "80"
                             },
+                            "instanceId": "awsservicediscoveryintegMyNamespaceIpServiceIpInstance56070746",
                             "serviceId": {
                               "Fn::GetAtt": [
                                 "MyNamespaceIpService220F547F",
                                 "Id"
                               ]
-                            },
-                            "instanceId": "awsservicediscoveryintegMyNamespaceIpServiceIpInstance56070746"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-servicediscovery.CfnInstance",
+                          "fqn": "aws-cdk-lib.aws_servicediscovery.CfnInstance",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-servicediscovery.IpInstance",
+                      "fqn": "aws-cdk-lib.aws_servicediscovery.IpInstance",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
+                  "fqn": "aws-cdk-lib.aws_servicediscovery.Service",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-servicediscovery.HttpNamespace",
+              "fqn": "aws-cdk-lib.aws_servicediscovery.HttpNamespace",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-servicediscovery-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-servicediscovery-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

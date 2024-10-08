@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "b7a1645cff8569b4466615fe3ab9de116c7b27fd34756b26ed0cb9a691cad5b2": {
+      "source": {
+        "path": "aws-cdk-pipes-targets-event-bridge.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b7a1645cff8569b4466615fe3ab9de116c7b27fd34756b26ed0cb9a691cad5b2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

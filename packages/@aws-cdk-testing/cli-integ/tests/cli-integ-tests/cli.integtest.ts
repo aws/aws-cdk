@@ -32,6 +32,7 @@ import {
   withCDKMigrateFixture,
   withExtendedTimeoutFixture,
   randomString,
+  withSpecificFixture,
   withoutBootstrap,
 } from '../../lib';
 
@@ -350,6 +351,13 @@ integTest(
     expect(arns.split('\n').length).toEqual(2);
   }),
 );
+
+integTest('doubly nested stack',
+  withDefaultFixture(async (fixture) => {
+    await fixture.cdkDeploy('with-doubly-nested-stack', {
+      captureStderr: false,
+    });
+  }));
 
 integTest(
   'nested stack with parameters',
@@ -1034,18 +1042,18 @@ integTest(
 integTest(
   'cdk diff with large changeset does not fail',
   withDefaultFixture(async (fixture) => {
-    // GIVEN - small initial stack with only ane IAM role
+    // GIVEN - small initial stack with only one IAM role
     await fixture.cdkDeploy('iam-roles', {
       modEnv: {
         NUMBER_OF_ROLES: '1',
       },
     });
 
-    // WHEN - adding 200 roles to the same stack to create a large diff
+    // WHEN - adding an additional role with a ton of metadata to create a large diff
     const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
       verbose: true,
       modEnv: {
-        NUMBER_OF_ROLES: '200',
+        NUMBER_OF_ROLES: '2',
       },
     });
 
@@ -1054,6 +1062,40 @@ integTest(
     expect(diff).toContain('success: Published');
   }),
 );
+
+integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = 'abc1111';
+  const toolkitStackName = 'custom-stack2';
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  // Deploying small initial stack with only one IAM role
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // WHEN - adding a role with a ton of metadata to create a large diff
+  const diff = await fixture.cdk(['diff', '--toolkit-stack-name', toolkitStackName, '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`, fixture.fullStackName('iam-roles')], {
+    verbose: true,
+    modEnv: {
+      NUMBER_OF_ROLES: '2',
+    },
+  });
+
+  // Assert that the CLI assumes the file publishing role:
+  expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+  expect(diff).toContain('success: Published');
+}));
 
 integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
@@ -2281,6 +2323,84 @@ integTest(
     const noticesUnacknowledgedAlias = await fixture.cdk(['notices', '-u'], { verbose: false });
     expect(noticesUnacknowledged).toEqual(expect.stringMatching(/There are \d{1,} unacknowledged notice\(s\)./));
     expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
+  }),
+);
+
+integTest(
+  'test cdk rollback',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2a';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Rollback
+      await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'test cdk rollback --force',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2b'; // Fail update and also fail rollback
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Should still fail
+      const rollbackOutput = await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(rollbackOutput).toContain('Failing rollback');
+
+      // Rollback and force cleanup
+      await fixture.cdk(['rollback', '--force'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
   }),
 );
 

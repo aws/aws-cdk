@@ -294,7 +294,7 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   crossRegionReplicationBuckets: {
     // note that a physical name of the replication Bucket must be known at synthesis time
     'us-west-1': s3.Bucket.fromBucketAttributes(this, 'UsWest1ReplicationBucket', {
-      bucketName: 'my-us-west-1-replication-bucket',
+      bucketName: 'amzn-s3-demo-bucket',
       // optional KMS key
       encryptionKey: kms.Key.fromKeyArn(this, 'UsWest1ReplicationKey',
         'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012'
