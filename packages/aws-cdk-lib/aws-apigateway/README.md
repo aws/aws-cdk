@@ -1496,6 +1496,20 @@ By performing this association, we can invoke the API gateway using the followin
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
+To restrict access to the API Gateway to only the VPC endpoint, you can use the `grantInvoke` method to [add resource policies](https://docs.aws.amazon.com/apigateway/latest/developerguide/private-api-tutorial.html#private-api-tutorial-attach-resource-policy) to the API Gateway:
+
+```ts
+declare const apiGwVpcEndpoint: ec2.IVpcEndpoint;
+
+const api = new apigateway.RestApi(this, 'PrivateApi', {
+  endpointConfiguration: {
+    types: [ apigateway.EndpointType.PRIVATE ],
+    vpcEndpoints: [ apiGwVpcEndpoint ]
+  }
+});
+api.grantInovke(apiGwVpcEndpoint);
+```
+
 ## Private Integrations
 
 A private integration makes it simple to expose HTTP/HTTPS resources behind an

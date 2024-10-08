@@ -465,11 +465,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
-   * Add a resource policy that only allows API execution from an Interface VPC Endpoint to create a private API.
+   * Add a resource policy that only allows API execution from a VPC Endpoint to create a private API.
    *
-   * @param interfaceVpcEndpoint the interface VPC endpoint to grant access to
+   * @param vpcEndpoint the interface VPC endpoint to grant access to
    */
-  public grantInvoke(interfaceVpcEndpoint: ec2.IInterfaceVpcEndpoint): void {
+  public grantInvoke(vpcEndpoint: ec2.IVpcEndpoint): void {
     this.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.AnyPrincipal()],
       actions: ['execute-api:Invoke'],
@@ -477,7 +477,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       effect: iam.Effect.DENY,
       conditions: {
         StringNotEquals: {
-          'aws:SourceVpce': interfaceVpcEndpoint.vpcEndpointId,
+          'aws:SourceVpce': vpcEndpoint.vpcEndpointId,
         },
       },
     }));
