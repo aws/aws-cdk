@@ -116,7 +116,6 @@
     "p-limit": "^3.1.0",
     "promptly": "^3.2.0",
     "proxy-agent": "^6.4.0",
-    "p-limit": "3.1.0",
     "semver": "^7.6.3",
     "source-map-support": "^0.5.21",
     "strip-ansi": "^6.0.1",
