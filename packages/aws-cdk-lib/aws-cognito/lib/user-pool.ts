@@ -768,6 +768,13 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
+   * The provider name of this user pool resource
+   *
+   * @attribute
+   */
+  readonly userPoolProviderName: string;
+
+  /**
    * Get all identity providers registered with this user pool.
    */
   readonly identityProviders: IUserPoolIdentityProvider[];
@@ -805,6 +812,7 @@ export interface IUserPool extends IResource {
 abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolId: string;
   public abstract readonly userPoolArn: string;
+  public abstract readonly userPoolProviderName: string;
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
@@ -870,10 +878,14 @@ export class UserPool extends UserPoolBase {
     }
 
     const userPoolId = arnParts.resourceName;
+    // ex) cognito-idp.us-east-1.amazonaws.com/us-east-1_abcdefghi
+    const providerName = `cognito-idp.${arnParts.region}.${Stack.of(scope).urlSuffix}/${userPoolId}`;;
 
     class ImportedUserPool extends UserPoolBase {
       public readonly userPoolArn = userPoolArn;
       public readonly userPoolId = userPoolId;
+      public readonly userPoolProviderName = providerName;
+
       constructor() {
         super(scope, id, {
           account: arnParts.account,
