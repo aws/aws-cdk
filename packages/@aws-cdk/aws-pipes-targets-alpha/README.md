@@ -47,7 +47,7 @@ declare const targetQueue: sqs.Queue;
 const pipeTarget = new targets.SqsTarget(targetQueue);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
@@ -68,7 +68,7 @@ const pipeTarget = new targets.SqsTarget(targetQueue,
 );
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
@@ -84,7 +84,7 @@ declare const targetStateMachine: sfn.IStateMachine;
 const pipeTarget = new targets.SfnStateMachine(targetStateMachine,{});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
@@ -102,7 +102,7 @@ const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
 );
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
@@ -121,7 +121,7 @@ const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
 );
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
@@ -137,7 +137,7 @@ declare const targetFunction: lambda.IFunction;
 const pipeTarget = new targets.LambdaFunction(targetFunction,{});
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
@@ -153,7 +153,7 @@ const pipeTarget = new targets.LambdaFunction(targetFunction, {
 });
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
@@ -169,7 +169,7 @@ const pipeTarget = new targets.LambdaFunction(targetFunction, {
 });
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
-    source: new SomeSource(sourceQueue),
+    source: new SqsSource(sourceQueue),
     target: pipeTarget
 });
 ```
