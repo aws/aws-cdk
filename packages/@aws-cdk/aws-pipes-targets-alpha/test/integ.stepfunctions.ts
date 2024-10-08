@@ -1,4 +1,5 @@
-import { IPipe, ISource, InputTransformation, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -36,25 +37,8 @@ const targetStateMachine = new sfn.StateMachine(stack, 'TargetStateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable( putParameterStep),
 });
 
-class TestSource implements ISource {
-  sourceArn: string;
-  sourceParameters = undefined;
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-  bind(_pipe: IPipe): SourceConfig {
-    return {
-      sourceParameters: this.sourceParameters,
-    };
-  }
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
-
 new Pipe(stack, 'Pipe', {
-  source: new TestSource(sourceQueue),
+  source: new SqsSource(sourceQueue),
   target: new SfnStateMachine(targetStateMachine,
     {
       inputTransformation: InputTransformation.fromObject({ body: '<$.body>' }),
