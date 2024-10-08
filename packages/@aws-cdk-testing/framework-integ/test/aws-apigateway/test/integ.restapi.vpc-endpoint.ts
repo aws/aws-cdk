@@ -52,7 +52,7 @@ class TestStack extends cdk.Stack {
             statusCode: '200',
           },
         ],
-      }
+      },
     );
     this.api.grantInvoke(vpcEndpoint);
 
@@ -108,7 +108,7 @@ class TestStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [this.api.arnForExecuteApi()],
-      })
+      }),
     );
     this.testFunction.connections.allowTo(vpcEndpoint, ec2.Port.tcp(443));
   }
@@ -134,5 +134,5 @@ assertion.expect(
   ExpectedResult.objectLike({
     StatusCode: 200,
     Payload: '{\'statusCode\':200,\'body\':\'{\\\'message\\\':\\\'Success\\\',\\\'data\\\':\\\'{\\\\\\\'message\\\\\\\':\\\\\\\'OK\\\\\\\'}\\\'}\'}',
-  })
+  }),
 );
