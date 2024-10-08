@@ -772,7 +772,10 @@ export class CdkToolkit {
 
     const environments = await this.defineEnvironments(userEnvironmentSpecs);
 
-    await Promise.all(environments.map(async (environment) => {
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment) => limit(async () => {
       success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
         const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
@@ -784,7 +787,7 @@ export class CdkToolkit {
         error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
         throw e;
       }
-    }));
+    })));
   }
 
   /**
@@ -833,22 +836,7 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    const limit = pLimit(20);
-
-    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-    await Promise.all(environments.map((environment) => limit(async () => {
-      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
-      try {
-        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
-        const message = result.noOp
-          ? ' ✅  Environment %s bootstrapped (no changes).'
-          : ' ✅  Environment %s bootstrapped.';
-        success(message, chalk.blue(environment.name));
-      } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
-        throw e;
-      }
-    })));
+    return environments;
   }
 
   /**
