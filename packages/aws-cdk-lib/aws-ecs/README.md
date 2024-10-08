@@ -85,6 +85,17 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
+To encrypt the fargate ephemeral storage configure a KMS key. 
+```ts
+declare const key: kms.Key;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { 
+  managedStorageConfiguration: { 
+    fargateEphemeralStorageKmsKey: key,
+  },
+});
+```
+
 The following code imports an existing cluster using the ARN which can be used to
 import an Amazon ECS service either EC2 or Fargate.
 
