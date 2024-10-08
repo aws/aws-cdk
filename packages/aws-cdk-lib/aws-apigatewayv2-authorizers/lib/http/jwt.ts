@@ -37,6 +37,10 @@ export interface HttpJwtAuthorizerProps {
  */
 export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
+  /**
+   * The authorizationType used for JWT Authorizer
+   */
+  public readonly authorizationType = 'JWT';
 
   /**
    * Initialize a JWT authorizer to be bound with HTTP route.
@@ -48,6 +52,18 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
     private readonly id: string,
     private readonly jwtIssuer: string,
     private readonly props: HttpJwtAuthorizerProps) {
+  }
+
+  /**
+   * Return the id of the authorizer if it's been constructed
+   */
+  public get authorizerId(): string {
+    if (!this.authorizer) {
+      throw new Error(
+        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
+      );
+    }
+    return this.authorizer.authorizerId;
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
@@ -64,7 +80,7 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: 'JWT',
+      authorizationType: this.authorizationType,
     };
   }
 }
