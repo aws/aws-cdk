@@ -345,7 +345,7 @@ import { Fn } from 'aws-cdk-lib'
 const authorizerId = Fn.importValue('authorizerId');
 const authorizerType = Fn.importValue('authorizerType');
 
-const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(stack, '', {
+const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(this, 'HttpAuthorizer', {
     authorizerId,
     authorizerType
 });
