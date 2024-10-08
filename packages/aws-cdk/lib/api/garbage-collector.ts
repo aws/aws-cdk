@@ -231,11 +231,13 @@ export class GarbageCollector {
         if (graceDays > 0) {
           print(chalk.white('Filtering out assets that are not old enough to delete'));
           await this.parallelReadAllTags(s3, isolated);
+          // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
           deletables = await Promise.all(isolated.map(async (obj) => {
             const shouldDelete = await obj.isolatedTagBefore(s3, new Date(currentTime - (graceDays * DAY)));
             return shouldDelete ? obj : null;
           })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
 
+          // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
           taggables = await Promise.all(isolated.map(async (obj) => {
             const shouldTag = await obj.noIsolatedTag(s3);
             return shouldTag ? obj : null;
@@ -436,34 +438,34 @@ export class GarbageCollector {
   }
 
   private async waitForStacksAndRefetch(
-    cfn: CloudFormation, 
-    originalResponse: AWS.CloudFormation.ListStacksOutput, 
-    reviewInProgressStacks: AWS.CloudFormation.StackSummary[]
+    cfn: CloudFormation,
+    originalResponse: AWS.CloudFormation.ListStacksOutput,
+    reviewInProgressStacks: AWS.CloudFormation.StackSummary[],
   ): Promise<AWS.Request<AWS.CloudFormation.ListStacksOutput, AWS.AWSError>> {
     const startTime = Date.now();
-  
+
     while (Date.now() - startTime < this.maxWaitTime) {
       let allStacksUpdated = true;
-  
+
       for (const stack of reviewInProgressStacks) {
         const response = await cfn.describeStacks({ StackName: stack.StackId ?? stack.StackName }).promise();
         const currentStatus = response.Stacks?.[0]?.StackStatus;
-  
+
         if (currentStatus === 'REVIEW_IN_PROGRESS') {
           allStacksUpdated = false;
           break;
         }
       }
-  
+
       if (allStacksUpdated) {
         // All stacks have left REVIEW_IN_PROGRESS state, refetch the list
         return cfn.listStacks({ NextToken: originalResponse.NextToken });
       }
-  
+
       // Wait for 15 seconds before checking again
       await new Promise(resolve => setTimeout(resolve, 15000));
     }
-  
+
     // If we've reached this point, some stacks are still in REVIEW_IN_PROGRESS after waiting
     const remainingStacks = reviewInProgressStacks.map(s => s.StackName).join(', ');
     throw new Error(`Stacks still in REVIEW_IN_PROGRESS state after waiting for 1 minute: ${remainingStacks}`);

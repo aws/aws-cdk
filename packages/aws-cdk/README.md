@@ -883,11 +883,12 @@ CDK Garbage Collection.
 
 > [!CAUTION]
 > CDK Garbage Collection is under development and therefore must be opted in via the `--unstable` flag: `cdk gc --unstable=gc`.
-
+>
 > [!WARNING]
 > `cdk gc` currently only supports garbage collecting S3 Assets. You must specify `cdk gc --unstable=gc --type=s3` as ECR asset garbage collection has not yet been implemented.
 
 `cdk gc` garbage collects isolated S3 assets from your bootstrap bucket via the following mechanism: 
+
 - for each object in the bootstrap S3 Bucket, check to see if it is referenced in any existing CloudFormation templates
 - if not, it is treated as isolated and either tagged or deleted, depending on your configuration.
 
@@ -911,6 +912,7 @@ cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30
 
 You can also configure the scope that `cdk gc` performs via the `--action` option. By default, all actions
 are performed, but you can specify `print`, `tag`, or `delete-tagged`.
+
 - `print` performs no changes to your AWS account, but finds and prints the number of isolated assets.
 - `tag` tags any newly isolated assets, but does not delete any isolated assets.
 - `delete-tagged` deletes assets that have been tagged for longer than the buffer days, but does not tag newly isolated assets.
