@@ -29,10 +29,12 @@ Pipe targets are the end point of a EventBridge Pipe.
 
 The following targets are supported:
 
-1. `targets.SqsTarget`: [Send event source to a Queue](#amazon-sqs)
+1. `targets.SqsTarget`: [Send event source to an SQS queue](#amazon-sqs)
 2. `targets.SfnStateMachine`: [Invoke a State Machine from an event source](#aws-step-functions-state-machine)
-3. `targets.LambdaFunction`: [Send event source to a Lambda Function](#aws-lambda-function)
-4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API Destination](#amazon-eventbridge-api-destination)
+3. `targets.LambdaFunction`: [Send event source to a Lambda function](#aws-lambda-function)
+4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API destination](#amazon-eventbridge-api-destination)
+5. `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
+6. `targets.EventBridgeTarget`: [Send event source to an EventBridge event bus](#amazon-eventbridge-event-bus)
 
 ### Amazon SQS
 
@@ -98,7 +100,6 @@ const pipeTarget = new targets.SfnStateMachine(targetStateMachine,
       invocationType: targets.StateMachineInvocationType.FIRE_AND_FORGET,
     }
 );
-
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SomeSource(sourceQueue),
@@ -203,5 +204,72 @@ const apiTarget = new targets.ApiDestinationTarget(dest, {
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
     target: apiTarget,
+});
+```
+
+### Amazon Kinesis Data Stream
+
+A data stream can be used as a target for a pipe. The data stream will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: kinesis.Stream;
+
+const streamTarget = new targets.KinesisTarget(targetStream, {
+    partitionKey: 'pk',
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: streamTarget,
+});
+```
+
+The input to the target data stream can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetStream: kinesis.Stream;
+
+const streamTarget = new targets.KinesisTarget(targetStream, {
+    partitionKey: 'pk',
+    inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: streamTarget,
+});
+```
+
+### Amazon EventBridge Event Bus
+
+An event bus can be used as a target for a pipe. The event bus will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetEventBus: events.EventBus;
+
+const eventBusTarget = new targets.EventBridgeTarget(targetEventBus);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: eventBusTarget,
+});
+```
+
+The input to the target event bus can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetEventBus: events.EventBus;
+
+const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: eventBusTarget,
 });
 ```

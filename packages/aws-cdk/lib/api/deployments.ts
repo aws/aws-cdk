@@ -17,7 +17,8 @@ import { StackActivityMonitor, StackActivityProgress } from './util/cloudformati
 import { StackEventPoller } from './util/cloudformation/stack-event-poller';
 import { RollbackChoice } from './util/cloudformation/stack-status';
 import { replaceEnvPlaceholders } from './util/placeholders';
-import { makeBodyParameterAndUpload } from './util/template-body-parameter';
+import { makeBodyParameter } from './util/template-body-parameter';
+import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
 
 const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
@@ -426,11 +427,11 @@ export class Deployments {
     const cfn = stackSdk.cloudFormation();
 
     // Upload the template, if necessary, before passing it to CFN
-    const cfnParam = await makeBodyParameterAndUpload(
+    const cfnParam = await makeBodyParameter(
       stackArtifact,
       resolvedEnvironment,
+      new AssetManifestBuilder(),
       envResources,
-      this.sdkProvider,
       stackSdk);
 
     const response = await cfn.getTemplateSummary(cfnParam).promise();
