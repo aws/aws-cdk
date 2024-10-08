@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9d946bbac52fb88d3fc7c9ea4f26da0e6a6965417c8ae9fb5464e5342269444.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/582882a43e46336bf196e3d6ce641f77b803ad0beb1c85f9944a32aca0947480.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,6 +53,24 @@
             "data": "StateMachine2E01A3A5"
           }
         ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LlamaStateMachineRoleA1E51172"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LlamaStateMachineRoleDefaultPolicy36666B63"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LlamaStateMachineD0B74BA3"
+          }
+        ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -82,6 +101,7 @@
         "templateFile": "InvokeModelDefaultTestDeployAssert9C0D2DFC.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

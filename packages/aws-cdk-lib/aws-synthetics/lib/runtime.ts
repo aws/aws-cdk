@@ -222,6 +222,19 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_8_0 = new Runtime('syn-nodejs-puppeteer-8.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-9.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 22.12.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** Bug fix to enable visual monitoring capabilities.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_0 = new Runtime('syn-nodejs-puppeteer-9.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
@@ -321,6 +334,19 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-3.0
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_3_0 = new Runtime('syn-python-selenium-3.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-4.0` includes the following:
+   * - Lambda runtime Python 3.9
+   * - Selenium version 4.15.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** for errors in HAR parser logging.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
 
   /**
     * @param name The name of the runtime version

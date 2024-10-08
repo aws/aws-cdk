@@ -12,6 +12,7 @@ export * from './public-key';
 export * from './realtime-log-config';
 export * from './response-headers-policy';
 export * from './web-distribution';
+export * from './origin-access-control';
 
 export * as experimental from './experimental';
 

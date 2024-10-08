@@ -1,6 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
 
 describe('notification', () => {
@@ -226,6 +227,45 @@ describe('notification', () => {
       },
     });
   });
+
+  test('Notification custom resource uses always treat bucket as unmanaged', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    stack.node.setContext(cxapi.S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, true);
+
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', {
+      eventBridgeEnabled: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        EventBridgeConfiguration: {},
+      },
+      Managed: false,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:PutBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 's3:GetBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('check notifications handler runtime version', () => {
     const stack = new cdk.Stack();
 

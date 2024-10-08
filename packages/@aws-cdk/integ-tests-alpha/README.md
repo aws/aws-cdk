@@ -517,11 +517,11 @@ need to do is add a dependency between the calls. There is an helper method `nex
 declare const integ: IntegTest;
 
 integ.assertions.awsApiCall('S3', 'putObject', {
-  Bucket: 'my-bucket',
+  Bucket: 'amzn-s3-demo-bucket',
   Key: 'my-key',
   Body: 'helloWorld',
 }).next(integ.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: 'my-bucket',
+  Bucket: 'amzn-s3-demo-bucket',
   Key: 'my-key',
 }));
 ```

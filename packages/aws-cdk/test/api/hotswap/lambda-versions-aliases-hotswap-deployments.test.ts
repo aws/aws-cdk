@@ -1,7 +1,7 @@
-/* eslint-disable import/order */
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { silentTest } from '../../util/silent';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;
@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('hotswaps a Version if it points to a changed Function, even if it itself is unchanged', async () => {
+  silentTest('hotswaps a Version if it points to a changed Function, even if it itself is unchanged', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -77,7 +77,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('hotswaps a Version if it points to a changed Function, even if it itself is replaced', async () => {
+  silentTest('hotswaps a Version if it points to a changed Function, even if it itself is replaced', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -132,7 +132,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('hotswaps a Version and an Alias if the Function they point to changed', async () => {
+  silentTest('hotswaps a Version and an Alias if the Function they point to changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

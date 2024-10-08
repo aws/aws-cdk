@@ -3,7 +3,7 @@ import { Annotations, Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
-import { App, Stack } from '../../core';
+import { App, Stack, Duration } from '../../core';
 import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxImage,
@@ -1023,4 +1023,200 @@ test('throw if both enclaveEnabled and hibernationEnabled are set to true', () =
       }],
     });
   }).toThrow('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
+});
+
+test('instance with ipv6 address count', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: new InstanceType('t2.micro'),
+    ipv6AddressCount: 2,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't2.micro',
+    Ipv6AddressCount: 2,
+  });
+});
+
+test.each([-1, 0.1, 1.1])('throws if ipv6AddressCount is not a positive integer', (ipv6AddressCount: number) => {
+  // THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      ipv6AddressCount: ipv6AddressCount,
+    });
+  }).toThrow(`\'ipv6AddressCount\' must be a non-negative integer, got: ${ipv6AddressCount}`);
+});
+
+test.each([true, false])('throw error for specifying ipv6AddressCount with associatePublicIpAddress', (associatePublicIpAddress) => {
+  // THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      ipv6AddressCount: 2,
+      associatePublicIpAddress,
+    });
+  }).toThrow('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+});
+
+test('resourceSignalTimeout overwrites initOptions.timeout when feature flag turned off', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: false,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    initOptions: {
+      timeout: Duration.minutes(30),
+    },
+    resourceSignalTimeout: Duration.minutes(10),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT10M',
+      },
+    },
+  });
+});
+
+test('initOptions.timeout and resourceSignalTimeout are both not set. Timeout is set to default of 5 min', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Timeout: 'PT5M',
+      },
+    },
+  });
+});
+
+test('initOptions.timeout is set and not resourceSignalTimeout. Timeout is set to initOptions.timeout value', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    initOptions: {
+      timeout: Duration.minutes(10),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT10M',
+      },
+    },
+  });
+});
+
+test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set to resourceSignalTimeout value', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    resourceSignalTimeout: Duration.minutes(10),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Timeout: 'PT15M',
+      },
+    },
+  });
+});
+
+test('resourceSignalTimeout and initOptions.timeout are both set, sum timeout and log warning', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.EC2_SUM_TIMEOUT_ENABLED]: true,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    init: CloudFormationInit.fromElements(
+      InitCommand.shellCommand('echo hello'),
+    ),
+    initOptions: {
+      timeout: Duration.minutes(10),
+    },
+    resourceSignalTimeout: Duration.minutes(10),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+    CreationPolicy: {
+      ResourceSignal: {
+        Count: 1,
+        Timeout: 'PT20M',
+      },
+    },
+  });
 });
