@@ -148,7 +148,7 @@ export class CloudWatchLogEventMonitor {
       }
     }
     // Limited set of log groups
-    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     return Promise.all(promises);
   }
 
