@@ -182,6 +182,7 @@ export class CloudAssembly {
       throw new Error(`Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`);
     }
     const tree = trees[0];
+    // TODO recombine
 
     if (!(tree instanceof TreeCloudArtifact)) {
       throw new Error('"Tree" artifact is not of expected type');

@@ -57,6 +57,7 @@ export class TreeMetadata extends Construct {
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
         constructInfo: constructInfoFromConstruct(construct),
+        isStack: Stack.isStack(construct),
       };
 
       lookup[node.path] = node;
@@ -71,13 +72,25 @@ export class TreeMetadata extends Construct {
     this._tree = lookup;
 
     const builder = session.assembly;
-    fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, (key: string, value: any) => {
+    const writeNode = (key: string, value: any) => {
       // we are adding in the `parent` attribute for internal use
       // and it doesn't make much sense to include it in the
       // tree.json
       if (key === 'parent') return undefined;
+      if (key === 'isStack') return undefined;
+      if (key === 'stringified') return undefined;
+      if (value && value.isStack && !value.stringified) {
+        value.stringified = true;
+        fs.writeFileSync(path.join(builder.outdir, `tree-${value.path.replaceAll('/', '')}.json`), JSON.stringify(value, writeNode, 2), { encoding: 'utf-8' });
+        const ret = {};
+        (ret as any)[value.id] = 'stack-marker';
+
+        return ret;
+      }
+
       return value;
-    }, 2), { encoding: 'utf-8' });
+    };
+    fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, writeNode, 2), { encoding: 'utf-8' });
 
     builder.addArtifact('Tree', {
       type: ArtifactType.CDK_TREE,
@@ -180,6 +193,7 @@ export interface Node {
   readonly parent?: Node;
   readonly children?: { [key: string]: Node };
   readonly attributes?: { [key: string]: any };
+  readonly isStack?: boolean;
 
   /**
    * Information on the construct class that led to this node, if available
