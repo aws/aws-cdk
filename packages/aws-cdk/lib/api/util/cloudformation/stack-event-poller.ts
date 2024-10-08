@@ -146,10 +146,20 @@ export class StackEventPoller {
    * On the CREATE_IN_PROGRESS, UPDATE_IN_PROGRESS, DELETE_IN_PROGRESS event of a nested stack, poll the nested stack updates
    */
   private trackNestedStack(event: aws.CloudFormation.StackEvent, parentStackLogicalIds: string[]) {
-    const logicalId = event.LogicalResourceId ?? '';
+    const logicalId = event.LogicalResourceId;
+    const physicalResourceId = event.PhysicalResourceId;
+
+    // The CREATE_IN_PROGRESS event for a Nested Stack is emitted twice; first without a PhysicalResourceId
+    // and then with. Ignore this event if we don't have that property yet.
+    //
+    // (At this point, I also don't trust that logicalId is always going to be there so validate that as well)
+    if (!logicalId || !physicalResourceId) {
+      return;
+    }
+
     if (!this.nestedStackPollers[logicalId]) {
       this.nestedStackPollers[logicalId] = new StackEventPoller(this.cfn, {
-        stackName: event.PhysicalResourceId ?? '',
+        stackName: physicalResourceId,
         parentStackLogicalIds: parentStackLogicalIds,
         startTime: event.Timestamp.valueOf(),
       });
