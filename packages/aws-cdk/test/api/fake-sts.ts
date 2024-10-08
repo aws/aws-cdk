@@ -209,7 +209,10 @@ export class FakeSts {
   private decodeMapFromRequestBody(parameter: string, body: Record<string, string>): Tag[] {
     return Object.entries(body)
       .filter(([key, _]) => key.startsWith(`${parameter}.member.`) && key.endsWith('.Key'))
-      .map(([key, tagKey]) => ({ Key: tagKey, Value: body[`${parameter}.member.${key.split('.')[2]}.Value`] }));
+      .map(([key, tagKey]) => ({
+        Key: tagKey,
+        Value: body[`${parameter}.member.${key.split('.')[2]}.Value`],
+      }));
   }
 
   /**
@@ -281,7 +284,7 @@ export class FakeSts {
     const failureRequested = s.match(/<FAIL:([^>]+)>/);
     if (failureRequested) {
       const err = new Error(`STS failing by user request: ${failureRequested[1]}`);
-      (err as any).code = failureRequested[1];
+      (err as any).name = failureRequested[1];
       throw err;
     }
   }

@@ -616,7 +616,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d77fcb7e4497ea7e1720518ba452504bdbe1a6a6de3a766745440129c8397e9e.zip"
+     "S3Key": "03b88dabbf9959e20788fc81687646e0ed6a152c994cfe69b0cd04169b3412b1.zip"
     },
     "Handler": "index.onEventHandler",
     "Role": {
@@ -735,7 +735,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d77fcb7e4497ea7e1720518ba452504bdbe1a6a6de3a766745440129c8397e9e.zip"
+     "S3Key": "03b88dabbf9959e20788fc81687646e0ed6a152c994cfe69b0cd04169b3412b1.zip"
     },
     "Handler": "index.isCompleteHandler",
     "Role": {

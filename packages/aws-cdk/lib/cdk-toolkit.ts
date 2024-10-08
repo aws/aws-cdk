@@ -443,7 +443,7 @@ export class CdkToolkit {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
         throw new Error(
-          [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.code ? [`${e.code}:`] : []), e.message].join(' '),
+          [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
         if (options.cloudWatchLogMonitor) {
@@ -908,19 +908,23 @@ export class CdkToolkit {
     const limit = pLimit(20);
 
     // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-    await Promise.all(environments.map((environment) => limit(async () => {
-      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
-      try {
-        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
-        const message = result.noOp
-          ? ' ✅  Environment %s bootstrapped (no changes).'
-          : ' ✅  Environment %s bootstrapped.';
-        success(message, chalk.blue(environment.name));
-      } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
-        throw e;
-      }
-    })));
+    await Promise.all(
+      environments.map((environment) =>
+        limit(async () => {
+          success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
+          try {
+            const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
+            const message = result.noOp
+              ? ' ✅  Environment %s bootstrapped (no changes).'
+              : ' ✅  Environment %s bootstrapped.';
+            success(message, chalk.blue(environment.name));
+          } catch (e) {
+            error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
+            throw e;
+          }
+        }),
+      ),
+    );
   }
 
   /**

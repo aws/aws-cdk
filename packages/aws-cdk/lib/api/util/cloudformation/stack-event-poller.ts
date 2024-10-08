@@ -88,7 +88,9 @@ export class StackEventPoller {
   private async doPoll(): Promise<ResourceEvent[]> {
     const events: ResourceEvent[] = [];
     try {
-      const eventList = await this.cfn.describeStackEvents({ StackName: this.props.stackName });
+      const eventList = await this.cfn.describeStackEvents({
+        StackName: this.props.stackName,
+      });
       for (const event of eventList) {
         // Event from before we were interested in 'em
         if (this.props.startTime !== undefined && event.Timestamp!.valueOf() < this.props.startTime) {
@@ -130,7 +132,7 @@ export class StackEventPoller {
         }
       }
     } catch (e: any) {
-      if (!(e.code === 'ValidationError' && e.message === `Stack [${this.props.stackName}] does not exist`)) {
+      if (!(e.name === 'ValidationError' && e.message === `Stack [${this.props.stackName}] does not exist`)) {
         throw e;
       }
     }

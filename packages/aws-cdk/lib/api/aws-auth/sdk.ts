@@ -462,7 +462,6 @@ export interface ISSMClient {
 }
 
 export interface IStepFunctionsClient {
-  // listStateMachines(input: ListStateMachinesCommandInput): Promise<ListStateMachinesCommandOutput>;
   updateStateMachine(input: UpdateStateMachineCommandInput): Promise<UpdateStateMachineCommandOutput>;
 }
 

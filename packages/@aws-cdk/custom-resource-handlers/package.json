@@ -31,7 +31,6 @@
     "@aws-sdk/client-ecs": "3.632.0",
     "@aws-sdk/client-ssm": "3.632.0",
     "@aws-sdk/client-kinesis": "3.632.0",
-    "@aws-sdk/client-kms": "3.632.0",
     "@aws-sdk/client-codepipeline": "3.632.0",
     "@aws-sdk/client-redshift": "3.632.0",
     "@aws-sdk/client-account": "3.632.0",

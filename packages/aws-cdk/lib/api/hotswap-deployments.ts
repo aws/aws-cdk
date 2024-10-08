@@ -1,5 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
+import { WaiterResult } from '@smithy/util-waiter';
 import * as chalk from 'chalk';
 import type { SDK, SdkProvider } from './aws-auth';
 import type { DeployStackResult } from './deploy-stack';
@@ -416,7 +417,20 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
 
   // if the SDK call fails, an error will be thrown by the SDK
   // and will prevent the green 'hotswapped!' text from being displayed
-  await hotswapOperation.apply(sdk);
+  try {
+    await hotswapOperation.apply(sdk);
+  } catch (e: any) {
+    if (e.name === 'TimeoutError' || e.name === 'AbortError') {
+      const result: WaiterResult = JSON.parse(e.message);
+      const error = new Error([
+        `Resource is not in the expected state due to waiter status: ${result.state}`,
+        result.reason ? `${result.reason}.` : '',
+      ].join('. '));
+      error.name = e.name;
+      throw error;
+    }
+    throw e;
+  }
 
   for (const name of hotswapOperation.resourceNames) {
     print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));

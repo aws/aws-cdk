@@ -6211,6 +6211,15 @@
     "@smithy/util-buffer-from" "^3.0.0"
     tslib "^2.6.2"
 
+"@smithy/util-waiter@3.1.6", "@smithy/util-waiter@^3.1.6":
+  version "3.1.6"
+  resolved "https://registry.npmjs.org/@smithy/util-waiter/-/util-waiter-3.1.6.tgz#c65870d0c802e33b96112fac5c4471b3bf2eeecb"
+  integrity sha512-xs/KAwWOeCklq8aMlnpk25LgxEYHKOEodfjfKclDMLcBJEVEKzDLxZxBQyztcuPJ7F54213NJS8PxoiHNMdItQ==
+  dependencies:
+    "@smithy/abort-controller" "^3.1.5"
+    "@smithy/types" "^3.5.0"
+    tslib "^2.6.2"
+
 "@smithy/util-waiter@^3.1.2":
   version "3.1.3"
   resolved "https://registry.npmjs.org/@smithy/util-waiter/-/util-waiter-3.1.3.tgz#a633257cc65f83cf5714a0f66665070868c3aa91"
@@ -6218,15 +6227,6 @@
   dependencies:
     "@smithy/abort-controller" "^3.1.2"
     "@smithy/types" "^3.4.0"
-    tslib "^2.6.2"
-
-"@smithy/util-waiter@^3.1.6":
-  version "3.1.6"
-  resolved "https://registry.npmjs.org/@smithy/util-waiter/-/util-waiter-3.1.6.tgz#c65870d0c802e33b96112fac5c4471b3bf2eeecb"
-  integrity sha512-xs/KAwWOeCklq8aMlnpk25LgxEYHKOEodfjfKclDMLcBJEVEKzDLxZxBQyztcuPJ7F54213NJS8PxoiHNMdItQ==
-  dependencies:
-    "@smithy/abort-controller" "^3.1.5"
-    "@smithy/types" "^3.5.0"
     tslib "^2.6.2"
 
 "@szmarczak/http-timer@^5.0.1":

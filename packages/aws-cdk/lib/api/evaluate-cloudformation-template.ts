@@ -283,7 +283,7 @@ export class EvaluateCloudFormationTemplate {
 
     if (Array.isArray(cfnExpression)) {
       // Small arrays in practice
-      // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
       return Promise.all(cfnExpression.map((expr) => this.evaluateCfnExpression(expr)));
     }
 

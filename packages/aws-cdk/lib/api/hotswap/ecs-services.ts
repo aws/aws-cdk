@@ -102,7 +102,7 @@ export async function isHotswappableEcsServiceChange(
         // Step 2 - update the services using that TaskDefinition to point to the new TaskDefinition Revision
         // Forcing New Deployment and setting Minimum Healthy Percent to 0.
         // As CDK HotSwap is development only, this seems the most efficient way to ensure all tasks are replaced immediately, regardless of original amount
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all(
           ecsServicesReferencingTaskDef.map(async (service) => {
             const cluster = service.serviceArn.split('/')[1];

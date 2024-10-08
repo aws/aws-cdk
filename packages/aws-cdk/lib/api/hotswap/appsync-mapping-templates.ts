@@ -173,7 +173,7 @@ async function simpleRetry(fn: () => Promise<any>, numOfRetries: number, errorCo
   try {
     await fn();
   } catch (error: any) {
-    if (error && error.code === errorCodeToRetry && numOfRetries > 0) {
+    if (error && error.name === errorCodeToRetry && numOfRetries > 0) {
       await sleep(1000); // wait a whole second
       await simpleRetry(fn, numOfRetries - 1, errorCodeToRetry);
     } else {
