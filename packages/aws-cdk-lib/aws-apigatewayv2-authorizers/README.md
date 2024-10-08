@@ -334,8 +334,8 @@ api.addRoutes({
 
 // You can only access authorizerId after it's been bound to a route
 // In this example we expect use CfnOutput
-new CfnOutput(this, 'authorizerId', authorizer.authorizerId);
-new CfnOutput(this, 'authorizerType', authorizer.authorizerType);
+new CfnOutput(this, 'authorizerId', { value: authorizer.authorizerId });
+new CfnOutput(this, 'authorizerType', { value: authorizer.authorizerType });
 ```
 
 ```ts
