@@ -1,11 +1,58 @@
 {
  "Resources": {
-  "Bucket83908E77": {
+  "MyQueueE6CA6235": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyQueuePolicy6BBEDDAC": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "MyBucketF68F3FF0",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyQueueE6CA6235",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "MyQueueE6CA6235"
+     }
+    ]
+   }
+  },
+  "MyBucketF68F3FF0": {
    "Type": "AWS::S3::Bucket",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "BucketNotifications8F2E257D": {
+  "MyBucketNotifications46AC0CD2": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
     "ServiceToken": {
@@ -15,34 +62,33 @@
      ]
     },
     "BucketName": {
-     "Ref": "Bucket83908E77"
+     "Ref": "MyBucketF68F3FF0"
     },
     "NotificationConfiguration": {
-     "TopicConfigurations": [
+     "QueueConfigurations": [
       {
        "Events": [
         "s3:ObjectCreated:Put"
-       ],
-       "TopicArn": {
-        "Ref": "TopicBFC7AF6E"
-       }
-      },
-      {
-       "Events": [
-        "s3:ObjectRemoved:*"
        ],
        "Filter": {
         "Key": {
          "FilterRules": [
           {
+           "Name": "suffix",
+           "Value": "bar/"
+          },
+          {
            "Name": "prefix",
-           "Value": "home/myusername/"
+           "Value": "foo/"
           }
          ]
         }
        },
-       "TopicArn": {
-        "Ref": "Topic3DEAE47A7"
+       "QueueArn": {
+        "Fn::GetAtt": [
+         "MyQueueE6CA6235",
+         "Arn"
+        ]
        }
       }
      ]
@@ -51,140 +97,9 @@
     "SkipDestinationValidation": false
    },
    "DependsOn": [
-    "TopicPolicyA1747468",
-    "TopicBFC7AF6E",
-    "Topic3Policy49BDDFBD",
-    "Topic3DEAE47A7"
+    "MyQueuePolicy6BBEDDAC",
+    "MyQueueE6CA6235"
    ]
-  },
-  "TopicBFC7AF6E": {
-   "Type": "AWS::SNS::Topic"
-  },
-  "TopicPolicyA1747468": {
-   "Type": "AWS::SNS::TopicPolicy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sns:Publish",
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket83908E77",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": {
-        "Ref": "TopicBFC7AF6E"
-       },
-       "Sid": "0"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Topics": [
-     {
-      "Ref": "TopicBFC7AF6E"
-     }
-    ]
-   }
-  },
-  "Topic3DEAE47A7": {
-   "Type": "AWS::SNS::Topic"
-  },
-  "Topic3Policy49BDDFBD": {
-   "Type": "AWS::SNS::TopicPolicy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sns:Publish",
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket83908E77",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": {
-        "Ref": "Topic3DEAE47A7"
-       },
-       "Sid": "0"
-      },
-      {
-       "Action": "sns:Publish",
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "Bucket25524B414",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": {
-        "Ref": "Topic3DEAE47A7"
-       },
-       "Sid": "1"
-      },
-      {
-       "Action": "sns:Publish",
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":s3:::",
-            {
-             "Ref": "Bucket3CFB7F7D7"
-            }
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": {
-        "Ref": "Topic3DEAE47A7"
-       },
-       "Sid": "2"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Topics": [
-     {
-      "Ref": "Topic3DEAE47A7"
-     }
-    ]
-   }
   },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
    "Type": "AWS::IAM::Role",
@@ -223,10 +138,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "s3:GetBucketNotification",
-        "s3:PutBucketNotification"
-       ],
+       "Action": "s3:PutBucketNotification",
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -261,94 +173,6 @@
    "DependsOn": [
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-   ]
-  },
-  "Bucket25524B414": {
-   "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "Bucket2NotificationsD9BA2A77": {
-   "Type": "Custom::S3BucketNotifications",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "Bucket25524B414"
-    },
-    "NotificationConfiguration": {
-     "TopicConfigurations": [
-      {
-       "Events": [
-        "s3:ObjectRemoved:*"
-       ],
-       "Filter": {
-        "Key": {
-         "FilterRules": [
-          {
-           "Name": "prefix",
-           "Value": "foo"
-          },
-          {
-           "Name": "suffix",
-           "Value": "foo/bar"
-          }
-         ]
-        }
-       },
-       "TopicArn": {
-        "Ref": "Topic3DEAE47A7"
-       }
-      }
-     ]
-    },
-    "Managed": true,
-    "SkipDestinationValidation": false
-   },
-   "DependsOn": [
-    "Topic3Policy49BDDFBD",
-    "Topic3DEAE47A7"
-   ]
-  },
-  "Bucket3CFB7F7D7": {
-   "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "Bucket3ImportedNotificationsB1625F39": {
-   "Type": "Custom::S3BucketNotifications",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "Bucket3CFB7F7D7"
-    },
-    "NotificationConfiguration": {
-     "TopicConfigurations": [
-      {
-       "Events": [
-        "s3:ObjectCreated:Copy"
-       ],
-       "TopicArn": {
-        "Ref": "Topic3DEAE47A7"
-       }
-      }
-     ]
-    },
-    "Managed": false,
-    "SkipDestinationValidation": false
-   },
-   "DependsOn": [
-    "Topic3Policy49BDDFBD",
-    "Topic3DEAE47A7"
    ]
   }
  },
