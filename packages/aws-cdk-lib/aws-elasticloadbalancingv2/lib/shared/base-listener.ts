@@ -27,6 +27,13 @@ export interface BaseListenerLookupOptions {
    * @default - does not filter by listener port
    */
   readonly listenerPort?: number;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -104,6 +111,7 @@ export abstract class BaseListener extends Resource implements IListener {
         listenerPort: 80,
         securityGroupIds: ['sg-123456789012'],
       } as cxapi.LoadBalancerListenerContextResponse,
+      additionalCacheKey: options.userOptions.additionalCacheKey,
     }).value;
 
     return props;
