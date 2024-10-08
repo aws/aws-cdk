@@ -288,45 +288,21 @@ describe('tests', () => {
       });
     });
 
-    test('http2Enabled is set to true', () => {
+    test.each([true, false])('http2Enabled is set to %s', (http2Enabled) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
-
       // WHEN
       new elbv2.ApplicationLoadBalancer(stack, 'LB', {
         vpc,
-        http2Enabled: true,
+        http2Enabled,
       });
-
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         LoadBalancerAttributes: Match.arrayWith([
           {
             Key: 'routing.http2.enabled',
-            Value: 'true',
-          },
-        ]),
-      });
-    });
-
-    test('http2Enabled is set to false', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
-
-      // WHEN
-      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
-        vpc,
-        http2Enabled: false,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        LoadBalancerAttributes: Match.arrayWith([
-          {
-            Key: 'routing.http2.enabled',
-            Value: 'false',
+            Value: String(http2Enabled),
           },
         ]),
       });
