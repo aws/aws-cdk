@@ -122,6 +122,13 @@ interface GarbageCollectorProps {
    * @default DEFAULT_TOOLKIT_STACK_NAME
    */
   readonly bootstrapStackName?: string;
+
+  /**
+   * Max wait time for retries in milliseconds (for testing purposes).
+   *
+   * @default 60000
+   */
+  readonly maxWaitTime?: number;
 }
 
 /**
@@ -133,6 +140,7 @@ export class GarbageCollector {
   private permissionToDelete: boolean;
   private permissionToTag: boolean;
   private bootstrapStackName: string;
+  private maxWaitTime: number;
 
   public constructor(readonly props: GarbageCollectorProps) {
     this.garbageCollectS3Assets = ['s3', 'all'].includes(props.type);
@@ -140,6 +148,7 @@ export class GarbageCollector {
 
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
+    this.maxWaitTime = props.maxWaitTime ?? 60000;
 
     print(chalk.white(this.permissionToDelete, this.permissionToTag, props.action));
 
@@ -220,13 +229,13 @@ export class GarbageCollector {
         let taggables: S3Asset[] = [];
 
         if (graceDays > 0) {
-          print(chalk.white(`Filtering out assets that are not old enough to delete`));
+          print(chalk.white('Filtering out assets that are not old enough to delete'));
           await this.parallelReadAllTags(s3, isolated);
           deletables = await Promise.all(isolated.map(async (obj) => {
             const shouldDelete = await obj.isolatedTagBefore(s3, new Date(currentTime - (graceDays * DAY)));
             return shouldDelete ? obj : null;
           })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
-          
+
           taggables = await Promise.all(isolated.map(async (obj) => {
             const shouldTag = await obj.noIsolatedTag(s3);
             return shouldTag ? obj : null;
@@ -379,7 +388,7 @@ export class GarbageCollector {
       const reviewInProgressStacks = response.StackSummaries?.filter(s => s.StackStatus === 'REVIEW_IN_PROGRESS') ?? [];
       if (reviewInProgressStacks.length > 0) {
         const updatedRequest = await this.waitForStacksAndRefetch(cfn, response, reviewInProgressStacks);
-      response = await updatedRequest.promise();
+        response = await updatedRequest.promise();
       }
 
       // Deleted stacks are ignored
@@ -425,16 +434,15 @@ export class GarbageCollector {
 
     return templates;
   }
-  
+
   private async waitForStacksAndRefetch(
     cfn: CloudFormation, 
     originalResponse: AWS.CloudFormation.ListStacksOutput, 
     reviewInProgressStacks: AWS.CloudFormation.StackSummary[]
   ): Promise<AWS.Request<AWS.CloudFormation.ListStacksOutput, AWS.AWSError>> {
-    const maxWaitTime = 60000;
     const startTime = Date.now();
   
-    while (Date.now() - startTime < maxWaitTime) {
+    while (Date.now() - startTime < this.maxWaitTime) {
       let allStacksUpdated = true;
   
       for (const stack of reviewInProgressStacks) {

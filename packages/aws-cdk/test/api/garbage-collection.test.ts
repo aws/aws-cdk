@@ -7,6 +7,7 @@ import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
 let garbageCollector: GarbageCollector;
 let mockListStacks: (params: AWS.CloudFormation.Types.ListStacksInput) => AWS.CloudFormation.Types.ListStacksOutput;
+let mockDescribeStacks: (params: AWS.CloudFormation.Types.DescribeStacksInput) => AWS.CloudFormation.Types.DescribeStacksOutput;
 let mockGetTemplateSummary: (params: AWS.CloudFormation.Types.GetTemplateSummaryInput) => AWS.CloudFormation.Types.GetTemplateSummaryOutput;
 let mockGetTemplate: (params: AWS.CloudFormation.Types.GetTemplateInput) => AWS.CloudFormation.Types.GetTemplateOutput;
 let mockListObjectsV2: (params: AWS.S3.Types.ListObjectsV2Request) => AWS.S3.Types.ListObjectsV2Output;
@@ -18,15 +19,14 @@ let stderrMock: jest.SpyInstance;
 let sdk: MockSdkProvider;
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
-  const sdk = new MockSdk();
-  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(sdk, stackProps)));
+  const mockSdk = new MockSdk();
+  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(mockSdk, stackProps)));
 }
 
 beforeEach(() => {
   sdk = new MockSdkProvider({ realSdk: false });
   // By default, we'll return a non-found toolkit info
   (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('GarbageStack'));
-
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
 });
 
@@ -38,9 +38,9 @@ describe('Garbage Collection', () => {
   beforeEach(() => {
     mockListStacks = jest.fn().mockResolvedValue({
       StackSummaries: [
-        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE'},
-        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE'},
-      ]
+        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
+        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+      ],
     });
     mockGetTemplateSummary = jest.fn().mockReturnValue({});
     mockGetTemplate = jest.fn().mockReturnValue({
@@ -58,16 +58,18 @@ describe('Garbage Collection', () => {
     });
     mockGetObjectTagging = jest.fn().mockImplementation((params) => {
       return Promise.resolve({
-        TagSet: params.Key === 'asset2' ? [{ Key: "ISOLATED_TAG", Value: new Date().toISOString() }] : []
+        TagSet: params.Key === 'asset2' ? [{ Key: 'ISOLATED_TAG', Value: new Date().toISOString() }] : [],
       });
     });
     mockPutObjectTagging = jest.fn();
     mockDeleteObjects = jest.fn();
+    mockDescribeStacks = jest.fn();
 
     sdk.stubCloudFormation({
       listStacks: mockListStacks,
       getTemplateSummary: mockGetTemplateSummary,
       getTemplate: mockGetTemplate,
+      describeStacks: mockDescribeStacks,
     });
     sdk.stubS3({
       listObjectsV2: mockListObjectsV2,
@@ -113,7 +115,7 @@ describe('Garbage Collection', () => {
 
     // assets are to be deleted
     expect(mockDeleteObjects).toHaveBeenCalledWith({
-      Bucket: "BUCKET_NAME",
+      Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
           { Key: 'asset1' },
@@ -285,4 +287,122 @@ describe('Garbage Collection', () => {
     expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
     expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
   });
+
+  test('stackStatus in REVIEW_IN_PROGRESS means we wait until it changes', async () => {  
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+  
+    // Mock the listStacks call
+    const mockListStacksStatus = jest.fn()
+      .mockResolvedValueOnce({
+        StackSummaries: [
+          { StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' },
+          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+        ],
+      })
+      .mockResolvedValueOnce({
+        StackSummaries: [
+          { StackName: 'Stack1', StackStatus: 'UPDATE_COMPLETE' },
+          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+        ],
+      });
+  
+    // Mock the describeStacks call
+    const mockDescribeStacksStatus = jest.fn()
+      .mockResolvedValueOnce({
+        Stacks: [{ StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' }],
+      })
+      .mockResolvedValueOnce({
+        Stacks: [{ StackName: 'Stack1', StackStatus: 'UPDATE_COMPLETE' }],
+      });
+  
+    sdk.stubCloudFormation({
+      listStacks: mockListStacksStatus,
+      describeStacks: mockDescribeStacksStatus,
+      getTemplateSummary: mockGetTemplateSummary,
+      getTemplate: mockGetTemplate,
+    });
+  
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'full',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 3,
+      type: 's3',
+    });
+  
+    await garbageCollector.garbageCollect();
+  
+    // describe and list are called as expected
+    expect(mockDescribeStacksStatus).toHaveBeenCalledTimes(2);
+    expect(mockListStacksStatus).toHaveBeenCalledTimes(2);
+
+    // everything else runs as expected:
+    // assets tagged
+    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(3);
+
+    // no deleting
+    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+  }, 60000);
+
+  test('stackStatus in REVIEW_IN_PROGRESS means we wait until it changes', async () => {  
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+  
+    // Mock the listStacks call
+    const mockListStacksStatus = jest.fn()
+      .mockResolvedValue({
+        StackSummaries: [
+          { StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' },
+          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+        ],
+      });
+  
+    // Mock the describeStacks call
+    const mockDescribeStacksStatus = jest.fn()
+      .mockResolvedValue({
+        Stacks: [{ StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' }],
+      });
+  
+    sdk.stubCloudFormation({
+      listStacks: mockListStacksStatus,
+      describeStacks: mockDescribeStacksStatus,
+      getTemplateSummary: mockGetTemplateSummary,
+      getTemplate: mockGetTemplate,
+    });
+  
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'full',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 3,
+      type: 's3',
+      maxWaitTime: 100, // Wait for only 100ms in tests
+    });
+  
+    await expect(garbageCollector.garbageCollect()).rejects.toThrow(/Stacks still in REVIEW_IN_PROGRESS state after waiting for 1 minute/);
+  }, 60000);
 });
