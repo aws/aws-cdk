@@ -1,0 +1,13 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "SQSBucketNotificationsTest4/DefaultTest": {
+      "stacks": [
+        "sqs-bucket-notifications-4"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SQSBucketNotificationsTest4/DefaultTest/DeployAssert",
+      "assertionStackName": "SQSBucketNotificationsTest4DefaultTestDeployAssert6B24C9B3"
+    }
+  }
+}

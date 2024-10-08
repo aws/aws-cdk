@@ -22,11 +22,6 @@ test('queues can be used as destinations', () => {
             'sqs:GetQueueAttributes',
             'sqs:GetQueueUrl',
           ],
-          Condition: {
-            ArnLike: {
-              'aws:SourceArn': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
-            },
-          },
           Effect: 'Allow',
           Principal: {
             Service: 's3.amazonaws.com',
@@ -72,6 +67,9 @@ test('queues can be used as destinations', () => {
 
   expect(resources.BucketNotifications8F2E257D.DependsOn)
     .toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
+
+  Annotations.fromStack(stack).hasWarning('/Default/Bucket/Notifications', 'Consider passing \`shouldAddGlobalS3PermissionToKMSandSQS:false\` and add restricted permission with condition - \'aws:SourceArn\': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]');
+
 });
 
 test('if the queue is encrypted with a custom kms key, the key resource policy is updated to allow s3 to read messages', () => {
@@ -96,6 +94,8 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
       }]),
     },
   });
+
+  Annotations.fromStack(stack).hasWarning('/Default/Bucket/Notifications', 'Consider passing \`shouldAddGlobalS3PermissionToKMSandSQS:false\` and add restricted permission with condition - \'aws:SourceArn\': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]');
 });
 
 test('if the queue is encrypted with a imported kms key, printout warning', () => {
@@ -120,4 +120,269 @@ test('if the queue is encrypted with a imported kms key, printout warning', () =
     },
     Resource: '*',
   }, null, 2)} [ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded]`);
+
+  Annotations.fromStack(stack).hasWarning('/Default/Bucket/Notifications', 'Consider passing \`shouldAddGlobalS3PermissionToKMSandSQS:false\` and add restricted permission with condition - \'aws:SourceArn\': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]');
+});
+
+test('queues can be used as destinations with global s3 permission for Object creation', () => {
+  const stack = new Stack();
+
+  const key = new kms.Key(stack, 'Key');
+  const queue = new sqs.Queue(stack, 'Queue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+  const bucket = new s3.Bucket(stack, 'Bucket', {
+    encryptionKey: key,
+  });
+
+  bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([{
+        Action: 'kms:*',
+        Effect: 'Allow',
+        Principal: {
+          AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+        },
+        Resource: '*',
+      }, {
+        Action: [
+          'kms:Decrypt',
+          'kms:Encrypt',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+        ],
+        Effect: 'Allow',
+        Principal: { Service: 's3.amazonaws.com' },
+        Resource: '*',
+      }]),
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
+          },
+          Resource: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [
+      {
+        Ref: 'Queue4A7E3555',
+      },
+    ],
+  });
+
+  Annotations.fromStack(stack).hasWarning('/Default/Bucket/Notifications', 'Consider passing \`shouldAddGlobalS3PermissionToKMSandSQS:false\` and add restricted permission with condition - \'aws:SourceArn\': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]');
+});
+
+test('queues can be used as destinations ignoring global s3 permissions added by kms.grantEncryptDecrypt(), queue.grantSendMessages() for Object creation', () => {
+  const stack = new Stack();
+
+  const key = new kms.Key(stack, 'Key');
+  const queue = new sqs.Queue(stack, 'Queue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+  const bucket = new s3.Bucket(stack, 'Bucket', {
+    encryptionKey: key,
+  });
+
+  bucket.addObjectCreatedNotification(new notif.SqsDestination(queue, false));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayEquals([{
+        Action: 'kms:*',
+        Effect: 'Allow',
+        Principal: {
+          AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+        },
+        Resource: '*',
+      }, {
+        Action: [
+          'kms:GenerateDataKey*',
+          'kms:Decrypt', // kms:Encrypt, kms:ReEncrypt* is not being added
+        ],
+        Effect: 'Allow',
+        Principal: { Service: 's3.amazonaws.com' },
+        Resource: '*',
+      }]),
+    },
+  });
+
+  const resources = Template.fromStack(stack).findResources('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
+          },
+          Resource: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [
+      {
+        Ref: 'Queue4A7E3555',
+      },
+    ],
+  });
+  expect(resources).toEqual({});
+
+  const warning = 'You have opted out to add global permission for KMS & SQS Key Policy. Consider manually adding kms.grantEncryptDecrypt(), queue.grantSendMessages()';
+  Annotations.fromStack(stack).hasWarning('/Default/Bucket/Notifications', `${warning} [ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded]`);
+});
+
+test('queues can be used as destinations with global s3 permission for Object deletion', () => {
+  const stack = new Stack();
+
+  const key = new kms.Key(stack, 'Key');
+  const queue = new sqs.Queue(stack, 'Queue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+  const bucket = new s3.Bucket(stack, 'Bucket', {
+    encryptionKey: key,
+  });
+
+  bucket.addObjectRemovedNotification(new notif.SqsDestination(queue));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([{
+        Action: 'kms:*',
+        Effect: 'Allow',
+        Principal: {
+          AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+        },
+        Resource: '*',
+      }, {
+        Action: [
+          'kms:Decrypt',
+          'kms:Encrypt',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+        ],
+        Effect: 'Allow',
+        Principal: { Service: 's3.amazonaws.com' },
+        Resource: '*',
+      }]),
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
+          },
+          Resource: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [
+      {
+        Ref: 'Queue4A7E3555',
+      },
+    ],
+  });
+
+  Annotations.fromStack(stack).hasWarning('/Default/Bucket/Notifications', 'Consider passing \`shouldAddGlobalS3PermissionToKMSandSQS:false\` and add restricted permission with condition - \'aws:SourceArn\': bucket.bucketArn [ack: @aws-cdk/aws-s3-notifications:securityWarning]');
+});
+
+test('queues can be used as destinations ignoring global s3 permissions added by kms.grantEncryptDecrypt(), queue.grantSendMessages() for Object deletion', () => {
+  const stack = new Stack();
+
+  const key = new kms.Key(stack, 'Key');
+  const queue = new sqs.Queue(stack, 'Queue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+  const bucket = new s3.Bucket(stack, 'Bucket', {
+    encryptionKey: key,
+  });
+
+  bucket.addObjectRemovedNotification(new notif.SqsDestination(queue, false));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([{
+        Action: 'kms:*',
+        Effect: 'Allow',
+        Principal: {
+          AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+        },
+        Resource: '*',
+      }, {
+        Action: [
+          'kms:GenerateDataKey*',
+          'kms:Decrypt',
+        ],
+        Effect: 'Allow',
+        Principal: { Service: 's3.amazonaws.com' },
+        Resource: '*',
+      }]),
+    },
+  });
+
+  const resources = Template.fromStack(stack).findResources('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
+          },
+          Resource: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [
+      {
+        Ref: 'Queue4A7E3555',
+      },
+    ],
+  });
+  expect(resources).toEqual({});
+  const warning = 'You have opted out to add global permission for KMS & SQS Key Policy. Consider manually adding kms.grantEncryptDecrypt(), queue.grantSendMessages()';
+  Annotations.fromStack(stack).hasWarning('/Default/Bucket/Notifications', `${warning} [ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded]`);
 });
