@@ -1,15 +1,15 @@
 {
   "version": "36.0.24",
   "files": {
-    "0bea6369f4826169fd9d375b2c98a62d7801c95ab5473313f9deedb8b0bb4249": {
+    "153ab3fd033eba1333b28a9acef00ff0d7753ea3eba4f170b8e805244d082f9f": {
       "source": {
-        "path": "TestStack2.template.json",
+        "path": "sns-bucket-notifications.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0bea6369f4826169fd9d375b2c98a62d7801c95ab5473313f9deedb8b0bb4249.json",
+          "objectKey": "153ab3fd033eba1333b28a9acef00ff0d7753ea3eba4f170b8e805244d082f9f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
