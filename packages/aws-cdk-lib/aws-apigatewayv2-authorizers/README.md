@@ -307,8 +307,8 @@ import software.amazon.awscdk.aws_apigatewayv2_authorizers.*;
 import software.amazon.awscdk.aws_apigatewayv2_authorizers.WebSocketIamAuthorizer;
 ```
 
-## Import an existing HTTP Authorizer
-If you want to import av existing HTTP Authorizer you can retrieve the authorizer id once it has been bound to a route, store it where you prefer, and then pass the values to
+## Export HTTP Authorizer Id
+You can retrieve the authorizer's id once it has been bound to a route to export the value.
 
 `HttpAuthorizer.fromHttpAuthorizerAttributes`
 
@@ -337,6 +337,9 @@ api.addRoutes({
 new CfnOutput(this, 'authorizerId', { value: authorizer.authorizerId });
 new CfnOutput(this, 'authorizerType', { value: authorizer.authorizerType });
 ```
+
+## Import an existing HTTP Authorizer
+If you want to import av existing HTTP Authorizer you simply provide the authorizer id and authorizer type used when the authorizer was created.
 
 ```ts
 import { HttpAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2';
