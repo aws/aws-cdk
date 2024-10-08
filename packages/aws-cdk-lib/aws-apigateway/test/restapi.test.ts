@@ -1,10 +1,10 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
-import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
-import * as apigw from '../lib';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
+import * as apigw from '../lib';
 
 describe('restapi', () => {
   test('minimal setup', () => {
@@ -1503,7 +1503,7 @@ describe('SpecRestApi', () => {
             Action: 'execute-api:Invoke',
             Effect: 'Allow',
             Resource: {
-              "Fn::Join": [
+              'Fn::Join': [
                 '',
                 [
                   'arn:',
@@ -1513,8 +1513,8 @@ describe('SpecRestApi', () => {
                   ':',
                   { Ref: 'AWS::AccountId' },
                   ':*',
-                ]
-              ]
+                ],
+              ],
             },
           }],
         },
@@ -1551,9 +1551,9 @@ describe('SpecRestApi', () => {
         principals: [new iam.AnyPrincipal()],
         conditions: {
           StringNotEquals: {
-            "aws:SourceVpce": "vpce-1234567890abcdef0"
-          }
-        }
+            'aws:SourceVpce': 'vpce-1234567890abcdef0',
+          },
+        },
       });
 
       // WHEN
@@ -1568,7 +1568,7 @@ describe('SpecRestApi', () => {
               Action: 'execute-api:Invoke',
               Effect: 'Allow',
               Resource: {
-                "Fn::Join": [
+                'Fn::Join': [
                   '',
                   [
                     'arn:',
@@ -1578,32 +1578,32 @@ describe('SpecRestApi', () => {
                     ':',
                     { Ref: 'AWS::AccountId' },
                     ':*',
-                  ]
-                ]
+                  ],
+                ],
               },
             },
             {
               Action: 'execute-api:Invoke',
               Effect: 'Deny',
               Resource: {
-                "Fn::Join": [
+                'Fn::Join': [
                   '',
                   [
-                    "arn:",
-                    { "Ref": "AWS::Partition" },
-                    ":execute-api:",
-                    { "Ref": "AWS::Region" },
-                    ":",
-                    { "Ref": "AWS::AccountId" },
-                    ":*"
-                  ]
-                ]
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':*',
+                  ],
+                ],
               },
               Condition: {
                 StringNotEquals: {
-                  "aws:SourceVpce": "vpce-1234567890abcdef0"
-                }
-              }
+                  'aws:SourceVpce': 'vpce-1234567890abcdef0',
+                },
+              },
             },
           ],
         },
@@ -1637,7 +1637,7 @@ describe('SpecRestApi', () => {
             Action: 'execute-api:Invoke',
             Effect: 'Allow',
             Resource: {
-              "Fn::Join": [
+              'Fn::Join': [
                 '',
                 [
                   'arn:',
@@ -1647,8 +1647,8 @@ describe('SpecRestApi', () => {
                   ':',
                   { Ref: 'AWS::AccountId' },
                   ':*',
-                ]
-              ]
+                ],
+              ],
             },
           }],
         },
@@ -1686,9 +1686,9 @@ describe('SpecRestApi', () => {
         principals: [new iam.AnyPrincipal()],
         conditions: {
           StringNotEquals: {
-            "aws:SourceVpce": "vpce-1234567890abcdef0"
-          }
-        }
+            'aws:SourceVpce': 'vpce-1234567890abcdef0',
+          },
+        },
       });
 
       // WHEN
@@ -1703,7 +1703,7 @@ describe('SpecRestApi', () => {
               Action: 'execute-api:Invoke',
               Effect: 'Allow',
               Resource: {
-                "Fn::Join": [
+                'Fn::Join': [
                   '',
                   [
                     'arn:',
@@ -1713,32 +1713,32 @@ describe('SpecRestApi', () => {
                     ':',
                     { Ref: 'AWS::AccountId' },
                     ':*',
-                  ]
-                ]
+                  ],
+                ],
               },
             },
             {
               Action: 'execute-api:Invoke',
               Effect: 'Deny',
               Resource: {
-                "Fn::Join": [
+                'Fn::Join': [
                   '',
                   [
-                    "arn:",
-                    { "Ref": "AWS::Partition" },
-                    ":execute-api:",
-                    { "Ref": "AWS::Region" },
-                    ":",
-                    { "Ref": "AWS::AccountId" },
-                    ":*"
-                  ]
-                ]
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':*',
+                  ],
+                ],
               },
               Condition: {
                 StringNotEquals: {
-                  "aws:SourceVpce": "vpce-1234567890abcdef0"
-                }
-              }
+                  'aws:SourceVpce': 'vpce-1234567890abcdef0',
+                },
+              },
             },
           ],
         },
@@ -1808,10 +1808,10 @@ describe('SpecRestApi', () => {
           Resource: 'execute-api:/*',
           Condition: {
             StringNotEquals: {
-              "aws:SourceVpce": {
-                "Ref": "VPCAPIGatewayEndpoint5865ABCA"
-              }
-            }
+              'aws:SourceVpce': {
+                Ref: 'VPCAPIGatewayEndpoint5865ABCA',
+              },
+            },
           },
         }, {
           Action: 'execute-api:Invoke',
@@ -1823,5 +1823,5 @@ describe('SpecRestApi', () => {
         }],
       },
     });
-  })
+  });
 });

@@ -924,12 +924,12 @@ export class RestApi extends RestApiBase {
    *
    * @param statement The policy statement to add
    */
-    public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-      this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument();
-      this.resourcePolicy.addStatements(statement);
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument();
+    this.resourcePolicy.addStatements(statement);
 
-      return { statementAdded: true, policyDependable: this };
-    }
+    return { statementAdded: true, policyDependable: this };
+  }
 
   /**
    * Adds a new model.
