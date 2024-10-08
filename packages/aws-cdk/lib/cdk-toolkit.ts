@@ -31,6 +31,10 @@ import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
+
 export interface CdkToolkitProps {
 
   /**
@@ -138,15 +142,11 @@ export class CdkToolkit {
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, quiet))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        if (!quiet) {
-          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        }
-
         const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
@@ -161,7 +161,6 @@ export class CdkToolkit {
         let changeSet = undefined;
 
         if (options.changeSet) {
-
           let stackExists = false;
           try {
             stackExists = await this.props.deployments.stackExists({
@@ -171,7 +170,9 @@ export class CdkToolkit {
             });
           } catch (e: any) {
             debug(e.message);
-            stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+            if (!quiet) {
+              stream.write(`Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`);
+            }
             stackExists = false;
           }
 
@@ -185,20 +186,19 @@ export class CdkToolkit {
               parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
               resourcesToImport,
               stream,
+              toolkitStackName: options.toolkitStackName,
             });
           } else {
             debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
           }
         }
 
-        if (resourcesToImport) {
-          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
-        }
-
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, quiet, stack.displayName, changeSet)))
+          : (printStackDiff(
+            currentTemplate, stack, strict, contextLines, quiet, stack.displayName, changeSet, !!resourcesToImport, stream, nestedStacks,
+          ));
 
         diffs += stackCount;
       }
@@ -212,14 +212,6 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     if (options.watch) {
       return this.watch(options);
-    }
-
-    if (options.notificationArns) {
-      options.notificationArns.map( arn => {
-        if (!validateSnsTopicArn(arn)) {
-          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
-        }
-      });
     }
 
     const startSynthTime = new Date().getTime();
@@ -318,7 +310,17 @@ export class CdkToolkit {
         }
       }
 
-      const stackIndex = stacks.indexOf(stack)+1;
+      let notificationArns: string[] = [];
+      notificationArns = notificationArns.concat(options.notificationArns ?? []);
+      notificationArns = notificationArns.concat(stack.notificationArns);
+
+      notificationArns.map(arn => {
+        if (!validateSnsTopicArn(arn)) {
+          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+        }
+      });
+
+      const stackIndex = stacks.indexOf(stack) + 1;
       print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
       const startDeployTime = new Date().getTime();
 
@@ -335,7 +337,7 @@ export class CdkToolkit {
           roleArn: options.roleArn,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
-          notificationArns: options.notificationArns,
+          notificationArns,
           tags,
           execute: options.execute,
           changeSetName: options.changeSetName,
@@ -374,9 +376,14 @@ export class CdkToolkit {
         print('Stack ARN:');
 
         data(result.stackArn);
-      } catch (e) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
-        throw e;
+      } catch (e: any) {
+        // It has to be exactly this string because an integration test tests for
+        // "bold(stackname) failed: ResourceNotReady: <error>"
+        throw new Error([
+          `❌  ${chalk.bold(stack.stackName)} failed:`,
+          ...e.code ? [`${e.code}:`] : [],
+          e.message,
+        ].join(' '));
       } finally {
         if (options.cloudWatchLogMonitor) {
           const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
@@ -404,32 +411,71 @@ export class CdkToolkit {
       warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
     }
 
-    try {
-      const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
-        stack,
-        ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
-      ]);
-      const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
+    const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
+      stack,
+      ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
+    ]);
+    const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
 
-      // Unless we are running with '--force', skip already published assets
-      if (!options.force) {
-        await this.removePublishedAssets(workGraph, options);
+    // Unless we are running with '--force', skip already published assets
+    if (!options.force) {
+      await this.removePublishedAssets(workGraph, options);
+    }
+
+    const graphConcurrency: Concurrency = {
+      'stack': concurrency,
+      'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
+      'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
+    };
+
+    await workGraph.doParallel(graphConcurrency, {
+      deployStack,
+      buildAsset,
+      publishAsset,
+    });
+  }
+
+  /**
+   * Roll back the given stack or stacks.
+   */
+  public async rollback(options: RollbackOptions) {
+    const startSynthTime = new Date().getTime();
+    const stackCollection = await this.selectStacksForDeploy(options.selector, true);
+    const elapsedSynthTime = new Date().getTime() - startSynthTime;
+    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
+
+    if (stackCollection.stackCount === 0) {
+      // eslint-disable-next-line no-console
+      console.error('No stacks selected');
+      return;
+    }
+
+    let anyRollbackable = false;
+
+    for (const stack of stackCollection.stackArtifacts) {
+      print('Rolling back %s', chalk.bold(stack.displayName));
+      const startRollbackTime = new Date().getTime();
+      try {
+        const result = await this.props.deployments.rollbackStack({
+          stack,
+          roleArn: options.roleArn,
+          toolkitStackName: options.toolkitStackName,
+          force: options.force,
+          validateBootstrapStackVersion: options.validateBootstrapStackVersion,
+          orphanLogicalIds: options.orphanLogicalIds,
+        });
+        if (!result.notInRollbackableState) {
+          anyRollbackable = true;
+        }
+        const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
+        print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
+      } catch (e: any) {
+        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
+        throw new Error('Rollback failed (use --force to orphan failing resources)');
       }
-
-      const graphConcurrency: Concurrency = {
-        'stack': concurrency,
-        'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
-        'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
-      };
-
-      await workGraph.doParallel(graphConcurrency, {
-        deployStack,
-        buildAsset,
-        publishAsset,
-      });
-    } catch (e) {
-      error('\n ❌ Deployment failed: %s', e);
-      throw e;
+    }
+    if (!anyRollbackable) {
+      throw new Error('No stacks were in a state that could be rolled back');
     }
   }
 
@@ -747,7 +793,10 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    await Promise.all(environments.map(async (environment) => {
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment) => limit(async () => {
       success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
         const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
@@ -759,7 +808,7 @@ export class CdkToolkit {
         error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
         throw e;
       }
-    }));
+    })));
   }
 
   /**
@@ -1059,6 +1108,13 @@ export interface DiffOptions {
   stackNames: string[];
 
   /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
+
+  /**
    * Only select the given stack
    *
    * @default false
@@ -1346,6 +1402,48 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly ignoreNoStacks?: boolean;
+}
+
+export interface RollbackOptions {
+  /**
+   * Criteria for selecting stacks to deploy
+   */
+  readonly selector: StackSelector;
+
+  /**
+   * Name of the toolkit stack to use/deploy
+   *
+   * @default CDKToolkit
+   */
+  readonly toolkitStackName?: string;
+
+  /**
+   * Role to pass to CloudFormation for deployment
+   *
+   * @default - Default stack role
+   */
+  readonly roleArn?: string;
+
+  /**
+   * Whether to force the rollback or not
+   *
+   * @default false
+   */
+  readonly force?: boolean;
+
+  /**
+   * Logical IDs of resources to orphan
+   *
+   * @default - No orphaning
+   */
+  readonly orphanLogicalIds?: string[];
+
+  /**
+   * Whether to validate the version of the bootstrap stack permissions
+   *
+   * @default true
+   */
+  readonly validateBootstrapStackVersion?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
