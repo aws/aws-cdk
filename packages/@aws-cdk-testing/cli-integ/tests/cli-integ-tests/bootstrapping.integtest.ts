@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import * as fs from 'fs';
 import * as path from 'path';
 import { DescribeStackResourcesCommand, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
