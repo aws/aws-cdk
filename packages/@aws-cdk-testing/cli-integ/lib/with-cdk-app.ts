@@ -273,6 +273,11 @@ interface CommonCdkBootstrapCommandOptions {
    * @default - none
    */
   readonly tags?: string;
+
+  /**
+   * @default - the default CDK qualifier
+   */
+  readonly qualifier?: string;
 }
 
 export interface CdkLegacyBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
@@ -447,7 +452,7 @@ export class TestFixture extends ShellHelper {
     if (options.bootstrapBucketName) {
       args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
     }
-    args.push('--qualifier', this.qualifier);
+    args.push('--qualifier', options.qualifier ?? this.qualifier);
     if (options.cfnExecutionPolicy) {
       args.push('--cloudformation-execution-policies', options.cfnExecutionPolicy);
     }
@@ -568,12 +573,16 @@ export class TestFixture extends ShellHelper {
 
     // Bootstrap stacks have buckets that need to be cleaned
     const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+    // Parallelism will be reasonable
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
     // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
     this.bucketsToDelete.push(...bucketNames);
 
     // Bootstrap stacks have ECR repositories with images which should be deleted
     const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+    // Parallelism will be reasonable
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
 
     await this.aws.deleteStacks(

@@ -35,8 +35,6 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 - [SSO Support](#sso-support)
 - [Configuration](#configuration)
   - [Running in CI](#running-in-ci)
-- [Stability](#stability)
-- [Changing the default TypeScript transpiler](#Changing-the-default-TypeScript-transpiler)
 
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
@@ -783,15 +781,15 @@ In practice this means for any resource in the provided template, for example,
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "MyBucket",
+        "BucketName": "amzn-s3-demo-bucket",
         "AccessControl": "PublicRead",
       },
       "DeletionPolicy": "Retain"
     }
 ```
 
-There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier
-would be "MyBucket"
+There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
+would be "amzn-s3-demo-bucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
@@ -1104,17 +1102,17 @@ Some of the interesting keys that can be used in the JSON configuration files:
 
 ```json5
 {
-    "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
-    "build": "mvn package",           // Specify pre-synth build           (--build='mvn package')
-    "context": {                      // Context entries                   (--context=key=value)
+    "app": "node bin/main.js",                  // Command to start the CDK app      (--app='node bin/main.js')
+    "build": "mvn package",                     // Specify pre-synth build           (--build='mvn package')
+    "context": {                                // Context entries                   (--context=key=value)
         "key": "value"
     },
-    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
+    "toolkitStackName": "foo",                  // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
     "toolkitBucket": {
-        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+        "bucketName": "amzn-s3-demo-bucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=amzn-s3-demo-bucket)
+        "kmsKeyId": "fooKMSKey"                 // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
     },
-    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
+    "versionReporting": false,                  // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 
@@ -1136,20 +1134,6 @@ The following environment variables affect aws-cdk:
 The CLI will attempt to detect whether it is being run in CI by looking for the presence of an
 environment variable `CI=true`. This can be forced by passing the `--ci` flag. By default the CLI
 sends most of its logs to `stderr`, but when `ci=true` it will send the logs to `stdout` instead.
-
-### Stability
-
-Sometimes the CDK team will release experimental or incremental features. In these scenarios we will
-require explicit opt-in from users via the `--unstable` flag. For example, if we are working on a new
-bootstrap feature and decide to release it incrementally, we will "hide" its functionality.
-Opting in would look something like this:
-
-```bash
-cdk bootstrap --unstable='new-funky-bootstrap'
-```
-
-When the feature is stabilized, explicit opt-in is no longer necessary but the feature will continue
-to work with the `--unstable` flag set.
 
 ### Changing the default TypeScript transpiler
 

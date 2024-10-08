@@ -32,6 +32,10 @@ import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
+
 export interface CdkToolkitProps {
 
   /**
@@ -183,6 +187,7 @@ export class CdkToolkit {
               parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
               resourcesToImport,
               stream,
+              toolkitStackName: options.toolkitStackName,
             });
           } else {
             debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
@@ -828,7 +833,22 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    return environments;
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment) => limit(async () => {
+      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
+      try {
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
+        const message = result.noOp
+          ? ' ✅  Environment %s bootstrapped (no changes).'
+          : ' ✅  Environment %s bootstrapped.';
+        success(message, chalk.blue(environment.name));
+      } catch (e) {
+        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
+        throw e;
+      }
+    })));
   }
 
   /**
@@ -1126,6 +1146,13 @@ export interface DiffOptions {
    * Stack names to diff
    */
   stackNames: string[];
+
+  /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
 
   /**
    * Only select the given stack
