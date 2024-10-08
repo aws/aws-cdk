@@ -1507,7 +1507,7 @@ const api = new apigateway.RestApi(this, 'PrivateApi', {
     vpcEndpoints: [ apiGwVpcEndpoint ]
   }
 });
-api.grantInovke(apiGwVpcEndpoint);
+api.grantInvoke(apiGwVpcEndpoint);
 ```
 
 ## Private Integrations
