@@ -21,6 +21,13 @@ export interface OriginGroupProps {
    * @default - 500, 502, 503 and 504
    */
   readonly fallbackStatusCodes?: number[];
+
+  /**
+   * A unique identifier for the origin. This value must be unique within the distribution.
+   *
+   * @default - an originId will be generated for you
+   */
+  readonly originId?: string;
 }
 
 /**
@@ -44,6 +51,7 @@ export class OriginGroup implements cloudfront.IOrigin {
         failoverOrigin: this.props.fallbackOrigin,
         statusCodes: this.props.fallbackStatusCodes,
       },
+      originGroupId: this.props.originId,
     };
   }
 }
