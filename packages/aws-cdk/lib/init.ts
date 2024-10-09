@@ -19,6 +19,7 @@ export interface CliInitOptions {
   readonly language?: string;
   readonly canUseNetwork?: boolean;
   readonly generateOnly?: boolean;
+  readonly projectName?: string;
   readonly workDir?: string;
   readonly stackName?: string;
   readonly migrate?: boolean;
@@ -52,7 +53,16 @@ export async function cliInit(options: CliInitOptions) {
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, options.language, canUseNetwork, generateOnly, workDir, options.stackName, options.migrate);
+  await initializeProject({
+    template,
+    language: options.language,
+    canUseNetwork,
+    generateOnly,
+    projectName: options.projectName,
+    workDir,
+    stackName: options.stackName,
+    migrate: options.migrate,
+  });
 }
 
 /**
@@ -102,8 +112,10 @@ export class InitTemplate {
    *
    * @param language    the language to instantiate this template with
    * @param targetDirectory the directory where the template is to be instantiated into
+   * @param stackName the output project stack name
+   * @param projectName the output project name
    */
-  public async install(language: string, targetDirectory: string, stackName?: string) {
+  public async install(language: string, targetDirectory: string, stackName?: string, projectName?: string) {
     if (this.languages.indexOf(language) === -1) {
       error(`The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} `
           + `(it supports: ${this.languages.map(l => chalk.blue(l)).join(', ')})`);
@@ -111,7 +123,7 @@ export class InitTemplate {
     }
 
     const projectInfo: ProjectInfo = {
-      name: decamelize(path.basename(path.resolve(targetDirectory))),
+      name: projectName ?? decamelize(path.basename(path.resolve(targetDirectory))),
       stackName,
     };
 
@@ -280,18 +292,32 @@ export async function printAvailableTemplates(language?: string) {
   }
 }
 
+interface InitializeProjectOptions {
+  template: InitTemplate;
+  language: string;
+  canUseNetwork: boolean;
+  generateOnly: boolean;
+  projectName?: string;
+  workDir: string;
+  stackName?: string;
+  migrate?: boolean;
+}
+
 async function initializeProject(
-  template: InitTemplate,
-  language: string,
-  canUseNetwork: boolean,
-  generateOnly: boolean,
-  workDir: string,
-  stackName?: string,
-  migrate?: boolean,
+  {
+    template,
+    language,
+    canUseNetwork,
+    generateOnly,
+    projectName,
+    workDir,
+    stackName,
+    migrate,
+  }: InitializeProjectOptions,
 ) {
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
-  await template.install(language, workDir, stackName);
+  await template.install(language, workDir, stackName, projectName);
   if (migrate) {
     await template.addMigrateContext(workDir);
   }
