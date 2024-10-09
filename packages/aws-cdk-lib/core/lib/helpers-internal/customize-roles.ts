@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { Annotations } from '../annotations';
 import { attachCustomSynthesis } from '../app';
 import { Reference } from '../reference';
-import { IResolvable, DefaultTokenResolver, StringConcat } from '../resolvable';
+import { IResolvable, StringConcat, PolicySynthesizerTokenResolver } from '../resolvable';
 import { ISynthesisSession } from '../stack-synthesizers';
 import { Token, Tokenization } from '../token';
 
@@ -139,14 +139,17 @@ export class PolicySynthesizer extends Construct {
     if (synthesizer) {
       return synthesizer as PolicySynthesizer;
     }
-    return new PolicySynthesizer(scope.node.root);
+    return new PolicySynthesizer(scope);
   }
 
+  private readonly _scope: Construct;
   private readonly roleReport: { [rolePath: string]: RoleReportOptions } = {};
   private readonly managedPolicyReport: { [policyPath: string]: ManagedPolicyReportOptions } = {};
   constructor(scope: Construct) {
-    super(scope, POLICY_SYNTHESIZER_ID);
+    // PolicySynthesizer should be created under the `App` scope
+    super(scope.node.root, POLICY_SYNTHESIZER_ID);
 
+    this._scope = scope;
     attachCustomSynthesis(this, {
       onSynthesize: (session: ISynthesisSession) => {
         const report = this.createJsonReport();
@@ -316,9 +319,11 @@ export class PolicySynthesizer extends Construct {
           if (Reference.isReference(r)) {
             return `(${r.target.node.path}.${r.displayName})`;
           }
+          // Token resolution requires a stack scope. We can't directly use this
+          // because PolicySynthesizer is always created in the App scope.
           const resolved = Tokenization.resolve(r, {
-            scope: this,
-            resolver: new DefaultTokenResolver(new StringConcat()),
+            scope: this._scope,
+            resolver: new PolicySynthesizerTokenResolver(new StringConcat()),
           });
           if (typeof resolved === 'object' && resolved.hasOwnProperty('Ref')) {
             switch (resolved.Ref) {
@@ -328,9 +333,17 @@ export class PolicySynthesizer extends Construct {
                 return '(PARTITION)';
               case 'AWS::Region':
                 return '(REGION)';
+              case 'AWS::NoValue':
+                return '(NOVALUE)';
               default:
                 return r;
             }
+          }
+          // If the original value is an unresolved Token and we have successfully
+          // resolve it through the above Token resolution process, we should
+          // return the resolved token instead.
+          if (Token.isUnresolved(r) && typeof resolved === 'string' && resolved) {
+            return resolved;
           }
           return r;
         },
