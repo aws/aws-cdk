@@ -319,8 +319,8 @@ export class PolicySynthesizer extends Construct {
           if (Reference.isReference(r)) {
             return `(${r.target.node.path}.${r.displayName})`;
           }
-          // Token resolution requires a stack scope. We can't directly use this
-          // because PolicySynthesizer is always created in the App scope.
+          // Token resolution requires a stack scope. We can't directly use 'this' scope
+          // because PolicySynthesizer is always created under 'App' scope.
           const resolved = Tokenization.resolve(r, {
             scope: this._scope,
             resolver: new PolicySynthesizerTokenResolver(new StringConcat()),
