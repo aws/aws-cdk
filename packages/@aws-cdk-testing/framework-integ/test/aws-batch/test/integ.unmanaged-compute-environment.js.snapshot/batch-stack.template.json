@@ -41,7 +41,7 @@
      ]
     },
     "State": "ENABLED",
-    "Type": "unmanaged"
+    "Type": "UNMANAGED"
    }
   },
   "IntegServiceRole5FCF74D8": {
@@ -86,7 +86,7 @@
      ]
     },
     "State": "ENABLED",
-    "Type": "unmanaged",
+    "Type": "UNMANAGED",
     "UnmanagedvCpus": 256
    }
   }
