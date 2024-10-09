@@ -1108,6 +1108,43 @@ const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
 });
 ```
 
+### Set PidMode for ECS Fargate Tasks
+
+You can pass a custom `pidMode` property to ECS Fargate tasks on Fargate Platform Version 1.4.0 or later.
+The only supported `pidMode` for Linux Fargate tasks is "task", and the option is unsupported on Windows.
+If `pidMode` is specified, the `runtimePlatform.operatingSystemFamily` property must be set to "LINUX".
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
+
+const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'ALBFargateServiceWithCustomEphemeralStorage', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  },
+  pidMode: ecs.PidMode.TASK,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+});
+
+const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'NLBFargateServiceWithCustomEphemeralStorage', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  },
+  pidMode: ecs.PidMode.TASK,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+});
+```
+
 ### Set securityGroups for NetworkLoadBalancedFargateService
 
 ```ts

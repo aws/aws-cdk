@@ -78,6 +78,8 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
         memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
         cpu: taskImageOptions.cpu || 256,
         ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
+        runtimePlatform: taskImageOptions.runtimePlatform,
+        pidMode: taskImageOptions.pidMode,
       });
       this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
