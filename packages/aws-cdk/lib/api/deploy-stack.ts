@@ -17,6 +17,7 @@ import {
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 
 export interface DeployStackResult {
@@ -289,6 +290,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     options.overrideTemplate);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
     parallel: options.assetParallelism,
+    allowCrossAccount: await determineAllowCrossAccountAssetPublishing(options.sdk, (await options.envResources.lookupToolkit()).stackName),
   });
 
   if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {

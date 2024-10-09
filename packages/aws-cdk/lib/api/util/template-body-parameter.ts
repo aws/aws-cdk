@@ -9,6 +9,7 @@ import { publishAssets } from '../../util/asset-publishing';
 import { contentHash } from '../../util/content-hash';
 import { ISDK, SdkProvider } from '../aws-auth';
 import { EnvironmentResources } from '../environment-resources';
+import { determineAllowCrossAccountAssetPublishing } from './checks';
 
 export type TemplateBodyParameter = {
   TemplateBody?: string;
@@ -108,7 +109,10 @@ export async function makeBodyParameterAndUpload(
   const builder = new AssetManifestBuilder();
   const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, resources, sdk, overrideTemplate);
   const manifest = builder.toManifest(stack.assembly.directory);
-  await publishAssets(manifest, sdkProvider, resolvedEnvironment, { quiet: true });
+  await publishAssets(manifest, sdkProvider, resolvedEnvironment, {
+    quiet: true,
+    allowCrossAccount: await determineAllowCrossAccountAssetPublishing(sdk, (await resources.lookupToolkit()).stackName),
+  });
 
   return bodyparam;
 }

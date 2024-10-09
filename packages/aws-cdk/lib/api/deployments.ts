@@ -11,6 +11,7 @@ import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from '
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
@@ -607,7 +608,7 @@ export class Deployments {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
     await publishAssets(manifest, this.sdkProvider, stackEnv, {
       ...options.publishOptions,
-      allowCrossAccount: this.allowCrossAccountAssetPublishing,
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv),
     });
   }
 
@@ -641,47 +642,18 @@ export class Deployments {
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     // eslint-disable-next-line no-console
-    await publisher.publishEntry(asset, { allowCrossAccount: this.allowCrossAccountAssetPublishing });
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
   }
 
-  private get allowCrossAccountAssetPublishing() {
+  private async allowCrossAccountAssetPublishingForEnv(env: cxapi.Environment): Promise<boolean> {
     if (this._allowCrossAccountAssetPublishing === undefined) {
-      this._allowCrossAccountAssetPublishing = this._determineAllowCrossAccountAssetPublishing();
+      const sdk = (await this.cachedSdkForEnvironment(env, Mode.ForReading)).sdk;
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
     }
     return this._allowCrossAccountAssetPublishing;
-  }
-
-  private _determineAllowCrossAccountAssetPublishing(): boolean {
-
-    if (!this.stagingBucketInToolkitStack()) {
-      // indicates an intentional cross account setup
-      return true;
-    }
-
-    if (this.bootstrapVersion() >= 21) {
-      // bootstrap stack version 21 contains a fix that will prevent cross
-      // account publishing on the IAM level
-      // https://github.com/aws/aws-cdk/pull/30823
-      return true;
-    }
-
-    // other scenarios are highly irregular and potentially dangerous so we prevent it by
-    // instructing cdk-assets to detect foriegn bucket ownership and reject.
-    return false;
-  }
-
-  private stagingBucketInToolkitStack(): boolean {
-    // determine if the staging bucket exists in the
-    // bootstrap stack (user might have removed it in case of a custom bootstrap template)
-    throw new Error('TODO');
-  }
-
-  private bootstrapVersion(): number {
-    // grab the current bootstrap stack version from the customer account
-    throw new Error('TODO');
   }
 
   /**
