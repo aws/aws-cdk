@@ -237,6 +237,39 @@ describe('external service', () => {
     });
   });
 
+  test('with enableExecuteCommand set to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // WHEN
+    new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      enableExecuteCommand: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      TaskDefinition: {
+        Ref: 'TaskDef54694570',
+      },
+      Cluster: {
+        Ref: 'EcsCluster97242B84',
+      },
+      LaunchType: LaunchType.EXTERNAL,
+      EnableExecuteCommand: true,
+    });
+  });
+
   test('throws when task definition is not External compatible', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -301,30 +334,6 @@ describe('external service', () => {
         name: 'myApp',
       },
     })).toThrow('Cloud map options are not supported for External service');
-
-    // THEN
-
-  });
-
-  test('error if enableExecuteCommand options provided with external service', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
-    // THEN
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-      enableExecuteCommand: true,
-    })).toThrow('Enable Execute Command options are not supported for External service');
 
     // THEN
 

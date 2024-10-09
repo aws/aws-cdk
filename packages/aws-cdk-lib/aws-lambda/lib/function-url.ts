@@ -202,6 +202,11 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
    */
   public readonly functionArn: string;
 
+  /**
+   * The authentication type used for this Function URL
+   */
+  public readonly authType: FunctionUrlAuthType;
+
   private readonly function: IFunction;
 
   constructor(scope: Construct, id: string, props: FunctionUrlProps) {
@@ -217,8 +222,10 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
       ? { targetFunction: props.function.version.lambda, alias: props.function }
       : { targetFunction: props.function, alias: undefined };
 
+    this.authType = props.authType ?? FunctionUrlAuthType.AWS_IAM;
+
     const resource: CfnUrl = new CfnUrl(this, 'Resource', {
-      authType: props.authType ?? FunctionUrlAuthType.AWS_IAM,
+      authType: this.authType,
       cors: props.cors ? this.renderCors(props.cors) : undefined,
       invokeMode: props.invokeMode,
       targetFunctionArn: targetFunction.functionArn,

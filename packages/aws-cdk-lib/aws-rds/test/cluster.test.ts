@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
 import {
@@ -172,6 +173,44 @@ describe('cluster new api', () => {
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
         ],
+      });
+    });
+
+    describe('enableLocalWriteForwarding', () => {
+      test('set enableLocalWriteForwarding', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 }),
+          vpc,
+          enableLocalWriteForwarding: true,
+          writer: ClusterInstance.serverlessV2('writer'),
+        });
+
+        // THEN
+        const template = Template.fromStack(stack);
+        template.hasResourceProperties('AWS::RDS::DBCluster', {
+          EnableLocalWriteForwarding: true,
+        });
+      });
+
+      test.each([true, false])('throw error for enableLocalWriteForwarding with aurora postgresql cluster', (enableLocalWriteForwarding) => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        expect(() => {
+          new DatabaseCluster(stack, 'Database', {
+            engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }),
+            vpc,
+            enableLocalWriteForwarding,
+            writer: ClusterInstance.serverlessV2('writer'),
+          });
+        }).toThrow('\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: aurora-postgresql');
       });
     });
 
@@ -4364,6 +4403,61 @@ describe('cluster', () => {
               Effect: 'Allow',
               Resource: {
                 Ref: 'DatabaseSecretAttachmentE5D1B020',
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('can grant DataApi access to an imported cluster with data api enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      const secret = new Secret(stack, 'Secret');
+
+      // WHEN
+      const importedCluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'ImportedCluster', {
+        clusterIdentifier: 'clusterIdentifier',
+        secret,
+        dataApiEnabled: true,
+      });
+      importedCluster.grantDataApiAccess(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'rds-data:BatchExecuteStatement',
+                'rds-data:BeginTransaction',
+                'rds-data:CommitTransaction',
+                'rds-data:ExecuteStatement',
+                'rds-data:RollbackTransaction',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds:us-test-1:12345:cluster:clusterIdentifier',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'SecretA720EF05',
               },
             },
           ],

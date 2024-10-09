@@ -501,7 +501,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+                      "s3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
                     },
                     "environment": {
                       "variables": {
@@ -520,7 +520,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.9",
+                    "runtime": "python3.11",
                     "timeout": 900
                   }
                 },
@@ -701,7 +701,7 @@
                     "value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
                   }
                 ],
-                "solutionStackName": "64bit Amazon Linux 2023 v6.1.7 running Node.js 20"
+                "solutionStackName": "64bit Amazon Linux 2023 v6.2.1 running Node.js 20"
               }
             },
             "constructInfo": {
