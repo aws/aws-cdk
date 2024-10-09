@@ -215,18 +215,21 @@ export class PolicySynthesizerTokenResolver extends DefaultTokenResolver {
   /**
    * PolicySynthesizer Token resolution
    *
-   * Resolve the Token, recurse into whatever it returns,
-   * then finally post-process it.
+   * Resolve the Token until the token can be resolved into
+   * "(Path/To/SomeResource.Arn)" format. Otherwise, recurse
+   * into whatever it returns,
    */
   public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
     try {
       let resolved = t.resolve(context);
 
-      // The token might have returned more values that need resolving, recurse
+      // If the token value is resolvable into the format "(Path/To/SomeResource.Arn)", return it
+      // as this is the format expected by the Policy Synthesizer.
       const resolvable = Tokenization.reverseString(resolved);
       if (resolvable.length === 1 && Reference.isReference(resolvable.firstToken)) {
         return `(${resolvable.firstToken.target.node.path}.${resolvable.firstToken.displayName})`;
       }
+      // The token might have returned more values that need resolving, recurse
       resolved = context.resolve(resolved);
       resolved = postProcessor.postProcess(resolved, context);
       return resolved;
