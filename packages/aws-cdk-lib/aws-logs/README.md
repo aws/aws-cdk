@@ -417,7 +417,7 @@ const bucket = new s3.Bucket(this, 'audit-bucket');
 const s3Destination = new destinations.S3Bucket(bucket);
 
 const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 
 const dataProtectionPolicy = new logs.DataProtectionPolicy({

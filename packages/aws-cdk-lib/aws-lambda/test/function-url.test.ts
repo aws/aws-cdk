@@ -231,10 +231,12 @@ describe('FunctionUrl', () => {
     });
 
     // WHEN
-    fn.addFunctionUrl({
+    const fnUrl = fn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
       invokeMode: lambda.InvokeMode.BUFFERED,
     });
+
+    expect(fnUrl.authType).toBe(lambda.FunctionUrlAuthType.NONE);
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Url', {

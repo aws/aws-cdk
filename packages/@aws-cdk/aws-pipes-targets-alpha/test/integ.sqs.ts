@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
-import { IPipe, ISource, InputTransformation, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SqsTarget } from '../lib';
@@ -9,25 +10,8 @@ const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
-class TestSource implements ISource {
-  sourceArn: string;
-  sourceParameters = undefined;
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-  bind(_pipe: IPipe): SourceConfig {
-    return {
-      sourceParameters: this.sourceParameters,
-    };
-  }
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
-
 new Pipe(stack, 'Pipe', {
-  source: new TestSource(sourceQueue),
+  source: new SqsSource(sourceQueue),
   target: new SqsTarget(targetQueue,
     {
       inputTransformation: InputTransformation.fromEventPath('$.body'),
