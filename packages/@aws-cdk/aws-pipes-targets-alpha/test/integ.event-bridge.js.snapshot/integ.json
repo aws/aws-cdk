@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integtest-pipe-target-event-bridge/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-event-bridge"
+      ],
+      "assertionStack": "integtest-pipe-target-event-bridge/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargeteventbridgeDefaultTestDeployAssert7ABF1246"
+    }
+  }
+}
