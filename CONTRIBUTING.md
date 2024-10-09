@@ -210,6 +210,8 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
+- [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
+  - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
 
 First fork the repository https://github.com/aws/aws-cdk/fork, and then run the following commands to clone the repository locally.
 
