@@ -7,6 +7,26 @@ import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../..
 import { Aws, Duration, Token } from '../../core';
 
 /**
+ * The Lustre version for the file system.
+ */
+export enum FileSystemTypeVersion {
+  /**
+   * Version 2.10
+   */
+  V_2_10 = '2.10',
+
+  /**
+   * Version 2.12
+   */
+  V_2_12 = '2.12',
+
+  /**
+   * Version 2.15
+   */
+  V_2_15 = '2.15',
+}
+
+/**
  * The different kinds of file system deployments used by Lustre.
  */
 export enum LustreDeploymentType {
@@ -182,6 +202,15 @@ export interface LustreFileSystemProps extends FileSystemProps {
   readonly lustreConfiguration: LustreConfiguration;
 
   /**
+   * The Lustre version for the file system.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fsx-filesystem.html#cfn-fsx-filesystem-filesystemtypeversion
+   *
+   * @default - V_2_10, except for PERSISTENT_2 deployment type, where it is V_2_12.
+   */
+  readonly fileSystemTypeVersion?: FileSystemTypeVersion;
+
+  /**
    * The subnet that the file system will be accessible from.
    */
   readonly vpcSubnet: ISubnet;
@@ -289,6 +318,7 @@ export class LustreFileSystem extends FileSystemBase {
       lustreConfiguration,
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
+      fileSystemTypeVersion: props.fileSystemTypeVersion,
     });
     this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
@@ -316,12 +346,27 @@ export class LustreFileSystem extends FileSystemBase {
     this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
 
     this.validateDailyAutomaticBackupStartTime(lustreConfiguration.automaticBackupRetention, lustreConfiguration.dailyAutomaticBackupStartTime);
+    this.validateFiileSystemTypeVersion(deploymentType, props.fileSystemTypeVersion);
+  }
+
+  /**
+   * Validates the file system type version
+   */
+  private validateFiileSystemTypeVersion(deploymentType: LustreDeploymentType, fileSystemTypeVersion?: FileSystemTypeVersion): void {
+    if (fileSystemTypeVersion === undefined) {
+      return;
+    }
+
+    if (fileSystemTypeVersion === FileSystemTypeVersion.V_2_10) {
+      if (!deploymentType.startsWith('SCRATCH') && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
+        throw new Error('fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types');
+      }
+    }
   }
 
   /**
    * Validates the auto import policy
    */
-
   private validateAutoImportPolicy(deploymentType: LustreDeploymentType, importPath?: string, autoImportPolicy?: LustreAutoImportPolicy): void {
     if (autoImportPolicy === undefined) { return; }
     if (importPath === undefined) {
