@@ -10,7 +10,7 @@ import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { HotswapMode } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
@@ -180,6 +180,11 @@ export interface DeployStackOptions {
    * @default - `HotswapMode.FULL_DEPLOYMENT` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
   readonly hotswap?: HotswapMode;
+
+  /**
+  * Properties that configure hotswap behavior
+  */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -488,6 +493,7 @@ export class Deployments {
       ci: options.ci,
       rollback: options.rollback,
       hotswap: options.hotswap,
+      hotswapPropertyOverrides: options.hotswapPropertyOverrides,
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
