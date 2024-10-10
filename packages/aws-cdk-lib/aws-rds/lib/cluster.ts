@@ -65,7 +65,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The maximum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
    * You can specify ACU values in half-step increments, such as 40, 40.5, 41, and so on.
-   * The largest value that you can use is 128 (256GB).
+   * The largest value that you can use is 256.
    *
    * The maximum capacity must be higher than 0.5 ACUs.
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
@@ -915,12 +915,12 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   }
 
   private validateServerlessScalingConfig(): void {
-    if (this.serverlessV2MaxCapacity > 128 || this.serverlessV2MaxCapacity < 0.5) {
-      throw new Error('serverlessV2MaxCapacity must be >= 0.5 & <= 128');
+    if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 0.5) {
+      throw new Error('serverlessV2MaxCapacity must be >= 0.5 & <= 256');
     }
 
-    if (this.serverlessV2MinCapacity > 128 || this.serverlessV2MinCapacity < 0.5) {
-      throw new Error('serverlessV2MinCapacity must be >= 0.5 & <= 128');
+    if (this.serverlessV2MinCapacity > 256 || this.serverlessV2MinCapacity < 0.5) {
+      throw new Error('serverlessV2MinCapacity must be >= 0.5 & <= 256');
     }
 
     if (this.serverlessV2MaxCapacity < this.serverlessV2MinCapacity) {
