@@ -23,7 +23,7 @@ export async function determineAllowCrossAccountAssetPublishing(sdk: ISDK, custo
     return false;
   } catch (e) {
     debug(`Error determining cross account asset publishing: ${e}`);
-    debug(`Defaulting to disallowing cross account asset publishing`);
+    debug('Defaulting to disallowing cross account asset publishing');
     return false;
   }
 }
@@ -54,18 +54,14 @@ async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promise<Boot
       throw new Error(`Invalid BootstrapVersion value: ${versionOutput.OutputValue}`);
     }
 
-    // Try to get the bucket name from the stack outputs first
-    let bucketName = stack.Outputs?.find(output => output.OutputKey === 'BucketName')?.OutputValue;
-
-    // If not found in outputs, try to get it from the logical resource id
-    if (!bucketName) {
-      const resourcesResponse = await cfn.describeStackResources({ StackName: stackName }).promise();
-      const bucketResource = resourcesResponse.StackResources?.find(resource => 
-        resource.LogicalResourceId === 'StagingBucket' && 
-        resource.ResourceType === 'AWS::S3::Bucket'
-      );
-      bucketName = bucketResource?.PhysicalResourceId;
-    }
+    // try to get bucketname from the logical resource id
+    let bucketName: string | undefined;
+    const resourcesResponse = await cfn.describeStackResources({ StackName: stackName }).promise();
+    const bucketResource = resourcesResponse.StackResources?.find(resource =>
+      resource.LogicalResourceId === 'StagingBucket' &&
+      resource.ResourceType === 'AWS::S3::Bucket',
+    );
+    bucketName = bucketResource?.PhysicalResourceId;
 
     let hasStagingBucket = !!bucketName;
 
