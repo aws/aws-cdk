@@ -1,6 +1,6 @@
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
-import { Annotations, Duration, IResource, Resource, Stack } from 'aws-cdk-lib/core';
+import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
@@ -462,7 +462,7 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     this.routerType = RouterType.VPC_PEERING_CONNECTION;
 
-    const isCrossAccount = Stack.of(props.requestorVpc).account !== Stack.of(props.acceptorVpc).account;
+    const isCrossAccount = props.requestorVpc.ownerAccountId !== props.acceptorVpc.ownerAccountId;
 
     if (!isCrossAccount && props.peerRoleArn) {
       Annotations.of(this).addWarning(
@@ -471,13 +471,12 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
     }
 
     if (isCrossAccount && !props.peerRoleArn) {
-      throw new Error('Cross account VPC peering requires a peerArnId');
+      throw new Error('Cross account VPC peering requires peerRoleArn');
     }
 
-    // TODO: do we still want to validate? already have this check in the vpc peering
     const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
     if (overlap) {
-      throw new Error('CIDR block should not overlap with existing subnet blocks');
+      throw new Error('CIDR block should not overlap with each other for establishing a peering connection');
     }
 
     this.resource = new CfnVPCPeeringConnection(this, 'VPCPeeringConnection', {
