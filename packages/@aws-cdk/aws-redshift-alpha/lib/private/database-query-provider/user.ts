@@ -21,7 +21,11 @@ export async function handler(props: UserHandlerProps & ClusterProps, event: AWS
     await dropUser(username, clusterProps);
     return;
   } else if (event.RequestType === 'Update') {
-    const { replace } = await updateUser(username, passwordSecretArn, clusterProps, event.OldResourceProperties as UserHandlerProps & ClusterProps);
+    const { replace } = await updateUser(
+      username,
+      passwordSecretArn,
+      clusterProps,
+      event.OldResourceProperties as unknown as UserHandlerProps & ClusterProps);
     const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId, Data: { username: username } };
   } else {

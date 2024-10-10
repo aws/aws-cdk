@@ -11,6 +11,11 @@ export enum IpAddressType {
    * Allocate both IPv4 and IPv6 addresses
    */
   DUAL_STACK = 'dualstack',
+
+  /**
+   * IPv6 only public addresses, with private IPv4 and IPv6 addresses
+   */
+  DUAL_STACK_WITHOUT_PUBLIC_IPV4 = 'dualstack-without-public-ipv4',
 }
 
 /**
@@ -298,6 +303,11 @@ export enum TargetGroupLoadBalancingAlgorithmType {
    * least_outstanding_requests
    */
   LEAST_OUTSTANDING_REQUESTS = 'least_outstanding_requests',
+
+  /**
+   * weighted_random
+   */
+  WEIGHTED_RANDOM = 'weighted_random',
 }
 
 /**

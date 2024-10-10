@@ -1,0 +1,414 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca9fc59863db9b703a30f5e63dbd774e259410737b8dbec090640a434ddbd183.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/EmrCreateCluster/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterServiceRole5251910D"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/EmrCreateCluster/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterInstanceRoleC80466F5"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/EmrCreateCluster/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterInstanceProfileC1729180"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/SM/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SMRole49C19C48"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/SM/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SMRoleDefaultPolicy34CA15C7"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/SM/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SM934E715A"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/Exports/Output{\"Ref\":\"SM934E715A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefSM934E715A7A92A8D9"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout"
+    },
+    "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/22d43a9376b9fbbb94321e0664b0e89bb3dd896713b8a291ae4bb44720a9e1d7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout",
+        "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A.assets"
+      ],
+      "metadata": {
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9dWaitForIsCompleteProviderInvokeBAC8B5BE"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9dWaitForTimeoutProviderInvokeE5FCC44B"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9dWaitForRole8CD47F8C"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9dWaitForBC9597E4"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachine28063f534025cd201089ec811bf81d9d"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution28063f534025cd201089ec811bf81d9d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsstartExecution28063f534025cd201089ec811bf81d9d"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForIsCompleteProviderInvokeB93B7AC3"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForTimeoutProviderInvoke6D741F95"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForRole99094368"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForB0B29668"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

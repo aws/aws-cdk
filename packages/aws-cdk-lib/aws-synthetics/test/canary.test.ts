@@ -3,7 +3,7 @@ import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { Duration, Lazy, Stack } from '../../core';
+import { Duration, Lazy, Size, Stack } from '../../core';
 import * as synthetics from '../lib';
 
 test('Basic canary properties work', () => {
@@ -224,7 +224,7 @@ test('Python runtime can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
@@ -233,8 +233,46 @@ test('Python runtime can be specified', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RuntimeVersion: 'syn-python-selenium-2.0',
+    RuntimeVersion: 'syn-python-selenium-4.0',
   });
+});
+
+test.each([true, false])('activeTracing can be set to %s', (activeTracing: boolean) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    activeTracing,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RunConfig: {
+      ActiveTracing: activeTracing,
+    },
+  });
+});
+
+test('throws when activeTracing is enabled with an unsupported runtime', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('# Synthetics handler code'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+    activeTracing: true,
+  }))
+    .toThrow('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
 });
 
 test('environment variables can be specified', () => {
@@ -280,6 +318,114 @@ test('environment variables are skipped if not provided', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     RunConfig: Match.absent(),
   });
+});
+
+test('memory can be set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    memory: Size.mebibytes(1024),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RunConfig: {
+      MemoryInMB: 1024,
+    },
+  });
+});
+
+test('throws when memory is not a multiple of 64 MiB', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    memory: Size.mebibytes(5),
+  }))
+    .toThrow('\`memory\` must be a multiple of 64 MiB, got 5 MiB.');
+});
+
+test.each([64, 6400])('throws when memory is out of range, %d MiB', (memoryInMb: number) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    memory: Size.mebibytes(memoryInMb),
+  }))
+    .toThrow(`\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`);
+});
+
+test('timeout can be set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.seconds(60),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RunConfig: {
+      TimeoutInSeconds: 60,
+    },
+  });
+});
+
+test.each([100, 3100])('throws when timeout is not set as an integer representing seconds , %d milliseconds', (milliseconds: number) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.millis(milliseconds),
+  }))
+    .toThrow(`\`timeout\` must be set as an integer representing seconds, got ${milliseconds} milliseconds.`);
+});
+
+test.each([2, 900])('throws when timeout is out of range, %d seconds', (seconds: number) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.seconds(seconds),
+  }))
+    .toThrow(`\`timeout\` must be between 3 seconds and 840 seconds, got ${seconds} seconds.`);
 });
 
 test('Runtime can be customized', () => {

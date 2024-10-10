@@ -50,6 +50,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.titan-image-generator-v1:0". */
   public static readonly AMAZON_TITAN_IMAGE_GENERATOR_V1_0 = new FoundationModelIdentifier('amazon.titan-image-generator-v1:0');
 
+  /** Base model "amazon.titan-image-generator-v2:0". */
+  public static readonly AMAZON_TITAN_IMAGE_GENERATOR_V2_0 = new FoundationModelIdentifier('amazon.titan-image-generator-v2:0');
+
   /** Base model "amazon.titan-embed-image-v1:0". */
   public static readonly AMAZON_TITAN_EMBED_IMAGE_V1_0 = new FoundationModelIdentifier('amazon.titan-embed-image-v1:0');
 
@@ -79,6 +82,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "ai21.jamba-instruct-v1:0". */
   public static readonly AI21_J2_JAMBA_INSTRUCT_V1_0 = new FoundationModelIdentifier('ai21.jamba-instruct-v1:0');
+
+  /** Base model "ai21.jamba-1-5-large-v1:0". */
+  public static readonly AI21_JAMBA_1_5_LARGE_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-large-v1:0');
+
+  /** Base model "ai21.jamba-1-5-mini-v1:0". */
+  public static readonly AI21_JAMBA_1_5_MINI_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-mini-v1:0');
 
   /**
    * Base model "anthropic.claude-v1".
@@ -203,6 +212,18 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-1-405b-instruct-v1:0". */
   public static readonly META_LLAMA_3_1_405_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-405b-instruct-v1:0');
 
+  /** Base model "meta.llama3-2-1b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_1B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-1b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-3b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_3B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-3b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-11b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_11B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-11b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-90b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_90B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-90b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -235,6 +256,15 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.stable-diffusion-xl-v1:0". */
   public static readonly STABILITY_STABLE_DIFFUSION_XL_V1_0 = new FoundationModelIdentifier('stability.stable-diffusion-xl-v1:0');
+
+  /** Base model "stability.sd3-large-v1:0". */
+  public static readonly STABILITY_SD3_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-large-v1:0');
+
+  /** Base model "stability.stable-image-ultra-v1:0". */
+  public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_0 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:0');
+
+  /** Base model "stability.stable-image-core-v1:0". */
+  public static readonly STABILITY_STABLE_IMAGE_CORE_V1_0 = new FoundationModelIdentifier('stability.stable-image-core-v1:0');
 
   /**
    * Constructor for foundation model identifier

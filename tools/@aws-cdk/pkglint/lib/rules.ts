@@ -55,24 +55,10 @@ export class DescriptionIsRequired extends ValidationRule {
 export class PublishConfigTagIsRequired extends ValidationRule {
   public readonly name = 'package-info/publish-config-tag';
 
-  // The list of packages that are publicly published in both v1 and v2.
-  private readonly SHARED_PACKAGES = [
-    '@aws-cdk/cloud-assembly-schema',
-    '@aws-cdk/cloudformation-diff',
-    '@aws-cdk/cx-api',
-    '@aws-cdk/region-info',
-    'aws-cdk',
-    'awslint',
-    'cdk-assets',
-  ];
-
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) { return; }
 
-    // v1 packages that are v1-only (e.g., `@aws-cdk/aws-s3`) are always published as `latest`.
-    // Packages that are published with the same namespace to both v1 and v2 are published as `latest-1` on v1 and `latest` on v2.
-    // All v2-only packages are just `latest`.
-    const defaultPublishTag = (cdkMajorVersion() === 2 || !this.SHARED_PACKAGES.includes(pkg.packageName)) ? 'latest' : 'latest-1';
+    const defaultPublishTag = 'latest';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
@@ -1677,7 +1663,6 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
-    '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
     '@aws-cdk/region-info',
@@ -1685,7 +1670,6 @@ export class UbergenPackageVisibility extends ValidationRule {
     'aws-cdk',
     'awslint',
     'cdk',
-    'cdk-assets',
     '@aws-cdk/integ-runner',
     '@aws-cdk-testing/cli-integ',
   ];

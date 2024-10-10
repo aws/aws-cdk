@@ -138,6 +138,18 @@ new neptune.DatabaseCluster(this, 'Cluster', {
 });
 ```
 
+## Port
+
+By default, Neptune uses port `8182`. You can override the default port by specifying the `port` property:
+
+```ts
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  port: 12345,
+});
+```
+
 ## Logging
 
 Neptune supports various methods for monitoring performance and usage. One of those methods is logging
