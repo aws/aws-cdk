@@ -26,6 +26,7 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'Test widget',
+      accountId: '123456789',
       stacked: true,
     });
 
@@ -35,6 +36,7 @@ describe('Graphs', () => {
       width: 6,
       height: 6,
       properties: {
+        accountId: '123456789',
         view: 'timeSeries',
         title: 'Test widget',
         region: { Ref: 'AWS::Region' },
@@ -160,6 +162,7 @@ describe('Graphs', () => {
     // WHEN
     const widget = new SingleValueWidget({
       metrics: [metric],
+      accountId: '123456789',
     });
 
     // THEN
@@ -168,6 +171,7 @@ describe('Graphs', () => {
       width: 6,
       height: 3,
       properties: {
+        accountId: '123456789',
         view: 'singleValue',
         region: { Ref: 'AWS::Region' },
         metrics: [
@@ -190,6 +194,7 @@ describe('Graphs', () => {
         'fields @message',
         'filter @message like /Error/',
       ],
+      accountId: '123456789',
     });
 
     // THEN
@@ -198,6 +203,7 @@ describe('Graphs', () => {
       width: 6,
       height: 6,
       properties: {
+        accountId: '123456789',
         view: 'table',
         region: { Ref: 'AWS::Region' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
@@ -336,6 +342,7 @@ describe('Graphs', () => {
     // WHEN
     const widget = new AlarmWidget({
       alarm,
+      accountId: '123456789',
     });
 
     // THEN
@@ -344,6 +351,7 @@ describe('Graphs', () => {
       width: 6,
       height: 6,
       properties: {
+        accountId: '123456789',
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         annotations: {
@@ -1065,6 +1073,7 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GaugeWidget({
       metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      accountId: '123456789',
       annotations: [
         {
           color: '#b2df8d',
@@ -1082,6 +1091,7 @@ describe('Graphs', () => {
       height: 6,
       properties: {
         view: 'gauge',
+        accountId: '123456789',
         region: { Ref: 'AWS::Region' },
         metrics: [
           ['CDK', 'Test'],
