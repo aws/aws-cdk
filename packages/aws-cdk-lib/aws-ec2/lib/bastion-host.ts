@@ -104,6 +104,26 @@ export interface BastionHostLinuxProps {
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * Changes to the UserData force replacement
+   *
+   * Depending the EC2 instance type, changing UserData either
+   * restarts the instance or replaces the instance.
+   *
+   * - Instance store-backed instances are replaced.
+   * - EBS-backed instances are restarted.
+   *
+   * By default, restarting does not execute the new UserData so you
+   * will need a different mechanism to ensure the instance is restarted.
+   *
+   * Setting this to `true` will make the instance's Logical ID depend on the
+   * UserData, which will cause CloudFormation to replace it if the UserData
+   * changes.
+   *
+   * @default - true if `initOptions` is specified, false otherwise.
+   */
+  readonly userDataCausesReplacement?: boolean;
 }
 
 /**
@@ -188,6 +208,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       init: props.init,
       initOptions: props.initOptions,
       requireImdsv2: props.requireImdsv2 ?? false,
+      userDataCausesReplacement: props.userDataCausesReplacement,
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
