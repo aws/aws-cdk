@@ -1,0 +1,32 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "2b0738aa9374af84bba13e7829ab41a876dcaf156e442d086ccd372af2fd13f9": {
+      "source": {
+        "path": "asset.2b0738aa9374af84bba13e7829ab41a876dcaf156e442d086ccd372af2fd13f9.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2b0738aa9374af84bba13e7829ab41a876dcaf156e442d086ccd372af2fd13f9.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "b13cb9422a2fdda059d2b11a6a9ba997d91761c746c127a9a883cb66fe1adf07": {
+      "source": {
+        "path": "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b13cb9422a2fdda059d2b11a6a9ba997d91761c746c127a9a883cb66fe1adf07.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
