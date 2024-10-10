@@ -288,9 +288,15 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     options.envResources,
     options.sdk,
     options.overrideTemplate);
+    let bootstrapStackName: string | undefined;
+    try {
+      bootstrapStackName = (await options.envResources.lookupToolkit()).stackName
+    } catch (e) {
+      debug(`Could not determine the bootstrap stack name: ${e}`);
+    }
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
     parallel: options.assetParallelism,
-    allowCrossAccount: await determineAllowCrossAccountAssetPublishing(options.sdk, (await options.envResources.lookupToolkit()).stackName),
+    allowCrossAccount: true
   });
 
   if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
