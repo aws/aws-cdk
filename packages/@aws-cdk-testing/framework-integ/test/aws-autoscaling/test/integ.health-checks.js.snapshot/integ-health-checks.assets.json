@@ -1,0 +1,19 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "ef7061115e98ba6f0acd0111a051ef90e571f3296b8897efb16bdd2efd0fe426": {
+      "source": {
+        "path": "integ-health-checks.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ef7061115e98ba6f0acd0111a051ef90e571f3296b8897efb16bdd2efd0fe426.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
