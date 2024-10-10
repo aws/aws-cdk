@@ -114,6 +114,14 @@ async function parseCommandLineArguments(args: string[]) {
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
+    .command('gc [ENVIRONMENTS..]', 'Garbage collect assets', (yargs: Argv) => yargs
+      .option('unstable', { type: 'array', desc: 'Opt in to specific unstable features. Can be specified multiple times.', default: [] })
+      .option('action', { type: 'string', desc: 'The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".', default: 'full' })
+      .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
+      .option('rollback-buffer-days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
+      .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
+      .option('bootstrap-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true }),
+    )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
@@ -676,6 +684,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: args.force,
           roleArn: args.roleArn,
           ci: args.ci,
+        });
+
+      case 'gc':
+        if (!args.unstable.includes('gc')) {
+          throw new Error('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
+        }
+        return cli.garbageCollect(args.ENVIRONMENTS, {
+          action: args.action,
+          type: args.type,
+          rollbackBufferDays: args['rollback-buffer-days'],
+          bootstrapStackName: args.bootstrapStackName,
         });
 
       case 'synthesize':
