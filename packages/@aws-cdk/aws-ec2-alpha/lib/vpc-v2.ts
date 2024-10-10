@@ -207,21 +207,25 @@ export interface VpcV2Attributes {
 
   /**
    * A VPN Gateway is attached to the VPC
+   * @default - No VPN Gateway
    */
   readonly vpnGatewayId?: string;
 
   /**
    * Public subnets associated with VPC
+   * @default -  no public subnets provided
    */
   readonly publicSubnets?: SubnetV2Attributes[];
 
   /**
    * Private subnets associated with VPC
+   * @default - no private subnets provided
    */
   readonly privateSubnets?: SubnetV2Attributes[];
 
   /**
    * Isolated subnets associated with VPC
+   * @default - no isolated subnets provided
    */
   readonly isolatedSubnets?: SubnetV2Attributes[];
 
@@ -241,6 +245,13 @@ export interface VpcV2Attributes {
  * @resource AWS::EC2::VPC
  */
 export class VpcV2 extends VpcV2Base {
+
+  /**
+   * Create a VPC from existing attributes
+   */
+  public static fromVpcV2attributes(scope: Construct, id: string, options: VpcV2Attributes): IVpcV2 {
+    return new ImportedVpcV2(scope, id, options);
+  }
 
   /**
    * Identifier for this VPC
@@ -423,13 +434,6 @@ export class VpcV2 extends VpcV2Base {
      */
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
   }
-
-  /**
-   * Create a VPC from existing attributes
-   */
-  public fromVpcV2attributes(scope: Construct, id: string, options: VpcV2Attributes): IVpcV2 {
-    return new ImportedVpcV2(scope, id, options);
-  }
 }
 /**
  * Supports assigning IPv4 address to VPC
@@ -552,7 +556,7 @@ class ImportedVpcV2 extends VpcV2Base {
     if (props.isolatedSubnets) {
       this.isolatedSubnets = props.isolatedSubnets.map(subnet => new ImportedSubnetV2(scope, 'ImportedPrivateSubnet', subnet));
     }
-    this.secondaryCidrBlock = props.secondaryCidrBlocks?.map(cidrBlock => VPCCidrBlock.fromVPCCidrBlockattributes(scope, 'ImportedCidrBlock', cidrBlock));
+    this.secondaryCidrBlock = props.secondaryCidrBlocks?.map(cidrBlock => VPCCidrBlock.fromVPCCidrBlockattributes(scope, cidrBlock.cidrBlockName ?? 'ImportedSecondaryCidrBlock', cidrBlock));
   }
 }
 
@@ -612,6 +616,12 @@ export interface VPCCidrBlockProps {
    * @default - no CIDR block provided
    */
   readonly cidrBlock?: string;
+
+  /**
+   * CIDR Block Name
+   * @default - no CIDR Block name generated, this field is required while importing CIDR block for VPC
+   */
+  readonly cidrBlockName?: string;
 
   /**
    * Opt for amazonProvided Ipv6 CIDR address
