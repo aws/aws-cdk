@@ -1,6 +1,6 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import { ISDK } from './aws-auth';
-import { EcrRepositoryInfo, ToolkitInfo } from './toolkit-info';
+import type { Environment } from '@aws-cdk/cx-api';
+import type { SDK } from './aws-auth';
+import { type EcrRepositoryInfo, ToolkitInfo } from './toolkit-info';
 import { debug, warning } from '../logging';
 import { Notices } from '../notices';
 
@@ -16,10 +16,9 @@ import { Notices } from '../notices';
 export class EnvironmentResourcesRegistry {
   private readonly cache = new Map<string, EnvironmentCache>();
 
-  constructor(private readonly toolkitStackName?: string) {
-  }
+  constructor(private readonly toolkitStackName?: string) {}
 
-  public for(resolvedEnvironment: cxapi.Environment, sdk: ISDK) {
+  public for(resolvedEnvironment: Environment, sdk: SDK) {
     const key = `${resolvedEnvironment.account}:${resolvedEnvironment.region}`;
     let envCache = this.cache.get(key);
     if (!envCache) {
@@ -44,8 +43,8 @@ export class EnvironmentResourcesRegistry {
  */
 export class EnvironmentResources {
   constructor(
-    public readonly environment: cxapi.Environment,
-    private readonly sdk: ISDK,
+    public readonly environment: Environment,
+    private readonly sdk: SDK,
     private readonly cache: EnvironmentCache,
     private readonly toolkitStackName?: string,
   ) {}
@@ -81,7 +80,9 @@ export class EnvironmentResources {
         doValidate(await this.versionFromSsmParameter(ssmParameterName), this.environment);
         return;
       } catch (e: any) {
-        if (e.code !== 'AccessDeniedException') { throw e; }
+        if (e.name !== 'AccessDeniedException') {
+          throw e;
+        }
 
         // This is a fallback! The bootstrap template that goes along with this change introduces
         // a new 'ssm:GetParameter' permission, but when run using the previous bootstrap template we
@@ -92,12 +93,16 @@ export class EnvironmentResources {
         // so let it fail as it would if we didn't have this fallback.
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
-          warning(`Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`);
+          warning(
+            `Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`,
+          );
           doValidate(bootstrapStack.version, this.environment);
           return;
         }
 
-        throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', but during the confirmation via SSM parameter ${ssmParameterName} the following error occurred: ${e}`);
+        throw new Error(
+          `This CDK deployment requires bootstrap stack version '${expectedVersion}', but during the confirmation via SSM parameter ${ssmParameterName} the following error occurred: ${e}`,
+        );
       }
     }
 
@@ -105,7 +110,7 @@ export class EnvironmentResources {
     const bootstrapStack = await this.lookupToolkit();
     doValidate(bootstrapStack.version, this.environment);
 
-    function doValidate(version: number, environment: cxapi.Environment) {
+    function doValidate(version: number, environment: Environment) {
       const notices = Notices.get();
       if (notices) {
         // if `Notices` hasn't been initialized there is probably a good
@@ -113,7 +118,9 @@ export class EnvironmentResources {
         notices.addBootstrappedEnvironment({ bootstrapStackVersion: version, environment });
       }
       if (defExpectedVersion > version) {
-        throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
+        throw new Error(
+          `This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`,
+        );
       }
     }
   }
@@ -123,12 +130,14 @@ export class EnvironmentResources {
    */
   public async versionFromSsmParameter(parameterName: string): Promise<number> {
     const existing = this.cache.ssmParameters.get(parameterName);
-    if (existing !== undefined) { return existing; }
+    if (existing !== undefined) {
+      return existing;
+    }
 
     const ssm = this.sdk.ssm();
 
     try {
-      const result = await ssm.getParameter({ Name: parameterName }).promise();
+      const result = await ssm.getParameter({ Name: parameterName });
 
       const asNumber = parseInt(`${result.Parameter?.Value}`, 10);
       if (isNaN(asNumber)) {
@@ -138,8 +147,10 @@ export class EnvironmentResources {
       this.cache.ssmParameters.set(parameterName, asNumber);
       return asNumber;
     } catch (e: any) {
-      if (e.code === 'ParameterNotFound') {
-        throw new Error(`SSM parameter ${parameterName} not found. Has the environment been bootstrapped? Please run \'cdk bootstrap\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`);
+      if (e.name === 'ParameterNotFound') {
+        throw new Error(
+          `SSM parameter ${parameterName} not found. Has the environment been bootstrapped? Please run \'cdk bootstrap\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`,
+        );
       }
       throw e;
     }
@@ -154,19 +165,26 @@ export class EnvironmentResources {
     // check if repo already exists
     try {
       debug(`${repositoryName}: checking if ECR repository already exists`);
-      const describeResponse = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
+      const describeResponse = await ecr.describeRepositories({
+        repositoryNames: [repositoryName],
+      });
       const existingRepositoryUri = describeResponse.repositories![0]?.repositoryUri;
       if (existingRepositoryUri) {
         return { repositoryUri: existingRepositoryUri };
       }
     } catch (e: any) {
-      if (e.code !== 'RepositoryNotFoundException') { throw e; }
+      if (e.name !== 'RepositoryNotFoundException') {
+        throw e;
+      }
     }
 
     // create the repo (tag it so it will be easier to garbage collect in the future)
     debug(`${repositoryName}: creating ECR repository`);
     const assetTag = { Key: 'awscdk:asset', Value: 'true' };
-    const response = await ecr.createRepository({ repositoryName, tags: [assetTag] }).promise();
+    const response = await ecr.createRepository({
+      repositoryName,
+      tags: [assetTag],
+    });
     const repositoryUri = response.repository?.repositoryUri;
     if (!repositoryUri) {
       throw new Error(`CreateRepository did not return a repository URI for ${repositoryUri}`);
@@ -174,14 +192,17 @@ export class EnvironmentResources {
 
     // configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
     debug(`${repositoryName}: enable image scanning`);
-    await ecr.putImageScanningConfiguration({ repositoryName, imageScanningConfiguration: { scanOnPush: true } }).promise();
+    await ecr.putImageScanningConfiguration({
+      repositoryName,
+      imageScanningConfiguration: { scanOnPush: true },
+    });
 
     return { repositoryUri };
   }
 }
 
 export class NoBootstrapStackEnvironmentResources extends EnvironmentResources {
-  constructor(environment: cxapi.Environment, sdk: ISDK) {
+  constructor(environment: Environment, sdk: SDK) {
     super(environment, sdk, emptyCache());
   }
 
@@ -189,7 +210,9 @@ export class NoBootstrapStackEnvironmentResources extends EnvironmentResources {
    * Look up the toolkit for a given environment, using a given SDK
    */
   public async lookupToolkit(): Promise<ToolkitInfo> {
-    throw new Error('Trying to perform an operation that requires a bootstrap stack; you should not see this error, this is a bug in the CDK CLI.');
+    throw new Error(
+      'Trying to perform an operation that requires a bootstrap stack; you should not see this error, this is a bug in the CDK CLI.',
+    );
   }
 }
 
