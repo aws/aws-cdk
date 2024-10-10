@@ -515,6 +515,7 @@ export class TableV2 extends TableBaseV2 {
     this.partitionKey = props.partitionKey;
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
+    this.resourcePolicy = props.resourcePolicy;
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
@@ -664,7 +665,6 @@ export class TableV2 extends TableBaseV2 {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
-    const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
 
     return {
       region: props.region,
@@ -690,8 +690,8 @@ export class TableV2 extends TableBaseV2 {
         : this.maxReadRequestUnits
           ? { maxReadRequestUnits: this.maxReadRequestUnits }
           : undefined,
-      resourcePolicy: resourcePolicy
-        ? { policyDocument: resourcePolicy }
+      resourcePolicy: this.resourcePolicy
+        ? { policyDocument: this.resourcePolicy }
         : undefined,
     };
   }
