@@ -1,0 +1,185 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "cdk-integ-location-tracker.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-location-tracker.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-location-tracker": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-location-tracker.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/437504f2660eaa44637296cc23aea74d2b25a510150094631b5eba0be2d297a9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-location-tracker.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-location-tracker.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-location-tracker/GeofenceCollection1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollection1D36FEE6D"
+          }
+        ],
+        "/cdk-integ-location-tracker/GeofenceCollection2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollection2348D6DB5"
+          }
+        ],
+        "/cdk-integ-location-tracker/GeofenceCollectionForAdd1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollectionForAdd131D6B4EA"
+          }
+        ],
+        "/cdk-integ-location-tracker/GeofenceCollectionForAdd2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollectionForAdd21A9CA549"
+          }
+        ],
+        "/cdk-integ-location-tracker/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerAF5FC55F"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerTrackerConsumerGeofenceCollection106C790AE"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerTrackerConsumerGeofenceCollection2BA7E93DE"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd1BAA19E05"
+          }
+        ],
+        "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE"
+          }
+        ],
+        "/cdk-integ-location-tracker/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-location-tracker/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "GeofenceCollection6FAC681F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GeofenceCollection6FAC681F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "TrackerConsumer3AEB9150": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrackerConsumer3AEB9150",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-integ-location-tracker"
+    },
+    "TrackerTestDefaultTestDeployAssert0E17BB8B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TrackerTestDefaultTestDeployAssert0E17BB8B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TrackerTestDefaultTestDeployAssert0E17BB8B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TrackerTestDefaultTestDeployAssert0E17BB8B.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TrackerTestDefaultTestDeployAssert0E17BB8B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TrackerTestDefaultTestDeployAssert0E17BB8B.assets"
+      ],
+      "metadata": {
+        "/TrackerTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TrackerTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TrackerTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
