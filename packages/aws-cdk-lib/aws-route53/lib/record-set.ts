@@ -3,7 +3,7 @@ import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-targ
 import { GeoLocation } from './geo-location';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
-import { determineFullyQualifiedDomainName } from './util';
+import { determineFullyQualifiedDomainName, validateRecordSetProps } from './util';
 import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
@@ -295,29 +295,7 @@ export class RecordSet extends Resource implements IRecordSet {
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
-
-    if (props.weight && (props.weight < 0 || props.weight > 255)) {
-      throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
-    }
-    if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
-      throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
-    }
-    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
-      throw new Error('setIdentifier can only be specified for non-simple routing policies');
-    }
-    if (props.multiValueAnswer && props.target.aliasTarget) {
-      throw new Error('multiValueAnswer cannot be specified for alias record');
-    }
-
-    const nonSimpleRoutingPolicies = [
-      props.geoLocation,
-      props.region,
-      props.weight,
-      props.multiValueAnswer,
-    ].filter((variable) => variable !== undefined).length;
-    if (nonSimpleRoutingPolicies > 1) {
-      throw new Error('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
-    }
+    validateRecordSetProps(props);
 
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;

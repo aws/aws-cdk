@@ -1,0 +1,272 @@
+{
+ "Resources": {
+  "myBucket5AF9C99B": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "myBucketPolicyDAC36B74": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "myBucket5AF9C99B"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Principal": {
+        "CanonicalUser": {
+         "Fn::GetAtt": [
+          "myDistOrigin1S3Origin5717909C",
+          "S3CanonicalUserId"
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "myBucket5AF9C99B",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "myDistOrigin1S3Origin5717909C": {
+   "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+   "Properties": {
+    "CloudFrontOriginAccessIdentityConfig": {
+     "Comment": "Identity for Api1StackmyDistOrigin1D6421C94"
+    }
+   }
+  },
+  "myDist9DB766F3": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "Api1StackmyDistOrigin1D6421C94",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "myBucket5AF9C99B",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "Api1StackmyDistOrigin1D6421C94",
+       "S3OriginConfig": {
+        "OriginAccessIdentity": {
+         "Fn::Join": [
+          "",
+          [
+           "origin-access-identity/cloudfront/",
+           {
+            "Ref": "myDistOrigin1S3Origin5717909C"
+           }
+          ]
+         ]
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "LatencyRecordcrossaccountrecordsethandlerrolePolicyApi1StackLatencyRecordcrossaccountrecordsethandlerrole7B962D4F7CED0322": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": "arn:aws:iam::786703845953:role/CrossAccountRecordSetRole"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PolicyApi1StackLatencyRecordcrossaccountrecordsethandlerrole7B962D4F",
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "CustomCrossAccountRecordSetCustomResourceProviderRoleCC110A9E",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "LatencyRecordCrossAccountRecordSetCustomResourceC05E2C15": {
+   "Type": "Custom::CrossAccountRecordSet",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountRecordSetCustomResourceProviderHandlerDCAC57CF",
+      "Arn"
+     ]
+    },
+    "AssumeRoleArn": "arn:aws:iam::786703845953:role/CrossAccountRecordSetRole",
+    "HostedZoneId": "Z05125833LLKMWFPHMF9L",
+    "Name": "global-test.lpafford.people.amazon.dev.",
+    "Type": "A",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "myDist9DB766F3",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     },
+     "EvaluateTargetHealth": false
+    },
+    "TTL": 1800,
+    "SetIdentifier": "us-west-1",
+    "Region": "us-west-1",
+    "GeoLocation": {},
+    "DeleteExisting": true
+   },
+   "DependsOn": [
+    "LatencyRecordcrossaccountrecordsethandlerrolePolicyApi1StackLatencyRecordcrossaccountrecordsethandlerrole7B962D4F7CED0322"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossAccountRecordSetCustomResourceProviderRoleCC110A9E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomCrossAccountRecordSetCustomResourceProviderHandlerDCAC57CF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-453872816227-us-west-1",
+     "S3Key": "020afdb13bf8c2fea7bafb38123bf169f9bcf4ac71f0988d77f8c4c0aad09c21.zip"
+    },
+    "Timeout": 30,
+    "MemorySize": 256,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountRecordSetCustomResourceProviderRoleCC110A9E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Description": "Lambda function for CrossAccountRecordSet custom resource"
+   },
+   "DependsOn": [
+    "CustomCrossAccountRecordSetCustomResourceProviderRoleCC110A9E"
+   ]
+  }
+ },
+ "Mappings": {
+  "AWSCloudFrontPartitionHostedZoneIdMap": {
+   "aws": {
+    "zoneId": "Z2FDTNDATAQYW2"
+   },
+   "aws-cn": {
+    "zoneId": "Z3RFFRIM2A3IF5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

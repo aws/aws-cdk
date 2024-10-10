@@ -39,6 +39,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // ensure that if there is an error it's reported as a failure to
     // cloudformation (otherwise cfn waits).
     // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // esbuild-disable unsupported-require-call
     const userHandler: Handler = require(external.userHandlerIndex).handler;
     const result = await userHandler(sanitizedEvent, context);
 
@@ -95,7 +96,7 @@ function renderResponse(
   };
 }
 
-async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
+export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
   const json: AWSLambda.CloudFormationCustomResourceResponse = {
     Status: status,
     Reason: event.Reason ?? status,

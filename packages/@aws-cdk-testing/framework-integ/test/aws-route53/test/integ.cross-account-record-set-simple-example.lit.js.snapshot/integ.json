@@ -1,0 +1,14 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "SimpleExample/DefaultTest": {
+      "stacks": [
+        "CrossAccountRoleStack",
+        "AppStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SimpleExample/DefaultTest/DeployAssert",
+      "assertionStackName": "SimpleExampleDefaultTestDeployAssertFC61A324"
+    }
+  }
+}

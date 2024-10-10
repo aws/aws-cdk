@@ -249,6 +249,12 @@ export const config: HandlerFrameworkConfig = {
         sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cross-account-zone-delegation-handler', 'index.ts'),
       },
     ],
+    'cross-account-record-set-provider': [
+      {
+        type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
+        sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cross-account-record-set-handler', 'index.ts'),
+      },
+    ],
     'delete-existing-record-set-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,

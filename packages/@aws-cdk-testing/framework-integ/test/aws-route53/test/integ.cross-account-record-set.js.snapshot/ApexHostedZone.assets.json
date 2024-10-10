@@ -1,0 +1,20 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "e77f6006716b22e07824b51ebca294be9ec95dc91be7ca09f48336c3f18c1f64": {
+      "source": {
+        "path": "ApexHostedZone.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "786703845953-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-786703845953-us-east-1",
+          "objectKey": "e77f6006716b22e07824b51ebca294be9ec95dc91be7ca09f48336c3f18c1f64.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::786703845953:role/cdk-hnb659fds-file-publishing-role-786703845953-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,394 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "CrossAccountRoleStack": {
+        "id": "CrossAccountRoleStack",
+        "path": "CrossAccountRoleStack",
+        "children": {
+          "ApexHostedZone": {
+            "id": "ApexHostedZone",
+            "path": "CrossAccountRoleStack/ApexHostedZone",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "CrossAccountRole": {
+            "id": "CrossAccountRole",
+            "path": "CrossAccountRoleStack/CrossAccountRole",
+            "children": {
+              "ImportCrossAccountRole": {
+                "id": "ImportCrossAccountRole",
+                "path": "CrossAccountRoleStack/CrossAccountRole/ImportCrossAccountRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CrossAccountRoleStack/CrossAccountRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": [
+                              "arn:aws:iam::453872816227:root",
+                              "arn:aws:iam::786703845953:root"
+                            ]
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": "CrossAccountRecordSetRole"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "Allow-RecordSet-Read-Write": {
+            "id": "Allow-RecordSet-Read-Write",
+            "path": "CrossAccountRoleStack/Allow-RecordSet-Read-Write",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CrossAccountRoleStack/Allow-RecordSet-Read-Write/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "route53:ChangeResourceRecordSets",
+                            "route53:ListResourceRecordSets"
+                          ],
+                          "Condition": {
+                            "ForAllValues:StringLike": {
+                              "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+                                "test.global-test.lpafford.people.amazon.dev"
+                              ]
+                            },
+                            "ForAllValues:StringEquals": {
+                              "route53:ChangeResourceRecordSetsRecordTypes": [
+                                "A"
+                              ]
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Resource": "arn:aws:route53:::hostedzone/Z05125833LLKMWFPHMF9L"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "Allow-RecordSet-Read-Write",
+                    "roles": [
+                      {
+                        "Ref": "CrossAccountRoleFACE29D1"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Policy",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CrossAccountRoleStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CrossAccountRoleStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "AppStack": {
+        "id": "AppStack",
+        "path": "AppStack",
+        "children": {
+          "MutableRoleCrossAccountRole": {
+            "id": "MutableRoleCrossAccountRole",
+            "path": "AppStack/MutableRoleCrossAccountRole",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "CrossAccountRole": {
+            "id": "CrossAccountRole",
+            "path": "AppStack/CrossAccountRole",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ApexHostedZone": {
+            "id": "ApexHostedZone",
+            "path": "AppStack/ApexHostedZone",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "SimpleRecordSet": {
+            "id": "SimpleRecordSet",
+            "path": "AppStack/SimpleRecordSet",
+            "children": {
+              "cross-account-record-set-handler-role": {
+                "id": "cross-account-record-set-handler-role",
+                "path": "AppStack/SimpleRecordSet/cross-account-record-set-handler-role",
+                "children": {
+                  "PolicyAppStackSimpleRecordSetcrossaccountrecordsethandlerrole9BA32FFD": {
+                    "id": "PolicyAppStackSimpleRecordSetcrossaccountrecordsethandlerrole9BA32FFD",
+                    "path": "AppStack/SimpleRecordSet/cross-account-record-set-handler-role/PolicyAppStackSimpleRecordSetcrossaccountrecordsethandlerrole9BA32FFD",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AppStack/SimpleRecordSet/cross-account-record-set-handler-role/PolicyAppStackSimpleRecordSetcrossaccountrecordsethandlerrole9BA32FFD/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": "arn:aws:iam::786703845953:role/CrossAccountRecordSetRole"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "PolicyAppStackSimpleRecordSetcrossaccountrecordsethandlerrole9BA32FFD",
+                            "roles": [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::Select": [
+                                          5,
+                                          {
+                                            "Fn::Split": [
+                                              ":",
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "CustomCrossAccountRecordSetCustomResourceProviderRoleCC110A9E",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "CrossAccountRecordSetCustomResource": {
+                "id": "CrossAccountRecordSetCustomResource",
+                "path": "AppStack/SimpleRecordSet/CrossAccountRecordSetCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "AppStack/SimpleRecordSet/CrossAccountRecordSetCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.CrossAccountRecordSet",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::CrossAccountRecordSetCustomResourceProvider": {
+            "id": "Custom::CrossAccountRecordSetCustomResourceProvider",
+            "path": "AppStack/Custom::CrossAccountRecordSetCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "AppStack/Custom::CrossAccountRecordSetCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "AppStack/Custom::CrossAccountRecordSetCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "AppStack/Custom::CrossAccountRecordSetCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "AppStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "AppStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "SimpleExample": {
+        "id": "SimpleExample",
+        "path": "SimpleExample",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SimpleExample/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SimpleExample/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SimpleExample/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "SimpleExample/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "SimpleExample/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
