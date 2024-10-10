@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "IntegTest-EcsImportedTaskDefinition/DefaultTest": {
+      "stacks": [
+        "IntegEcsImportedTaskDefStack"
+      ],
+      "assertionStack": "IntegTest-EcsImportedTaskDefinition/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestEcsImportedTaskDefinitionDefaultTestDeployAssert69FA1335"
+    }
+  }
+}

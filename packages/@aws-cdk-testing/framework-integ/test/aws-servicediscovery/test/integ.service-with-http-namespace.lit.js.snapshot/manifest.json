@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "38.0.1",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-servicediscovery-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,12 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-servicediscovery-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea42ace1ba66461746ff5ebdce1e1c0fa37f12e32c367e3819aafaa44afe738e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13ad8d0248b0f59b00ee16d1d818d24403ff02a8722a623a96510f74baa0277d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -83,6 +79,12 @@
         ]
       },
       "displayName": "aws-servicediscovery-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

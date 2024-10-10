@@ -51,6 +51,7 @@ test('somewhat balance', async () => {
 
   const keys = Object.keys(counters) as Array<keyof typeof counters> ;
   const pool = ResourcePool.withResources(POOL_NAME, keys);
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(Array.from(range(N)).map(() =>
     pool.using(async (x) => {
       counters[x] += 1;

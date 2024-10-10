@@ -9,6 +9,7 @@ import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
+import { EcsTask } from '../../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.Vpc;
@@ -1094,4 +1095,101 @@ test.each([
       },
     ],
   });
+});
+
+test('When using non-imported TaskDefinition, the IAM policy `Resource` should use `Ref` to reference the TaskDefinition', () => {
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  });
+
+  rule.addTarget(
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
+  );
+
+  const policyMatch = Match.objectLike({
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'ecs:RunTask',
+          Resource: {
+            Ref: 'TaskDef54694570',
+          },
+        }),
+      ]),
+    },
+  });
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
+});
+
+test('Imported task definition without revision adds wildcard to policy resource', () => {
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDefImport', {
+    taskDefinitionArn: 'arn:aws:ecs:us-west-2:012345678901:task-definition/MyTask',
+    taskRole: iam.Role.fromRoleArn(stack, 'RoleImport', 'arn:aws:iam::012345678901:role/MyTaskRole'),
+    networkMode: ecs.NetworkMode.AWS_VPC,
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  });
+
+  rule.addTarget(
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
+  );
+
+  const policyMatch = Match.objectLike({
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'ecs:RunTask',
+          Resource: `${taskDefinition.taskDefinitionArn}:*`,
+        }),
+      ]),
+    },
+  });
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
+});
+
+test('Imported task definition with revision uses original arn for policy resource', () => {
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDefImport', {
+    taskDefinitionArn: 'arn:aws:ecs:us-west-2:012345678901:task-definition/MyTask:1',
+    taskRole: iam.Role.fromRoleArn(stack, 'RoleImport', 'arn:aws:iam::012345678901:role/MyTaskRole'),
+    networkMode: ecs.NetworkMode.AWS_VPC,
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  });
+
+  rule.addTarget(
+    new EcsTask({
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+    }),
+  );
+
+  const policyMatch = Match.objectLike({
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'ecs:RunTask',
+          Resource: taskDefinition.taskDefinitionArn,
+        }),
+      ]),
+    },
+  });
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
 });

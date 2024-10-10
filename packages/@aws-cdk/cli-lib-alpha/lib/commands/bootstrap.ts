@@ -4,6 +4,14 @@ import { SharedOptions } from './common';
  * Options to use with cdk bootstrap
  */
 export interface BootstrapOptions extends SharedOptions {
+  /**
+   * The target AWS environments to deploy the bootstrap stack to.
+   * Uses the following format: `aws://<account-id>/<region>`
+   *
+   * @example "aws://123456789012/us-east-1"
+   * @default - Bootstrap all environments referenced in the CDK app or determine an environment from local configuration.
+   */
+  readonly environments?: string[];
 
   /**
    * The name of the CDK toolkit stack to create

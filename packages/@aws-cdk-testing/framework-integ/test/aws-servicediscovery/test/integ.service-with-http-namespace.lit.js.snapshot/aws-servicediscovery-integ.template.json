@@ -22,15 +22,15 @@
    "Type": "AWS::ServiceDiscovery::Instance",
    "Properties": {
     "InstanceAttributes": {
-     "arn": "arn:aws:s3:::mybucket"
+     "arn": "arn:aws:s3:::amzn-s3-demo-bucket"
     },
+    "InstanceId": "ervicediscoveryintegMyNamespaceNonIpServiceNonIpInstance45389A2A",
     "ServiceId": {
      "Fn::GetAtt": [
       "MyNamespaceNonIpService3B425009",
       "Id"
      ]
-    },
-    "InstanceId": "ervicediscoveryintegMyNamespaceNonIpServiceNonIpInstance45389A2A"
+    }
    }
   },
   "MyNamespaceIpService220F547F": {
@@ -57,13 +57,13 @@
      "AWS_INSTANCE_IPV4": "54.239.25.192",
      "AWS_INSTANCE_PORT": "80"
     },
+    "InstanceId": "awsservicediscoveryintegMyNamespaceIpServiceIpInstance56070746",
     "ServiceId": {
      "Fn::GetAtt": [
       "MyNamespaceIpService220F547F",
       "Id"
      ]
-    },
-    "InstanceId": "awsservicediscoveryintegMyNamespaceIpServiceIpInstance56070746"
+    }
    }
   }
  },

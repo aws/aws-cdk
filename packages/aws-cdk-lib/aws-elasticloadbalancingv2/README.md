@@ -405,6 +405,23 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
+### Network Load Balancer Listener attributes
+
+You can modify attributes of Network Load Balancer Listener:
+
+```ts
+declare const lb: elbv2.NetworkLoadBalancer;
+declare const group: elbv2.NetworkTargetGroup;
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+  defaultAction: elbv2.NetworkListenerAction.forward([group]),
+
+  // The tcp idle timeout value. The valid range is 60-6000 seconds. The default is 350 seconds.
+  tcpIdleTimeout: Duration.seconds(100),
+});
+```
+
 ## Targets and Target Groups
 
 Application and Network Load Balancers organize load balancing targets in Target

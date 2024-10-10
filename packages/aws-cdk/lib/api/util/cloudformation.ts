@@ -305,6 +305,7 @@ export type PrepareChangeSetOptions = {
   sdkProvider: SdkProvider;
   stream: NodeJS.WritableStream;
   parameters: { [name: string]: string | undefined };
+  toolkitStackName?: string;
   resourcesToImport?: ResourcesToImport;
 }
 
@@ -375,9 +376,11 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       for (const entry of file_entries) {
         await options.deployments.buildSingleAsset(artifact, assetManifest, entry, {
           stack: options.stack,
+          toolkitStackName: options.toolkitStackName,
         });
         await options.deployments.publishSingleAsset(assetManifest, entry, {
           stack: options.stack,
+          toolkitStackName: options.toolkitStackName,
         });
       }
     }

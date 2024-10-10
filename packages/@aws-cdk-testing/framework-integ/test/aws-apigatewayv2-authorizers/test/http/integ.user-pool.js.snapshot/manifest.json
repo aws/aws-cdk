@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "AuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "AuthorizerInteg.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e1b12f5d12c6de951105961b92d6c971a32d4cbbc394e1542bcbedf77450978.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88d5ad156d2cbb044227b4188a274f0800e0bfd4c8564e1eb29c296b68081937.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -140,6 +141,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RouteA67450D2"
+          }
+        ],
+        "/AuthorizerInteg/AuthorizerId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerId"
+          }
+        ],
+        "/AuthorizerInteg/AuthorizationType": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizationType"
           }
         ],
         "/AuthorizerInteg/BootstrapVersion": [

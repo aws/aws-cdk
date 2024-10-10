@@ -32,12 +32,16 @@ export async function handler(props: UserTablePrivilegesHandlerProps & ClusterPr
 }
 
 async function revokePrivileges(username: string, tablePrivileges: TablePrivilege[], clusterProps: ClusterProps) {
+  // Limited by human input
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
     return executeStatement(`REVOKE ${actions.join(', ')} ON ${tableName} FROM ${username}`, clusterProps);
   }));
 }
 
 async function grantPrivileges(username: string, tablePrivileges: TablePrivilege[], clusterProps: ClusterProps) {
+  // Limited by human input
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
     return executeStatement(`GRANT ${actions.join(', ')} ON ${tableName} TO ${username}`, clusterProps);
   }));

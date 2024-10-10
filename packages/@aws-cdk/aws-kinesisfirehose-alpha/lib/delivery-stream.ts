@@ -185,11 +185,9 @@ export enum StreamEncryptionType {
  */
 export interface DeliveryStreamProps {
   /**
-   * The destinations that this delivery stream will deliver data to.
-   *
-   * Only a singleton array is supported at this time.
+   * The destination that this delivery stream will deliver data to.
    */
-  readonly destinations: IDestination[];
+  readonly destination: IDestination;
 
   /**
    * A name for the delivery stream.
@@ -324,10 +322,6 @@ export class DeliveryStream extends DeliveryStreamBase {
 
     this._role = props.role;
 
-    if (props.destinations.length !== 1) {
-      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
-    }
-
     if (props.encryption?.encryptionKey || props.sourceStream) {
       this._role = this._role ?? new iam.Role(this, 'Service Role', {
         assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
@@ -369,7 +363,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       readStreamGrant = props.sourceStream.grantRead(this._role);
     }
 
-    const destinationConfig = props.destinations[0].bind(this, {});
+    const destinationConfig = props.destination.bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "36.0.0",
   "artifacts": {
     "batch-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/430386354edc9ab4d2ea248849aff4ff559a8b7c4d92f62491ad75c8c3746edb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29532266ce5c96c372f99765edc76d90da88dd7316798a6e86946bc0ffa1802d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -314,36 +314,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AllocationStrategySPOTCAPACITYEE4582C5"
-          }
-        ],
-        "/batch-stack/noOptimalInstancesForARM": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "'optimal' instance types are not supported with ARM instance types or classes, setting useOptimalInstanceClasses to false [ack: @aws-cdk/aws-batch:optimalNotSupportedWithARM]"
-          }
-        ],
-        "/batch-stack/noOptimalInstancesForARM/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "noOptimalInstancesForARMSecurityGroup7157B016"
-          }
-        ],
-        "/batch-stack/noOptimalInstancesForARM/InstanceProfileRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "noOptimalInstancesForARMInstanceProfileRole926AEEC5"
-          }
-        ],
-        "/batch-stack/noOptimalInstancesForARM/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "noOptimalInstancesForARMInstanceProfile37BE9D32"
-          }
-        ],
-        "/batch-stack/noOptimalInstancesForARM/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "noOptimalInstancesForARMF146AA4D"
           }
         ],
         "/batch-stack/taggedCE/SecurityGroup/Resource": [
