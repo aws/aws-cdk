@@ -31,6 +31,12 @@ export class TestStack extends Stack {
       resourcePolicy: doc,
     });
 
+    this.table.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:GetItem'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    }));
+
     this.tableTwo = new dynamodb.Table(this, 'TableTest2', {
       partitionKey: {
         name: 'PK',
@@ -39,7 +45,16 @@ export class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.tableTwo.grantReadData(new iam.AccountPrincipal('123456789012'));
+    this.tableTwo.addToResourcePolicy( new iam.PolicyStatement({
+      actions: ['dynamodb:PutItem'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    }));
+
+    // TODO
+    // The following causes a circular depedency issue, which needs investigated
+    //
+    // this.tableTwo.grantReadData(new iam.AccountPrincipal('012345678910'));
   }
 }
 

@@ -525,6 +525,7 @@ export interface TableAttributes {
 }
 
 export abstract class TableBase extends Resource implements ITable, iam.IResourceWithPolicy {
+
   /**
    * @attribute
    */
@@ -552,6 +553,25 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public abstract resourcePolicy?: iam.PolicyDocument;
 
   protected readonly regionalArns = new Array<string>();
+
+  /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+    this.resourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
+  }
 
   /**
    * Adds an IAM policy statement associated with this table to an IAM
@@ -593,11 +613,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
       throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
     }
 
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: [this.tableStreamArn],
-      scope: this,
+      resource: this,
     });
   }
 
@@ -689,23 +709,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
-  }
-
-  /**
-   * Adds a statement to the resource policy associated with this file system.
-   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
-   *
-   * Note that this does not work with imported file systems.
-   *
-   * @param statement The policy statement to add
-   */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
   }
 
   /**
@@ -1150,6 +1153,8 @@ export class Table extends TableBase {
     }
     this.validateProvisioning(props);
 
+    this.resourcePolicy = props.resourcePolicy ?? new iam.PolicyDocument();
+
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -1177,8 +1182,8 @@ export class Table extends TableBase {
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
+      resourcePolicy: this.resourcePolicy
+        ? { policyDocument: this.resourcePolicy }
         : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
@@ -1732,6 +1737,7 @@ export class Table extends TableBase {
       },
     };
   }
+
 }
 
 /**
