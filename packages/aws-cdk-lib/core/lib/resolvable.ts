@@ -1,9 +1,7 @@
 import { IConstruct } from 'constructs';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
-import { Reference } from './reference';
 import { TokenizedStringFragments } from './string-fragments';
-import { Tokenization } from './token';
 import { ResolutionTypeHint } from './type-hints';
 
 /**
@@ -200,47 +198,5 @@ export class DefaultTokenResolver implements ITokenResolver {
     }
 
     return fragments.mapTokens({ mapToken: context.resolve }).firstValue;
-  }
-}
-
-/**
- * PolicySynthesizer token resolver implementation
- *
- */
-export class PolicySynthesizerTokenResolver extends DefaultTokenResolver {
-  constructor(concat: IFragmentConcatenator) {
-    super(concat);
-  }
-
-  /**
-   * PolicySynthesizer Token resolution
-   *
-   * Resolve the Token until the token can be resolved into
-   * "(Path/To/SomeResource.Arn)" format. Otherwise, recurse
-   * into whatever it returns,
-   */
-  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
-    try {
-      let resolved = t.resolve(context);
-
-      // If the token value is resolvable into the format "(Path/To/SomeResource.Arn)", return it
-      // as this is the format expected by the Policy Synthesizer.
-      const resolvable = Tokenization.reverseString(resolved);
-      if (resolvable.length === 1 && Reference.isReference(resolvable.firstToken)) {
-        return `(${resolvable.firstToken.target.node.path}.${resolvable.firstToken.displayName})`;
-      }
-      // The token might have returned more values that need resolving, recurse
-      resolved = context.resolve(resolved);
-      resolved = postProcessor.postProcess(resolved, context);
-      return resolved;
-    } catch (e: any) {
-      let message = `Resolution error: ${e.message}.`;
-      if (t.creationStack && t.creationStack.length > 0) {
-        message += `\nObject creation stack:\n  at ${t.creationStack.join('\n  at ')}`;
-      }
-
-      e.message = message;
-      throw e;
-    }
   }
 }
