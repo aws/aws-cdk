@@ -8,6 +8,8 @@ import { CfnConnection } from 'aws-cdk-lib/aws-glue';
  *
  * If you need to use a connection type that doesn't exist as a static member, you
  * can instantiate a `ConnectionType` object, e.g: `new ConnectionType('NEW_TYPE')`.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype
  */
 export class ConnectionType {
 
@@ -30,6 +32,18 @@ export class ConnectionType {
    * Designates a network connection to a data source within an Amazon Virtual Private Cloud environment (Amazon VPC).
    */
   public static readonly NETWORK = new ConnectionType('NETWORK');
+
+  /**
+   * Uses configuration settings contained in a connector purchased from AWS Marketplace
+   * to read from and write to data stores that are not natively supported by AWS Glue.
+   */
+  public static readonly MARKETPLACE = new ConnectionType('MARKETPLACE');
+
+  /**
+   * Uses configuration settings contained in a custom connector to read from and write to data stores
+   * that are not natively supported by AWS Glue.
+   */
+  public static readonly CUSTOM = new ConnectionType('CUSTOM');
 
   /**
    * The name of this ConnectionType, as expected by Connection resource.
