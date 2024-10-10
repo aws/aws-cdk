@@ -328,6 +328,7 @@ export interface SubnetV2Attributes {
 
   /**
      * The type of subnet (public or private) that this subnet represents.
+     * @default - no subnet name
     */
   readonly subnetName?: string;
 

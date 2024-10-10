@@ -1,0 +1,151 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "vpcv2-import-integ-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "vpcv2-import-integ-test.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "vpcv2-import-integ-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-west-2",
+      "properties": {
+        "templateFile": "vpcv2-import-integ-test.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/5d62285f365aaad1a318be65b4cbb19b1d8dd7336c95d61923a203dde81074c8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "vpcv2-import-integ-test.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "vpcv2-import-integ-test.assets"
+      ],
+      "metadata": {
+        "/vpcv2-import-integ-test/ImportedNewVPC/InternetGateway/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/InternetGateway/GWAttachment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCInternetGatewayGWAttachment5928F3D0"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/ImportedPublicSubnet-DefaultRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCImportedPublicSubnetDefaultRoute56DCABA4"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet-DefaultRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewImportedSubnet/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewImportedSubnet53655C69"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewImportedSubnet/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewImportedSubnetRouteTable73C1E1B7"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewImportedSubnet/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewImportedSubnetRouteTableAssociationE5634175"
+          }
+        ],
+        "/vpcv2-import-integ-test/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/vpcv2-import-integ-test/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "vpcv2-import-integ-test"
+    },
+    "integtestmodelDefaultTestDeployAssertCF40BD53.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestmodelDefaultTestDeployAssertCF40BD53.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestmodelDefaultTestDeployAssertCF40BD53": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestmodelDefaultTestDeployAssertCF40BD53.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestmodelDefaultTestDeployAssertCF40BD53.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestmodelDefaultTestDeployAssertCF40BD53.assets"
+      ],
+      "metadata": {
+        "/integtest-model/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-model/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-model/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
