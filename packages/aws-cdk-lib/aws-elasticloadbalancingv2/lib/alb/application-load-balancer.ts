@@ -200,7 +200,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.listeners = [];
     this.metrics = new ApplicationLoadBalancerMetrics(this, this.loadBalancerFullName);
 
-    if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
+    if (props.http2Enabled !== undefined) { this.setAttribute('routing.http2.enabled', props.http2Enabled ? 'true' : 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
     if (props.dropInvalidHeaderFields) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
     if (props.desyncMitigationMode !== undefined) { this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
