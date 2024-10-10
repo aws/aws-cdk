@@ -35,6 +35,7 @@ The following targets are supported:
 4. `targets.ApiDestinationTarget`: [Send event source to an EventBridge API destination](#amazon-eventbridge-api-destination)
 5. `targets.KinesisTarget`: [Send event source to a Kinesis data stream](#amazon-kinesis-data-stream)
 6. `targets.EventBridgeTarget`: [Send event source to an EventBridge event bus](#amazon-eventbridge-event-bus)
+7. `targets.CloudWatchLogsTarget`: [Send event source to a CloudWatch Logs log group](#amazon-cloudwatch-logs-log-group)
 
 ### Amazon SQS
 
@@ -271,5 +272,37 @@ const eventBusTarget = new targets.EventBridgeTarget(targetEventBus, {
 const pipe = new pipes.Pipe(this, 'Pipe', {
     source: new SqsSource(sourceQueue),
     target: eventBusTarget,
+});
+```
+
+### Amazon CloudWatch Logs Log Group
+
+A log group can be used as a target for a pipe. The log will receive the (enriched/filtered) source payload.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetLogGroup: logs.LogGroup;
+
+const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: logGroupTarget,
+});
+```
+
+The input to the target log group can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetLogGroup: logs.LogGroup;
+
+const logGroupTarget = new targets.CloudWatchLogsTarget(targetLogGroup, {
+  inputTransformation: pipes.InputTransformation.fromObject({ body: "👀" }),
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SqsSource(sourceQueue),
+    target: logGroupTarget,
 });
 ```
