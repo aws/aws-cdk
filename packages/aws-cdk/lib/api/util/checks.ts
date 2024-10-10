@@ -36,20 +36,14 @@ interface BootstrapStackInfo {
 async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promise<BootstrapStackInfo> {
   try {
     const cfn = sdk.cloudFormation();
-    const s3 = sdk.s3();
-    const response = await cfn.describeStacks({ StackName: stackName }).promise();
+    const stackResponse = await cfn.describeStacks({ StackName: stackName }).promise();
 
-    if (!response.Stacks || response.Stacks.length === 0) {
+    if (!stackResponse.Stacks || stackResponse.Stacks.length === 0) {
       throw new Error(`Toolkit stack ${stackName} not found`);
     }
 
-    const stack = response.Stacks[0];
-    const bucketNameOutput = stack.Outputs?.find(output => output.OutputKey === 'BucketName');
+    const stack = stackResponse.Stacks[0];
     const versionOutput = stack.Outputs?.find(output => output.OutputKey === 'BootstrapVersion');
-
-    if (!bucketNameOutput?.OutputValue) {
-      throw new Error(`Unable to locate the Staging BucketName output value in the toolkit stack ${stackName}`);
-    }
 
     if (!versionOutput?.OutputValue) {
       throw new Error(`Unable to find BootstrapVersion output in the toolkit stack ${stackName}`);
@@ -60,13 +54,20 @@ async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promise<Boot
       throw new Error(`Invalid BootstrapVersion value: ${versionOutput.OutputValue}`);
     }
 
-    let hasStagingBucket = false;
-    try {
-      await s3.headBucket({ Bucket: bucketNameOutput.OutputValue }).promise();
-      hasStagingBucket = true;
-    } catch (s3Error) {
-      debug(`Bucket ${bucketNameOutput.OutputValue} either does not exist, or is not accessible: ${s3Error}`);
+    // Try to get the bucket name from the stack outputs first
+    let bucketName = stack.Outputs?.find(output => output.OutputKey === 'BucketName')?.OutputValue;
+
+    // If not found in outputs, try to get it from the logical resource id
+    if (!bucketName) {
+      const resourcesResponse = await cfn.describeStackResources({ StackName: stackName }).promise();
+      const bucketResource = resourcesResponse.StackResources?.find(resource => 
+        resource.LogicalResourceId === 'StagingBucket' && 
+        resource.ResourceType === 'AWS::S3::Bucket'
+      );
+      bucketName = bucketResource?.PhysicalResourceId;
     }
+
+    let hasStagingBucket = !!bucketName;
 
     return {
       hasStagingBucket,
