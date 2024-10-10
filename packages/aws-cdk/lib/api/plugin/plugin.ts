@@ -1,9 +1,9 @@
 import { inspect } from 'util';
 import * as chalk from 'chalk';
 
-import { error } from './_env';
-import { ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
-import { CredentialProviderSource } from './credential-provider-source';
+import { type ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
+import type { CredentialProviderSource } from './credential-provider-source';
+import { error } from '../../logging';
 
 /**
  * The basic contract for plug-ins to adhere to::
@@ -71,7 +71,9 @@ export class PluginHost {
         error(`Module ${chalk.green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
         throw new Error(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
-      if (plugin.init) { plugin.init(PluginHost.instance); }
+      if (plugin.init) {
+        plugin.init(PluginHost.instance);
+      }
     } catch (e: any) {
       error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
       throw new Error(`Unable to load plug-in: ${moduleSpec}`);
