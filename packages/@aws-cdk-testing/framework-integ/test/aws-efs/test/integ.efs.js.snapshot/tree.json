@@ -751,6 +751,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EFS::AccessPoint",
                       "aws:cdk:cloudformation:props": {
+                        "clientToken": "client-token",
                         "fileSystemId": {
                           "Ref": "FileSystem8A8E25C0"
                         },
@@ -826,7 +827,7 @@
                 "path": "test-efs-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -872,7 +873,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },
