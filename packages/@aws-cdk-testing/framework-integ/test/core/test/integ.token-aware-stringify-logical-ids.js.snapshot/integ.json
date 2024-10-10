@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "TokenAwareStringifyLogicalIds/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "TokenAwareStringifyLogicalIds/DefaultTest/DeployAssert",
+      "assertionStackName": "TokenAwareStringifyLogicalIdsDefaultTestDeployAssert787DCCE3"
+    }
+  }
+}

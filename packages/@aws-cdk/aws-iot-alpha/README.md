@@ -77,3 +77,65 @@ new iot.TopicRule(this, 'TopicRule', {
 ```
 
 See also [@aws-cdk/aws-iot-actions-alpha](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-iot-actions-alpha-readme.html) for other actions.
+
+## Logging
+
+AWS IoT provides a [logging feature](https://docs.aws.amazon.com/iot/latest/developerguide/configure-logging.html) that allows you to monitor and log AWS IoT activity.
+
+You can enable IoT logging with the following code:
+
+```ts
+new iot.Logging(this, 'Logging', {
+  logLevel: iot.LogLevel.INFO,
+});
+```
+
+**Note**: All logs are forwarded to the `AWSIotLogsV2` log group in CloudWatch.
+
+## Audit
+
+An [AWS IoT Device Defender audit looks](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-defender-audit.html) at account- and device-related settings and policies to ensure security measures are in place.
+An audit can help you detect any drifts from security best practices or access policies.
+
+### Account Audit Configuration
+
+The IoT audit includes [various audit checks](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-defender-audit-checks.html), and it is necessary to configure settings to enable those checks.
+
+You can enable an account audit configuration with the following code:
+
+```ts
+// Audit notification are sent to the SNS topic
+declare const targetTopic: sns.ITopic;
+
+new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
+  targetTopic,
+});
+```
+
+By default, all audit checks are enabled, but it is also possible to enable only specific audit checks.
+
+```ts
+new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
+  checkConfiguration: {
+    // enabled
+    authenticatedCognitoRoleOverlyPermissiveCheck: true,
+    // enabled by default
+    caCertificateExpiringCheck: undefined,
+    // disabled
+    caCertificateKeyQualityCheck: false,
+    conflictingClientIdsCheck: false,
+    deviceCertificateExpiringCheck: false,
+    deviceCertificateKeyQualityCheck: false,
+    deviceCertificateSharedCheck: false,
+    intermediateCaRevokedForActiveDeviceCertificatesCheck: false,
+    ioTPolicyPotentialMisConfigurationCheck: false,
+    iotPolicyOverlyPermissiveCheck: false,
+    iotRoleAliasAllowsAccessToUnusedServicesCheck: false,
+    iotRoleAliasOverlyPermissiveCheck: false,
+    loggingDisabledCheck: false,
+    revokedCaCertificateStillActiveCheck: false,
+    revokedDeviceCertificateStillActiveCheck: false,
+    unauthenticatedCognitoRoleOverlyPermissiveCheck: false,
+  },
+});
+```

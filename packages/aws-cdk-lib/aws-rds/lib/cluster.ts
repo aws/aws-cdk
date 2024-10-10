@@ -385,6 +385,17 @@ interface DatabaseClusterBaseProps {
    * @default - false
    */
   readonly enableDataApi?: boolean;
+
+  /**
+   * Whether read replicas can forward write operations to the writer DB instance in the DB cluster.
+   *
+   * This setting can only be enabled for Aurora MySQL 3.04 and higher clusters.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html
+   *
+   * @default false
+   */
+  readonly enableLocalWriteForwarding?: boolean;
 }
 
 /**
@@ -690,6 +701,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
+    // enableLocalWriteForwarding cannot be configured, including false, on Aurora clusters other than MySQL.
+    if (props.enableLocalWriteForwarding !== undefined && !['aurora', 'aurora-mysql'].includes(props.engine.engineType)) {
+      throw new Error(`\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: ${props.engine.engineType}`);
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -716,6 +732,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         },
       }),
       storageType: props.storageType?.toString(),
+      enableLocalWriteForwarding: props.enableLocalWriteForwarding,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -980,7 +997,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   private readonly _instanceIdentifiers?: string[];
   private readonly _instanceEndpoints?: Endpoint[];
 
-  protected readonly enableDataApi = false;
+  protected readonly enableDataApi: boolean;
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
@@ -995,6 +1012,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     });
     this.engine = attrs.engine;
     this.secret = attrs.secret;
+
+    this.enableDataApi = attrs.dataApiEnabled ?? false;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;

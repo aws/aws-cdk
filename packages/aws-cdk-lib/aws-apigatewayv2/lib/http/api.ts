@@ -160,6 +160,15 @@ export interface HttpApiProps {
    * @default - no default authorization scopes
    */
   readonly defaultAuthorizationScopes?: string[];
+
+  /**
+   * Whether to set the default route selection expression for the API.
+   *
+   * When enabled, "${request.method} ${request.path}" is set as the default route selection expression.
+   *
+   * @default false
+   */
+  readonly routeSelectionExpression?: boolean;
 }
 
 /**
@@ -434,6 +443,7 @@ export class HttpApi extends HttpApiBase {
       corsConfiguration,
       description: props?.description,
       disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
+      routeSelectionExpression: props?.routeSelectionExpression ? '${request.method} ${request.path}' : undefined,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);

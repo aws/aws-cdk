@@ -371,3 +371,53 @@ test('when resolver limit is out of range, it throws an error', () => {
   expect(() => buildWithLimit('resolver-limit-high', 10001)).toThrow(errorString);
 
 });
+
+test.each([
+  [appsync.FieldLogLevel.ALL],
+  [appsync.FieldLogLevel.ERROR],
+  [appsync.FieldLogLevel.NONE],
+  [appsync.FieldLogLevel.INFO],
+  [appsync.FieldLogLevel.DEBUG],
+])('GraphQLApi with LogLevel %s', (fieldLogLevel) => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'GraphQLApi', {
+    name: 'api',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {
+      fieldLogLevel,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    LogConfig: {
+      FieldLogLevel: fieldLogLevel,
+    },
+  });
+});
+
+test('when owner contact is set, they should be used on API', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'owner-contact', {
+    name: 'owner-contact',
+    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    ownerContact: 'test',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    OwnerContact: 'test',
+  });
+});
+
+test('when owner contact exceeds 256 characters, it throws an error', () => {
+  const buildWithOwnerContact = () => {
+    new appsync.GraphqlApi(stack, 'owner-contact-length-exceeded', {
+      name: 'owner-contact',
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      ownerContact: 'a'.repeat(256 + 1),
+    });
+  };
+
+  expect(() => buildWithOwnerContact()).toThrow('You must specify `ownerContact` as a string of 256 characters or less.');
+});
