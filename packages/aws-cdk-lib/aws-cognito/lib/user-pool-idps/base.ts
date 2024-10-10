@@ -99,6 +99,12 @@ export interface AttributeMapping {
   readonly email?: ProviderAttribute;
 
   /**
+   * The user's e-mail address is verification.
+   * @default - not mapped
+   */
+  readonly emailVerified?: ProviderAttribute;
+
+  /**
    * The surname or last name of user.
    * @default - not mapped
    */
