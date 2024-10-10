@@ -26,7 +26,7 @@ export abstract class TableEncryptionV2 {
   }
 
   /**
-   * Configure server-side encryption using a DynamoDB owned key.
+   * Configure server-side encryption using an AWS managed key.
    */
   public static awsManagedKey(): TableEncryptionV2 {
     return new (class extends TableEncryptionV2 {

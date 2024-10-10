@@ -119,8 +119,12 @@ export async function isHotswappableEcsServiceChange(
             ecsService: ecsService,
           });
         }
+        // Limited set of updates per cluster
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all(Object.values(servicePerClusterUpdates)
           .map(clusterUpdates => {
+            // Limited set of updates per cluster
+            // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
             return Promise.all(clusterUpdates.map(serviceUpdate => serviceUpdate.promise));
           }),
         );
@@ -172,6 +176,7 @@ export async function isHotswappableEcsServiceChange(
         // create a custom Waiter that uses the deploymentCompleted configuration added above
         const deploymentWaiter = new (AWS as any).ResourceWaiter(sdk.ecs(), 'deploymentCompleted');
         // wait for all of the waiters to finish
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all(Object.entries(servicePerClusterUpdates).map(([clusterName, serviceUpdates]) => {
           return deploymentWaiter.wait({
             cluster: clusterName,
