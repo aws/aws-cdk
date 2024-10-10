@@ -10,7 +10,9 @@ export async function determineAllowCrossAccountAssetPublishing(sdk: ISDK, custo
 
   if (await _bootstrapVersion(sdk, stackName) >= 21) {
     // bootstrap stack version 21 contains a fix that will prevent cross
-    // account publishing on the IAM level
+    // account publishing on the IAM level. Therefore, we can safely allow this in the CLI.
+    // It will either fail, or if it succeeds then the user has customized their bootstrap stack
+    // to explicitly allow it, which is also fine.
     // https://github.com/aws/aws-cdk/pull/30823
     return true;
   }
