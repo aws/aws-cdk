@@ -116,6 +116,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly cloudFormationExecutionRoleArn?: string;
 
   /**
+   * The role that needs to be assumed to perform operations on the changeset other than execution
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  readonly changesetRole?: cxschema.BootstrapRole;
+
+  /**
    * The role to use to look up values from the target AWS account
    *
    * @default - No role is assumed (current credentials are used)
@@ -185,6 +192,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.terminationProtection = properties.terminationProtection;
     this.validateOnSynth = properties.validateOnSynth;
     this.lookupRole = properties.lookupRole;
+    this.changesetRole = properties.changesetRole;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);

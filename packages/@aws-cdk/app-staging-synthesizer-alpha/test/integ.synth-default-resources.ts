@@ -4,10 +4,10 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { APP_ID_MAX } from './util';
-import { AppStagingSynthesizer } from '../lib';
+import { AppStagingSynthesizer, BootstrapRole, DeploymentIdentities } from '../lib';
 
 // IMAGE_COPIES env variable is used to test maximum number of ECR repositories allowed.
-const IMAGE_COPIES = Number(process.env.IMAGE_COPIES) ?? 1;
+const IMAGE_COPIES = Number(process.env.IMAGE_COPIES) || 1;
 
 const app = new App({
   context: {
@@ -61,8 +61,21 @@ if (!defaultStagingStack) {
   throw new Error('Default Staging Stack not found');
 }
 
+const customRolesStack = new Stack(app, 'synthesize-custom-roles', {
+  synthesizer: AppStagingSynthesizer.defaultResources({
+    appId: APP_ID_MAX,
+    stagingBucketEncryption: BucketEncryption.KMS,
+    deploymentIdentities: DeploymentIdentities.specifyRoles({
+      cloudFormationExecutionRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
+      deploymentRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
+      lookupRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
+      changesetRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
+    }),
+  }),
+});
+
 new integ.IntegTest(app, 'integ-tests', {
-  testCases: [stack, defaultStagingStack],
+  testCases: [stack, defaultStagingStack, customRolesStack],
 });
 
 app.synth();

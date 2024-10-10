@@ -729,6 +729,18 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
+class IamRolesStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    for(let i = 1; i <= Number(process.env.NUMBER_OF_ROLES) ; i++) {
+      new iam.Role(this, `Role${i}`, {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+    }
+  }
+}
+
 class NotificationArnPropStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -815,6 +827,8 @@ switch (stackSet) {
     new AppSyncHotswapStack(app, `${stackPrefix}-appsync-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+
+    new IamRolesStack(app, `${stackPrefix}-iam-roles`);
 
     new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
       notificationArns: [`arn:aws:sns:${defaultEnv.region}:${defaultEnv.account}:${stackPrefix}-test-topic-prop`],

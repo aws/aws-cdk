@@ -67,6 +67,7 @@ export class DeploymentIdentities {
       cloudFormationExecutionRole: BootstrapRole.cliCredentials(),
       deploymentRole: BootstrapRole.cliCredentials(),
       lookupRole: BootstrapRole.cliCredentials(),
+      changesetRole: BootstrapRole.cliCredentials(),
     });
   }
 
@@ -93,6 +94,7 @@ export class DeploymentIdentities {
       deploymentRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN)),
       cloudFormationExecutionRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN)),
       lookupRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN)),
+      changesetRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_CHANGESET_ROLE_ARN)),
     });
   }
 
@@ -112,6 +114,12 @@ export class DeploymentIdentities {
    */
   public readonly lookupRole?: BootstrapRole;
 
+  /**
+   * Changeset Role
+    @default - use bootstrapped role
+   */
+  public readonly changesetRole?: BootstrapRole;
+
   private constructor(
     /** roles that are bootstrapped to your account. */
     roles: BootstrapRoles,
@@ -119,6 +127,7 @@ export class DeploymentIdentities {
     this.cloudFormationExecutionRole = roles.cloudFormationExecutionRole;
     this.deploymentRole = roles.deploymentRole;
     this.lookupRole = roles.lookupRole;
+    this.changesetRole = roles.changesetRole;
   }
 }
 
@@ -160,6 +169,13 @@ export interface BootstrapRoles {
    * @default - use bootstrapped role
    */
   readonly lookupRole?: BootstrapRole;
+
+  /**
+   * Changeset Role
+   *
+   * @default - use bootstrapped role
+   */
+  readonly changesetRole?: BootstrapRole;
 }
 
 /**

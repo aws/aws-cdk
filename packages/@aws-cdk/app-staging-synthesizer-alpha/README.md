@@ -159,6 +159,7 @@ const app = new App({
       cloudFormationExecutionRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
       deploymentRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Deploy'),
       lookupRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Lookup'),
+      changesetRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Changeset'),
     }),
   }),
 });
@@ -167,8 +168,8 @@ const app = new App({
 Or, you can ask to use the CLI credentials that exist at deploy-time.
 These credentials must have the ability to perform CloudFormation calls,
 lookup resources in your account, and perform CloudFormation deployment.
-For a full list of what is necessary, see `LookupRole`, `DeploymentActionRole`,
-and `CloudFormationExecutionRole` in the
+For a full list of what is necessary, see `LookupRole`, `DeploymentActionRole`, `CloudFormationExecutionRole`,
+and `CloudFormationChangeSetReviewRole` in the
 [bootstrap template](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml).
 
 ```ts

@@ -18,12 +18,11 @@ export function last<A>(xs?: A[]): A | undefined {
 }
 
 export function testWithXRepos(x: number): boolean {
-  // set env variable
-  process.env.IMAGE_COPIES = String(x);
-
   // execute cdk synth requesting 'copies' number of ecr repos
   try {
-    execSync("npx cdk synth --app='node test/integ.synth-default-resources.js' --all", {
+    // Envs passed to the child process must be passed directly if it is executed using jest
+    // see https://github.com/jestjs/jest/issues/9264
+    execSync(`IMAGE_COPIES=${String(x)} npx cdk synth --app='node test/integ.synth-default-resources.js' --all`, {
       stdio: 'pipe',
     });
   } catch (error: any) {

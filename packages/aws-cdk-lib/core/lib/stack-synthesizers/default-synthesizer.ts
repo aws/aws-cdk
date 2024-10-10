@@ -29,7 +29,7 @@ const MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 8;
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
  */
-const MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION = 22;
+const MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION = 23;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -159,6 +159,13 @@ export interface DefaultStackSynthesizerProps {
    * @default DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN
    */
   readonly cloudFormationExecutionRole?: string;
+
+  /**
+   * The role to use to perform operations on the changeset other than execution
+   *
+   * @default - None
+   */
+  readonly changesetRoleArn?: string;
 
   /**
    * Name of the CloudFormation Export with the asset key name
@@ -316,6 +323,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
+   * Default changeset role ARN for missing values.
+   */
+  public static readonly DEFAULT_CHANGESET_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-changeset-review-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
    * Default image assets repository name
    */
   public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
@@ -351,6 +363,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
   private lookupRoleArn?: string;
+  private changesetRoleArn?: string;
   private useLookupRoleForStackOperations: boolean;
   private qualifier?: string;
   private bucketPrefix?: string;
@@ -423,6 +436,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     this.fileAssetPublishingRoleArn = spec.specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = spec.specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     this.lookupRoleArn = spec.specialize(this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
+    this.changesetRoleArn = spec.specialize(this.props.changesetRoleArn ?? DefaultStackSynthesizer.DEFAULT_CHANGESET_ROLE_ARN);
     this.bucketPrefix = spec.specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     this.dockerTagPrefix = spec.specialize(this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX);
     this.bootstrapStackVersionSsmParameter = spec.qualifierOnly(this.props.bootstrapStackVersionSsmParameter ?? DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER);
@@ -513,6 +527,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
         assumeRoleExternalId: this.props.lookupRoleExternalId,
         assumeRoleAdditionalOptions: this.props.lookupRoleAdditionalOptions,
         requiresBootstrapStackVersion: this._requiredBootstrapVersionForLookup,
+        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
+      } : undefined,
+      changesetRole: this.changesetRoleArn ? {
+        arn: this.changesetRoleArn,
+        requiresBootstrapStackVersion: MIN_CHANGESET_ROLE_BOOTSTRAP_STACK_VERSION,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       } : undefined,
     });
