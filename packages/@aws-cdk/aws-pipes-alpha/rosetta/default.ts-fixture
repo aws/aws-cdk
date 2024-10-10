@@ -5,46 +5,8 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import * as pipes from '@aws-cdk/aws-pipes-alpha';
-
-class SqsSource implements pipes.ISource {
-  sourceArn: string;
-  sourceParameters = undefined;
-  constructor(private readonly queue: sqs.Queue) {
-    this.queue = queue;
-    this.sourceArn = queue.queueArn;
-  }
-  bind(_pipe: pipes.IPipe): pipes.SourceConfig {
-    return {
-      sourceParameters: this.sourceParameters,
-    };
-  }
-  grantRead(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantConsumeMessages(pipeRole);
-  }
-}
-
-class SqsTarget implements pipes.ITarget {
-  targetArn: string;
-  inputTransformation: pipes.InputTransformation | undefined;
-
-  constructor(private readonly queue: sqs.Queue, props: {inputTransformation?: pipes.InputTransformation} = {}) {
-    this.inputTransformation = props?.inputTransformation
-    this.queue = queue;
-    this.targetArn = queue.queueArn;
-  }
-
-  bind(_pipe: pipes.IPipe): pipes.TargetConfig {
-    return {
-      targetParameters: {
-        inputTemplate: this.inputTransformation?.bind(_pipe).inputTemplate,
-      },
-    };
-  }
-
-  grantPush(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantSendMessages(pipeRole);
-  }
-}
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
+import { SqsTarget } from '@aws-cdk/aws-pipes-targets-alpha';
 
 class LambdaEnrichment implements pipes.IEnrichment {
   enrichmentArn: string;
@@ -63,27 +25,6 @@ class LambdaEnrichment implements pipes.IEnrichment {
   }
   grantInvoke(pipeRole: cdk.aws_iam.IRole): void {
     this.lambda.grantInvoke(pipeRole);
-  }
-}
-
-class CloudwatchDestination implements pipes.ILogDestination {
-  parameters: pipes.LogDestinationParameters;
-  constructor(private readonly logGroup: cdk.aws_logs.LogGroup) {
-    this.logGroup = logGroup;
-    this.parameters = {
-      cloudwatchLogsLogDestination: {
-        logGroupArn: logGroup.logGroupArn,
-      },
-    };
-  }
-  bind(_pipe: pipes.IPipe): pipes.LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
-  grantPush(pipeRole: cdk.aws_iam.IRole): void {
-    this.logGroup.grantWrite(pipeRole);
   }
 }
 
