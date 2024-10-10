@@ -238,6 +238,72 @@ iam.Role.customizeRoles(this, {
 For more information on configuring permissions see the [Security And Safety Dev
 Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
+#### Policy report generation
+
+When `customizeRoles` is used, the `iam-policy-report.txt` report will contain a list
+of IAM roles and associated permissions that would have been created. This report is
+generated so that it attempts to resolve any references and replace with a more user
+friendly value.
+
+The following are some examples of the value that will appear in the report:
+
+```json
+"Resource": {
+  "Fn::Join": [
+    "",
+    [
+      "arn:",
+      {
+        "Ref": "AWS::Partition"
+      },
+      ":iam::",
+      {
+        "Ref": "AWS::AccountId"
+      },
+      ":role/Role"
+    ]
+  ]
+}
+```
+
+The policy report will instead get:
+
+```json
+"Resource": "arn:(PARTITION):iam::(ACCOUNT):role/Role"
+```
+
+If IAM policy is referencing a resource attribute:
+
+```json
+"Resource": [
+  {
+    "Fn::GetAtt": [
+      "SomeResource",
+      "Arn"
+    ]
+  },
+  {
+    "Ref": "AWS::NoValue",
+  }
+]
+```
+
+The policy report will instead get:
+
+```json
+"Resource": [
+  "(Path/To/SomeResource.Arn)"
+  "(NoValue)"
+]
+```
+
+The following pseudo parameters will be converted:
+
+1. `{ 'Ref': 'AWS::AccountId' }` -> `(ACCOUNT)
+2. `{ 'Ref': 'AWS::Partition' }` -> `(PARTITION)
+3. `{ 'Ref': 'AWS::Region' }` -> `(REGION)
+4. `{ 'Ref': 'AWS::NoValue' }` -> `(NOVALUE)
+
 #### Generating a permissions report
 
 It is also possible to generate the report _without_ preventing the role/policy creation.
