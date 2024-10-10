@@ -2,6 +2,147 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.161.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.161.0-alpha.0...v2.161.1-alpha.0) (2024-10-05)
+
+## [2.161.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.160.0-alpha.0...v2.161.0-alpha.0) (2024-10-03)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **kinesisfirehose-destinations:** the `logging` and `logGroup` properties in `DestinationLoggingProps` have been removed and replaced with a single optional property `loggingConfig` which accepts a class of type `LoggingConfig`. 
+
+#### Details
+Combine the `logging` and `logGroup` properties into a single new optional property called `loggingConfig` which accepts a class of type `LoggingConfig`. 
+
+`LoggingConfig` is an abstract class which can be instantiated through either an instance of `EnableLogging` or `DisableLogging` which can be used in the following 3 ways:
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const logGroup = new logs.LogGroup(this, 'Log Group');
+declare const bucket: s3.Bucket;
+
+// 1. Enable logging with no parameters - a log group will be created for you
+const destinationWithLogging = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.EnableLogging(),
+});
+
+// 2. Enable a logging and pass in a logGroup to be used
+const destinationWithLoggingAndMyLogGroup = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.EnableLogging(logGroup),
+});
+
+// 3. Disable logging (does not accept any parameters so it is now impossible to provide a logGroup in this case)
+const destinationWithoutLogging = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.DisableLogging(),
+});
+
+```
+
+### Description of how you validated changes
+unit + integ test
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Features
+
+* **ec2:** add interface endpoint dynamodb ([#30162](https://github.com/aws/aws-cdk/issues/30162)) ([182804a](https://github.com/aws/aws-cdk/commit/182804a3b3116924e2f7a8e50a22e2e7d99c71ae)), closes [#29547](https://github.com/aws/aws-cdk/issues/29547)
+* **pipes-sources:** add Kinesis and DynamoDB ([#29476](https://github.com/aws/aws-cdk/issues/29476)) ([00c2efb](https://github.com/aws/aws-cdk/commit/00c2efb323fdba21191c69e7f970e2cd78c37d68)), closes [#29378](https://github.com/aws/aws-cdk/issues/29378) [#29377](https://github.com/aws/aws-cdk/issues/29377)
+* **pipes-targets:** add API destination ([#30756](https://github.com/aws/aws-cdk/issues/30756)) ([5e08c98](https://github.com/aws/aws-cdk/commit/5e08c981dd2a309c84abc01a0c8b358e55b5cc4c)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-events-targets/lib/api-gateway.ts#L11-L32](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-events-targets/lib/api-gateway.ts/issues/L11-L32)
+* **pipes-targets:** add Kinesis ([#30656](https://github.com/aws/aws-cdk/issues/30656)) ([d0c99d8](https://github.com/aws/aws-cdk/commit/d0c99d85e0bd85beea78ce65f843d319abd493ce))
+* **redshift:** supports excludeCharacters settings for DatabaseSecret ([#30563](https://github.com/aws/aws-cdk/issues/30563)) ([a1c46cf](https://github.com/aws/aws-cdk/commit/a1c46cfc5eefa58640324420a3dc15b32c37e7dd)), closes [#26847](https://github.com/aws/aws-cdk/issues/26847)
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** better fallback for require failures ([#31571](https://github.com/aws/aws-cdk/issues/31571)) ([00cdbcb](https://github.com/aws/aws-cdk/commit/00cdbcba93baa9a605f62ae8c18c0880ec15aea2)), closes [#30067](https://github.com/aws/aws-cdk/issues/30067)
+
+
+### Miscellaneous Chores
+
+* **kinesisfirehose-destinations:** refactor logging to combine logGroup and logging properties into loggingConfig ([#31488](https://github.com/aws/aws-cdk/issues/31488)) ([c4bda64](https://github.com/aws/aws-cdk/commit/c4bda6409cea78dbfa51fb6437f61fb13d0d0abb))
+
+## [2.160.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.159.1-alpha.0...v2.160.0-alpha.0) (2024-09-24)
+
+
+### Features
+
+* **kinesisanalytics-flink:** support Apache Flink 1.20 ([#31349](https://github.com/aws/aws-cdk/issues/31349)) ([b3b9aa8](https://github.com/aws/aws-cdk/commit/b3b9aa8a4584e178808f5babe0583749d1a87da5))
+
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** cannot configure roleMappings with imported userPool and client ([#30421](https://github.com/aws/aws-cdk/issues/30421)) ([0fdd6a9](https://github.com/aws/aws-cdk/commit/0fdd6a92ac7196e5498969be2743019f825b9262)), closes [#30304](https://github.com/aws/aws-cdk/issues/30304) [/github.com/aws/aws-cdk/blob/c3003ab41f0efc763f39eb2cab490c8a005e146b/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts#L902](https://github.com/aws//github.com/aws/aws-cdk/blob/c3003ab41f0efc763f39eb2cab490c8a005e146b/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts/issues/L902)
+* **ec2:** instance resourceSignalTimeout overwrites initOptions.timeout ([#31446](https://github.com/aws/aws-cdk/issues/31446)) ([a29bf19](https://github.com/aws/aws-cdk/commit/a29bf19be1e17c13b85f6edd45c382c1f0d89702)), closes [#30052](https://github.com/aws/aws-cdk/issues/30052)
+
+## [2.159.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.159.0-alpha.0...v2.159.1-alpha.0) (2024-09-19)
+
+## [2.159.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.158.0-alpha.0...v2.159.0-alpha.0) (2024-09-18)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **kinesisfirehose-alpha:** `encryptionKey` property is removed and `encryption` property type has changed from the `StreamEncryption` enum to the `StreamEncryption` class. 
+
+To pass in a KMS key for the customer managed key case, use `StreamEncryption.customerManagedKey(key)`
+
+#### Details
+Replaced `encryption` and `encryptionKey` properties with a single property `encryption` of type `StreamEncryption` and is used by calling one of the 3 methods:
+```ts
+SreamEncryption.unencrypted()
+StreamEncryption.awsOwnedKey()
+StreamEncryption.customerManagedKey(key?: IKey)
+```
+
+This makes it so it's not longer possible to pass in a key when the encryption type is AWS owned or unencrypted. The `key` is an optional parameter in `StreamEncryption.customerManagedKey(key?: IKey)` so following the previous behaviour, if a key is provided it will be used, otherwise a key will be created for the user. 
+### Description of how you validated changes
+
+Generated templates do not change so behaviour remains the same. 
+
+Updated integ/unit tests. 
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Features
+
+* **ivs:** support RTMP ingest for IVS channel ([#31380](https://github.com/aws/aws-cdk/issues/31380)) ([a907a7e](https://github.com/aws/aws-cdk/commit/a907a7eb0a54f51b6e77ff57cac278de9574eee2))
+
+
+### Bug Fixes
+
+* **ec2:** fixing vpc endpoint pattern for ecr and ecr docker ([#31434](https://github.com/aws/aws-cdk/issues/31434)) ([95c49ab](https://github.com/aws/aws-cdk/commit/95c49abdfa4ad77a0c0fcb82a230778dcc2ea59a))
+
+
+### Miscellaneous Chores
+
+* **kinesisfirehose-alpha:** refactor encryption property to combine encryptionKey ([#31430](https://github.com/aws/aws-cdk/issues/31430)) ([8e92185](https://github.com/aws/aws-cdk/commit/8e9218525b606d72b2dfe55933fa1c515d26d386))
+
+## [2.158.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.157.0-alpha.0...v2.158.0-alpha.0) (2024-09-11)
+
+
+### Features
+
+* **amplify:** support cache configuration for app ([#31381](https://github.com/aws/aws-cdk/issues/31381)) ([b7bd041](https://github.com/aws/aws-cdk/commit/b7bd0416dc1f809eac22b9dbc49a1947e1cfc262))
+* **iot:** configure IoT Logging ([#31352](https://github.com/aws/aws-cdk/issues/31352)) ([6348717](https://github.com/aws/aws-cdk/commit/63487174736236e329488f4d06b29110d910a031)), closes [#31357](https://github.com/aws/aws-cdk/issues/31357)
+
+## [2.157.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.156.0-alpha.0...v2.157.0-alpha.0) (2024-09-09)
+
+## [2.156.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.155.0-alpha.0...v2.156.0-alpha.0) (2024-09-05)
+
+
+### Features
+
+* **location:** support RouteCalculator ([#30682](https://github.com/aws/aws-cdk/issues/30682)) ([574d383](https://github.com/aws/aws-cdk/commit/574d383ef0a5b78564bbba76e5a14a049129c042)), closes [#30681](https://github.com/aws/aws-cdk/issues/30681)
+* **neptune-alpha:** specify port for the cluster ([#31137](https://github.com/aws/aws-cdk/issues/31137)) ([130b62b](https://github.com/aws/aws-cdk/commit/130b62b7904a10145b810837323451263ec7d66f)), closes [#31074](https://github.com/aws/aws-cdk/issues/31074)
+* **scheduler:** validate schedule name length ([#31200](https://github.com/aws/aws-cdk/issues/31200)) ([d0f9688](https://github.com/aws/aws-cdk/commit/d0f9688423d1e12c00aebb7a9ff3cecd68d3bb3c))
+
+
+### Bug Fixes
+
+* **scheduler:** the value of the description property is not reflected to the resource. ([#31276](https://github.com/aws/aws-cdk/issues/31276)) ([a3332b6](https://github.com/aws/aws-cdk/commit/a3332b61514f13fa3c5aef87041cb2d7f81a1e92)), closes [#31269](https://github.com/aws/aws-cdk/issues/31269)
+
 ## [2.155.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.154.1-alpha.0...v2.155.0-alpha.0) (2024-08-29)
 
 

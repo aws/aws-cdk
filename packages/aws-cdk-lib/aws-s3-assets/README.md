@@ -26,8 +26,8 @@ to an S3 bucket during deployment.
 
  * `s3BucketName` - the name of the assets S3 bucket.
  * `s3ObjectKey` - the S3 object key of the asset file (whether it's a file or a zip archive)
- * `s3ObjectUrl` - the S3 object URL of the asset (i.e. s3://mybucket/mykey.zip)
- * `httpUrl` - the S3 HTTP URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)
+ * `s3ObjectUrl` - the S3 object URL of the asset (i.e. s3://amzn-s3-demo-bucket/mykey.zip)
+ * `httpUrl` - the S3 HTTP URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/amzn-s3-demo-bucket/mykey.zip)
 
 In the following example, the various asset attributes are exported as stack outputs:
 

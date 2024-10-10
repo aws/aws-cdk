@@ -66,6 +66,16 @@ export interface CfnIncludeProps {
    * @default - will throw an error on detecting any cyclical references
    */
   readonly allowCyclicalReferences?: boolean;
+
+  /**
+   * Specifies a list of LogicalIDs for resources that will be included in the CDK Stack,
+   * but will not be parsed and converted to CDK types. This allows you to use CFN templates
+   * that rely on Intrinsic placement that `cfn-include`
+   * would otherwise reject, such as non-primitive values in resource update policies.
+   *
+   * @default - All resources are hydrated
+   */
+  readonly dehydratedResources?: string[];
 }
 
 /**
@@ -109,6 +119,7 @@ export class CfnInclude extends core.CfnElement {
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
   private readonly allowCyclicalReferences: boolean;
+  private readonly dehydratedResources: string[];
   private logicalIdToPlaceholderMap: Map<string, string>;
 
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
@@ -124,6 +135,14 @@ export class CfnInclude extends core.CfnElement {
     this.template = futils.readYamlSync(props.templateFile);
 
     this.preserveLogicalIds = props.preserveLogicalIds ?? true;
+
+    this.dehydratedResources = props.dehydratedResources ?? [];
+
+    for (const logicalId of this.dehydratedResources) {
+      if (!Object.keys(this.template.Resources).includes(logicalId)) {
+        throw new Error(`Logical ID '${logicalId}' was specified in 'dehydratedResources', but does not belong to a resource in the template.`);
+      }
+    }
 
     // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(this.parametersToReplace)) {
@@ -663,8 +682,27 @@ export class CfnInclude extends core.CfnElement {
 
     const resourceAttributes: any = this.template.Resources[logicalId];
     let l1Instance: core.CfnResource;
-    if (this.nestedStacksToInclude[logicalId]) {
+    if (this.nestedStacksToInclude[logicalId] && this.dehydratedResources.includes(logicalId)) {
+      throw new Error(`nested stack '${logicalId}' was marked as dehydrated - nested stacks cannot be dehydrated`);
+    } else if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
+    } else if (this.dehydratedResources.includes(logicalId)) {
+
+      l1Instance = new core.CfnResource(this, logicalId, {
+        type: resourceAttributes.Type,
+        properties: resourceAttributes.Properties,
+      });
+      const cfnOptions = l1Instance.cfnOptions;
+      cfnOptions.creationPolicy = resourceAttributes.CreationPolicy;
+      cfnOptions.updatePolicy = resourceAttributes.UpdatePolicy;
+      cfnOptions.deletionPolicy = resourceAttributes.DeletionPolicy;
+      cfnOptions.updateReplacePolicy = resourceAttributes.UpdateReplacePolicy;
+      cfnOptions.version = resourceAttributes.Version;
+      cfnOptions.description = resourceAttributes.Description;
+      cfnOptions.metadata = resourceAttributes.Metadata;
+      this.resources[logicalId] = l1Instance;
+
+      return l1Instance;
     } else {
       const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
       // The AWS::CloudFormation::CustomResource type corresponds to the CfnCustomResource class.

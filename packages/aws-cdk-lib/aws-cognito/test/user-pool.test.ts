@@ -300,6 +300,9 @@ describe('User Pool', () => {
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
     expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    expect(stack.resolve(pool.userPoolProviderName)).toEqual(
+      { 'Fn::Join': ['', ['cognito-idp.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/test-user-pool']] },
+    );
   });
 
   test('import using arn without resourceName fails', () => {

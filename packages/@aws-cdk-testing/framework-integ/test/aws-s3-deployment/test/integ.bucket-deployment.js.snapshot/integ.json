@@ -1,9 +1,9 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "testCases": {
     "integ-test-bucket-deployments/DefaultTest": {
       "stacks": [
-        "test-bucket-deployments-2"
+        "test-bucket-deployments"
       ],
       "diffAssets": true,
       "assertionStack": "integ-test-bucket-deployments/DefaultTest/DeployAssert",

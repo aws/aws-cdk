@@ -1,0 +1,36 @@
+{
+  "Parameters": {
+    "CountParameter": {
+      "Type": "Number",
+      "Default": 3
+    }
+  },
+  "Conditions": {
+    "UseCountParameter": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "ResourceSignalIntrinsic": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": 1,
+        "MaxSize": 5
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Fn::If": [
+            "UseCountParameter",
+            {
+              "Count": { "Ref": "CountParameter" }
+            },
+            5
+          ]
+        }
+      }
+    }
+  }
+}

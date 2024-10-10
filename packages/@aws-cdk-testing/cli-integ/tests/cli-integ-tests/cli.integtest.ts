@@ -19,7 +19,6 @@ import {
 import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import * as chalk from 'chalk';
 import {
   integTest,
   cloneDirectory,
@@ -33,6 +32,8 @@ import {
   withCDKMigrateFixture,
   withExtendedTimeoutFixture,
   randomString,
+  withSpecificFixture,
+  withoutBootstrap,
 } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -276,9 +277,12 @@ integTest(
   }),
 );
 
+// bootstrapping also performs synthesis. As it turns out, bootstrap-stage synthesis still causes the lookups to be cached, meaning that the lookup never
+// happens when we actually call `cdk synth --no-lookups`. This results in the error never being thrown, because it never tries to lookup anything.
+// Fix this by not trying to bootstrap; there's no need to bootstrap anyway, since the test never tries to deploy anything.
 integTest(
   'context in stage propagates to top',
-  withDefaultFixture(async (fixture) => {
+  withoutBootstrap(async (fixture) => {
     await expect(
       fixture.cdkSynth({
         // This will make it error to prove that the context bubbles up, and also that we can fail on command
@@ -347,6 +351,13 @@ integTest(
     expect(arns.split('\n').length).toEqual(2);
   }),
 );
+
+integTest('doubly nested stack',
+  withDefaultFixture(async (fixture) => {
+    await fixture.cdkDeploy('with-doubly-nested-stack', {
+      captureStderr: false,
+    });
+  }));
 
 integTest(
   'nested stack with parameters',
@@ -613,12 +624,13 @@ integTest(
 );
 
 integTest(
-  'deploy with notification ARN',
+  'deploy with notification ARN as flag',
   withDefaultFixture(async (fixture) => {
-    const topicName = `${fixture.stackNamePrefix}-test-topic`;
+    const topicName = `${fixture.stackNamePrefix}-test-topic-flag`;
 
     const response = await fixture.aws.sns.send(new CreateTopicCommand({ Name: topicName }));
     const topicArn = response.TopicArn!;
+
     try {
       await fixture.cdkDeploy('test-2', {
         options: ['--notification-arns', topicArn],
@@ -640,6 +652,31 @@ integTest(
     }
   }),
 );
+
+integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixture) => {
+  const topicName = `${fixture.stackNamePrefix}-test-topic-prop`;
+
+  const response = await fixture.aws.sns.send(new CreateTopicCommand({ Name: topicName }));
+  const topicArn = response.TopicArn!;
+
+  try {
+    await fixture.cdkDeploy('notification-arn-prop');
+
+    // verify that the stack we deployed has our notification ARN
+    const describeResponse = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({
+        StackName: fixture.fullStackName('notification-arn-prop'),
+      }),
+    );
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
+  } finally {
+    await fixture.aws.sns.send(
+      new DeleteTopicCommand({
+        TopicArn: topicArn,
+      }),
+    );
+  }
+}));
 
 // NOTE: this doesn't currently work with modern-style synthesis, as the bootstrap
 // role by default will not have permission to iam:PassRole the created role.
@@ -1001,6 +1038,64 @@ integTest(
     ).rejects.toThrow('exited with error');
   }),
 );
+
+integTest(
+  'cdk diff with large changeset does not fail',
+  withDefaultFixture(async (fixture) => {
+    // GIVEN - small initial stack with only one IAM role
+    await fixture.cdkDeploy('iam-roles', {
+      modEnv: {
+        NUMBER_OF_ROLES: '1',
+      },
+    });
+
+    // WHEN - adding an additional role with a ton of metadata to create a large diff
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+      verbose: true,
+      modEnv: {
+        NUMBER_OF_ROLES: '2',
+      },
+    });
+
+    // Assert that the CLI assumes the file publishing role:
+    expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+    expect(diff).toContain('success: Published');
+  }),
+);
+
+integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = 'abc1111';
+  const toolkitStackName = 'custom-stack2';
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  // Deploying small initial stack with only one IAM role
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // WHEN - adding a role with a ton of metadata to create a large diff
+  const diff = await fixture.cdk(['diff', '--toolkit-stack-name', toolkitStackName, '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`, fixture.fullStackName('iam-roles')], {
+    verbose: true,
+    modEnv: {
+      NUMBER_OF_ROLES: '2',
+    },
+  });
+
+  // Assert that the CLI assumes the file publishing role:
+  expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+  expect(diff).toContain('success: Published');
+}));
 
 integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
@@ -2155,7 +2250,7 @@ integTest(
 
 integTest(
   'hotswap deployment for ecs service detects failed deployment and errors',
-  withDefaultFixture(async (fixture) => {
+  withExtendedTimeoutFixture(async (fixture) => {
     // GIVEN
     await fixture.cdkDeploy('ecs-hotswap');
 
@@ -2168,11 +2263,41 @@ integTest(
       allowErrExit: true,
     });
 
-    const stackName = `${fixture.stackNamePrefix}-ecs-hotswap`;
-    const expectedSubstring = `❌  ${chalk.bold(stackName)} failed: ResourceNotReady: Resource is not in the state deploymentCompleted`;
+    const expectedSubstring = 'Resource is not in the state deploymentCompleted';
 
     expect(deployOutput).toContain(expectedSubstring);
     expect(deployOutput).not.toContain('hotswapped!');
+  }),
+);
+
+integTest('hotswap deployment supports AppSync APIs with many functions',
+  withDefaultFixture(async (fixture) => {
+    // GIVEN
+    const stackArn = await fixture.cdkDeploy('appsync-hotswap', {
+      captureStderr: false,
+    });
+
+    // WHEN
+    const deployOutput = await fixture.cdkDeploy('appsync-hotswap', {
+      options: ['--hotswap'],
+      captureStderr: true,
+      onlyStderr: true,
+      modEnv: {
+        DYNAMIC_APPSYNC_PROPERTY_VALUE: '$util.qr($ctx.stash.put("newTemplate", []))\n$util.toJson({})',
+      },
+    });
+
+    const response = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({
+        StackName: stackArn,
+      }),
+    );
+
+    expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+    // assert all 50 functions were hotswapped
+    for (const i of Array(50).keys()) {
+      expect(deployOutput).toContain(`AWS::AppSync::FunctionConfiguration 'appsync_function${i}' hotswapped!`);
+    }
   }),
 );
 
@@ -2190,3 +2315,129 @@ async function listChildren(parent: string, pred: (x: string) => Promise<boolean
 async function listChildDirs(parent: string) {
   return listChildren(parent, async (fullPath: string) => (await fs.stat(fullPath)).isDirectory());
 }
+
+integTest(
+  'cdk notices with --unacknowledged',
+  withDefaultFixture(async (fixture) => {
+    const noticesUnacknowledged = await fixture.cdk(['notices', '--unacknowledged'], { verbose: false });
+    const noticesUnacknowledgedAlias = await fixture.cdk(['notices', '-u'], { verbose: false });
+    expect(noticesUnacknowledged).toEqual(expect.stringMatching(/There are \d{1,} unacknowledged notice\(s\)./));
+    expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
+  }),
+);
+
+integTest(
+  'test cdk rollback',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2a';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Rollback
+      await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'test cdk rollback --force',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2b'; // Fail update and also fail rollback
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Should still fail
+      const rollbackOutput = await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(rollbackOutput).toContain('Failing rollback');
+
+      // Rollback and force cleanup
+      await fixture.cdk(['rollback', '--force'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
+
+  const cache = {
+    expiration: 4125963264000, // year 2100 so we never overwrite the cache
+    notices: [
+      {
+        title: 'Bootstrap 1999 Notice',
+        issueNumber: 4444,
+        overview: 'Overview for Bootstrap 1999 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        components: [
+          {
+            name: 'bootstrap',
+            version: '<1999', // so we include all possible environments
+          },
+        ],
+        schemaVersion: '1',
+      },
+    ],
+  };
+
+  const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
+  await fs.mkdir(cdkCacheDir);
+  await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
+
+  const output = await fixture.cdkDeploy('notices', {
+    verbose: false,
+    modEnv: {
+      CDK_HOME: fixture.integTestDir,
+    },
+  });
+
+  expect(output).toContain('Overview for Bootstrap 1999 Notice');
+
+  // assert dynamic environments are resolved
+  expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
+
+}));

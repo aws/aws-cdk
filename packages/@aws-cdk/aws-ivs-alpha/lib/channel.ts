@@ -118,6 +118,13 @@ export interface ChannelProps {
   readonly authorized?: boolean;
 
   /**
+   * Whether the channel allows insecure RTMP ingest.
+   *
+   * @default false
+   */
+  readonly insecureIngest?: boolean;
+
+  /**
    * Channel latency mode.
    *
    * @default LatencyMode.LOW
@@ -211,6 +218,7 @@ export class Channel extends ChannelBase {
 
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
+      insecureIngest: props.insecureIngest,
       latencyMode: props.latencyMode,
       name: this.physicalName,
       type: props.type,

@@ -1,10 +1,12 @@
 import { Construct } from 'constructs';
+import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
+import { EncryptionConfiguration } from './encryption-configuration';
+import { buildEncryptionConfiguration } from './private/util';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
-
 /**
  * Properties for defining a new Step Functions Activity
  */
@@ -15,6 +17,13 @@ export interface ActivityProps {
    * @default - If not supplied, a name is generated
    */
   readonly activityName?: string;
+
+  /**
+   * The encryptionConfiguration object used for server-side encryption of the activity inputs.
+   *
+   * @default - data is transparently encrypted using an AWS owned key
+   */
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
 
 /**
@@ -57,14 +66,40 @@ export class Activity extends Resource implements IActivity {
    */
   public readonly activityName: string;
 
+  /**
+   * @attribute
+   */
+  public readonly encryptionConfiguration?: EncryptionConfiguration;
+
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
       physicalName: props.activityName ||
-                Lazy.string({ produce: () => this.generateName() }),
+        Lazy.string({ produce: () => this.generateName() }),
     });
+
+    this.encryptionConfiguration = props.encryptionConfiguration;
+
+    if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
+      props.encryptionConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        principals: [new iam.ServicePrincipal('states.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'kms:EncryptionContext:aws:states:activityArn': Stack.of(this).formatArn({
+              service: 'states',
+              resource: 'activity',
+              sep: ':',
+              resourceName: this.physicalName,
+            }),
+          },
+        },
+      }));
+    }
 
     const resource = new CfnActivity(this, 'Resource', {
       name: this.physicalName!, // not null because of above call to `super`
+      encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
 
     this.activityArn = this.getResourceArnAttribute(resource.ref, {
@@ -222,4 +257,11 @@ export interface IActivity extends IResource {
    * @attribute
    */
   readonly activityName: string;
+
+  /**
+   * The encryptionConfiguration object used for server-side encryption of the activity inputs
+   *
+   * @attribute
+   */
+  readonly encryptionConfiguration?: EncryptionConfiguration;
 }
