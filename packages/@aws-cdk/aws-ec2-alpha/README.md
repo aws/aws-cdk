@@ -236,7 +236,7 @@ new Route(this, 'DynamoDBRoute', {
 VPC peering connection allows you to connect two VPCs and route traffic between them using private IP addresses. The VpcV2 construct supports creating VPC peering connections through the `VPCPeeringConnection` construct from the `route` module.
 
 Here's an example of how to create a VPC peering connection between two VPCs:
-
+<!-- 
 ```ts
 const stack = new Stack();
 
@@ -261,7 +261,7 @@ const routeTable = new RouteTable(this, 'RouteTable', {
 });
 
 routeTable.addRoute('vpcPeeringRoute', '10.0.0.0/16', { gateway: peeringConnection });
-```
+``` -->
 
 Note that for cross-account peering, you'll need to ensure that the peering request is accepted in the peer account. For more information see [Accept or reject a VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/accept-vpc-peering-connection.html).
 

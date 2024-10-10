@@ -1,10 +1,9 @@
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
-import { Aws, Annotations, Duration, IResource, Resource, Stack } from 'aws-cdk-lib/core';
+import { Annotations, Duration, IResource, Resource, Stack } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
-import { NetworkUtils, allRouteTableIds, validateVpcCidrOverlap } from './util';
+import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
-import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -177,19 +176,9 @@ export interface NatGatewayProps extends NatGatewayOptions {
 }
 
 /**
- * Properties to define a VPC peering connection.
+ * Options to define a VPC peering connection.
  */
-export interface VPCPeeringConnectionProps {
-  /**
-   * Indicates whether this is a cross-account VPC peering connection.
-   */
-  readonly isCrossAccount: boolean;
-
-  /**
-   * The VPC that is requesting the peering connection.
-   */
-  readonly requestorVpc: IVpcV2;
-
+export interface VPCPeeringConnectionOptions {
   /**
    * The VPC that is accepting the peering connection.
    */
@@ -198,16 +187,9 @@ export interface VPCPeeringConnectionProps {
   /**
    * The AWS account ID of the acceptor VPC owner.
    *
-   * @default - no acceptor account ID needed if not cross account connection
+   * @default - no roleArn needed if not cross account connection
    */
-  readonly acceptorAccountId?: string;
-
-  /**
-   * The region of the acceptor VPC.
-   *
-   * @default - same region as the requestor VPC
-   */
-  readonly acceptorRegion?: string;
+  readonly peerRoleArn?: string;
 
   /**
    * The resource name of the peering connection.
@@ -215,6 +197,16 @@ export interface VPCPeeringConnectionProps {
    * @default - peering connection provisioned without any name
    */
   readonly vpcPeeringConnectionName?: string;
+}
+
+/**
+ * Properties to define a VPC peering connection.
+ */
+export interface VPCPeeringConnectionProps extends VPCPeeringConnectionOptions {
+  /**
+   * The VPC that is requesting the peering connection.
+   */
+  readonly requestorVpc: IVpcV2;
 }
 
 /**
@@ -468,62 +460,80 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
   constructor(scope: Construct, id: string, props: VPCPeeringConnectionProps) {
     super(scope, id);
 
-    const region = props.acceptorRegion ? props.acceptorRegion : Stack.of(this).region;
-    let peerRole: Role | undefined;
     this.routerType = RouterType.VPC_PEERING_CONNECTION;
 
-    if (props.isCrossAccount && props.acceptorAccountId === undefined) {
-      throw new Error('AcceptorAccountId is required for cross-account peering connections');
+    const isCrossAccount = Stack.of(props.requestorVpc).account !== Stack.of(props.acceptorVpc).account;
+
+    if (!isCrossAccount && props.peerRoleArn) {
+      Annotations.of(this).addWarning(
+        'This is a same account peering, peerRoleArn is not needed and will be ignored',
+      );
     }
 
-    const overlap = validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
+    if (isCrossAccount && !props.peerRoleArn) {
+      throw new Error('Cross account VPC peering requires a peerArnId');
+    }
+
+    // TODO: do we still want to validate? already have this check in the vpc peering
+    const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
     if (overlap) {
       throw new Error('CIDR block should not overlap with existing subnet blocks');
     }
 
-    if (props.isCrossAccount) {
-      peerRole = new Role(this, 'PeerRole', {
-        assumedBy: new AccountPrincipal(Stack.of(this).account),
-        roleName: `VPCPeeringRole-${id}`,
-      });
-
-      peerRole.assumeRolePolicy?.addStatements(
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: ['sts:AssumeRole'],
-          principals: [new AccountPrincipal(Stack.of(this).account)],
-        }),
-      );
-
-      peerRole.addToPolicy(new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['ec2:acceptVpcPeeringConnection'],
-        resources: [`arn:${Aws.PARTITION}:ec2:${region}:${props.acceptorAccountId}:vpc/${props.acceptorVpc.vpcId}`],
-      }));
-
-      peerRole.addToPolicy(new PolicyStatement({
-        actions: ['ec2:acceptVpcPeeringConnection'],
-        effect: Effect.ALLOW,
-        resources: [`arn:${Aws.PARTITION}:ec2:${region}:${props.acceptorAccountId}:vpc-peering-connection/*`],
-        conditions: {
-          StringEquals: {
-            'ec2:AccepterVpc': `arn:${Aws.PARTITION}:ec2:${region}:${props.acceptorAccountId}:vpc/${props.acceptorVpc.vpcId}`,
-          },
-        },
-      }));
-    }
-
-    this.resource = new CfnVPCPeeringConnection(this, 'PeeringConnection', {
+    this.resource = new CfnVPCPeeringConnection(this, 'VPCPeeringConnection', {
       vpcId: props.requestorVpc.vpcId,
       peerVpcId: props.acceptorVpc.vpcId,
-      peerOwnerId: props.acceptorAccountId,
-      peerRegion: region,
-      peerRoleArn: peerRole?.roleArn,
+      peerOwnerId: props.acceptorVpc.ownerAccountId,
+      peerRegion: props.acceptorVpc.region,
+      peerRoleArn: isCrossAccount ? props.peerRoleArn : undefined,
     });
 
     this.routerTargetId = this.resource.attrId;
     this.node.defaultChild = this.resource;
   }
+
+  /**
+   * Validates if the provided IPv4 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
+   *
+   * @param requestorVpc The VPC of the requestor.
+   * @param acceptorVpc The VPC of the acceptor.
+   * @returns True if the IPv4 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
+   * @internal
+   */
+  private validateVpcCidrOverlap(requestorVpc: IVpcV2, acceptorVpc: IVpcV2): boolean {
+
+    const requestorCidrs = [requestorVpc.ipv4CidrBlock];
+    const acceptorCidrs = [acceptorVpc.ipv4CidrBlock];
+
+    if (requestorVpc.secondaryCidrBlock) {
+      requestorCidrs.push(...requestorVpc.secondaryCidrBlock
+        .map(block => block.cidrBlock)
+        .filter((cidr): cidr is string => cidr !== undefined));
+    }
+
+    if (acceptorVpc.secondaryCidrBlock) {
+      acceptorCidrs.push(...acceptorVpc.secondaryCidrBlock
+        .map(block => block.cidrBlock)
+        .filter((cidr): cidr is string => cidr !== undefined));
+    }
+
+    for (const requestorCidr of requestorCidrs) {
+      const requestorRange = new CidrBlock(requestorCidr);
+      const requestorIpRange: [string, string] = [requestorRange.minIp(), requestorRange.maxIp()];
+
+      for (const acceptorCidr of acceptorCidrs) {
+        const acceptorRange = new CidrBlock(acceptorCidr);
+        const acceptorIpRange: [string, string] = [acceptorRange.minIp(), acceptorRange.maxIp()];
+
+        if (requestorRange.rangesOverlap(acceptorIpRange, requestorIpRange)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
 }
 
 /**

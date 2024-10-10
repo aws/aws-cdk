@@ -1,9 +1,10 @@
-import { Resource, Annotations } from 'aws-cdk-lib';
+import { Aws, Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPNGatewayV2 } from './route';
+import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPCPeeringConnection, VPCPeeringConnectionOptions, VPNGatewayV2 } from './route';
 import { ISubnetV2 } from './subnet-v2';
+import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -97,6 +98,20 @@ export interface IVpcV2 extends IVpc {
   readonly ipv4CidrBlock: string;
 
   /**
+   * Optional to override inferred region
+   *
+   * @default - current stack's environment region
+   */
+  readonly region?: string;
+
+  /**
+   * The ID of the AWS account that owns the VPC
+   *
+   * @default - the account id of the parent stack
+   */
+  readonly ownerAccountId?: string;
+
+  /**
    * Add an Egress only Internet Gateway to current VPC.
    * Can only be used for ipv6 enabled VPCs.
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway-basics.html}.
@@ -128,6 +143,19 @@ export interface IVpcV2 extends IVpc {
    */
   addNatGateway(options: NatGatewayOptions): NatGateway;
 
+  /**
+   * Adds a new role to VPC account
+   * A cross account role is required for the VPC to peer with another account.
+   * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/peer-with-vpc-in-another-account.html}.
+   */
+  createAcceptorVpcRole(requestorAccountId: string, acceptorAccountId: string, acceptorVpcRegion: string): Role;
+
+  /**
+   * Creates a new peering connection
+   * A peering connection is a private virtual network established between two VPCs.
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html}.
+   */
+  createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection;
 }
 
 /**
@@ -166,6 +194,16 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   * List of isolated subnets in this VPC
   */
   public abstract readonly isolatedSubnets: ISubnet[];
+
+  /**
+  * Region for this VPC
+  */
+  public abstract readonly region?: string;
+
+  /**
+  * Identifier of the owner for this VPC
+  */
+  public abstract readonly ownerAccountId?: string;
 
   /**
   * AZs for this VPC
@@ -441,6 +479,45 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
     return new FlowLog(this, id, {
       resourceType: FlowLogResourceType.fromVpc(this),
+      ...options,
+    });
+  }
+
+  /**
+  * Creates peering connection role for acceptor VPC
+  */
+  public createAcceptorVpcRole(requestorAccountId: string, acceptorAccountId: string, acceptorVpcRegion: string): Role {
+    const peeringRole = new Role(this, 'VpcPeeringRole', {
+      assumedBy: new AccountPrincipal(requestorAccountId),
+      description: 'Restrictive role for VPC peering',
+    });
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['ec2:AcceptVpcPeeringConnection'],
+      resources: [`arn:${Aws.PARTITION}:ec2:${acceptorVpcRegion}:${requestorAccountId}:vpc/${acceptorAccountId}`],
+    }));
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      actions: ['ec2:AcceptVpcPeeringConnection'],
+      effect: Effect.ALLOW,
+      resources: [`arn:${Aws.PARTITION}:ec2:${acceptorVpcRegion}:${requestorAccountId}:vpc-peering-connection/*`],
+      conditions: {
+        StringEquals: {
+          'ec2:AccepterVpc': `arn:${Aws.PARTITION}:ec2:${acceptorVpcRegion}:${requestorAccountId}:vpc/${acceptorAccountId}`,
+        },
+      },
+    }));
+
+    return peeringRole;
+  }
+
+  /**
+  * Creates a peering connection
+  */
+  public createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection {
+    return new VPCPeeringConnection(this, id, {
+      requestorVpc: this,
       ...options,
     });
   }

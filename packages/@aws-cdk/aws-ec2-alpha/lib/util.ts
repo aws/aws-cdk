@@ -1,7 +1,6 @@
 /*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
 import { ISubnet } from 'aws-cdk-lib/aws-ec2';
-import { IVpcV2 } from './vpc-v2-base';
 
 /**
  * Return a subnet name from its construct ID
@@ -379,46 +378,4 @@ export class CidrBlockIpv6 {
     }
     return ipv6Number;
   }
-}
-
-/**
- * Validates if the provided IPv4 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
- *
- * @param requestorVpc The VPC of the requestor.
- * @param acceptorVpc The VPC of the acceptor.
- * @returns True if the IPv4 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
- * @internal
- */
-export function validateVpcCidrOverlap(requestorVpc: IVpcV2, acceptorVpc: IVpcV2): boolean {
-
-  const requestorCidrs = [requestorVpc.ipv4CidrBlock];
-  const acceptorCidrs = [acceptorVpc.ipv4CidrBlock];
-
-  if (requestorVpc.secondaryCidrBlock) {
-    requestorCidrs.push(...requestorVpc.secondaryCidrBlock
-      .map(block => block.cidrBlock)
-      .filter((cidr): cidr is string => cidr !== undefined));
-  }
-
-  if (acceptorVpc.secondaryCidrBlock) {
-    acceptorCidrs.push(...acceptorVpc.secondaryCidrBlock
-      .map(block => block.cidrBlock)
-      .filter((cidr): cidr is string => cidr !== undefined));
-  }
-
-  for (const requestorCidr of requestorCidrs) {
-    const requestorRange = new CidrBlock(requestorCidr);
-    const requestorIpRange: [string, string] = [requestorRange.minIp(), requestorRange.maxIp()];
-
-    for (const acceptorCidr of acceptorCidrs) {
-      const acceptorRange = new CidrBlock(acceptorCidr);
-      const acceptorIpRange: [string, string] = [acceptorRange.minIp(), acceptorRange.maxIp()];
-
-      if (requestorRange.rangesOverlap(acceptorIpRange, requestorIpRange)) {
-        return true;
-      }
-    }
-  }
-
-  return false;
 }

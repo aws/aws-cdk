@@ -243,9 +243,19 @@ export class VpcV2 extends VpcV2Base {
   public readonly publicSubnets: ISubnet[];
 
   /**
-   * Pbulic Subnets that are part of this VPC.
+   * Public Subnets that are part of this VPC.
    */
   public readonly privateSubnets: ISubnet[];
+
+  /**
+  * Region for this VPC
+  */
+  public readonly region?: string;
+
+  /**
+  * Identifier of the owner for this VPC
+  */
+  public readonly ownerAccountId?: string;
 
   /**
    * To define dependency on internet connectivity
@@ -302,6 +312,8 @@ export class VpcV2 extends VpcV2Base {
       resource: 'vpc',
       resourceName: this.vpcId,
     }, this.stack);
+    this.region = this.stack.region;
+    this.ownerAccountId = this.stack.account;
 
     if (props.secondaryAddressBlocks) {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
