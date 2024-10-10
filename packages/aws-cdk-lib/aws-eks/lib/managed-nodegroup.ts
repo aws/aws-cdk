@@ -79,6 +79,10 @@ export enum NodegroupAmiType {
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
+  /**
+   * Custom AMI defined in the launch template
+   */
+  CUSTOM = 'CUSTOM',
 }
 
 /**
@@ -193,8 +197,8 @@ export interface NodegroupOptions {
    */
   readonly subnets?: SubnetSelection;
   /**
-   * The AMI type for your node group. If you explicitly specify the launchTemplate with custom AMI, do not specify this property, or
-   * the node group deployment will fail. In other cases, you will need to specify correct amiType for the nodegroup.
+   * The AMI type for your node group. If you explicitly specify the launchTemplate with custom AMI, either set this property to `CUSTOM` or leave
+   * it undefined, otherwise the node group deployment will fail. In other cases, you will need to specify correct amiType for the nodegroup.
    *
    * @default - auto-determined from the instanceTypes property when launchTemplateSpec property is not specified
    */
@@ -292,7 +296,9 @@ export interface NodegroupOptions {
    */
   readonly tags?: { [name: string]: string };
   /**
-   * Launch template specification used for the nodegroup
+   * Launch template specification used for the nodegroup.
+   * Required when `amiType` is set to `CUSTOM`.
+   *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
@@ -440,6 +446,11 @@ export class Nodegroup extends Resource implements INodegroup {
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
         + 'R3 instances aren\'t supported for Windows workloads.');
       }
+    }
+
+    // custom AMI type can be used only when there's a launch template that picks an AMI
+    if (props.amiType === NodegroupAmiType.CUSTOM && !props.launchTemplateSpec) {
+      throw new Error('When amiType is CUSTOM, launchTemplateSpec must be defined');
     }
 
     if (!props.nodeRole) {
@@ -651,5 +662,5 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
     throw new Error('instanceTypes of different architectures is not allowed');
   }
 
-  return archAmiMap.get(Array.from(architectures)[0])!;
+  return archAmiMap.get(Array.from(architectures)[0])!.concat(NodegroupAmiType.CUSTOM);
 }
