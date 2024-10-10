@@ -651,6 +651,9 @@ export class Key extends KeyBase {
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
    *
+   * If you set `returnDummyKeyOnMissing` to `true` in `options` and the key was not found,
+   * this method will return a dummy key with a key id '1234abcd-12ab-34cd-56ef-1234567890ab'.
+   *
    * The Key information will be cached in `cdk.context.json` and the same Key
    * will be used on future runs. To refresh the lookup, you will have to
    * evict the value from the cache using the `cdk context` command. See
@@ -685,6 +688,7 @@ export class Key extends KeyBase {
       dummyValue: {
         keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
       },
+      ignoreErrorOnMissingContext: options.returnDummyKeyOnMissing,
     }).value;
 
     return new Import(attributes.keyId,

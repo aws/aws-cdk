@@ -123,6 +123,22 @@ Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not 
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
 
+If the target key is not found in your account, an error will be thrown.
+To prevent the error in the case, you can receive a dummy key without the error
+by setting `returnDummyKeyOnMissing` to `true`. The dummy key has a `keyId` of
+`1234abcd-12ab-34cd-56ef-1234567890ab`.
+
+```ts
+const dummy = kms.Key.fromLookup(this, 'MyKeyLookup', {
+  aliasName: 'alias/NonExistentAlias',
+  returnDummyKeyOnMissing: true,
+});
+
+if (dummy.keyId === '1234abcd-12ab-34cd-56ef-1234567890ab') {
+  // alternative process
+}
+```
+
 ## Key Policies
 
 Controlling access and usage of KMS Keys requires the use of key policies (resource-based policies attached to the key);
