@@ -397,6 +397,13 @@ export interface TableOptions extends SchemaOptions {
    * @default - No resource policy statement
    */
   readonly resourcePolicy?: iam.PolicyDocument;
+
+  /**
+   * Resource policy to assign to a DynamoDB stream.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicaspecification.html#cfn-dynamodb-globaltable-replicaspecification-replicastreamspecification
+   * @default - No resource policy statements are added to the stream
+   */
+  readonly streamResourcePolicy?: iam.PolicyDocument;
 }
 
 /**
@@ -550,6 +557,12 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @attribute
    */
   public abstract resourcePolicy?: iam.PolicyDocument;
+
+  /**
+   * Resource policy to assign to table.
+   * @attribute
+   */
+  public abstract streamResourcePolicy?: iam.PolicyDocument;
 
   protected readonly regionalArns = new Array<string>();
 
@@ -1047,6 +1060,7 @@ export class Table extends TableBase {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
       public resourcePolicy?: iam.PolicyDocument;
+      public streamResourcePolicy?: iam.PolicyDocument;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
@@ -1091,6 +1105,13 @@ export class Table extends TableBase {
    * @default - No resource policy statements are added to the created table.
    */
   public resourcePolicy?: iam.PolicyDocument;
+
+  /**
+   * Resource policy to assign to DynamoDB stream.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-resourcepolicy.html
+   * @default - No resource policy statements are added to the created stream.
+   */
+  public streamResourcePolicy?: iam.PolicyDocument;
 
   /**
    * @attribute
@@ -1139,14 +1160,27 @@ export class Table extends TableBase {
       if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
         throw new Error('`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicationRegions`');
       }
-      streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
+      streamSpecification = {
+        streamViewType: StreamViewType.NEW_AND_OLD_IMAGES,
+        resourcePolicy: props.streamResourcePolicy
+          ? { policyDocument: props.streamResourcePolicy }
+          : undefined,
+      };
 
       this.billingMode = props.billingMode ?? BillingMode.PAY_PER_REQUEST;
     } else {
       this.billingMode = props.billingMode ?? BillingMode.PROVISIONED;
       if (props.stream) {
-        streamSpecification = { streamViewType: props.stream };
+        streamSpecification = {
+          streamViewType: props.stream,
+          resourcePolicy: props.streamResourcePolicy
+            ? { policyDocument: props.streamResourcePolicy }
+            : undefined,
+        };
       }
+    }
+    if (props.streamResourcePolicy && !props.stream) {
+      throw new Error('`stream` must be enabled when specifying `streamResourcePolicy`');
     }
     this.validateProvisioning(props);
 

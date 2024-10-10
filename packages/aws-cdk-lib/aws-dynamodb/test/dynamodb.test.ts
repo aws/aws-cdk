@@ -3601,3 +3601,78 @@ test('Resource policy test', () => {
     },
   });
 });
+
+test('Stream resource policy test to fail as no stream specified', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const doc = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['dynamodb:DescribeStream', 'dynamodb:GetRecords'],
+        principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  expect(() => new Table(stack, 'Table', {
+    partitionKey: TABLE_PARTITION_KEY,
+    streamResourcePolicy: doc,
+  })).toThrow('`stream` must be enabled when specifying `streamResourcePolicy`');
+
+});
+
+test('Stream resource policy test', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const doc = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['dynamodb:DescribeStream', 'dynamodb:GetRecords'],
+        principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    streamResourcePolicy: doc,
+    stream: StreamViewType.NEW_AND_OLD_IMAGES,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    'StreamSpecification': {
+      'ResourcePolicy': {
+        'PolicyDocument': {
+          'Version': '2012-10-17',
+          'Statement': [
+            {
+              'Principal': {
+                'AWS': 'arn:aws:iam::111122223333:user/foobar',
+              },
+              'Effect': 'Allow',
+              'Action': ['dynamodb:DescribeStream', 'dynamodb:GetRecords'],
+              'Resource': '*',
+            },
+          ],
+        },
+      },
+    },
+  });
+});
