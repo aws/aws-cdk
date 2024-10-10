@@ -13,6 +13,8 @@ export async function determineAllowCrossAccountAssetPublishing(sdk: ISDK, custo
     // account publishing on the IAM level. Therefore, we can safely allow this in the CLI.
     // It will either fail, or if it succeeds then the user has customized their bootstrap stack
     // to explicitly allow it, which is also fine.
+    // It will either fail, or if it succeeds then the user has customized their bootstrap stack
+    // to explicitly allow it, which is also fine.
     // https://github.com/aws/aws-cdk/pull/30823
     return true;
   }
