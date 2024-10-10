@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "stack-cors-allow-multiple-origins.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "stack-cors-allow-multiple-origins.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10b38de28f6f291a0a2fe437096ce3ea526ffeb14c593b034d0df5e8452cde82.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88fab505ed66008a6b79adea9a84286b0497ec0e3b341bc3e67a8c8608e87b8e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,7 +44,7 @@
         "/stack-cors-allow-multiple-origins/cors-api-test/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c"
+            "data": "corsapitestDeployment2BF1633A685a07b5f656133b5b22af9c5c9e710b"
           }
         ],
         "/stack-cors-allow-multiple-origins/cors-api-test/DeploymentStage.prod/Resource": [
@@ -118,10 +119,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd": [
+        "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestDeployment2BF1633Ad72428c37c88b8c23ef39eebb5b7e9fd",
+            "data": "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -145,6 +146,7 @@
         "templateFile": "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
