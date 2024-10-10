@@ -226,6 +226,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 export class SelfManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
   private innerProps: SelfManagedKafkaEventSourceProps;
+  private _eventSourceMappingId?: string = undefined;
+  private _eventSourceMappingArn?: string = undefined;
 
   constructor(props: SelfManagedKafkaEventSourceProps) {
     super(props);
@@ -244,7 +246,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
-    target.addEventSourceMapping(
+    const eventSourceMapping = target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
         filters: this.innerProps.filters,
@@ -258,6 +260,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
       }),
     );
+
+    this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
+    this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
 
     if (this.innerProps.secret !== undefined) {
       this.innerProps.secret.grantRead(target);
@@ -313,5 +318,25 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     return sourceAccessConfigurations.length === 0
       ? undefined
       : sourceAccessConfigurations;
+  }
+
+  /**
+  * The identifier for this EventSourceMapping
+  */
+  public get eventSourceMappingId(): string {
+    if (!this._eventSourceMappingId) {
+      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingId;
+  }
+
+  /**
+     * The ARN for this EventSourceMapping
+     */
+  public get eventSourceMappingArn(): string {
+    if (!this._eventSourceMappingArn) {
+      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingArn;
   }
 }
