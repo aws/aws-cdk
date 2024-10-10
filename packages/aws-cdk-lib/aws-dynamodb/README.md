@@ -687,6 +687,30 @@ Using `resourcePolicy` you can add a [resource policy](https://docs.aws.amazon.c
 TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update.
 To incorporate a resource-based policy into a replica, you'll need to initially deploy the replica without the policy, followed by a subsequent update to include the desired policy.
 
+You can also add a resource policy to a DynamoDB stream, using the `streamResourcePolicy` parameter:
+
+```
+const streamDoc = new iam.PolicyDocument({
+  statements: [
+    new iam.PolicyStatement({
+      actions: ['dynamodb:GetRecords', 'dynamodb:DescribeStream'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    }),
+  ],
+});
+
+new dynamodb.TableV2(this, 'StreamPolicyTable', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  removalPolicy: RemovalPolicy.DESTROY,
+  streamResourcePolicy: streamDoc,
+  dynamoStream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+});
+```
+
 ## Grants
 
 Using any of the `grant*` methods on an instance of the `TableV2` construct will only apply to the primary table, its indexes, and any associated `encryptionKey`. As an example, `grantReadData` used below will only apply the table in `us-west-2`:
