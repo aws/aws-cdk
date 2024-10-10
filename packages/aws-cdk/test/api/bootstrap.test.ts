@@ -4,12 +4,16 @@ import { parse } from 'yaml';
 import { Bootstrapper } from '../../lib/api/bootstrap';
 import { deserializeStructure } from '../../lib/serialize';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+
 const env = {
   account: '123456789012',
   region: 'us-east-1',
   name: 'mock',
 };
 
+jest.mock('../../lib/api/util/checks', () => ({
+  determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
+}));
 let sdk: MockSdkProvider;
 let executed: boolean;
 let protectedTermination: boolean;
