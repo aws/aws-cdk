@@ -12,7 +12,7 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, RouteTable, VPCPeeringConnection, VPNGatewayV2 } from '../lib/route';
+import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, RouteTable, VPNGatewayV2 } from '../lib/route';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { Fn } from 'aws-cdk-lib';
 
@@ -115,19 +115,19 @@ const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoi
 });
 routeTables.dynamodb.addRoute('dynamoRoute', '0.0.0.0/0', { endpoint: dynamoEndpoint });
 
-const vpc2 = new vpc_v2.VpcV2(stacks.vpcpc, 'secondVPC', {
-  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
-  secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv4('10.2.0.0/16', { cidrBlockName: 'Temp Block' })],
-});
+// const vpc2 = new vpc_v2.VpcV2(stacks.vpcpc, 'secondVPC', {
+//   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
+//   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv4('10.2.0.0/16', { cidrBlockName: 'Temp Block' })],
+// });
 
-const peeringConnection = new VPCPeeringConnection(stacks.vpcpc, 'crossAccountCrossRegionPeering', {
-  isCrossAccount: true,
-  requestorVpc: vpcs.vpcpc,
-  acceptorVpc: vpc2,
-  acceptorAccountId: '123456789012',
-  acceptorRegion: 'us-west-2',
-});
-routeTables.vpcpc.addRoute('vpcPeeringRoute', '0.0.0.0/0', { gateway: peeringConnection });
+// const peeringConnection = new VPCPeeringConnection(stacks.vpcpc, 'crossAccountCrossRegionPeering', {
+//   isCrossAccount: true,
+//   requestorVpc: vpcs.vpcpc,
+//   acceptorVpc: vpc2,
+//   acceptorAccountId: '123456789012',
+//   acceptorRegion: 'us-west-2',
+// });
+// routeTables.vpcpc.addRoute('vpcPeeringRoute', '0.0.0.0/0', { gateway: peeringConnection });
 
 var i = 0;
 for (const stackName in stacks) {

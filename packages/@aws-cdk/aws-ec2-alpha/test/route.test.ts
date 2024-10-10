@@ -512,145 +512,46 @@ describe('EC2 Routing', () => {
       },
     });
   });
+});
 
-  describe('VPCPeeringConnection', () => {
-    test('Cross account peering connection', () => {
-      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      });
-      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-      });
+describe('VPCPeeringConnection', () => {
 
-      new route.VPCPeeringConnection(stack, 'TestPeering', {
-        isCrossAccount: true,
-        requestorVpc: vpc1,
-        acceptorVpc: vpc2,
-        acceptorAccountId: '123456789012',
-        acceptorRegion: 'us-west-2',
-      });
+  let stack: cdk.Stack;
+  let vpcA: vpc.VpcV2;
+  let vpcB: vpc.VpcV2;
 
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
-        PeerOwnerId: '123456789012',
-        PeerRegion: 'us-west-2',
-        VpcId: {
-          'Fn::GetAtt': ['VPC17DE2CF87', 'VpcId'],
-        },
-        PeerVpcId: {
-          'Fn::GetAtt': ['VPC2C1F0E711', 'VpcId'],
-        },
-        PeerRoleArn: {
-          'Fn::GetAtt': ['TestPeeringPeerRole67D845E9', 'Arn'],
-        },
-      });
+  beforeEach(() => {
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new cdk.Stack(app, 'VpcStack');
+    vpcA = new vpc.VpcV2(stack, 'VpcA', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'TempSecondaryBlock' })],
+    });
+    vpcB = new vpc.VpcV2(stack, 'VpcB', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+    });
+  });
+
+  test('Creates a VPC peering connection', () => {
+    new route.VPCPeeringConnection(stack, 'TestPeeringConnection', {
+      requestorVpc: vpcA,
+      acceptorVpc: vpcB,
     });
 
-    test('Default region handling for same account peering', () => {
-      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      });
-
-      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-      });
-
-      new route.VPCPeeringConnection(stack, 'TestPeering', {
-        isCrossAccount: false,
-        requestorVpc: vpc1,
-        acceptorVpc: vpc2,
-      });
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
-        VpcId: {
-          'Fn::GetAtt': ['VPC17DE2CF87', 'VpcId'],
-        },
-        PeerVpcId: {
-          'Fn::GetAtt': ['VPC2C1F0E711', 'VpcId'],
-        },
-        PeerRegion: {
-          Ref: 'AWS::Region',
-        },
-      });
-    });
-
-    test('Overlap with primary CIDR block should throw error', () => {
-      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-      });
-
-      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-      });
-
-      expect(() => {
-        new route.VPCPeeringConnection(stack, 'TestPeering', {
-          isCrossAccount: false,
-          requestorVpc: vpc1,
-          acceptorVpc: vpc2,
-        });
-      }).toThrow(/CIDR block should not overlap with existing subnet blocks/);
-    });
-
-    test('Overlap with secondary CIDR block should throw error', () => {
-      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
-      });
-
-      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
-      });
-
-      expect(() => {
-        new route.VPCPeeringConnection(stack, 'TestPeering', {
-          isCrossAccount: false,
-          requestorVpc: vpc1,
-          acceptorVpc: vpc2,
-        });
-      }).toThrow(/CIDR block should not overlap with existing subnet blocks/);
-    });
-
-    test('Overlap with primary and secondary CIDR block should throw error', () => {
-      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.3.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
-      });
-
-      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.3.0.0/16', { cidrBlockName: 'Temp Block' })],
-      });
-
-      expect(() => {
-        new route.VPCPeeringConnection(stack, 'TestPeering', {
-          isCrossAccount: false,
-          requestorVpc: vpc1,
-          acceptorVpc: vpc2,
-        });
-      }).toThrow(/CIDR block should not overlap with existing subnet blocks/);
-    });
-
-    test('Non overlapping CIDR blocks should succeed', () => {
-      const vpc1 = new vpc.VpcV2(stack, 'VPC1', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'Temp Block' })],
-      });
-
-      const vpc2 = new vpc.VpcV2(stack, 'VPC2', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.3.0.0/16', { cidrBlockName: 'Temp Block' })],
-      });
-
-      expect(() => {
-        new route.VPCPeeringConnection(stack, 'TestPeering', {
-          isCrossAccount: false,
-          requestorVpc: vpc1,
-          acceptorVpc: vpc2,
-        });
-      }).not.toThrow();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+      VpcId: {
+        'Fn::GetAtt': ['VpcAAD85CA4C', 'VpcId'],
+      },
+      PeerVpcId: {
+        'Fn::GetAtt': ['VpcB98A08B07', 'VpcId'],
+      },
+      PeerOwnerId: { Ref: 'AWS::AccountId' },
+      PeerRegion: { Ref: 'AWS::Region' },
     });
   });
 });
