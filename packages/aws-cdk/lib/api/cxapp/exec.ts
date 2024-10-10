@@ -49,6 +49,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }
+  if (typeof outdir !== 'string') {
+    throw new Error(`--output takes a string, got ${JSON.stringify(outdir)}`);
+  }
   try {
     await fs.mkdirp(outdir);
   } catch (error: any) {
