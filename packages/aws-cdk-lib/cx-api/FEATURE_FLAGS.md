@@ -79,6 +79,7 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages](#aws-cdkaws-lambda-nodejssdkv3excludesmithypackages) | When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications. | 2.161.0 | (fix) |
 | [@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId](#aws-cdkaws-rdssetcorrectvaluefordatabaseinstancereadreplicainstanceresourceid) | When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn` | 2.161.0 | (fix) |
 | [@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics](#aws-cdkcorecfnincluderejectcomplexresourceupdatecreatepolicyintrinsics) | When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values. | 2.161.0 | (fix) |
+| [@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName](#aws-cdkaws-route53-targetsusenewmethodforuserpooldomaindnsname) | When enabled, use a new method for DNS Name of user pool domain target. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -146,7 +147,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
     "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
     "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
-    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
+    "@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName": true
   }
 }
 ```
@@ -1489,6 +1491,22 @@ Enabling this feature flag will make `cfn-include` throw on these templates, unl
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.161.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName
+
+*When enabled, use a new method for DNS Name of user pool domain target.* (fix)
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
