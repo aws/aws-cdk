@@ -357,7 +357,7 @@ new codebuild.Project(this, 'Project', {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
     // optional certificate to include in the build image
     certificate: {
-      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket'),
+      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'),
       objectKey: 'path/to/cert.pem',
     },
   },
