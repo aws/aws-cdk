@@ -1,0 +1,1287 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "sqs-integration": {
+        "id": "sqs-integration",
+        "path": "sqs-integration",
+        "children": {
+          "Queue": {
+            "id": "Queue",
+            "path": "sqs-integration/Queue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "sqs-integration/Queue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "Api": {
+            "id": "Api",
+            "path": "sqs-integration/Api",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "sqs-integration/Api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "Api",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "sqs-integration/Api/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-integration/Api/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--default": {
+                "id": "POST--default",
+                "path": "sqs-integration/Api/POST--default",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "sqs-integration/Api/POST--default/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "sqs-integration/Api/POST--default/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--default/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "sqs-integration/Api/POST--default/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "sqs-integration/Api/POST--default/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sqs:SendMessage",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "Queue4A7E3555",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "Sid": "AllowSqsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTdefaultInvokeRole9137E4F5"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "defaultIntegration": {
+                    "id": "defaultIntegration",
+                    "path": "sqs-integration/Api/POST--default/defaultIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--default/defaultIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTdefaultInvokeRole9137E4F5",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "SQS-SendMessage",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "QueueUrl": {
+                                "Ref": "Queue4A7E3555"
+                              },
+                              "MessageBody": "$request.body.MessageBody"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-integration/Api/POST--default/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /default",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTdefaultdefaultIntegration0355373B"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--send-message": {
+                "id": "POST--send-message",
+                "path": "sqs-integration/Api/POST--send-message",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "sqs-integration/Api/POST--send-message/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "sqs-integration/Api/POST--send-message/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--send-message/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "sqs-integration/Api/POST--send-message/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "sqs-integration/Api/POST--send-message/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sqs:SendMessage",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "Queue4A7E3555",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "Sid": "AllowSqsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTsendmessageInvokeRoleDefaultPolicy4B7D7B02",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTsendmessageInvokeRole628F6753"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "sendMessageIntegration": {
+                    "id": "sendMessageIntegration",
+                    "path": "sqs-integration/Api/POST--send-message/sendMessageIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--send-message/sendMessageIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTsendmessageInvokeRole628F6753",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "SQS-SendMessage",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "QueueUrl": {
+                                "Ref": "Queue4A7E3555"
+                              },
+                              "MessageBody": "$request.body.MessageBody"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-integration/Api/POST--send-message/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /send-message",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTsendmessagesendMessageIntegrationA3699583"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--receive-message": {
+                "id": "POST--receive-message",
+                "path": "sqs-integration/Api/POST--receive-message",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "sqs-integration/Api/POST--receive-message/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "sqs-integration/Api/POST--receive-message/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--receive-message/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "sqs-integration/Api/POST--receive-message/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "sqs-integration/Api/POST--receive-message/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sqs:ReceiveMessage",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "Queue4A7E3555",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "Sid": "AllowSqsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTreceivemessageInvokeRoleDefaultPolicy22774339",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTreceivemessageInvokeRoleF920E28E"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "receiveMessageIntegration": {
+                    "id": "receiveMessageIntegration",
+                    "path": "sqs-integration/Api/POST--receive-message/receiveMessageIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--receive-message/receiveMessageIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTreceivemessageInvokeRoleF920E28E",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "SQS-ReceiveMessage",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "QueueUrl": {
+                                "Ref": "Queue4A7E3555"
+                              }
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-integration/Api/POST--receive-message/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /receive-message",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTreceivemessagereceiveMessageIntegrationFC744BEF"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--delete-message": {
+                "id": "POST--delete-message",
+                "path": "sqs-integration/Api/POST--delete-message",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "sqs-integration/Api/POST--delete-message/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "sqs-integration/Api/POST--delete-message/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--delete-message/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "sqs-integration/Api/POST--delete-message/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "sqs-integration/Api/POST--delete-message/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sqs:DeleteMessage",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "Queue4A7E3555",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "Sid": "AllowSqsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTdeletemessageInvokeRoleDefaultPolicyC736EDFF",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTdeletemessageInvokeRoleF36F96C7"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "deleteMessageIntegration": {
+                    "id": "deleteMessageIntegration",
+                    "path": "sqs-integration/Api/POST--delete-message/deleteMessageIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--delete-message/deleteMessageIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTdeletemessageInvokeRoleF36F96C7",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "SQS-DeleteMessage",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "QueueUrl": {
+                                "Ref": "Queue4A7E3555"
+                              },
+                              "ReceiptHandle": "$request.body.ReceiptHandle"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-integration/Api/POST--delete-message/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /delete-message",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTdeletemessagedeleteMessageIntegration49DB56A7"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--purge-queue": {
+                "id": "POST--purge-queue",
+                "path": "sqs-integration/Api/POST--purge-queue",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "sqs-integration/Api/POST--purge-queue/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "sqs-integration/Api/POST--purge-queue/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--purge-queue/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "sqs-integration/Api/POST--purge-queue/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "sqs-integration/Api/POST--purge-queue/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sqs:PurgeQueue",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "Queue4A7E3555",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "Sid": "AllowSqsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTpurgequeueInvokeRoleDefaultPolicy275FF06E",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTpurgequeueInvokeRole1F4EEB80"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "purgeQueueIntegration": {
+                    "id": "purgeQueueIntegration",
+                    "path": "sqs-integration/Api/POST--purge-queue/purgeQueueIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "sqs-integration/Api/POST--purge-queue/purgeQueueIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTpurgequeueInvokeRole1F4EEB80",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "SQS-PurgeQueue",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "QueueUrl": {
+                                "Ref": "Queue4A7E3555"
+                              }
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-integration/Api/POST--purge-queue/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /purge-queue",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTpurgequeuepurgeQueueIntegration7B3B35C2"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "sqs-integration/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiEndpoint\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiEndpoint\"]}",
+                "path": "sqs-integration/Exports/Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiEndpoint\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "sqs-integration/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "sqs-integration/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "SqsIntegrationIntegTest": {
+        "id": "SqsIntegrationIntegTest",
+        "path": "SqsIntegrationIntegTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SqsIntegrationIntegTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SqsIntegrationIntegTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert",
+                "children": {
+                  "HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8": {
+                    "id": "HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8",
+                    "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8",
+                    "children": {
+                      "HttpProvider": {
+                        "id": "HttpProvider",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8/HttpProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8/HttpProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.HttpApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e": {
+                    "id": "HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e",
+                    "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e",
+                    "children": {
+                      "HttpProvider": {
+                        "id": "HttpProvider",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e/HttpProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e/HttpProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.HttpApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6": {
+                    "id": "HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6",
+                    "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6",
+                    "children": {
+                      "HttpProvider": {
+                        "id": "HttpProvider",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6/HttpProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6/HttpProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.HttpApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544": {
+                    "id": "HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544",
+                    "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544",
+                    "children": {
+                      "HttpProvider": {
+                        "id": "HttpProvider",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544/HttpProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544/HttpProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.HttpApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "SqsIntegrationIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
