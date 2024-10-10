@@ -1,0 +1,364 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "redshift-query-events": {
+        "id": "redshift-query-events",
+        "path": "redshift-query-events",
+        "children": {
+          "Namespace": {
+            "id": "Namespace",
+            "path": "redshift-query-events/Namespace",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::RedshiftServerless::Namespace",
+              "aws:cdk:cloudformation:props": {
+                "namespaceName": "namespace"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_redshiftserverless.CfnNamespace",
+              "version": "0.0.0"
+            }
+          },
+          "WorkGroup": {
+            "id": "WorkGroup",
+            "path": "redshift-query-events/WorkGroup",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::RedshiftServerless::Workgroup",
+              "aws:cdk:cloudformation:props": {
+                "namespaceName": "namespace",
+                "securityGroupIds": [
+                  "sg-0f3ee03c20cc6056c"
+                ],
+                "subnetIds": [
+                  "subnet-06c91b5d4c16df0ff",
+                  "subnet-04b90752f12ed5174",
+                  "subnet-0d42bcb68396ffd19"
+                ],
+                "workgroupName": "workgroup"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_redshiftserverless.CfnWorkgroup",
+              "version": "0.0.0"
+            }
+          },
+          "dlq": {
+            "id": "dlq",
+            "path": "redshift-query-events/dlq",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "redshift-query-events/dlq/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "Secret": {
+            "id": "Secret",
+            "path": "redshift-query-events/Secret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "redshift-query-events/Secret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "Timer3": {
+            "id": "Timer3",
+            "path": "redshift-query-events/Timer3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "redshift-query-events/Timer3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "rate(1 minute)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "WorkGroup",
+                            "Workgroup.WorkgroupArn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "Timer3EventsRole909B99A1",
+                            "Arn"
+                          ]
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "dlq09C78ACC",
+                              "Arn"
+                            ]
+                          }
+                        },
+                        "redshiftDataParameters": {
+                          "database": "dev",
+                          "secretManagerArn": {
+                            "Ref": "SecretA720EF05"
+                          },
+                          "sql": "SELECT * FROM baz"
+                        }
+                      },
+                      {
+                        "id": "Target1",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "WorkGroup",
+                            "Workgroup.WorkgroupArn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "Timer3EventsRole909B99A1",
+                            "Arn"
+                          ]
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "dlq09C78ACC",
+                              "Arn"
+                            ]
+                          }
+                        },
+                        "redshiftDataParameters": {
+                          "database": "dev",
+                          "secretManagerArn": {
+                            "Ref": "SecretA720EF05"
+                          },
+                          "sqls": [
+                            "SELECT * FROM foo",
+                            "SELECT * FROM bar"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "redshift-query-events/Timer3/EventsRole",
+                "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "redshift-query-events/Timer3/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "redshift-query-events/Timer3/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "redshift-query-events/Timer3/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "redshift-query-events/Timer3/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "redshift-data:BatchExecuteStatement",
+                                    "redshift-data:ExecuteStatement"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "WorkGroup",
+                                      "Workgroup.WorkgroupArn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Timer3EventsRoleDefaultPolicy3A2ECE32",
+                            "roles": [
+                              {
+                                "Ref": "Timer3EventsRole909B99A1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "redshift-query-events/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "redshift-query-events/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LogGroup": {
+        "id": "LogGroup",
+        "path": "LogGroup",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LogGroup/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LogGroup/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LogGroup/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LogGroup/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LogGroup/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

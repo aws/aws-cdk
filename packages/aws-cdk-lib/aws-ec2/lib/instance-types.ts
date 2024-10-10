@@ -901,6 +901,16 @@ export enum InstanceClass {
   G6 = 'g6',
 
   /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 6th generation
+   */
+  GRAPHICS6_EFFICIENT = 'graphics6-efficient',
+
+  /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 6th generation
+   */
+  G6E = 'g6e',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'parallel2',
@@ -1169,6 +1179,16 @@ export enum InstanceClass {
    * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
    */
   MAC2_M2PRO = 'mac2-m2pro',
+
+  /**
+   * Macintosh instances built on 2022 Mac Studio hardware powered by Apple silicon M1 Ultra processors
+   */
+  MACINTOSH2_M1_ULTRA = 'macintosh2-m1-ultra',
+
+  /**
+   * Macintosh instances built on 2022 Mac Studio hardware powered by Apple silicon M1 Ultra processors
+   */
+  MAC2_M1ULTRA = 'mac2-m1ultra',
 
   /**
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
@@ -1580,6 +1600,8 @@ export class InstanceType {
       [InstanceClass.G5G]: 'g5g',
       [InstanceClass.GRAPHICS6]: 'g6',
       [InstanceClass.G6]: 'g6',
+      [InstanceClass.GRAPHICS6_EFFICIENT]: 'g6e',
+      [InstanceClass.G6E]: 'g6e',
       [InstanceClass.PARALLEL2]: 'p2',
       [InstanceClass.P2]: 'p2',
       [InstanceClass.PARALLEL3]: 'p3',
@@ -1632,6 +1654,8 @@ export class InstanceType {
       [InstanceClass.MAC2_M2]: 'mac2-m2',
       [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
       [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
+      [InstanceClass.MACINTOSH2_M1_ULTRA]: 'mac2-m1ultra',
+      [InstanceClass.MAC2_M1ULTRA]: 'mac2-m1ultra',
       [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
       [InstanceClass.VT1]: 'vt1',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',

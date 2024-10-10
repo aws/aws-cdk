@@ -1,0 +1,202 @@
+{
+ "Resources": {
+  "natgwpub2FB85986": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "natgwpubAmazonIpv625B947F8": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpub2FB85986",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottableRouteTableFA28AA38": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpub2FB85986",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottablenatGwRoute31868FBF": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwIGW6AC97E9A",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   }
+  },
+  "TestRoottablenatGwRouteGWAttachment1D9CDF77": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwIGW6AC97E9A",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpub2FB85986",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoottablenatGwPubRoute0463E2F5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwNATGateway1533420D",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   }
+  },
+  "natgwpubSubnet79D316E5": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "natgwpub2FB85986",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "natgwpub2FB85986",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "natgwpubAmazonIpv625B947F8"
+   ]
+  },
+  "natgwpubSubnetRouteTableAssociation019CE26A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "natgwpubSubnet79D316E5"
+    }
+   },
+   "DependsOn": [
+    "natgwpubAmazonIpv625B947F8"
+   ]
+  },
+  "testNATgwIGW6AC97E9A": {
+   "Type": "AWS::EC2::InternetGateway"
+  },
+  "testNATgwEIP1C260FAD": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": {
+     "Fn::GetAtt": [
+      "natgwpub2FB85986",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "natgwpubSubnetRouteTableAssociation019CE26A"
+   ]
+  },
+  "testNATgwNATGateway1533420D": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "testNATgwEIP1C260FAD",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "natgwpubSubnet79D316E5"
+    }
+   },
+   "DependsOn": [
+    "natgwpubSubnetRouteTableAssociation019CE26A"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

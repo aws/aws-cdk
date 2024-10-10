@@ -1,6 +1,7 @@
 import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as dynamodb from '../../aws-dynamodb';
+import { Key } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Bucket } from '../../aws-s3';
 import * as sqs from '../../aws-sqs';
@@ -285,6 +286,128 @@ describe('DynamoEventSource', () => {
         ],
       },
       'StartingPosition': 'LATEST',
+    });
+  });
+
+  test('adding filter criteria encryption', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    const myKey = Key.fromKeyArn(
+      stack,
+      'SourceBucketEncryptionKey',
+      'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    );
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      filters: [
+        lambda.FilterCriteria.filter({
+          eventName: lambda.FilterRule.isEqual('INSERT'),
+          dynamodb: {
+            Keys: {
+              id: {
+                S: lambda.FilterRule.exists(),
+              },
+            },
+          },
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"eventName":["INSERT"],"dynamodb":{"Keys":{"id":{"S":[{"exists":true}]}}}}',
+          },
+        ],
+      },
+      KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+      'StartingPosition': 'LATEST',
+    });
+  });
+
+  test('adding filter criteria encryption with stack key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    const myKey = new Key(stack, 'fc-test-key-name', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pendingWindow: cdk.Duration.days(7),
+      description: 'KMS key for test fc encryption',
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      filters: [
+        lambda.FilterCriteria.filter({
+          eventName: lambda.FilterRule.isEqual('INSERT'),
+          dynamodb: {
+            Keys: {
+              id: {
+                S: lambda.FilterRule.exists(),
+              },
+            },
+          },
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
+            Resource: '*',
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+      },
     });
   });
 
@@ -825,5 +948,54 @@ describe('DynamoEventSource', () => {
     //THEN
     }).toThrowError('S3 onFailure Destination is not supported for this event source');
 
+  });
+
+  test('filter on boolean', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      filters: [
+        lambda.FilterCriteria.filter({
+          eventName: lambda.FilterRule.isEqual('INSERT'),
+          dynamodb: {
+            NewImage: {
+              id: { BOOL: lambda.FilterRule.isEqual(true) },
+            },
+          },
+        }),
+      ],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"eventName":["INSERT"],"dynamodb":{"NewImage":{"id":{"BOOL":[true]}}}}',
+          },
+        ],
+      },
+      'StartingPosition': 'LATEST',
+    });
   });
 });

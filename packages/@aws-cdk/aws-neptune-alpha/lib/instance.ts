@@ -12,6 +12,75 @@ import { IParameterGroup } from './parameter-group';
  * used for defining `DatabaseInstanceProps.instanceType`.
  */
 export class InstanceType {
+  /**
+   * db.x2g.large
+   */
+  public static readonly X2G_LARGE = InstanceType.of('db.x2g.large');
+
+  /**
+   * db.x2g.xlarge
+   */
+  public static readonly X2G_XLARGE = InstanceType.of('db.x2g.xlarge');
+
+  /**
+   * db.x2g.2xlarge
+   */
+  public static readonly X2G_2XLARGE = InstanceType.of('db.x2g.2xlarge');
+
+  /**
+   * db.x2g.4xlarge
+   */
+  public static readonly X2G_4XLARGE = InstanceType.of('db.x2g.4xlarge');
+
+  /**
+   * db.x2g.8xlarge
+   */
+  public static readonly X2G_8XLARGE = InstanceType.of('db.x2g.8xlarge');
+
+  /**
+   * db.x2g.12xlarge
+   */
+  public static readonly X2G_12XLARGE = InstanceType.of('db.x2g.12xlarge');
+
+  /**
+   * db.x2g.16xlarge
+   */
+  public static readonly X2G_16XLARGE = InstanceType.of('db.x2g.16xlarge');
+
+  /**
+  * db.x2iedn.xlarge
+  */
+  public static readonly X2IEDN_XLARGE = InstanceType.of('db.x2iedn.xlarge');
+
+  /**
+   * db.x2iedn.2xlarge
+   */
+  public static readonly X2IEDN_2XLARGE = InstanceType.of('db.x2iedn.2xlarge');
+
+  /**
+   * db.x2iedn.4xlarge
+   */
+  public static readonly X2IEDN_4XLARGE = InstanceType.of('db.x2iedn.4xlarge');
+
+  /**
+   * db.x2iedn.8xlarge
+   */
+  public static readonly X2IEDN_8XLARGE = InstanceType.of('db.x2iedn.8xlarge');
+
+  /**
+   * db.x2iedn.16xlarge
+   */
+  public static readonly X2IEDN_16XLARGE = InstanceType.of('db.x2iedn.16xlarge');
+
+  /**
+   * db.x2iedn.24xlarge
+   */
+  public static readonly X2IEDN_24XLARGE = InstanceType.of('db.x2iedn.24xlarge');
+
+  /**
+   * db.x2iedn.32xlarge
+   */
+  public static readonly X2IEDN_32XLARGE = InstanceType.of('db.x2iedn.32xlarge');
 
   /**
    * db.r6g.large
@@ -49,9 +118,49 @@ export class InstanceType {
   public static readonly R6G_16XLARGE = InstanceType.of('db.r6g.16xlarge');
 
   /**
-   * db.t4g.medium
+   * db.r6i.large
    */
-  public static readonly T4G_MEDIUM = InstanceType.of('db.t4g.medium');
+  public static readonly R6I_LARGE = InstanceType.of('db.r6i.large');
+
+  /**
+   * db.r6i.xlarge
+   */
+  public static readonly R6I_XLARGE = InstanceType.of('db.r6i.xlarge');
+
+  /**
+   * db.r6i.2xlarge
+   */
+  public static readonly R6I_2XLARGE = InstanceType.of('db.r6i.2xlarge');
+
+  /**
+   * db.r6i.4xlarge
+   */
+  public static readonly R6I_4XLARGE = InstanceType.of('db.r6i.4xlarge');
+
+  /**
+   * db.r6i.8xlarge
+   */
+  public static readonly R6I_8XLARGE = InstanceType.of('db.r6i.8xlarge');
+
+  /**
+   * db.r6i.12xlarge
+   */
+  public static readonly R6I_12XLARGE = InstanceType.of('db.r6i.12xlarge');
+
+  /**
+   * db.r6i.16xlarge
+   */
+  public static readonly R6I_16XLARGE = InstanceType.of('db.r6i.16xlarge');
+
+  /**
+   * db.r6i.24xlarge
+   */
+  public static readonly R6I_24XLARGE = InstanceType.of('db.r6i.24xlarge');
+
+  /**
+   * db.r6i.32xlarge
+   */
+  public static readonly R6I_32XLARGE = InstanceType.of('db.r6i.32xlarge');
 
   /**
    * db.r5.large
@@ -84,9 +193,54 @@ export class InstanceType {
   public static readonly R5_12XLARGE = InstanceType.of('db.r5.12xlarge');
 
   /**
+   * db.r5.16xlarge
+   */
+  public static readonly R5_16XLARGE = InstanceType.of('db.r5.16xlarge');
+
+  /**
    * db.r5.24xlarge
    */
   public static readonly R5_24XLARGE = InstanceType.of('db.r5.24xlarge');
+
+  /**
+   * db.r5d.large
+   */
+  public static readonly R5D_LARGE = InstanceType.of('db.r5d.large');
+
+  /**
+   * db.r5d.xlarge
+   */
+  public static readonly R5D_XLARGE = InstanceType.of('db.r5d.xlarge');
+
+  /**
+   * db.r5d.2xlarge
+   */
+  public static readonly R5D_2XLARGE = InstanceType.of('db.r5d.2xlarge');
+
+  /**
+   * db.r5d.4xlarge
+   */
+  public static readonly R5D_4XLARGE = InstanceType.of('db.r5d.4xlarge');
+
+  /**
+   * db.r5d.8xlarge
+   */
+  public static readonly R5D_8XLARGE = InstanceType.of('db.r5d.8xlarge');
+
+  /**
+   * db.r5d.12xlarge
+   */
+  public static readonly R5D_12XLARGE = InstanceType.of('db.r5d.12xlarge');
+
+  /**
+   * db.r5d.16xlarge
+   */
+  public static readonly R5D_16XLARGE = InstanceType.of('db.r5d.16xlarge');
+
+  /**
+   * db.r5d.24xlarge
+   */
+  public static readonly R5D_24XLARGE = InstanceType.of('db.r5d.24xlarge');
 
   /**
    * db.r4.large
@@ -112,6 +266,11 @@ export class InstanceType {
    * db.r4.8xlarge
    */
   public static readonly R4_8XLARGE = InstanceType.of('db.r4.8xlarge');
+
+  /**
+   * db.t4g.medium
+   */
+  public static readonly T4G_MEDIUM = InstanceType.of('db.t4g.medium');
 
   /**
    * db.t3.medium

@@ -1,4 +1,4 @@
-import { Duration, IResource, Resource } from 'aws-cdk-lib';
+import { Duration, IResource, Resource, Token } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
@@ -324,6 +324,9 @@ export class Schedule extends Resource implements ISchedule {
     const flexibleTimeWindow = props.timeWindow ?? TimeWindow.off();
 
     this.validateTimeFrame(props.start, props.end);
+    if (props.scheduleName && !Token.isUnresolved(props.scheduleName) && props.scheduleName.length > 64) {
+      throw new Error(`scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`);
+    }
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
@@ -352,6 +355,7 @@ export class Schedule extends Resource implements ISchedule {
       },
       startDate: props.start?.toISOString(),
       endDate: props.end?.toISOString(),
+      description: props.description,
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
