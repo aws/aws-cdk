@@ -369,7 +369,7 @@ export class AlbController extends Construct {
     // This is safe to disable because we're actually replacing the literal partition with a reference to
     // the stack partition (which is hardcoded into the JSON files) to prevent issues such as
     // aws/aws-cdk#22520.
-    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    // eslint-disable-next-line @cdklabs/no-literal-partition
     const rewriteResource = (s: string) => s.replace('arn:aws:', `arn:${Aws.PARTITION}:`);
 
     if (!resources) {

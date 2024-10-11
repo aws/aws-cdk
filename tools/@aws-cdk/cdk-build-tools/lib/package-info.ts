@@ -105,7 +105,7 @@ export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuild
     }
     if (options?.stripDeprecated) {
       // This package is not published to npm so the linter rule is invalid
-      // eslint-disable-next-line @aws-cdk/no-invalid-path
+      // eslint-disable-next-line @cdklabs/no-invalid-path
       args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
     return [compilers.jsii || require.resolve('jsii/bin/jsii'), ...args];
