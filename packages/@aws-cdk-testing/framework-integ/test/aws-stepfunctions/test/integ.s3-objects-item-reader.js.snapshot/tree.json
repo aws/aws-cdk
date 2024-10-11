@@ -252,6 +252,19 @@
                             "policyDocument": {
                               "Statement": [
                                 {
+                                  "Action": "s3:ListBucket",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    "*",
+                                    {
+                                      "Fn::GetAtt": [
+                                        "S3ObjectsItemReaderTestBucket7B2E5D7A",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
                                   "Action": "s3:GetObject",
                                   "Effect": "Allow",
                                   "Resource": {
@@ -266,16 +279,6 @@
                                         },
                                         "/*"
                                       ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "s3:ListBucket",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "S3ObjectsItemReaderTestBucket7B2E5D7A",
-                                      "Arn"
                                     ]
                                   }
                                 }
