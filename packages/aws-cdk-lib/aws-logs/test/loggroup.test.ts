@@ -572,10 +572,10 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        statement: [
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Statement: [
           {
             sid: 'audit-statement-cdk',
             dataIdentifier: [
@@ -642,10 +642,10 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        statement: [
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Statement: [
           {
             sid: 'audit-statement-cdk',
             dataIdentifier: [
@@ -717,10 +717,10 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'data-protection-policy-cdk',
-        description: 'cdk generated data protection policy',
-        version: '2021-06-01',
-        statement: [
+        Name: 'data-protection-policy-cdk',
+        Description: 'cdk generated data protection policy',
+        Version: '2021-06-01',
+        Statement: [
           {
             sid: 'audit-statement-cdk',
             dataIdentifier: [
@@ -801,10 +801,10 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        configuration: {
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Configuration: {
           customDataIdentifier: [
             {
               name: 'EmployeeId',
@@ -812,7 +812,7 @@ describe('log group', () => {
             },
           ],
         },
-        statement: [
+        Statement: [
           {
             sid: 'audit-statement-cdk',
             dataIdentifier: [
@@ -861,10 +861,10 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        configuration: {
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Configuration: {
           customDataIdentifier: [
             {
               name: 'EmployeeId',
@@ -872,7 +872,7 @@ describe('log group', () => {
             },
           ],
         },
-        statement: [
+        Statement: [
           {
             sid: 'audit-statement-cdk',
             dataIdentifier: [

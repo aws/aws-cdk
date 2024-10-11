@@ -637,6 +637,7 @@ export class LogGroup extends LogGroupBase {
           Description: dataProtectionPolicy?.description,
           Version: dataProtectionPolicy?.version,
           Statement: dataProtectionPolicy?.statement,
+          Configuration: dataProtectionPolicy?.configuration,
       } : undefined,
     });
 
