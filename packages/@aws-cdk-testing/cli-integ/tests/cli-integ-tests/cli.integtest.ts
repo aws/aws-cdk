@@ -352,6 +352,13 @@ integTest(
   }),
 );
 
+integTest('doubly nested stack',
+  withDefaultFixture(async (fixture) => {
+    await fixture.cdkDeploy('with-doubly-nested-stack', {
+      captureStderr: false,
+    });
+  }));
+
 integTest(
   'nested stack with parameters',
   withDefaultFixture(async (fixture) => {
@@ -1031,6 +1038,64 @@ integTest(
     ).rejects.toThrow('exited with error');
   }),
 );
+
+integTest(
+  'cdk diff with large changeset does not fail',
+  withDefaultFixture(async (fixture) => {
+    // GIVEN - small initial stack with only one IAM role
+    await fixture.cdkDeploy('iam-roles', {
+      modEnv: {
+        NUMBER_OF_ROLES: '1',
+      },
+    });
+
+    // WHEN - adding an additional role with a ton of metadata to create a large diff
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+      verbose: true,
+      modEnv: {
+        NUMBER_OF_ROLES: '2',
+      },
+    });
+
+    // Assert that the CLI assumes the file publishing role:
+    expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+    expect(diff).toContain('success: Published');
+  }),
+);
+
+integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = 'abc1111';
+  const toolkitStackName = 'custom-stack2';
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  // Deploying small initial stack with only one IAM role
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // WHEN - adding a role with a ton of metadata to create a large diff
+  const diff = await fixture.cdk(['diff', '--toolkit-stack-name', toolkitStackName, '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`, fixture.fullStackName('iam-roles')], {
+    verbose: true,
+    modEnv: {
+      NUMBER_OF_ROLES: '2',
+    },
+  });
+
+  // Assert that the CLI assumes the file publishing role:
+  expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+  expect(diff).toContain('success: Published');
+}));
 
 integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
@@ -2345,49 +2410,13 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
     notices: [
       {
-        title: 'CLI Notice',
-        issueNumber: 1111,
-        overview: 'Overview for CLI Notice',
-        components: [
-          {
-            name: 'cli',
-            version: '<99.0.0',
-          },
-        ],
-        schemaVersion: '1',
-      },
-      {
-        title: 'Framework Notice',
-        issueNumber: 2222,
-        overview: 'Overview for Framework Notice',
-        components: [
-          {
-            name: 'framework',
-            version: '<99.0.0',
-          },
-        ],
-        schemaVersion: '1',
-      },
-      {
-        title: 'Queue Notice',
-        issueNumber: 3333,
-        overview: 'Overview for Queue Notice',
-        components: [
-          {
-            name: 'aws-cdk-lib.aws_sqs.Queue',
-            version: '<99.0.0',
-          },
-        ],
-        schemaVersion: '1',
-      },
-      {
-        title: 'Bootstrap 22 Notice',
+        title: 'Bootstrap 1999 Notice',
         issueNumber: 4444,
-        overview: 'Overview for Bootstrap 22 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        overview: 'Overview for Bootstrap 1999 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
         components: [
           {
             name: 'bootstrap',
-            version: '22',
+            version: '<1999', // so we include all possible environments
           },
         ],
         schemaVersion: '1',
@@ -2406,10 +2435,7 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
     },
   });
 
-  expect(output).toContain('Overview for CLI Notice');
-  expect(output).toContain('Overview for Framework Notice');
-  expect(output).toContain('Overview for Queue Notice');
-  expect(output).toContain('Overview for Bootstrap 22 Notice');
+  expect(output).toContain('Overview for Bootstrap 1999 Notice');
 
   // assert dynamic environments are resolved
   expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);

@@ -3,7 +3,7 @@ import {
   DeleteStackCommand,
   DescribeStacksCommand,
   UpdateTerminationProtectionCommand,
-  Stack,
+  type Stack,
 } from '@aws-sdk/client-cloudformation';
 import { DeleteRepositoryCommand, ECRClient } from '@aws-sdk/client-ecr';
 import { ECSClient } from '@aws-sdk/client-ecs';
@@ -13,14 +13,14 @@ import {
   S3Client,
   DeleteObjectsCommand,
   ListObjectVersionsCommand,
-  ObjectIdentifier,
+  type ObjectIdentifier,
   DeleteBucketCommand,
 } from '@aws-sdk/client-s3';
 import { SNSClient } from '@aws-sdk/client-sns';
 import { SSOClient } from '@aws-sdk/client-sso';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { fromIni } from '@aws-sdk/credential-providers';
-import { AwsCredentialIdentityProvider } from '@smithy/types';
+import type { AwsCredentialIdentityProvider } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 interface ClientConfig {
   readonly credentials?: AwsCredentialIdentityProvider;
@@ -75,7 +75,7 @@ export class AwsClients {
       maxAttempts: 2,
     });
 
-    return (await stsClient.send(new GetCallerIdentityCommand())).Account!;
+    return (await stsClient.send(new GetCallerIdentityCommand({}))).Account!;
   }
 
   public async deleteStacks(...stackNames: string[]) {
