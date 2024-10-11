@@ -2,18 +2,39 @@ import { exec as _exec } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { promisify } from 'util';
-import { CloudFormation } from 'aws-sdk';
+import {
+  CreateGeneratedTemplateCommand,
+  DescribeGeneratedTemplateCommand,
+  DescribeResourceScanCommand,
+  DescribeStacksCommand,
+  GetGeneratedTemplateCommand,
+  GetTemplateCommand,
+  ListResourceScanRelatedResourcesCommand,
+  ListResourceScanResourcesCommand,
+  ListResourceScansCommand,
+  ResourceScanStatus,
+  StackStatus,
+  StartResourceScanCommand,
+} from '@aws-sdk/client-cloudformation';
 import * as fs from 'fs-extra';
-import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, TemplateSourceOptions, GenerateTemplateOptions, FromScan } from '../../lib/commands/migrate';
-import { MockSdkProvider, MockedObject, SyncHandlerSubsetOf } from '../util/mock-sdk';
+import {
+  generateCdkApp,
+  generateStack,
+  readFromPath,
+  readFromStack,
+  setEnvironment,
+  parseSourceOptions,
+  generateTemplate,
+  TemplateSourceOptions,
+  GenerateTemplateOptions,
+  FromScan,
+} from '../../lib/commands/migrate';
+import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const exec = promisify(_exec);
 
 describe('Migrate Function Tests', () => {
   let sdkProvider: MockSdkProvider;
-  let getTemplateMock: jest.Mock;
-  let describeStacksMock: jest.Mock;
-  let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
 
   const testResourcePath = [__dirname, 'test-resources'];
   const templatePath = [...testResourcePath, 'templates'];
@@ -27,26 +48,32 @@ describe('Migrate Function Tests', () => {
 
   beforeEach(async () => {
     sdkProvider = new MockSdkProvider();
-    getTemplateMock = jest.fn();
-    describeStacksMock = jest.fn();
-    cfnMocks = { getTemplate: getTemplateMock, describeStacks: describeStacksMock };
-    sdkProvider.stubCloudFormation(cfnMocks as any);
   });
 
   test('parseSourceOptions throws if both --from-path and --from-stack is provided', () => {
-    expect(() => parseSourceOptions('any-value', true, 'my-awesome-stack')).toThrowError('Only one of `--from-path` or `--from-stack` may be provided.');
+    expect(() => parseSourceOptions('any-value', true, 'my-awesome-stack')).toThrowError(
+      'Only one of `--from-path` or `--from-stack` may be provided.',
+    );
   });
 
   test('parseSourceOptions returns from-scan when neither --from-path or --from-stack are provided', () => {
-    expect(parseSourceOptions(undefined, undefined, 'my-stack-name')).toStrictEqual({ source: TemplateSourceOptions.SCAN });
+    expect(parseSourceOptions(undefined, undefined, 'my-stack-name')).toStrictEqual({
+      source: TemplateSourceOptions.SCAN,
+    });
   });
 
   test('parseSourceOptions does not throw when only --from-path is supplied', () => {
-    expect(parseSourceOptions('my-file-path', undefined, 'my-stack-name')).toStrictEqual({ source: TemplateSourceOptions.PATH, templatePath: 'my-file-path' });
+    expect(parseSourceOptions('my-file-path', undefined, 'my-stack-name')).toStrictEqual({
+      source: TemplateSourceOptions.PATH,
+      templatePath: 'my-file-path',
+    });
   });
 
   test('parseSourceOptions does now throw when only --from-stack is provided', () => {
-    expect(parseSourceOptions(undefined, true, 'my-stack-name')).toStrictEqual({ source: TemplateSourceOptions.STACK, stackName: 'my-stack-name' });
+    expect(parseSourceOptions(undefined, true, 'my-stack-name')).toStrictEqual({
+      source: TemplateSourceOptions.STACK,
+      stackName: 'my-stack-name',
+    });
   });
 
   test('readFromPath produces a string representation of the template at a given path', () => {
@@ -64,43 +91,72 @@ describe('Migrate Function Tests', () => {
 
   test('readFromStack produces a string representation of the template retrieved from CloudFormation', async () => {
     const template = fs.readFileSync(validTemplatePath, { encoding: 'utf-8' });
-    getTemplateMock.mockImplementation(() => ({
-      TemplateBody: template,
-    }));
+    mockCloudFormationClient
+      .on(GetTemplateCommand)
+      .resolves({
+        TemplateBody: template,
+      })
+      .on(DescribeStacksCommand)
+      .resolves({
+        Stacks: [
+          {
+            StackName: 'this-one',
+            StackStatus: StackStatus.CREATE_COMPLETE,
+            CreationTime: new Date(),
+          },
+        ],
+      });
 
-    describeStacksMock.mockImplementation(() => ({
-      Stacks: [
-        {
-          StackName: 'this-one',
-          StackStatus: 'CREATE_COMPLETE',
-        },
-      ],
-    }));
-
-    expect(await readFromStack('this-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-what...' })).toEqual(JSON.stringify(JSON.parse(template)));
+    expect(
+      await readFromStack('this-one', sdkProvider, {
+        account: '123456789012',
+        region: 'here',
+        name: 'hello-my-name-is-what...',
+      }),
+    ).toEqual(JSON.stringify(JSON.parse(template)));
   });
 
   test('readFromStack throws error when no stack exists with the stack name in the account and region', async () => {
-    describeStacksMock.mockImplementation(() => { throw new Error('No stack. This did not go well.'); });
-    await expect(() => readFromStack('that-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-who...' })).rejects.toThrow('No stack. This did not go well.');
+    const error = new Error('No stack. This did not go well.');
+    mockCloudFormationClient.on(DescribeStacksCommand).rejects(error);
+    await expect(() =>
+      readFromStack('that-one', sdkProvider, {
+        account: '123456789012',
+        region: 'here',
+        name: 'hello-my-name-is-who...',
+      }),
+    ).rejects.toThrow('No stack. This did not go well.');
   });
 
   test('readFromStack throws error when stack exists but the status is not healthy', async () => {
-    describeStacksMock.mockImplementation(() => ({
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
       Stacks: [
         {
           StackName: 'this-one',
-          StackStatus: 'CREATE_FAILED',
+          StackStatus: StackStatus.CREATE_FAILED,
           StackStatusReason: 'Something went wrong',
+          CreationTime: new Date(),
         },
       ],
-    }));
+    });
 
-    await expect(() => readFromStack('that-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-chicka-chicka...' })).rejects.toThrow('Stack \'that-one\' in account num and region here has a status of \'CREATE_FAILED\' due to \'Something went wrong\'. The stack cannot be migrated until it is in a healthy state.');
+    await expect(() =>
+      readFromStack('that-one', sdkProvider, {
+        account: '123456789012',
+        region: 'here',
+        name: 'hello-my-name-is-chicka-chicka...',
+      }),
+    ).rejects.toThrow(
+      "Stack 'that-one' in account 123456789012 and region here has a status of 'CREATE_FAILED' due to 'Something went wrong'. The stack cannot be migrated until it is in a healthy state.",
+    );
   });
 
   test('setEnvironment sets account and region when provided', () => {
-    expect(setEnvironment('my-account', 'somewhere')).toEqual({ account: 'my-account', region: 'somewhere', name: 'cdk-migrate-env' });
+    expect(setEnvironment('my-account', 'somewhere')).toEqual({
+      account: 'my-account',
+      region: 'somewhere',
+      name: 'cdk-migrate-env',
+    });
   });
 
   test('serEnvironment uses default account and region when not provided', () => {
@@ -134,11 +190,15 @@ describe('Migrate Function Tests', () => {
   });
 
   test('generateStack throws error when called for other language', () => {
-    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError('BadBadBadStack could not be generated because php is not a supported language');
+    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError(
+      'BadBadBadStack could not be generated because php is not a supported language',
+    );
   });
 
   test('generateStack throws error for invalid resource property', () => {
-    expect(() => generateStack(invalidTemplate, 'VeryBad', 'typescript')).toThrow('VeryBadStack could not be generated because ReadEndpoint is not a valid property for resource RDSCluster of type AWS::RDS::DBCluster');
+    expect(() => generateStack(invalidTemplate, 'VeryBad', 'typescript')).toThrow(
+      'VeryBadStack could not be generated because ReadEndpoint is not a valid property for resource RDSCluster of type AWS::RDS::DBCluster',
+    );
   });
 
   cliTest('generateCdkApp generates the expected cdk app when called for typescript', async (workDir) => {
@@ -152,11 +212,21 @@ describe('Migrate Function Tests', () => {
 
     // Replaced stack file is referenced correctly in app file
     const app = fs.readFileSync(path.join(workDir, 'GoodTypeScript', 'bin', 'good_type_script.ts'), 'utf8').split('\n');
-    expect(app.map(line => line.match('import { GoodTypeScriptStack } from \'../lib/good_type_script-stack\';')).filter(line => line).length).toEqual(1);
-    expect(app.map(line => line.match(/new GoodTypeScriptStack\(app, \'GoodTypeScript\', \{/)).filter(line => line).length).toEqual(1);
+    expect(
+      app
+        .map((line) => line.match("import { GoodTypeScriptStack } from '../lib/good_type_script-stack';"))
+        .filter((line) => line).length,
+    ).toEqual(1);
+    expect(
+      app.map((line) => line.match(/new GoodTypeScriptStack\(app, \'GoodTypeScript\', \{/)).filter((line) => line)
+        .length,
+    ).toEqual(1);
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodTypeScript', 'lib', 'good_type_script-stack.ts'), 'utf8');
+    const replacedStack = fs.readFileSync(
+      path.join(workDir, 'GoodTypeScript', 'lib', 'good_type_script-stack.ts'),
+      'utf8',
+    );
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3-stack.ts'), 'utf8'));
   });
 
@@ -183,11 +253,19 @@ describe('Migrate Function Tests', () => {
 
     // Replaced stack file is referenced correctly in app file
     const app = fs.readFileSync(path.join(workDir, 'GoodPython', 'app.py'), 'utf8').split('\n');
-    expect(app.map(line => line.match('from good_python.good_python_stack import GoodPythonStack')).filter(line => line).length).toEqual(1);
-    expect(app.map(line => line.match(/GoodPythonStack\(app, "GoodPython",/)).filter(line => line).length).toEqual(1);
+    expect(
+      app.map((line) => line.match('from good_python.good_python_stack import GoodPythonStack')).filter((line) => line)
+        .length,
+    ).toEqual(1);
+    expect(app.map((line) => line.match(/GoodPythonStack\(app, "GoodPython",/)).filter((line) => line).length).toEqual(
+      1,
+    );
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodPython', 'good_python', 'good_python_stack.py'), 'utf8');
+    const replacedStack = fs.readFileSync(
+      path.join(workDir, 'GoodPython', 'good_python', 'good_python_stack.py'),
+      'utf8',
+    );
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3_stack.py'), 'utf8'));
   });
 
@@ -197,16 +275,29 @@ describe('Migrate Function Tests', () => {
 
     // Packages exist in the correct spot
     expect(fs.pathExistsSync(path.join(workDir, 'GoodJava', 'pom.xml'))).toBeTruthy();
-    expect(fs.pathExistsSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaApp.java'))).toBeTruthy();
-    expect(fs.pathExistsSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaStack.java'))).toBeTruthy();
+    expect(
+      fs.pathExistsSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaApp.java')),
+    ).toBeTruthy();
+    expect(
+      fs.pathExistsSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaStack.java')),
+    ).toBeTruthy();
 
     // Replaced stack file is referenced correctly in app file
-    const app = fs.readFileSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaApp.java'), 'utf8').split('\n');
-    expect(app.map(line => line.match('public class GoodJavaApp {')).filter(line => line).length).toEqual(1);
-    expect(app.map(line => line.match(/        new GoodJavaStack\(app, "GoodJava", StackProps.builder()/)).filter(line => line).length).toEqual(1);
+    const app = fs
+      .readFileSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaApp.java'), 'utf8')
+      .split('\n');
+    expect(app.map((line) => line.match('public class GoodJavaApp {')).filter((line) => line).length).toEqual(1);
+    expect(
+      app
+        .map((line) => line.match(/        new GoodJavaStack\(app, "GoodJava", StackProps.builder()/))
+        .filter((line) => line).length,
+    ).toEqual(1);
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaStack.java'), 'utf8');
+    const replacedStack = fs.readFileSync(
+      path.join(workDir, 'GoodJava', 'src', 'main', 'java', 'com', 'myorg', 'GoodJavaStack.java'),
+      'utf8',
+    );
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.java'), 'utf8'));
   });
 
@@ -220,12 +311,21 @@ describe('Migrate Function Tests', () => {
     expect(fs.pathExistsSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'))).toBeTruthy();
 
     // Replaced stack file is referenced correctly in app file
-    const app = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'Program.cs'), 'utf8').split('\n');
-    expect(app.map(line => line.match('namespace GoodCSharp')).filter(line => line).length).toEqual(1);
-    expect(app.map(line => line.match(/        new GoodCSharpStack\(app, "GoodCSharp", new GoodCSharpStackProps/)).filter(line => line).length).toEqual(1);
+    const app = fs
+      .readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'Program.cs'), 'utf8')
+      .split('\n');
+    expect(app.map((line) => line.match('namespace GoodCSharp')).filter((line) => line).length).toEqual(1);
+    expect(
+      app
+        .map((line) => line.match(/        new GoodCSharpStack\(app, "GoodCSharp", new GoodCSharpStackProps/))
+        .filter((line) => line).length,
+    ).toEqual(1);
 
     // Replaced stack file is correctly generated
-    const replacedStack = fs.readFileSync(path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'), 'utf8');
+    const replacedStack = fs.readFileSync(
+      path.join(workDir, 'GoodCSharp', 'src', 'GoodCSharp', 'GoodCSharpStack.cs'),
+      'utf8',
+    );
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 'S3Stack.cs'), 'utf8'));
   });
 
@@ -235,8 +335,16 @@ describe('Migrate Function Tests', () => {
 
     expect(fs.pathExists(path.join(workDir, 's3.go'))).toBeTruthy();
     const app = fs.readFileSync(path.join(workDir, 'GoodGo', 'good_go.go'), 'utf8').split('\n');
-    expect(app.map(line => line.match(/func NewGoodGoStack\(scope constructs.Construct, id string, props \*GoodGoStackProps\) \*GoodGoStack \{/)).filter(line => line).length).toEqual(1);
-    expect(app.map(line => line.match(/    NewGoodGoStack\(app, "GoodGo", &GoodGoStackProps\{/)));
+    expect(
+      app
+        .map((line) =>
+          line.match(
+            /func NewGoodGoStack\(scope constructs.Construct, id string, props \*GoodGoStackProps\) \*GoodGoStack \{/,
+          ),
+        )
+        .filter((line) => line).length,
+    ).toEqual(1);
+    expect(app.map((line) => line.match(/    NewGoodGoStack\(app, "GoodGo", &GoodGoStackProps\{/)));
   });
 
   cliTest('generatedCdkApp generates a zip file when --compress is used', async (workDir) => {
@@ -276,7 +384,7 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
 
 describe('generateTemplate', () => {
   let sdkProvider: MockSdkProvider;
-  let cloudFormationMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+  restoreSdkMocksToDefault();
   const sampleResource = {
     ResourceType: 'AWS::S3::Bucket',
     ManagedByStack: true,
@@ -333,41 +441,45 @@ describe('generateTemplate', () => {
 
   beforeEach(() => {
     sdkProvider = new MockSdkProvider();
-    cloudFormationMocks = {
-      startResourceScan: jest.fn(),
-      listResourceScans: jest.fn(),
-      describeResourceScan: jest.fn(),
-      listResourceScanResources: jest.fn(),
-      createGeneratedTemplate: jest.fn(),
-      describeGeneratedTemplate: jest.fn(),
-      getGeneratedTemplate: jest.fn(),
-      listResourceScanRelatedResources: jest.fn(),
-      config: {
-        getCredentials: jest.fn(),
-        getToken: jest.fn(),
-        loadFromPath: jest.fn(),
-        update: jest.fn(),
-        getPromisesDependency: jest.fn(),
-        setPromisesDependency: jest.fn(),
-        customUserAgent: 'cdk-migrate',
-      },
-    };
-
-    sdkProvider.stubCloudFormation(cloudFormationMocks as any);
+    mockCloudFormationClient
+      .on(StartResourceScanCommand)
+      .resolves({
+        ResourceScanId: scanId,
+      })
+      .on(ListResourceScansCommand)
+      .resolves({
+        ResourceScanSummaries: [
+          { ResourceScanId: scanId, Status: ResourceScanStatus.COMPLETE, PercentageCompleted: 100 },
+        ],
+      })
+      .on(DescribeResourceScanCommand)
+      .resolves({
+        Status: 'COMPLETE',
+      })
+      .on(ListResourceScanResourcesCommand)
+      .resolves({
+        Resources: [sampleResource2],
+      })
+      .on(CreateGeneratedTemplateCommand)
+      .resolves({
+        GeneratedTemplateId: 'template-arn',
+      })
+      .on(DescribeGeneratedTemplateCommand)
+      .resolves({
+        Status: 'COMPLETE',
+        Resources: [sampleResource, sampleResource2],
+      })
+      .on(GetGeneratedTemplateCommand)
+      .resolves({
+        TemplateBody: 'template-body',
+      })
+      .on(ListResourceScanRelatedResourcesCommand)
+      .resolves({
+        RelatedResources: [sampleResource],
+      });
   });
 
   test('generateTemplate successfully generates template with a new scan', async () => {
-    const resourceScanSummaries = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
-
-    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
-    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
-    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
-    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
-    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
-    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
-    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
-    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
-
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
       filters: [],
@@ -381,18 +493,16 @@ describe('generateTemplate', () => {
   });
 
   test('generateTemplate successfully defaults to latest scan instead of starting a new one', async () => {
-    const resourceScanSummaryComplete = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
-    const resourceScanSummaryInProgress = [{ ResourceScanId: scanId, Status: 'IN_PROGRESS', PercentageCompleted: 50 }];
-
-    cloudFormationMocks.startResourceScan!.mockImplementation(() => { throw new Error('No >:('); });
-    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryInProgress });
-    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryComplete });
-    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
-    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
-    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
-    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
-    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
-    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource2] });
+    mockCloudFormationClient
+      .on(StartResourceScanCommand)
+      .rejects('No >:(')
+      .on(ListResourceScansCommand)
+      .resolvesOnce({
+        ResourceScanSummaries: [{ ResourceScanId: scanId, Status: 'IN_PROGRESS', PercentageCompleted: 50 }],
+      })
+      .resolves({
+        ResourceScanSummaries: [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }],
+      });
 
     const opts = {
       stackName: stackName,
@@ -406,9 +516,9 @@ describe('generateTemplate', () => {
   });
 
   test('generateTemplate throws an error when from-scan most-recent is passed but no scans are found.', async () => {
-    const resourceScanSummaries: CloudFormation.ResourceScanSummary[] = [];
-
-    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
+    mockCloudFormationClient.on(ListResourceScansCommand).resolves({
+      ResourceScanSummaries: [],
+    });
 
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
@@ -417,21 +527,12 @@ describe('generateTemplate', () => {
       sdkProvider: sdkProvider,
       environment: environment,
     };
-    await expect(generateTemplate(opts)).rejects.toThrow('No scans found. Please either start a new scan with the `--from-scan` new or do not specify a `--from-scan` option.');
+    await expect(generateTemplate(opts)).rejects.toThrow(
+      'No scans found. Please either start a new scan with the `--from-scan` new or do not specify a `--from-scan` option.',
+    );
   });
 
   test('generateTemplate throws an error when an invalid key is passed in the filters', async () => {
-    const resourceScanSummaries = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
-
-    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
-    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
-    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
-    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
-    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
-    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE' });
-    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
-    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
-
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
       filters: ['invalid-key=invalid-value'],
@@ -443,20 +544,6 @@ describe('generateTemplate', () => {
   });
 
   test('generateTemplate defaults to starting a new scan when no options are provided', async () => {
-    const resourceScanSummaryComplete = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
-    const resourceScanSummaryInProgress = [{ ResourceScanId: scanId, Status: 'IN_PROGRESS', PercentageCompleted: 50 }];
-
-    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
-    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: undefined });
-    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryInProgress });
-    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryComplete });
-    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
-    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
-    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
-    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
-    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
-    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
-
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
       sdkProvider: sdkProvider,
@@ -464,21 +551,10 @@ describe('generateTemplate', () => {
     };
     const template = await generateTemplate(opts);
     expect(template).toEqual(defaultExpectedResult);
-    expect(cloudFormationMocks.startResourceScan).toHaveBeenCalled();
+    expect(mockCloudFormationClient).toHaveReceivedCommand(StartResourceScanCommand);
   });
 
   test('generateTemplate successfully generates templates with valid filter options', async () => {
-    const resourceScanSummaries = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
-
-    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
-    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
-    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
-    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
-    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
-    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
-    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
-    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
-
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
       filters: ['type=AWS::S3::Bucket,identifier={"my-key":"my-bucket"}', 'type=AWS::EC2::Instance'],
@@ -488,5 +564,4 @@ describe('generateTemplate', () => {
     const template = await generateTemplate(opts);
     expect(template).toEqual(defaultExpectedResult);
   });
-
 });

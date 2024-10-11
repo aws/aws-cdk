@@ -1,5 +1,4 @@
-import * as aws from 'aws-sdk';
-
+import type { AwsCredentialIdentity } from '@smithy/types';
 export enum Mode {
   ForReading,
   ForWriting,
@@ -27,5 +26,5 @@ export interface CredentialProviderSource {
    *
    * Guaranteed to be called only if canProvideCredentails() returned true at some point.
    */
-  getProvider(accountId: string, mode: Mode): Promise<aws.Credentials>;
+  getProvider(accountId: string, mode: Mode): Promise<AwsCredentialIdentity>;
 }
