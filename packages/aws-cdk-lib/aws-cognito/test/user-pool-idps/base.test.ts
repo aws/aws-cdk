@@ -39,7 +39,6 @@ describe('UserPoolIdentityProvider', () => {
         attributeMapping: {
           givenName: ProviderAttribute.FACEBOOK_NAME,
           birthdate: ProviderAttribute.FACEBOOK_BIRTHDAY,
-          emailVerified: ProviderAttribute.other('email_verified'),
         },
       });
 
