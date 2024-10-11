@@ -1599,7 +1599,6 @@ export class InstanceType {
       [InstanceClass.GRAPHICS5_GRAVITON2]: 'g5g',
       [InstanceClass.G5G]: 'g5g',
       [InstanceClass.GRAPHICS6]: 'g6',
-      [InstanceClass.G6E]: 'g6e',
       [InstanceClass.G6]: 'g6',
       [InstanceClass.GRAPHICS6_EFFICIENT]: 'g6e',
       [InstanceClass.G6E]: 'g6e',
