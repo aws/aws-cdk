@@ -242,32 +242,46 @@ This is an example of how to create a VPC peering connection between two VPCs. T
 Create a restrictive IAM role in the acceptor VPC account. This role will be used to grant limited permissions for accepting the peering request from the requestor account.
 
 ```ts
+// Step 1: Acceptor Account Stack
 const stack = new Stack();
 
 const acceptorVpc = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
 
-const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('111')
+const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('987654321098')
 ```
 
 **Step 2: Requestor Account Stack**
 
 Initiate the peering connection request from the requestor VPC.
 
-```ts
-const peeringConnection = new VPCPeeringConnection(this, 'crossAccountCrossRegionPeering', {
-  requestorVpc: acceptorVpc,
-  acceptorVpc: requestorVpc,
-  peerRoleArn: acceptorRoleArn,
-});
-```
-
 **Step 3: Route Table Configuration**
 
 Update route tables in both VPCs to enable traffic flow. If a route is added to the requestor stack, information will be able to flow from the requestor VPC to the acceptor VPC, but not in the reverse direction. For bi-directional communication, routes need to be added in both VPCs from their respective stacks.
 
 ```ts
+// Step 2: Requestor Account Stack
+const stack = new Stack();
+
+// TODO: Import acceptorVpc into the requestor stack
+const acceptorVpc = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const acceptorRoleArn = 'arn:aws:iam::123456789012:role/VpcPeeringRole';
+
+const requestorVpc = new VpcV2(this, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const peeringConnection = new VPCPeeringConnection(this, 'crossAccountCrossRegionPeering', {
+  requestorVpc: requestorVpc,
+  acceptorVpc: acceptorVpc,
+  peerRoleArn: acceptorRoleArn,
+});
+
+// Step 3: Route Table Configuration
 const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: requestorVpc,
 });
