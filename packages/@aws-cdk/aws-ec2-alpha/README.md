@@ -235,37 +235,45 @@ new Route(this, 'DynamoDBRoute', {
 
 VPC peering connection allows you to connect two VPCs and route traffic between them using private IP addresses. The VpcV2 construct supports creating VPC peering connections through the `VPCPeeringConnection` construct from the `route` module.
 
-Here's an example of how to create a VPC peering connection between two VPCs:
-<!-- 
+This is an example of how to create a VPC peering connection between two VPCs. The process involves 3 main steps:
+
+1. **Acceptor Account Stack**
+
+Create a restrictive IAM role in the acceptor VPC account. This role will be used to grant limited permissions for accepting the peering request from the requestor account.
+
 ```ts
 const stack = new Stack();
 
-const vpcA = new VpcV2(this, 'VpcA', {
+const acceptorVpc = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
 
-const vpcB = new VpcV2(this, 'VpcB', {
-  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
-});
+const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('111')
+```
 
+2. **Requestor Account Stack**
+
+Initiate the peering connection request from the requestor VPC.
+
+```ts
 const peeringConnection = new VPCPeeringConnection(this, 'crossAccountCrossRegionPeering', {
-  isCrossAccount: true,
-  requestorVpc: vpcA,
-  acceptorVpc: vpcB,
-  acceptorAccountId: '123456789012',
-  acceptorRegion: 'us-west-2',
+  requestorVpc: acceptorVpc,
+  acceptorVpc: requestorVpc,
+  peerRoleArn: acceptorRoleArn,
 });
+```
 
+3. **Route Table Configuration**
+
+Update route tables in both VPCs to enable traffic flow. If a route is added to the requestor stack, information will be able to flow from the requestor VPC to the acceptor VPC, but not in the reverse direction. For bi-directional communication, routes need to be added in both VPCs from their respective stacks.
+
+```ts
 const routeTable = new RouteTable(this, 'RouteTable', {
-  vpc: vpcA,
+  vpc: requestorVpc,
 });
 
 routeTable.addRoute('vpcPeeringRoute', '10.0.0.0/16', { gateway: peeringConnection });
-``` -->
-
-Note that for cross-account peering, you'll need to ensure that the peering request is accepted in the peer account. For more information see [Accept or reject a VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/accept-vpc-peering-connection.html).
-
-To add routes for the peering connection to specific subnets, you can use the addRoute method of the RouteTable construct.
+```
 
 ## Adding Egress-Only Internet Gateway to VPC
 
