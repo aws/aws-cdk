@@ -160,13 +160,12 @@ export class S3ObjectsItemReader implements IItemReader {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    if (!this._bucket) return [];
     return [
       new iam.PolicyStatement({
         actions: [
           's3:ListBucket',
         ],
-        resources: [this._bucket.bucketArn],
+        resources: [this._bucket ? this._bucket.bucketArn : '*'],
       }),
     ];
   }
