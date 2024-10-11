@@ -306,6 +306,12 @@
         "aws-cdk-routev2-virtualprivategw-alpha.assets"
       ],
       "metadata": {
+        "/aws-cdk-routev2-virtualprivategw-alpha": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "No subnets matching selection: '[]'. Select other subnets to add routes to. [ack: @aws-cdk:aws-ec2-elpha:enableVpnGatewayV2]"
+          }
+        ],
         "/aws-cdk-routev2-virtualprivategw-alpha/vpgw/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -340,12 +346,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "vpgwSubnetRouteTableAssociation49921F90"
-          }
-        ],
-        "/aws-cdk-routev2-virtualprivategw-alpha/testVPGW": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "No subnets matching selection: '[]'. Select other subnets to add routes to. [ack: @aws-cdk:aws-ec2-elpha:enableVpnGatewayV2]"
           }
         ],
         "/aws-cdk-routev2-virtualprivategw-alpha/testVPGW/IGW": [
@@ -687,7 +687,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4fc8e38f9f8c75b7937e32a2d8924346cf1648878ab74ccf8083f3c7958cf89a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/247a442d4f157f616d8ab3238140453b7c58c3b66472c23fc213101c15b136d2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -716,6 +716,12 @@
             "data": "vpcpcAmazonIpv66504EEB2"
           }
         ],
+        "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/crossAccountCrossRegionPeering/VPCPeeringConnection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8"
+          }
+        ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/TestRoottable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
@@ -740,22 +746,16 @@
             "data": "secondVPCTempBlock7F6107B6"
           }
         ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/crossAccountCrossRegionPeering/PeerRole/Resource": [
+        "/aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "crossAccountCrossRegionPeeringPeerRoleA26F8D4F"
+            "data": "secondVPCVpcPeeringRoleB5D6E33D"
           }
         ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/crossAccountCrossRegionPeering/PeerRole/DefaultPolicy/Resource": [
+        "/aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "crossAccountCrossRegionPeeringPeerRoleDefaultPolicy4F428B82"
-          }
-        ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/crossAccountCrossRegionPeering/PeeringConnection": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "crossAccountCrossRegionPeeringPeeringConnection1503A608"
+            "data": "secondVPCVpcPeeringRoleDefaultPolicy2274B424"
           }
         ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/BootstrapVersion": [

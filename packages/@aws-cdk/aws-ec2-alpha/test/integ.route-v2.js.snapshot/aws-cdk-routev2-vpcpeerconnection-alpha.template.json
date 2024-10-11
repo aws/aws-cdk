@@ -21,6 +21,26 @@
     }
    }
   },
+  "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerOwnerId": "012345678910",
+    "PeerRegion": "us-west-2",
+    "PeerRoleArn": "arn:aws:iam::012345678910:role/VpcPeeringRole",
+    "PeerVpcId": {
+     "Fn::GetAtt": [
+      "secondVPCFBB45262",
+      "VpcId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   }
+  },
   "TestRoottableRouteTableFA28AA38": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
@@ -44,15 +64,13 @@
     },
     "VpcPeeringConnectionId": {
      "Fn::GetAtt": [
-      "crossAccountCrossRegionPeeringPeeringConnection1503A608",
+      "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8",
       "Id"
      ]
     }
    },
    "DependsOn": [
-    "crossAccountCrossRegionPeeringPeeringConnection1503A608",
-    "crossAccountCrossRegionPeeringPeerRoleDefaultPolicy4F428B82",
-    "crossAccountCrossRegionPeeringPeerRoleA26F8D4F"
+    "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8"
    ]
   },
   "secondVPCFBB45262": {
@@ -76,7 +94,7 @@
     }
    }
   },
-  "crossAccountCrossRegionPeeringPeerRoleA26F8D4F": {
+  "secondVPCVpcPeeringRoleB5D6E33D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -93,11 +111,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+           ":iam::987654321098:root"
           ]
          ]
         }
@@ -106,16 +120,17 @@
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "VPCPeeringRole-crossAccountCrossRegionPeering"
+    "Description": "Restrictive role for VPC peering",
+    "RoleName": "VpcPeeringRole"
    }
   },
-  "crossAccountCrossRegionPeeringPeerRoleDefaultPolicy4F428B82": {
+  "secondVPCVpcPeeringRoleDefaultPolicy2274B424": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "ec2:acceptVpcPeeringConnection",
+       "Action": "ec2:AcceptVpcPeeringConnection",
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
@@ -125,7 +140,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ec2:us-west-2:123456789012:vpc/",
+          ":ec2:us-west-2:012345678910:vpc/",
           {
            "Fn::GetAtt": [
             "secondVPCFBB45262",
@@ -137,7 +152,7 @@
        }
       },
       {
-       "Action": "ec2:acceptVpcPeeringConnection",
+       "Action": "ec2:AcceptVpcPeeringConnection",
        "Condition": {
         "StringEquals": {
          "ec2:AccepterVpc": {
@@ -148,7 +163,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":ec2:us-west-2:123456789012:vpc/",
+            ":ec2:us-west-2:012345678910:vpc/",
             {
              "Fn::GetAtt": [
               "secondVPCFBB45262",
@@ -169,7 +184,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ec2:us-west-2:123456789012:vpc-peering-connection/*"
+          ":ec2:us-west-2:012345678910:vpc-peering-connection/*"
          ]
         ]
        }
@@ -177,37 +192,12 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "crossAccountCrossRegionPeeringPeerRoleDefaultPolicy4F428B82",
+    "PolicyName": "secondVPCVpcPeeringRoleDefaultPolicy2274B424",
     "Roles": [
      {
-      "Ref": "crossAccountCrossRegionPeeringPeerRoleA26F8D4F"
+      "Ref": "secondVPCVpcPeeringRoleB5D6E33D"
      }
     ]
-   }
-  },
-  "crossAccountCrossRegionPeeringPeeringConnection1503A608": {
-   "Type": "AWS::EC2::VPCPeeringConnection",
-   "Properties": {
-    "PeerOwnerId": "123456789012",
-    "PeerRegion": "us-west-2",
-    "PeerRoleArn": {
-     "Fn::GetAtt": [
-      "crossAccountCrossRegionPeeringPeerRoleA26F8D4F",
-      "Arn"
-     ]
-    },
-    "PeerVpcId": {
-     "Fn::GetAtt": [
-      "secondVPCFBB45262",
-      "VpcId"
-     ]
-    },
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpc6CAE1A04",
-      "VpcId"
-     ]
-    }
    }
   }
  },

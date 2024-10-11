@@ -398,4 +398,21 @@ describe('Vpc V2 with full control', () => {
     }).toThrow('The VPN Gateway has already been enabled.');
   });
 
+  test('createAcceptorVpcRole creates a restricted role', () => {
+    myVpc.createAcceptorVpcRole('123456789012');
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
 });
