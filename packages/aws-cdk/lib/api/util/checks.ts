@@ -58,7 +58,6 @@ async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promise<Boot
     let bucketName: string | undefined;
     const resourcesResponse = await cfn.describeStackResources({ StackName: stackName }).promise();
     const bucketResource = resourcesResponse.StackResources?.find(resource =>
-      resource.LogicalResourceId === 'StagingBucket' &&
       resource.ResourceType === 'AWS::S3::Bucket',
     );
     bucketName = bucketResource?.PhysicalResourceId;
