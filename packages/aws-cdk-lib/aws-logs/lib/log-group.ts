@@ -626,18 +626,18 @@ export class LogGroup extends LogGroupBase {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
     }
 
-    const dataProtectionPolicy =  props.dataProtectionPolicy?._bind(this) || null;
+    const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this) || null;
     const resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,
       dataProtectionPolicy: dataProtectionPolicy ? {
-          Name: dataProtectionPolicy?.name,
-          Description: dataProtectionPolicy?.description,
-          Version: dataProtectionPolicy?.version,
-          Statement: dataProtectionPolicy?.statement,
-          Configuration: dataProtectionPolicy?.configuration,
+        Name: dataProtectionPolicy?.name,
+        Description: dataProtectionPolicy?.description,
+        Version: dataProtectionPolicy?.version,
+        Statement: dataProtectionPolicy?.statement,
+        Configuration: dataProtectionPolicy?.configuration,
       } : undefined,
     });
 
