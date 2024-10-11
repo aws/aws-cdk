@@ -237,7 +237,7 @@ VPC peering connection allows you to connect two VPCs and route traffic between 
 
 This is an example of how to create a VPC peering connection between two VPCs. The process involves 3 main steps:
 
-1. **Acceptor Account Stack**
+**Step 1: Acceptor Account Stack**
 
 Create a restrictive IAM role in the acceptor VPC account. This role will be used to grant limited permissions for accepting the peering request from the requestor account.
 
@@ -251,7 +251,7 @@ const acceptorVpc = new VpcV2(this, 'VpcA', {
 const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('111')
 ```
 
-2. **Requestor Account Stack**
+**Step 2: Requestor Account Stack**
 
 Initiate the peering connection request from the requestor VPC.
 
@@ -263,7 +263,7 @@ const peeringConnection = new VPCPeeringConnection(this, 'crossAccountCrossRegio
 });
 ```
 
-3. **Route Table Configuration**
+**Step 3: Route Table Configuration**
 
 Update route tables in both VPCs to enable traffic flow. If a route is added to the requestor stack, information will be able to flow from the requestor VPC to the acceptor VPC, but not in the reverse direction. For bi-directional communication, routes need to be added in both VPCs from their respective stacks.
 
