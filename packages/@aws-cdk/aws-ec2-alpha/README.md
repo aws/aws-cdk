@@ -275,11 +275,10 @@ const requestorVpc = new VpcV2(this, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
 });
 
-const peeringConnection = new VPCPeeringConnection(this, 'crossAccountCrossRegionPeering', {
-  requestorVpc: requestorVpc,
+const peeringConnection = requestorVpc.createPeeringConnection('crossAccountCrossRegionPeering', {
   acceptorVpc: acceptorVpc,
   peerRoleArn: acceptorRoleArn,
-});
+})
 
 // Step 3: Route Table Configuration
 const routeTable = new RouteTable(this, 'RouteTable', {
