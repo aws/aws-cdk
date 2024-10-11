@@ -28,7 +28,7 @@ You can only run one test at a time.
 **B) Must be run with `--disable-update-workflow`**\
 The checked-in snapshot uses dummy values that will not deploy.
 
-- Go to your Hosted Zone and write down the values for `HostedZoneId`, `HostedZoneName`, `DomainName`.
+- Go to your Hosted Zone and write down the values for `HostedZoneId`, `HostedZoneName` and `DomainName`.
    All values must related to the **same** Hosted Zone.
 - Go to your AWS Certificate Manager and write down the ARN for the `Certificate`
    The certificate should be attached to a domain name in the **same** Hosted Zone.
