@@ -1004,7 +1004,7 @@ const userpool = new cognito.UserPool(this, 'UserPool', {
 By default deletion protection is disabled.
 
 
-1### `email_verified` Attribute Mapping
+### `email_verified` Attribute Mapping
 
 If you use a third-party identity provider, you can specify the `email_verified` attribute in attributeMapping.
 
