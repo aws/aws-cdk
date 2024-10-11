@@ -305,7 +305,6 @@ export type PrepareChangeSetOptions = {
   sdkProvider: SdkProvider;
   stream: NodeJS.WritableStream;
   parameters: { [name: string]: string | undefined };
-  toolkitStackName?: string;
   resourcesToImport?: ResourcesToImport;
 }
 
@@ -342,12 +341,14 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
 }
 
 /**
- * Returns all file entries from an AssetManifestArtifact. This is used in the
- * `uploadBodyParameterAndCreateChangeSet` function to find all template asset files to build and publish.
+ * Returns all file entries from an AssetManifestArtifact that look like templates.
+ *
+ * This is used in the `uploadBodyParameterAndCreateChangeSet` function to find
+ * all template asset files to build and publish.
  *
  * Returns a tuple of [AssetManifest, FileManifestEntry[]]
  */
-function fileEntriesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): [AssetManifest, FileManifestEntry[]] {
+function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): [AssetManifest, FileManifestEntry[]] {
   const assets: (FileManifestEntry)[] = [];
   const fileName = artifact.file;
   const assetManifest = AssetManifest.fromFile(fileName);
@@ -365,25 +366,7 @@ function fileEntriesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtif
 
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
-    for (const artifact of options.stack.dependencies) {
-      // Skip artifact if it is not an Asset Manifest Artifact
-      if (!cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-        continue;
-      }
-
-      // Build and publish each file entry of the Asset Manifest Artifact:
-      const [assetManifest, file_entries] = fileEntriesFromAssetManifestArtifact(artifact);
-      for (const entry of file_entries) {
-        await options.deployments.buildSingleAsset(artifact, assetManifest, entry, {
-          stack: options.stack,
-          toolkitStackName: options.toolkitStackName,
-        });
-        await options.deployments.publishSingleAsset(assetManifest, entry, {
-          stack: options.stack,
-          toolkitStackName: options.toolkitStackName,
-        });
-      }
-    }
+    await uploadStackTemplateAssets(options.stack, options.deployments);
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
 
     const bodyParameter = await makeBodyParameter(
@@ -416,6 +399,33 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
     options.stream.write('Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n');
 
     return undefined;
+  }
+}
+
+/**
+ * Uploads the assets that look like templates for this CloudFormation stack
+ *
+ * This is necessary for any CloudFormation call that needs the template, it may need
+ * to be uploaded to an S3 bucket first. We have to follow the instructions in the
+ * asset manifest, because technically that is the only place that knows about
+ * bucket and assumed roles and such.
+ */
+export async function uploadStackTemplateAssets(stack: cxapi.CloudFormationStackArtifact, deployments: Deployments) {
+  for (const artifact of stack.dependencies) {
+    // Skip artifact if it is not an Asset Manifest Artifact
+    if (!cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
+      continue;
+    }
+
+    const [assetManifest, file_entries] = templatesFromAssetManifestArtifact(artifact);
+    for (const entry of file_entries) {
+      await deployments.buildSingleAsset(artifact, assetManifest, entry, {
+        stack,
+      });
+      await deployments.publishSingleAsset(assetManifest, entry, {
+        stack,
+      });
+    }
   }
 }
 
