@@ -144,11 +144,11 @@ export interface IVpcV2 extends IVpc {
   addNatGateway(options: NatGatewayOptions): NatGateway;
 
   /**
-   * Adds a new role to VPC account
+   * Adds a new role to acceptor VPC account
    * A cross account role is required for the VPC to peer with another account.
    * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/peer-with-vpc-in-another-account.html}.
    */
-  createAcceptorVpcRole(requestorAccountId: string, acceptorAccountId: string, acceptorVpcRegion: string): Role;
+  createAcceptorVpcRole(requestorAccountId: string): Role;
 
   /**
    * Creates a new peering connection
@@ -486,25 +486,26 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   /**
   * Creates peering connection role for acceptor VPC
   */
-  public createAcceptorVpcRole(requestorAccountId: string, acceptorAccountId: string, acceptorVpcRegion: string): Role {
+  public createAcceptorVpcRole(requestorAccountId: string): Role {
     const peeringRole = new Role(this, 'VpcPeeringRole', {
       assumedBy: new AccountPrincipal(requestorAccountId),
+      roleName: 'VpcPeeringRole',
       description: 'Restrictive role for VPC peering',
     });
 
     peeringRole.addToPolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ['ec2:AcceptVpcPeeringConnection'],
-      resources: [`arn:${Aws.PARTITION}:ec2:${acceptorVpcRegion}:${requestorAccountId}:vpc/${acceptorAccountId}`],
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`],
     }));
 
     peeringRole.addToPolicy(new PolicyStatement({
       actions: ['ec2:AcceptVpcPeeringConnection'],
       effect: Effect.ALLOW,
-      resources: [`arn:${Aws.PARTITION}:ec2:${acceptorVpcRegion}:${requestorAccountId}:vpc-peering-connection/*`],
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc-peering-connection/*`],
       conditions: {
         StringEquals: {
-          'ec2:AccepterVpc': `arn:${Aws.PARTITION}:ec2:${acceptorVpcRegion}:${requestorAccountId}:vpc/${acceptorAccountId}`,
+          'ec2:AccepterVpc': `arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`,
         },
       },
     }));
