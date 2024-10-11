@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.162.1](https://github.com/aws/aws-cdk/compare/v2.162.0...v2.162.1) (2024-10-11)
+
+
+### Bug Fixes
+
+* **cli:** `cdk import` errors with 'S3 error: Access Denied' ([#31727](https://github.com/aws/aws-cdk/issues/31727)) ([5c2787a](https://github.com/aws/aws-cdk/commit/5c2787ab9ee35b36f91d9a2889b92c6ac85e2fcb)), closes [#31597](https://github.com/aws/aws-cdk/issues/31597) [#31716](https://github.com/aws/aws-cdk/issues/31716)
+
 ## [2.162.0](https://github.com/aws/aws-cdk/compare/v2.161.1...v2.162.0) (2024-10-10)
 
 
