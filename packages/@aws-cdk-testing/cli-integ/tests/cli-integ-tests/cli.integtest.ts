@@ -32,6 +32,7 @@ import {
   withCDKMigrateFixture,
   withExtendedTimeoutFixture,
   randomString,
+  withSpecificFixture,
   withoutBootstrap,
 } from '../../lib';
 
@@ -350,6 +351,13 @@ integTest(
     expect(arns.split('\n').length).toEqual(2);
   }),
 );
+
+integTest('doubly nested stack',
+  withDefaultFixture(async (fixture) => {
+    await fixture.cdkDeploy('with-doubly-nested-stack', {
+      captureStderr: false,
+    });
+  }));
 
 integTest(
   'nested stack with parameters',
@@ -1030,6 +1038,64 @@ integTest(
     ).rejects.toThrow('exited with error');
   }),
 );
+
+integTest(
+  'cdk diff with large changeset does not fail',
+  withDefaultFixture(async (fixture) => {
+    // GIVEN - small initial stack with only one IAM role
+    await fixture.cdkDeploy('iam-roles', {
+      modEnv: {
+        NUMBER_OF_ROLES: '1',
+      },
+    });
+
+    // WHEN - adding an additional role with a ton of metadata to create a large diff
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+      verbose: true,
+      modEnv: {
+        NUMBER_OF_ROLES: '2',
+      },
+    });
+
+    // Assert that the CLI assumes the file publishing role:
+    expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+    expect(diff).toContain('success: Published');
+  }),
+);
+
+integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = 'abc1111';
+  const toolkitStackName = 'custom-stack2';
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  // Deploying small initial stack with only one IAM role
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // WHEN - adding a role with a ton of metadata to create a large diff
+  const diff = await fixture.cdk(['diff', '--toolkit-stack-name', toolkitStackName, '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`, fixture.fullStackName('iam-roles')], {
+    verbose: true,
+    modEnv: {
+      NUMBER_OF_ROLES: '2',
+    },
+  });
+
+  // Assert that the CLI assumes the file publishing role:
+  expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+  expect(diff).toContain('success: Published');
+}));
 
 integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
@@ -2260,33 +2326,118 @@ integTest(
   }),
 );
 
-integTest('cdk notices for bootstrap', withDefaultFixture(async (fixture) => {
+integTest(
+  'test cdk rollback',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2a';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Rollback
+      await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'test cdk rollback --force',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2b'; // Fail update and also fail rollback
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Should still fail
+      const rollbackOutput = await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(rollbackOutput).toContain('Failing rollback');
+
+      // Rollback and force cleanup
+      await fixture.cdk(['rollback', '--force'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
 
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
-    notices: [{
-      title: 'Bootstrap stack outdated',
-      issueNumber: 16600,
-      overview: 'Your environments "{resolve:ENVIRONMENTS}" are running an outdated bootstrap stack.',
-      components: [{
-        name: 'bootstrap',
-        version: '<2000',
-      }],
-      schemaVersion: '1',
-    }],
+    notices: [
+      {
+        title: 'Bootstrap 1999 Notice',
+        issueNumber: 4444,
+        overview: 'Overview for Bootstrap 1999 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        components: [
+          {
+            name: 'bootstrap',
+            version: '<1999', // so we include all possible environments
+          },
+        ],
+        schemaVersion: '1',
+      },
+    ],
   };
 
   const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
   await fs.mkdir(cdkCacheDir);
   await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
 
-  const output = await fixture.cdkDeploy('test-2', {
+  const output = await fixture.cdkDeploy('notices', {
     verbose: false,
     modEnv: {
       CDK_HOME: fixture.integTestDir,
     },
   });
 
-  expect(output).toContain('Your environments \"aws://');
+  expect(output).toContain('Overview for Bootstrap 1999 Notice');
+
+  // assert dynamic environments are resolved
+  expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
 
 }));
