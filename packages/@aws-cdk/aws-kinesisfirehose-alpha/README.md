@@ -54,23 +54,21 @@ The above example defines the following resources:
 
 ## Sources
 
-There are two main methods of sourcing input data: Kinesis Data Streams and via a "direct
-put".
+A Kinesis Data Firehose delivery stream can accept data from three main sources: Kinesis Data Streams, Managed Streaming for Apache Kafka (MSK), or via a "direct put" (API calls).
 
 See: [Sending Data to a Delivery Stream](https://docs.aws.amazon.com/firehose/latest/dev/basic-write.html)
 in the *Kinesis Data Firehose Developer Guide*.
 
 ### Kinesis Data Stream
 
-A delivery stream can read directly from a Kinesis data stream as a consumer of the data
-stream. Configure this behaviour by providing a data stream in the `sourceStream`
-property when constructing a delivery stream:
+To use a Kinesis Data Stream as the source of a Kinesis Firehose delivery stream:
 
 ```ts
 declare const destination: firehose.IDestination;
 const sourceStream = new kinesis.Stream(this, 'Source Stream');
+
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  sourceStream: sourceStream,
+  source: new source.KinesisStreamSource(sourceStream),
   destination: destination,
 });
 ```
