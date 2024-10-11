@@ -33,7 +33,7 @@ interface BootstrapStackInfo {
   bootstrapVersion: number;
 }
 
-async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promise<BootstrapStackInfo> {
+export async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promise<BootstrapStackInfo> {
   try {
     const cfn = sdk.cloudFormation();
     const stackResponse = await cfn.describeStacks({ StackName: stackName }).promise();
