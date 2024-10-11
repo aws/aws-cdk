@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.161.1](https://github.com/aws/aws-cdk/compare/v2.161.0...v2.161.1) (2024-10-05)
+
+
+### Reverts
+
+* feat(cli): cdk rollback ([#31407](https://github.com/aws/aws-cdk/issues/31407)) ([#31657](https://github.com/aws/aws-cdk/issues/31657)) ([29bf223](https://github.com/aws/aws-cdk/commit/29bf2233a33d3ded20639279fa712a5b036fe041))
+
 ## [2.161.0](https://github.com/aws/aws-cdk/compare/v2.160.0...v2.161.0) (2024-10-03)
 
 
