@@ -1,15 +1,15 @@
 {
-  "version": "38.0.1",
+  "version": "36.0.0",
   "files": {
-    "6c722501ab9de71ab86b45204d7be9bdfbd0653c7e7f4e35b063a9679df1d8c1": {
+    "b70afe3fccbab7f6f454145285c729eb91a7254c797c5156812a783b8f6cefd9": {
       "source": {
-        "path": "aws-cdk-elbv2-integ.template.json",
+        "path": "FsxLustreStorageTypeStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6c722501ab9de71ab86b45204d7be9bdfbd0653c7e7f4e35b063a9679df1d8c1.json",
+          "objectKey": "b70afe3fccbab7f6f454145285c729eb91a7254c797c5156812a783b8f6cefd9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
