@@ -333,7 +333,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "867837e91f97aaf9c29d20a4fea18e3f520bb65d84e9bb59ec84058226225ffc.zip"
+     "S3Key": "305ef816d469be820f1dbbfee876dd1758bf6733bee4d3dba76995a755ac145a.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -428,6 +428,16 @@
      ]
     }
    }
+  }
+ },
+ "Outputs": {
+  "AuthorizerId": {
+   "Value": {
+    "Ref": "MyHttpApiUserPoolAuthorizer8754262B"
+   }
+  },
+  "AuthorizationType": {
+   "Value": "JWT"
   }
  },
  "Parameters": {

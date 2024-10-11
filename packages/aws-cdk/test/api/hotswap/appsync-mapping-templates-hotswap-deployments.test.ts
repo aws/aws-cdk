@@ -871,6 +871,89 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
+  silentTest('calls the updateFunction() API with functionId when function is listed on second page', async () => {
+    // GIVEN
+    const mockListFunctions = jest
+      .fn()
+      .mockReturnValueOnce({
+        functions: [{ name: 'other-function', functionId: 'other-functionId' }],
+        nextToken: 'nexttoken',
+      })
+      .mockReturnValueOnce({
+        functions: [{ name: 'my-function', functionId: 'functionId' }],
+      });
+    hotswapMockSdkProvider.stubAppSync({
+      listFunctions: mockListFunctions,
+      updateFunction: mockUpdateFunction,
+    });
+
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        AppSyncFunction: {
+          Type: 'AWS::AppSync::FunctionConfiguration',
+          Properties: {
+            Name: 'my-function',
+            ApiId: 'apiId',
+            DataSourceName: 'my-datasource',
+            FunctionVersion: '2018-05-29',
+            Runtime: 'APPSYNC_JS',
+            Code: 'old test code',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              Runtime: 'APPSYNC_JS',
+              Code: 'new test code',
+            },
+            Metadata: {
+              'aws:asset:path': 'new-path',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult =
+      await hotswapMockSdkProvider.tryHotswapDeployment(
+        hotswapMode,
+        cdkStackArtifact,
+      );
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockListFunctions).toHaveBeenCalledTimes(2);
+    expect(mockListFunctions).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      nextToken: undefined,
+    });
+    expect(mockListFunctions).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      nextToken: 'nexttoken',
+    });
+    expect(mockUpdateFunction).toHaveBeenCalledWith({
+      apiId: 'apiId',
+      dataSourceName: 'my-datasource',
+      functionId: 'functionId',
+      runtime: 'APPSYNC_JS',
+      name: 'my-function',
+      code: 'new test code',
+    });
+  });
+
   silentTest('calls the startSchemaCreation() API when it receives only a definition difference in a graphql schema', async () => {
     // GIVEN
     mockStartSchemaCreation = jest.fn().mockReturnValueOnce({ status: 'SUCCESS' });
