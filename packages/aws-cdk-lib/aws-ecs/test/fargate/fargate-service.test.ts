@@ -1362,7 +1362,7 @@ describe('fargate service', () => {
 
       // THEN
       Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
-    })
+    });
 
     test('no warning if minHealthyPercent set', () => {
       // GIVEN
@@ -1383,7 +1383,7 @@ describe('fargate service', () => {
 
       // THEN
       Annotations.fromStack(stack).hasNoWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
-    })
+    });
   });
 
   describe('when enabling service connect', () => {

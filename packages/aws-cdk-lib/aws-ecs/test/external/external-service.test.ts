@@ -581,7 +581,7 @@ describe('external service', () => {
         type: DeploymentControllerType.EXTERNAL,
       },
       circuitBreaker: { rollback: true },
-      minHealthyPercent: 100 // required to prevent test failure due to warning
+      minHealthyPercent: 100, // required to prevent test failure due to warning
     });
     app.synth();
 
@@ -613,7 +613,7 @@ describe('external service', () => {
     // THEN
     Annotations.fromStack(stack).hasWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
     Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
-  })
+  });
 
   test('no warning if minHealthyPercent set for an external service', () => {
     // GIVEN
@@ -631,12 +631,12 @@ describe('external service', () => {
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
-      minHealthyPercent: 100
+      minHealthyPercent: 100,
     });
 
     // THEN
     Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
     Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
-  })
+  });
 
 });
