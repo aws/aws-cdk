@@ -33,13 +33,5 @@
   },
   "extensions": {
     "recommendations": ["dbaeumer.vscode-eslint", "Orta.vscode-jest"]
-  },
-  "folders": [
-    {
-      "path": "."
-    },
-    {
-      "path": "../cdkApp"
-    }
-  ]
+  }
 }
