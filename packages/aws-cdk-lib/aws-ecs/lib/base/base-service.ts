@@ -708,6 +708,10 @@ export abstract class BaseService extends Resource
       throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
     }
 
+    if (props.minHealthyPercent === undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercent', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705');
+    }
+
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
       // Strip the revision ID from the service's task definition property to
       // prevent new task def revisions in the stack from triggering updates

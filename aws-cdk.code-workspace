@@ -1,5 +1,4 @@
 {
-  "folders": [{ "path": "." }],
   "settings": {
     "jest.jestCommandLine": "node_modules/.bin/jest",
     "jest.autoRun": "off",
@@ -34,5 +33,13 @@
   },
   "extensions": {
     "recommendations": ["dbaeumer.vscode-eslint", "Orta.vscode-jest"]
-  }
+  },
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../cdkApp"
+    }
+  ]
 }
