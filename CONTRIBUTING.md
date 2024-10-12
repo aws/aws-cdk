@@ -661,6 +661,7 @@ CDK integration tests.
     * `fix`: describe the bug (not the solution)
   * Title should be lowercase.
   * No period at the end of the title.
+  * The module name should omit `aws-` where relevant e.g. use `feat(ecs)` instead of `feat(aws-ecs)`.
 
 * Pull request body should describe _motivation_. Think about your code reviewers and what information they need in
   order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
