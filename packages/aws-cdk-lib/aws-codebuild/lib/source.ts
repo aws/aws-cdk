@@ -773,7 +773,7 @@ class GitHubSource extends CommonGithubSource {
   constructor(props: GitHubSourceProps) {
     super(props);
     this.organization = props.repo === undefined ? props.owner : undefined;
-    this.webhookFilters = props.webhookFilters || this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : [];
+    this.webhookFilters = props.webhookFilters ?? this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : [];
     this.sourceLocation = this.organization ? 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION' : `https://github.com/${props.owner}/${props.repo}.git`;
   }
 
