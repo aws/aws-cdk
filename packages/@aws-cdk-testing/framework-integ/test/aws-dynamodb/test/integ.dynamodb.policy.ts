@@ -12,15 +12,15 @@ export class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const doc = new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          actions: ['dynamodb:*'],
-          principals: [new iam.AccountRootPrincipal()],
-          resources: ['*'],
-        }),
-      ],
-    });
+    // const doc = new iam.PolicyDocument({
+    //   statements: [
+    //     new iam.PolicyStatement({
+    //       actions: ['dynamodb:*'],
+    //       principals: [new iam.AccountRootPrincipal()],
+    //       resources: ['*'],
+    //     }),
+    //   ],
+    // });
 
     this.table = new dynamodb.Table(this, 'TableTest1', {
       partitionKey: {
@@ -28,7 +28,7 @@ export class TestStack extends Stack {
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
-      resourcePolicy: doc,
+      // resourcePolicy: doc,
     });
 
     this.table.addToResourcePolicy(new iam.PolicyStatement({
@@ -51,10 +51,7 @@ export class TestStack extends Stack {
       resources: ['*'],
     }));
 
-    // TODO
-    // The following causes a circular depedency issue, which needs investigated
-    //
-    // this.tableTwo.grantReadData(new iam.AccountPrincipal('012345678910'));
+    this.tableTwo.grantReadData(new iam.AccountPrincipal('012345678910'));
   }
 }
 

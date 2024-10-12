@@ -38,29 +38,6 @@
                       "policyDocument": {
                         "Statement": [
                           {
-                            "Action": "dynamodb:*",
-                            "Effect": "Allow",
-                            "Principal": {
-                              "AWS": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":root"
-                                  ]
-                                ]
-                              }
-                            },
-                            "Resource": "*"
-                          },
-                          {
                             "Action": "dynamodb:GetItem",
                             "Effect": "Allow",
                             "Principal": {
