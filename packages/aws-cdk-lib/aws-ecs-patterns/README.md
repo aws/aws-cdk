@@ -112,7 +112,6 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  minHealthyPercent: 100,
   targetGroups: [
     {
       containerPort: 80,
