@@ -87,7 +87,6 @@ const loadBalancedEc2Service = new ecsPatterns.ApplicationMultipleTargetGroupsEc
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  minHealthyPercent: 100,
   targetGroups: [
     {
       containerPort: 80,
@@ -184,7 +183,6 @@ const loadBalancedEc2Service = new ecsPatterns.NetworkMultipleTargetGroupsEc2Ser
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  minHealthyPercent: 100,
   loadBalancers: [
     {
       name: 'lb1',
@@ -227,7 +225,6 @@ const loadBalancedFargateService = new ecsPatterns.NetworkMultipleTargetGroupsFa
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  minHealthyPercent: 100,
   loadBalancers: [
     {
       name: 'lb1',
@@ -748,7 +745,6 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
-  minHealthyPercent: 100,
   enableExecuteCommand: true,
   loadBalancers: [
     {
@@ -821,7 +817,6 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
-  minHealthyPercent: 100,
   enableExecuteCommand: true,
   loadBalancers: [
     {
@@ -976,7 +971,6 @@ const securityGroup = new ec2.SecurityGroup(this, 'SG', { vpc });
 
 const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
   cluster,
-  minHealthyPercent: 100,
   scheduledFargateTaskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
