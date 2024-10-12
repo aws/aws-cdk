@@ -180,6 +180,31 @@ describe('GitHub source', () => {
     });
   });
 
+  test('can create organizational webhook', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'GITHUB',
+        Location: 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION',
+      },
+      Triggers: {
+        ScopeConfiguration: {
+          Name: 'testowner',
+        },
+      },
+    });
+  });
+
   test('can be added to a CodePipeline', () => {
     const stack = new cdk.Stack();
     const project = new codebuild.Project(stack, 'Project', {
