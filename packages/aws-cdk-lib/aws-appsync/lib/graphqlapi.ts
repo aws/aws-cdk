@@ -439,6 +439,15 @@ export interface GraphqlApiProps {
    * @default - No environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * The owner contact information for an API resource.
+   *
+   * This field accepts any string input with a length of 0 - 256 characters.
+   *
+   * @default - No owner contact.
+   */
+  readonly ownerContact?: string;
 }
 
 /**
@@ -621,6 +630,9 @@ export class GraphqlApi extends GraphqlApiBase {
     if (props.resolverCountLimit !== undefined && (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)) {
       throw new Error('You must specify a resolver count limit between 0 and 10000.');
     }
+    if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && (props.ownerContact.length > 256)) {
+      throw new Error('You must specify `ownerContact` as a string of 256 characters or less.');
+    }
 
     this.definition = props.schema ? Definition.fromSchema(props.schema) : props.definition!;
 
@@ -653,6 +665,7 @@ export class GraphqlApi extends GraphqlApiBase {
       queryDepthLimit: props.queryDepthLimit,
       resolverCountLimit: props.resolverCountLimit,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
+      ownerContact: props.ownerContact,
     });
 
     this.apiId = this.api.attrApiId;

@@ -458,6 +458,24 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages`
+
+Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the `@aws-sdk/*` packages are excluded by default.
+However, this can cause version mismatches between the `@aws-sdk/*` and `@smithy/*` packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+When this feature flag is enabled, both `@aws-sdk/*` and `@smithy/*` packages will be excluded during the bundling process. This ensures that no mismatches
+occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
+  }
+}
+```
+
 * `@aws-cdk/aws-dynamodb:resourcePolicyPerReplica`
 
 If this flag is not set, the default behavior for \`TableV2\` is to use the use a different \`resourcePolicy\` for all replicas. 
