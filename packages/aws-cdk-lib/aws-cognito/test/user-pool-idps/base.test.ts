@@ -39,7 +39,6 @@ describe('UserPoolIdentityProvider', () => {
         attributeMapping: {
           givenName: ProviderAttribute.FACEBOOK_NAME,
           birthdate: ProviderAttribute.FACEBOOK_BIRTHDAY,
-          emailVerified: ProviderAttribute.other('email_verified'),
         },
       });
 
@@ -47,7 +46,6 @@ describe('UserPoolIdentityProvider', () => {
       expect(idp.mapping).toStrictEqual({
         given_name: 'name',
         birthdate: 'birthday',
-        email_verified: 'email_verified',
       });
     });
 
