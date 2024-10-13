@@ -887,10 +887,10 @@ CDK Garbage Collection.
 > [!WARNING]
 > `cdk gc` currently only supports garbage collecting S3 Assets. You must specify `cdk gc --unstable=gc --type=s3` as ECR asset garbage collection has not yet been implemented.
 
-`cdk gc` garbage collects isolated S3 assets from your bootstrap bucket via the following mechanism: 
+`cdk gc` garbage collects unused S3 assets from your bootstrap bucket via the following mechanism: 
 
 - for each object in the bootstrap S3 Bucket, check to see if it is referenced in any existing CloudFormation templates
-- if not, it is treated as isolated and either tagged or deleted, depending on your configuration.
+- if not, it is treated as unused and gc will either tag it or delete it, depending on your configuration.
 
 The most basic usage looks like this:
 
@@ -902,7 +902,7 @@ This will garbage collect S3 assets from the current bootstrapped environment(s)
 policy on the bucket.
 
 If you are concerned about deleting assets too aggressively, you can configure a buffer amount of days to keep
-an isolated asset before deletion. In this scenario, instead of deleting isolated objects, `cdk gc` will tag
+an unused asset before deletion. In this scenario, instead of deleting unused objects, `cdk gc` will tag
 them with today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`
 and delete them if they have been tagged for longer than the buffer days.
 
@@ -913,15 +913,15 @@ cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30
 You can also configure the scope that `cdk gc` performs via the `--action` option. By default, all actions
 are performed, but you can specify `print`, `tag`, or `delete-tagged`.
 
-- `print` performs no changes to your AWS account, but finds and prints the number of isolated assets.
-- `tag` tags any newly isolated assets, but does not delete any isolated assets.
-- `delete-tagged` deletes assets that have been tagged for longer than the buffer days, but does not tag newly isolated assets.
+- `print` performs no changes to your AWS account, but finds and prints the number of unused assets.
+- `tag` tags any newly unused assets, but does not delete any unused assets.
+- `delete-tagged` deletes assets that have been tagged for longer than the buffer days, but does not tag newly unused assets.
 
 ```console
 cdk gc --unstable=gc --type=s3 --action=delete-tagged --rollback-buffer-days=30
 ```
 
-This will delete assets that have been isolated for >30 days, but will not tag additional assets.
+This will delete assets that have been unused for >30 days, but will not tag additional assets.
 
 ### `cdk doctor`
 

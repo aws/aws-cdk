@@ -82,22 +82,16 @@ interface GarbageCollectorProps {
   /**
    * The action to perform. Specify this if you want to perform a truncated set
    * of actions available.
-   *
-   * @default 'full'
    */
   readonly action: 'print' | 'tag' | 'delete-tagged' | 'full';
 
   /**
    * The type of asset to garbage collect.
-   *
-   * @default 'all'
    */
   readonly type: 's3' | 'ecr' | 'all';
 
   /**
    * The days an asset must be in isolation before being actually deleted.
-   *
-   * @default 0
    */
   readonly rollbackBufferDays: number;
 
