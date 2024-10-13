@@ -13,7 +13,7 @@ class LogGroupIntegStack extends Stack {
 
     const dataProtectionPolicy = new DataProtectionPolicy({
       name: 'policy-name',
-      description: 'policy description',
+      description: 'policy description example',
       identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress'), new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')],
       logGroupAuditDestination: audit,
       s3BucketAuditDestination: bucket,
