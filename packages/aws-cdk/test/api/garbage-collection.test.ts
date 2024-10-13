@@ -313,18 +313,8 @@ describe('Garbage Collection', () => {
         ],
       });
 
-    // Mock the describeStacks call
-    const mockDescribeStacksStatus = jest.fn()
-      .mockResolvedValueOnce({
-        Stacks: [{ StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' }],
-      })
-      .mockResolvedValueOnce({
-        Stacks: [{ StackName: 'Stack1', StackStatus: 'UPDATE_COMPLETE' }],
-      });
-
     sdk.stubCloudFormation({
       listStacks: mockListStacksStatus,
-      describeStacks: mockDescribeStacksStatus,
       getTemplateSummary: mockGetTemplateSummary,
       getTemplate: mockGetTemplate,
     });
@@ -344,8 +334,7 @@ describe('Garbage Collection', () => {
 
     await garbageCollector.garbageCollect();
 
-    // describe and list are called as expected
-    expect(mockDescribeStacksStatus).toHaveBeenCalledTimes(2);
+    // list are called as expected
     expect(mockListStacksStatus).toHaveBeenCalledTimes(2);
 
     // everything else runs as expected:
@@ -357,7 +346,7 @@ describe('Garbage Collection', () => {
     expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
   }, 60000);
 
-  test('stackStatus in REVIEW_IN_PROGRESS means we wait until it changes', async () => {
+  test('fails when stackStatus stuck in REVIEW_IN_PROGRESS', async () => {
     mockTheToolkitInfo({
       Outputs: [
         {
@@ -376,15 +365,8 @@ describe('Garbage Collection', () => {
         ],
       });
 
-    // Mock the describeStacks call
-    const mockDescribeStacksStatus = jest.fn()
-      .mockResolvedValue({
-        Stacks: [{ StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' }],
-      });
-
     sdk.stubCloudFormation({
       listStacks: mockListStacksStatus,
-      describeStacks: mockDescribeStacksStatus,
       getTemplateSummary: mockGetTemplateSummary,
       getTemplate: mockGetTemplate,
     });
@@ -400,9 +382,9 @@ describe('Garbage Collection', () => {
       bootstrapStackName: 'GarbageStack',
       rollbackBufferDays: 3,
       type: 's3',
-      maxWaitTime: 100, // Wait for only 100ms in tests
+      maxWaitTime: 600, // Wait for only 600ms in tests
     });
 
-    await expect(garbageCollector.garbageCollect()).rejects.toThrow(/Stacks still in REVIEW_IN_PROGRESS state after waiting for 1 minute/);
+    await expect(garbageCollector.garbageCollect()).rejects.toThrow(/Stacks still in REVIEW_IN_PROGRESS state after waiting/);
   }, 60000);
 });

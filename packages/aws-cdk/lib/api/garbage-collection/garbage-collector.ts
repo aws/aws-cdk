@@ -1,9 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation, S3 } from 'aws-sdk';
+import { S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
-import { ISDK, Mode, SdkProvider } from './aws-auth';
-import { print } from '../logging';
-import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from './toolkit-info';
+import { print } from '../../logging';
+import { ISDK, Mode, SdkProvider } from '../aws-auth';
+import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
+import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -12,23 +13,6 @@ const pLimit: typeof import('p-limit') = require('p-limit');
 const ISOLATED_TAG = 'aws-cdk:isolated';
 const P_LIMIT = 50;
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-
-class ActiveAssetCache {
-  private readonly stacks: Set<string> = new Set();
-
-  public rememberStack(stackTemplate: string) {
-    this.stacks.add(stackTemplate);
-  }
-
-  public contains(asset: string): boolean {
-    for (const stack of this.stacks) {
-      if (stack.includes(asset)) {
-        return true;
-      }
-    }
-    return false;
-  }
-}
 
 class S3Asset {
   private cached_tags: S3.TagSet | undefined = undefined;
@@ -165,37 +149,19 @@ export class GarbageCollector {
     const s3 = sdk.s3();
 
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
-
     const activeAssets = new ActiveAssetCache();
 
-    let refreshStacksRunning = false;
-    const refreshStacks = async (isInitial?: boolean) => {
-      if (refreshStacksRunning) {
-        return;
-      }
-
-      refreshStacksRunning = true;
-
-      try {
-        const stacks = await this.fetchAllStackTemplates(cfn, qualifier);
-        for (const stack of stacks) {
-          activeAssets.rememberStack(stack);
-        }
-      } catch (err) {
-        throw new Error(`Error refreshing stacks: ${err}`);
-      } finally {
-        refreshStacksRunning = false;
-
-        if (!isInitial) {
-          setTimeout(refreshStacks, 300_000);
-        }
-      }
-    };
-
     // Grab stack templates first
-    await refreshStacks(true);
-    // Refresh stacks in the background
-    const timeout = setTimeout(refreshStacks, 300_000);
+    const startTime = Date.now();
+    await refreshStacks(cfn, activeAssets, this.maxWaitTime, qualifier);
+    // Start the background refresh
+    const backgroundStackRefresh = new BackgroundStackRefresh({
+      cfn,
+      activeAssets,
+      qualifier,
+      maxWaitTime: this.maxWaitTime,
+    });
+    const timeout = setTimeout(backgroundStackRefresh.start, Math.max(startTime + 300_000 - Date.now(), 0))
 
     try {
       const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
@@ -249,11 +215,12 @@ export class GarbageCollector {
           await this.parallelTag(s3, bucket, taggables, currentTime);
         }
 
-        // TODO: maybe undelete
+        // TODO: untag
       }
     } catch (err: any) {
       throw new Error(err);
     } finally {
+      backgroundStackRefresh.stop();
       clearTimeout(timeout);
     }
   }
@@ -363,116 +330,5 @@ export class GarbageCollector {
         yield batch;
       }
     } while (continuationToken);
-  }
-
-  /**
-   * Fetches all relevant stack templates from CloudFormation. It ignores the following stacks:
-   * - stacks in DELETE_COMPLETE or DELET_IN_PROGRES stage
-   * - stacks that are using a different bootstrap qualifier
-   *
-   * It fails on the following stacks because we cannot get the template and therefore have an imcomplete
-   * understanding of what assets are being used.
-   * - stacks in REVIEW_IN_PROGRESS stage
-   */
-  private async fetchAllStackTemplates(cfn: CloudFormation, qualifier?: string) {
-    const stackNames: string[] = [];
-    await paginateSdkCall(async (nextToken) => {
-      let response = await cfn.listStacks({ NextToken: nextToken }).promise();
-
-      // We cannot operate on REVIEW_IN_PROGRESS stacks because we do not know what the template looks like in this case
-      // If we encounter this status, we will wait up to a minute for it to land before erroring out.
-      const reviewInProgressStacks = response.StackSummaries?.filter(s => s.StackStatus === 'REVIEW_IN_PROGRESS') ?? [];
-      if (reviewInProgressStacks.length > 0) {
-        const updatedRequest = await this.waitForStacksAndRefetch(cfn, response, reviewInProgressStacks);
-        response = await updatedRequest.promise();
-      }
-
-      // Deleted stacks are ignored
-      const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED'];
-      stackNames.push(
-        ...(response.StackSummaries ?? [])
-          .filter(s => !ignoredStatues.includes(s.StackStatus))
-          .map(s => s.StackId ?? s.StackName),
-      );
-
-      return response.NextToken;
-    });
-
-    print(chalk.blue(`Parsing through ${stackNames.length} stacks`));
-
-    const templates: string[] = [];
-    for (const stack of stackNames) {
-      let summary;
-      summary = await cfn.getTemplateSummary({
-        StackName: stack,
-      }).promise();
-
-      // Filter out stacks that we KNOW are using a different bootstrap qualifier
-      // This is necessary because a stack under a different bootstrap could coincidentally reference the same hash
-      // and cause a false negative (cause an asset to be preserved when its isolated)
-      // This is intentionally done in a way where we ONLY filter out stacks that are meant for a different qualifier
-      // because we are okay with false positives.
-      const bootstrapVersion = summary?.Parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
-      const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
-      if (qualifier && splitBootstrapVersion && splitBootstrapVersion.length == 4 && splitBootstrapVersion[2] != qualifier) {
-        // This stack is definitely bootstrapped to a different qualifier so we can safely ignore it
-        continue;
-      } else {
-        const template = await cfn.getTemplate({
-          StackName: stack,
-        }).promise();
-
-        templates.push(template.TemplateBody ?? '' + summary?.Parameters);
-      }
-    }
-
-    print(chalk.red('Done parsing through stacks'));
-
-    return templates;
-  }
-
-  private async waitForStacksAndRefetch(
-    cfn: CloudFormation,
-    originalResponse: AWS.CloudFormation.ListStacksOutput,
-    reviewInProgressStacks: AWS.CloudFormation.StackSummary[],
-  ): Promise<AWS.Request<AWS.CloudFormation.ListStacksOutput, AWS.AWSError>> {
-    const startTime = Date.now();
-
-    while (Date.now() - startTime < this.maxWaitTime) {
-      let allStacksUpdated = true;
-
-      for (const stack of reviewInProgressStacks) {
-        const response = await cfn.describeStacks({ StackName: stack.StackId ?? stack.StackName }).promise();
-        const currentStatus = response.Stacks?.[0]?.StackStatus;
-
-        if (currentStatus === 'REVIEW_IN_PROGRESS') {
-          allStacksUpdated = false;
-          break;
-        }
-      }
-
-      if (allStacksUpdated) {
-        // All stacks have left REVIEW_IN_PROGRESS state, refetch the list
-        return cfn.listStacks({ NextToken: originalResponse.NextToken });
-      }
-
-      // Wait for 15 seconds before checking again
-      await new Promise(resolve => setTimeout(resolve, 15000));
-    }
-
-    // If we've reached this point, some stacks are still in REVIEW_IN_PROGRESS after waiting
-    const remainingStacks = reviewInProgressStacks.map(s => s.StackName).join(', ');
-    throw new Error(`Stacks still in REVIEW_IN_PROGRESS state after waiting for 1 minute: ${remainingStacks}`);
-  }
-}
-
-async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | undefined>) {
-  let finished = false;
-  let nextToken: string | undefined;
-  while (!finished) {
-    nextToken = await cb(nextToken);
-    if (nextToken === undefined) {
-      finished = true;
-    }
   }
 }
