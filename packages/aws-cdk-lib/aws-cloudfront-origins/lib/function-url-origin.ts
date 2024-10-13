@@ -118,6 +118,12 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
 
     this.addInvokePermission(scope, options);
 
+    if (!this.isCheckAuthType()) {
+      cdk.Annotations.of(scope).addWarning(
+        'FunctionUrlOriginWithOAC: When the origin access control signing method is SIGV4_ALWAYS, it is recommended to set the authType of the Function URL to AWS_IAM.'
+      );
+    }
+
     return {
       ...originBindConfig,
       originProperty: {
@@ -136,5 +142,20 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       functionName: this.functionUrl.functionArn,
       sourceArn: `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`,
     });
+  }
+
+  /**
+   * Validation method: Ensures that when the OAC signing method is SIGV4_ALWAYS, the authType is set to AWS_IAM.
+   */
+  private isCheckAuthType(): boolean {
+
+    const cfnFunctionUrl = this.functionUrl.node.defaultChild as lambda.CfnUrl;
+    const CfnOriginAccessControl
+      = this.originAccessControl?.node.defaultChild as unknown as cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty;
+
+    return (CfnOriginAccessControl.signingBehavior === cloudfront.SigningBehavior.ALWAYS
+       && CfnOriginAccessControl.signingProtocol === cloudfront.SigningProtocol.SIGV4
+       && cfnFunctionUrl.authType !== 'AWS_IAM'
+    );
   }
 }
