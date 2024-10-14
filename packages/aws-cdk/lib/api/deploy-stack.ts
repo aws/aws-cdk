@@ -17,7 +17,7 @@ import {
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
-import { publishAssets } from '../util/asset-publishing';
+import { iAmDeployStack, publishAssets } from '../util/asset-publishing';
 
 export interface DeployStackResult {
   readonly noOp: boolean;
@@ -190,7 +190,7 @@ export interface DeployStackOptions {
    *
    * @default - Use the stored template
    */
-  readonly overrideTemplate?: any;
+  readonly overrideTemplate?: unknown;
 
   /**
    * Whether to build/publish assets in parallel
@@ -280,13 +280,23 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`${deployName}: deploying...`);
   }
 
-  const bodyParameter = await makeBodyParameter(
+  let bodyParameter;
+  const bodyAction = await makeBodyParameter(
     stackArtifact,
     options.resolvedEnvironment,
-    legacyAssets,
     options.envResources,
     options.sdk,
+    iAmDeployStack(),
     options.overrideTemplate);
+  switch (bodyAction.type) {
+    case 'direct':
+      bodyParameter = bodyAction.param;
+      break;
+    case 'upload':
+      bodyParameter = bodyAction.addToManifest(legacyAssets);
+      break;
+  }
+
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
     parallel: options.assetParallelism,
   });

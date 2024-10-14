@@ -35,7 +35,7 @@ export async function publishAssets(
   sdk: SdkProvider,
   targetEnv: cxapi.Environment,
   options: PublishAssetsOptions = {},
-) {
+): Promise<AssetsPublishedProof> {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
   if (
@@ -60,6 +60,8 @@ export async function publishAssets(
   if (publisher.hasFailures) {
     throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
   }
+
+  return { [PUBLISH_ASSET_PROOF_SYM]: true };
 }
 
 export interface BuildAssetsOptions {
@@ -215,4 +217,48 @@ class PublishingProgressListener implements cdk_assets.IPublishProgressListener 
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
     handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }
+}
+
+const PUBLISH_ASSET_PROOF_SYM = Symbol('publish_assets_proof');
+
+/**
+ * This interface represents proof that assets have been published.
+ *
+ * Objects of this type can only be obtained by calling functions in this module.
+ */
+export interface AssetsPublishedProof {
+  [PUBLISH_ASSET_PROOF_SYM]: true;
+}
+
+/**
+ * If you promise that you will publish assets for every element of an array, this function will attest it for every size of an array.
+ *
+ * Without this function, there would be no way to get `AssetsPublishedProof` for an empty array,
+ * since you'd have no single element to call `publishAssets` on.
+ */
+export async function multipleAssetPublishedProof<A>(xs: A[], block: (x: A) => Promise<AssetsPublishedProof>): Promise<AssetsPublishedProof> {
+  for (const x of xs) {
+    // Don't even care about the return value, just the type checking is good enough.
+    await block(x);
+  }
+  return { [PUBLISH_ASSET_PROOF_SYM]: true };
+}
+
+/**
+ * Conjure an `AssetsPublishedProof` out of thin air.
+ *
+ * This is only allowed in one location: the function `deployStack` in
+ * `deploy-stack.ts`.  Do not call this function anywhere but there.
+ *
+ * The reason we have this is because the assets are published in an elaborate
+ * way in the work graph there, and it's too much work for too little benefit to
+ * do an elaborate token refactoring over there.
+ *
+ * This proof protocol exists for ancillary locations where we also need to send
+ * a template to CloudFormation like `diff` and `import`, and that template
+ * might be represented like a stack asset. Use of the proof forces a call
+ * to `uploadStackTemplateAssets` in those locations.
+ */
+export function iAmDeployStack(): AssetsPublishedProof {
+  return { [PUBLISH_ASSET_PROOF_SYM]: true };
 }
