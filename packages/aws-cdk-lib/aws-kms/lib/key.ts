@@ -555,6 +555,13 @@ export interface KeyProps {
  */
 export class Key extends KeyBase {
   /**
+   * The default key id of the dummy key.
+   *
+   * This value is used as a dummy key id if the key was not found by the `fromLookup` method.
+   */
+  public static readonly DEFAULT_DUMMY_KEY_ID = '1234abcd-12ab-34cd-56ef-1234567890ab';
+
+  /**
    * Import an externally defined KMS Key using its ARN.
    *
    * @param scope  the construct that will "own" the imported key.
@@ -653,6 +660,8 @@ export class Key extends KeyBase {
    *
    * If you set `returnDummyKeyOnMissing` to `true` in `options` and the key was not found,
    * this method will return a dummy key with a key id '1234abcd-12ab-34cd-56ef-1234567890ab'.
+   * The value of the dummy key id can also be referenced using the `Key.DEFAULT_DUMMY_KEY_ID`
+   * variable.
    *
    * The Key information will be cached in `cdk.context.json` and the same Key
    * will be used on future runs. To refresh the lookup, you will have to
@@ -686,7 +695,7 @@ export class Key extends KeyBase {
         aliasName: options.aliasName,
       } as cxschema.KeyContextQuery,
       dummyValue: {
-        keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+        keyId: Key.DEFAULT_DUMMY_KEY_ID,
       },
       ignoreErrorOnMissingContext: options.returnDummyKeyOnMissing,
     }).value;

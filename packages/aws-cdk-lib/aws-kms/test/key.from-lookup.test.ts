@@ -47,7 +47,7 @@ test('return dummy key if returnDummyKeyOnMissing is true', () => {
     returnDummyKeyOnMissing: true,
   });
 
-  expect(key.keyId).toEqual('1234abcd-12ab-34cd-56ef-1234567890ab');
+  expect(key.keyId).toEqual(Key.DEFAULT_DUMMY_KEY_ID);
   expect(app.synth().manifest.missing).toEqual([
     {
       key: 'key-provider:account=123456789012:aliasName=alias/foo:region=us-east-1',
