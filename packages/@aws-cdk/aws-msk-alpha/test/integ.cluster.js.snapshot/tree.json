@@ -1633,7 +1633,8 @@
                               "Arn"
                             ]
                           }
-                        ]
+                        ],
+                        "enabled": true
                       }
                     },
                     "clusterName": "integ-test-iam-tls-auth",

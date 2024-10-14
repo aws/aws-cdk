@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "bebaacb803cbd7702f959bbadc925ea654fbcc46464f713f3204e122be7ad825": {
+      "source": {
+        "path": "aws-cdk-msk-sasl-scram-iam-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bebaacb803cbd7702f959bbadc925ea654fbcc46464f713f3204e122be7ad825.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

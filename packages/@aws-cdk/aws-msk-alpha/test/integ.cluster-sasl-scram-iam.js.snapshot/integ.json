@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "MskClusterSaslScramIam/DefaultTest": {
+      "stacks": [
+        "aws-cdk-msk-sasl-scram-iam-integ"
+      ],
+      "assertionStack": "MskClusterSaslScramIam/DefaultTest/DeployAssert",
+      "assertionStackName": "MskClusterSaslScramIamDefaultTestDeployAssert9AC3A11C"
+    }
+  }
+}

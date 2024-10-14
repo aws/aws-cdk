@@ -649,18 +649,21 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    const clientAuthentication = {
-      sasl: props.clientAuthentication?.saslProps ? {
-        iam: props.clientAuthentication.saslProps.iam ? { enabled: true }: undefined,
-        scram: props.clientAuthentication.saslProps.scram ? { enabled: true }: undefined,
-      } : undefined,
-      tls: props.clientAuthentication?.tlsProps?.certificateAuthorities ? {
-        certificateAuthorityArnList: props.clientAuthentication.tlsProps.certificateAuthorities?.map(
-          (ca) => ca.certificateAuthorityArn,
-        ),
-        enabled: true,
-      } : undefined,
-    };
+    let clientAuthentication;
+    if (props.clientAuthentication) {
+      clientAuthentication = {
+        sasl: props.clientAuthentication.saslProps ? {
+          iam: props.clientAuthentication.saslProps.iam ? { enabled: true }: undefined,
+          scram: props.clientAuthentication.saslProps.scram ? { enabled: true }: undefined,
+        } : undefined,
+        tls: props.clientAuthentication.tlsProps?.certificateAuthorities ? {
+          certificateAuthorityArnList: props.clientAuthentication.tlsProps.certificateAuthorities?.map(
+            (ca) => ca.certificateAuthorityArn,
+          ),
+          enabled: true,
+        } : undefined,
+      };
+    }
 
     const resource = new CfnCluster(this, 'Resource', {
       clusterName: props.clusterName,
