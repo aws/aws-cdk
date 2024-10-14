@@ -64,7 +64,7 @@ import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { DeployStackResult } from '../lib/api/deploy-stack';
-import { Deployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/deployments';
+import { Deployments, DeployStackOptions, DestroyStackOptions, RollbackStackOptions, RollbackStackResult } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
@@ -983,7 +983,7 @@ describe('watch', () => {
       });
 
       test("triggers a 'deploy' twice for two file changes", async () => {
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all([
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
@@ -993,7 +993,7 @@ describe('watch', () => {
       });
 
       test("batches file changes that happen during 'deploy'", async () => {
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all([
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
@@ -1226,6 +1226,31 @@ describe('synth', () => {
     expect(mockData.mock.calls.length).toEqual(1);
     expect(mockData.mock.calls[0][0]).toBeDefined();
   });
+
+  test('rollback uses deployment role', async () => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+      ],
+    });
+
+    const mockedRollback = jest.spyOn(Deployments.prototype, 'rollbackStack').mockResolvedValue({
+      success: true,
+    });
+
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+    });
+
+    await toolkit.rollback({
+      selector: { patterns: [] },
+    });
+
+    expect(mockedRollback).toHaveBeenCalled();
+  });
 });
 
 class MockStack {
@@ -1399,6 +1424,12 @@ class FakeCloudFormation extends Deployments {
       noOp: false,
       outputs: { StackName: options.stack.stackName },
       stackArtifact: options.stack,
+    });
+  }
+
+  public rollbackStack(_options: RollbackStackOptions): Promise<RollbackStackResult> {
+    return Promise.resolve({
+      success: true,
     });
   }
 
