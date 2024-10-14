@@ -4,8 +4,8 @@ import * as chalk from 'chalk';
 import { debug, print } from '../../logging';
 import { ISDK, Mode, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
-import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 import { ProgressPrinter } from './progress-printer';
+import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -165,13 +165,13 @@ export class GarbageCollector {
     const printer = new ProgressPrinter(numObjects, 1000);
 
     debug(`Found bootstrap bucket ${bucket}`);
-    
+
     try {
       const batches = 1;
       const batchSize = 1000;
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
- 
+
       debug(`Parsing through ${numObjects} objects in batches`);
 
       // Process objects in batches of 1000

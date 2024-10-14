@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
-import { print } from '../../logging';
 import { S3Asset } from './garbage-collector';
+import { print } from '../../logging';
 
 export class ProgressPrinter {
   private totalObjects: number;
