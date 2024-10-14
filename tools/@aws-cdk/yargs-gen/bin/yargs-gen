@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('./spec2cdk.js');
+require('./yargs-gen.js');

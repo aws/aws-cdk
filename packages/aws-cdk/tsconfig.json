@@ -26,7 +26,7 @@
         "**/*.ts",
         "**/*.d.ts",
         "lib/init-templates/**/*.hook.ts"
-, "../../tools/@aws-cdk/yargs-gen/lib/config.ts", "../../tools/@aws-cdk/yargs-gen/bin/pre-build.ts"    ],
+    ],
     "exclude": [
         "lib/init-templates/**/typescript/*/*.ts",
         "test/integ/cli/sam_cdk_integ_app/**/*",
