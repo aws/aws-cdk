@@ -54,9 +54,9 @@ describe('Garbage Collection', () => {
     mockListObjectsV2 = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         Contents: [
-          { Key: 'asset1' },
-          { Key: 'asset2' },
-          { Key: 'asset3' },
+          { Key: 'asset1', LastModified: new Date(0) },
+          { Key: 'asset2', LastModified: new Date(0) },
+          { Key: 'asset3', LastModified: new Date(0) },
         ],
         KeyCount: 3,
       });
@@ -291,6 +291,62 @@ describe('Garbage Collection', () => {
     // get tags, but dont put tags
     expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
     expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+  });
+
+  test('ignore objects that are modified after gc start', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    const mockListObjectsV2Future = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        Contents: [
+          { Key: 'asset1', LastModified: new Date(0) },
+          { Key: 'asset2', LastModified: new Date(0) },
+          { Key: 'asset3', LastModified: new Date(new Date().setFullYear(new Date().getFullYear() + 1))}, // future date ignored everywhere
+        ],
+        KeyCount: 3,
+      });
+    });
+
+    sdk.stubS3({
+      listObjectsV2: mockListObjectsV2Future,
+      getObjectTagging: mockGetObjectTagging,
+      deleteObjects: mockDeleteObjects,
+      putObjectTagging: mockPutObjectTagging,
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'full',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 0,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    // assets are to be deleted
+    expect(mockDeleteObjects).toHaveBeenCalledWith({
+      Bucket: 'BUCKET_NAME',
+      Delete: {
+        Objects: [
+          { Key: 'asset1' },
+          { Key: 'asset2' },
+          // no asset3
+        ],
+        Quiet: true,
+      },
+    });
   });
 
   test('bootstrap filters out other bootstrap versions', async () => {

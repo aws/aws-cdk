@@ -177,7 +177,7 @@ export class GarbageCollector {
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
-      for await (const batch of this.readBucketInBatches(s3, bucket, batchSize)) {
+      for await (const batch of this.readBucketInBatches(s3, bucket, batchSize, currentTime)) {
         print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
         printer.start();
 
@@ -308,7 +308,7 @@ export class GarbageCollector {
   /**
    * Generator function that reads objects from the S3 Bucket in batches.
    */
-  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000): AsyncGenerator<S3Asset[]> {
+  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<S3Asset[]> {
     let continuationToken: string | undefined;
 
     do {
@@ -323,7 +323,9 @@ export class GarbageCollector {
         response.Contents?.forEach((obj) => {
           const key = obj.Key ?? '';
           const size = obj.Size ?? 0;
-          if (obj.Key) {
+          const lastModified = obj.LastModified?.getTime() ?? Date.now();
+          // Store the object if it has a Key and if it has not been modified since the start of garbage collection 
+          if (key && lastModified < currentTime) {
             batch.push(new S3Asset(bucket, key, size));
           }
         });
