@@ -166,7 +166,7 @@ export class Subscription extends Resource {
   }
 
   private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {
-    if (protocol !== SubscriptionProtocol.HTTP && protocol !== SubscriptionProtocol.HTTPS) {
+    if (![SubscriptionProtocol.HTTP, SubscriptionProtocol.HTTPS].includes(protocol)) {
       throw new Error(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`);
     }
     const { healthyRetryPolicy, throttlePolicy } = deliveryPolicy;
