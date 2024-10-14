@@ -82,14 +82,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
       StackName: stack,
     }).promise();
 
-    // Filter out stacks that we KNOW are using a different bootstrap qualifier
-    // This is necessary because a stack under a different bootstrap could coincidentally reference the same hash
-    // and cause a false negative (cause an asset to be preserved when its isolated)
-    // This is intentionally done in a way where we ONLY filter out stacks that are meant for a different qualifier
-    // because we are okay with false positives.
-    const bootstrapVersion = summary?.Parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
-    const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
-    if (qualifier && splitBootstrapVersion && splitBootstrapVersion.length == 4 && splitBootstrapVersion[2] != qualifier) {
+    if (bootstrapFilter(summary.Parameters, qualifier)) {
       // This stack is definitely bootstrapped to a different qualifier so we can safely ignore it
       continue;
     } else {
@@ -104,6 +97,25 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
   debug('Done parsing through stacks');
 
   return templates;
+}
+
+/**
+ * Filter out stacks that we KNOW are using a different bootstrap qualifier
+ * This is mostly necessary for the integration tests that can run the same app (with the same assets)
+ * under different qualifiers.
+ * This is necessary because a stack under a different bootstrap could coincidentally reference the same hash
+ * and cause a false negative (cause an asset to be preserved when its isolated)
+ * This is intentionally done in a way where we ONLY filter out stacks that are meant for a different qualifier
+ * because we are okay with false positives.
+ */
+function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qualifier?: string) {
+  const bootstrapVersion = parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
+  const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
+  // We find the qualifier in a specific part of the bootstrap version parameter
+  return (qualifier && 
+          splitBootstrapVersion &&
+          splitBootstrapVersion.length == 4 &&
+          splitBootstrapVersion[2] != qualifier);
 }
 
 export async function refreshStacks(cfn: CloudFormation, activeAssets: ActiveAssetCache, maxWaitTime: number, qualifier?: string) {
@@ -148,30 +160,21 @@ export interface BackgroundStackRefreshProps {
  * Class that controls scheduling of the background stack refresh
  */
 export class BackgroundStackRefresh {
-  private _isRefreshing = false;
   private timeout?: NodeJS.Timeout;
 
   constructor(private readonly props: BackgroundStackRefreshProps) {}
 
   public async start() {
-    if (this.isRefreshing) {
-      return;
-    }
-
     const startTime = Date.now();
-    this._isRefreshing = true;
 
     await refreshStacks(this.props.cfn, this.props.activeAssets, this.props.maxWaitTime ?? 60000, this.props.qualifier);
 
-    this._isRefreshing = false;
+    // If the last invocation of refreshStacks takes <5 minutes, the next invocation starts 5 minutes after the last one started.
+    // If the last invocation of refreshStacks takes >5 minutes, the next invocation starts immediately.
     this.timeout = setTimeout(this.start, Math.max(startTime + 300_000 - Date.now(), 0));
   }
 
   public stop() {
     clearTimeout(this.timeout);
-  }
-
-  public get isRefreshing(): boolean {
-    return this._isRefreshing;
   }
 }
