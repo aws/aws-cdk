@@ -324,7 +324,7 @@ export class GarbageCollector {
           const key = obj.Key ?? '';
           const size = obj.Size ?? 0;
           const lastModified = obj.LastModified?.getTime() ?? Date.now();
-          // Store the object if it has a Key and if it has not been modified since the start of garbage collection 
+          // Store the object if it has a Key and if it has not been modified since the start of garbage collection
           if (key && lastModified < currentTime) {
             batch.push(new S3Asset(bucket, key, size));
           }

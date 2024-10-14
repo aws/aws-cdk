@@ -112,7 +112,7 @@ function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qual
   const bootstrapVersion = parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
   const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
   // We find the qualifier in a specific part of the bootstrap version parameter
-  return (qualifier && 
+  return (qualifier &&
           splitBootstrapVersion &&
           splitBootstrapVersion.length == 4 &&
           splitBootstrapVersion[2] != qualifier);

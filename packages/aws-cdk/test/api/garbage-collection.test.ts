@@ -44,8 +44,8 @@ describe('Garbage Collection', () => {
     });
     mockGetTemplateSummary = jest.fn().mockReturnValue({
       Parameters: [{
-        ParameterKey: "BootstrapVersion",
-        DefaultValue: "/cdk-bootstrap/abcde/version",
+        ParameterKey: 'BootstrapVersion',
+        DefaultValue: '/cdk-bootstrap/abcde/version',
       }],
     });
     mockGetTemplate = jest.fn().mockReturnValue({
@@ -308,7 +308,7 @@ describe('Garbage Collection', () => {
         Contents: [
           { Key: 'asset1', LastModified: new Date(0) },
           { Key: 'asset2', LastModified: new Date(0) },
-          { Key: 'asset3', LastModified: new Date(new Date().setFullYear(new Date().getFullYear() + 1))}, // future date ignored everywhere
+          { Key: 'asset3', LastModified: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) }, // future date ignored everywhere
         ],
         KeyCount: 3,
       });
@@ -393,8 +393,8 @@ describe('Garbage Collection', () => {
 
     const mockGetTemplateSummaryAssets = jest.fn().mockReturnValue({
       Parameters: [{
-        ParameterKey: "AssetParametersasset1",
-        DefaultValue: "asset1",
+        ParameterKey: 'AssetParametersasset1',
+        DefaultValue: 'asset1',
       }],
     });
 
