@@ -3,12 +3,13 @@ import { DescribeChangeSetOutput } from '@aws-cdk/cloudformation-diff';
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import { AssetManifest, FileManifestEntry } from 'cdk-assets';
+import { AssetManifest, DestinationPattern, FileManifestEntry } from 'cdk-assets';
 import { StackStatus } from './cloudformation/stack-status';
 import { makeBodyParameter, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
+import { AssetsPublishedProof, multipleAssetPublishedProof, publishAssets } from '../../util/asset-publishing';
 import { SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
 
@@ -345,37 +346,47 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
  *
  * This is used in the `uploadBodyParameterAndCreateChangeSet` function to find
  * all template asset files to build and publish.
- *
- * Returns a tuple of [AssetManifest, FileManifestEntry[]]
  */
-function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): [AssetManifest, FileManifestEntry[]] {
-  const assets: (FileManifestEntry)[] = [];
+function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): AssetManifest {
   const fileName = artifact.file;
   const assetManifest = AssetManifest.fromFile(fileName);
 
-  assetManifest.entries.forEach(entry => {
+  return assetManifest.select(assetManifest.entries.flatMap((entry) => {
     if (entry.type === 'file') {
       const source = (entry as FileManifestEntry).source;
       if (source.path && (source.path.endsWith('.template.json'))) {
-        assets.push(entry as FileManifestEntry);
+        return [new DestinationPattern(entry.id.assetId, entry.id.destinationId)];
       }
     }
-  });
-  return [assetManifest, assets];
+    return [];
+  }));
 }
 
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
-    await uploadStackTemplateAssets(options.stack, options.deployments);
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+    const proof = await uploadStackTemplateAssets(options.stack, options.sdkProvider, preparedSdk.resolvedEnvironment);
 
-    const bodyParameter = await makeBodyParameter(
+    let bodyParameter;
+    const bodyAction = await makeBodyParameter(
       options.stack,
       preparedSdk.resolvedEnvironment,
-      new AssetManifestBuilder(),
       preparedSdk.envResources,
       preparedSdk.stackSdk,
+      proof,
     );
+    switch (bodyAction.type) {
+      case 'direct':
+        bodyParameter = bodyAction.param;
+        break;
+
+      case 'upload':
+        const builder = new AssetManifestBuilder();
+        bodyParameter = bodyAction.addToManifest(builder);
+        await publishAssets(builder.toManifest(options.stack.assembly.directory), options.sdkProvider, preparedSdk.resolvedEnvironment);
+        break;
+    }
+
     const cfn = preparedSdk.stackSdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
@@ -410,23 +421,17 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
  * asset manifest, because technically that is the only place that knows about
  * bucket and assumed roles and such.
  */
-export async function uploadStackTemplateAssets(stack: cxapi.CloudFormationStackArtifact, deployments: Deployments) {
-  for (const artifact of stack.dependencies) {
-    // Skip artifact if it is not an Asset Manifest Artifact
-    if (!cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
-      continue;
-    }
+export async function uploadStackTemplateAssets(
+  stack: cxapi.CloudFormationStackArtifact,
+  sdkProvider: SdkProvider,
+  environment: cxapi.Environment,
+): Promise<AssetsPublishedProof> {
+  const assetDependencies = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
-    const [assetManifest, file_entries] = templatesFromAssetManifestArtifact(artifact);
-    for (const entry of file_entries) {
-      await deployments.buildSingleAsset(artifact, assetManifest, entry, {
-        stack,
-      });
-      await deployments.publishSingleAsset(assetManifest, entry, {
-        stack,
-      });
-    }
-  }
+  return multipleAssetPublishedProof(assetDependencies, (artifact) => {
+    const templates = templatesFromAssetManifestArtifact(artifact);
+    return publishAssets(templates, sdkProvider, environment);
+  });
 }
 
 async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetOutput> {

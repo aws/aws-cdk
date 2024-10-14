@@ -419,27 +419,26 @@ export class Deployments {
     const { stackSdk, resolvedEnvironment, envResources } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
-    await uploadStackTemplateAssets(stackArtifact, this);
+    const proof = await uploadStackTemplateAssets(stackArtifact, this.sdkProvider, resolvedEnvironment);
 
     // Upload the template, if necessary, before passing it to CFN
-    const builder = new AssetManifestBuilder();
-    const cfnParam = await makeBodyParameter(
+    let cfnParam;
+    const bodyAction = await makeBodyParameter(
       stackArtifact,
       resolvedEnvironment,
-      builder,
       envResources,
-      stackSdk);
+      stackSdk,
+      proof);
+    switch (bodyAction.type) {
+      case 'direct':
+        cfnParam = bodyAction.param;
+        break;
 
-    // If the `makeBodyParameter` before this added assets, make sure to publish them before
-    // calling the API.
-    const addedAssets = builder.toManifest(stackArtifact.assembly.directory);
-    for (const entry of addedAssets.entries) {
-      await this.buildSingleAsset('no-version-validation', addedAssets, entry, {
-        stack: stackArtifact,
-      });
-      await this.publishSingleAsset(addedAssets, entry, {
-        stack: stackArtifact,
-      });
+      case 'upload':
+        const builder = new AssetManifestBuilder();
+        cfnParam = bodyAction.addToManifest(builder);
+        await publishAssets(builder.toManifest(stackArtifact.assembly.directory), this.sdkProvider, resolvedEnvironment);
+        break;
     }
 
     const response = await cfn.getTemplateSummary(cfnParam).promise();
