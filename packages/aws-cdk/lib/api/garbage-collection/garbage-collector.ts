@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
-import { print } from '../../logging';
+import { debug, print } from '../../logging';
 import { ISDK, Mode, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
@@ -49,12 +49,9 @@ class S3Asset {
 
   public async isolatedTagBefore(s3: S3, date: Date) {
     const tagValue = await this.getTag(s3, ISOLATED_TAG);
-    print(chalk.red('a', tagValue, 'b', date));
     if (!tagValue || tagValue == '') {
-      print(chalk.red('no tag'));
       return false;
     }
-    print(chalk.red('tag', typeof(tagValue)));
     return new Date(tagValue) < date;
   }
 }
@@ -128,8 +125,6 @@ export class GarbageCollector {
     this.permissionToTag = ['tag', 'full'].includes(props.action);
     this.maxWaitTime = props.maxWaitTime ?? 60000;
 
-    print(chalk.white(this.permissionToDelete, this.permissionToTag, props.action));
-
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
     // TODO: ECR garbage collection
@@ -142,7 +137,6 @@ export class GarbageCollector {
    * Perform garbage collection on the resolved environment.
    */
   public async garbageCollect() {
-    print(chalk.black(this.garbageCollectS3Assets));
     // SDKs
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
@@ -171,7 +165,7 @@ export class GarbageCollector {
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
 
-      print(chalk.white(`Parsing through ${numObjects} objects in batches`));
+      debug(`Parsing through ${numObjects} objects in batches`);
 
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
@@ -183,13 +177,13 @@ export class GarbageCollector {
           return !activeAssets.contains(obj.fileName());
         });
 
-        print(chalk.blue(`${isolated.length} isolated assets`));
+        debug(`${isolated.length} isolated assets`);
 
         let deletables: S3Asset[] = isolated;
         let taggables: S3Asset[] = [];
 
         if (graceDays > 0) {
-          print(chalk.white('Filtering out assets that are not old enough to delete'));
+          debug('Filtering out assets that are not old enough to delete');
           await this.parallelReadAllTags(s3, isolated);
           // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
           deletables = await Promise.all(isolated.map(async (obj) => {
@@ -204,8 +198,8 @@ export class GarbageCollector {
           })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
         }
 
-        print(chalk.blue(`${deletables.length} deletable assets`));
-        print(chalk.white(`${taggables.length} taggable assets`));
+        debug(`${deletables.length} deletable assets`);
+        debug(`${taggables.length} taggable assets`);
 
         if (this.permissionToDelete && deletables.length > 0) {
           await this.parallelDelete(s3, bucket, deletables);
@@ -257,7 +251,7 @@ export class GarbageCollector {
       );
     }
 
-    print(chalk.green(`Tagged ${taggables.length} assets`));
+    debug(`Tagged ${taggables.length} assets`);
   }
 
   /**
@@ -277,7 +271,7 @@ export class GarbageCollector {
         },
       }).promise();
 
-      print(chalk.green(`Deleted ${deletables.length} assets`));
+      debug(`Deleted ${deletables.length} assets`);
     } catch (err) {
       print(chalk.red(`Error deleting objects: ${err}`));
     }
