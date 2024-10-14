@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC"
+      "Value": "aws-cdk-msk-auth-integ/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-msk-auth-integ/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-msk-sasl-scram-iam-integ/VPC"
+      "Value": "aws-cdk-msk-auth-integ/VPC"
      }
     ]
    }
@@ -391,7 +391,64 @@
     }
    }
   },
-  "ClusterSaslScramIamSecurityGroup3617243A": {
+  "CertificateAuthority": {
+   "Type": "AWS::ACMPCA::CertificateAuthority",
+   "Properties": {
+    "KeyAlgorithm": "RSA_2048",
+    "KeyStorageSecurityStandard": "FIPS_140_2_LEVEL_3_OR_HIGHER",
+    "SigningAlgorithm": "SHA256WITHRSA",
+    "Subject": {
+     "CommonName": "MSK Cluster Root CA",
+     "Country": "DE",
+     "Locality": "Berlin",
+     "Organization": "Amazon Web Services",
+     "OrganizationalUnit": "AWS-CDK",
+     "State": "Berlin"
+    },
+    "Type": "ROOT"
+   }
+  },
+  "Certificate": {
+   "Type": "AWS::ACMPCA::Certificate",
+   "Properties": {
+    "CertificateAuthorityArn": {
+     "Fn::GetAtt": [
+      "CertificateAuthority",
+      "Arn"
+     ]
+    },
+    "CertificateSigningRequest": {
+     "Fn::GetAtt": [
+      "CertificateAuthority",
+      "CertificateSigningRequest"
+     ]
+    },
+    "SigningAlgorithm": "SHA256WITHRSA",
+    "TemplateArn": "arn:aws:acm-pca:::template/RootCACertificate/V1",
+    "Validity": {
+     "Type": "YEARS",
+     "Value": 1
+    }
+   }
+  },
+  "CertificateActivation": {
+   "Type": "AWS::ACMPCA::CertificateAuthorityActivation",
+   "Properties": {
+    "Certificate": {
+     "Fn::GetAtt": [
+      "Certificate",
+      "Certificate"
+     ]
+    },
+    "CertificateAuthorityArn": {
+     "Fn::GetAtt": [
+      "CertificateAuthority",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ClusterSecurityGroup0921994B": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "MSK security group",
@@ -405,9 +462,12 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "DependsOn": [
+    "CertificateActivation"
+   ]
   },
-  "ClusterSaslScramIamSASLKey1ED07A25": {
+  "ClusterSASLKeyC4AE65F3": {
    "Type": "AWS::KMS::Key",
    "Properties": {
     "Description": "Used for encrypting MSK secrets for SASL/SCRAM authentication.",
@@ -475,22 +535,28 @@
      "Version": "2012-10-17"
     }
    },
+   "DependsOn": [
+    "CertificateActivation"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "ClusterSaslScramIamSASLKeyAliasA5DD463A": {
+  "ClusterSASLKeyAliasCBD2665F": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/msk/integ-test-sasl-scram-iam-auth/sasl/scram",
+    "AliasName": "alias/msk/integ-test-auth/sasl/scram",
     "TargetKeyId": {
      "Fn::GetAtt": [
-      "ClusterSaslScramIamSASLKey1ED07A25",
+      "ClusterSASLKeyC4AE65F3",
       "Arn"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "CertificateActivation"
+   ]
   },
-  "ClusterSaslScramIamBBCBE054": {
+  "ClusterEB0386A7": {
    "Type": "AWS::MSK::Cluster",
    "Properties": {
     "BrokerNodeGroupInfo": {
@@ -506,7 +572,7 @@
      "SecurityGroups": [
       {
        "Fn::GetAtt": [
-        "ClusterSaslScramIamSecurityGroup3617243A",
+        "ClusterSecurityGroup0921994B",
         "GroupId"
        ]
       }
@@ -525,9 +591,20 @@
       "Scram": {
        "Enabled": true
       }
+     },
+     "Tls": {
+      "CertificateAuthorityArnList": [
+       {
+        "Fn::GetAtt": [
+         "CertificateAuthority",
+         "Arn"
+        ]
+       }
+      ],
+      "Enabled": true
      }
     },
-    "ClusterName": "integ-test-sasl-scram-iam-auth",
+    "ClusterName": "integ-test-auth",
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
@@ -550,6 +627,9 @@
     },
     "NumberOfBrokerNodes": 2
    },
+   "DependsOn": [
+    "CertificateActivation"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
