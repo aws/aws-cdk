@@ -31,7 +31,7 @@ export class S3Asset {
 
     const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key }).promise();
     this.cached_tags = response.TagSet;
-    return response.TagSet;
+    return this.cached_tags;
   }
 
   private async getTag(s3: S3, tag: string) {
@@ -181,9 +181,14 @@ export class GarbageCollector {
         print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
         printer.start();
 
-        const isolated = batch.filter((obj) => {
-          return !activeAssets.contains(obj.fileName());
-        });
+        const { isolated, notIsolated } = batch.reduce<{ isolated: S3Asset[]; notIsolated: S3Asset[] }>((acc, obj) => {
+          if (!activeAssets.contains(obj.fileName())) {
+            acc.isolated.push(obj);
+          } else {
+            acc.notIsolated.push(obj);
+          }
+          return acc;
+        }, { isolated: [], notIsolated: [] });
 
         debug(`${isolated.length} isolated assets`);
 
@@ -219,7 +224,17 @@ export class GarbageCollector {
 
         printer.reportScannedObjects(batch.length);
 
-        // TODO: untag
+        // We untag objects that are referenced in ActiveAssets and currently have the Isolated Tag.
+        let untaggables: S3Asset[] = await Promise.all(notIsolated.map(async (obj) => {
+          const noTag = await obj.noIsolatedTag(s3);
+          return noTag ? null : obj;
+        })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
+
+        debug(`${untaggables.length} assets to untag`);
+
+        if (this.permissionToTag && untaggables.length > 0) {
+          await this.parallelUntag(s3, bucket, untaggables);
+        }
       }
     } catch (err: any) {
       throw new Error(err);
@@ -236,6 +251,37 @@ export class GarbageCollector {
     for (const obj of objects) {
       await limit(() => obj.allTags(s3));
     }
+  }
+
+  /**
+   * Untag assets that were previously tagged, but now currently referenced.
+   * Since this is treated as an implementation detail, we do not print the results in the printer.
+   */
+  private async parallelUntag(s3: S3, bucket: string, untaggables: S3Asset[]) {
+    const limit = pLimit(P_LIMIT);
+
+    for (const obj of untaggables) {
+      const tags = await obj.allTags(s3);
+      const updatedTags = tags.filter(tag => tag.Key !== ISOLATED_TAG);
+      await limit(() =>
+        s3.deleteObjectTagging({
+          Bucket: bucket,
+          Key: obj.key,
+
+        }).promise(),
+      );
+      await limit(() => 
+        s3.putObjectTagging({
+          Bucket: bucket,
+          Key: obj.key,
+          Tagging: {
+            TagSet: updatedTags,
+          },
+        }).promise(),
+      );
+    }
+
+    debug(`Untagged ${untaggables.length} assets`);
   }
 
   /**
