@@ -90,7 +90,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
         StackName: stack,
       }).promise();
 
-      templates.push(template.TemplateBody ?? '' + summary?.Parameters);
+      templates.push((template.TemplateBody ?? '') + JSON.stringify(summary?.Parameters));
     }
   }
 

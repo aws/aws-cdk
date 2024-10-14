@@ -42,7 +42,12 @@ describe('Garbage Collection', () => {
         { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
       ],
     });
-    mockGetTemplateSummary = jest.fn().mockReturnValue({});
+    mockGetTemplateSummary = jest.fn().mockReturnValue({
+      Parameters: [{
+        ParameterKey: "BootstrapVersion",
+        DefaultValue: "/cdk-bootstrap/abcde/version",
+      }],
+    });
     mockGetTemplate = jest.fn().mockReturnValue({
       TemplateBody: 'abcde',
     });
@@ -286,6 +291,95 @@ describe('Garbage Collection', () => {
     // get tags, but dont put tags
     expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
     expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+  });
+
+  test('bootstrap filters out other bootstrap versions', async () => {
+    mockTheToolkitInfo({
+      Parameters: [{
+        ParameterKey: 'Qualifier',
+        ParameterValue: 'zzzzzz',
+      }],
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'full',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 3,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockGetTemplateSummary).toHaveBeenCalledTimes(2);
+    expect(mockGetTemplate).toHaveBeenCalledTimes(0);
+  });
+
+  test('parameter hashes are included', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    const mockGetTemplateSummaryAssets = jest.fn().mockReturnValue({
+      Parameters: [{
+        ParameterKey: "AssetParametersasset1",
+        DefaultValue: "asset1",
+      }],
+    });
+
+    sdk.stubCloudFormation({
+      listStacks: mockListStacks,
+      getTemplateSummary: mockGetTemplateSummaryAssets,
+      getTemplate: mockGetTemplate,
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'full',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 0,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    // no tagging
+    expect(mockGetObjectTagging).toHaveBeenCalledTimes(0);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+
+    // assets are to be deleted
+    expect(mockDeleteObjects).toHaveBeenCalledWith({
+      Bucket: 'BUCKET_NAME',
+      Delete: {
+        Objects: [
+          // no 'asset1'
+          { Key: 'asset2' },
+          { Key: 'asset3' },
+        ],
+        Quiet: true,
+      },
+    });
   });
 
   test('stackStatus in REVIEW_IN_PROGRESS means we wait until it changes', async () => {
