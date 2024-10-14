@@ -229,8 +229,8 @@ describe('MSK Cluster', () => {
       });
     });
 
-    describe('with sasl/iam auth and tls', () => {
-      test('Snapshot test with all values set (iam/sasl)', () => {
+    describe('with sasl/scram, iam, and tls', () => {
+      test('Snapshot test with all values set (iam/scram/tls)', () => {
         const cluster = new msk.Cluster(stack, 'kafka', {
           clusterName: 'test-cluster',
           kafkaVersion: msk.KafkaVersion.V2_6_1,
@@ -252,6 +252,7 @@ describe('MSK Cluster', () => {
           },
           clientAuthentication: msk.ClientAuthentication.saslTls({
             iam: true,
+            scram: true,
             certificateAuthorities: [
               acmpca.CertificateAuthority.fromCertificateAuthorityArn(
                 stack,
@@ -374,24 +375,6 @@ describe('MSK Cluster', () => {
           },
         });
       });
-    });
-
-    test('fails if more than one authentication method is enabled', () => {
-      expect(
-        () =>
-          new msk.Cluster(stack, 'Cluster', {
-            clusterName: 'cluster',
-            kafkaVersion: msk.KafkaVersion.V2_6_1,
-            vpc,
-            encryptionInTransit: {
-              clientBroker: msk.ClientBrokerEncryption.TLS,
-            },
-            clientAuthentication: msk.ClientAuthentication.sasl({
-              iam: true,
-              scram: true,
-            }),
-          }),
-      ).toThrow('Only one client authentication method can be enabled.');
     });
   });
 
