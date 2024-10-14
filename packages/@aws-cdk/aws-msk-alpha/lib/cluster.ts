@@ -650,9 +650,8 @@ export class Cluster extends ClusterBase {
     }
 
     let clientAuthentication;
-    const { saslProps, tlsProps } = props.clientAuthentication ?? {};
-
     if (props.clientAuthentication) {
+      const { saslProps, tlsProps } = props.clientAuthentication;
       clientAuthentication = {
         sasl: saslProps ? {
           iam: saslProps.iam ? { enabled: true }: undefined,
