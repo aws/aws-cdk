@@ -1,7 +1,6 @@
 import { CloudFormation } from 'aws-sdk';
-import * as chalk from 'chalk';
-import { print } from '../../logging';
 import { sleep } from '../../../test/util';
+import { debug } from '../../logging';
 
 export class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();
@@ -36,10 +35,8 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
  */
 async function listStacksNotBeingReviewed(cfn: CloudFormation, maxWaitTime: number, nextToken: string | undefined) {
   let sleepMs = 500;
-  console.log("1");
 
-  while(sleepMs < maxWaitTime) {
-    console.log("2");
+  while (sleepMs < maxWaitTime) {
     let stacks = await cfn.listStacks({ NextToken: nextToken }).promise();
     if (!stacks.StackSummaries?.some(s => s.StackStatus == 'REVIEW_IN_PROGRESS')) {
       return stacks;
@@ -60,7 +57,7 @@ async function listStacksNotBeingReviewed(cfn: CloudFormation, maxWaitTime: numb
    * understanding of what assets are being used.
    * - stacks in REVIEW_IN_PROGRESS stage
    */
-async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number,  qualifier?: string) {
+async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, qualifier?: string) {
   const stackNames: string[] = [];
   await paginateSdkCall(async (nextToken) => {
     const stacks = await listStacksNotBeingReviewed(cfn, maxWaitTime, nextToken);
@@ -76,7 +73,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
     return stacks.NextToken;
   });
 
-  print(chalk.blue(`Parsing through ${stackNames.length} stacks`));
+  debug(`Parsing through ${stackNames.length} stacks`);
 
   const templates: string[] = [];
   for (const stack of stackNames) {
@@ -104,7 +101,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
     }
   }
 
-  print(chalk.red('Done parsing through stacks'));
+  debug('Done parsing through stacks');
 
   return templates;
 }
@@ -152,7 +149,7 @@ export interface BackgroundStackRefreshProps {
  */
 export class BackgroundStackRefresh {
   private _isRefreshing = false;
-  private timeout: NodeJS.Timeout | undefined;
+  private timeout?: NodeJS.Timeout;
 
   constructor(private readonly props: BackgroundStackRefreshProps) {}
 

@@ -5,6 +5,7 @@ import { debug, print } from '../../logging';
 import { ISDK, Mode, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
+import { ProgressPrinter } from './progress-printer';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -14,7 +15,7 @@ const ISOLATED_TAG = 'aws-cdk:isolated';
 const P_LIMIT = 50;
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
-class S3Asset {
+export class S3Asset {
   private cached_tags: S3.TagSet | undefined = undefined;
 
   public constructor(private readonly bucket: string, public readonly key: string, public readonly size: number) {}
@@ -121,6 +122,8 @@ export class GarbageCollector {
     this.garbageCollectS3Assets = ['s3', 'all'].includes(props.type);
     this.garbageCollectEcrAssets = ['ecr', 'all'].includes(props.type);
 
+    debug(`${this.garbageCollectS3Assets} ${this.garbageCollectEcrAssets}`);
+
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
     this.maxWaitTime = props.maxWaitTime ?? 60000;
@@ -155,16 +158,20 @@ export class GarbageCollector {
       qualifier,
       maxWaitTime: this.maxWaitTime,
     });
-    const timeout = setTimeout(backgroundStackRefresh.start, Math.max(startTime + 300_000 - Date.now(), 0))
+    const timeout = setTimeout(backgroundStackRefresh.start, Math.max(startTime + 300_000 - Date.now(), 0));
 
+    const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
+    const numObjects = await this.numObjectsInBucket(s3, bucket);
+    const printer = new ProgressPrinter(numObjects, 1000);
+
+    debug(`Found bootstrap bucket ${bucket}`);
+    
     try {
-      const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
-      const numObjects = await this.numObjectsInBucket(s3, bucket);
       const batches = 1;
       const batchSize = 1000;
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
-
+ 
       debug(`Parsing through ${numObjects} objects in batches`);
 
       // Process objects in batches of 1000
@@ -172,6 +179,7 @@ export class GarbageCollector {
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket, batchSize)) {
         print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
+        printer.start();
 
         const isolated = batch.filter((obj) => {
           return !activeAssets.contains(obj.fileName());
@@ -202,12 +210,14 @@ export class GarbageCollector {
         debug(`${taggables.length} taggable assets`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          await this.parallelDelete(s3, bucket, deletables);
+          await this.parallelDelete(s3, bucket, deletables, printer);
         }
 
         if (this.permissionToTag && taggables.length > 0) {
-          await this.parallelTag(s3, bucket, taggables, currentTime);
+          await this.parallelTag(s3, bucket, taggables, currentTime, printer);
         }
+
+        printer.reportScannedObjects(batch.length);
 
         // TODO: untag
       }
@@ -215,6 +225,7 @@ export class GarbageCollector {
       throw new Error(err);
     } finally {
       backgroundStackRefresh.stop();
+      printer.stop();
       clearTimeout(timeout);
     }
   }
@@ -231,7 +242,7 @@ export class GarbageCollector {
    * Tag objects in parallel using p-limit. The putObjectTagging API does not
    * support batch tagging so we must handle the parallelism client-side.
    */
-  private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[], date: number) {
+  private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[], date: number, printer: ProgressPrinter) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of taggables) {
@@ -251,13 +262,14 @@ export class GarbageCollector {
       );
     }
 
+    printer.reportTaggedObjects(taggables);
     debug(`Tagged ${taggables.length} assets`);
   }
 
   /**
    * Delete objects in parallel. The deleteObjects API supports batches of 1000.
    */
-  private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[]) {
+  private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[], printer: ProgressPrinter) {
     const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
       Key: asset.key,
     }));
@@ -272,6 +284,7 @@ export class GarbageCollector {
       }).promise();
 
       debug(`Deleted ${deletables.length} assets`);
+      printer.reportDeletedObjects(deletables);
     } catch (err) {
       print(chalk.red(`Error deleting objects: ${err}`));
     }
