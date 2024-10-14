@@ -40,6 +40,10 @@ export function makeConfig(): CliConfig {
             default: false,
           },
         },
+        arg: {
+          name: 'STACKS',
+          variadic: true,
+        },
       },
     },
   };

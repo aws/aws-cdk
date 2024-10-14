@@ -26,7 +26,7 @@ function makeYargs(config: CliConfig): typewriter.Statement {
     console.log('in loop');
     const commandFacts = config.commands[command];
     const commandArg = commandFacts.arg
-      ? ` [${commandFacts.arg?.name}${commandFacts.arg?.variadic}]`
+      ? ` [${commandFacts.arg?.name}${commandFacts.arg?.variadic ? '..' : ''}]`
       : '';
     const aliases = commandFacts.aliases
       ? commandFacts.aliases.map((alias) => `, '${alias} ${commandArg}'`)
