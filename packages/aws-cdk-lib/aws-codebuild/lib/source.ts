@@ -785,12 +785,13 @@ class GitHubSource extends CommonGithubSource {
         location: this.sourceLocation,
       },
       sourceVersion: superConfig.sourceVersion,
-      buildTriggers: {
-        ...superConfig.buildTriggers,
-        scopeConfiguration: this.organization ? {
-          name: this.organization,
-        } : undefined,
-      },
+      buildTriggers: this.organization
+        ? {
+          ...superConfig.buildTriggers,
+          scopeConfiguration: {
+            name: this.organization,
+          },
+        } : superConfig.buildTriggers,
     };
   }
 }
