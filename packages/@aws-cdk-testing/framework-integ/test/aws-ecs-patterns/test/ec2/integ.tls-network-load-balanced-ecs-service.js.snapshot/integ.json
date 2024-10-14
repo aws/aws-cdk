@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "networkLoadBalancedEc2ServiceTest/DefaultTest": {
+      "stacks": [
+        "tls-network-load-balanced-ecs-service"
+      ],
+      "assertionStack": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "networkLoadBalancedEc2ServiceTestDefaultTestDeployAssert34DAD7DE"
+    }
+  }
+}
