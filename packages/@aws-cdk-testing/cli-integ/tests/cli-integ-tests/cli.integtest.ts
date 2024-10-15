@@ -2258,8 +2258,7 @@ integTest(
   'hotswap deployment for ecs service detects failed deployment and errors',
   withExtendedTimeoutFixture(async (fixture) => {
     // GIVEN
-    // eslint-disable-next-line no-console
-    console.log(await fixture.cdkDeploy('ecs-hotswap', { verbose: true }));
+    await fixture.cdkDeploy('ecs-hotswap', { verbose: true });
 
     // WHEN
     const deployOutput = await fixture.cdkDeploy('ecs-hotswap', {
