@@ -4,7 +4,6 @@ import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 import { RouteTable } from './route';
-import { error } from 'console';
 
 /**
  * Interface to define subnet CIDR
@@ -476,9 +475,35 @@ function validateSupportIpv6(vpc: IVpcV2) {
  * @returns True if the CIDR range falls within the VPC's IP address ranges, false otherwise.
  * @internal
  */
+// function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
+
+//   const vpcCidrBlock = [vpc.ipv4CidrBlock];
+
+//   if (vpc.secondaryCidrBlock) {
+//     for (const ipAddress of vpc.secondaryCidrBlock) {
+//       if (ipAddress.cidrBlock) {
+//         vpcCidrBlock.push(ipAddress.cidrBlock);
+//       }
+//     }
+//     const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
+
+//     const subnetCidrBlock = new CidrBlock(cidrRange);
+
+//     return cidrs.some(c => c.containsCidr(subnetCidrBlock));
+//   }
+//   if (vpc.ipv4ProvisionedCidrs) {
+
+//     const cidrs = vpc.ipv4ProvisionedCidrs.map(cidr => new CidrBlock(cidr));
+
+//     const subnetCidrBlock = new CidrBlock(cidrRange);
+
+//     return cidrs.some(c => c.containsCidr(subnetCidrBlock));
+//   } else {throw error('No secondary IP address attached to VPC');}
+// }
 function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
+  const allCidrs: CidrBlock[] = [];
 
   if (vpc.secondaryCidrBlock) {
     for (const ipAddress of vpc.secondaryCidrBlock) {
@@ -487,11 +512,21 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
       }
     }
     const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
+    allCidrs.push(...cidrs);
+  }
 
-    const subnetCidrBlock = new CidrBlock(cidrRange);
+  if (vpc.ipv4ProvisionedCidrs) {
 
-    return cidrs.some(c => c.containsCidr(subnetCidrBlock));
-  } else {throw error('No secondary IP address attached to VPC');}
+    const cidrs = vpc.ipv4ProvisionedCidrs.map(cidr => new CidrBlock(cidr));
+    allCidrs.push(...cidrs);
+  }
+  if (allCidrs.length === 0) {
+    throw new Error('No secondary IP address attached to VPC');
+  }
+
+  const subnetCidrBlock = new CidrBlock(cidrRange);
+
+  return allCidrs.some(c => c.containsCidr(subnetCidrBlock));
 }
 
 /**

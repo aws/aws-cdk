@@ -32,6 +32,28 @@
     "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
    ]
   },
+  "ImportedNewVPCAddnewImportedSubnetDefaultIPv6Route98D952A0": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "AddnewImportedSubnetRouteTable73C1E1B7",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
+    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
+   ]
+  },
   "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C": {
    "Type": "AWS::EC2::Route",
    "Properties": {
@@ -54,12 +76,81 @@
     "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
    ]
   },
+  "ImportedNewVPCAddnewImportedSubnet2DefaultIPv6Route1EBC364B": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "AddnewImportedSubnet2RouteTable2F07FB4F",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
+    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
+   ]
+  },
+  "ImportedNewVPCAddnewImportedSubnet2DefaultRouteE8630009": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "AddnewImportedSubnet2RouteTable2F07FB4F",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
+    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
+   ]
+  },
+  "ImportedNewVPCNATGatewayEIP36F5A670": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc-08193db3ccc4f909f"
+   }
+  },
+  "ImportedNewVPCNATGatewayE0ECDDFA": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "ImportedNewVPCNATGatewayEIP36F5A670",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": "subnet-0d441651f6653d4a7"
+   }
+  },
+  "ImportedNewVPCEgressOnlyGWEIGWF9D837A6": {
+   "Type": "AWS::EC2::EgressOnlyInternetGateway",
+   "Properties": {
+    "VpcId": "vpc-08193db3ccc4f909f"
+   }
+  },
   "AddnewImportedSubnet53655C69": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.2.2.0/24",
+    "Ipv6CidrBlock": "2600:1f14:b1d:6500::/64",
     "VpcId": "vpc-08193db3ccc4f909f"
    }
   },
@@ -80,6 +171,72 @@
     },
     "SubnetId": {
      "Ref": "AddnewImportedSubnet53655C69"
+    }
+   }
+  },
+  "AddnewImportedSubnet2SubnetD9533DC5": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.3.2.0/24",
+    "Ipv6CidrBlock": "2600:1f14:b1d:6501::/64",
+    "VpcId": "vpc-08193db3ccc4f909f"
+   }
+  },
+  "AddnewImportedSubnet2RouteTable2F07FB4F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": "vpc-08193db3ccc4f909f"
+   }
+  },
+  "AddnewImportedSubnet2RouteTableAssociationA2C6CDF7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "AddnewImportedSubnet2RouteTable2F07FB4F",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "AddnewImportedSubnet2SubnetD9533DC5"
+    }
+   }
+  },
+  "ImportedIPAMVPCEgressOnlyGWEIGW52C5892F": {
+   "Type": "AWS::EC2::EgressOnlyInternetGateway",
+   "Properties": {
+    "VpcId": "vpc-02407f4a207815a97"
+   }
+  },
+  "AddnewSubnettoImportedIpamSubnet0F5C302A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.2.1.0/28",
+    "Ipv6CidrBlock": "2600:1f24:6c:4000::/64",
+    "VpcId": "vpc-02407f4a207815a97"
+   }
+  },
+  "AddnewSubnettoImportedIpamRouteTable1AE0FBA3": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": "vpc-02407f4a207815a97"
+   }
+  },
+  "AddnewSubnettoImportedIpamRouteTableAssociation20268806": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "AddnewSubnettoImportedIpamRouteTable1AE0FBA3",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "AddnewSubnettoImportedIpamSubnet0F5C302A"
     }
    }
   }
