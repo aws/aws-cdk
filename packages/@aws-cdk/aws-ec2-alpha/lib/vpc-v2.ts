@@ -3,7 +3,7 @@ import { Arn, CfnResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
-import { ISubnetV2, ImportedSubnetV2, SubnetV2Attributes } from './subnet-v2';
+import { ISubnetV2, ImportedSubnetV2, SubnetV2Attributes } from './subnet-v2';;
 
 /**
  * Additional props needed for secondary Address
@@ -112,6 +112,14 @@ export interface VpcCidrOptions {
    * @default - no name for primary addresses
    */
   readonly cidrBlockName?: string;
+
+  /**
+   * IPv4 CIDR provisioned under pool
+   * Required to check for overlapping CIDRs after provisioning
+   * is complete under IPAM pool
+   * @default - no IPAM IPv4 CIDR range is provisioned using IPAM
+   */
+  readonly ipv4ProvisionedCidrs?: string[];
 }
 
 /**
@@ -233,7 +241,7 @@ export interface VpcV2Attributes {
    * Import Secondary CIDR blocks associated with VPC
    * @default - No secondary IP address
    */
-  readonly secondaryCidrBlocks?: VPCCidrBlockProps[];
+  readonly secondaryCidrBlocks?: VPCCidrBlockattributes[];
 
 }
 
@@ -315,9 +323,16 @@ export class VpcV2 extends VpcV2Base {
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
- * reference to all secondary blocks attached
- */
+  * reference to all secondary blocks attached
+  */
   public readonly secondaryCidrBlock?: IVPCCidrBlock[] = new Array<IVPCCidrBlock>;
+
+  /**
+   * IPv4 CIDR provisioned under pool
+   * Required to check for overlapping CIDRs after provisioning
+   * is complete under IPAM pool
+   */
+  public readonly ipv4ProvisionedCidrs?: string[];
 
   /**
    * For validation to define IPv6 subnets, set to true in case of
@@ -385,15 +400,17 @@ export class VpcV2 extends VpcV2Base {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
         }
-        // const cfnVpcCidrBlock = new CfnVPCCidrBlock(this, secondaryVpcOptions.cidrBlockName, {
-        //   vpcId: this.vpcId,
-        //   cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
-        //   ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPool?.ipamPoolId,
-        //   ipv4NetmaskLength: secondaryVpcOptions.ipv4NetmaskLength,
-        //   ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
-        //   ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPool?.ipamPoolId,
-        //   amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
-        // });
+
+        if (secondaryVpcOptions.ipv4ProvisionedCidrs!) {
+          let isOverlap;
+          for (const provisionedCidr of secondaryVpcOptions.ipv4ProvisionedCidrs) {
+            isOverlap = validateIpv4address(provisionedCidr, secondaryVpcOptions.ipv4CidrBlock);
+          }
+          if (isOverlap === false) {
+            throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
+          }
+          this.ipv4ProvisionedCidrs?.push(...secondaryVpcOptions.ipv4ProvisionedCidrs);
+        }
         const cfnVpcCidrBlock = new VPCCidrBlock(this, secondaryVpcOptions.cidrBlockName, {
           vpcId: this.vpcId,
           cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
@@ -510,6 +527,7 @@ class IpamIpv4 implements IIpAddresses {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
       cidrBlockName: this.props?.cidrBlockName,
+      ipv4ProvisionedCidrs: this.props.ipamPool?.ipamIpv4Cidrs,
     };
   }
 }
@@ -534,6 +552,9 @@ class ImportedVpcV2 extends VpcV2Base {
 
   public readonly vpcCidrBlock: string;
 
+  // required to do CIDR range test on imported VPCs to create new subnets
+  public readonly ipv4ProvisionedCidrs: string[] = [];
+
   constructor(scope: Construct, id: string, props: VpcV2Attributes) {
     super(scope, id, {
       region: props. region,
@@ -548,15 +569,22 @@ class ImportedVpcV2 extends VpcV2Base {
     this.ipv4CidrBlock = props.vpcCidrBlock;
     this._vpnGatewayId = props.vpnGatewayId; //TODO if we need it for other gateways
     if (props.publicSubnets) {
-      this.publicSubnets = props.publicSubnets.map(subnet => new ImportedSubnetV2(scope, 'ImportedPublicSubnet', subnet));
+      this.publicSubnets = props.publicSubnets.map(subnet => new ImportedSubnetV2(scope, subnet.subnetName?? 'ImportedPublicSubnet', subnet));
     }
     if (props.privateSubnets) {
-      this.privateSubnets = props.privateSubnets.map(subnet => new ImportedSubnetV2(scope, 'ImportedPrivateSubnet', subnet));
+      this.privateSubnets = props.privateSubnets.map(subnet => new ImportedSubnetV2(scope, subnet.subnetName?? 'ImportedPrivateSubnet', subnet));
     }
     if (props.isolatedSubnets) {
-      this.isolatedSubnets = props.isolatedSubnets.map(subnet => new ImportedSubnetV2(scope, 'ImportedPrivateSubnet', subnet));
+      this.isolatedSubnets = props.isolatedSubnets.map(subnet => new ImportedSubnetV2(scope, subnet.subnetName?? 'ImportedIsolatedSubnet', subnet));
     }
-    this.secondaryCidrBlock = props.secondaryCidrBlocks?.map(cidrBlock => VPCCidrBlock.fromVPCCidrBlockattributes(scope, cidrBlock.cidrBlockName ?? 'ImportedSecondaryCidrBlock', cidrBlock));
+    this.secondaryCidrBlock = props.secondaryCidrBlocks?.map(cidrBlock => VPCCidrBlock.fromVPCCidrBlockattributes(scope, cidrBlock.cidrBlockName ?? 'ImportedSecondaryCidrBlock', { ...cidrBlock }));
+    if (props.secondaryCidrBlocks) {
+      for (const cidr of props.secondaryCidrBlocks) {
+        if (cidr.ipv4ProvisionedCidrs) {
+          this.ipv4ProvisionedCidrs.push(...cidr.ipv4ProvisionedCidrs);
+        }
+      }
+    }
   }
 }
 
@@ -603,13 +631,10 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
 }
 
 /**
- * Interface VPCCidrBlock
+ * Attributes for VPCCidrBlock used for defining a new VPCCIDRBlock
+ * and also importing an existing  VPCCIDRBlock
  */
-export interface VPCCidrBlockProps {
-  /**
-   * The VPC Id
-   */
-  readonly vpcId: string;
+export interface VPCCidrBlockattributes {
 
   /**
    * The secondary IPv4 CIDR Block
@@ -618,40 +643,60 @@ export interface VPCCidrBlockProps {
   readonly cidrBlock?: string;
 
   /**
-   * CIDR Block Name
-   * @default - no CIDR Block name generated, this field is required while importing CIDR block for VPC
-   */
+     * CIDR Block Name
+     * @default - no CIDR Block name generated, this field is required while importing CIDR block for VPC
+     */
   readonly cidrBlockName?: string;
 
   /**
-   * Opt for amazonProvided Ipv6 CIDR address
-   * @default false
-   */
+     * Opt for amazonProvided Ipv6 CIDR address
+     * @default false
+     */
   readonly amazonProvidedIpv6CidrBlock?: boolean;
 
   /**
-   * IPAM pool Id for IPv6 address type
-   * @default - no IPAM pool Id provided
-   */
+     * IPAM pool Id for IPv6 address type
+     * @default - no IPAM pool Id provided
+     */
   readonly ipv6IpamPoolId?: string;
 
   /**
-   * IPAM pool Id for IPv4 address type
-   * @default - no IPAM pool Id provided
-   */
+     * IPAM pool Id for IPv4 address type
+     * @default - no IPAM pool Id provided
+     */
   readonly ipv4IpamPoolId?: string;
 
   /**
-   * Net mask length for IPv4 address type
-   * @default - no Net mask length configured and it would fail the deployment
-   */
+     * Net mask length for IPv4 address type
+     * @default - no Net mask length configured and it would fail the deployment
+     */
   readonly ipv4NetmaskLength?: number;
 
   /**
-   * Net mask length for IPv6 address type
-   * @default - no Net mask length configured and it would fail the deployment
+   * IPv4 CIDR provisioned under pool
+   * Required to check for overlapping CIDRs after provisioning
+   * is complete under IPAM pool
+   * @default - no IPAM IPv4 CIDR range is provisioned using IPAM
    */
+  readonly ipv4ProvisionedCidrs?: string[];
+
+  /**
+     * Net mask length for IPv6 address type
+     * @default - no Net mask length configured and it would fail the deployment
+     */
   readonly ipv6NetmaskLength?: number;
+
+}
+
+/**
+ * Interface VPCCidrBlock
+ */
+interface VPCCidrBlockProps extends VPCCidrBlockattributes {
+  /**
+   * The VPC Id
+   */
+  readonly vpcId: string;
+
 }
 
 /**
@@ -660,7 +705,7 @@ export interface VPCCidrBlockProps {
  */
 class VPCCidrBlock extends Resource implements IVPCCidrBlock {
 
-  public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockProps) : IVPCCidrBlock {
+  public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes) : IVPCCidrBlock {
     class Import extends Resource implements IVPCCidrBlock {
       public readonly cidrBlock = props.cidrBlock;
       public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;;

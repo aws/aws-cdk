@@ -13,43 +13,32 @@ const stack = new cdk.Stack(app, 'vpcv2-import-integ-test', {
 });
 
 /**
- * Testing VPC import
+ * To deploy these test for importing VPCs
+ * Create VPC in account using integ.vpc-v2-alpha
+ * and integ.ipam.ts for IPAM related test
+ * Once created, change the subnet and VPCID
+ * according to the one alloted on creation
  */
-// const imported_vpc = VpcV2.VpcV2.fromVpcV2attributes(stack, 'ImportedVPC', {
-//   vpcId: 'vpc-058cd322b857c8c0d',
-//   vpcCidrBlock: '10.0.0.0/16',
-//   privateSubnets: [{
-//     subnetId: 'subnet-0b29e0804726920a9',
-//     subnetType: SubnetType.PRIVATE,
-//     availabilityZone: 'us-west-2a',
-//     ipv4CidrBlock: '10.0.128.0/18',
-//     routeTableId: 'rtb-05d7e8cb38a502040',
-//   }],
-// });
-
-// imported_vpc.addInterfaceEndpoint('ec2Endpoint', {
-//   service: ec2.InterfaceVpcEndpointAwsService.EC2,
-//});
-
 const imported_new_vpc = VpcV2.VpcV2.fromVpcV2attributes(stack, 'ImportedNewVPC', {
-  vpcId: 'vpc-08193db3ccc4f909f',
+  vpcId: 'vpc-08193db3ccc4f909f', //VPC id
   vpcCidrBlock: '10.1.0.0/16',
   secondaryCidrBlocks: [{
-    vpcId: 'vpc-08193db3ccc4f909f', //eliminate VPC id and fetch it from above
     cidrBlock: '10.2.0.0/16',
     cidrBlockName: 'ImportedBlock1',
   },
   {
-    vpcId: 'vpc-08193db3ccc4f909f', //another secondary address to test
     cidrBlock: '10.3.0.0/16',
     cidrBlockName: 'ImportedBlock2',
+  }, {
+    amazonProvidedIpv6CidrBlock: true,
   }],
-  privateSubnets: [{
-    subnetId: 'subnet-03cd773c0fe08ed26',
+  isolatedSubnets: [{
+    subnetName: 'IsolatedSubnet2',
+    subnetId: 'subnet-03cd773c0fe08ed26', //Subnet Id
     subnetType: SubnetType.PRIVATE_ISOLATED,
     availabilityZone: 'us-west-2a',
-    ipv4CidrBlock: '10.1.0.0/24',
-    routeTableId: 'rtb-0871c310f98da2cbb',
+    ipv4CidrBlock: '10.2.0.0/24',
+    routeTableId: 'rtb-0871c310f98da2cbb', //RouteTable id
   }],
   publicSubnets: [{
     subnetId: 'subnet-0fa477e01db27d820',
@@ -60,20 +49,71 @@ const imported_new_vpc = VpcV2.VpcV2.fromVpcV2attributes(stack, 'ImportedNewVPC'
   }],
 });
 
+//Test to add new subnet to imported VPC against secondary range
 new SubnetV2(stack, 'AddnewImportedSubnet', {
   availabilityZone: 'us-west-2a',
   ipv4CidrBlock: new IpCidr('10.2.2.0/24'),
-  vpc: imported_new_vpc,
-  subnetType: SubnetType.PUBLIC,
-});
-new SubnetV2(stack, 'AddnewImportedSubnet', {
-  availabilityZone: 'us-west-2a',
-  ipv4CidrBlock: new IpCidr('10.3.2.0/24'),
+  //can be uncommented and modified after allocation is done using Amazon Provided Ipv6
+  //ipv6CidrBlock: new IpCidr('2600:1f14:b1d:6500::/64'),
   vpc: imported_new_vpc,
   subnetType: SubnetType.PUBLIC,
 });
 
+//Test to add new subnet to imported VPC against secondary range
+new SubnetV2(stack, 'AddnewImportedSubnet2', {
+  availabilityZone: 'us-west-2a',
+  ipv4CidrBlock: new IpCidr('10.3.2.0/24'),
+  //can be uncommented and modified after allocation is done using Amazon Provided Ipv6
+  //ipv6CidrBlock: new IpCidr('2600:1f14:b1d:6500::/64'),
+  vpc: imported_new_vpc,
+  subnetType: SubnetType.PUBLIC,
+});
+
+const ImportedSubnet = SubnetV2.fromSubnetV2attributes(stack, 'IsolatedSubnet1', {
+  subnetId: 'subnet-0d441651f6653d4a7',
+  subnetType: SubnetType.PRIVATE_ISOLATED,
+  availabilityZone: 'us-west-2b',
+  ipv4CidrBlock: '10.2.0.0/24',
+  routeTableId: 'rtb-0f02fab3ed3fb4ba9',
+});
+
+//Test to add different types of gateways
 imported_new_vpc.addInternetGateway();
+
+imported_new_vpc.addNatGateway({
+  subnet: ImportedSubnet,
+});
+
+imported_new_vpc.addEgressOnlyInternetGateway();
+
+// Import another IPAM enabled VPC
+const ipamvpc = VpcV2.VpcV2.fromVpcV2attributes(stack, 'ImportedIPAMVPC', {
+  vpcId: 'vpc-02407f4a207815a97',
+  vpcCidrBlock: '10.0.0.0/16',
+  secondaryCidrBlocks: [{
+    ipv6IpamPoolId: 'ipam-pool-0316c6848898c09e0',
+    ipv6NetmaskLength: 52,
+    cidrBlockName: 'ImportedIpamIpv6',
+  },
+  {
+    ipv4IpamPoolId: 'ipam-pool-0d53ae29b3b8ca8de',
+    ipv4ProvisionedCidrs: ['10.2.0.0/16'],
+    cidrBlockName: 'ImportedIpamIpv4',
+  }],
+});
+
+//Test to add different types of gateways
+ipamvpc.addEgressOnlyInternetGateway();
+
+//Test to add new subnet to imported VPC against IPAM range
+new SubnetV2(stack, 'AddnewSubnettoImportedIpam', {
+  availabilityZone: 'us-west-2a',
+  ipv4CidrBlock: new IpCidr('10.2.1.0/28'),
+  //can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
+  ipv6CidrBlock: new IpCidr('2600:1f24:6c:4000::/64'),
+  vpc: ipamvpc,
+  subnetType: SubnetType.PUBLIC,
+});
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],

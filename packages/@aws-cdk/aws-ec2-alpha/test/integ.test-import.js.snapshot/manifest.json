@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/5d62285f365aaad1a318be65b4cbb19b1d8dd7336c95d61923a203dde81074c8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/8bcc09e4eceabfb397695075b581f1f4e8f8a03b61ec24651ebe38d9da4f754e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,10 +53,46 @@
             "data": "ImportedNewVPCImportedPublicSubnetDefaultRoute56DCABA4"
           }
         ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet-DefaultIPv6Route/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCAddnewImportedSubnetDefaultIPv6Route98D952A0"
+          }
+        ],
         "/vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet-DefaultRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet2-DefaultIPv6Route/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCAddnewImportedSubnet2DefaultIPv6Route1EBC364B"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet2-DefaultRoute/Route": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCAddnewImportedSubnet2DefaultRouteE8630009"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCNATGatewayEIP36F5A670"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCNATGatewayE0ECDDFA"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedNewVPC/EgressOnlyGW/EIGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCEgressOnlyGWEIGWF9D837A6"
           }
         ],
         "/vpcv2-import-integ-test/AddnewImportedSubnet/Subnet": [
@@ -75,6 +111,51 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AddnewImportedSubnetRouteTableAssociationE5634175"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewImportedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewImportedSubnet2SubnetD9533DC5"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewImportedSubnet2/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewImportedSubnet2RouteTable2F07FB4F"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewImportedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewImportedSubnet2RouteTableAssociationA2C6CDF7"
+          }
+        ],
+        "/vpcv2-import-integ-test/ImportedIPAMVPC/EgressOnlyGW/EIGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedIPAMVPCEgressOnlyGWEIGW52C5892F"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewSubnettoImportedIpam/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewSubnettoImportedIpamSubnet0F5C302A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewSubnettoImportedIpam/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewSubnettoImportedIpamRouteTable1AE0FBA3"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewSubnettoImportedIpam/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewSubnettoImportedIpamRouteTableAssociation20268806"
           }
         ],
         "/vpcv2-import-integ-test/BootstrapVersion": [

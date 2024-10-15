@@ -193,6 +193,11 @@ export interface IIpamPool{
   readonly ipamCidrs: CfnIPAMPoolCidr[];
 
   /**
+   * Pool CIDR for IPv4 to be provisioned
+   */
+  readonly ipamIpv4Cidrs?: string[];
+
+  /**
    * Function to associate a IPv6 address with IPAM pool
    */
   provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): CfnIPAMPoolCidr;
@@ -316,6 +321,11 @@ class IpamPool extends Resource implements IIpamPool {
   public readonly ipamCidrs: CfnIPAMPoolCidr[] = []
 
   /**
+   * Pool CIDR for IPv4 to be provisioned
+   */
+  public readonly ipamIpv4Cidrs: string[] = []
+
+  /**
    * Reference to ipamPool resource created in this class
    */
   private readonly _ipamPool: CfnIPAMPool;
@@ -340,6 +350,7 @@ class IpamPool extends Resource implements IIpamPool {
       awsService: props.awsService,
     });
     this.ipamPoolId = this._ipamPool.attrIpamPoolId;
+    props.ipv4ProvisionedCidrs?.map(cidr => (this.ipamIpv4Cidrs.push(cidr)));
     this.node.defaultChild = this._ipamPool;
   }
 
