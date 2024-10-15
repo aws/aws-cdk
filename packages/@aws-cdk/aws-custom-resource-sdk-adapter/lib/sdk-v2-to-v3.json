@@ -91,7 +91,7 @@
   "mediapackagevod": "mediapackage-vod",
   "mediastoredata": "mediastore-data",
   "medicalimaging": "medical-imaging",
-  "memorydb": "memory-db",
+  "memorydb": "memorydb",
   "migrationhub": "migration-hub",
   "migrationhubconfig": "migrationhub-config",
   "migrationhubrefactorspaces": "migration-hub-refactor-spaces",
