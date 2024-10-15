@@ -105,11 +105,14 @@ new route53.ARecord(this, 'ARecord', {
 ```
 
 To create an A record of type alias with target set to another record created outside CDK:
-### This function registers the given input i.e. DNS Name(string) of an existing record as an AliasTarget to the new ARecord. To register a target that is created as part of CDK use this instead https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53_targets-readme.html
+
+This function registers the given input i.e. DNS Name(string) of an existing record as an AliasTarget to the new ARecord. To register a target that is created as part of CDK use this instead.
+
+Detailed information can be found in the [documentation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53_targets-readme.html).
 
 ```ts
-
 declare const myZone: route53.HostedZone;
+
 const targetRecord = 'existing.record.cdk.local';
 const record = route53.ARecord.fromARecordAttributes(this, 'A', {
   zone: myZone,

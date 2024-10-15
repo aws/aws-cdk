@@ -13,7 +13,7 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 
 const MAX_INLINE_SIZE = 10000;
@@ -629,6 +629,19 @@ export class Role extends Resource implements IRole {
     }
 
     return this.immutableRole;
+  }
+
+  /**
+   * Skip applyRemovalPolicy if role synthesis is prevented by customizeRoles.
+   * Because in this case, this construct does not have a CfnResource in the tree.
+   * @override
+   * @param policy RemovalPolicy
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy): void {
+    const config = this.getPrecreatedRoleConfig();
+    if (!config.preventSynthesis) {
+      super.applyRemovalPolicy(policy);
+    }
   }
 
   private validateRole(): string[] {

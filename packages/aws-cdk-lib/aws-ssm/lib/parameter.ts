@@ -574,12 +574,17 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    *
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
+   *
+   * If defaultValue is provided, it will be used as the dummyValue
+   * and the ContextProvider will be told NOT to raise an error on synthesis
+   * if the SSM Parameter is not found in the account at synth time.
    */
-  public static valueFromLookup(scope: Construct, parameterName: string): string {
+  public static valueFromLookup(scope: Construct, parameterName: string, defaultValue?: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
-      dummyValue: `dummy-value-for-${parameterName}`,
+      dummyValue: defaultValue || `dummy-value-for-${parameterName}`,
+      ignoreErrorOnMissingContext: defaultValue !== undefined,
     }).value;
 
     return value;

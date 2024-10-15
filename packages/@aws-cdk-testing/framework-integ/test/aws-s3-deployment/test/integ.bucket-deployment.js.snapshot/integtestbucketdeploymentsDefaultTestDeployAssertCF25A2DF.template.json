@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "test-bucket-deployments-2:ExportsOutputRefDestination52A57FAA3531B2DE2"
+         "Fn::ImportValue": "test-bucket-deployments:ExportsOutputRefDestination52A57FAA3531B2DE2"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720655039201"
+    "salt": "1727420304629"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,6 +76,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -86,12 +95,20 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "30d328e47ab6c6a4d0d137aac9e53e30955ac7469bcb2be4a49f9baf5cfc2f9c.zip"
+     "S3Key": "da514df694ce3f41453746a766ae6aff13c869c38002598930d6d34e5711985b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -102,6 +119,32 @@
      ]
     }
    }
+  },
+  "AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$StringLike\":\"Object Keys are ([0-9a-f])+.zip\"}",
+    "actualPath": "Stacks.0.Outputs.0.OutputValue",
+    "parameters": {
+     "StackName": "\"test-bucket-deployments\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Stacks.0.Outputs.0.OutputKey",
+     "Stacks.0.Outputs.0.OutputValue"
+    ],
+    "salt": "1727420304629"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -111,6 +154,138 @@
      "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159",
      "assertion"
     ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
    }
   }
  },

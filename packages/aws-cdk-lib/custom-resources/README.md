@@ -636,7 +636,7 @@ new cr.AwsCustomResource(this, 'ListObjects', {
     service: 's3',
     action: 'ListObjectsV2',
     parameters: {
-      Bucket: 'my-bucket',
+      Bucket: 'amzn-s3-demo-bucket',
     },
     physicalResourceId: cr.PhysicalResourceId.of('id'),
     outputPaths: ['Contents.0.Key', 'Contents.1.Key'], // Output only the two first keys

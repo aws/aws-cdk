@@ -2832,7 +2832,7 @@
                         "role": {
                           "Ref": "referencetoawscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn"
                         },
-                        "runtime": "python3.10",
+                        "runtime": "python3.11",
                         "timeout": 900,
                         "vpcConfig": {
                           "subnetIds": [
@@ -3282,7 +3282,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/4b7060f9a7391e772faca37cc5ddd245cca8f875e6238dfd7a4c6e6003afa6f7.json"
+                          "/b28ec0444060b976c34d01a01376cc0bf6ac2e0fe559a5d6b42fe8f763233dc0.json"
                         ]
                       ]
                     }
