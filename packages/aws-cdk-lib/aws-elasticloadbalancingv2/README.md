@@ -405,6 +405,40 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
+### Network Load Balancer Listener attributes
+
+You can modify attributes of Network Load Balancer Listener:
+
+```ts
+declare const lb: elbv2.NetworkLoadBalancer;
+declare const group: elbv2.NetworkTargetGroup;
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+  defaultAction: elbv2.NetworkListenerAction.forward([group]),
+
+  // The tcp idle timeout value. The valid range is 60-6000 seconds. The default is 350 seconds.
+  tcpIdleTimeout: Duration.seconds(100),
+});
+```
+
+### Network Load Balancer and EC2 IConnectable interface
+Network Load Balancer implements EC2 `IConnectable` and exposes `connections` property. EC2 Connections allows manage the allowed network connections for constructs with Security Groups. This class makes it easy to allow network connections to and from security groups, and between security groups individually. One thing to keep in mind is that network load balancers do not have security groups, and no automatic security group configuration is done for you. You will have to configure the security groups of the target yourself to allow traffic by clients and/or load balancer instances, depending on your target types.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+  securityGroups: [sg1],
+});
+lb.addSecurityGroup(sg2);
+lb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+```
+
 ## Targets and Target Groups
 
 Application and Network Load Balancers organize load balancing targets in Target

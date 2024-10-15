@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
 import {
@@ -112,10 +113,10 @@ describe('cluster new api', () => {
     });
 
     test.each([
-      [0.5, 200, /serverlessV2MaxCapacity must be >= 0.5 & <= 128/],
-      [0.5, 0, /serverlessV2MaxCapacity must be >= 0.5 & <= 128/],
-      [0, 1, /serverlessV2MinCapacity must be >= 0.5 & <= 128/],
-      [200, 1, /serverlessV2MinCapacity must be >= 0.5 & <= 128/],
+      [0.5, 300, /serverlessV2MaxCapacity must be >= 0.5 & <= 256/],
+      [0.5, 0, /serverlessV2MaxCapacity must be >= 0.5 & <= 256/],
+      [0, 1, /serverlessV2MinCapacity must be >= 0.5 & <= 256/],
+      [300, 1, /serverlessV2MinCapacity must be >= 0.5 & <= 256/],
       [0.5, 0.5, /If serverlessV2MinCapacity === 0.5 then serverlessV2MaxCapacity must be >=1/],
       [10.1, 12, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
       [12, 12.1, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
@@ -4402,6 +4403,61 @@ describe('cluster', () => {
               Effect: 'Allow',
               Resource: {
                 Ref: 'DatabaseSecretAttachmentE5D1B020',
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('can grant DataApi access to an imported cluster with data api enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      const secret = new Secret(stack, 'Secret');
+
+      // WHEN
+      const importedCluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'ImportedCluster', {
+        clusterIdentifier: 'clusterIdentifier',
+        secret,
+        dataApiEnabled: true,
+      });
+      importedCluster.grantDataApiAccess(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'rds-data:BatchExecuteStatement',
+                'rds-data:BeginTransaction',
+                'rds-data:CommitTransaction',
+                'rds-data:ExecuteStatement',
+                'rds-data:RollbackTransaction',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds:us-test-1:12345:cluster:clusterIdentifier',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'SecretA720EF05',
               },
             },
           ],
