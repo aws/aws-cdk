@@ -236,6 +236,27 @@ const amplifyApp = new amplify.App(this, 'App', {
 });
 ```
 
+If the app uses a monorepo structure, define which appRoot from the build spec the custom response headers should apply to by using the `appRoot` property:
+```ts
+customResponseHeaders: [
+  {
+    appRoot: 'frontend',
+    pattern: '*.json',
+    headers: {
+      'custom-header-name-1': 'custom-header-value-1',
+      'custom-header-name-2': 'custom-header-value-2',
+    },
+  },
+  {
+    appRoot: 'backend',
+    pattern: '/path/*',
+    headers: {
+      'custom-header-name-1': 'custom-header-value-2',
+    },
+  },
+],
+```
+
 ## Configure server side rendering when hosting app
 
 Setting the `platform` field on the Amplify `App` construct can be used to control whether the app will host only static assets or server side rendered assets in addition to static. By default, the value is set to `WEB` (static only), however, server side rendering can be turned on by setting to `WEB_COMPUTE` as follows:
