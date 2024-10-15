@@ -239,23 +239,30 @@ const amplifyApp = new amplify.App(this, 'App', {
 If the app uses a monorepo structure, define which appRoot from the build spec the custom response headers should apply to by using the `appRoot` property:
 
 ```ts
-customResponseHeaders: [
-  {
-    appRoot: 'frontend',
-    pattern: '*.json',
-    headers: {
-      'custom-header-name-1': 'custom-header-value-1',
-      'custom-header-name-2': 'custom-header-value-2',
+const amplifyApp = new amplify.App(this, 'App', {
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: SecretValue.secretsManager('my-github-token'),
+  }),
+  customResponseHeaders: [
+    {
+      appRoot: 'frontend',
+      pattern: '*.json',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-1',
+        'custom-header-name-2': 'custom-header-value-2',
+      },
     },
-  },
-  {
-    appRoot: 'backend',
-    pattern: '/path/*',
-    headers: {
-      'custom-header-name-1': 'custom-header-value-2',
+    {
+      appRoot: 'backend',
+      pattern: '/path/*',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-2',
+      },
     },
-  },
-],
+  ],
+});
 ```
 
 ## Configure server side rendering when hosting app
