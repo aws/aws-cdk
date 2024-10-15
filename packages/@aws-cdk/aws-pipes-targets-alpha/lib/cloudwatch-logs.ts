@@ -26,8 +26,9 @@ export interface CloudWatchLogsTargetParameters {
   /**
    * The JSON path expression that references the timestamp in the payload.
    *
-   * @example
-   * '$.data.timestamp'
+   * This is the time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+   *
+   * @example '$.data.timestamp'
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargetcloudwatchlogsparameters.html#cfn-pipes-pipe-pipetargetcloudwatchlogsparameters-timestamp
    * @default - current time
@@ -36,7 +37,7 @@ export interface CloudWatchLogsTargetParameters {
 }
 
 /**
- * A EventBridge Pipes target that sends messages to a CloudWatch Logs log group.
+ * An EventBridge Pipes target that sends messages to a CloudWatch Logs log group.
  */
 export class CloudWatchLogsTarget implements ITarget {
   private logGroup: ILogGroup;
