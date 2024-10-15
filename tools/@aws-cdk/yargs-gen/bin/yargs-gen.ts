@@ -45,7 +45,7 @@ function makeYargs(config: CliConfig): Statement {
       for (const optionProp of Object.keys(optionFacts)) {
         switch (optionProp) {
           case 'middleware':
-            // middleware is a separate function call, so we can't store it with the regular option arguments:
+            // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
             // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
             middleware = {
               callbacks: code.expr.lit(optionFacts.middleware!.callbacks.toString()),
