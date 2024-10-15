@@ -1,20 +1,24 @@
-import * as typewriter from '@cdklabs/typewriter';
-import { code } from '@cdklabs/typewriter';
+import { Expression, FreeFunction, Module, Statement, TypeScriptRenderer, code } from '@cdklabs/typewriter';
 import { CliConfig, makeConfig } from '../lib/config';
 
 async function main() {
-  const scope = new typewriter.Module('aws-cdk');
-  const parseCommandLineArguments = new typewriter.FreeFunction(scope, {
+  const scope = new Module('aws-cdk');
+  const parseCommandLineArguments = new FreeFunction(scope, {
     name: 'parseCommandLineArguments',
   });
   parseCommandLineArguments.addBody(makeYargs(makeConfig()));
 
-  const renderer = new typewriter.TypeScriptRenderer();
+  const renderer = new TypeScriptRenderer();
   // eslint-disable-next-line no-console
   console.log(renderer.render(scope));
 }
 
-function makeYargs(config: CliConfig): typewriter.Statement {
+interface MiddlewareExpression {
+  callbacks: Expression;
+  applyBeforeValidation?: Expression;
+}
+
+function makeYargs(config: CliConfig): Statement {
   const preamble = `yargs
   .env('CDK')
   .usage('Usage: cdk -a <cdk-app> COMMAND')
@@ -22,8 +26,6 @@ function makeYargs(config: CliConfig): typewriter.Statement {
 
   let yargsExpr = code.expr.directCode(preamble);
   for (const command of Object.keys(config.commands)) {
-    // eslint-disable-next-line no-console
-    console.log('in loop');
     const commandFacts = config.commands[command];
     const commandArg = commandFacts.arg
       ? ` [${commandFacts.arg?.name}${commandFacts.arg?.variadic ? '..' : ''}]`
@@ -31,21 +33,40 @@ function makeYargs(config: CliConfig): typewriter.Statement {
     const aliases = commandFacts.aliases
       ? commandFacts.aliases.map((alias) => `, '${alias} ${commandArg}'`)
       : '';
-    yargsExpr = yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description), code.expr.directCode('(yargs: Argv) => yargs'));
+
+    // must compute options before we compute the full command, because in yargs, the options are an argument to the command call.
+    let optionsExpr: Expression = code.expr.directCode('(yargs: Argv) => yargs');
 
     for (const option of Object.keys(commandFacts.options ?? {})) {
-      // eslint-disable-next-line no-console
-      console.log('in loop 2');
+      // each option can define at most one middleware call; if we need more, handle a list of these instead
+      let middleware: MiddlewareExpression | undefined = undefined;
       const optionFacts = commandFacts.options![option];
-      const optionArgs: { [key: string]: typewriter.Expression } = {};
+      const optionArgs: { [key: string]: Expression } = {};
       for (const optionProp of Object.keys(optionFacts)) {
-        // eslint-disable-next-line no-console
-        console.log('in loop 3');
-        optionArgs[optionProp] = code.expr.lit((optionFacts as any)[optionProp]);
+        switch (optionProp) {
+          case 'middleware':
+            // middleware is a separate function call, so we can't store it with the regular option arguments:
+            // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
+            middleware = {
+              callbacks: code.expr.lit(optionFacts.middleware!.callbacks.toString()),
+              applyBeforeValidation: code.expr.lit(optionFacts.middleware!.applyBeforeValidation),
+            };
+            break;
+
+          default:
+            optionArgs[optionProp] = code.expr.lit((optionFacts as any)[optionProp]);
+        }
       }
 
-      yargsExpr = yargsExpr.callMethod('option', code.expr.lit(`${option}`), code.expr.object(optionArgs));
+      optionsExpr = optionsExpr.callMethod('option', code.expr.lit(`${option}`), code.expr.object(optionArgs));
+      if (middleware) {
+        optionsExpr = optionsExpr.callMethod('middleware', middleware.callbacks, middleware.applyBeforeValidation ?? code.expr.UNDEFINED);
+        middleware = undefined;
+      }
     }
+
+    // tail-recursive?
+    yargsExpr = yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description), optionsExpr);
   }
 
   return code.stmt.ret(yargsExpr);
