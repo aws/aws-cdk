@@ -400,15 +400,7 @@ export class VpcV2 extends VpcV2Base {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
         }
-
         if (secondaryVpcOptions.ipv4ProvisionedCidrs!) {
-          let isOverlap;
-          for (const provisionedCidr of secondaryVpcOptions.ipv4ProvisionedCidrs) {
-            isOverlap = validateIpv4address(provisionedCidr, secondaryVpcOptions.ipv4CidrBlock);
-          }
-          if (isOverlap === false) {
-            throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
-          }
           this.ipv4ProvisionedCidrs?.push(...secondaryVpcOptions.ipv4ProvisionedCidrs);
         }
         const cfnVpcCidrBlock = new VPCCidrBlock(this, secondaryVpcOptions.cidrBlockName, {
