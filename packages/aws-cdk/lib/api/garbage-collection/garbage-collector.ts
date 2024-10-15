@@ -36,14 +36,14 @@ export class S3Asset {
 
   private getTag(tag: string) {
     if (!this.cached_tags) {
-      throw new Error("Cannot call getTag before allTags");
+      throw new Error('Cannot call getTag before allTags');
     }
     return this.cached_tags.find(t => t.Key === tag)?.Value;
   }
 
   private hasTag(tag: string) {
     if (!this.cached_tags) {
-      throw new Error("Cannot call hasTag before allTags");
+      throw new Error('Cannot call hasTag before allTags');
     }
     return this.cached_tags.some(t => t.Key === tag);
   }
@@ -161,7 +161,7 @@ export class GarbageCollector {
       qualifier,
       maxWaitTime: this.maxWaitTime,
     });
-    backgroundStackRefresh.start();
+    void backgroundStackRefresh.start();
 
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
@@ -203,11 +203,11 @@ export class GarbageCollector {
         if (graceDays > 0) {
           debug('Filtering out assets that are not old enough to delete');
           await this.parallelReadAllTags(s3, batch);
-         
+
           // We delete objects that are not referenced in ActiveAssets and have the Isolated Tag with a date
           // earlier than the current time - grace period.
           deletables = isolated.filter(obj => obj.isolatedTagBefore(new Date(currentTime - (graceDays * DAY))));
-          
+
           // We tag objects that are not referenced in ActiveAssets and do not have the Isolated Tag.
           taggables = isolated.filter(obj => !obj.hasIsolatedTag());
 
@@ -266,7 +266,7 @@ export class GarbageCollector {
 
         }).promise(),
       );
-      await limit(() => 
+      await limit(() =>
         s3.putObjectTagging({
           Bucket: bucket,
           Key: obj.key,

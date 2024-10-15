@@ -187,7 +187,7 @@ export class BackgroundStackRefresh {
   }
 
   private justRefreshedStacks() {
-    debug("just refreshed stacks");
+    debug('just refreshed stacks');
     this.lastRefreshTime = Date.now();
     for (const p of this.queuedPromises.splice(0, this.queuedPromises.length)) {
       p(undefined);
