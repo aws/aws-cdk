@@ -66,6 +66,38 @@ test('return dummy key if returnDummyKeyOnMissing is true', () => {
   ]);
 });
 
+describe('isLookupDummy method', () => {
+  test('return false if the lookup key is not a dummy key', () => {
+    const previous = mockKeyContextProviderWith({
+      keyId: '12345678-1234-1234-1234-123456789012',
+    }, options => {
+      expect(options.aliasName).toEqual('alias/foo');
+    });
+
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
+    const key = Key.fromLookup(stack, 'Key', {
+      aliasName: 'alias/foo',
+      returnDummyKeyOnMissing: true,
+    });
+
+    expect(Key.isLookupDummy(key)).toEqual(false);
+
+    restoreContextProvider(previous);
+  });
+
+  test('return true if the lookup key is a dummy key', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
+    const key = Key.fromLookup(stack, 'Key', {
+      aliasName: 'alias/foo',
+      returnDummyKeyOnMissing: true,
+    });
+
+    expect(Key.isLookupDummy(key)).toEqual(true);
+  });
+});
+
 interface MockKeyContextResponse {
   readonly keyId: string;
 }
