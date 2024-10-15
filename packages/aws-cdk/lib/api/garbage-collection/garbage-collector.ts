@@ -181,6 +181,7 @@ export class GarbageCollector {
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket, batchSize, currentTime)) {
+        await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
         print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
         printer.start();
 
@@ -311,21 +312,30 @@ export class GarbageCollector {
    * Delete objects in parallel. The deleteObjects API supports batches of 1000.
    */
   private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[], printer: ProgressPrinter) {
+    const batchSize = 1000;
     const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
       Key: asset.key,
     }));
 
     try {
-      await s3.deleteObjects({
-        Bucket: bucket,
-        Delete: {
-          Objects: objectsToDelete,
-          Quiet: true,
-        },
-      }).promise();
+      const batches = [];
+      for (let i = 0; i < objectsToDelete.length; i += batchSize) {
+        batches.push(objectsToDelete.slice(i, i + batchSize));
+      }
+      // Delete objects in batches
+      for (const batch of batches) {
+        await s3.deleteObjects({
+          Bucket: bucket,
+          Delete: {
+            Objects: batch,
+            Quiet: true,
+          },
+        }).promise();
 
-      debug(`Deleted ${deletables.length} assets`);
-      printer.reportDeletedObjects(deletables);
+        const deletedCount = batch.length;
+        debug(`Deleted ${deletedCount} assets`);
+        printer.reportDeletedObjects(deletables.slice(0, deletedCount));
+      }
     } catch (err) {
       print(chalk.red(`Error deleting objects: ${err}`));
     }

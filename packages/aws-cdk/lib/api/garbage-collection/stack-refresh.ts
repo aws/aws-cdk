@@ -162,8 +162,12 @@ export interface BackgroundStackRefreshProps {
  */
 export class BackgroundStackRefresh {
   private timeout?: NodeJS.Timeout;
+  private lastRefreshTime: number;
+  private queuedPromises: Array<(value: unknown) => void> = [];
 
-  constructor(private readonly props: BackgroundStackRefreshProps) {}
+  constructor(private readonly props: BackgroundStackRefreshProps) {
+    this.lastRefreshTime = Date.now();
+  }
 
   public async start() {
     // Since start is going to be called right after the first invocation of refreshStacks,
@@ -175,10 +179,40 @@ export class BackgroundStackRefresh {
     const startTime = Date.now();
 
     await refreshStacks(this.props.cfn, this.props.activeAssets, this.props.maxWaitTime ?? 60000, this.props.qualifier);
+    this.justRefreshedStacks();
 
     // If the last invocation of refreshStacks takes <5 minutes, the next invocation starts 5 minutes after the last one started.
     // If the last invocation of refreshStacks takes >5 minutes, the next invocation starts immediately.
     this.timeout = setTimeout(() => this.refresh(), Math.max(startTime + 300_000 - Date.now(), 0));
+  }
+
+  private justRefreshedStacks() {
+    debug("just refreshed stacks");
+    this.lastRefreshTime = Date.now();
+    for (const p of this.queuedPromises.splice(0, this.queuedPromises.length)) {
+      p(undefined);
+    }
+  }
+
+  /**
+   * Checks if the last successful background refresh happened within the specified time frame.
+   * If the last refresh is older than the specified time frame, it returns a Promise that resolves
+   * when the next background refresh completes or rejects if the refresh takes too long.
+   */
+  public noOlderThan(ms: number) {
+    const horizon = Date.now() - ms;
+
+    // The last refresh happened within the time frame
+    if (this.lastRefreshTime >= horizon) {
+      return Promise.resolve();
+    }
+
+    // The last refresh happened earlier than the time frame
+    // We will wait for the latest refresh to land or reject if it takes too long
+    return Promise.race([
+      new Promise(resolve => this.queuedPromises.push(resolve)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('refreshStacks took too long; the background thread likely threw an error')), ms)),
+    ]);
   }
 
   public stop() {

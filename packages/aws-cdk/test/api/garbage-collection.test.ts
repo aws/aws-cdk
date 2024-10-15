@@ -13,10 +13,13 @@ let mockGetTemplate: (params: AWS.CloudFormation.Types.GetTemplateInput) => AWS.
 let mockListObjectsV2: (params: AWS.S3.Types.ListObjectsV2Request) => AWS.S3.Types.ListObjectsV2Output;
 let mockGetObjectTagging: (params: AWS.S3.Types.GetObjectTaggingRequest) => AWS.S3.Types.GetObjectTaggingOutput;
 let mockDeleteObjects: (params: AWS.S3.Types.DeleteObjectsRequest) => AWS.S3.Types.DeleteObjectsOutput;
+let mockDeleteObjectTagging: (params: AWS.S3.Types.DeleteObjectTaggingRequest) => AWS.S3.Types.DeleteObjectTaggingOutput;
 let mockPutObjectTagging: (params: AWS.S3.Types.PutObjectTaggingRequest) => AWS.S3.Types.PutObjectTaggingOutput;
 
 let stderrMock: jest.SpyInstance;
 let sdk: MockSdkProvider;
+
+const ISOLATED_TAG = 'aws-cdk:isolated';
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
   const mockSdk = new MockSdk();
@@ -63,11 +66,12 @@ describe('Garbage Collection', () => {
     });
     mockGetObjectTagging = jest.fn().mockImplementation((params) => {
       return Promise.resolve({
-        TagSet: params.Key === 'asset2' ? [{ Key: 'ISOLATED_TAG', Value: new Date().toISOString() }] : [],
+        TagSet: params.Key === 'asset2' ? [{ Key: ISOLATED_TAG, Value: new Date().toISOString() }] : [],
       });
     });
     mockPutObjectTagging = jest.fn();
     mockDeleteObjects = jest.fn();
+    mockDeleteObjectTagging = jest.fn();
     mockDescribeStacks = jest.fn();
 
     sdk.stubCloudFormation({
@@ -80,6 +84,7 @@ describe('Garbage Collection', () => {
       listObjectsV2: mockListObjectsV2,
       getObjectTagging: mockGetObjectTagging,
       deleteObjects: mockDeleteObjects,
+      deleteObjectTagging: mockDeleteObjectTagging,
       putObjectTagging: mockPutObjectTagging,
     });
   });
@@ -161,7 +166,7 @@ describe('Garbage Collection', () => {
 
     // assets tagged
     expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one asset already has the tag
 
     // no deleting
     expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
@@ -255,7 +260,7 @@ describe('Garbage Collection', () => {
 
     // tags objects
     expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one object already has the tag
 
     // no deleting
     expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
@@ -490,7 +495,7 @@ describe('Garbage Collection', () => {
     // everything else runs as expected:
     // assets tagged
     expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one object already has the tag
 
     // no deleting
     expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
@@ -537,4 +542,141 @@ describe('Garbage Collection', () => {
 
     await expect(garbageCollector.garbageCollect()).rejects.toThrow(/Stacks still in REVIEW_IN_PROGRESS state after waiting/);
   }, 60000);
+});
+
+let mockListObjectsV2Large: (params: AWS.S3.Types.ListObjectsV2Request) => AWS.S3.Types.ListObjectsV2Output;
+let mockGetObjectTaggingLarge: (params: AWS.S3.Types.GetObjectTaggingRequest) => AWS.S3.Types.GetObjectTaggingOutput;
+describe('Garbage Collection with large # of objects', () => {
+  const keyCount = 10000;
+
+  beforeEach(() => {
+    mockListStacks = jest.fn().mockResolvedValue({
+      StackSummaries: [
+        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
+      ],
+    });
+    mockGetTemplateSummary = jest.fn().mockReturnValue({
+      Parameters: [{
+        ParameterKey: 'BootstrapVersion',
+        DefaultValue: '/cdk-bootstrap/abcde/version',
+      }],
+    });
+    // add every 5th asset hash to the mock template body: 8000 assets are isolated
+    const mockTemplateBody = [];
+    for (let i = 0; i < keyCount; i+=5) {
+      mockTemplateBody.push(`asset${i}hash`);
+    }
+    mockGetTemplate = jest.fn().mockReturnValue({
+      TemplateBody: mockTemplateBody.join('-'),
+    });
+
+    const contents: { Key: string; LastModified: Date }[] = [];
+    for (let i = 0; i < keyCount; i++) {
+      contents.push({
+        Key: `asset${i}hash`,
+        LastModified: new Date(0),
+      });
+    }
+    mockListObjectsV2Large = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        Contents: contents,
+        KeyCount: keyCount,
+      });
+    });
+
+    // every other object has the isolated tag: of the 8000 isolated assets, 4000 already are tagged.
+    // of the 2000 in use assets, 1000 are tagged.
+    mockGetObjectTaggingLarge = jest.fn().mockImplementation((params) => {
+      return Promise.resolve({
+        TagSet: Number(params.Key[params.Key.length - 5]) % 2 === 0 ? [{ Key: ISOLATED_TAG, Value: new Date(2000, 1, 1).toISOString() }] : [],
+      });
+    });
+    mockPutObjectTagging = jest.fn();
+    mockDeleteObjects = jest.fn();
+    mockDeleteObjectTagging = jest.fn();
+    mockDescribeStacks = jest.fn();
+
+    sdk.stubCloudFormation({
+      listStacks: mockListStacks,
+      getTemplateSummary: mockGetTemplateSummary,
+      getTemplate: mockGetTemplate,
+      describeStacks: mockDescribeStacks,
+    });
+    sdk.stubS3({
+      listObjectsV2: mockListObjectsV2Large,
+      getObjectTagging: mockGetObjectTaggingLarge,
+      deleteObjects: mockDeleteObjects,
+      deleteObjectTagging: mockDeleteObjectTagging,
+      putObjectTagging: mockPutObjectTagging,
+    });
+  });
+
+  afterEach(() => {
+    mockGarbageCollect.mockClear();
+  });
+
+  test('tag only', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'tag',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 1,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mockListObjectsV2Large).toHaveBeenCalledTimes(2);
+
+    // tagging is performed
+    expect(mockGetObjectTaggingLarge).toHaveBeenCalledTimes(keyCount);
+    expect(mockDeleteObjectTagging).toHaveBeenCalledTimes(1000); // 1000 in use assets are erroneously tagged
+    expect(mockPutObjectTagging).toHaveBeenCalledTimes(5000); // 8000-4000 assets need to be tagged, + 1000 (since untag also calls this)
+  });
+
+  test('delete-tagged only', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = new GarbageCollector({
+      sdkProvider: sdk,
+      action: 'delete-tagged',
+      resolvedEnvironment: {
+        account: '123456789012',
+        region: 'us-east-1',
+        name: 'mock',
+      },
+      bootstrapStackName: 'GarbageStack',
+      rollbackBufferDays: 1,
+      type: 's3',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mockListObjectsV2Large).toHaveBeenCalledTimes(2);
+
+    // delete previously tagged objects
+    expect(mockGetObjectTaggingLarge).toHaveBeenCalledTimes(keyCount);
+    expect(mockDeleteObjects).toHaveBeenCalledTimes(4); // 4000 isolated assets are already tagged, deleted in batches of 1000
+  });
 });
