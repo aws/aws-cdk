@@ -35,14 +35,15 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
  */
 async function listStacksNotBeingReviewed(cfn: CloudFormation, maxWaitTime: number, nextToken: string | undefined) {
   let sleepMs = 500;
+  const deadline = Date.now() + maxWaitTime;
 
-  while (sleepMs < maxWaitTime) {
+  while (Date.now() <= deadline) {
     let stacks = await cfn.listStacks({ NextToken: nextToken }).promise();
     if (!stacks.StackSummaries?.some(s => s.StackStatus == 'REVIEW_IN_PROGRESS')) {
       return stacks;
     }
     await sleep(Math.floor(Math.random() * sleepMs));
-    sleepMs = Math.min(sleepMs * 2, maxWaitTime);
+    sleepMs = sleepMs * 2;
   }
 
   throw new Error(`Stacks still in REVIEW_IN_PROGRESS state after waiting for ${maxWaitTime} ms.`);
@@ -62,7 +63,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
   await paginateSdkCall(async (nextToken) => {
     const stacks = await listStacksNotBeingReviewed(cfn, maxWaitTime, nextToken);
 
-    // Deleted stacks are ignored
+    // We ignore stacks with these statuses because their assets are no longer live
     const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED'];
     stackNames.push(
       ...(stacks.StackSummaries ?? [])
@@ -165,13 +166,19 @@ export class BackgroundStackRefresh {
   constructor(private readonly props: BackgroundStackRefreshProps) {}
 
   public async start() {
+    // Since start is going to be called right after the first invocation of refreshStacks,
+    // lets wait some time before beginning the background refresh.
+    this.timeout = setTimeout(() => this.refresh(), 300_000);
+  }
+
+  private async refresh() {
     const startTime = Date.now();
 
     await refreshStacks(this.props.cfn, this.props.activeAssets, this.props.maxWaitTime ?? 60000, this.props.qualifier);
 
     // If the last invocation of refreshStacks takes <5 minutes, the next invocation starts 5 minutes after the last one started.
     // If the last invocation of refreshStacks takes >5 minutes, the next invocation starts immediately.
-    this.timeout = setTimeout(this.start, Math.max(startTime + 300_000 - Date.now(), 0));
+    this.timeout = setTimeout(() => this.refresh(), Math.max(startTime + 300_000 - Date.now(), 0));
   }
 
   public stop() {

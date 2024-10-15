@@ -153,7 +153,6 @@ export class GarbageCollector {
     const activeAssets = new ActiveAssetCache();
 
     // Grab stack templates first
-    const startTime = Date.now();
     await refreshStacks(cfn, activeAssets, this.maxWaitTime, qualifier);
     // Start the background refresh
     const backgroundStackRefresh = new BackgroundStackRefresh({
@@ -162,7 +161,7 @@ export class GarbageCollector {
       qualifier,
       maxWaitTime: this.maxWaitTime,
     });
-    const timeout = setTimeout(backgroundStackRefresh.start, Math.max(startTime + 300_000 - Date.now(), 0));
+    backgroundStackRefresh.start();
 
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
@@ -238,7 +237,6 @@ export class GarbageCollector {
     } finally {
       backgroundStackRefresh.stop();
       printer.stop();
-      clearTimeout(timeout);
     }
   }
 
