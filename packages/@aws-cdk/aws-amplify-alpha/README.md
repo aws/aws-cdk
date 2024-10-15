@@ -237,6 +237,7 @@ const amplifyApp = new amplify.App(this, 'App', {
 ```
 
 If the app uses a monorepo structure, define which appRoot from the build spec the custom response headers should apply to by using the `appRoot` property:
+
 ```ts
 customResponseHeaders: [
   {
