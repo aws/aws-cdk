@@ -1200,6 +1200,7 @@ The following example shows granting Data API access to a Lamba function.
 ```ts
 declare const vpc: ec2.Vpc;
 declare const fn: lambda.Function;
+declare const secret: secretsmanager.Secret;
 
 // Create a serverless V1 cluster
 const serverlessV1Cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
@@ -1216,6 +1217,14 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
+
+// Import an Aurora cluster
+const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(this, 'ImportedCluster', {
+  clusterIdentifier: 'clusterIdentifier',
+  secret,
+  dataApiEnabled: true,
+});
+importedCluster.grantDataApiAccess(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
