@@ -443,6 +443,86 @@ test('with custom headers', () => {
   });
 });
 
+test('with custom headers in a monorepo structure', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    customResponseHeaders: [
+      {
+        appRoot: 'frontend',
+        pattern: '*.json',
+        headers: {
+          'custom-header-name-1': 'custom-header-value-1',
+          'custom-header-name-2': 'custom-header-value-2',
+        },
+      },
+      {
+        appRoot: 'backend',
+        pattern: '/path/*',
+        headers: {
+          'custom-header-name-1': 'custom-header-value-2',
+        },
+      },
+      {
+        appRoot: 'other',
+        pattern: '/with-tokens/*',
+        headers: {
+          'x-custom': `${'hello'.repeat(10)}${Stack.of(stack).urlSuffix} `,
+        },
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    CustomHeaders: {
+      'Fn::Join': [
+        '',
+        [
+          'applications\n  - appRoot: frontend\n    customHeaders:\n      - pattern: \"*.json\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-1\"\n          - key: \"custom-header-name-2\"\n            value: \"custom-header-value-2\"\n  - appRoot: backend\n    customHeaders:\n      - pattern: \"/path/*\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-2\"\n  - appRoot: other\n    customHeaders:\n      - pattern: \"/with-tokens/*\"\n        headers:\n          - key: \"x-custom\"\n            value: \"hellohellohellohellohellohellohellohellohellohello',
+          {
+            Ref: 'AWS::URLSuffix',
+          },
+          ' "\n',
+        ],
+      ],
+    },
+  });
+});
+
+test('error with inconsistent appRoot in custom headers', () => {
+  // WHEN
+  expect(() => {
+    new amplify.App(stack, 'App', {
+      sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+        owner: 'aws',
+        repository: 'aws-cdk',
+        oauthToken: SecretValue.unsafePlainText('secret'),
+      }),
+      customResponseHeaders: [
+        {
+          pattern: '*.json',
+          headers: {
+            'custom-header-name-1': 'custom-header-value-1',
+            'custom-header-name-2': 'custom-header-value-2',
+          },
+        },
+        {
+          appRoot: 'backend',
+          pattern: '/path/*',
+          headers: {
+            'custom-header-name-1': 'custom-header-value-2',
+          },
+        },
+      ],
+    });
+  }).toThrow('appRoot must be either be present or absent across all custom response headers');
+});
+
 test('create a statically hosted app by default', () => {
   // WHEN
   new amplify.App(stack, 'App', {});

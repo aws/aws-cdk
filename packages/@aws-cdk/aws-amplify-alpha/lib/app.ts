@@ -520,6 +520,12 @@ export class CustomRule {
  */
 export interface CustomResponseHeader {
   /**
+   * If the app uses a monorepo structure, the appRoot from the build spec to apply the custom headers to.
+   * @default - The appRoot is omitted in the custom headers output.
+   */
+  readonly appRoot?: string;
+
+  /**
    * These custom headers will be applied to all URL file paths that match this pattern.
    */
   readonly pattern: string;
@@ -531,16 +537,24 @@ export interface CustomResponseHeader {
 }
 
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): string {
-  const yaml = [
-    'customHeaders:',
-  ];
+  const hasAppRoot = customHeaders[0].appRoot !== undefined;
+  const yaml = [hasAppRoot ? 'applications' : 'customHeaders:'];
 
   for (const customHeader of customHeaders) {
-    yaml.push(`  - pattern: "${customHeader.pattern}"`);
-    yaml.push('    headers:');
+    if ((customHeader.appRoot !== undefined) !== hasAppRoot) {
+      throw new Error('appRoot must be either be present or absent across all custom response headers');
+    }
+
+    const baseIndentation = ' '.repeat(customHeader.appRoot ? 6 : 2);
+    if (hasAppRoot) {
+      yaml.push(`  - appRoot: ${customHeader.appRoot}`);
+      yaml.push('    customHeaders:');
+    }
+    yaml.push(`${baseIndentation}- pattern: "${customHeader.pattern}"`);
+    yaml.push(`${baseIndentation}  headers:`);
     for (const [key, value] of Object.entries(customHeader.headers)) {
-      yaml.push(`      - key: "${key}"`);
-      yaml.push(`        value: "${value}"`);
+      yaml.push(`${baseIndentation}    - key: "${key}"`);
+      yaml.push(`${baseIndentation}      value: "${value}"`);
     }
   }
 
