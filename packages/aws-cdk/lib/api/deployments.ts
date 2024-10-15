@@ -12,6 +12,7 @@ import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from '
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { StackEventPoller } from './util/cloudformation/stack-event-poller';
@@ -384,6 +385,7 @@ export class Deployments {
   private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
+  private _allowCrossAccountAssetPublishing: boolean | undefined;
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
@@ -808,7 +810,10 @@ export class Deployments {
    */
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+    await publishAssets(manifest, this.sdkProvider, stackEnv, {
+      ...options.publishOptions,
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv),
+    });
   }
 
   /**
@@ -846,10 +851,19 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    await publisher.publishEntry(asset);
+    // eslint-disable-next-line no-console
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
+  }
+
+  private async allowCrossAccountAssetPublishingForEnv(env: cxapi.Environment): Promise<boolean> {
+    if (this._allowCrossAccountAssetPublishing === undefined) {
+      const sdk = (await this.cachedSdkForEnvironment(env, Mode.ForReading)).sdk;
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
+    }
+    return this._allowCrossAccountAssetPublishing;
   }
 
   /**
