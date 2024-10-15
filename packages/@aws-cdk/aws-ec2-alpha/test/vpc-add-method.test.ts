@@ -415,4 +415,32 @@ describe('Vpc V2 with full control', () => {
       },
     });
   });
+
+  test('createPeeringConnection establishes connection between 2 VPCs', () => {
+    const acceptorRoleArn = 'arn:aws:iam::123456789012:role/VpcPeeringRole';
+    const acceptorVpc = new vpc.VpcV2(stack, 'TestAcceptorVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+      ownerAccountId: '987654321098',
+      region: 'us-east-1',
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    myVpc.createPeeringConnection('testPeeringConnection', {
+      acceptorVpc: acceptorVpc,
+      peerRoleArn: acceptorRoleArn,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+      PeerRoleArn: acceptorRoleArn,
+      VpcId: {
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
+      },
+      PeerVpcId: {
+        'Fn::GetAtt': ['TestAcceptorVpc4AE3E611', 'VpcId'],
+      },
+      PeerOwnerId: '987654321098',
+      PeerRegion: 'us-east-1',
+    });
+  });
 });
