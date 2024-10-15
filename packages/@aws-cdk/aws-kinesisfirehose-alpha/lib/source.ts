@@ -11,7 +11,7 @@ import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 export interface SourceConfig {
   /**
      * Configuration for using a Kinesis Data Stream as a source for the delivery stream.
-     * 
+     *
      * This will be returned by the _bind method depending on what type of Source class is specified.
      *
      * @default - Kinesis Data Stream Source configuration property is not provided.
@@ -20,7 +20,7 @@ export interface SourceConfig {
 
   /**
      * Configuration for using an MSK (Managed Streaming for Kafka) cluster as a source for the delivery stream.
-     * 
+     *
      * This will be returned by the _bind method depending on what type of Source class is specified.
      *
      * @default - MSK Source configuration property is not provided.
@@ -67,7 +67,7 @@ export class KinesisStreamSource implements ISource {
 
   /**
    * Binds the Kinesis stream as a source for the Kinesis Data Firehose delivery stream.
-   * 
+   *
    * @returns The configuration needed to use this Kinesis stream as the delivery stream source.
    * @internal
    */
