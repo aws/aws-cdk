@@ -187,7 +187,6 @@ export class CdkToolkit {
               parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
               resourcesToImport,
               stream,
-              toolkitStackName: options.toolkitStackName,
             });
           } else {
             debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
@@ -247,7 +246,6 @@ export class CdkToolkit {
       await this.props.deployments.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
         stackName: assetNode.parentStack.stackName,
       });
     };
@@ -256,7 +254,6 @@ export class CdkToolkit {
       await this.props.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
         stackName: assetNode.parentStack.stackName,
       });
     };
@@ -1058,7 +1055,6 @@ export class CdkToolkit {
     await graph.removeUnnecessaryAssets(assetNode => this.props.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
       stack: assetNode.parentStack,
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
       stackName: assetNode.parentStack.stackName,
     }));
   }
