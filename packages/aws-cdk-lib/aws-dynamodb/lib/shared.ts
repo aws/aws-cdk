@@ -219,6 +219,23 @@ export enum StreamViewType {
 }
 
 /**
+ * The precision associated with the DynamoDB write timestamps that will be replicated to Kinesis.
+ * The default setting for record timestamp precision is microseconds. You can change this setting at any time.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-kinesisstreamspecification.html#aws-properties-dynamodb-table-kinesisstreamspecification-properties
+ */
+export enum ApproximateCreationDateTimePrecision {
+  /**
+   * Millisecond precision
+   */
+  MILLISECOND = 'MILLISECOND',
+
+  /**
+   * Microsecond precision
+   */
+  MICROSECOND = 'MICROSECOND',
+}
+
+/**
  * Properties for a secondary index
  */
 export interface SecondaryIndexProps {
