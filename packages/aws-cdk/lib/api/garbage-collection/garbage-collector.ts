@@ -34,22 +34,26 @@ export class S3Asset {
     return this.cached_tags;
   }
 
-  private async getTag(s3: S3, tag: string) {
-    const tags = await this.allTags(s3);
-    return tags.find(t => t.Key === tag)?.Value;
+  private getTag(tag: string) {
+    if (!this.cached_tags) {
+      throw new Error("Cannot call getTag before allTags");
+    }
+    return this.cached_tags.find(t => t.Key === tag)?.Value;
   }
 
-  private async hasTag(s3: S3, tag: string) {
-    const tags = await this.allTags(s3);
-    return tags.some(t => t.Key === tag);
+  private hasTag(tag: string) {
+    if (!this.cached_tags) {
+      throw new Error("Cannot call hasTag before allTags");
+    }
+    return this.cached_tags.some(t => t.Key === tag);
   }
 
-  public async noIsolatedTag(s3: S3) {
-    return !(await this.hasTag(s3, ISOLATED_TAG));
+  public hasIsolatedTag() {
+    return this.hasTag(ISOLATED_TAG);
   }
 
-  public async isolatedTagBefore(s3: S3, date: Date) {
-    const tagValue = await this.getTag(s3, ISOLATED_TAG);
+  public isolatedTagBefore(date: Date) {
+    const tagValue = this.getTag(ISOLATED_TAG);
     if (!tagValue || tagValue == '') {
       return false;
     }
@@ -194,25 +198,26 @@ export class GarbageCollector {
 
         let deletables: S3Asset[] = isolated;
         let taggables: S3Asset[] = [];
+        let untaggables: S3Asset[] = [];
 
         if (graceDays > 0) {
           debug('Filtering out assets that are not old enough to delete');
-          await this.parallelReadAllTags(s3, isolated);
-          // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-          deletables = await Promise.all(isolated.map(async (obj) => {
-            const shouldDelete = await obj.isolatedTagBefore(s3, new Date(currentTime - (graceDays * DAY)));
-            return shouldDelete ? obj : null;
-          })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
+          await this.parallelReadAllTags(s3, batch);
+         
+          // We delete objects that are not referenced in ActiveAssets and have the Isolated Tag with a date
+          // earlier than the current time - grace period.
+          deletables = isolated.filter(obj => obj.isolatedTagBefore(new Date(currentTime - (graceDays * DAY))));
+          
+          // We tag objects that are not referenced in ActiveAssets and do not have the Isolated Tag.
+          taggables = isolated.filter(obj => !obj.hasIsolatedTag());
 
-          // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-          taggables = await Promise.all(isolated.map(async (obj) => {
-            const shouldTag = await obj.noIsolatedTag(s3);
-            return shouldTag ? obj : null;
-          })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
+          // We untag objects that are referenced in ActiveAssets and currently have the Isolated Tag.
+          untaggables = notIsolated.filter(obj => obj.hasIsolatedTag());
         }
 
         debug(`${deletables.length} deletable assets`);
         debug(`${taggables.length} taggable assets`);
+        debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
           await this.parallelDelete(s3, bucket, deletables, printer);
@@ -222,19 +227,11 @@ export class GarbageCollector {
           await this.parallelTag(s3, bucket, taggables, currentTime, printer);
         }
 
-        printer.reportScannedObjects(batch.length);
-
-        // We untag objects that are referenced in ActiveAssets and currently have the Isolated Tag.
-        let untaggables: S3Asset[] = await Promise.all(notIsolated.map(async (obj) => {
-          const noTag = await obj.noIsolatedTag(s3);
-          return noTag ? null : obj;
-        })).then(results => results.filter((obj): obj is S3Asset => obj !== null));
-
-        debug(`${untaggables.length} assets to untag`);
-
         if (this.permissionToTag && untaggables.length > 0) {
           await this.parallelUntag(s3, bucket, untaggables);
         }
+
+        printer.reportScannedObjects(batch.length);
       }
     } catch (err: any) {
       throw new Error(err);
