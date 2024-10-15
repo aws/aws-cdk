@@ -1,4 +1,4 @@
-import { Template, Match } from '../../assertions';
+import { Annotations, Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Stack } from '../../core';
@@ -161,6 +161,11 @@ describe('FunctionUrlOriginAccessControl', () => {
         }),
       },
     });
+
+    // Check that the warning is added
+    Annotations.fromStack(stack).hasWarning('*',
+      'FunctionUrlOriginWithOAC: When the origin access control signing method is SIGV4_ALWAYS, it is recommended to set the authType of the Function URL to AWS_IAM.',
+    );
 
     const template = Template.fromStack(stack);
 

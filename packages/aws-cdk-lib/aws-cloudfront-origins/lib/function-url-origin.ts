@@ -120,7 +120,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
 
     if (!this.isCheckAuthType()) {
       cdk.Annotations.of(scope).addWarning(
-        'FunctionUrlOriginWithOAC: When the origin access control signing method is SIGV4_ALWAYS, it is recommended to set the authType of the Function URL to AWS_IAM.'
+        'FunctionUrlOriginWithOAC: When the origin access control signing method is SIGV4_ALWAYS, it is recommended to set the authType of the Function URL to AWS_IAM.',
       );
     }
 
