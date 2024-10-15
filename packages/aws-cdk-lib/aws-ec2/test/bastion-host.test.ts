@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Duration, Stack } from '../../core';
 import { BastionHostLinux, BlockDeviceVolume, CloudFormationInit, InitCommand, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
 
@@ -175,5 +175,83 @@ describe('bastion host', () => {
         },
       },
     });
+  });
+
+  test('appends new hash digest to instance logical Id if userDataCausesReplacement is true', () => {
+    //GIVEN
+    const stackOld = new Stack();
+    const stackNew = new Stack();
+    const vpcOld = new Vpc(stackOld, 'VPC');
+    const vpcNew = new Vpc(stackNew, 'VPC');
+    const oldSshKeys = ['foo', 'bar'];
+    const newSshKeys = ['foo_new', 'bar_new'];
+    const oldHash = '450c0dd0c96b2841';
+    const newHash = 'a5b7d63257ea4ca9';
+
+    // WHEN
+    const bastionHostOld = new BastionHostLinux(stackOld, 'BastionHostUserDataCausesReplacement', {
+      vpc: vpcOld,
+      userDataCausesReplacement: true,
+    });
+    bastionHostOld.instance.addUserData(
+      ...oldSshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
+    );
+
+    const bastionHostNew = new BastionHostLinux(stackNew, 'BastionHostUserDataCausesReplacement', {
+      vpc: vpcNew,
+      userDataCausesReplacement: true,
+    });
+    bastionHostNew.instance.addUserData(
+      ...oldSshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
+    );
+    bastionHostNew.instance.addUserData(
+      ...newSshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
+    );
+
+    // THEN
+    Template.fromStack(stackOld).templateMatches(Match.objectLike({
+      Resources: Match.objectLike({
+        [`BastionHostUserDataCausesReplacement985DBC41${oldHash}`]: Match.objectLike({
+          Type: 'AWS::EC2::Instance',
+          Properties: Match.anyValue(),
+        }),
+      }),
+    }));
+
+    Template.fromStack(stackNew).templateMatches(Match.objectLike({
+      Resources: Match.objectLike({
+        [`BastionHostUserDataCausesReplacement985DBC41${newHash}`]: Match.objectLike({
+          Type: 'AWS::EC2::Instance',
+          Properties: Match.anyValue(),
+        }),
+      }),
+    }));
+  });
+
+  test('does not append new hash digest to instance logical Id if userDataCausesReplacement is false', () => {
+    //GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const sshKeys = ['foo', 'bar'];
+    const hashdigest = '450c0dd0c96b2841';
+
+    // WHEN
+    const bastionHostOld = new BastionHostLinux(stack, 'BastionHostUserDataCausesReplacement', {
+      vpc,
+      userDataCausesReplacement: false,
+    });
+    bastionHostOld.instance.addUserData(
+      ...sshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
+    );
+
+    // THEN
+    Template.fromStack(stack).templateMatches(Match.objectLike({
+      Resources: Match.objectLike({
+        ['BastionHostUserDataCausesReplacement985DBC41']: Match.objectLike({
+          Type: 'AWS::EC2::Instance',
+          Properties: Match.anyValue(),
+        }),
+      }),
+    }));
   });
 });
