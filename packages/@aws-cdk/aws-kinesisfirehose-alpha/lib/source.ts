@@ -34,7 +34,7 @@ export interface SourceConfig {
 export interface ISource {
   /**
    * Binds this source to the Kinesis Data Firehose delivery stream.
-   * 
+   *
    * @internal
    */
   _bind(scope: Construct, roleArn?: string): SourceConfig;

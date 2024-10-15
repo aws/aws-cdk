@@ -68,7 +68,7 @@ declare const destination: firehose.IDestination;
 const sourceStream = new kinesis.Stream(this, 'Source Stream');
 
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  source: new source.KinesisStreamSource(sourceStream),
+  source: new firehose.KinesisStreamSource(sourceStream),
   destination: destination,
 });
 ```
