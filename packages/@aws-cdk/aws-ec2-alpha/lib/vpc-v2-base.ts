@@ -98,6 +98,13 @@ export interface IVpcV2 extends IVpc {
   readonly ipv4CidrBlock: string;
 
   /**
+   * IPv4 CIDR provisioned under pool
+   * Required to check for overlapping CIDRs after provisioning
+   * is complete under IPAM pool
+   */
+  readonly ipv4ProvisionedCidrs?: string[];
+
+  /**
    * Add an Egress only Internet Gateway to current VPC.
    * Can only be used for ipv6 enabled VPCs.
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway-basics.html}.
