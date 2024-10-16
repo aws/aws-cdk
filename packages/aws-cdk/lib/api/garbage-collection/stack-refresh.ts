@@ -172,7 +172,7 @@ export class BackgroundStackRefresh {
   public async start() {
     // Since start is going to be called right after the first invocation of refreshStacks,
     // lets wait some time before beginning the background refresh.
-    this.timeout = setTimeout(() => this.refresh(), 300_000);
+    this.timeout = setTimeout(() => this.refresh(), 300_000); // 5 minutes
   }
 
   private async refresh() {

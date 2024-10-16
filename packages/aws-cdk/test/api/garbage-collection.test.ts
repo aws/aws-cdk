@@ -3,6 +3,7 @@
 const mockGarbageCollect = jest.fn();
 
 import { GarbageCollector, ToolkitInfo } from '../../lib/api';
+import { ActiveAssetCache, BackgroundStackRefresh, BackgroundStackRefreshProps } from '../../lib/api/garbage-collection/stack-refresh';
 import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
 let garbageCollector: GarbageCollector;
@@ -678,5 +679,113 @@ describe('Garbage Collection with large # of objects', () => {
     // delete previously tagged objects
     expect(mockGetObjectTaggingLarge).toHaveBeenCalledTimes(keyCount);
     expect(mockDeleteObjects).toHaveBeenCalledTimes(4); // 4000 isolated assets are already tagged, deleted in batches of 1000
+  });
+});
+
+describe('BackgroundStackRefresh', () => {
+  let backgroundRefresh: BackgroundStackRefresh;
+  let refreshProps: BackgroundStackRefreshProps;
+  let setTimeoutSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    mockListStacks = jest.fn().mockResolvedValue({
+      StackSummaries: [
+        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
+        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+      ],
+    });
+    mockGetTemplateSummary = jest.fn().mockReturnValue({
+      Parameters: [{
+        ParameterKey: 'BootstrapVersion',
+        DefaultValue: '/cdk-bootstrap/abcde/version',
+      }],
+    });
+    mockGetTemplate = jest.fn().mockReturnValue({
+      TemplateBody: 'abcde',
+    });
+
+    sdk.stubCloudFormation({
+      listStacks: mockListStacks,
+      getTemplateSummary: mockGetTemplateSummary,
+      getTemplate: mockGetTemplate,
+      describeStacks: jest.fn(),
+    });
+
+    refreshProps = {
+      cfn: sdk.mockSdk.cloudFormation(),
+      activeAssets: new ActiveAssetCache(),
+      maxWaitTime: 60000, // 1 minute
+    };
+
+    backgroundRefresh = new BackgroundStackRefresh(refreshProps);
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    setTimeoutSpy.mockRestore();
+  });
+
+  test('should start after a delay', () => {
+    backgroundRefresh.start();
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+    expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 300000);
+  });
+
+  test('should refresh stacks and schedule next refresh', async () => {
+    backgroundRefresh.start();
+
+    // Run the first timer (which should trigger the first refresh)
+    await jest.runOnlyPendingTimersAsync();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(2); // Once for start, once for next refresh
+    expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 300000);
+
+    // Run the first timer (which triggers the first refresh)
+    await jest.runOnlyPendingTimersAsync();
+
+    expect(mockListStacks).toHaveBeenCalledTimes(2);
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(3); // Two refreshes plus one more scheduled
+  });
+
+  test('should wait for the next refresh if called within time frame', async () => {
+    backgroundRefresh.start();
+
+    // Run the first timer (which triggers the first refresh)
+    await jest.runOnlyPendingTimersAsync();
+
+    const waitPromise = backgroundRefresh.noOlderThan(180000); // 3 minutes
+    jest.advanceTimersByTime(120000); // Advance time by 2 minutes
+
+    await expect(waitPromise).resolves.toBeUndefined();
+  });
+
+  test('should wait for the next refresh if refresh lands before the timeout', async () => {
+    backgroundRefresh.start();
+
+    // Run the first timer (which triggers the first refresh)
+    await jest.runOnlyPendingTimersAsync();
+    jest.advanceTimersByTime(24000); // Advance time by 4 minutes
+
+    const waitPromise = backgroundRefresh.noOlderThan(300000); // 5 minutes
+    jest.advanceTimersByTime(120000); // Advance time by 2 minutes, refresh should fire
+
+    await expect(waitPromise).resolves.toBeUndefined();
+  });
+
+  test('should reject if the refresh takes too long', async () => {
+    backgroundRefresh.start();
+
+    // Run the first timer (which triggers the first refresh)
+    await jest.runOnlyPendingTimersAsync();
+    jest.advanceTimersByTime(120000); // Advance time by 2 minutes
+
+    const waitPromise = backgroundRefresh.noOlderThan(0); // 0 seconds
+    jest.advanceTimersByTime(120000); // Advance time by 2 minutes
+    
+    await expect(waitPromise).rejects.toThrow('refreshStacks took too long; the background thread likely threw an error');
   });
 });
