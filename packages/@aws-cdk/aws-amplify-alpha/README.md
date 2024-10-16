@@ -245,6 +245,37 @@ const amplifyApp = new amplify.App(this, 'App', {
     repository: '<repo>',
     oauthToken: SecretValue.secretsManager('my-github-token'),
   }),
+  buildSpec: BuildSpec.fromObjectToYaml({
+    version: '1.0',
+    applications: [
+      {
+        appRoot: 'frontend',
+        frontend: {
+          phases: {
+            preBuild: {
+              commands: ['npm install'],
+            },
+            build: {
+              commands: ['npm run build'],
+            },
+          },
+        },
+      },
+      {
+        appRoot: 'backend',
+        backend: {
+          phases: {
+            preBuild: {
+              commands: ['npm install'],
+            },
+            build: {
+              commands: ['npm run build'],
+            },
+          },
+        },
+      },
+    ],
+  }),
   customResponseHeaders: [
     {
       appRoot: 'frontend',
