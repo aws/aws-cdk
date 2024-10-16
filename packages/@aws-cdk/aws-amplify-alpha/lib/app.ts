@@ -538,7 +538,7 @@ export interface CustomResponseHeader {
 
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): string {
   const hasAppRoot = customHeaders[0].appRoot !== undefined;
-  const yaml = [hasAppRoot ? 'applications' : 'customHeaders:'];
+  const yaml = [hasAppRoot ? 'applications:' : 'customHeaders:'];
 
   for (const customHeader of customHeaders) {
     if ((customHeader.appRoot !== undefined) !== hasAppRoot) {

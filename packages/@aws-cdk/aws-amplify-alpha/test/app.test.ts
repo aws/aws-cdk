@@ -483,7 +483,7 @@ test('with custom headers in a monorepo structure', () => {
       'Fn::Join': [
         '',
         [
-          'applications\n  - appRoot: frontend\n    customHeaders:\n      - pattern: \"*.json\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-1\"\n          - key: \"custom-header-name-2\"\n            value: \"custom-header-value-2\"\n  - appRoot: backend\n    customHeaders:\n      - pattern: \"/path/*\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-2\"\n  - appRoot: other\n    customHeaders:\n      - pattern: \"/with-tokens/*\"\n        headers:\n          - key: \"x-custom\"\n            value: \"hellohellohellohellohellohellohellohellohellohello',
+          'applications:\n  - appRoot: frontend\n    customHeaders:\n      - pattern: \"*.json\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-1\"\n          - key: \"custom-header-name-2\"\n            value: \"custom-header-value-2\"\n  - appRoot: backend\n    customHeaders:\n      - pattern: \"/path/*\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-2\"\n  - appRoot: other\n    customHeaders:\n      - pattern: \"/with-tokens/*\"\n        headers:\n          - key: \"x-custom\"\n            value: \"hellohellohellohellohellohellohellohellohellohello',
           {
             Ref: 'AWS::URLSuffix',
           },
