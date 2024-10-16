@@ -194,7 +194,8 @@ export interface ServiceConnectProps {
 export interface ServiceConnectService {
   /**
    * portMappingName specifies which port and protocol combination should be used for this
-   * service connect service.
+   * service connect service. This should point to the `name` property of a port mapping
+   * defined on the task associated with the service.
    */
   readonly portMappingName: string;
 
