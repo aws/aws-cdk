@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "igwAmazonIpv64026617C": {
+  "igwAmazonIpv6476278C6": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -48,24 +48,11 @@
       "RouteTableId"
      ]
     }
-   }
-  },
-  "TestRoottableigwRouteGWAttachment4B3E8FD9": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "InternetGatewayId": {
-     "Fn::GetAtt": [
-      "testIGW8D947AF2",
-      "InternetGatewayId"
-     ]
-    },
-    "VpcId": {
-     "Fn::GetAtt": [
-      "igw127F1970",
-      "VpcId"
-     ]
-    }
-   }
+   },
+   "DependsOn": [
+    "testIGWGWAttachment682A6782",
+    "testIGW8D947AF2"
+   ]
   },
   "igwSubnetF238E402": {
    "Type": "AWS::EC2::Subnet",
@@ -92,7 +79,7 @@
     }
    },
    "DependsOn": [
-    "igwAmazonIpv64026617C"
+    "igwAmazonIpv6476278C6"
    ]
   },
   "igwSubnetRouteTableAssociationA48C27F3": {
@@ -109,11 +96,28 @@
     }
    },
    "DependsOn": [
-    "igwAmazonIpv64026617C"
+    "igwAmazonIpv6476278C6"
    ]
   },
   "testIGW8D947AF2": {
    "Type": "AWS::EC2::InternetGateway"
+  },
+  "testIGWGWAttachment682A6782": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "testIGW8D947AF2",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "igw127F1970",
+      "VpcId"
+     ]
+    }
+   }
   }
  },
  "Parameters": {

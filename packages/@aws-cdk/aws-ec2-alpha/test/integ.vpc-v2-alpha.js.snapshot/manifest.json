@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-vpcv2-alpha.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-vpcv2-alpha.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/353ce11111b0142986244849c029324fb6a6870f15c9cc910200712386cd1cbf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f788e7e93312214b5744a46db25d85b0b2eedddcbc77e2fc51193c34dc73efd2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,22 +41,22 @@
             "data": "VPCintegtest1EBA1CB75"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress2": [
+        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress2/SecondaryAddress2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryAddress256BAC1D3"
+            "data": "VPCintegtest1SecondaryAddress2B60D56E9"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/AmazonProvided": [
+        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/AmazonProvided/AmazonProvided": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1AmazonProvidedE0445E5C"
+            "data": "VPCintegtest1AmazonProvided48C2076B"
           }
         ],
-        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress3": [
+        "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress3/SecondaryAddress3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1SecondaryAddress3BCA08E40"
+            "data": "VPCintegtest1SecondaryAddress35E910ECB"
           }
         ],
         "/aws-cdk-vpcv2-alpha/VPC-integ-test-1/TestGWendpoint/Resource": [
@@ -213,24 +214,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "VPCintegtest1RoutePropagation062BDAD5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1RoutePropagation062BDAD5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCintegtest1TestNATGateway54FD55E6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCintegtest1TestNATGateway54FD55E6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-vpcv2-alpha"
@@ -250,6 +233,7 @@
         "templateFile": "integtestmodelDefaultTestDeployAssertCF40BD53.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

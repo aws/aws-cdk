@@ -16,16 +16,16 @@ describe('Vpc V2 with full control', () => {
     stack = new cdk.Stack(app);
   });
 
-  test('VpcV2.fromVpcV2attributes creates correct vpcArn', () => {
-    const importedVpc = VpcV2.fromVpcV2attributes(stack, 'VpcWithArn', {
+  test('VpcV2.fromVpcV2Attributes creates correct vpcArn', () => {
+    const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'VpcWithArn', {
       vpcId: 'vpc-12345',
       vpcCidrBlock: '10.0.0.0/16',
     });
     expect(importedVpc.vpcArn).toBe(`arn:${cdk.Stack.of(stack).partition}:ec2:${cdk.Stack.of(stack).region}:${cdk.Stack.of(stack).account}:vpc/vpc-12345`);
   });
 
-  test('VpcV2.fromVpcV2attributes returns an instance of IVpcV2', () => {
-    const importedVpc = VpcV2.fromVpcV2attributes(stack, 'VpcInstance', {
+  test('VpcV2.fromVpcV2Attributes returns an instance of IVpcV2', () => {
+    const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'VpcInstance', {
       vpcId: 'vpc-12345',
       vpcCidrBlock: '10.0.0.0/16',
     });
@@ -33,7 +33,7 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('Import VPC successfully', () => {
-    const vpc = VpcV2.fromVpcV2attributes(stack, 'ImportedVpc', {
+    const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'XXXXXXXXX',
       vpcCidrBlock: '10.1.0.0/16',
       publicSubnets: [{
@@ -52,7 +52,7 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('Import different type of subnets successfully', () => {
-    const importedVpc = VpcV2.fromVpcV2attributes(stack, 'ImportedVpc', {
+    const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'vpc-12345',
       vpcCidrBlock: '10.0.0.0/16',
       secondaryCidrBlocks: [
@@ -93,7 +93,7 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('Import VPC with secondary address Ipv4 successfully', () => {
-    const vpc = VpcV2.fromVpcV2attributes(stack, 'ImportedVpc', {
+    const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
       secondaryCidrBlocks: [
@@ -115,12 +115,12 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('Import VPC with IPAM IPv4', () => {
-    const vpc = VpcV2.fromVpcV2attributes(stack, 'ImportedVpc', {
+    const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
       secondaryCidrBlocks: [{
         ipv4IpamPoolId: 'ipam-pool-0d53ae29b3b8ca8de',
-        ipv4ProvisionedCidrs: ['10.2.0.0/16'],
+        ipv4IpamProvisionedCidrs: ['10.2.0.0/16'],
         cidrBlockName: 'ImportedIpamIpv4',
       }],
     });
@@ -137,7 +137,7 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('Import VPC with IPAM IPv6', () => {
-    const vpc = VpcV2.fromVpcV2attributes(stack, 'ImportedVpc', {
+    const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
       secondaryCidrBlocks: [{
@@ -164,7 +164,7 @@ describe('Vpc V2 with full control', () => {
   });
 
   test('Import VPC with secondary address amazon provided Ipv6 successfully', () => {
-    const vpc = VpcV2.fromVpcV2attributes(stack, 'ImportedVpc', {
+    const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
       secondaryCidrBlocks: [{
@@ -186,5 +186,4 @@ describe('Vpc V2 with full control', () => {
       Ipv6CidrBlock: '2600:1f24:6c:4000::/64',
     });
   });
-
 });
