@@ -90,23 +90,9 @@ export enum AuditCheck {
   DEVICE_CERTIFICATE_SHARED_CHECK = 'DEVICE_CERTIFICATE_SHARED_CHECK',
 
   /**
-   * Checks if device certificates are still active despite being revoked by an intermediate CA.
-   */
-  INTERMEDIATE_CA_REVOKED_FOR_ACTIVE_DEVICE_CERTIFICATES_CHECK = 'INTERMEDIATE_CA_REVOKED_FOR_ACTIVE_DEVICE_CERTIFICATES_CHECK',
-
-  /**
    * Checks the permissiveness of a policy attached to an authenticated Amazon Cognito identity pool role.
    */
   IOT_POLICY_OVERLY_PERMISSIVE_CHECK = 'IOT_POLICY_OVERLY_PERMISSIVE_CHECK',
-
-  /**
-   * Checks if an AWS IoT policy is potentially misconfigured.
-   *
-   * Misconfigured policies, including overly permissive policies, can cause security incidents like allowing devices access to unintended resources.
-   *
-   * This check is a warning for you to make sure that only intended actions are allowed before updating the policy.
-   */
-  IOT_POLICY_POTENTIAL_MIS_CONFIGURATION_CHECK = 'IOT_POLICY_POTENTIAL_MIS_CONFIGURATION_CHECK',
 
   /**
    * Checks if a role alias has access to services that haven't been used for the AWS IoT device in the last year.
@@ -202,6 +188,10 @@ export class DayOfMonth {
     return new DayOfMonth(String(day));
   }
 
+  /**
+   *
+   * @param day The day of the month
+   */
   private constructor(public readonly day: string) {}
 }
 
@@ -267,7 +257,7 @@ export interface ScheduledAuditProps {
    *
    * @default - auto generated name
    */
-  readonly name?: string;
+  readonly scheduledAuditName?: string;
 }
 
 /**
@@ -279,15 +269,15 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
    *
    * @param scope The parent creating construct (usually `this`)
    * @param id The construct's name
-   * @param arn The ARN of the scheduled audit
+   * @param scheduledAuditArn The ARN of the scheduled audit
    */
-  public static fromScheduledAuditArn(scope: Construct, id: string, arn: string): IScheduledAudit {
-    const name = Stack.of(scope).splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+  public static fromScheduledAuditArn(scope: Construct, id: string, scheduledAuditArn: string): IScheduledAudit {
+    const name = Stack.of(scope).splitArn(scheduledAuditArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!name) {
-      throw new Error(`No scheduled audit name found in ARN: '${arn}'`);
+      throw new Error(`No scheduled audit name found in ARN: '${scheduledAuditArn}'`);
     }
 
-    return this.fromScheduledAuditAttributes(scope, id, { scheduledAuditArn: arn, scheduledAuditName: name });
+    return this.fromScheduledAuditAttributes(scope, id, { scheduledAuditArn: scheduledAuditArn, scheduledAuditName: name });
   }
 
   /**
@@ -305,17 +295,17 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
     return new Import(scope, id);
   }
 
-    /**
+  /**
    * The scheduled audit name
    * @attribute
    */
-    public readonly scheduledAuditName: string;
+  public readonly scheduledAuditName: string;
 
-    /**
-     * The ARN of the scheduled audit
-     * @attribute
-     */
-    public readonly scheduledAuditArn: string;
+  /**
+   * The ARN of the scheduled audit
+   * @attribute
+   */
+  public readonly scheduledAuditArn: string;
 
   constructor(scope: Construct, id: string, props: ScheduledAuditProps) {
     super(scope, id);
@@ -341,17 +331,17 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
       }
     }
 
-    if (props.name && !Token.isUnresolved(props.name)){
-      if (props.name.length < 1 || props.name.length > 128) {
-        throw new Error(`Scheduled audit name must be between 1 and 128 characters, got: ${props.name.length}`);
+    if (props.scheduledAuditName && !Token.isUnresolved(props.scheduledAuditName)) {
+      if (props.scheduledAuditName.length < 1 || props.scheduledAuditName.length > 128) {
+        throw new Error(`Scheduled audit name must be between 1 and 128 characters, got: ${props.scheduledAuditName.length}`);
       }
-      if (!/^[a-zA-Z0-9:_-]+$/.test(props.name)) {
-        throw new Error(`Scheduled audit name must be alphanumeric and may include colons, underscores, and hyphens, got: ${props.name}`);
+      if (!/^[a-zA-Z0-9:_-]+$/.test(props.scheduledAuditName)) {
+        throw new Error(`Scheduled audit name must be alphanumeric and may include colons, underscores, and hyphens, got: ${props.scheduledAuditName}`);
       }
     }
 
     const resource = new iot.CfnScheduledAudit(this, 'Resource', {
-      scheduledAuditName: props.name,
+      scheduledAuditName: props.scheduledAuditName,
       targetCheckNames: props.auditChecks,
       dayOfWeek: props.dayOfWeek,
       dayOfMonth: props.dayOfMonth?.day,
