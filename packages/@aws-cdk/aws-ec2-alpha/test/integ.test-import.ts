@@ -19,7 +19,7 @@ const stack = new cdk.Stack(app, 'vpcv2-import-integ-test', {
  * Once created, change the subnet and VPCID
  * according to the one alloted on creation
  */
-const imported_new_vpc = VpcV2.VpcV2.fromVpcV2attributes(stack, 'ImportedNewVPC', {
+const imported_new_vpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedNewVPC', {
   vpcId: 'vpc-08193db3ccc4f909f', //VPC id
   vpcCidrBlock: '10.1.0.0/16',
   secondaryCidrBlocks: [{
@@ -69,7 +69,7 @@ new SubnetV2(stack, 'AddnewImportedSubnet2', {
   subnetType: SubnetType.PUBLIC,
 });
 
-const ImportedSubnet = SubnetV2.fromSubnetV2attributes(stack, 'IsolatedSubnet1', {
+const ImportedSubnet = SubnetV2.fromSubnetV2Attributes(stack, 'IsolatedSubnet1', {
   subnetId: 'subnet-0d441651f6653d4a7',
   subnetType: SubnetType.PRIVATE_ISOLATED,
   availabilityZone: 'us-west-2b',
@@ -87,7 +87,7 @@ imported_new_vpc.addNatGateway({
 imported_new_vpc.addEgressOnlyInternetGateway();
 
 // Import another IPAM enabled VPC
-const ipamvpc = VpcV2.VpcV2.fromVpcV2attributes(stack, 'ImportedIPAMVPC', {
+const ipamvpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedIPAMVPC', {
   vpcId: 'vpc-02407f4a207815a97',
   vpcCidrBlock: '10.0.0.0/16',
   secondaryCidrBlocks: [{
@@ -97,7 +97,7 @@ const ipamvpc = VpcV2.VpcV2.fromVpcV2attributes(stack, 'ImportedIPAMVPC', {
   },
   {
     ipv4IpamPoolId: 'ipam-pool-0d53ae29b3b8ca8de',
-    ipv4ProvisionedCidrs: ['10.2.0.0/16'],
+    ipv4IpamProvisionedCidrs: ['10.2.0.0/16'],
     cidrBlockName: 'ImportedIpamIpv4',
   }],
 });
