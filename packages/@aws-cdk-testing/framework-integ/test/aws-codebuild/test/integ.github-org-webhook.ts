@@ -8,6 +8,13 @@ class TestStack extends cdk.Stack {
     const source = codebuild.Source.gitHub({
       owner: 'aws',
       reportBuildStatus: false,
+      webhookFilters: [
+        codebuild.FilterGroup.inEventOf(
+          codebuild.EventAction.WORKFLOW_JOB_QUEUED,
+        )
+          .andRepositoryNameIs('aws-cdk.*')
+          .andRepositoryNameIsNot('aws-cdk-lib'),
+      ],
     });
     new codebuild.Project(this, 'MyProject', {
       source,
@@ -18,6 +25,6 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestStack(app, 'test-codebuild-github');
+new TestStack(app, 'test-codebuild-github-org-webhook');
 
 app.synth();
