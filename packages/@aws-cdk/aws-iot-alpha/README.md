@@ -148,7 +148,7 @@ You can create a [scheduled audit](https://docs.aws.amazon.com/iot-device-defend
 declare const config: iot.AccountAuditConfiguration;
 
 // Daily audit
-const dailyConfig = new iot.ScheduledAudit(this, 'DailyAudit', {
+const dailyAudit = new iot.ScheduledAudit(this, 'DailyAudit', {
   frequency: iot.Frequency.DAILY,
   auditChecks: [
     iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK,
