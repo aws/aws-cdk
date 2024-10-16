@@ -69,3 +69,22 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
   target: new SomeTarget(targetQueue),
 });
 ```
+
+### API destination
+
+API destination can be used to enrich events of a pipe.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+declare const apiDestination: events.ApiDestination;
+
+const enrichment = new enrichments.ApiDestinationEnrichment(apiDestination);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SomeSource(sourceQueue),
+  enrichment,
+  target: new SomeTarget(targetQueue),
+});
+```
