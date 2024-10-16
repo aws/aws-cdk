@@ -102,7 +102,7 @@ export interface IVpcV2 extends IVpc {
    * Required to check for overlapping CIDRs after provisioning
    * is complete under IPAM pool
    */
-  readonly ipv4ProvisionedCidrs?: string[];
+  readonly ipv4IpamProvisionedCidrs?: string[];
 
   /**
    * Add an Egress only Internet Gateway to current VPC.
@@ -353,7 +353,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     });
 
     let useIpv6;
-
     if (this.secondaryCidrBlock) {
       useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
     secondaryAddress.ipv6IpamPoolId != undefined));
