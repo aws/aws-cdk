@@ -5,10 +5,8 @@ import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
 /**
  * A Kinesis Data Firehose delivery stream source configuration.
- *
- * @internal
  */
-export interface SourceConfig {
+interface SourceConfig {
   /**
      * Configuration for using a Kinesis Data Stream as a source for the delivery stream.
      *
