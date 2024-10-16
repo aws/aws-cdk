@@ -1,7 +1,8 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
-class TestStack extends cdk.Stack {
+class GitHubOrgWebhookTestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
@@ -25,6 +26,11 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestStack(app, 'test-codebuild-github-org-webhook');
+const codebuildGitHubOrgWebhook = new GitHubOrgWebhookTestStack(app, 'codebuild-github-org-webhook');
+
+new IntegTest(app, 'codebuild-github-org-webhook-integ', {
+  testCases: [codebuildGitHubOrgWebhook],
+  stackUpdateWorkflow: true,
+});
 
 app.synth();
