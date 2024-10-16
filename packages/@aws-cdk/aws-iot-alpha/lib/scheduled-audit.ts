@@ -314,21 +314,34 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
       throw new Error('At least one \'auditChecks\' must be specified.');
     }
 
-    if (props.frequency === Frequency.WEEKLY || props.frequency === Frequency.BI_WEEKLY) {
-      if (!props.dayOfWeek) {
-        throw new Error('Day of the week must be specified for weekly or bi-weekly audits.');
-      }
-      if (props.dayOfMonth) {
-        throw new Error('Day of the month must not be specified for weekly or bi-weekly audits.');
-      }
-    }
-    if (props.frequency === Frequency.MONTHLY) {
-      if (!props.dayOfMonth) {
-        throw new Error('Day of the month must be specified for monthly audits.');
-      }
-      if (props.dayOfWeek) {
-        throw new Error('Day of the week must not be specified for monthly audits.');
-      }
+    switch (props.frequency) {
+      case Frequency.DAILY:
+        if (props.dayOfWeek) {
+          throw new Error('Day of the week must not be specified for daily audits.');
+        }
+        if (props.dayOfMonth) {
+          throw new Error('Day of the month must not be specified for daily audits.');
+        }
+        break;
+      case Frequency.WEEKLY:
+      case Frequency.BI_WEEKLY:
+        if (!props.dayOfWeek) {
+          throw new Error('Day of the week must be specified for weekly or bi-weekly audits.');
+        }
+        if (props.dayOfMonth) {
+          throw new Error('Day of the month must not be specified for weekly or bi-weekly audits.');
+        }
+        break;
+      case Frequency.MONTHLY:
+        if (!props.dayOfMonth) {
+          throw new Error('Day of the month must be specified for monthly audits.');
+        }
+        if (props.dayOfWeek) {
+          throw new Error('Day of the week must not be specified for monthly audits.');
+        }
+        break;
+      default:
+        throw new Error('Invalid frequency specified.');
     }
 
     if (props.scheduledAuditName && !Token.isUnresolved(props.scheduledAuditName)) {
