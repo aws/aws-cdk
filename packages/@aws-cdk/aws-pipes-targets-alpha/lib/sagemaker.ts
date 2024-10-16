@@ -10,7 +10,7 @@ export interface SageMakerTargetParameters {
    * The input transformation to apply to the message before sending it to the target.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipetargetparameters.html#cfn-pipes-pipe-pipetargetparameters-inputtemplate
-   * @default none
+   * @default - none
    */
   readonly inputTransformation?: IInputTransformation;
 
@@ -47,9 +47,7 @@ export class SageMakerTarget implements ITarget {
 
   bind(pipe: IPipe): TargetConfig {
     if (!this.sagemakerParameters) {
-      return {
-        targetParameters: {},
-      };
+      return { targetParameters: {} };
     }
 
     return {
