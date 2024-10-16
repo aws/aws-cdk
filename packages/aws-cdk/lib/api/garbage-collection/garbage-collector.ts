@@ -185,14 +185,7 @@ export class GarbageCollector {
         print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
         printer.start();
 
-        const { isolated, notIsolated } = batch.reduce<{ isolated: S3Asset[]; notIsolated: S3Asset[] }>((acc, obj) => {
-          if (!activeAssets.contains(obj.fileName())) {
-            acc.isolated.push(obj);
-          } else {
-            acc.notIsolated.push(obj);
-          }
-          return acc;
-        }, { isolated: [], notIsolated: [] });
+        const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
 
         debug(`${isolated.length} isolated assets`);
 
@@ -391,4 +384,21 @@ export class GarbageCollector {
       }
     } while (continuationToken);
   }
+}
+
+function partition<A>(xs: Iterable<A>, pred: (x: A) => boolean): { included: A[]; excluded: A[] } {
+  const result = {
+    included: [] as A[],
+    excluded: [] as A[],
+  };
+
+  for (const x of xs) {
+    if (pred(x)) {
+      result.included.push(x);
+    } else {
+      result.excluded.push(x);
+    }
+  }
+
+  return result;
 }
