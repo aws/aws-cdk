@@ -3852,5 +3852,198 @@ describe('bucket', () => {
       },
     });
   });
+
+  describe('Bucket with transitionDefaultMinimumObjectSize', () => {
+    test.each([
+      [s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K, 'all_storage_classes_128K'],
+      [s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS, 'varies_by_storage_class'],
+    ])('transitionDefaultMinimumObjectSize %s can be specified', (key, value) => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        transitionDefaultMinimumObjectSize: key,
+        lifecycleRules: [
+          {
+            expiration: cdk.Duration.days(365),
+          },
+        ],
+      });
+  
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        LifecycleConfiguration: {
+          TransitionDefaultMinimumObjectSize: value,
+          Rules: [{
+            ExpirationInDays: 365,
+          }],
+        },
+      });
+    });
+
+    test('throw if there is a rule doesn\'t have required properties', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            objectSizeLessThan: 300000,
+            objectSizeGreaterThan: 200000,
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        app.synth();  
+      }).toThrow(/TransitionDefaultMinimumObjectSize cannot be specified if all lifecycleRules don\'t have at least one of the following properties: abortIncompleteMultipartUploadAfter, expiration, expirationDate, expiredObjectDeleteMarker, noncurrentVersionExpiration, noncurrentVersionsToRetain, noncurrentVersionTransitions, or transitions/);
+    });
+
+    test('throw if there are a valid rule and a rule that doesn\'t have required properties.', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            abortIncompleteMultipartUploadAfter: cdk.Duration.days(365),
+          },
+          {
+            objectSizeLessThan: 300000,
+            objectSizeGreaterThan: 200000,
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        app.synth();  
+      }).toThrow(/TransitionDefaultMinimumObjectSize cannot be specified if all lifecycleRules don\'t have at least one of the following properties: abortIncompleteMultipartUploadAfter, expiration, expirationDate, expiredObjectDeleteMarker, noncurrentVersionExpiration, noncurrentVersionsToRetain, noncurrentVersionTransitions, or transitions/);
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with abortIncompleteMultipartUploadAfter', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            abortIncompleteMultipartUploadAfter: cdk.Duration.days(365),
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with expiration', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            expiration: cdk.Duration.days(365),
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with expirationDate', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            expirationDate: new Date('2024-01-01'),
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with expiredObjectDeleteMarker', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            expiredObjectDeleteMarker: true,
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with noncurrentVersionExpiration', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            noncurrentVersionExpiration: cdk.Duration.days(365),
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with noncurrentVersionsToRetain', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            noncurrentVersionsToRetain: 10,
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with noncurrentVersionTransitions', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            noncurrentVersionTransitions: [
+              {
+                storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL,
+                transitionAfter: cdk.Duration.days(10),
+                noncurrentVersionsToRetain: 1,
+              },
+            ],
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw if transitionDefaultMinimumObjectSize with transitions', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            transitions: [{
+              storageClass: s3.StorageClass.GLACIER,
+              transitionAfter: cdk.Duration.days(30),
+            }],
+          },
+        ],
+        transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+  });
 });
 

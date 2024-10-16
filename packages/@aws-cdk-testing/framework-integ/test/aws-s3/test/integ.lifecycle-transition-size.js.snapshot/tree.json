@@ -1,0 +1,233 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "s3-lifecycle-transition-size": {
+        "id": "s3-lifecycle-transition-size",
+        "path": "s3-lifecycle-transition-size",
+        "children": {
+          "AllStorageClasses128K": {
+            "id": "AllStorageClasses128K",
+            "path": "s3-lifecycle-transition-size/AllStorageClasses128K",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "s3-lifecycle-transition-size/AllStorageClasses128K/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "expirationInDays": 30,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "transitionDefaultMinimumObjectSize": "all_storage_classes_128K"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "VariesByStorageClass": {
+            "id": "VariesByStorageClass",
+            "path": "s3-lifecycle-transition-size/VariesByStorageClass",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "s3-lifecycle-transition-size/VariesByStorageClass/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "expirationInDays": 30,
+                          "status": "Enabled"
+                        }
+                      ],
+                      "transitionDefaultMinimumObjectSize": "varies_by_storage_class"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "AllStorageClasses128KWithCustomSizeRule": {
+            "id": "AllStorageClasses128KWithCustomSizeRule",
+            "path": "s3-lifecycle-transition-size/AllStorageClasses128KWithCustomSizeRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "s3-lifecycle-transition-size/AllStorageClasses128KWithCustomSizeRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "expirationInDays": 30,
+                          "status": "Enabled",
+                          "objectSizeLessThan": 300000,
+                          "objectSizeGreaterThan": 200000
+                        }
+                      ],
+                      "transitionDefaultMinimumObjectSize": "all_storage_classes_128K"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "VariesByStorageClassWithCustomSizeRule": {
+            "id": "VariesByStorageClassWithCustomSizeRule",
+            "path": "s3-lifecycle-transition-size/VariesByStorageClassWithCustomSizeRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "s3-lifecycle-transition-size/VariesByStorageClassWithCustomSizeRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "expirationInDays": 30,
+                          "status": "Enabled",
+                          "objectSizeLessThan": 300000,
+                          "objectSizeGreaterThan": 200000
+                        }
+                      ],
+                      "transitionDefaultMinimumObjectSize": "varies_by_storage_class"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "s3-lifecycle-transition-size/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "s3-lifecycle-transition-size/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "cdk-integ-s3-lifecycle-transition-size": {
+        "id": "cdk-integ-s3-lifecycle-transition-size",
+        "path": "cdk-integ-s3-lifecycle-transition-size",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}
