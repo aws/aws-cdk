@@ -62,8 +62,8 @@ in the *Kinesis Data Firehose Developer Guide*.
 ### Kinesis Data Stream
 
 A delivery stream can read directly from a Kinesis data stream as a consumer of the data
-stream. Configure this behaviour by providing a data stream in the `sourceStream`
-property when constructing a delivery stream:
+stream. Configure this behaviour by passing in a data stream in the `source`
+property via the `KinesisStreamSource` class when constructing a delivery stream:
 
 ```ts
 declare const destination: firehose.IDestination;
