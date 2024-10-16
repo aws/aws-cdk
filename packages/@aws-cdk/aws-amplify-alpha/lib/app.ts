@@ -545,7 +545,7 @@ function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): str
       throw new Error('appRoot must be either be present or absent across all custom response headers');
     }
 
-    const baseIndentation = ' '.repeat(customHeader.appRoot ? 6 : 2);
+    const baseIndentation = ' '.repeat(hasAppRoot ? 6 : 2);
     if (hasAppRoot) {
       yaml.push(`  - appRoot: ${customHeader.appRoot}`);
       yaml.push('    customHeaders:');
