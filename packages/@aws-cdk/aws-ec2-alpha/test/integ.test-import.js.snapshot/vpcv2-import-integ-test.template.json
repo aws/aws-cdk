@@ -32,28 +32,6 @@
     "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
    ]
   },
-  "ImportedNewVPCAddnewImportedSubnetDefaultIPv6Route98D952A0": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationIpv6CidrBlock": "::/0",
-    "GatewayId": {
-     "Fn::GetAtt": [
-      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
-      "InternetGatewayId"
-     ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "AddnewImportedSubnetRouteTable73C1E1B7",
-      "RouteTableId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
-    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
-   ]
-  },
   "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C": {
    "Type": "AWS::EC2::Route",
    "Properties": {
@@ -67,28 +45,6 @@
     "RouteTableId": {
      "Fn::GetAtt": [
       "AddnewImportedSubnetRouteTable73C1E1B7",
-      "RouteTableId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
-    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
-   ]
-  },
-  "ImportedNewVPCAddnewImportedSubnet2DefaultIPv6Route1EBC364B": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationIpv6CidrBlock": "::/0",
-    "GatewayId": {
-     "Fn::GetAtt": [
-      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
-      "InternetGatewayId"
-     ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "AddnewImportedSubnet2RouteTable2F07FB4F",
       "RouteTableId"
      ]
     }
@@ -150,7 +106,6 @@
     "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.2.2.0/24",
-    "Ipv6CidrBlock": "2600:1f14:b1d:6500::/64",
     "VpcId": "vpc-08193db3ccc4f909f"
    }
   },
@@ -180,7 +135,6 @@
     "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.3.2.0/24",
-    "Ipv6CidrBlock": "2600:1f14:b1d:6501::/64",
     "VpcId": "vpc-08193db3ccc4f909f"
    }
   },
