@@ -43,7 +43,7 @@ export interface ISource {
    * Grant read permissions for this source resource and its contents to an IAM
    * principal (the delivery stream).
    *
-   * If an encryption key is used, permission to ues the key to decrypt the
+   * If an encryption key is used, permission to use the key to decrypt the
    * contents of the stream will also be granted.
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
