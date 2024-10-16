@@ -369,4 +369,16 @@ describe('list', () => {
     );
   });
 
+  test('bootstrap specific environment', async () => {
+    // WHEN
+    await cdk.bootstrap({
+      environments: ['aws://123456789012/us-east-1'],
+    });
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      ['bootstrap', 'aws://123456789012/us-east-1', '--all'],
+      expect.anything(),
+    );
+  });
 });

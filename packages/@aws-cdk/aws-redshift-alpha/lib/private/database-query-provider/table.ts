@@ -211,7 +211,7 @@ async function updateTable(
   }
 
   // Limited by human input
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
 
   if (isTableV2) {
