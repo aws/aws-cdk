@@ -2,6 +2,8 @@ import * as path from 'path';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
+import * as integ from "@aws-cdk/integ-tests-alpha";
+import { IFunction } from "aws-cdk-lib/aws-lambda";
 
 /*
  * Stack verification steps:
@@ -9,10 +11,11 @@ import * as lambda from '../lib';
  */
 
 class TestStack extends Stack {
+  public readonly lambdaFunction: IFunction
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new lambda.GoFunction(this, 'go-handler-docker', {
+    this.lambdaFunction = new lambda.GoFunction(this, 'go-handler-docker', {
       entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
       bundling: {
         forcedDockerBundling: true,
@@ -23,5 +26,14 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-golang');
-app.synth();
+const stack = new TestStack(app, 'cdk-integ-lambda-golang-test-stack');
+
+const integTest = new integ.IntegTest(app, 'cdk-integ-lambda-golang', {
+  testCases: [stack],
+});
+
+const response = integTest.assertions.invokeFunction({
+  functionName: stack.lambdaFunction.functionName,
+});
+
+response.expect(integ.ExpectedResult.exact(256.0));
