@@ -12,6 +12,7 @@ import {
   Weekday,
   LustreDataCompressionType,
   DailyAutomaticBackupStartTime,
+  FileSystemTypeVersion,
   StorageType,
   DriveCacheType,
 } from '../lib';
@@ -138,7 +139,47 @@ describe('FSx for Lustre File System', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {});
   });
 
+  test.each([
+    FileSystemTypeVersion.V_2_10,
+    FileSystemTypeVersion.V_2_12,
+    FileSystemTypeVersion.V_2_15,
+  ])('file system is created correctly with fileSystemTypeVersion %s', (fileSystemTypeVersion: FileSystemTypeVersion) => {
+    lustreConfiguration = {
+      deploymentType: LustreDeploymentType.SCRATCH_2,
+    };
+
+    new LustreFileSystem(stack, 'FsxFileSystem', {
+      lustreConfiguration,
+      storageCapacityGiB: storageCapacity,
+      vpc,
+      vpcSubnet,
+      fileSystemTypeVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+      FileSystemTypeVersion: fileSystemTypeVersion,
+    });
+  });
+
   describe('when validating props', () => {
+    describe('fileSystemTypeVersion', () => {
+      test('throw error when fileSystemTypeVersion 2.10 is used with PERSISTENT_2 deployment type', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+            fileSystemTypeVersion: FileSystemTypeVersion.V_2_10,
+          });
+        }).toThrow('fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types');
+      });
+    });
+
     describe('exportPath', () => {
       test('export path valid', () => {
         const importPath = 's3://import-bucket';
