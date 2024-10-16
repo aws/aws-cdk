@@ -12,7 +12,8 @@ import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from '
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
-import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack } from './util/cloudformation';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
+import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { StackEventPoller } from './util/cloudformation/stack-event-poller';
 import { RollbackChoice } from './util/cloudformation/stack-status';
@@ -298,13 +299,6 @@ interface AssetOptions {
   readonly stack: cxapi.CloudFormationStackArtifact;
 
   /**
-   * Name of the toolkit stack, if not the default name.
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
-
-  /**
    * Execution role for the building.
    *
    * @default - Current role
@@ -396,6 +390,7 @@ export class Deployments {
   private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
+  private _allowCrossAccountAssetPublishing: boolean | undefined;
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
@@ -431,13 +426,28 @@ export class Deployments {
     const { stackSdk, resolvedEnvironment, envResources } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
+    await uploadStackTemplateAssets(stackArtifact, this);
+
     // Upload the template, if necessary, before passing it to CFN
+    const builder = new AssetManifestBuilder();
     const cfnParam = await makeBodyParameter(
       stackArtifact,
       resolvedEnvironment,
-      new AssetManifestBuilder(),
+      builder,
       envResources,
       stackSdk);
+
+    // If the `makeBodyParameter` before this added assets, make sure to publish them before
+    // calling the API.
+    const addedAssets = builder.toManifest(stackArtifact.assembly.directory);
+    for (const entry of addedAssets.entries) {
+      await this.buildSingleAsset('no-version-validation', addedAssets, entry, {
+        stack: stackArtifact,
+      });
+      await this.publishSingleAsset(addedAssets, entry, {
+        stack: stackArtifact,
+      });
+    }
 
     const response = await cfn.getTemplateSummary(cfnParam).promise();
     if (!response.ResourceIdentifierSummaries) {
@@ -806,21 +816,30 @@ export class Deployments {
    */
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+    await publishAssets(manifest, this.sdkProvider, stackEnv, {
+      ...options.publishOptions,
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv),
+    });
   }
 
   /**
    * Build a single asset from an asset manifest
+   *
+   * If an assert manifest artifact is given, the bootstrap stack version
+   * will be validated according to the constraints in that manifest artifact.
+   * If that is not necessary, `'no-version-validation'` can be passed.
    */
   // eslint-disable-next-line max-len
-  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
+  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact | 'no-version-validation', assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
     const { resolvedEnvironment, envResources } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
-    await this.validateBootstrapStackVersion(
-      options.stack.stackName,
-      assetArtifact.requiresBootstrapStackVersion,
-      assetArtifact.bootstrapStackVersionSsmParameter,
-      envResources);
+    if (assetArtifact !== 'no-version-validation') {
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        envResources);
+    }
 
     const publisher = this.cachedPublisher(assetManifest, resolvedEnvironment, options.stackName);
     await publisher.buildEntry(asset);
@@ -838,10 +857,19 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    await publisher.publishEntry(asset);
+    // eslint-disable-next-line no-console
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
+  }
+
+  private async allowCrossAccountAssetPublishingForEnv(env: cxapi.Environment): Promise<boolean> {
+    if (this._allowCrossAccountAssetPublishing === undefined) {
+      const sdk = (await this.cachedSdkForEnvironment(env, Mode.ForReading)).sdk;
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
+    }
+    return this._allowCrossAccountAssetPublishing;
   }
 
   /**
