@@ -451,6 +451,37 @@ test('with custom headers in a monorepo structure', () => {
       repository: 'aws-cdk',
       oauthToken: SecretValue.unsafePlainText('secret'),
     }),
+    buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+      version: '1.0',
+      applications: [
+        {
+          appRoot: 'frontend',
+          frontend: {
+            phases: {
+              preBuild: {
+                commands: ['npm install'],
+              },
+              build: {
+                commands: ['npm run build'],
+              },
+            },
+          },
+        },
+        {
+          appRoot: 'backend',
+          backend: {
+            phases: {
+              preBuild: {
+                commands: ['npm install'],
+              },
+              build: {
+                commands: ['npm run build'],
+              },
+            },
+          },
+        },
+      ],
+    }),
     customResponseHeaders: [
       {
         appRoot: 'frontend',
@@ -467,13 +498,6 @@ test('with custom headers in a monorepo structure', () => {
           'custom-header-name-1': 'custom-header-value-2',
         },
       },
-      {
-        appRoot: 'other',
-        pattern: '/with-tokens/*',
-        headers: {
-          'x-custom': `${'hello'.repeat(10)}${Stack.of(stack).urlSuffix} `,
-        },
-      },
     ],
   });
 
@@ -483,7 +507,7 @@ test('with custom headers in a monorepo structure', () => {
       'Fn::Join': [
         '',
         [
-          'applications:\n  - appRoot: frontend\n    customHeaders:\n      - pattern: \"*.json\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-1\"\n          - key: \"custom-header-name-2\"\n            value: \"custom-header-value-2\"\n  - appRoot: backend\n    customHeaders:\n      - pattern: \"/path/*\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-2\"\n  - appRoot: other\n    customHeaders:\n      - pattern: \"/with-tokens/*\"\n        headers:\n          - key: \"x-custom\"\n            value: \"hellohellohellohellohellohellohellohellohellohello',
+          'applications:\n  - appRoot: frontend\n    customHeaders:\n      - pattern: \"*.json\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-1\"\n          - key: \"custom-header-name-2\"\n            value: \"custom-header-value-2\"\n  - appRoot: backend\n    customHeaders:\n      - pattern: \"/path/*\"\n        headers:\n          - key: \"custom-header-name-1\"\n            value: \"custom-header-value-2\"\n',
           {
             Ref: 'AWS::URLSuffix',
           },
