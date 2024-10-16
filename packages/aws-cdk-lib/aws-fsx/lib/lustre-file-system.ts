@@ -206,7 +206,7 @@ export interface LustreFileSystemProps extends FileSystemProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fsx-filesystem.html#cfn-fsx-filesystem-filesystemtypeversion
    *
-   * @default - V_2_10, except for PERSISTENT_2 deployment type, where it is V_2_12.
+   * @default - V_2_10, except for PERSISTENT_2 deployment type, where it is V_2_12 without metadata configuration mode and V_2_15 with metadata configuration mode.
    */
   readonly fileSystemTypeVersion?: FileSystemTypeVersion;
 
