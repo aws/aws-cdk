@@ -10,7 +10,6 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as pipes from '@aws-cdk/aws-pipes-alpha';
 import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
-
 import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
 
 class SomeSource implements pipes.ISource {
