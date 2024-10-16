@@ -239,13 +239,15 @@ const amplifyApp = new amplify.App(this, 'App', {
 If the app uses a monorepo structure, define which appRoot from the build spec the custom response headers should apply to by using the `appRoot` property:
 
 ```ts
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
 const amplifyApp = new amplify.App(this, 'App', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
     owner: '<user>',
     repository: '<repo>',
     oauthToken: SecretValue.secretsManager('my-github-token'),
   }),
-  buildSpec: BuildSpec.fromObjectToYaml({
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     version: '1.0',
     applications: [
       {
