@@ -24,7 +24,6 @@ import {
 } from '../lib/aws-entities';
 
 export async function main(): Promise<void> {
-  console.log('hello')
   checkRegions(APPMESH_ECR_ACCOUNTS);
   checkRegions(DLC_REPOSITORY_ACCOUNTS);
   checkRegions(ELBV2_ACCOUNTS);
@@ -123,7 +122,6 @@ export async function main(): Promise<void> {
     }
 
     for (const version in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {
-      console.log(version)
       for (const arch in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version]) {
         registerFact(region, ['paramsAndSecretsLambdaLayer', version, arch], PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version][arch][region]);
       }
@@ -134,15 +132,11 @@ export async function main(): Promise<void> {
   lines.push('  private constructor() {}');
   lines.push('}');
 
-  console.log(lines)
-
-  await fs.writeFile(path.resolve( '..', 'lib', 'built-ins.generated.ts'), lines.join('\n'));
+  await fs.writeFile(path.resolve(__dirname, '..', 'lib', 'built-ins.generated.ts'), lines.join('\n'));
 
   function registerFact(region: string, name: string | string[], value: string) {
     const factName = typeof name === 'string' ? name : `${name[0]}(${name.slice(1).map(s => JSON.stringify(s)).join(', ')})`;
-    const l = `    Fact.register({ region: ${JSON.stringify(region)}, name: FactName.${factName}, value: ${JSON.stringify(value)} });`
-    lines.push(l);
-    console.log(l)
+    lines.push(`    Fact.register({ region: ${JSON.stringify(region)}, name: FactName.${factName}, value: ${JSON.stringify(value)} });`);
   }
 }
 
