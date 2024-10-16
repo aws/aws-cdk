@@ -38,15 +38,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "86891c59c6b1eb9b0ec971a6dfc2007af1a03467fd9157a78d28c154968b2980.zip"
+     "S3Key": "500fd707c88312e264a4eb741eb23571a837167480b64529ac84c757e39236b9.zip"
     },
+    "Handler": "bootstrap",
     "Role": {
      "Fn::GetAtt": [
       "gohandlerdockerServiceRole70394790",
       "Arn"
      ]
     },
-    "Handler": "bootstrap",
     "Runtime": "provided.al2"
    },
    "DependsOn": [
