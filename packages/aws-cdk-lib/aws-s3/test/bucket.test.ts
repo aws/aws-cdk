@@ -3867,7 +3867,7 @@ describe('bucket', () => {
           },
         ],
       });
-  
+
       Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
           TransitionDefaultMinimumObjectSize: value,
@@ -3891,7 +3891,7 @@ describe('bucket', () => {
         transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
       });
       expect(() => {
-        app.synth();  
+        app.synth();
       }).toThrow(/TransitionDefaultMinimumObjectSize cannot be specified if all lifecycleRules don\'t have at least one of the following properties: abortIncompleteMultipartUploadAfter, expiration, expirationDate, expiredObjectDeleteMarker, noncurrentVersionExpiration, noncurrentVersionsToRetain, noncurrentVersionTransitions, or transitions/);
     });
 
@@ -3911,7 +3911,7 @@ describe('bucket', () => {
         transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
       });
       expect(() => {
-        app.synth();  
+        app.synth();
       }).toThrow(/TransitionDefaultMinimumObjectSize cannot be specified if all lifecycleRules don\'t have at least one of the following properties: abortIncompleteMultipartUploadAfter, expiration, expirationDate, expiredObjectDeleteMarker, noncurrentVersionExpiration, noncurrentVersionsToRetain, noncurrentVersionTransitions, or transitions/);
     });
 

@@ -1415,7 +1415,7 @@ export enum TransitionDefaultMinimumObjectSize {
   /**
    * Objects smaller than 128 KB will transition to Glacier Flexible Retrieval or Glacier
    * Deep Archive storage classes.
-   * 
+   *
    * By default, all other storage classes will prevent transitions smaller than 128 KB.
    */
   VARIES_BY_STORAGE_CLASS = 'varies_by_storage_class',
@@ -1552,7 +1552,7 @@ export interface BucketProps {
    * To customize the minimum object size for any transition you can add a filter that specifies a custom
    * `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules` property. Custom filters always
    * take precedence over the default transition behavior.
-   * 
+   *
    * @default TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K
    */
   readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
@@ -2270,14 +2270,14 @@ export class Bucket extends BucketBase {
    */
   private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
     const isValidTransitionDefaultMinimumObjectSize = this.lifecycleRules.every((rule: LifecycleRule): boolean =>
-      rule.abortIncompleteMultipartUploadAfter !== undefined || 
-      rule.expiration !== undefined || 
-      rule.expirationDate !== undefined || 
-      rule.expiredObjectDeleteMarker !== undefined || 
-      rule.noncurrentVersionExpiration !== undefined || 
-      rule.noncurrentVersionsToRetain !== undefined || 
-      rule.noncurrentVersionTransitions !== undefined || 
-      rule.transitions  !== undefined
+      rule.abortIncompleteMultipartUploadAfter !== undefined ||
+      rule.expiration !== undefined ||
+      rule.expirationDate !== undefined ||
+      rule.expiredObjectDeleteMarker !== undefined ||
+      rule.noncurrentVersionExpiration !== undefined ||
+      rule.noncurrentVersionsToRetain !== undefined ||
+      rule.noncurrentVersionTransitions !== undefined ||
+      rule.transitions !== undefined
     );
     if (this.transitionDefaultMinimumObjectSize && !isValidTransitionDefaultMinimumObjectSize) {
       throw new Error('TransitionDefaultMinimumObjectSize cannot be specified if all lifecycleRules don\'t have at least one of the following properties: abortIncompleteMultipartUploadAfter, expiration, expirationDate, expiredObjectDeleteMarker, noncurrentVersionExpiration, noncurrentVersionsToRetain, noncurrentVersionTransitions, or transitions');
