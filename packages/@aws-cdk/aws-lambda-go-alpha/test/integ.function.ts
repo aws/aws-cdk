@@ -2,8 +2,8 @@ import * as path from 'path';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
-import * as integ from "@aws-cdk/integ-tests-alpha";
-import { IFunction } from "aws-cdk-lib/aws-lambda";
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 /*
  * Stack verification steps:
@@ -26,9 +26,9 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-const stack = new TestStack(app, 'cdk-integ-lambda-golang-test-stack');
+const stack = new TestStack(app, 'cdk-integ-lambda-golang');
 
-const integTest = new integ.IntegTest(app, 'cdk-integ-lambda-golang', {
+const integTest = new integ.IntegTest(app, 'cdk-integ-lambda-golang-al2-integ-test', {
   testCases: [stack],
 });
 
@@ -36,4 +36,8 @@ const response = integTest.assertions.invokeFunction({
   functionName: stack.lambdaFunction.functionName,
 });
 
-response.expect(integ.ExpectedResult.exact(256.0));
+response.expect(integ.ExpectedResult.objectLike({
+  StatusCode: 200,
+  ExecutedVersion: '$LATEST',
+  Payload: '256',
+}));

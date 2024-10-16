@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a3f13d1c11b19d495aaa0901f1c89f80e019b4fb87f0f7432d2460d51b8cf59b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c0df4660809a6fe7b81eaab90eb4561df4b7a779fa411e719361c00756a58a73.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,6 +45,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "gohandlerdockerAE04F1B8"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/Exports/Output{\"Ref\":\"gohandlerdockerAE04F1B8\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefgohandlerdockerAE04F1B886D55427"
           }
         ],
         "/cdk-integ-lambda-golang-provided-al2023/BootstrapVersion": [
@@ -80,7 +86,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5cc1b3d6a9657a42ef4276d9221d6c6ef4ad342b0177b450687a7657d2ade01d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -93,9 +99,46 @@
         }
       },
       "dependencies": [
+        "cdk-integ-lambda-golang-provided-al2023",
         "lambdagoruntimeDefaultTestDeployAssert366012A1.assets"
       ],
       "metadata": {
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokec4688b687151901cd5c67c2304486b07/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec4688b687151901cd5c67c2304486b07"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokec4688b687151901cd5c67c2304486b07/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec4688b687151901cd5c67c2304486b07Invoke6DCC0555"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokec4688b687151901cd5c67c2304486b07/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokec4688b687151901cd5c67c2304486b07"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/lambda-go-runtime/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
