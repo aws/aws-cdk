@@ -161,7 +161,7 @@ async function classifyResourceChanges(
   const changesDetectionResults: Array<ChangeHotswapResult> = [];
   for (const detectorResultPromises of promises) {
     // Constant set of promises per resource
-    // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     const hotswapDetectionResults = await Promise.all(await detectorResultPromises());
     changesDetectionResults.push(hotswapDetectionResults);
   }
@@ -336,7 +336,7 @@ async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: Hotsw
     print(`\n${ICON} hotswapping resources:`);
   }
   const limit = pLimit(10);
-  // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   return Promise.all(hotswappableChanges.map(hotswapOperation => limit(() => {
     return applyHotswappableChange(sdk, hotswapOperation);
   })));
