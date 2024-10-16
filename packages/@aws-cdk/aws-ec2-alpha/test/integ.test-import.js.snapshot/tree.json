@@ -85,42 +85,6 @@
                   "version": "0.0.0"
                 }
               },
-              "AddnewImportedSubnet-DefaultIPv6Route": {
-                "id": "AddnewImportedSubnet-DefaultIPv6Route",
-                "path": "vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet-DefaultIPv6Route",
-                "children": {
-                  "Route": {
-                    "id": "Route",
-                    "path": "vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet-DefaultIPv6Route/Route",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationIpv6CidrBlock": "::/0",
-                        "gatewayId": {
-                          "Fn::GetAtt": [
-                            "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
-                            "InternetGatewayId"
-                          ]
-                        },
-                        "routeTableId": {
-                          "Fn::GetAtt": [
-                            "AddnewImportedSubnetRouteTable73C1E1B7",
-                            "RouteTableId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
-                  "version": "0.0.0"
-                }
-              },
               "AddnewImportedSubnet-DefaultRoute": {
                 "id": "AddnewImportedSubnet-DefaultRoute",
                 "path": "vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet-DefaultRoute",
@@ -141,42 +105,6 @@
                         "routeTableId": {
                           "Fn::GetAtt": [
                             "AddnewImportedSubnetRouteTable73C1E1B7",
-                            "RouteTableId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
-                  "version": "0.0.0"
-                }
-              },
-              "AddnewImportedSubnet2-DefaultIPv6Route": {
-                "id": "AddnewImportedSubnet2-DefaultIPv6Route",
-                "path": "vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet2-DefaultIPv6Route",
-                "children": {
-                  "Route": {
-                    "id": "Route",
-                    "path": "vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet2-DefaultIPv6Route/Route",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationIpv6CidrBlock": "::/0",
-                        "gatewayId": {
-                          "Fn::GetAtt": [
-                            "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
-                            "InternetGatewayId"
-                          ]
-                        },
-                        "routeTableId": {
-                          "Fn::GetAtt": [
-                            "AddnewImportedSubnet2RouteTable2F07FB4F",
                             "RouteTableId"
                           ]
                         }
@@ -356,7 +284,6 @@
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2a",
                     "cidrBlock": "10.2.2.0/24",
-                    "ipv6CidrBlock": "2600:1f14:b1d:6500::/64",
                     "vpcId": "vpc-08193db3ccc4f909f"
                   }
                 },
@@ -438,7 +365,6 @@
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2a",
                     "cidrBlock": "10.3.2.0/24",
-                    "ipv6CidrBlock": "2600:1f14:b1d:6501::/64",
                     "vpcId": "vpc-08193db3ccc4f909f"
                   }
                 },
