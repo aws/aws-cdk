@@ -362,6 +362,8 @@ export class LustreFileSystem extends FileSystemBase {
         throw new Error('fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types');
       }
     }
+
+    // TODO: Add validation for V_2_12 with PERSISTENT_2 deployment mode and metadata configuration mode when metadata configuration is supported.
   }
 
   /**
