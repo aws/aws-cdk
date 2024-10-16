@@ -1,0 +1,119 @@
+{
+ "Resources": {
+  "requestorVpcFFA7DDD4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "requestorVpcTempBlock78E0B4F4": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "10.3.0.0/16",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcFFA7DDD4",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VpcB98A08B07": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.2.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerOwnerId": "12345678",
+    "PeerRegion": "us-east-1",
+    "PeerVpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcFFA7DDD4",
+      "VpcId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcB98A08B07",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "RouteTableE1378006": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcB98A08B07",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "RouteTablevpcPeeringRoute2C93DAB3": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "10.0.0.0/16",
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "RouteTableE1378006",
+      "RouteTableId"
+     ]
+    },
+    "VpcPeeringConnectionId": {
+     "Fn::GetAtt": [
+      "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3",
+      "Id"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
