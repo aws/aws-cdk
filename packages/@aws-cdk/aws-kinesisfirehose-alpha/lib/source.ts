@@ -56,7 +56,7 @@ export class KinesisStreamSource implements ISource {
    * Creates a new KinesisStreamSource.
    */
   constructor(private readonly stream: kinesis.IStream) {}
-  
+
   grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.stream.grantRead(grantee);
   }

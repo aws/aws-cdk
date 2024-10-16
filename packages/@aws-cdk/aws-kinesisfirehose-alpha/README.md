@@ -444,7 +444,7 @@ necessary permissions for Kinesis Data Firehose to access the resources referenc
 delivery stream. One service role is created for the delivery stream that allows Kinesis
 Data Firehose to read from a Kinesis data stream (if one is configured as the delivery
 stream source) and for server-side encryption. Note that if the DeliveryStream is created 
-without specifying `sourceStream` or `encryptionKey`, this role is not created as it is not needed.
+without specifying a Kinesis Stream as the`source` or `encryptionKey`, this role is not created as it is not needed.
 
 Another service role is created for each destination, which gives Kinesis Data Firehose write 
 access to the destination resource, as well as the ability to invoke data transformers and 
