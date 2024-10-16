@@ -344,7 +344,7 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
         throw new Error('Invalid frequency specified.');
     }
 
-    if (props.scheduledAuditName && !Token.isUnresolved(props.scheduledAuditName)) {
+    if (props.scheduledAuditName !== undefined && !Token.isUnresolved(props.scheduledAuditName)) {
       if (props.scheduledAuditName.length < 1 || props.scheduledAuditName.length > 128) {
         throw new Error(`Scheduled audit name must be between 1 and 128 characters, got: ${props.scheduledAuditName.length}`);
       }

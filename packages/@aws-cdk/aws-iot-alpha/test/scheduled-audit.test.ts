@@ -70,7 +70,7 @@ describe('weekly audit', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IoT::ScheduledAudit', {
       Frequency: 'WEEKLY',
-      DayOfWeek: 'MONDAY',
+      DayOfWeek: 'MON',
       TargetCheckNames: ['AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK'],
     });
   });
@@ -112,7 +112,7 @@ describe('bi-weekly audit', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IoT::ScheduledAudit', {
       Frequency: 'BIWEEKLY',
-      DayOfWeek: 'MONDAY',
+      DayOfWeek: 'MON',
       TargetCheckNames: ['AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK'],
     });
   });
@@ -154,7 +154,7 @@ describe('monthly audit', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IoT::ScheduledAudit', {
       Frequency: 'MONTHLY',
-      DayOfMonth: 29,
+      DayOfMonth: '29',
       TargetCheckNames: ['AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK'],
     });
   });
