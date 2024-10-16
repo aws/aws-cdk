@@ -185,9 +185,9 @@ export interface VPCPeeringConnectionOptions {
   readonly acceptorVpc: IVpcV2;
 
   /**
-   * The AWS account ID of the acceptor VPC owner.
+   * The role arn created in the acceptor account.
    *
-   * @default - no roleArn needed if not cross account connection
+   * @default - no peerRoleArn needed if not cross account connection
    */
   readonly peerRoleArn?: string;
 
