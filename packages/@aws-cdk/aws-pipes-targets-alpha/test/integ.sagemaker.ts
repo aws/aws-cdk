@@ -9,6 +9,13 @@ import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import { Construct } from 'constructs';
 import { SageMakerTarget } from '../lib/sagemaker';
 
+/*
+ * This integration test sends a message to an SQS queue which
+ * invokes a SageMaker pipeline.
+ *
+ * SQS (pipe source) --> SageMaker pipeline (pipe target)
+ */
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-sagemaker');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
