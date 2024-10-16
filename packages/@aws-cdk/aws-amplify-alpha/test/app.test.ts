@@ -500,7 +500,6 @@ test('with custom headers in a monorepo structure', () => {
         },
       },
     ],
-    platform: amplify.Platform.WEB_COMPUTE,
   });
 
   // THEN
