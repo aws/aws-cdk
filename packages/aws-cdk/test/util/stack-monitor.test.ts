@@ -174,6 +174,7 @@ describe('stack monitor, collecting errors from events', () => {
                 physicalResourceId: '',
                 resourceType: 'AWS::CloudFormation::Stack',
                 resourceStatusReason: 'nested stack failed',
+                resourceStatus: 'CREATE_IN_PROGRESS',
               },
             ),
           ],
@@ -196,7 +197,8 @@ describe('stack monitor, collecting errors from events', () => {
       },
     ]);
 
-    expect(monitor.errors).toStrictEqual(['nested stack failed', 'some failure']);
+    expect(monitor.errors).not.toContain('nested stack failed');
+    expect(monitor.errors).toContain('some failure');
   });
 
   test('does not check for nested stacks that have already completed successfully', async () => {

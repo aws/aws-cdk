@@ -8,6 +8,9 @@ import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHa
 import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
 
 jest.mock('../../lib/api/hotswap-deployments');
+jest.mock('../../lib/api/util/checks', () => ({
+  determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
+}));
 
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',

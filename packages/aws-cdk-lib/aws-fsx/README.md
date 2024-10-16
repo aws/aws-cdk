@@ -240,6 +240,41 @@ const lustreConfiguration = {
 For more information, see [Working with backups
 ](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-backups-fsx.html).
 
+### Storage Type
+
+By default, FSx for Lustre uses SSD storage. To use HDD storage, specify `storageType`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.PERSISTENT_1 },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  storageType: fsx.StorageType.HDD,
+});
+```
+
+**Note:** The HDD storage type is only supported for `PERSISTENT_1` deployment types.
+
+To improve the performance of frequently accessed files by caching up to 20% of the total storage capacity of the file system, set `driveCacheType` to `READ`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: {
+    deploymentType: fsx.LustreDeploymentType.PERSISTENT_1,
+    driveCacheType: fsx.DriveCacheType.READ,
+    },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  storageType: fsx.StorageType.HDD,
+});
+```
+
 ## FSx for Windows File Server
 
 The L2 construct for the FSx for Windows File Server has not yet been implemented. To instantiate an FSx for Windows
