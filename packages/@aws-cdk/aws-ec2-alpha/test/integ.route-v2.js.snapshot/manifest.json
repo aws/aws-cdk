@@ -687,7 +687,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/247a442d4f157f616d8ab3238140453b7c58c3b66472c23fc213101c15b136d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa56ca630709a15070b4208becd94454c974906d445fd83b73389524957f89e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -716,46 +716,22 @@
             "data": "vpcpcAmazonIpv66504EEB2"
           }
         ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/crossAccountCrossRegionPeering/VPCPeeringConnection": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8"
-          }
-        ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/TestRoottable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestRoottableRouteTableFA28AA38"
           }
         ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/TestRoottable/vpcPeeringRoute/Route": [
+        "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestRoottablevpcPeeringRouteA5DE3C21"
+            "data": "vpcpcSubnet1DD6CE35"
           }
         ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/Resource": [
+        "/aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "secondVPCFBB45262"
-          }
-        ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/Temp Block": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "secondVPCTempBlock7F6107B6"
-          }
-        ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "secondVPCVpcPeeringRoleB5D6E33D"
-          }
-        ],
-        "/aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "secondVPCVpcPeeringRoleDefaultPolicy2274B424"
+            "data": "vpcpcSubnetRouteTableAssociation8531BF5C"
           }
         ],
         "/aws-cdk-routev2-vpcpeerconnection-alpha/BootstrapVersion": [

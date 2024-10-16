@@ -1754,44 +1754,6 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
                   "version": "0.0.0"
                 }
-              },
-              "crossAccountCrossRegionPeering": {
-                "id": "crossAccountCrossRegionPeering",
-                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/crossAccountCrossRegionPeering",
-                "children": {
-                  "VPCPeeringConnection": {
-                    "id": "VPCPeeringConnection",
-                    "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/crossAccountCrossRegionPeering/VPCPeeringConnection",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCPeeringConnection",
-                      "aws:cdk:cloudformation:props": {
-                        "peerOwnerId": "012345678910",
-                        "peerRegion": "us-west-2",
-                        "peerRoleArn": "arn:aws:iam::012345678910:role/VpcPeeringRole",
-                        "peerVpcId": {
-                          "Fn::GetAtt": [
-                            "secondVPCFBB45262",
-                            "VpcId"
-                          ]
-                        },
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "vpcpc6CAE1A04",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCPeeringConnection",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.VPCPeeringConnection",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -1821,42 +1783,6 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
-              },
-              "vpcPeeringRoute": {
-                "id": "vpcPeeringRoute",
-                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/TestRoottable/vpcPeeringRoute",
-                "children": {
-                  "Route": {
-                    "id": "Route",
-                    "path": "aws-cdk-routev2-vpcpeerconnection-alpha/TestRoottable/vpcPeeringRoute/Route",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationCidrBlock": "0.0.0.0/0",
-                        "routeTableId": {
-                          "Fn::GetAtt": [
-                            "TestRoottableRouteTableFA28AA38",
-                            "RouteTableId"
-                          ]
-                        },
-                        "vpcPeeringConnectionId": {
-                          "Fn::GetAtt": [
-                            "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8",
-                            "Id"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -1864,200 +1790,76 @@
               "version": "0.0.0"
             }
           },
-          "secondVPC": {
-            "id": "secondVPC",
-            "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC",
+          "vpcpcSubnet": {
+            "id": "vpcpcSubnet",
+            "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/Resource",
+              "Subnet": {
+                "id": "Subnet",
+                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/Subnet",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.1.0.0/16",
-                    "enableDnsHostnames": true,
-                    "enableDnsSupport": true,
-                    "instanceTenancy": "default"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
-                  "version": "0.0.0"
-                }
-              },
-              "Temp Block": {
-                "id": "Temp Block",
-                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/Temp Block",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.2.0.0/16",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-east-1a",
+                    "cidrBlock": "10.0.0.0/24",
+                    "ipv6CidrBlock": {
+                      "Fn::Select": [
+                        0,
+                        {
+                          "Fn::GetAtt": [
+                            "vpcpc6CAE1A04",
+                            "Ipv6CidrBlocks"
+                          ]
+                        }
+                      ]
+                    },
                     "vpcId": {
                       "Fn::GetAtt": [
-                        "secondVPCFBB45262",
+                        "vpcpc6CAE1A04",
                         "VpcId"
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                   "version": "0.0.0"
                 }
               },
-              "VpcPeeringRole": {
-                "id": "VpcPeeringRole",
-                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole",
-                "children": {
-                  "ImportVpcPeeringRole": {
-                    "id": "ImportVpcPeeringRole",
-                    "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/ImportVpcPeeringRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::987654321098:root"
-                                    ]
-                                  ]
-                                }
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "description": "Restrictive role for VPC peering",
-                        "roleName": "VpcPeeringRole"
-                      }
+              "Acl": {
+                "id": "Acl",
+                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/Acl",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "RouteTableAssociation": {
+                "id": "RouteTableAssociation",
+                "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpcSubnet/RouteTableAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "TestRoottableRouteTableFA28AA38",
+                        "RouteTableId"
+                      ]
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-routev2-vpcpeerconnection-alpha/secondVPC/VpcPeeringRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "ec2:AcceptVpcPeeringConnection",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":ec2:us-west-2:012345678910:vpc/",
-                                        {
-                                          "Fn::GetAtt": [
-                                            "secondVPCFBB45262",
-                                            "VpcId"
-                                          ]
-                                        }
-                                      ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": "ec2:AcceptVpcPeeringConnection",
-                                  "Condition": {
-                                    "StringEquals": {
-                                      "ec2:AccepterVpc": {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":ec2:us-west-2:012345678910:vpc/",
-                                            {
-                                              "Fn::GetAtt": [
-                                                "secondVPCFBB45262",
-                                                "VpcId"
-                                              ]
-                                            }
-                                          ]
-                                        ]
-                                      }
-                                    }
-                                  },
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":ec2:us-west-2:012345678910:vpc-peering-connection/*"
-                                      ]
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "secondVPCVpcPeeringRoleDefaultPolicy2274B424",
-                            "roles": [
-                              {
-                                "Ref": "secondVPCVpcPeeringRoleB5D6E33D"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                    "subnetId": {
+                      "Ref": "vpcpcSubnet1DD6CE35"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },

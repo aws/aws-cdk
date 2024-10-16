@@ -21,26 +21,6 @@
     }
    }
   },
-  "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8": {
-   "Type": "AWS::EC2::VPCPeeringConnection",
-   "Properties": {
-    "PeerOwnerId": "012345678910",
-    "PeerRegion": "us-west-2",
-    "PeerRoleArn": "arn:aws:iam::012345678910:role/VpcPeeringRole",
-    "PeerVpcId": {
-     "Fn::GetAtt": [
-      "secondVPCFBB45262",
-      "VpcId"
-     ]
-    },
-    "VpcId": {
-     "Fn::GetAtt": [
-      "vpcpc6CAE1A04",
-      "VpcId"
-     ]
-    }
-   }
-  },
   "TestRoottableRouteTableFA28AA38": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
@@ -52,153 +32,50 @@
     }
    }
   },
-  "TestRoottablevpcPeeringRouteA5DE3C21": {
-   "Type": "AWS::EC2::Route",
+  "vpcpcSubnet1DD6CE35": {
+   "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAtt": [
+        "vpcpc6CAE1A04",
+        "Ipv6CidrBlocks"
+       ]
+      }
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "vpcpc6CAE1A04",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "vpcpcAmazonIpv66504EEB2"
+   ]
+  },
+  "vpcpcSubnetRouteTableAssociation8531BF5C": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
     "RouteTableId": {
      "Fn::GetAtt": [
       "TestRoottableRouteTableFA28AA38",
       "RouteTableId"
      ]
     },
-    "VpcPeeringConnectionId": {
-     "Fn::GetAtt": [
-      "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8",
-      "Id"
-     ]
+    "SubnetId": {
+     "Ref": "vpcpcSubnet1DD6CE35"
     }
    },
    "DependsOn": [
-    "vpcpccrossAccountCrossRegionPeeringVPCPeeringConnection89B302C8"
+    "vpcpcAmazonIpv66504EEB2"
    ]
-  },
-  "secondVPCFBB45262": {
-   "Type": "AWS::EC2::VPC",
-   "Properties": {
-    "CidrBlock": "10.1.0.0/16",
-    "EnableDnsHostnames": true,
-    "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
-   }
-  },
-  "secondVPCTempBlock7F6107B6": {
-   "Type": "AWS::EC2::VPCCidrBlock",
-   "Properties": {
-    "CidrBlock": "10.2.0.0/16",
-    "VpcId": {
-     "Fn::GetAtt": [
-      "secondVPCFBB45262",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "secondVPCVpcPeeringRoleB5D6E33D": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::987654321098:root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Description": "Restrictive role for VPC peering",
-    "RoleName": "VpcPeeringRole"
-   }
-  },
-  "secondVPCVpcPeeringRoleDefaultPolicy2274B424": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "ec2:AcceptVpcPeeringConnection",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ec2:us-west-2:012345678910:vpc/",
-          {
-           "Fn::GetAtt": [
-            "secondVPCFBB45262",
-            "VpcId"
-           ]
-          }
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "ec2:AcceptVpcPeeringConnection",
-       "Condition": {
-        "StringEquals": {
-         "ec2:AccepterVpc": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":ec2:us-west-2:012345678910:vpc/",
-            {
-             "Fn::GetAtt": [
-              "secondVPCFBB45262",
-              "VpcId"
-             ]
-            }
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ec2:us-west-2:012345678910:vpc-peering-connection/*"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "secondVPCVpcPeeringRoleDefaultPolicy2274B424",
-    "Roles": [
-     {
-      "Ref": "secondVPCVpcPeeringRoleB5D6E33D"
-     }
-    ]
-   }
   }
  },
  "Parameters": {

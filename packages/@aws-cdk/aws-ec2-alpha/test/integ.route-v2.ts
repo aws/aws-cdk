@@ -57,7 +57,7 @@ for (const stackName in stacks) {
       routeTable: routeTables[stackName],
     });
     subnets[stackName] = subnet;
-  } else if (stackName != 'vpcpc') {
+  } else {
     // use empty ipv6 that doesn't overlap
     const subnet = new SubnetV2(stacks[stackName], stackName + 'Subnet', {
       vpc: vpc,
@@ -114,20 +114,6 @@ const dynamoEndpoint = new GatewayVpcEndpoint(stacks.dynamodb, 'testDynamoEndpoi
   subnets: [subnets.dynamodb],
 });
 routeTables.dynamodb.addRoute('dynamoRoute', '0.0.0.0/0', { endpoint: dynamoEndpoint });
-
-vpcs.vpcpc2 = new vpc_v2.VpcV2(stacks.vpcpc, 'secondVPC', {
-  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
-  secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv4('10.2.0.0/16', { cidrBlockName: 'Temp Block' })],
-  region: 'us-west-2',
-  ownerAccountId: '012345678910',
-});
-vpcs.vpcpc2.createAcceptorVpcRole('987654321098');
-
-const peeringConnection = vpcs.vpcpc.createPeeringConnection('crossAccountCrossRegionPeering', {
-  acceptorVpc: vpcs.vpcpc2,
-  peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
-});
-routeTables.vpcpc.addRoute('vpcPeeringRoute', '0.0.0.0/0', { gateway: peeringConnection });
 
 var i = 0;
 for (const stackName in stacks) {
