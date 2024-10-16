@@ -66,7 +66,9 @@ function makeYargs(config: CliConfig): Statement {
     }
 
     // tail-recursive?
-    yargsExpr = yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description), optionsExpr);
+    yargsExpr = commandFacts.options
+      ? yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description), optionsExpr)
+      : yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description));
   }
 
   return code.stmt.ret(yargsExpr);
